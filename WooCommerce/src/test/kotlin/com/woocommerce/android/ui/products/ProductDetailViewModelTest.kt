@@ -35,7 +35,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -640,79 +639,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             // The VM state should have been updated with the _fetched_ product's numVariations
             assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
-        }
-
-    @Test
-    fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {
-        doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
-        doReturn(product).whenever(productRepository).getProduct(any())
-        savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
-
-        setup()
-        viewModel.start()
-        viewModel.onSaveAsDraftButtonClicked()
-
-        verify(mediaFileUploadHandler).assignUploadsToCreatedProduct(PRODUCT_REMOTE_ID)
-    }
-
-    @Test
-    fun `given a product is under creation, when displaying discard changes dialog, then stop observing uploads`() =
-        testBlocking {
-            var isObservingEvents: Boolean? = null
-            val successEvents = MutableSharedFlow<MediaModel>()
-                .onSubscription { isObservingEvents = true }
-                .onCompletion { isObservingEvents = false }
-            doReturn(successEvents).whenever(mediaFileUploadHandler)
-                .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
-            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
-
-            setup()
-            viewModel.start()
-            // Make some changes to trigger discard changes dialog
-            viewModel.onProductTitleChanged("Product")
-            viewModel.onBackButtonClickedProductDetail()
-
-            assertThat(isObservingEvents).isFalse()
-        }
-
-    @Test
-    fun `given a product is under creation, when dismissing discard changes dialog, then start observing uploads`() =
-        testBlocking {
-            var isObservingEvents: Boolean? = null
-            val successEvents = MutableSharedFlow<MediaModel>()
-                .onSubscription { isObservingEvents = true }
-                .onCompletion { isObservingEvents = false }
-            doReturn(successEvents).whenever(mediaFileUploadHandler)
-                .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
-            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
-
-            setup()
-            viewModel.start()
-            // Make some changes to trigger discard changes dialog
-            viewModel.onProductTitleChanged("Product")
-            viewModel.onBackButtonClickedProductDetail()
-            (viewModel.event.value as ShowDialog).negativeBtnAction!!.onClick(null, 0)
-
-            assertThat(isObservingEvents).isTrue()
-        }
-
-    @Test
-    fun `given a product is under creation, when clicking on save product, then assign uploads to the new id`() =
-        testBlocking {
-            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
-            doReturn(product).whenever(productRepository).getProduct(any())
-            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
-
-            setup()
-            viewModel.start()
-            // Make some changes to trigger discard changes dialog
-            viewModel.onProductTitleChanged("Product")
-            viewModel.onBackButtonClickedProductDetail()
-            (viewModel.event.value as ShowDialog).neutralBtnAction!!.onClick(null, 0)
-
-            verify(mediaFileUploadHandler).assignUploadsToCreatedProduct(PRODUCT_REMOTE_ID)
         }
 
     private val productsDraft
