@@ -75,7 +75,7 @@ class ProductDetailFragment :
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
     private var updateMenuItem: MenuItem? = null
-    private var detailSnackbar: Snackbar? = null
+    private var imageUploadErrorsSnackbar: Snackbar? = null
 
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
     private val saveTitleId = R.string.save
@@ -97,7 +97,7 @@ class ProductDetailFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
-        detailSnackbar?.dismiss()
+        imageUploadErrorsSnackbar?.dismiss()
         super.onDestroyView()
         _binding = null
     }
@@ -261,7 +261,7 @@ class ProductDetailFragment :
                         )
                     }
                     is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
-                    is HideImageUploadErrorSnackbar -> detailSnackbar?.dismiss()
+                    is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                     else -> event.isHandled = false
                 }
             }
@@ -311,16 +311,16 @@ class ProductDetailFragment :
         message: String,
         actionListener: View.OnClickListener
     ) {
-        if (detailSnackbar == null) {
-            detailSnackbar = uiMessageResolver.getIndefiniteActionSnack(
+        if (imageUploadErrorsSnackbar == null) {
+            imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
                 actionText = getString(R.string.details),
                 actionListener = actionListener
             )
         } else {
-            detailSnackbar?.setText(message)
+            imageUploadErrorsSnackbar?.setText(message)
         }
-        detailSnackbar?.show()
+        imageUploadErrorsSnackbar?.show()
     }
 
     private fun startAddImageContainer() {

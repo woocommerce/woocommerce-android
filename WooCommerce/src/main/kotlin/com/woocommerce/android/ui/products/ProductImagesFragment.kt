@@ -66,7 +66,7 @@ class ProductImagesFragment :
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
-    private var detailSnackbar: Snackbar? = null
+    private var imageUploadErrorsSnackbar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -87,7 +87,7 @@ class ProductImagesFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        detailSnackbar?.dismiss()
+        imageUploadErrorsSnackbar?.dismiss()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -222,16 +222,16 @@ class ProductImagesFragment :
         message: String,
         actionListener: View.OnClickListener
     ) {
-        if (detailSnackbar == null) {
-            detailSnackbar = uiMessageResolver.getIndefiniteActionSnack(
+        if (imageUploadErrorsSnackbar == null) {
+            imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
                 actionText = getString(R.string.details),
                 actionListener = actionListener
             )
         } else {
-            detailSnackbar?.setText(message)
+            imageUploadErrorsSnackbar?.setText(message)
         }
-        detailSnackbar?.show()
+        imageUploadErrorsSnackbar?.show()
     }
 
     private fun updateImages(images: List<Image>, uris: List<Uri>?) {

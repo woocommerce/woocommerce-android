@@ -67,7 +67,7 @@ class VariationDetailFragment :
     private val skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-    private var detailSnackbar: Snackbar? = null
+    private var imageUploadErrorsSnackbar: Snackbar? = null
 
     private val viewModel: VariationDetailViewModel by viewModels()
 
@@ -86,7 +86,7 @@ class VariationDetailFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
-        detailSnackbar?.dismiss()
+        imageUploadErrorsSnackbar?.dismiss()
         super.onDestroyView()
         _binding = null
     }
@@ -245,7 +245,7 @@ class VariationDetailFragment :
                 when (event) {
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
-                    is HideImageUploadErrorSnackbar -> detailSnackbar?.dismiss()
+                    is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                     is VariationNavigationTarget -> {
                         navigator.navigate(this, event)
                     }
@@ -323,16 +323,16 @@ class VariationDetailFragment :
         message: String,
         actionListener: View.OnClickListener
     ) {
-        if (detailSnackbar == null) {
-            detailSnackbar = uiMessageResolver.getIndefiniteActionSnack(
+        if (imageUploadErrorsSnackbar == null) {
+            imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
                 actionText = getString(R.string.details),
                 actionListener = actionListener
             )
         } else {
-            detailSnackbar?.setText(message)
+            imageUploadErrorsSnackbar?.setText(message)
         }
-        detailSnackbar?.show()
+        imageUploadErrorsSnackbar?.show()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
