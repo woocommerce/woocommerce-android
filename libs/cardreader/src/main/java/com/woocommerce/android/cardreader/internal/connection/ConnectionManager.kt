@@ -13,7 +13,12 @@ import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -96,11 +101,22 @@ internal class ConnectionManager(
         })
     }
 
-    fun resetConnectionState() {
-        bluetoothReaderListener.resetConnectionState()
+    private fun startStateResettingJobIfNeeded(currentStatus: CardReaderStatus) {
+        if (currentStatus !is CardReaderStatus.Connecting) return
+
+        val connectedScope = CoroutineScope(Dispatchers.Default)
+        connectedScope.launch {
+            terminalListenerImpl.readerStatus.collect { connectionStatus ->
+                if (connectionStatus is CardReaderStatus.NotConnected) {
+                    bluetoothReaderListener.resetConnectionState()
+                    connectedScope.cancel()
+                }
+            }
+        }
     }
 
     private fun updateReaderStatus(status: CardReaderStatus) {
         terminalListenerImpl.updateReaderStatus(status)
+        startStateResettingJobIfNeeded(status)
     }
 }

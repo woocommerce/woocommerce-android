@@ -10,7 +10,6 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
@@ -19,12 +18,7 @@ import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.PaymentInfo
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
@@ -91,7 +85,6 @@ internal class CardReaderManagerImpl(
 
     override suspend fun connectToReader(cardReader: CardReader): Boolean {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        startStateResettingJob()
         return connectionManager.connectToReader(cardReader)
     }
 
@@ -125,17 +118,5 @@ internal class CardReaderManagerImpl(
 
     override fun cancelOngoingFirmwareUpdate() {
         softwareUpdateManager.cancelOngoingFirmwareUpdate()
-    }
-
-    private fun startStateResettingJob() {
-        val connectedScope = CoroutineScope(Dispatchers.Default)
-        connectedScope.launch {
-            readerStatus.collect { connectionStatus ->
-                if (connectionStatus is CardReaderStatus.NotConnected) {
-                    connectionManager.resetConnectionState()
-                    connectedScope.cancel()
-                }
-            }
-        }
     }
 }
