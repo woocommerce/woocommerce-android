@@ -23,7 +23,6 @@ import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewMo
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SKIPPED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -73,8 +72,6 @@ class CardReaderDetailViewModel @Inject constructor(
                 triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
             }
             FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
-            SKIPPED -> {
-            }
         }.exhaustive
     }
 

@@ -1,20 +1,16 @@
 package com.woocommerce.android.cardreader.internal.connection
 
 import com.stripe.stripeterminal.external.models.ConnectionStatus
-import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
-import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 
 class TerminalListenerImplTest {
-    private val terminalWrapper: TerminalWrapper = mock()
     private val logWrapper: LogWrapper = mock()
 
-    private val listener = TerminalListenerImpl(terminalWrapper, logWrapper)
+    private val listener = TerminalListenerImpl(logWrapper)
 
     @Test
     fun `when reader unexpectedly disconnected, then not connected status emitted`() {
@@ -31,18 +27,29 @@ class TerminalListenerImplTest {
     }
 
     @Test
-    fun `when connecting to reader, then connected status emitted`() {
-        listener.onConnectionStatusChange(ConnectionStatus.CONNECTING)
+    fun `when update reader status with not connected, then not connected status emitted`() {
+        val newStatus = CardReaderStatus.NotConnected
 
-        assertThat(listener.readerStatus.value).isEqualTo(CardReaderStatus.Connecting)
+        listener.updateReaderStatus(newStatus)
+
+        assertThat(listener.readerStatus.value).isEqualTo(newStatus)
     }
 
     @Test
-    fun `when reader connection established, then connected status emitted`() {
-        val cardReader = CardReaderImpl(mock())
-        whenever(terminalWrapper.getConnectedReader()).thenReturn(cardReader)
-        listener.onConnectionStatusChange(ConnectionStatus.CONNECTED)
+    fun `when update reader status with connecting, then connecting status emitted`() {
+        val newStatus = CardReaderStatus.Connecting
 
-        assertThat(listener.readerStatus.value).isEqualTo(CardReaderStatus.Connected(cardReader))
+        listener.updateReaderStatus(newStatus)
+
+        assertThat(listener.readerStatus.value).isEqualTo(newStatus)
+    }
+
+    @Test
+    fun `when update reader status with connected, then connected status emitted`() {
+        val newStatus = CardReaderStatus.Connected(mock())
+
+        listener.updateReaderStatus(newStatus)
+
+        assertThat(listener.readerStatus.value).isEqualTo(newStatus)
     }
 }

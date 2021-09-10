@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewMo
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ButtonState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.StateWithProgress
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -59,7 +60,10 @@ class CardReaderUpdateViewModel @Inject constructor(
     fun onBackPressed() {
         return when (val currentState = viewState.value) {
             is UpdatingState -> showCancelAnywayButton(currentState)
-            is UpdatingCancelingState -> viewState.value = buildUpdateState(currentState.progressText)
+            is UpdatingCancelingState -> viewState.value = UpdatingState(progressText = currentState.progressText)
+            is UpdateAboutToStart -> {
+                // noop. Update is initiating, we can not cancel it
+            }
             else -> triggerEvent(ExitWithResult(FAILED))
         }
     }
@@ -68,7 +72,9 @@ class CardReaderUpdateViewModel @Inject constructor(
         cardReaderManager.softwareUpdateStatus.collect { status ->
             when (status) {
                 is Failed -> onUpdateFailed(status)
-                is InstallationStarted -> updateProgress(viewState.value, 0)
+                is InstallationStarted -> viewState.value = UpdateAboutToStart(
+                    buildProgressText(convertProgressToPercentage(0f))
+                )
                 is Installing -> updateProgress(viewState.value, convertProgressToPercentage(status.progress))
                 Success -> onUpdateSucceeded()
                 Unknown -> onUpdateStatusUnknown()
@@ -83,7 +89,7 @@ class CardReaderUpdateViewModel @Inject constructor(
             null,
             "Unknown software update status"
         )
-        finishFlow(UpdateResult.SKIPPED)
+        finishFlow(FAILED)
     }
 
     private fun onUpdateSucceeded() {
@@ -109,7 +115,7 @@ class CardReaderUpdateViewModel @Inject constructor(
         if (currentState is StateWithProgress<*>) {
             viewState.value = currentState.copyWithUpdatedProgress(buildProgressText(progress))
         } else {
-            viewState.value = buildUpdateState(buildProgressText(progress))
+            viewState.value = UpdatingState(progressText = buildProgressText(progress))
         }
     }
 
@@ -125,6 +131,7 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun onCancelClicked() {
+        cardReaderManager.cancelOngoingFirmwareUpdate()
         tracker.track(
             CARD_READER_SOFTWARE_UPDATE_FAILED,
             this@CardReaderUpdateViewModel.javaClass.simpleName,
@@ -133,15 +140,6 @@ class CardReaderUpdateViewModel @Inject constructor(
         )
         triggerEvent(ExitWithResult(FAILED))
     }
-
-    private fun buildUpdateState(progressText: UiString) =
-        UpdatingState(
-            progressText = progressText,
-            button = ButtonState(
-                ::onCancelClicked,
-                UiStringRes(R.string.cancel)
-            ),
-        )
 
     private fun convertProgressToPercentage(progress: Float) = (progress * PERCENT_100).toInt()
 
@@ -165,9 +163,15 @@ class CardReaderUpdateViewModel @Inject constructor(
         open val progressText: UiString? = null,
         open val button: ButtonState? = null,
     ) {
+        data class UpdateAboutToStart(
+            override val progressText: UiString,
+        ) : ViewState(
+            title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
+            description = UiStringRes(R.string.card_reader_software_update_description),
+        )
+
         data class UpdatingState(
             override val progressText: UiString,
-            override val button: ButtonState,
             override val description: UiStringRes = UiStringRes(
                 R.string.card_reader_software_update_description
             ),
@@ -202,6 +206,6 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     enum class UpdateResult {
-        SUCCESS, SKIPPED, FAILED
+        SUCCESS, FAILED
     }
 }

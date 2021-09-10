@@ -36,4 +36,5 @@ interface CardReaderManager {
 
     suspend fun startAsyncSoftwareUpdate()
     suspend fun clearCachedCredentials()
+    fun cancelOngoingFirmwareUpdate()
 }
