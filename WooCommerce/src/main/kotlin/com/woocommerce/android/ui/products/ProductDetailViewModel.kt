@@ -1573,11 +1573,15 @@ class ProductDetailViewModel @Inject constructor(
                 .launchIn(this)
 
             mediaFileUploadHandler.observeCurrentUploadErrors(getRemoteProductId())
-                .onEach {
-                    val errorMsg = resources.getMediaUploadErrorMessage(it.size)
-                    triggerEvent(
-                        ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(getRemoteProductId())) }
-                    )
+                .onEach { errorList ->
+                    if (errorList.isEmpty()) {
+                        triggerEvent(HideImageUploadErrorSnackbar)
+                    } else {
+                        val errorMsg = resources.getMediaUploadErrorMessage(errorList.size)
+                        triggerEvent(
+                            ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(getRemoteProductId())) }
+                        )
+                    }
                 }
                 .launchIn(this)
         }
@@ -1992,6 +1996,8 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     object RefreshMenu : Event()
+
+    object HideImageUploadErrorSnackbar: Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
