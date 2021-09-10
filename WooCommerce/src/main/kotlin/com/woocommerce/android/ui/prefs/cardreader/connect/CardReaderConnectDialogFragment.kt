@@ -21,6 +21,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -51,6 +53,7 @@ import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -102,7 +105,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     }
 
     private fun initObservers(binding: CardReaderConnectDialogBinding) {
-        observeEvents()
+        observeEvents(binding)
         observeState(binding)
         setupResultHandlers(viewModel)
     }
@@ -170,7 +173,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     }
 
     @Suppress("ComplexMethod")
-    private fun observeEvents() {
+    private fun observeEvents(binding: CardReaderConnectDialogBinding) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is CheckLocationPermissions -> {
@@ -221,6 +224,8 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_CONNECT_TO_READER_RESULT, event.data as Boolean)
                 }
+                is CardReaderConnectViewModel.CardReaderConnectEvent.ShowToast ->
+                    ToastUtils.showToast(requireContext(), getString(event.message))
                 else -> event.isHandled = false
             }
         }
