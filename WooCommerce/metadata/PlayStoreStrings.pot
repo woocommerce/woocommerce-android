@@ -11,20 +11,20 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_075"
+msgid ""
+"7.5:\n"
+"Viewing orders with products using WooCommerce’s Product Add-Ons Extension is a new feature! Head over to your store’s settings in the app on the My store tab and turn this on under Beta features. Be sure to send us feedback about the experience!\n"
+"\n"
+"You’ll also find that you can filter the product list by category. You asked, and we delivered!\n"
+msgstr ""
+
 msgctxt "release_note_074"
 msgid ""
 "7.4:\n"
 "Product reviews requiring your approval have a new label to make it easier for you to distinguish them from already approved reviews.\n"
 "\n"
 "This update also includes several enhancements to the shipping label feature using the WooCommerce Shipping & Tax Extension. We value all of your feedback on this newer feature!\n"
-msgstr ""
-
-msgctxt "release_note_073"
-msgid ""
-"7.3:\n"
-"Merchants using the WooCommerce Shipping & Tax Extension will be happy to hear of two improvements we’ve made. You can create custom packages when creating a label. You can also create multiple shipping labels for a single order!\n"
-"\n"
-"This and many other tiny improvements were made to make your experience smoother. We hope you notice the love we put into our software.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
