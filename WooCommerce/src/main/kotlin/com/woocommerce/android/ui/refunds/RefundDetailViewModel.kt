@@ -13,12 +13,14 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.ProductRefundListItem
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -30,6 +32,7 @@ import javax.inject.Inject
 class RefundDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     orderStore: WCOrderStore,
+    private val coroutineDispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
@@ -128,6 +131,20 @@ class RefundDetailViewModel @Inject constructor(
             manualRefund
         }
     }
+
+    private fun checkAddonAvailability(refunds: List<ProductRefundListItem>) {
+        launch(coroutineDispatchers.computation) {
+            refunds.forEach { refund ->
+                refund.orderItem.containsAddons = containsAddons(refund.orderItem)
+            }
+        }
+    }
+
+    private fun containsAddons(product: Order.Item) =
+        addonsRepository
+            .getAddonsFrom(product.productId)
+            ?.any { addon -> product.attributesList.any { it.addonName == addon.name } }
+            ?: false
 
     @Parcelize
     data class ViewState(
