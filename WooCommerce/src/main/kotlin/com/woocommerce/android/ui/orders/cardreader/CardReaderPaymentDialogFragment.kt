@@ -42,12 +42,12 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        disableGooglePay()
+        disableDigitalWallets()
     }
 
     override fun onDetach() {
         super.onDetach()
-        reEnableGooglePay()
+        reEnableDigitalWallets()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -162,10 +162,10 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
     }
 
     /**
-     * Disables Google Pay in order to prevent the merchant from accidentally charging themselves instead of
-     * the customer.
+     * Disables digital wallets (eg. Google Pay) in order to prevent the merchant from accidentally charging themselves
+     * instead of the customer.
      */
-    private fun disableGooglePay() {
+    private fun disableDigitalWallets() {
         NfcAdapter.getDefaultAdapter(requireContext())
             ?.enableReaderMode(
                 requireActivity(),
@@ -175,7 +175,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
             )
     }
 
-    private fun reEnableGooglePay() {
+    private fun reEnableDigitalWallets() {
         NfcAdapter.getDefaultAdapter(requireContext())
             ?.disableReaderMode(requireActivity())
     }
