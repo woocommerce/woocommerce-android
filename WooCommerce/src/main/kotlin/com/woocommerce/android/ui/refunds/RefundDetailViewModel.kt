@@ -11,6 +11,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.ProductRefundListItem
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -32,6 +33,7 @@ class RefundDetailViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
+    private val addonsRepository: AddonRepository,
     private val refundStore: WCRefundStore
 ) : ScopedViewModel(savedState) {
     val viewStateData = LiveDataDelegate(savedState, ViewState())
