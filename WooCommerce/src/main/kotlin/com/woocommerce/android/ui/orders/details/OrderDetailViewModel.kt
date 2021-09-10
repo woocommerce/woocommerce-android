@@ -520,9 +520,8 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun containsAddons(product: Order.Item) =
-        addonsRepository
-            .getAddonsFrom(product.productId)
+    private suspend fun containsAddons(product: Order.Item) =
+        addonsRepository.getAddonsFrom(product.productId)
             ?.any { addon -> product.attributesList.any { it.addonName == addon.name } }
             ?: false
 
