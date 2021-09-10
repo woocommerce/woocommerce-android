@@ -369,6 +369,10 @@
     <string name="ordered_add_ons_details_info_notice">If renaming an add-on in your web dashboard, please note that previous orders will no longer show that add-on within the app.</string>
     <string name="ordered_add_ons_wip_title">View add-ons from your device!</string>
     <string name="ordered_add_ons_wip_message">We are working on making it easier for you to see product add-ons from your device! For now, you’ll be able to see the add-ons for your orders. You can create and edit these add-ons in your web dashboard.</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Something went wrong</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Sorry, we couldn\'t load the Order Add-ons right now</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+
     <!--
         Shipping label Refunds
     -->
@@ -774,7 +778,7 @@
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
-    <string name="card_reader_payment_save_for_later">Save for later</string>
+    <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
 
     <string name="card_reader_payment_description">Online payment for order %s for %s</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>

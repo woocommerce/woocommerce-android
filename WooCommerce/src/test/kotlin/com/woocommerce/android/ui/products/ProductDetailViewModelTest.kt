@@ -9,9 +9,9 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.*
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -56,7 +56,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
@@ -75,6 +74,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
         on { it.observeCurrentUploads(any()) } doReturn flowOf(emptyList())
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
+    }
+    private val addonRepository: AddonRepository = mock {
+        onBlocking { hasAnyProductSpecificAddons(any()) } doReturn false
     }
 
     private var savedState: SavedStateHandle =
@@ -225,13 +227,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 mediaFilesRepository,
                 variationRepository,
                 mediaFileUploadHandler,
-                prefs
+                prefs,
+                addonRepository,
             )
         )
 
         clearInvocations(
             viewModel,
-            selectedSite,
             productRepository,
             networkStatus,
             currencyFormatter,
