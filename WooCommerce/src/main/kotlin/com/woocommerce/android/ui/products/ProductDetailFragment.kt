@@ -97,6 +97,7 @@ class ProductDetailFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
+        detailSnackbar?.dismiss()
         super.onDestroyView()
         _binding = null
     }
