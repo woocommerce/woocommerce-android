@@ -369,7 +369,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         assertThat(saveAsDraftShown).isFalse()
     }
 
-
     @Test
     fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {
         doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
