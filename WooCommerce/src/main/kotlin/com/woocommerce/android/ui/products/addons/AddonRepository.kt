@@ -21,9 +21,10 @@ class AddonRepository @Inject constructor(
         addonsStore.fetchAllGlobalAddonsGroups(selectedSite.get())
             .isError.not()
 
-    fun getAddonsFrom(productID: Long) =
+    suspend fun getAddonsFrom(productID: Long) =
         productStore.getProductByRemoteId(selectedSite.get(), productID)
-            ?.addons
+            ?.let { addonsStore.observeAddonsForProduct(selectedSite.get().siteId, it) }
+            ?.firstOrNull()
 
     suspend fun getOrderAddonsData(
         orderID: Long,
@@ -45,9 +46,7 @@ class AddonRepository @Inject constructor(
             ?.filter { it.isNotInternalAttributeData }
 
     private suspend fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
-        productStore.getProductByRemoteId(selectedSite.get(), productID)
-            ?.let { addonsStore.observeAddonsForProduct(selectedSite.get().siteId, it) }
-            ?.firstOrNull()
+        getAddonsFrom(productID)
             ?.map { it.toAppModel() }
             ?.let { addons -> Pair(addons, this) }
 }
