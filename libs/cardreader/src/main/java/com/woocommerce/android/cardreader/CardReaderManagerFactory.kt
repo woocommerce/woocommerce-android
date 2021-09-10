@@ -23,6 +23,7 @@ object CardReaderManagerFactory {
     fun createCardReaderManager(cardReaderStore: CardReaderStore, logWrapper: LogWrapper): CardReaderManager {
         val terminal = TerminalWrapper()
         val bluetoothReaderListener = BluetoothReaderListenerImpl(logWrapper)
+        val terminalListener = TerminalListenerImpl(logWrapper)
 
         return CardReaderManagerImpl(
             terminal,
@@ -37,19 +38,20 @@ object CardReaderManagerFactory {
                 CancelPaymentAction(terminal),
                 PaymentUtils(),
                 PaymentErrorMapper(),
-                AdditionalInfoMapper()
+                AdditionalInfoMapper(),
             ),
             ConnectionManager(
                 terminal,
                 bluetoothReaderListener,
                 DiscoverReadersAction(terminal, logWrapper),
+                terminalListener,
             ),
             SoftwareUpdateManager(
                 terminal,
                 bluetoothReaderListener,
                 logWrapper,
             ),
-            TerminalListenerImpl(terminal, logWrapper)
+            terminalListener
         )
     }
 }

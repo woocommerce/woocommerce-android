@@ -9,6 +9,7 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -20,6 +21,7 @@ internal class ConnectionManager(
     private val terminal: TerminalWrapper,
     private val bluetoothReaderListener: BluetoothReaderListenerImpl,
     private val discoverReadersAction: DiscoverReadersAction,
+    private val terminalListenerImpl: TerminalListenerImpl,
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
@@ -57,13 +59,16 @@ internal class ConnectionManager(
             val locationId = cardReader.locationId ?: throw IllegalStateException(
                 "Only attached to a location readers are supported at the moment"
             )
+            updateReaderStatus(CardReaderStatus.Connecting)
             val configuration = ConnectionConfiguration.BluetoothConnectionConfiguration(locationId)
             val readerCallback = object : ReaderCallback {
                 override fun onSuccess(reader: Reader) {
+                    updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
                     continuation.resume(true)
                 }
 
                 override fun onFailure(e: TerminalException) {
+                    updateReaderStatus(CardReaderStatus.NotConnected)
                     continuation.resume(false)
                 }
             }
@@ -80,12 +85,18 @@ internal class ConnectionManager(
     suspend fun disconnectReader() = suspendCoroutine<Boolean> { continuation ->
         terminal.disconnectReader(object : Callback {
             override fun onFailure(e: TerminalException) {
+                updateReaderStatus(CardReaderStatus.NotConnected)
                 continuation.resume(false)
             }
 
             override fun onSuccess() {
+                updateReaderStatus(CardReaderStatus.NotConnected)
                 continuation.resume(true)
             }
         })
+    }
+
+    private fun updateReaderStatus(status: CardReaderStatus) {
+        terminalListenerImpl.updateReaderStatus(status)
     }
 }

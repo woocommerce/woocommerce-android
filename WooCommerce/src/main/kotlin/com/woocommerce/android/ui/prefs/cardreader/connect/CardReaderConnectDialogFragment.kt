@@ -26,6 +26,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.CardReaderConnectDialogBinding
 import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
@@ -40,6 +41,8 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
 import com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.WooAnimUtils
@@ -117,6 +120,9 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     private fun setupResultHandlers(viewModel: CardReaderConnectViewModel) {
         handleNotice(CardReaderTutorialDialogFragment.KEY_READER_TUTORIAL_RESULT) {
             viewModel.onTutorialClosed()
+        }
+        handleResult<UpdateResult>(CardReaderUpdateDialogFragment.KEY_READER_UPDATE_RESULT) {
+            viewModel.onUpdateReaderResult(it)
         }
     }
 
