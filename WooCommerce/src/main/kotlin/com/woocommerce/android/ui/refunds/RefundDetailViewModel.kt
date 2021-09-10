@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.Transformations
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
@@ -43,7 +44,9 @@ class RefundDetailViewModel @Inject constructor(
     private var viewState by viewStateData
 
     private val _refundItems = MutableLiveData<List<ProductRefundListItem>>()
-    val refundItems: LiveData<List<ProductRefundListItem>> = _refundItems
+    val refundItems: LiveData<List<ProductRefundListItem>> = Transformations.map(_refundItems) {
+        it.apply { checkAddonAvailability(this) }
+    }
 
     private lateinit var formatCurrency: (BigDecimal) -> String
 
