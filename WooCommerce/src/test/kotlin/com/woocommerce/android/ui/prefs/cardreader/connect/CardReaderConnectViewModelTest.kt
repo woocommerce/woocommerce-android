@@ -851,6 +851,24 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given update reader result failed, when on update result called, then toast event emitted`() {
+        val result = CardReaderUpdateViewModel.UpdateResult.FAILED
+
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.onUpdateReaderResult(result)
+
+        assertThat(events[events.size - 2]).isEqualTo(
+            CardReaderConnectViewModel.CardReaderConnectEvent.ShowToast(
+                R.string.card_reader_detail_connected_update_failed
+            )
+        )
+    }
+
+    @Test
     fun `given update reader result success, when on update result called, then event is check location`() {
         val result = CardReaderUpdateViewModel.UpdateResult.SUCCESS
 

@@ -21,8 +21,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -105,7 +103,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     }
 
     private fun initObservers(binding: CardReaderConnectDialogBinding) {
-        observeEvents(binding)
+        observeEvents()
         observeState(binding)
         setupResultHandlers(viewModel)
     }
@@ -173,7 +171,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     }
 
     @Suppress("ComplexMethod")
-    private fun observeEvents(binding: CardReaderConnectDialogBinding) {
+    private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is CheckLocationPermissions -> {
