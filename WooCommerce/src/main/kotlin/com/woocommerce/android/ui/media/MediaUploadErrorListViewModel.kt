@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.media
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlin.collections.map
 
 @HiltViewModel
 class MediaUploadErrorListViewModel @Inject constructor(
@@ -27,20 +29,36 @@ class MediaUploadErrorListViewModel @Inject constructor(
     private var viewState by viewStateData
 
     init {
-        mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteId)
-            .onEach { errors ->
-                val currentErrors = viewState.uploadErrorList + errors.map { ErrorUiModel(it.uploadStatus as Failed) }
-                viewState = viewState.copy(
-                    uploadErrorList = currentErrors,
-                    toolBarTitle = resourceProvider.getString(
-                        R.string.product_images_error_detail_title,
-                        currentErrors.size
-                    )
-                )
-                // Remove errors from mediaFileUploadHandler to avoid duplicate notifications
-                mediaFileUploadHandler.clearImageErrors(navArgs.remoteId)
+        val errorList = navArgs.errorList
+        if (errorList != null) {
+            val currentErrors = errorList.map<ProductImageUploadData, ErrorUiModel> {
+                ErrorUiModel(it.uploadStatus as Failed)
             }
-            .launchIn(this)
+            viewState = viewState.copy(
+                uploadErrorList = currentErrors,
+                toolBarTitle = resourceProvider.getString(
+                    R.string.product_images_error_detail_title,
+                    currentErrors.size
+                )
+            )
+            mediaFileUploadHandler.clearImageErrors(navArgs.remoteId)
+        } else {
+            mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteId)
+                .onEach { errors ->
+                    val currentErrors =
+                        viewState.uploadErrorList + errors.map { ErrorUiModel(it.uploadStatus as Failed) }
+                    viewState = viewState.copy(
+                        uploadErrorList = currentErrors,
+                        toolBarTitle = resourceProvider.getString(
+                            R.string.product_images_error_detail_title,
+                            currentErrors.size
+                        )
+                    )
+                    // Remove errors from mediaFileUploadHandler to avoid duplicate notifications
+                    mediaFileUploadHandler.clearImageErrors(navArgs.remoteId)
+                }
+                .launchIn(this)
+        }
     }
 
     @Parcelize

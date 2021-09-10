@@ -19,9 +19,17 @@ object WooLog {
     enum class T {
         DASHBOARD,
         ORDERS,
+        PRODUCTS,
+        NOTIFS,
         UTILS,
-        CARD_READER,
-        NOTIFS
+        DEVICE,
+        SUPPORT,
+        WP,
+        NOTIFICATIONS,
+        LOGIN,
+        REVIEWS,
+        MEDIA,
+        CARD_READER
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

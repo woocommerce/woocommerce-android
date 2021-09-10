@@ -1,11 +1,10 @@
 package com.woocommerce.android.ui.products.addons.order
 
+import android.content.Context
+import android.content.SharedPreferences
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.ProductAddon
-import com.woocommerce.android.model.ProductAddon.PriceType.FlatFee
-import com.woocommerce.android.model.ProductAddon.PriceType.QuantityBased
-import com.woocommerce.android.model.ProductAddonOption
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
@@ -21,10 +20,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.domain.Addon
+import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -48,6 +51,14 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                 .doReturn(storeParametersMock)
         }
 
+        val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+        val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
+        mock<Context> {
+            whenever(it.applicationContext).thenReturn(it)
+            whenever(it.getSharedPreferences(any(), any())).thenReturn(preferences)
+            FeedbackPrefs.init(it)
+        }
+
         viewModelUnderTest = OrderedAddonViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,
@@ -65,7 +76,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             val expectedResult = defaultOrderedAddonList
 
-            var actualResult: List<ProductAddon>? = null
+            var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
             }
@@ -76,20 +87,22 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `should return null if fetchGlobalAddons returns an error`() =
+    fun `should request data even if fetchGlobalAddons returns an error`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
 
-            var actualResult: List<ProductAddon>? = null
+            val expectedResult = defaultOrderedAddonList
+
+            var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
             }
 
             viewModelUnderTest.start(321, 999, 123)
 
-            assertThat(actualResult).isNull()
+            assertThat(actualResult).isEqualTo(expectedResult)
         }
 
     @Test
@@ -99,7 +112,6 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                 listOf(
                     emptyProductAddon.copy(
                         name = "Delivery",
-                        priceType = FlatFee
                     )
                 ),
                 defaultOrderAttributes
@@ -111,18 +123,19 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             val expectedResult = emptyProductAddon.copy(
                 name = "Delivery",
-                priceType = FlatFee,
-                rawOptions = listOf(
-                    ProductAddonOption(
-                        priceType = FlatFee,
+                options = listOf(
+                    Addon.HasOptions.Option(
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "$5,00",
+                        ),
                         label = "Yes",
-                        price = "$5,00",
                         image = ""
                     )
                 )
             ).let { listOf(it) }
 
-            var actualResult: List<ProductAddon>? = null
+            var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
             }
@@ -151,18 +164,19 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             val expectedResult = emptyProductAddon.copy(
                 name = "test-name",
-                priceType = FlatFee,
-                rawOptions = listOf(
-                    ProductAddonOption(
-                        priceType = FlatFee,
-                        "test-label",
-                        "test-price",
-                        "test-image"
+                options = listOf(
+                    Addon.HasOptions.Option(
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "test-price"
+                        ),
+                        label = "test-label",
+                        image = "test-image"
                     )
                 )
             ).let { listOf(it) }
 
-            var actualResult: List<ProductAddon>? = null
+            var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
             }
@@ -196,31 +210,33 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             val expectedResult = listOf(
                 emptyProductAddon.copy(
                     name = "test-name",
-                    priceType = FlatFee,
-                    rawOptions = listOf(
-                        ProductAddonOption(
-                            priceType = FlatFee,
-                            "test-label",
-                            "test-price",
-                            "test-image"
+                    options = listOf(
+                        Addon.HasOptions.Option(
+                            price = Addon.HasAdjustablePrice.Price.Adjusted(
+                                priceType = PriceType.FlatFee,
+                                value = "test-price"
+                            ),
+                            label = "test-label",
+                            image = "test-image"
                         )
                     )
                 ),
                 emptyProductAddon.copy(
                     name = "test-name",
-                    priceType = FlatFee,
-                    rawOptions = listOf(
-                        ProductAddonOption(
-                            priceType = QuantityBased,
-                            "test-label-2",
-                            "test-price-2",
-                            "test-image-2"
+                    options = listOf(
+                        Addon.HasOptions.Option(
+                            price = Addon.HasAdjustablePrice.Price.Adjusted(
+                                priceType = PriceType.FlatFee,
+                                value = "test-price-2",
+                            ),
+                            label = "test-label-2",
+                            image = "test-image-2"
                         )
                     )
                 )
             )
 
-            var actualResult: List<ProductAddon>? = null
+            var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {
                 actualResult = it
             }
@@ -228,5 +244,136 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
             viewModelUnderTest.start(321, 999, 123)
 
             assertThat(actualResult).isEqualTo(expectedResult)
+        }
+
+    @Test
+    fun `should enable and disable skeleton view when loading the view data`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
+                .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isSkeletonShown).isTrue
+                        1 -> assertThat(new.isSkeletonShown).isFalse
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
+        }
+
+    @Test
+    fun `should enable and disable skeleton view when loading the view data fails`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isSkeletonShown).isTrue
+                        1 -> assertThat(new.isSkeletonShown).isFalse
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
+        }
+
+    @Test
+    fun `should change isLoadingFailure to true when loading the view data fails`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isLoadingFailure).isFalse
+                        1 -> assertThat(new.isLoadingFailure).isTrue
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
+        }
+
+    @Test
+    fun `should change isLoadingFailure to true when the Ordered Addons data is empty`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
+                .thenReturn(Pair(emptyList(), emptyList()))
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isLoadingFailure).isFalse
+                        1 -> assertThat(new.isLoadingFailure).isTrue
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
+        }
+
+    @Test
+    fun `should keep isLoadingFailure to false when loading the view data succeeds`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
+                .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
+
+            var timesCalled = 0
+            var viewModelStarted = false
+            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+                if (viewModelStarted) {
+                    when (timesCalled) {
+                        0 -> assertThat(new.isLoadingFailure).isFalse
+                        1 -> assertThat(new.isLoadingFailure).isFalse
+                        else -> fail("View state is expected to be changed exactly two times")
+                    }
+
+                    timesCalled++
+                }
+            }
+
+            viewModelStarted = true
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(timesCalled).isEqualTo(2)
         }
 }

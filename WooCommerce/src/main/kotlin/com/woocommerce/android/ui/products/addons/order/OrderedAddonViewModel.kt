@@ -4,20 +4,27 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.ProductAddon
-import com.woocommerce.android.model.ProductAddonOption
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.products.addons.order.OrderedAddonFragment.Companion.TAG
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.domain.Addon
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 @HiltViewModel
 class OrderedAddonViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -32,8 +39,13 @@ class OrderedAddonViewModel @Inject constructor(
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
-    private val _orderedAddons = MutableLiveData<List<ProductAddon>>()
-    val orderedAddonsData: LiveData<List<ProductAddon>> = _orderedAddons
+    private val _orderedAddons = MutableLiveData<List<Addon>>()
+    val orderedAddonsData: LiveData<List<Addon>> = _orderedAddons
+
+    private val currentFeedbackSettings
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)
+            ?: FeatureFeedbackSettings(OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name)
+                .apply { registerItselfWith(TAG) }
 
     /**
      * Provides the currencyCode for views who requires display prices
@@ -50,34 +62,75 @@ class OrderedAddonViewModel @Inject constructor(
         productID: Long
     ) = viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
         launch(dispatchers.computation) {
-            takeIf { addonsRepository.updateGlobalAddonsSuccessfully() }
-                ?.let { addonsRepository.getOrderAddonsData(orderID, orderItemID, productID) }
-                ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
+            addonsRepository.updateGlobalAddonsSuccessfully()
+            loadOrderAddonsData(orderID, orderItemID, productID)
+                ?.takeIf { it.isNotEmpty() }
                 ?.let { dispatchResult(it) }
-                ?: dispatchFailure()
+                ?: handleFailure()
         }
     }
 
+    fun onGiveFeedbackClicked() {
+        trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_GIVEN)
+
+        FeatureFeedbackSettings(
+            OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
+            GIVEN
+        ).registerItselfWith(TAG)
+
+        triggerEvent(ShowSurveyView)
+    }
+
+    fun onDismissWIPCardClicked() {
+        trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_DISMISSED)
+
+        FeatureFeedbackSettings(
+            OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
+            DISMISSED
+        ).registerItselfWith(TAG)
+
+        viewState = viewState.copy(shouldDisplayFeedbackCard = false)
+    }
+
+    private suspend fun loadOrderAddonsData(
+        orderID: Long,
+        orderItemID: Long,
+        productID: Long
+    ) = addonsRepository.getOrderAddonsData(orderID, orderItemID, productID)
+        ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
+
     private fun mapAddonsFromOrderAttributes(
-        productAddons: List<ProductAddon>,
+        productAddons: List<Addon>,
         orderAttributes: List<Order.Item.Attribute>
-    ) = orderAttributes.mapNotNull { it.findMatchingAddon(productAddons) }
+    ): List<Addon> = orderAttributes.mapNotNull { findMatchingAddon(it, productAddons) }
 
-    private fun Order.Item.Attribute.findMatchingAddon(
-        addons: List<ProductAddon>
-    ) = addons.find { it.name == addonName }
-        ?.asAddonWithSingleSelectedOption(this)
+    private fun findMatchingAddon(matchingTo: Order.Item.Attribute, addons: List<Addon>): Addon? = addons.firstOrNull {
+        it.name == matchingTo.addonName
+    }?.asAddonWithSingleSelectedOption(matchingTo)
 
-    private fun ProductAddon.asAddonWithSingleSelectedOption(
+    private fun Addon.asAddonWithSingleSelectedOption(
         attribute: Order.Item.Attribute
-    ) = options.find { it.label == attribute.value }
-        ?.let { this.copy(rawOptions = listOf(it)) }
-        ?: mergeOrderAttributeWithAddon(this, attribute)
+    ): Addon {
+        return when (this) {
+            is Addon.HasOptions -> options.find { it.label == attribute.value }
+                ?.takeIf { (this is Addon.MultipleChoice) or (this is Addon.Checkbox) }
+                ?.let { this.asSelectableAddon(it) }
+                ?: mergeOrderAttributeWithAddon(this, attribute)
+            else -> this
+        }
+    }
+
+    private fun Addon.asSelectableAddon(selectedOption: Addon.HasOptions.Option): Addon? =
+        when (this) {
+            is Addon.Checkbox -> this.copy(options = listOf(selectedOption))
+            is Addon.MultipleChoice -> this.copy(options = listOf(selectedOption))
+            else -> null
+        }
 
     /**
      * If it isn't possible to find the respective option
      * through [Order.Item.Attribute.value] matching we will
-     * have to merge the [ProductAddon] data with the Attribute in order
+     * have to merge the [Addon] data with the Attribute in order
      * to display the Ordered addon correctly, which is exactly
      * what this method does.
      *
@@ -85,34 +138,77 @@ class OrderedAddonViewModel @Inject constructor(
      * information since it's something contained inside the options only
      */
     private fun mergeOrderAttributeWithAddon(
-        addon: ProductAddon,
+        addon: Addon,
         attribute: Order.Item.Attribute
-    ) = addon.copy(
-        rawOptions = listOf(
-            ProductAddonOption(
-                priceType = addon.priceType,
-                label = attribute.value,
-                price = attribute.asAddonPrice,
-                image = ""
-            )
+    ): Addon {
+        return when (addon) {
+            is Addon.Checkbox -> addon.copy(options = prepareAddonOptionBasedOnAttribute(attribute))
+            is Addon.MultipleChoice -> addon.copy(options = prepareAddonOptionBasedOnAttribute(attribute))
+            else -> addon
+        }
+    }
+
+    private fun prepareAddonOptionBasedOnAttribute(attribute: Order.Item.Attribute) = listOf(
+        Addon.HasOptions.Option(
+            label = attribute.value,
+            price = Addon.HasAdjustablePrice.Price.Adjusted(
+                priceType = Addon.HasAdjustablePrice.Price.Adjusted.PriceType.FlatFee,
+                value = attribute.asAddonPrice
+            ),
+            image = ""
         )
     )
 
-    private suspend fun dispatchResult(result: List<ProductAddon>) {
+    private suspend fun dispatchResult(result: List<Addon>) {
         withContext(dispatchers.main) {
-            viewState = viewState.copy(isSkeletonShown = false)
+            viewState = viewState.copy(
+                isSkeletonShown = false,
+                isLoadingFailure = false,
+                shouldDisplayFeedbackCard = currentFeedbackSettings.state != DISMISSED
+            )
+            track(result)
             _orderedAddons.value = result
         }
     }
 
-    private suspend fun dispatchFailure() {
+    private suspend fun handleFailure() {
         withContext(dispatchers.main) {
-            viewState = viewState.copy(isSkeletonShown = false)
+            viewState = viewState.copy(
+                isSkeletonShown = false,
+                isLoadingFailure = true,
+                shouldDisplayFeedbackCard = false
+            )
         }
     }
 
+    private fun trackFeedback(feedbackAction: String) {
+        AnalyticsTracker.track(
+            AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_ADDONS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to feedbackAction
+            )
+        )
+    }
+
+    private fun track(addons: List<Addon>) =
+        addons.distinctBy { it.name }
+            .map { it.name }
+            .filter { it.isNotEmpty() }
+            .joinToString(",")
+            .let {
+                AnalyticsTracker.track(
+                    AnalyticsTracker.Stat.PRODUCT_ADDONS_ORDER_ADDONS_VIEWED,
+                    mapOf(AnalyticsTracker.KEY_ADDONS to it)
+                )
+            }
+
     @Parcelize
     data class ViewState(
-        val isSkeletonShown: Boolean? = null
+        val isSkeletonShown: Boolean? = null,
+        val isLoadingFailure: Boolean = false,
+        val shouldDisplayFeedbackCard: Boolean = false
     ) : Parcelable
+
+    object ShowSurveyView : Event()
 }

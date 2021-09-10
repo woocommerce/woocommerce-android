@@ -97,7 +97,7 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment() {
                 is PickFileFromMedialLibrary -> showWPMediaPicker()
                 is PickFileFromDevice -> chooseFile()
                 is UploadFile -> {
-                    parentViewModel.uploadDownloadableFile(event.uri)
+                    parentViewModel.uploadDownloadableFile(event.uri.toString())
                     findNavController().navigateUp()
                 }
                 is ViewProductDownloadDetails -> navigator.navigate(this, event)
