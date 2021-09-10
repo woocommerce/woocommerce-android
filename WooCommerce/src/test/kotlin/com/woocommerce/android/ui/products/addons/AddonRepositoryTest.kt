@@ -123,7 +123,7 @@ class AddonRepositoryTest {
     fun `getAddonsFrom should return addons successfully`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
-        val expectedAddons = defaultWCProductModel.addons!!
+        val expectedAddons = defaultAddonWithOptionsList.map { it.toAppModel() }
 
         val actualAddons = repositoryUnderTest.getAddonsFrom(333)
 
