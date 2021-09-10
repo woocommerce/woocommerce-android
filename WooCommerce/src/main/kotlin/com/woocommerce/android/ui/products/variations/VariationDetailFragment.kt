@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -85,6 +86,7 @@ class VariationDetailFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
+        detailSnackbar?.dismiss()
         super.onDestroyView()
         _binding = null
     }
@@ -243,6 +245,7 @@ class VariationDetailFragment :
                 when (event) {
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                    is HideImageUploadErrorSnackbar -> detailSnackbar?.dismiss()
                     is VariationNavigationTarget -> {
                         navigator.navigate(this, event)
                     }
