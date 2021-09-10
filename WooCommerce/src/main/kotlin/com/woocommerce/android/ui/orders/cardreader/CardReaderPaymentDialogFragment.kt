@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.cardreader
 
 import android.app.Dialog
 import android.content.ContentResolver
-import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
