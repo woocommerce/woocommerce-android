@@ -40,16 +40,6 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        disableDigitalWallets()
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        reEnableDigitalWallets()
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.let {
             it.setCanceledOnTouchOutside(false)
@@ -159,6 +149,12 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
         printHtmlHelper.getAndClearPrintJobResult()?.let {
             viewModel.onPrintResult(it)
         }
+        disableDigitalWallets()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        reEnableDigitalWallets()
     }
 
     /**
