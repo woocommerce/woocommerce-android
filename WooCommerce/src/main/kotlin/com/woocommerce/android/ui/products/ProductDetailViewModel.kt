@@ -1997,7 +1997,7 @@ class ProductDetailViewModel @Inject constructor(
 
     object RefreshMenu : Event()
 
-    object HideImageUploadErrorSnackbar: Event()
+    object HideImageUploadErrorSnackbar : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

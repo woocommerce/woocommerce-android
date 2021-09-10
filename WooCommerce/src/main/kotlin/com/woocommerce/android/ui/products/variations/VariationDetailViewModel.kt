@@ -409,7 +409,7 @@ class VariationDetailViewModel @Inject constructor(
             .launchIn(this)
     }
 
-    object HideImageUploadErrorSnackbar: Event()
+    object HideImageUploadErrorSnackbar : Event()
 
     @Parcelize
     data class VariationViewState(
