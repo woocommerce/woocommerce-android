@@ -25,7 +25,6 @@ class AddonRepository @Inject constructor(
         productStore.getProductByRemoteId(selectedSite.get(), productID)
             ?.let { addonsStore.observeAddonsForProduct(selectedSite.get().siteId, it) }
             ?.firstOrNull()
-            ?.map { it.toAppModel() }
 
     suspend fun getOrderAddonsData(
         orderID: Long,
