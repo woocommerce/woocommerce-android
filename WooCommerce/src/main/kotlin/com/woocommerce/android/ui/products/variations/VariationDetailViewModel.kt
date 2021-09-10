@@ -37,6 +37,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -395,6 +396,7 @@ class VariationDetailViewModel @Inject constructor(
             .launchIn(this)
 
         mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteVariationId)
+            .filter { it.isNotEmpty() }
             .onEach {
                 val errorMsg = resources.getMediaUploadErrorMessage(it.size)
                 triggerEvent(
