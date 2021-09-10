@@ -50,7 +50,7 @@
                 android:id="@+id/feature_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_extra_medium_large"
+                android:layout_marginTop="@dimen/major_250"
                 android:overScrollMode="never"
                 tools:itemCount="5"
                 tools:listitem="@layout/feature_announcement_list_item" />
