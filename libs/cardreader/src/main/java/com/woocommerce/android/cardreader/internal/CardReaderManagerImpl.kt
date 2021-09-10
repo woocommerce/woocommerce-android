@@ -39,8 +39,6 @@ internal class CardReaderManagerImpl(
     private val softwareUpdateManager: SoftwareUpdateManager,
     private val terminalListener: TerminalListenerImpl,
 ) : CardReaderManager {
-    private val connectedScope = CoroutineScope(Dispatchers.Default)
-
     companion object {
         private const val TAG = "CardReaderManager"
     }
@@ -130,17 +128,12 @@ internal class CardReaderManagerImpl(
     }
 
     private fun startStateResettingJob() {
+        val connectedScope = CoroutineScope(Dispatchers.Default)
         connectedScope.launch {
-            readerStatus.collect { status ->
-                if (status is CardReaderStatus.Connected) {
-                    launch {
-                        readerStatus.collect { statusAfterConnected ->
-                            if (statusAfterConnected is CardReaderStatus.NotConnected) {
-                                connectionManager.resetConnectionState()
-                                connectedScope.cancel()
-                            }
-                        }
-                    }
+            readerStatus.collect { connectionStatus ->
+                if (connectionStatus is CardReaderStatus.NotConnected) {
+                    connectionManager.resetConnectionState()
+                    connectedScope.cancel()
                 }
             }
         }
