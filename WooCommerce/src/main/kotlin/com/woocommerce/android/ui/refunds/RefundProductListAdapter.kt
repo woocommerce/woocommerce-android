@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout.VISIBLE
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
@@ -117,6 +120,7 @@ class RefundProductListAdapter(
         private val descriptionTextView: TextView = itemView.findViewById(R.id.refundItem_description)
         private val quantityTextView: TextView = itemView.findViewById(R.id.refundItem_quantity)
         private val productImageView: ImageView = itemView.findViewById(R.id.refundItem_icon)
+        private val productAddonsView: TextView = itemView.findViewById(R.id.refundItem_addons)
 
         @SuppressLint("SetTextI18n")
         override fun bind(item: ProductRefundListItem) {
@@ -132,6 +136,10 @@ class RefundProductListAdapter(
             quantityTextView.setOnClickListener {
                 onItemClicked(item.orderItem.itemId)
             }
+
+            productAddonsView.visibility =
+                if (item.orderItem.containsAddons && AppPrefs.isProductAddonsEnabled) VISIBLE
+                else ConstraintLayout.GONE
 
             imageMap.get(item.orderItem.productId)?.let {
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
