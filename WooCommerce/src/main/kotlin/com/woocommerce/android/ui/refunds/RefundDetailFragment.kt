@@ -15,6 +15,8 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
+import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -23,6 +25,7 @@ import javax.inject.Inject
 class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
+    @Inject lateinit var navigator: OrderNavigator
 
     private val viewModel: RefundDetailViewModel by viewModels()
 
@@ -121,5 +124,12 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
                 adapter.update(list)
             }
         )
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when(event) {
+                is OrderNavigationTarget -> navigator.navigate(this, event)
+                else -> event.isHandled = false
+            }
+        }
     }
 }

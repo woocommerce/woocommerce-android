@@ -12,6 +12,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.ProductRefundListItem
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -66,6 +67,16 @@ class RefundDetailViewModel @Inject constructor(
                 displayRefundedProducts(order, refunds)
             }
         }
+    }
+
+    fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
+        triggerEvent(
+            OrderNavigationTarget.ViewOrderedAddons(
+                navArgs.orderId,
+                orderItem.itemId,
+                orderItem.productId
+            )
+        )
     }
 
     private fun displayRefundedProducts(order: Order, refunds: List<Refund>) {

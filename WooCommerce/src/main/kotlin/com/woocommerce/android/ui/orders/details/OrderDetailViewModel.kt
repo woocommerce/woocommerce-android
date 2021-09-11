@@ -460,7 +460,6 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
-        // track add-ons event
         triggerEvent(
             ViewOrderedAddons(
                 orderIdSet.remoteOrderId,
