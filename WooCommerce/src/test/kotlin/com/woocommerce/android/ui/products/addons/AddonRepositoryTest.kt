@@ -17,11 +17,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.times
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -138,10 +134,12 @@ class AddonRepositoryTest {
         configureSuccessfulAddonResponse()
 
         val orderItem = defaultWCOrderModel.toAppModel().items.first()
-            .copy(attributesList = listOf(
-                Order.Item.Attribute("Invalid", "Invalid"),
-                Order.Item.Attribute("Invalid", "Invalid")
-            ))
+            .copy(
+                attributesList = listOf(
+                    Order.Item.Attribute("Invalid", "Invalid"),
+                    Order.Item.Attribute("Invalid", "Invalid")
+                )
+            )
 
         assertThat(repositoryUnderTest.containsAddonsFrom(orderItem)).isFalse
     }
