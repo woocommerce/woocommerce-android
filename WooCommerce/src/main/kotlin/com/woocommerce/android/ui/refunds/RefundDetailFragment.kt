@@ -87,7 +87,8 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
                     isProductDetailList = true,
                     onItemClicked = { uniqueId ->
                         (activity as? MainNavigationRouter)?.showProductDetail(uniqueId)
-                    }
+                    },
+                    onViewAddonsClick = viewModel::onViewOrderedAddonButtonTapped
                 )
             }
             new.areItemsVisible?.takeIfNotEqualTo(old?.areItemsVisible) { isVisible ->

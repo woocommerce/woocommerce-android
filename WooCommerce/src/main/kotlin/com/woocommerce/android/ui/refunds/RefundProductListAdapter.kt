@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.hide
@@ -29,17 +30,20 @@ import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 
+typealias ViewAddonClickListener = (Order.Item) -> Unit
+
 class RefundProductListAdapter(
     private val formatCurrency: (BigDecimal) -> String,
     private val imageMap: ProductImageMap,
     private val isProductDetailList: Boolean,
-    private val onItemClicked: (Long) -> Unit = { }
+    private val onItemClicked: (Long) -> Unit = { },
+    private val onViewAddonsClick: ViewAddonClickListener? = null
 ) : RecyclerView.Adapter<RefundViewHolder>() {
     private var items = mutableListOf<ProductRefundListItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): RefundViewHolder {
         return if (isProductDetailList) {
-            RefundDetailViewHolder(parent, formatCurrency, imageMap)
+            RefundDetailViewHolder(parent, formatCurrency, imageMap, onViewAddonsClick)
         } else {
             IssueRefundViewHolder(parent, formatCurrency, onItemClicked, imageMap)
         }
@@ -66,7 +70,8 @@ class RefundProductListAdapter(
     class RefundDetailViewHolder(
         parent: ViewGroup,
         private val formatCurrency: (BigDecimal) -> String,
-        private val imageMap: ProductImageMap
+        private val imageMap: ProductImageMap,
+        private val onViewAddonsClick: ViewAddonClickListener?
     ) : RefundViewHolder(parent, R.layout.refunds_detail_product_list_item) {
         private val nameTextView: TextView = itemView.findViewById(R.id.refundItem_productName)
         private val descriptionTextView: TextView = itemView.findViewById(R.id.refundItem_description)
@@ -103,6 +108,11 @@ class RefundProductListAdapter(
             productAddonsView.visibility =
                 if (item.orderItem.containsAddons && AppPrefs.isProductAddonsEnabled) VISIBLE
                 else GONE
+
+            productAddonsView.setOnClickListener {
+                AnalyticsTracker.track(AnalyticsTracker.Stat.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
+                onViewAddonsClick?.invoke(item.orderItem)
+            }
 
             imageMap.get(item.orderItem.productId)?.let {
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
