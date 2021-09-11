@@ -110,7 +110,6 @@ class RefundProductListAdapter(
                 else GONE
 
             productAddonsView.setOnClickListener {
-                AnalyticsTracker.track(AnalyticsTracker.Stat.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
                 onViewAddonsClick?.invoke(item.orderItem)
             }
 
