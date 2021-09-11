@@ -16,7 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
+import com.woocommerce.android.ui.refunds.RefundDetailViewModel.ViewOrderedAddons
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
