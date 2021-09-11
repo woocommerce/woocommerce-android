@@ -127,7 +127,7 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
         )
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
-            when(event) {
+            when (event) {
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
