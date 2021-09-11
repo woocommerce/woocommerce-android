@@ -148,17 +148,9 @@ class RefundDetailViewModel @Inject constructor(
 
     private fun checkAddonAvailability(refunds: List<ProductRefundListItem>) {
         launch(coroutineDispatchers.computation) {
-            refunds.forEach { refund ->
-                refund.orderItem.containsAddons = containsAddons(refund.orderItem)
-            }
+            refunds.forEach { it.orderItem.containsAddons = addonsRepository.containsAddonsFrom(it.orderItem) }
         }
     }
-
-    private fun containsAddons(product: Order.Item) =
-        addonsRepository
-            .getAddonsFrom(product.productId)
-            ?.any { addon -> product.attributesList.any { it.addonName == addon.name } }
-            ?: false
 
     @Parcelize
     data class ViewState(
