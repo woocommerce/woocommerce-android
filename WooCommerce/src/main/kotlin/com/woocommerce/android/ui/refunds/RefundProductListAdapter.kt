@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.LayoutRes
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout.GONE
 import androidx.constraintlayout.widget.ConstraintLayout.VISIBLE
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
@@ -73,6 +73,7 @@ class RefundProductListAdapter(
         private val skuTextView: TextView = itemView.findViewById(R.id.refundItem_sku)
         private val quantityTextView: TextView = itemView.findViewById(R.id.refundItem_quantity)
         private val productImageView: ImageView = itemView.findViewById(R.id.refundItem_icon)
+        private val productAddonsView: TextView = itemView.findViewById(R.id.refundItem_addons)
 
         @SuppressLint("SetTextI18n")
         override fun bind(item: ProductRefundListItem) {
@@ -99,6 +100,10 @@ class RefundProductListAdapter(
 
             quantityTextView.text = item.quantity.toString()
 
+            productAddonsView.visibility =
+                if (item.orderItem.containsAddons && AppPrefs.isProductAddonsEnabled) VISIBLE
+                else GONE
+
             imageMap.get(item.orderItem.productId)?.let {
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
@@ -120,7 +125,6 @@ class RefundProductListAdapter(
         private val descriptionTextView: TextView = itemView.findViewById(R.id.refundItem_description)
         private val quantityTextView: TextView = itemView.findViewById(R.id.refundItem_quantity)
         private val productImageView: ImageView = itemView.findViewById(R.id.refundItem_icon)
-        private val productAddonsView: TextView = itemView.findViewById(R.id.refundItem_addons)
 
         @SuppressLint("SetTextI18n")
         override fun bind(item: ProductRefundListItem) {
@@ -136,10 +140,6 @@ class RefundProductListAdapter(
             quantityTextView.setOnClickListener {
                 onItemClicked(item.orderItem.itemId)
             }
-
-            productAddonsView.visibility =
-                if (item.orderItem.containsAddons && AppPrefs.isProductAddonsEnabled) VISIBLE
-                else ConstraintLayout.GONE
 
             imageMap.get(item.orderItem.productId)?.let {
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)

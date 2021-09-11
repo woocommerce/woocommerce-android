@@ -68,21 +68,4 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="2" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/refundItem_addons"
-        style="@style/Woo.ListItem.Body"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_100"
-        android:background="?attr/selectableItemBackground"
-        android:drawableEnd="@drawable/ic_arrow_right"
-        android:text="@string/orderdetail_product_lineitem_view_addons_action"
-        android:textColor="@color/woo_black"
-        android:visibility="gone"
-        app:drawableTint="@color/color_on_surface_medium"
-        app:layout_constraintStart_toEndOf="@+id/refundItem_iconFrame"
-        app:layout_constraintTop_toBottomOf="@+id/refundItem_description"
-        tools:text="View Add-ons"
-        tools:visibility="visible" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
