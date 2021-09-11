@@ -12,12 +12,12 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.ProductRefundListItem
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -71,7 +71,7 @@ class RefundDetailViewModel @Inject constructor(
 
     fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
         triggerEvent(
-            OrderNavigationTarget.ViewOrderedAddons(
+            ViewOrderedAddons(
                 navArgs.orderId,
                 orderItem.itemId,
                 orderItem.productId
@@ -172,4 +172,10 @@ class RefundDetailViewModel @Inject constructor(
         val areItemsVisible: Boolean? = null,
         val areDetailsVisible: Boolean? = null
     ) : Parcelable
+
+    data class ViewOrderedAddons(
+        val remoteOrderID: Long,
+        val orderItemID: Long,
+        val addonsProductID: Long
+    ) : Event()
 }
