@@ -124,12 +124,13 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ViewOrderedAddons -> RefundDetailFragmentDirections
-                    .actionRefundDetailFragmentToOrderedAddonFragment(
-                        orderId = event.remoteOrderID,
-                        orderItemId = event.orderItemID,
-                        addonsProductId = event.addonsProductID
-                    ).let { findNavController().navigateSafely(it) }
+                is ViewOrderedAddons ->
+                    RefundDetailFragmentDirections
+                        .actionRefundDetailFragmentToOrderedAddonFragment(
+                            orderId = event.remoteOrderID,
+                            orderItemId = event.orderItemID,
+                            addonsProductId = event.addonsProductID
+                        ).let { findNavController().navigateSafely(it) }
                 else -> event.isHandled = false
             }
         }
