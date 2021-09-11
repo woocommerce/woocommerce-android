@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.products.addons
 
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultAddonsList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderModel
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -122,23 +125,25 @@ class AddonRepositoryTest {
     }
 
     @Test
-    fun `getAddonsFrom should return addons successfully`() = runBlockingTest {
+    fun `containsAddonsFrom should true for valid OrderItem`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
-        val expectedAddons = defaultWCProductModel.addons!!
+        val orderItem = defaultWCOrderModel.toAppModel().items.first()
 
-        val actualAddons = repositoryUnderTest.getAddonsFrom(333)
-
-        assertThat(actualAddons).isEqualTo(expectedAddons)
+        assertThat(repositoryUnderTest.containsAddonsFrom(orderItem)).isTrue
     }
 
     @Test
-    fun `getAddonsFrom should return null when the requested with wrong ID`() = runBlockingTest {
+    fun `containsAddonsFrom should return false when the requested with wrong OrderItem`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
-        val actualAddons = repositoryUnderTest.getAddonsFrom(999)
+        val orderItem = defaultWCOrderModel.toAppModel().items.first()
+            .copy(attributesList = listOf(
+                Order.Item.Attribute("Invalid", "Invalid"),
+                Order.Item.Attribute("Invalid", "Invalid")
+            ))
 
-        assertThat(actualAddons).isNull()
+        assertThat(repositoryUnderTest.containsAddonsFrom(orderItem)).isFalse
     }
 
     @Test
