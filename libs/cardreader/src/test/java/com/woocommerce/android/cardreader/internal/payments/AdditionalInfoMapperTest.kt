@@ -17,7 +17,6 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class AdditionalInfoMapperTest {
-
     private lateinit var additionalInfoMapper: AdditionalInfoMapper
 
     @Before
