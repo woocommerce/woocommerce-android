@@ -204,7 +204,7 @@ class ProductPricingFragment :
 
         pricingData.taxStatus?.let { status ->
             with(binding.productTaxStatus) {
-                setText(ProductTaxStatus.taxStatusToDisplayString(requireContext(), status))
+                setText(ProductTaxStatus.taxStatusToDisplayString(requireContext(), ProductTaxStatus.Taxable))
                 setClickListener {
                     productTaxStatusSelectorDialog = ProductItemSelectorDialog.newInstance(
                         this@ProductPricingFragment, RequestCodes.PRODUCT_TAX_STATUS,
