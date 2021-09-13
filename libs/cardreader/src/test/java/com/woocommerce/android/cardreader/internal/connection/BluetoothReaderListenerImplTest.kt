@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.internal.connection
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -10,7 +11,8 @@ import org.mockito.kotlin.mock
 
 class BluetoothReaderListenerImplTest {
     private val logWrapper: LogWrapper = mock()
-    private val listener = BluetoothReaderListenerImpl(logWrapper)
+    private val additionalInfoMapper: AdditionalInfoMapper = mock()
+    private val listener = BluetoothReaderListenerImpl(logWrapper, additionalInfoMapper)
 
     @Test
     fun `when finishes installing update with error, then failed emitted`() {

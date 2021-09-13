@@ -4,6 +4,7 @@ import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
@@ -13,9 +14,12 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -23,6 +27,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
@@ -139,5 +144,22 @@ class ConnectionManagerTest {
         val result = connectionManager.disconnectReader()
 
         assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given flow terminated, when listen bluetooth messages called, then unregister listener`() = runBlockingTest {
+        whenever(bluetoothReaderListener.registerBluetoothCardReaderMessagesObserver(any())).thenAnswer {
+            (it.arguments[0] as BluetoothCardReaderMessagesObserver)
+                .sendMessage(BluetoothCardReaderMessages.CardReaderDisplayMessage(REMOVE_CARD))
+        }
+
+        val job = launch {
+            connectionManager.listenForBluetoothCardReaderMessages().collect { }
+        }
+
+        job.cancel()
+        joinAll(job)
+
+        verify(bluetoothReaderListener).unregisterBluetoothCardReaderMessages()
     }
 }

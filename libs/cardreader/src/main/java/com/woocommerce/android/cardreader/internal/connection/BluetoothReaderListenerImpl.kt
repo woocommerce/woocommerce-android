@@ -26,10 +26,14 @@ internal class BluetoothReaderListenerImpl(
         MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
     val updateAvailabilityEvents = _updateAvailabilityEvents.asStateFlow()
 
-    private lateinit var bluetoothCardReaderMessagesObserver: BluetoothCardReaderObserver
+    private var bluetoothCardReaderMessagesObserver: BluetoothCardReaderObserver? = null
 
-    fun registerBluetoothCardReaderObservers(observer: BluetoothCardReaderObserver) {
-        bluetoothCardReaderMessagesObserver = observer
+    fun registerBluetoothCardReaderMessagesObserver(messagesObserver: BluetoothCardReaderObserver) {
+        bluetoothCardReaderMessagesObserver = messagesObserver
+    }
+
+    fun unregisterBluetoothCardReaderMessages() {
+        bluetoothCardReaderMessagesObserver = null
     }
 
     override fun onFinishInstallingUpdate(update: ReaderSoftwareUpdate?, e: TerminalException?) {
@@ -67,13 +71,17 @@ internal class BluetoothReaderListenerImpl(
 
     override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
         logWrapper.d(LOG_TAG, "onRequestReaderDisplayMessage: $message")
-        (bluetoothCardReaderMessagesObserver as BluetoothCardReaderMessagesObserver)
-            .sendMessage(BluetoothCardReaderMessages.CardReaderDisplayMessage(additionalInfoMapper.map(message)))
+        bluetoothCardReaderMessagesObserver?.let { bluetoothCardReaderMessagesObserver ->
+            (bluetoothCardReaderMessagesObserver as BluetoothCardReaderMessagesObserver)
+                .sendMessage(BluetoothCardReaderMessages.CardReaderDisplayMessage(additionalInfoMapper.map(message)))
+        }
     }
 
     override fun onRequestReaderInput(options: ReaderInputOptions) {
         logWrapper.d(LOG_TAG, "onRequestReaderInput: $options")
-        (bluetoothCardReaderMessagesObserver as BluetoothCardReaderMessagesObserver)
-            .sendMessage(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
+        bluetoothCardReaderMessagesObserver?.let { bluetoothCardReaderMessagesObserver ->
+            (bluetoothCardReaderMessagesObserver as BluetoothCardReaderMessagesObserver)
+                .sendMessage(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
+        }
     }
 }

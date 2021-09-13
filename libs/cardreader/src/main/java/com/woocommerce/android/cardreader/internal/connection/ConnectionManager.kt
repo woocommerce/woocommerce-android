@@ -32,8 +32,10 @@ internal class ConnectionManager(
                 this@callbackFlow.sendBlocking(message)
             }
         }
-        bluetoothReaderListener.registerBluetoothCardReaderObservers(listener)
-        awaitClose()
+        bluetoothReaderListener.registerBluetoothCardReaderMessagesObserver(listener)
+        awaitClose {
+            bluetoothReaderListener.unregisterBluetoothCardReaderMessages()
+        }
     }
 
     fun discoverReaders(isSimulated: Boolean) =
