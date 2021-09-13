@@ -218,9 +218,9 @@ class ProductDetailViewModel @Inject constructor(
 
     fun start() {
         val isNotRestoringState = viewState.productDraft == null
-            if (isNotRestoringState) {
-                initializeViewState()
-            }
+        if (isNotRestoringState) {
+            initializeViewState()
+        }
         observeImageUploadEvents()
     }
 
