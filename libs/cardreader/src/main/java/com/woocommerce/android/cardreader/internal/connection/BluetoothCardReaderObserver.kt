@@ -1,3 +1,0 @@
-package com.woocommerce.android.cardreader.internal.connection
-
-interface BluetoothCardReaderObserver

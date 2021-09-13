@@ -27,7 +27,7 @@ internal class ConnectionManager(
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
 
     suspend fun listenForBluetoothCardReaderMessages() = callbackFlow {
-        val listener = object : BluetoothCardReaderMessagesObserver() {
+        val listener = object : BluetoothCardReaderMessagesObserver {
             override fun sendMessage(message: BluetoothCardReaderMessages) {
                 this@callbackFlow.sendBlocking(message)
             }

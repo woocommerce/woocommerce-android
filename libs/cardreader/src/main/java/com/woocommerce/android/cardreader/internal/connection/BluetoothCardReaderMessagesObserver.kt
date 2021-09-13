@@ -1,6 +1,5 @@
 package com.woocommerce.android.cardreader.internal.connection
 
-abstract class BluetoothCardReaderMessagesObserver : BluetoothCardReaderObserver {
-
-    abstract fun sendMessage(message: BluetoothCardReaderMessages)
+interface BluetoothCardReaderMessagesObserver {
+    fun sendMessage(message: BluetoothCardReaderMessages)
 }

@@ -26,9 +26,9 @@ internal class BluetoothReaderListenerImpl(
         MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
     val updateAvailabilityEvents = _updateAvailabilityEvents.asStateFlow()
 
-    private var bluetoothCardReaderMessagesObserver: BluetoothCardReaderObserver? = null
+    private var bluetoothCardReaderMessagesObserver: BluetoothCardReaderMessagesObserver? = null
 
-    fun registerBluetoothCardReaderMessagesObserver(messagesObserver: BluetoothCardReaderObserver) {
+    fun registerBluetoothCardReaderMessagesObserver(messagesObserver: BluetoothCardReaderMessagesObserver) {
         bluetoothCardReaderMessagesObserver = messagesObserver
     }
 
@@ -72,7 +72,7 @@ internal class BluetoothReaderListenerImpl(
     override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
         logWrapper.d(LOG_TAG, "onRequestReaderDisplayMessage: $message")
         bluetoothCardReaderMessagesObserver?.let { bluetoothCardReaderMessagesObserver ->
-            (bluetoothCardReaderMessagesObserver as BluetoothCardReaderMessagesObserver)
+            bluetoothCardReaderMessagesObserver
                 .sendMessage(BluetoothCardReaderMessages.CardReaderDisplayMessage(additionalInfoMapper.map(message)))
         }
     }
@@ -80,7 +80,7 @@ internal class BluetoothReaderListenerImpl(
     override fun onRequestReaderInput(options: ReaderInputOptions) {
         logWrapper.d(LOG_TAG, "onRequestReaderInput: $options")
         bluetoothCardReaderMessagesObserver?.let { bluetoothCardReaderMessagesObserver ->
-            (bluetoothCardReaderMessagesObserver as BluetoothCardReaderMessagesObserver)
+            bluetoothCardReaderMessagesObserver
                 .sendMessage(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
         }
     }
