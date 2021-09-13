@@ -121,7 +121,7 @@ class AddonRepositoryTest {
     }
 
     @Test
-    fun `containsAddonsFrom should true for valid OrderItem`() = runBlockingTest {
+    fun `containsAddonsFrom should return true for valid OrderItem`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
         val orderItem = defaultWCOrderModel.toAppModel().items.first()
@@ -130,7 +130,7 @@ class AddonRepositoryTest {
     }
 
     @Test
-    fun `containsAddonsFrom should return false when the requested with wrong OrderItem`() = runBlockingTest {
+    fun `containsAddonsFrom should return false when requested with invalid OrderItem`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
         val orderItem = defaultWCOrderModel.toAppModel().items.first()
