@@ -989,22 +989,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             verify(cardReaderManager, never()).cancelPayment(any())
         }
 
-//    @Test
-//    fun `given collect payment shown, when retry card event received, then collect payment hint updated`() =
-//        coroutinesTestRule.testDispatcher.runBlockingTest {
-//            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-//                flow {
-//                    emit(CollectingPayment)
-//                    emit(ShowAdditionalInfo(RETRY_CARD))
-//                }
-//            }
-//
-//            viewModel.start()
-//
-//            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
-//                .isEqualTo(R.string.card_reader_payment_retry_card_prompt)
-//        }
-
     @Test
     fun `given collect payment shown, when multiple cards event received, then collect payment hint updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
