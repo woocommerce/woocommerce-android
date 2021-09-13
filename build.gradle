@@ -4,7 +4,7 @@ buildscript {
     ext.kotlinVersion = '1.5.30'
     ext.navigationVersion = '2.3.5'
     ext.daggerVersion = '2.38.1'
-    ext.wordPressLoginVersion = '0.0.4'
+    ext.wordPressLoginVersion = '64-8bca6c6d2f39970318d8ec9c501c063595d9bfac'
     ext.detektVersion = '1.18.1'
 
     repositories {
