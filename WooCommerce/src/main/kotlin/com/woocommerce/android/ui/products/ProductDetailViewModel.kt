@@ -217,11 +217,18 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun start() {
+        val isNotRestoringState = viewState.productDraft == null
+            if (isNotRestoringState) {
+                initializeViewState()
+            }
+        observeImageUploadEvents()
+    }
+
+    private fun initializeViewState() {
         when (isAddFlowEntryPoint) {
             true -> startAddNewProduct()
             else -> loadRemoteProduct(navArgs.remoteProductId)
         }
-        observeImageUploadEvents()
     }
 
     private fun startAddNewProduct() {
