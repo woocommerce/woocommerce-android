@@ -12,18 +12,21 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.internal.verification.AtLeast
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
@@ -32,6 +35,8 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 class ProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
+
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
     private val productList = ProductTestUtils.generateProductList()
@@ -48,7 +53,8 @@ class ProductListViewModelTest : BaseUnitTest() {
             ProductListViewModel(
                 savedStateHandle,
                 productRepository,
-                networkStatus
+                networkStatus,
+                mediaFileUploadHandler
             )
         )
     }
@@ -245,5 +251,13 @@ class ProductListViewModelTest : BaseUnitTest() {
         viewModel.onSortButtonTapped()
 
         assertThat(events.count { it is ShowProductSortingBottomSheet }).isEqualTo(1)
+    }
+
+    @Test
+    fun `when image upload finishes for a product, then reload products`() {
+        whenever(mediaFileUploadHandler.observeProductImageChanges()).thenReturn(flowOf(1L))
+        createViewModel()
+
+        verify(productRepository, AtLeast(2)).getProductList()
     }
 }

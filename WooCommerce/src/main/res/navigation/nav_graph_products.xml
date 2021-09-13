@@ -682,6 +682,11 @@
             android:name="remoteId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="errorList"
+            android:defaultValue="@null"
+            app:nullable="true"
+            app:argType="com.woocommerce.android.ui.media.MediaFileUploadHandler$ProductImageUploadData[]" />
     </fragment>
     <dialog
         android:id="@+id/addProductDownloadBottomSheetFragment"

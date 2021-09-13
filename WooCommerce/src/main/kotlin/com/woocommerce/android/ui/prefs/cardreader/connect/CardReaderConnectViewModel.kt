@@ -18,7 +18,10 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.F
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -43,6 +46,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ScanningState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -98,6 +102,15 @@ class CardReaderConnectViewModel @Inject constructor(
             delay(1)
             exitFlow(connected = true)
         }
+    }
+
+    fun onUpdateReaderResult(updateResult: CardReaderUpdateViewModel.UpdateResult) {
+        when (updateResult) {
+            CardReaderUpdateViewModel.UpdateResult.FAILED -> exitFlow(connected = false)
+            CardReaderUpdateViewModel.UpdateResult.SUCCESS -> {
+                // noop
+            }
+        }.exhaustive
     }
 
     fun onScreenResumed() {
@@ -204,7 +217,10 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private suspend fun startScanning() {
         cardReaderManager
-            .discoverReaders(isSimulated = BuildConfig.USE_SIMULATED_READER)
+            .discoverReaders(
+                isSimulated = BuildConfig.USE_SIMULATED_READER,
+                cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(SUPPORTED_READERS)
+            )
             .flowOn(dispatchers.io)
             .collect { discoveryEvent ->
                 handleScanEvent(discoveryEvent)
@@ -501,5 +517,9 @@ class CardReaderConnectViewModel @Inject constructor(
         ) : ListItemViewState() {
             val connectLabel: UiString = UiStringRes(R.string.card_reader_connect_connect_button)
         }
+    }
+
+    companion object {
+        private val SUPPORTED_READERS = listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2)
     }
 }

@@ -26,6 +26,7 @@ internal class BluetoothReaderListenerImpl(
         MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
     val updateAvailabilityEvents = _updateAvailabilityEvents.asStateFlow()
 
+    var cancelUpdateAction: Cancelable? = null
     private var bluetoothCardReaderMessagesObserver: BluetoothCardReaderMessagesObserver? = null
 
     fun registerBluetoothCardReaderMessagesObserver(messagesObserver: BluetoothCardReaderMessagesObserver) {
@@ -57,6 +58,7 @@ internal class BluetoothReaderListenerImpl(
     }
 
     override fun onStartInstallingUpdate(update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
+        cancelUpdateAction = cancelable
         logWrapper.d(LOG_TAG, "onStartInstallingUpdate: $update $cancelable")
         _updateStatusEvents.value = SoftwareUpdateStatus.InstallationStarted
     }
@@ -87,5 +89,10 @@ internal class BluetoothReaderListenerImpl(
         } ?: run {
             logWrapper.e(LOG_TAG, "onRequestReaderInput: Bluetooth card reader message observer is null")
         }
+    }
+
+    fun resetConnectionState() {
+        _updateStatusEvents.value = SoftwareUpdateStatus.Unknown
+        _updateAvailabilityEvents.value = SoftwareUpdateAvailability.NotAvailable
     }
 }

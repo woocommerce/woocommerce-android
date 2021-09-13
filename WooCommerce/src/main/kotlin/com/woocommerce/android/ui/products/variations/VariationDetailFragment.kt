@@ -256,7 +256,7 @@ class VariationDetailFragment :
     }
 
     private fun showVariationDetails(variation: ProductVariation) {
-        if (variation.image == null && !viewModel.isUploadingImages(variation.remoteVariationId)) {
+        if (variation.image == null && !viewModel.isUploadingImages()) {
             binding.imageGallery.hide()
             binding.addImageContainer.show()
             binding.addImageContainer.setOnClickListener {
