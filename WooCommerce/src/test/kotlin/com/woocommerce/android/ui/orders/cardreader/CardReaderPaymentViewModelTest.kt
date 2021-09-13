@@ -117,7 +117,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given collect payment shown, when retry message received, then collect payment hint updated`() =
+    fun `given collect payment shown, when RETRY message received, then collect payment hint updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.listenForBluetoothCardReaderMessagesAsync()).thenAnswer {
                 flow {
@@ -136,7 +136,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given collect payment shown, when multiple cards detected received, then collect payment hint updated`() =
+    fun `given collect payment shown, when MULTIPLE_CARDS_DETECTED received, then collect payment hint updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.listenForBluetoothCardReaderMessagesAsync()).thenAnswer {
                 flow {
@@ -155,7 +155,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given collect payment shown, when try other card message received, then collect payment hint updated`() =
+    fun `given collect payment shown, when TRY_OTHER_CARD message received, then collect payment hint updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.listenForBluetoothCardReaderMessagesAsync()).thenAnswer {
                 flow {
@@ -174,7 +174,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given collect payment shown, when try other read message received, then collect payment hint updated`() =
+    fun `given collect payment shown, when TRY_OTHER_READ message received, then collect payment hint updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.listenForBluetoothCardReaderMessagesAsync()).thenAnswer {
                 flow {
