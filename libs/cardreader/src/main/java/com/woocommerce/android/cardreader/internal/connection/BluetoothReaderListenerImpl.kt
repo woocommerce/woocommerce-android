@@ -74,6 +74,8 @@ internal class BluetoothReaderListenerImpl(
         bluetoothCardReaderMessagesObserver?.let { bluetoothCardReaderMessagesObserver ->
             bluetoothCardReaderMessagesObserver
                 .sendMessage(BluetoothCardReaderMessages.CardReaderDisplayMessage(additionalInfoMapper.map(message)))
+        } ?: run {
+            logWrapper.e(LOG_TAG, "onRequestReaderDisplayMessage: Bluetooth card reader message observer is null")
         }
     }
 
@@ -82,6 +84,8 @@ internal class BluetoothReaderListenerImpl(
         bluetoothCardReaderMessagesObserver?.let { bluetoothCardReaderMessagesObserver ->
             bluetoothCardReaderMessagesObserver
                 .sendMessage(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
+        } ?: run {
+            logWrapper.e(LOG_TAG, "onRequestReaderInput: Bluetooth card reader message observer is null")
         }
     }
 }
