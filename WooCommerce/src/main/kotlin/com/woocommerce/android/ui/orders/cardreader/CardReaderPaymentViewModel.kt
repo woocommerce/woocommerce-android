@@ -285,6 +285,8 @@ class CardReaderPaymentViewModel
             }?.let { hint ->
                 viewState.value = collectPaymentState.copy(hintLabel = hint)
             }
+        } ?: run {
+            WooLog.e(WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}")
         }
     }
 
