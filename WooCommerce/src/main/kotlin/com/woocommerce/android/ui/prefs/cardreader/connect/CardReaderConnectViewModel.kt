@@ -106,7 +106,10 @@ class CardReaderConnectViewModel @Inject constructor(
 
     fun onUpdateReaderResult(updateResult: CardReaderUpdateViewModel.UpdateResult) {
         when (updateResult) {
-            CardReaderUpdateViewModel.UpdateResult.FAILED -> exitFlow(connected = false)
+            CardReaderUpdateViewModel.UpdateResult.FAILED -> {
+                triggerEvent(CardReaderConnectEvent.ShowToast(R.string.card_reader_detail_connected_update_failed))
+                exitFlow(connected = false)
+            }
             CardReaderUpdateViewModel.UpdateResult.SUCCESS -> {
                 // noop
             }
@@ -392,6 +395,8 @@ class CardReaderConnectViewModel @Inject constructor(
         object ShowUpdateInProgress : CardReaderConnectEvent()
 
         object NavigateToOnboardingFlow : CardReaderConnectEvent()
+
+        data class ShowToast(@StringRes val message: Int) : CardReaderConnectEvent()
     }
 
     @Suppress("LongParameterList")
