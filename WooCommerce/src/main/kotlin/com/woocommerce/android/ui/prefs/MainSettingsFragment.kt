@@ -30,6 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.support.HelpActivity
@@ -190,13 +191,17 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         if (presenter.hasMultipleStores()) {
-            binding.optionStore.setOnClickListener {
+            val storeClickListener = View.OnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
                 SitePickerActivity.showSitePickerForResult(this)
             }
+            binding.optionStore.setOnClickListener(storeClickListener)
+            binding.optionSwitchStore.setOnClickListener(storeClickListener)
 
             // advertise the site switcher if we haven't already
             WCPromoTooltip.showIfNeeded(Feature.SITE_SWITCHER, binding.optionStore)
+        } else {
+            binding.optionSwitchStore.hide()
         }
 
         binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)

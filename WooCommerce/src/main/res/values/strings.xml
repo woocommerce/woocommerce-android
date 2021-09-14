@@ -1264,6 +1264,7 @@
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
     <string name="settings_selected_store">Selected store</string>
+    <string name="settings_switch_store">Switch store</string>
     <string name="settings_store">Store settings</string>
     <string name="settings_card_reader">Manage card reader</string>
     <string name="settings_card_reader_payments">In-Person Payments</string>
