@@ -10,32 +10,11 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_CANCELED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardPaymentStatus
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.INSERT_OR_SWIPE_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.MULTIPLE_CONTACTLESS_CARDS_DETECTED
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.RETRY_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.SWIPE_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
-import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
-import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
-import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
-import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
+import com.woocommerce.android.cardreader.CardPaymentStatus.*
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.*
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -44,21 +23,13 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CapturingPaymentState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.CollectPaymentState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.FailedPaymentState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.LoadingDataState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.PaymentSuccessfulState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ProcessingPaymentState
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.ReFetchingOrderState
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.*
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
-import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
-import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
-import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.*
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -334,7 +305,6 @@ class CardReaderPaymentViewModel
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun onCleared() {
         super.onCleared()
-        orderRepository.onCleanup()
         paymentDataForRetry?.let {
             cardReaderManager.cancelPayment(it)
         }

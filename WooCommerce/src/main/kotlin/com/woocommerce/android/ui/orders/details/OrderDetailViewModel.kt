@@ -18,33 +18,12 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.getNonRefundedProducts
-import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -142,7 +121,6 @@ class OrderDetailViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        orderDetailRepository.onCleanup()
         dispatcher.unregister(this)
     }
 

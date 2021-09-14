@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -36,8 +35,9 @@ import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@OpenClassOnDebug
+@Singleton
 class OrderDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
@@ -57,10 +57,6 @@ class OrderDetailRepository @Inject constructor(
 
     init {
         dispatcher.register(this)
-    }
-
-    fun onCleanup() {
-        dispatcher.unregister(this)
     }
 
     suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
