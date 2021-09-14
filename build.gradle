@@ -1,7 +1,7 @@
 import io.gitlab.arturbosch.detekt.Detekt
 
 buildscript {
-    ext.kotlinVersion = '1.5.30'
+    ext.kotlinVersion = '1.5.21'
     ext.navigationVersion = '2.3.5'
     ext.daggerVersion = '2.38.1'
     ext.wordPressLoginVersion = '0.0.4'
@@ -12,7 +12,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:7.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.automattic.android:fetchstyle:1.1'
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
