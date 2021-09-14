@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/minor_100">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -13,13 +14,33 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/addon_name"
             style="@style/Woo.Card.Title"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:gravity="start"
             android:includeFontPadding="false"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/addon_description"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Addon Name" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/addon_custom_price"
+            style="@style/Woo.Card.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:includeFontPadding="false"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/addon_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@id/addon_name"
+            app:layout_constraintTop_toTopOf="@id/addon_name"
+            tools:text="$50.00"
+            tools:visibility="visible" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/addon_description"
@@ -30,6 +51,8 @@
             android:gravity="start"
             android:includeFontPadding="false"
             android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/options_list"
+            app:layout_constraintTop_toBottomOf="@id/addon_name"
             tools:text="Addon Description"
             tools:visibility="visible" />
 
@@ -37,10 +60,11 @@
             android:id="@+id/options_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/addon_description"
             tools:itemCount="3"
             tools:listitem="@layout/product_addon_option_item" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

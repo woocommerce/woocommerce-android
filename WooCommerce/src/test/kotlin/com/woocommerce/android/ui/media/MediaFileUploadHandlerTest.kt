@@ -8,8 +8,8 @@ import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -105,7 +105,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
         val error = ProductImageUploadData(
             remoteProductId = REMOTE_PRODUCT_ID,
             localUri = TEST_URI,
-            uploadStatus = Failed(
+            uploadStatus = UploadStatus.Failed(
                 media = MediaModel(),
                 mediaErrorMessage = resourceProvider.getString(string.product_image_service_error_media_null),
                 mediaErrorType = NULL_MEDIA_ARG
@@ -250,5 +250,40 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
         )
 
         verify(notificationHandler).postUploadFailureNotification(anyOrNull(), eq(listOf(errorData)))
+    }
+
+    @Test
+    fun `when assigning uploads to created product, then update the id for the successful ones`() = testBlocking {
+        mediaFileUploadHandler.enqueueUpload(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID, listOf(TEST_URI))
+        val mediaModel = MediaModel().apply {
+            fileName = "test"
+            url = "url"
+            uploadDate = DateTimeUtils.iso8601FromDate(Date())
+            setUploadState(UPLOADED)
+        }
+        eventsFlow.tryEmit(
+            Event.MediaUploadEvent.UploadSucceeded(
+                ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID,
+                TEST_URI,
+                mediaModel
+            )
+        )
+
+        mediaFileUploadHandler.assignUploadsToCreatedProduct(REMOTE_PRODUCT_ID)
+
+        val uploadedMedia = mediaFileUploadHandler.observeSuccessfulUploads(REMOTE_PRODUCT_ID).first()
+        assertThat(uploadedMedia).isEqualTo(mediaModel)
+    }
+
+    @Test
+    fun `when assigning uploads to created product, then cancel and reschedule ongoing ones`() = testBlocking {
+        mediaFileUploadHandler.enqueueUpload(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID, listOf(TEST_URI))
+
+        mediaFileUploadHandler.assignUploadsToCreatedProduct(REMOTE_PRODUCT_ID)
+
+        verify(productImagesUploadWorker).cancelUpload(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
+        verify(productImagesUploadWorker).enqueueWork(Work.FetchMedia(REMOTE_PRODUCT_ID, TEST_URI))
+        val currentUploads = mediaFileUploadHandler.observeCurrentUploads(REMOTE_PRODUCT_ID).first()
+        assertThat(currentUploads).isEqualTo(listOf(TEST_URI))
     }
 }

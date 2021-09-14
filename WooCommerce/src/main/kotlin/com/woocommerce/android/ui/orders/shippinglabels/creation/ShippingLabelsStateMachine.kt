@@ -2,13 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import com.tinder.StateMachine
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.CustomsPackage
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.PaymentMethod
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -18,15 +12,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.UserInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.TrackCompletedStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.TrackFlowStart
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.PackagingStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.PaymentsStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.ShippingAddressStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -204,8 +191,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     SideEffect.OpenAddressEditor(
                         address = data.stepsState.shippingAddressStep.data,
                         type = DESTINATION,
-                        requiresPhoneNumber = data.isCustomsFormRequired &&
-                            data.stepsState.carrierStep.requiresDestinationPhoneNumber
+                        requiresPhoneNumber = data.isCustomsFormRequired
                     )
                 )
             }
@@ -328,8 +314,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                         address = data.stepsState.shippingAddressStep.data,
                         type = DESTINATION,
                         validationResult = event.validationResult,
-                        requiresPhoneNumber = data.isCustomsFormRequired &&
-                            data.stepsState.carrierStep.requiresDestinationPhoneNumber
+                        requiresPhoneNumber = data.isCustomsFormRequired
                     )
                 )
             }
@@ -351,8 +336,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     SideEffect.OpenAddressEditor(
                         address = event.address,
                         type = DESTINATION,
-                        requiresPhoneNumber = data.isCustomsFormRequired &&
-                            data.stepsState.carrierStep.requiresDestinationPhoneNumber
+                        requiresPhoneNumber = data.isCustomsFormRequired
                     )
                 )
             }
@@ -526,14 +510,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class CarrierStep(
             override val status: StepStatus,
             override val data: List<ShippingRate>
-        ) : Step<List<ShippingRate>>() {
-            /**
-             * Checks if one of the selected carriers requires a destination phone number
-             * if the shipment is international
-             */
-            val requiresDestinationPhoneNumber
-                get() = data.any { it.carrierId.contains("dhl", ignoreCase = true) }
-        }
+        ) : Step<List<ShippingRate>>()
 
         @Parcelize
         data class PaymentsStep(
@@ -638,7 +615,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
             } else originAddressStep
 
             val shippingAddressStep = if (isCustomsFormRequired &&
-                carrierStep.requiresDestinationPhoneNumber &&
                 !shippingAddressStep.data.phone.isValidPhoneNumber(DESTINATION)
             ) {
                 shippingAddressStep.copy(status = READY)

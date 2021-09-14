@@ -1,15 +1,7 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.CustomsPackage
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.ShippingAccountSettings
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingPackage
-import com.woocommerce.android.model.ShippingRate
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -195,6 +187,7 @@ class ShippingLabelRepository @Inject constructor(
             WCShippingLabelPackageData(
                 id = labelPackage.packageId,
                 boxId = labelPackage.selectedPackage!!.id,
+                isLetter = labelPackage.selectedPackage.isLetter,
                 length = labelPackage.selectedPackage.dimensions.length,
                 width = labelPackage.selectedPackage.dimensions.width,
                 height = labelPackage.selectedPackage.dimensions.height,

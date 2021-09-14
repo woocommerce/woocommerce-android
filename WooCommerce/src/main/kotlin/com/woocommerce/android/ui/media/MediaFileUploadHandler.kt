@@ -10,6 +10,7 @@ import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work.UploadMedia
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.*
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -210,6 +211,30 @@ class MediaFileUploadHandler @Inject constructor(
         return worker.events
             .filterIsInstance<Event.ProductUploadsCompleted>()
             .map { it.productId }
+    }
+
+    fun assignUploadsToCreatedProduct(productId: Long) {
+        WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> assign uploads to the created product $productId")
+        // Update id for past successful uploads
+        uploadsStatus.update { list ->
+            list.map {
+                if (it.remoteProductId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID &&
+                    it.uploadStatus is UploadSuccess
+                ) {
+                    it.copy(remoteProductId = productId)
+                } else {
+                    it
+                }
+            }
+        }
+        // Cancel and reschedule ongoing uploads
+        val ongoingUploads = uploadsStatus.value.filter {
+            it.remoteProductId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID && it.uploadStatus == InProgress
+        }
+        if (ongoingUploads.isNotEmpty()) {
+            cancelUpload(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
+            enqueueUpload(productId, ongoingUploads.map { it.localUri })
+        }
     }
 
     private fun Event.MediaUploadEvent.toStatus(): ProductImageUploadData {

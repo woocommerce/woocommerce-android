@@ -3,7 +3,7 @@
 7.6
 -----
 - [***] Product Images: uploading will continue now in background to allow merchants to continue their other tasks without getting blocked [https://github.com/woocommerce/woocommerce-android/pull/4720]
-
+- [*] Fixed a bug that resulted in a failure when purchasing DHL shipping labels under some circumstances.
 
 7.5
 -----

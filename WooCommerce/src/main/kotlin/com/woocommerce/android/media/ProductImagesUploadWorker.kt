@@ -199,6 +199,7 @@ class ProductImagesUploadWorker @Inject constructor(
             val doneUploads = uploadList.count { it.isDone }
             notificationHandler.update(doneUploads + 1, uploadList.size)
             try {
+                work.fetchedMedia.postId = work.productId
                 val uploadedMedia = mediaFilesRepository.uploadMedia(work.fetchedMedia)
                 WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> upload succeeded for ${work.localUri}")
                 emitEvent(
@@ -287,7 +288,7 @@ class ProductImagesUploadWorker @Inject constructor(
     sealed class Work {
         abstract val productId: Long
 
-        class FetchMedia(
+        data class FetchMedia(
             override val productId: Long,
             val localUri: String
         ) : Work()
