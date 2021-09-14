@@ -36,10 +36,12 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.util.*
+import com.woocommerce.android.util.AnalyticsUtils
+import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
-import com.woocommerce.android.widgets.WCPromoTooltip
-import com.woocommerce.android.widgets.WCPromoTooltip.Feature
+import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -197,9 +199,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             }
             binding.optionStore.setOnClickListener(storeClickListener)
             binding.optionSwitchStore.setOnClickListener(storeClickListener)
-
-            // advertise the site switcher if we haven't already
-            WCPromoTooltip.showIfNeeded(Feature.SITE_SWITCHER, binding.optionStore)
         } else {
             binding.optionSwitchStore.hide()
         }
