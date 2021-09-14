@@ -223,6 +223,12 @@ dependencies {
     implementation "org.greenrobot:eventbus:$eventBusVersion"
     implementation "com.google.android.play:core:$googlePlayCoreVersion"
 
+    implementation "androidx.compose.ui:ui:$composeVersion"
+    implementation "androidx.compose.ui:ui-tooling:$composeVersion"
+    implementation "androidx.compose.foundation:foundation:$composeVersion"
+    implementation "androidx.compose.material:material:$composeVersion"
+    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
+
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
     debugImplementation "com.facebook.soloader:soloader:0.10.1"

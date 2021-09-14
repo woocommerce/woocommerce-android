@@ -114,6 +114,7 @@ ext {
     jUnitExtVersion = '1.1.2'
     robolectricVersion = '4.6.1'
     hiltJetpackVersion = '1.0.0'
+    composeVersion = '1.0.2'
 }
 
 // Onboarding and dev env setup tasks
