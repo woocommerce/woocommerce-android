@@ -7,9 +7,9 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
@@ -24,6 +24,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -40,11 +42,13 @@ import javax.inject.Inject
 class ProductListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    mediaFileUploadHandler: MediaFileUploadHandler
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
+        private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
 
     private val _productList = MutableLiveData<List<Product>>()
@@ -60,6 +64,7 @@ class ProductListViewModel @Inject constructor(
         params
     }
 
+    private var selectedCategoryName: String? = null
     private var searchJob: Job? = null
     private var loadJob: Job? = null
 
@@ -69,6 +74,13 @@ class ProductListViewModel @Inject constructor(
             loadProducts()
         }
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
+
+        selectedCategoryName = savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)
+
+        // Reload products if any image changes occur
+        mediaFileUploadHandler.observeProductImageChanges()
+            .onEach { loadProducts() }
+            .launchIn(this)
     }
 
     override fun onCleared() {
@@ -101,20 +113,36 @@ class ProductListViewModel @Inject constructor(
     fun onFiltersChanged(
         stockStatus: String?,
         productStatus: String?,
-        productType: String?
+        productType: String?,
+        productCategory: String?,
+        productCategoryName: String?
     ) {
-        if (stockStatus != productFilterOptions[ProductFilterOption.STOCK_STATUS] ||
-            productStatus != productFilterOptions[ProductFilterOption.STATUS] ||
-            productType != productFilterOptions[ProductFilterOption.TYPE]
-        ) {
+        if (areFiltersChanged(stockStatus, productStatus, productType, productCategory)) {
             productFilterOptions.clear()
             stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
             productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
             productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
+            productCategory?.let { productFilterOptions[ProductFilterOption.CATEGORY] = it }
+            productCategoryName?. let {
+                selectedCategoryName = it
+                savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = it
+            }
 
             viewState = viewState.copy(filterCount = productFilterOptions.size)
             refreshProducts()
         }
+    }
+
+    private fun areFiltersChanged(
+        stockStatus: String?,
+        productStatus: String?,
+        productType: String?,
+        productCategory: String?
+    ): Boolean {
+        return stockStatus != productFilterOptions[ProductFilterOption.STOCK_STATUS] ||
+            productStatus != productFilterOptions[ProductFilterOption.STATUS] ||
+            productType != productFilterOptions[ProductFilterOption.TYPE] ||
+            productCategory != productFilterOptions[ProductFilterOption.CATEGORY]
     }
 
     fun onFiltersButtonTapped() {
@@ -123,7 +151,9 @@ class ProductListViewModel @Inject constructor(
             ShowProductFilterScreen(
                 productFilterOptions[ProductFilterOption.STOCK_STATUS],
                 productFilterOptions[ProductFilterOption.TYPE],
-                productFilterOptions[ProductFilterOption.STATUS]
+                productFilterOptions[ProductFilterOption.STATUS],
+                productFilterOptions[ProductFilterOption.CATEGORY],
+                selectedCategoryName
             )
         )
     }
@@ -381,12 +411,6 @@ class ProductListViewModel @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        loadProducts()
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onRefreshProducts(event: OnProductSortingChanged) {
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
         refreshProducts(scrollToTop = true)
@@ -417,7 +441,9 @@ class ProductListViewModel @Inject constructor(
         data class ShowProductFilterScreen(
             val stockStatusFilter: String?,
             val productTypeFilter: String?,
-            val productStatusFilter: String?
+            val productStatusFilter: String?,
+            val productCategoryFilter: String?,
+            val selectedCategoryName: String?
         ) : ProductListEvent()
     }
 }

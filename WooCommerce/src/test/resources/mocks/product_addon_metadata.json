@@ -11,6 +11,7 @@
       {
         "name": "Topping",
         "description": "Pizza topping",
+        "description_enable": 1,
         "price_type": "flat_fee",
         "price": "",
         "options": [
@@ -38,11 +39,14 @@
             "image": "",
             "price_type": "flat_fee"
           }
-        ]
+        ],
+        "title_format": "label",
+        "type": "checkbox"
       },
       {
         "name": "Soda",
         "description": "",
+        "description_enable": 0,
         "price_type": "flat_fee",
         "price": "2",
         "options": [
@@ -52,11 +56,14 @@
             "image": "",
             "price_type": "flat_fee"
           }
-        ]
+        ],
+        "title_format": "label",
+        "type": "checkbox"
       },
       {
         "name": "Delivery",
         "description": "",
+        "description_enable": 0,
         "price_type": "flat_fee",
         "price": "",
         "options": [
@@ -72,7 +79,9 @@
             "image": "",
             "price_type": "flat_fee"
           }
-        ]
+        ],
+        "title_format": "label",
+        "type": "checkbox"
       }
     ]
   },

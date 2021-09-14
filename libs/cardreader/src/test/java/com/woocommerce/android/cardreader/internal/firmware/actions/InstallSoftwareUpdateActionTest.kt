@@ -8,7 +8,6 @@ import org.mockito.kotlin.whenever
 import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateListener
-import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
@@ -32,7 +31,6 @@ import org.mockito.junit.MockitoJUnitRunner
 internal class InstallSoftwareUpdateActionTest {
     private lateinit var action: InstallSoftwareUpdateAction
     private val terminal: TerminalWrapper = mock()
-    private val updateData: ReaderSoftwareUpdate = mock()
 
     @Before
     fun setUp() {

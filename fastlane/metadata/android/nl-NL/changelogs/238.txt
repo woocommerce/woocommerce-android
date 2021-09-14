@@ -1,4 +1,0 @@
-7.3:
-Verkopers die gebruikmaken van de extensie WooCommerce Shipping en Tax zullen blij zijn met de twee verbeteringen die we hebben doorgevoerd. Je kunt aangepaste pakketten maken wanneer je een label maakt. En je kunt meerdere verzendlabels maken voor één bestelling!
-
-Verder hebben we nog wat kleine dingen verbeterd, zodat je ervaring nog soepeler verloopt. We hopen dat je merkt dat we dit met liefde doen.

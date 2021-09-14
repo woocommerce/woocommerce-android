@@ -119,11 +119,10 @@ class AppSettingsActivity :
         confirmLogout()
     }
 
-    override fun onProductsFeatureOptionChanged(enabled: Boolean) {
-        val isProductsFeatureEnabled = AppPrefs.isProductsFeatureEnabled()
-        if (isProductsFeatureEnabled != enabled) {
+    override fun onProductAddonsOptionChanged(enabled: Boolean) {
+        if (AppPrefs.isProductAddonsEnabled != enabled) {
             isBetaOptionChanged = true
-            AppPrefs.setIsProductsFeatureEnabled(enabled)
+            AppPrefs.isProductAddonsEnabled = enabled
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
     }

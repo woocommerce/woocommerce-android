@@ -1,4 +1,0 @@
-7.3:
-Verkäufer, die WooCommerce Shipping & Tax verwenden, werden sich sehr über die neuesten Verbesserungen freuen. Du kannst beim Erstellen eines Versandetiketts nun individuelle Pakete erstellen. Du kannst zudem mehrere Versandetiketten für eine einzelne Bestellung erstellen!
-
-Diese und viele weitere kleine Verbesserungen sorgen insgesamt für ein reibungsloses Erlebnis. Wir hoffen, dass dir unsere Bemühungen auffallen und sie dir weiterhelfen.

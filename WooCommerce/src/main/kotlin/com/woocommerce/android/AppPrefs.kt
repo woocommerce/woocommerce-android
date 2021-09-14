@@ -40,6 +40,7 @@ object AppPrefs {
         LOGIN_SITE_ADDRESS,
         DATABASE_DOWNGRADED,
         IS_PRODUCTS_FEATURE_ENABLED,
+        IS_PRODUCT_ADDONS_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
@@ -136,6 +137,10 @@ object AppPrefs {
         private set(value) = value
             ?.time.toString()
             .let { setString(UndeletablePrefKey.APP_INSTALATION_DATE, it) }
+
+    var isProductAddonsEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)

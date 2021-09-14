@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -38,6 +39,7 @@ import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VIRTUAL
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -48,7 +50,6 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -57,11 +58,12 @@ class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val parameters: SiteParameters
+    private val parameters: SiteParameters,
+    private val addonRepository: AddonRepository,
 ) {
     private lateinit var originalSku: String
 
-    fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
+    suspend fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
         this.originalSku = originalSku
 
         val cards = mutableListOf<ProductPropertyCard>()
@@ -89,7 +91,7 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getSimpleProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getSimpleProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -108,7 +110,7 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getGroupedProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getGroupedProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -125,7 +127,7 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getExternalProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getExternalProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -143,7 +145,7 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getVariableProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getVariableProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -166,7 +168,7 @@ class ProductDetailCardBuilder(
      * Used for product types the app doesn't support yet (ex: subscriptions), uses a subset
      * of properties since we can't be sure pricing, shipping, etc., are applicable
      */
-    private fun getOtherProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getOtherProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -615,13 +617,22 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.addons(): ProductProperty? =
-        takeIf { addons.isNotEmpty() && FeatureFlag.PRODUCT_ADD_ONS.isEnabled() }?.let {
+    private suspend fun Product.addons(): ProductProperty? =
+        takeIf { product ->
+            addonRepository.hasAnyProductSpecificAddons(
+                productRemoteID = product.remoteId
+            ) && AppPrefs.isProductAddonsEnabled
+        }?.let {
             ComplexProperty(
                 value = resources.getString(string.product_add_ons_title),
                 icon = drawable.ic_gridicon_circle_plus,
                 showTitle = false,
-                onClick = { viewModel.onEditProductCardClicked(ViewProductAddonsDetails) }
+                onClick = {
+                    viewModel.onEditProductCardClicked(
+                        ViewProductAddonsDetails,
+                        Stat.PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
+                    )
+                }
             )
         }
 }

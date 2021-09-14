@@ -1,0 +1,4 @@
+7.4
+Produktrecensioner som kräver ditt godkännande har en ny etikett som ska göra det enklare för dig att skilja dem från redan godkända recensioner.
+
+Denna uppdatering inkluderar även flera förbättringar av fraktetikettfunktionen i utökningen WooCommerce Shipping & Tax. Vi värdesätter din feedback rörande denna nya funktion!

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.net.Uri
 import android.os.Parcelable
+import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
@@ -10,39 +11,33 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.extensions.areSameImagesAs
-import com.woocommerce.android.media.ProductImagesService
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
-import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.util.swap
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductImagesViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
+    private val resourceProvider: ResourceProvider,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
@@ -53,7 +48,7 @@ class ProductImagesViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
-            uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
+            uploadingImageUris = emptyList(),
             isImageDeletingAllowed = true,
             images = navArgs.images.toList(),
             isWarningVisible = !isMultiSelectionAllowed,
@@ -74,14 +69,14 @@ class ProductImagesViewModel @Inject constructor(
         get() = viewState.isImageDeletingAllowed ?: true
 
     init {
-        EventBus.getDefault().register(this)
-
         if (navArgs.showChooser) {
             clearImageUploadErrors()
             triggerEvent(ShowImageSourceDialog)
         } else if (navArgs.selectedImage != null) {
             triggerEvent(ShowImageDetail(navArgs.selectedImage!!, true))
         }
+
+        observeImageUploadEvents()
     }
 
     fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
@@ -89,11 +84,8 @@ class ProductImagesViewModel @Inject constructor(
             triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
             return
         }
-        if (ProductImagesService.isBusy()) {
-            triggerEvent(ShowSnackbar(string.product_image_service_busy))
-            return
-        }
-        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
+
+        mediaFileUploadHandler.enqueueUpload(remoteProductId, localUriList.map { it.toString() })
     }
 
     fun onShowStorageChooserButtonClicked() {
@@ -184,69 +176,34 @@ class ProductImagesViewModel @Inject constructor(
 
     private fun clearImageUploadErrors() {
         // clear existing image upload errors from the backlog
-        mediaFileUploadHandler.onCleanup()
+        mediaFileUploadHandler.clearImageErrors(navArgs.remoteId)
     }
 
-    /**
-     * The list of product images has started uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
-        checkImageUploads(event.id)
-    }
+    private fun observeImageUploadEvents() {
+        val remoteProductId = navArgs.remoteId
+        mediaFileUploadHandler.observeCurrentUploads(remoteProductId)
+            .map { list -> list.map { it.toUri() } }
+            .onEach { viewState = viewState.copy(uploadingImageUris = it) }
+            .launchIn(this)
 
-    /**
-     * The list of product images has finished uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        if (event.isCancelled) {
-            viewState = viewState.copy(uploadingImageUris = emptyList())
-        } else {
-            checkImageUploads(event.id)
-        }
-    }
-
-    /**
-     * Checks whether product images are uploading and ensures the view state reflects any currently
-     * uploading images
-     */
-    private fun checkImageUploads(remoteProductId: Long) {
-        viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
-            val uris = ProductImagesService.getUploadingImageUris(remoteProductId)
-            val images = if (isMultiSelectionAllowed) viewState.images else emptyList()
-            viewState.copy(images = images, uploadingImageUris = uris)
-        } else {
-            viewState.copy(uploadingImageUris = emptyList())
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        EventBus.getDefault().unregister(this)
-    }
-
-    /**
-     * A single product image has finished uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImageUploaded) {
-        if (event.isError) {
-            val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(navArgs.remoteId)
-            triggerEvent(ShowActionSnackbar(errorMsg, { triggerEvent(ViewMediaUploadErrors(navArgs.remoteId)) }))
-        } else {
-            event.media?.let { media ->
+        mediaFileUploadHandler.observeSuccessfulUploads(remoteProductId)
+            .onEach { media ->
                 viewState = if (isMultiSelectionAllowed) {
                     viewState.copy(images = images + media.toAppModel())
                 } else {
                     viewState.copy(images = listOf(media.toAppModel()))
                 }
             }
-        }
-        checkImageUploads(navArgs.remoteId)
+            .launchIn(this)
+
+        mediaFileUploadHandler.observeCurrentUploadErrors(remoteProductId)
+            .onEach {
+                val errorMsg = resourceProvider.getMediaUploadErrorMessage(it.size)
+                triggerEvent(
+                    ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(remoteProductId)) }
+                )
+            }
+            .launchIn(this)
     }
 
     fun onGalleryImageDragStarted() {

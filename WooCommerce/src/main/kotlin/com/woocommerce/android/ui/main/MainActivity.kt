@@ -73,7 +73,6 @@ class MainActivity :
     WCPromoDialog.PromoDialogListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
-        private const val TOKEN_PARAMETER = "token"
 
         private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
@@ -613,11 +612,6 @@ class MainActivity :
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
-    private fun getAuthTokenFromIntent(): String? {
-        val uri = intent.data
-        return uri?.getQueryParameter(TOKEN_PARAMETER)
-    }
-
     // region Bottom Navigation
     override fun updateReviewsBadge() {
         if (AppPrefs.getHasUnseenReviews()) {
@@ -789,9 +783,15 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
-    override fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?) {
+    override fun showProductFilters(
+        stockStatus: String?,
+        productType: String?,
+        productStatus: String?,
+        productCategory: String?,
+        productCategoryName: String?
+    ) {
         val action = ProductListFragmentDirections.actionProductListFragmentToProductFilterListFragment(
-            stockStatus, productStatus, productType
+            stockStatus, productStatus, productType, productCategory, productCategoryName
         )
         navController.navigateSafely(action)
     }

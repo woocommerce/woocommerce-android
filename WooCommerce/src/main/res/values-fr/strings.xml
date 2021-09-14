@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:50:50+0000
+Translation-Revision-Date: 2021-08-31 13:54:44+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="shipping_label_package_details_items_count_one">%d article</string>
+    <string name="upsell_product_count_many">%d produits suggérés</string>
+    <string name="upsell_product_count_one">%d produit suggéré</string>
+    <string name="cross_sell_product_count_many">%d produits en ventes croisées</string>
+    <string name="cross_sell_product_count_one">%d produit en ventes croisées</string>
+    <string name="product_count_many">%d produits</string>
+    <string name="product_count_one">%d produit</string>
+    <string name="product_add_ons_title">Modules produits</string>
+    <string name="product_save_dialog_title">Enregistrement de votre produit</string>
+    <string name="pending_review_label">En attente de relecture</string>
+    <string name="card_reader_payment_reader_not_connected">Veuillez vérifier que le lecteur de carte est connecté.</string>
+    <string name="card_reader_payment_try_another_card_prompt">Réessayer avec une autre carte</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Réessayer d’appuyer, d’insérer ou de glisser votre carte</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Plusieurs cartes détectées. Réessayer avec une seule carte</string>
+    <string name="card_reader_payment_remove_card_prompt">Retirer la carte</string>
+    <string name="card_reader_payment_retry_card_prompt">Réessayer avec la même carte</string>
+    <string name="order_refunds_refund_info_description_many">%d articles</string>
+    <string name="order_refunds_refund_info_description_one">%d article</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d jours ouvrables</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d jour ouvrable</string>
+    <string name="shipping_label_validation_error_template">Nous n’avons pas pu vérifier l’adresse d’expédition automatiquement : %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">Nous n’avons pas pu vérifier l’adresse d’origine automatiquement. Affichez l’adresse dans Google Maps pour vérifier qu’elle est correcte.</string>
+    <string name="ordered_add_ons_wip_message">Nous travaillons pour faciliter l’affichage des modules produits à partir de votre appareil ! Pour l’instant, vous pouvez voir les modules de vos commandes. Vous pouvez créer et modifier ces modules dans votre tableau de bord Web.</string>
+    <string name="ordered_add_ons_wip_title">Affichez les modules de votre appareil !</string>
+    <string name="ordered_add_ons_details_info_notice">Si vous renommez un module dans votre tableau de bord Web, notez que les commandes précédentes n’afficheront plus ce module dans l’application.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">Voir les modules</string>
+    <string name="save">Sauver</string>
     <string name="support_contact_payments_detail">Contacter nos Happiness Engineers pour toutes les questions relatives aux paiements</string>
     <string name="support_contact_payments">Contacter l’assistance sur les paiements</string>
     <string name="product_images_error_detail_title">Charger des détails (%d)</string>
@@ -13,7 +40,6 @@ Language: fr
     <string name="product_image_service_error_uploading_single">%d fichier n’a pas pu être chargé</string>
     <string name="product_image_service_error_media_null">Média introuvable</string>
     <string name="product_add_ons_details_info_notice">Vous pouvez modifier des modules produits dans le tableau de bord Web.</string>
-    <string name="product_add_ons_card_button_title">Modules produits</string>
     <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur le chargement d’images</string>
     <string name="card_reader_onboarding_generic_error_hint">Désolé, nous n’avons pas pu vérifier les paiements en personne pour cette boutique</string>
     <string name="card_reader_onboarding_generic_error_header">Impossible de vérifier les paiements en personne pour cette boutique</string>
@@ -355,6 +381,7 @@ Language: fr
     <string name="shipping_label_packages_loading_message">Veuillez patienter…</string>
     <string name="shipping_label_packages_loading_title">Colis en cours de chargement !</string>
     <string name="shipping_label_package_details_title_template">Colis %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d articles</string>
     <string name="shipping_label_packages_loading_error">Impossible de charger les définitions des colis</string>
     <string name="shipping_label_package_details_weight_info">Comprend le poids du colis</string>
     <string name="shipping_label_package_details_weight_hint">Poids total du colis (%1$s)</string>
@@ -369,9 +396,8 @@ Language: fr
     <string name="shipping_label_address_suggestion_use_selected_address">Utiliser l\'adresse sélectionnée</string>
     <string name="shipping_label_edit_address_loading_progress_title">Données d’adresse en cours de chargement</string>
     <string name="product_wip_title_m5">Nouvelles fonctionnalités disponibles !</string>
-    <string name="shipping_label_validation_view_map">Ouvrir une carte</string>
+    <string name="shipping_label_validation_view_map">Trouver sur la carte</string>
     <string name="shipping_label_validation_contact_customer">Contacter le client</string>
-    <string name="shipping_label_validation_error_template">Échec de la validation : %s</string>
     <string name="shipping_label_error_address_invalid_street">Rue non valide</string>
     <string name="shipping_label_error_address_house_number_missing">Numéro de maison manquant</string>
     <string name="shipping_label_error_address_not_found">Adresse introuvable</string>
@@ -770,10 +796,9 @@ Language: fr
     <string name="orderlist_loading">Recherche dans vos commandes…</string>
     <string name="product_detail_editable_text_hint">Saisissez du texte</string>
     <string name="product_detail_title_hint">Entrer le nom du produit</string>
-    <string name="product_detail_save_product_success">Produit mis à jour</string>
+    <string name="product_detail_save_product_success">Produit sauvegardé</string>
     <string name="product_detail_update_product_error">Erreur lors de la mise à jour du produit</string>
     <string name="product_update_dialog_message">Veuillez patienter…</string>
-    <string name="product_save_dialog_title">Mise à jour du produit</string>
     <string name="product_description_empty">Décrivez votre produit</string>
     <string name="product_description">Description</string>
     <string name="product_edit_description">Modifier la description</string>

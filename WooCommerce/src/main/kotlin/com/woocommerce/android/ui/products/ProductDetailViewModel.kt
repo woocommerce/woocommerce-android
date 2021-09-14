@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
-import androidx.annotation.StringRes
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -12,70 +12,20 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_PUBLISH_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_PRODUCT_DELETED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
-import com.woocommerce.android.extensions.addNewItem
-import com.woocommerce.android.extensions.clearList
-import com.woocommerce.android.extensions.containsItem
-import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.getList
-import com.woocommerce.android.extensions.isEmpty
-import com.woocommerce.android.extensions.removeItem
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.media.MediaFilesRepository
-import com.woocommerce.android.media.ProductImagesService
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.model.ProductAttributeTerm
-import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.model.ProductFile
-import com.woocommerce.android.model.ProductGlobalAttribute
-import com.woocommerce.android.model.ProductTag
-import com.woocommerce.android.model.addTags
-import com.woocommerce.android.model.sortCategories
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
-import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.*
+import com.woocommerce.android.ui.products.ProductNavigationTarget.*
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -89,27 +39,21 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
-import java.util.Collections
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -126,7 +70,8 @@ class ProductDetailViewModel @Inject constructor(
     private val mediaFilesRepository: MediaFilesRepository,
     private val variationRepository: VariationRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
-    private val prefs: AppPrefs
+    private val prefs: AppPrefs,
+    private val addonRepository: AddonRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -196,7 +141,7 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
     private val cardBuilder by lazy {
-        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters)
+        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters, addonRepository)
     }
 
     private val _productDetailBottomSheetList = MutableLiveData<List<ProductDetailBottomSheetUiItem>>()
@@ -265,16 +210,18 @@ class ProductDetailViewModel @Inject constructor(
     val currencyCode: String
         get() = parameters.currencyCode.orEmpty()
 
+    private var imageUploadsJob: Job? = null
+
     init {
         start()
     }
 
     fun start() {
-        EventBus.getDefault().register(this)
         when (isAddFlowEntryPoint) {
             true -> startAddNewProduct()
             else -> loadRemoteProduct(navArgs.remoteProductId)
         }
+        observeImageUploadEvents()
     }
 
     private fun startAddNewProduct() {
@@ -291,6 +238,9 @@ class ProductDetailViewModel @Inject constructor(
     fun getProduct() = viewState
 
     fun getRemoteProductId() = viewState.productDraft?.remoteId ?: DEFAULT_ADD_NEW_PRODUCT_ID
+
+    fun observeProductSpecificAddons(productRemoteId: Long) =
+        addonRepository.observeProductSpecificAddons(productRemoteId)
 
     /**
      * Called when the Share menu button is clicked in Product detail screen
@@ -486,7 +436,7 @@ class ProductDetailViewModel @Inject constructor(
             ?.let { updateProductDraft(numVariation = variationAmount) }
     }
 
-    fun uploadDownloadableFile(uri: Uri) {
+    fun uploadDownloadableFile(uri: String) {
         launch {
             viewState = viewState.copy(isUploadingDownloadableFile = true)
             productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
@@ -578,9 +528,12 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onBackButtonClickedProductDetail(): Boolean {
         val isProductDetailUpdated = viewState.isProductUpdated ?: false
-        val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
+        // Consider a non created product with ongoing uploads same as product with non saved changes
+        val isUploadingImagesForNonCreatedProduct = isProductUnderCreation && isUploadingImages()
 
-        if (isProductDetailUpdated) {
+        if (isProductDetailUpdated ||
+            isUploadingImagesForNonCreatedProduct
+        ) {
             val positiveAction = DialogInterface.OnClickListener { _, _ ->
                 // discard changes made to the product and exit product detail
                 discardEditChanges()
@@ -589,36 +542,42 @@ class ProductDetailViewModel @Inject constructor(
 
             // if the user is adding a product and this is product detail, include a "Save as draft" neutral
             // button in the discard dialog
-            @StringRes val neutralBtnId: Int?
-            val neutralAction = if (isProductUnderCreation) {
-                neutralBtnId = string.product_detail_save_as_draft
-                DialogInterface.OnClickListener { _, _ ->
-                    startPublishProduct(productStatus = DRAFT, exitWhenDone = true)
-                }
+            val (neutralAction, neutralBtnId) = if (isProductUnderCreation) {
+                Pair(
+                    DialogInterface.OnClickListener { _, _ ->
+                        startPublishProduct(productStatus = DRAFT, exitWhenDone = true)
+                    },
+                    string.product_detail_save_as_draft
+                )
             } else {
-                neutralBtnId = null
-                null
+                Pair(null, null)
             }
+
+            val negativeBtnAction = if (isProductUnderCreation) {
+                // If the product is under creation, then we need to stop observing image uploads to let the handler
+                // handles cache them, so that we can assign them to the product if the user decides to save it
+                imageUploadsJob?.cancel()
+                DialogInterface.OnClickListener { _, _ -> observeImageUploadEvents() }
+            } else null
+
+            val message = if (isUploadingImagesForNonCreatedProduct) string.discard_images_message
+            else string.discard_message
 
             triggerEvent(
                 ShowDialog(
+                    messageId = message,
+                    positiveButtonId = string.discard,
+                    negativeButtonId = string.keep_editing,
                     positiveBtnAction = positiveAction,
-                    neutralBtnAction = neutralAction
+                    neutralBtnAction = neutralAction,
+                    neutralButtonId = neutralBtnId,
+                    negativeBtnAction = negativeBtnAction
                 )
             )
             return false
-        } else if (isUploadingImages) {
-            // images can't be assigned to the product until they finish uploading so ask whether
-            // to discard the uploading images
-            triggerEvent(
-                ShowDialog.buildDiscardDialogEvent(
-                    messageId = string.discard_images_message,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        ProductImagesService.cancel()
-                        triggerEvent(ExitProduct)
-                    }
-                )
-            )
+        } else if (isUploadingImages()) {
+            triggerEvent(ShowSnackbar(message = string.product_detail_background_image_upload))
+            triggerEvent(ExitProduct)
             return false
         } else {
             return true
@@ -663,7 +622,7 @@ class ProductDetailViewModel @Inject constructor(
                     (it.type == VARIABLE.value) and
                     (it.status == DRAFT)
             }
-            ?.takeIf { addProduct(it) }
+            ?.takeIf { addProduct(it).first }
             ?.let {
                 AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
             }
@@ -688,13 +647,21 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = true)
 
             launch {
-                val isSuccess = addProduct(it)
+                val (isSuccess, newProductId) = addProduct(it)
+                viewState = viewState.copy(isProgressDialogShown = false)
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
                     AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
+                    if (it.remoteId != newProductId) {
+                        // Assign the current uploads to the new product id
+                        mediaFileUploadHandler.assignUploadsToCreatedProduct(newProductId)
+                    }
                     if (exitWhenDone) {
                         triggerEvent(ExitProduct)
+                    } else if (it.remoteId != newProductId) {
+                        // Restart observing image uploads using the new product id
+                        observeImageUploadEvents()
                     }
                 } else {
                     AnalyticsTracker.track(ADD_PRODUCT_FAILED)
@@ -946,11 +913,19 @@ class ProductDetailViewModel @Inject constructor(
         productCategoriesRepository.onCleanup()
         productTagsRepository.onCleanup()
         mediaFilesRepository.onCleanup()
-        EventBus.getDefault().unregister(this)
+        if (isProductUnderCreation) {
+            // cancel uploads for the default ID, since we can't assign the uploads to it
+            mediaFileUploadHandler.cancelUpload(DEFAULT_ADD_NEW_PRODUCT_ID)
+        }
     }
 
     private fun updateCards(product: Product) {
-        _productDetailCards.value = cardBuilder.buildPropertyCards(product, viewState.storedProduct?.sku ?: "")
+        launch(dispatchers.io) {
+            val cards = cardBuilder.buildPropertyCards(product, viewState.storedProduct?.sku ?: "")
+            withContext(dispatchers.main) {
+                _productDetailCards.value = cards
+            }
+        }
         fetchBottomSheetList()
     }
 
@@ -977,6 +952,9 @@ class ProductDetailViewModel @Inject constructor(
     private fun discardEditChanges() {
         viewState = viewState.copy(productDraft = viewState.productBeforeEnteringFragment)
         _addedProductTags.clearList()
+
+        // Make sure to cancel any remaining image uploads
+        mediaFileUploadHandler.cancelUpload(getRemoteProductId())
 
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
         // will only be displayed if there are changes made to the Product model.
@@ -1096,7 +1074,7 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun isUploadingImages(remoteProductId: Long) = ProductImagesService.isUploadingForProduct(remoteProductId)
+    fun isUploadingImages() = !viewState.uploadingImageUris.isNullOrEmpty()
 
     /**
      * Updates the UPDATE menu button in the product detail screen. UPDATE is only displayed
@@ -1108,19 +1086,6 @@ class ProductDetailViewModel @Inject constructor(
             val isProductUpdated = viewState.storedProduct?.isSameProduct(draft) == false ||
                 viewState.isPasswordChanged
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
-        }
-    }
-
-    /**
-     * Checks whether product images are uploading and ensures the view state reflects any currently
-     * uploading images
-     */
-    private fun checkImageUploads(remoteProductId: Long) {
-        viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
-            val uris = ProductImagesService.getUploadingImageUris(remoteProductId)
-            viewState.copy(uploadingImageUris = uris)
-        } else {
-            viewState.copy(uploadingImageUris = emptyList())
         }
     }
 
@@ -1533,24 +1498,22 @@ class ProductDetailViewModel @Inject constructor(
      * Otherwise, an offline snackbar is displayed. Returns true only
      * if product successfully added
      */
-    private suspend fun addProduct(product: Product): Boolean {
-        var isSuccess = false
-        if (checkConnection()) {
-            val result = productRepository.addProduct(product)
-            isSuccess = result.first
-            if (isSuccess) {
-                viewState = viewState.copy(
-                    productDraft = null,
-                    productBeforeEnteringFragment = getProduct().storedProduct,
-                    isProductUpdated = false
-                )
-                val newProductRemoteId = result.second
-                loadRemoteProduct(newProductRemoteId)
-                triggerEvent(RefreshMenu)
-            }
+    private suspend fun addProduct(product: Product): Pair<Boolean, Long> {
+        if (!checkConnection()) return Pair(false, 0L)
+
+        val result = productRepository.addProduct(product)
+        val (isSuccess, newProductRemoteId) = result
+        if (isSuccess) {
+            viewState = viewState.copy(
+                productDraft = null,
+                productBeforeEnteringFragment = getProduct().storedProduct,
+                isProductUpdated = false
+            )
+            loadRemoteProduct(newProductRemoteId)
+            triggerEvent(RefreshMenu)
         }
-        viewState = viewState.copy(isProgressDialogShown = false)
-        return isSuccess
+
+        return result
     }
 
     /**
@@ -1581,9 +1544,6 @@ class ProductDetailViewModel @Inject constructor(
                 productBeforeEnteringFragment = updatedDraft
             )
         }
-
-        // make sure to remember uploading images
-        checkImageUploads(getRemoteProductId())
     }
 
     private fun loadProductTaxAndShippingClassDependencies(product: Product) {
@@ -1600,48 +1560,27 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    /**
-     * The list of product images has started uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
-        checkImageUploads(event.id)
-    }
+    private fun observeImageUploadEvents() {
+        imageUploadsJob?.cancel()
+        imageUploadsJob = launch {
+            mediaFileUploadHandler.observeCurrentUploads(getRemoteProductId())
+                .map { list -> list.map { it.toUri() } }
+                .onEach { viewState = viewState.copy(uploadingImageUris = it) }
+                .launchIn(this)
 
-    /**
-     * The list of product images has finished uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        var productId = event.id
-        if (event.isCancelled) {
-            viewState = viewState.copy(uploadingImageUris = emptyList())
-        } else {
-            when (isProductUnderCreation) {
-                true -> productId = DEFAULT_ADD_NEW_PRODUCT_ID
-                else -> loadRemoteProduct(event.id)
-            }
-        }
-        checkImageUploads(productId)
-    }
+            mediaFileUploadHandler.observeSuccessfulUploads(getRemoteProductId())
+                .onEach { addProductImageToDraft(it.toAppModel()) }
+                .launchIn(this)
 
-    /**
-     * A single product image has finished uploading
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImageUploaded) {
-        if (event.isError) {
-            val errorMsg = mediaFileUploadHandler.getMediaUploadErrorMessage(getRemoteProductId())
-            triggerEvent(ShowActionSnackbar(errorMsg, { triggerEvent(ViewMediaUploadErrors(getRemoteProductId())) }))
-        } else {
-            event.media?.let { media ->
-                addProductImageToDraft(media.toAppModel())
-            }
+            mediaFileUploadHandler.observeCurrentUploadErrors(getRemoteProductId())
+                .onEach {
+                    val errorMsg = resources.getMediaUploadErrorMessage(it.size)
+                    triggerEvent(
+                        ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(getRemoteProductId())) }
+                    )
+                }
+                .launchIn(this)
         }
-        checkImageUploads(getRemoteProductId())
     }
 
     /**
