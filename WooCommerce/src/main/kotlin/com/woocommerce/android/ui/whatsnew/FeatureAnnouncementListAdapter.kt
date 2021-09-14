@@ -1,16 +1,21 @@
 package com.woocommerce.android.ui.whatsnew
 
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FeatureAnnouncementListItemBinding
+import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.FeatureAnnouncementItem
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementListAdapter.FeatureAnnouncementViewHolder
-import com.woocommerce.android.util.ImageUtils
+import com.woocommerce.android.util.WooLog
 
 class FeatureAnnouncementListAdapter :
     ListAdapter<FeatureAnnouncementItem, FeatureAnnouncementViewHolder>(ItemDiffCallback) {
@@ -47,7 +52,7 @@ class FeatureAnnouncementListAdapter :
 
             when {
                 item.iconUrl.isNotEmpty() -> {
-                    ImageUtils.loadUrlIntoCircle(
+                    loadUrlIntoCircle(
                         context = viewBinding.root.context,
                         imageView = viewBinding.featureItemIcon,
                         imgUrl = item.iconUrl,
@@ -55,7 +60,7 @@ class FeatureAnnouncementListAdapter :
                     )
                 }
                 item.iconBase64.isNotEmpty() -> {
-                    ImageUtils.loadBase64IntoCircle(
+                    loadBase64IntoCircle(
                         context = viewBinding.root.context,
                         imageView = viewBinding.featureItemIcon,
                         base64ImageData = item.iconBase64,
@@ -66,6 +71,52 @@ class FeatureAnnouncementListAdapter :
                     viewBinding.featureItemIcon.setImageDrawable(placeholder)
                 }
             }
+        }
+
+        /**
+         * Loads an image from the "imgUrl" into the ImageView and applies circle transformation.
+         */
+        private fun loadUrlIntoCircle(
+            context: Context,
+            imageView: ImageView,
+            imgUrl: String,
+            placeholder: Drawable?
+        ) {
+            GlideApp.with(context)
+                .load(imgUrl)
+                .placeholder(placeholder)
+                .error(placeholder)
+                .circleCrop()
+                .into(imageView)
+                .clearOnDetach()
+        }
+
+        /**
+         * Loads a base64 string without prefix (data:image/png;base64,) into the ImageView and applies circle
+         * transformation.
+         */
+        private fun loadBase64IntoCircle(
+            context: Context,
+            imageView: ImageView,
+            base64ImageData: String,
+            placeholder: Drawable?
+        ) {
+            val imageData: ByteArray
+            try {
+                val sanitizedBase64String = base64ImageData.replace("data:image/png;base64,", "")
+                imageData = Base64.decode(sanitizedBase64String, Base64.DEFAULT)
+            } catch (ex: IllegalArgumentException) {
+                WooLog.e(WooLog.T.MEDIA, "Cant parse base64 image data: ${ex.message}")
+                return
+            }
+
+            GlideApp.with(context)
+                .load(imageData)
+                .placeholder(placeholder)
+                .error(placeholder)
+                .circleCrop()
+                .into(imageView)
+                .clearOnDetach()
         }
     }
 
