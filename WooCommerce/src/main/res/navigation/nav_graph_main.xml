@@ -136,7 +136,7 @@
     </action>
     <fragment
         android:id="@+id/reviewDetailFragment"
-        android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
+        android:name="com.woocommerce.android.ui.reviews.detail.ReviewDetailFragment"
         tools:layout="@layout/fragment_review_detail">
         <argument
             android:name="remoteReviewId"
