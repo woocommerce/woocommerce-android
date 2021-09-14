@@ -122,6 +122,7 @@ object WooLog {
     fun e(tag: T, message: String) {
         Log.e("$TAG-$tag", message)
         addEntry(tag, LogLevel.e, message)
+        addDeviceInfoEntry(tag, LogLevel.w)
     }
 
     /**
@@ -136,6 +137,7 @@ object WooLog {
             Log.e("$TAG-$tag", message, throwable)
             addEntry(tag, LogLevel.e, message + " - exception: " + throwable.message)
             addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(throwable))
+            addDeviceInfoEntry(tag, LogLevel.w)
         } ?: e(tag, message)
     }
 
@@ -149,6 +151,7 @@ object WooLog {
         Log.e("$TAG-$tag", tr.message, tr)
         addEntry(tag, LogLevel.e, tr.message ?: "")
         addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(tr))
+        addDeviceInfoEntry(tag, LogLevel.w)
     }
 
     /**
@@ -168,6 +171,7 @@ object WooLog {
         }
         Log.e("$TAG-$tag", logText)
         addEntry(tag, LogLevel.w, logText)
+        addDeviceInfoEntry(tag, LogLevel.w)
     }
 
     private fun addEntry(tag: T, level: LogLevel, text: String) {
@@ -178,6 +182,12 @@ object WooLog {
         // Call our listeners if any
         for (listener in listeners) {
             listener(tag, level, text)
+        }
+    }
+
+    fun addDeviceInfoEntry(tag: T, level: LogLevel) {
+        with(DeviceInfo) {
+            addEntry(tag, level, "OS: ${OS}\nDeviceName: ${name}\nLanguage: $locale")
         }
     }
 
@@ -212,7 +222,8 @@ object WooLog {
      * Fix-sized list of log entries
      */
     private class LogEntryList : ArrayList<LogEntry>() {
-        @Synchronized fun addEntry(entry: LogEntry): Boolean {
+        @Synchronized
+        fun addEntry(entry: LogEntry): Boolean {
             if (size >= MAX_ENTRIES) {
                 removeFirstEntry()
             }

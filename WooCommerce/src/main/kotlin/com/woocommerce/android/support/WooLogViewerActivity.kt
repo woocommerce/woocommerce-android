@@ -20,6 +20,7 @@ import com.woocommerce.android.R.layout
 import com.woocommerce.android.databinding.ActivityLogviewerBinding
 import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.DeviceInfo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -51,6 +52,12 @@ class WooLogViewerActivity : AppCompatActivity() {
             divider.setDrawable(drawable)
         }
 
+        with(DeviceInfo) {
+            binding.deviceModelTvValue.text = name
+            binding.osTvValue.text = OS
+            binding.languageTvValue.text = locale
+        }
+
         binding.recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         binding.recycler.addItemDecoration(divider)
         binding.recycler.adapter = LogAdapter(this)
@@ -70,6 +77,7 @@ class WooLogViewerActivity : AppCompatActivity() {
 
     private fun copyAppLogToClipboard() {
         try {
+            WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.setPrimaryClip(ClipData.newPlainText("AppLog", WooLog.toString()))
             ToastUtils.showToast(this, R.string.logviewer_copied_to_clipboard)
