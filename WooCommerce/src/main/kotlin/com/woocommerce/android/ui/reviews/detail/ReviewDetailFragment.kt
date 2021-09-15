@@ -3,15 +3,16 @@ package com.woocommerce.android.ui.reviews.detail
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ReviewDetailFragment : Fragment() {
+class ReviewDetailFragment : BaseFragment() {
+    private val viewModel: ReviewDetailViewModel by viewModels()
     private val navArgs: ReviewDetailFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -21,9 +22,7 @@ class ReviewDetailFragment : Fragment() {
     ) = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            MaterialTheme {
-                ReviewDetailScreen()
-            }
+            ReviewDetailScreen(viewModel)
         }
     }
 }

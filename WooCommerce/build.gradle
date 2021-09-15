@@ -237,6 +237,8 @@ dependencies {
     implementation "androidx.compose.animation:animation:$composeVersion"
     implementation "androidx.compose.ui:ui-tooling:$composeVersion"
     implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
+    implementation "com.google.android.material:compose-theme-adapter:$composeVersion"
+    implementation "androidx.compose.ui:ui-viewbinding:$composeVersion"
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
