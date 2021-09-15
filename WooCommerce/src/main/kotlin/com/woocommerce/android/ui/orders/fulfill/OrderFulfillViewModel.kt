@@ -21,7 +21,10 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentT
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -84,6 +87,11 @@ class OrderFulfillViewModel @Inject constructor(
             displayOrderProducts(it)
             displayShipmentTrackings()
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.onCleanup()
     }
 
     private fun displayOrderDetails(order: Order) {

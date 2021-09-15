@@ -59,6 +59,10 @@ class OrderDetailRepository @Inject constructor(
         dispatcher.register(this)
     }
 
+    fun onCleanup() {
+        dispatcher.unregister(this)
+    }
+
     suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
         val remoteOrderId = orderIdentifier.toIdSet().remoteOrderId
         val requestResult = continuationFetchOrder.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {

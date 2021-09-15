@@ -13,7 +13,10 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrack
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -156,6 +159,11 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
         } else {
             true
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        orderDetailRepository.onCleanup()
     }
 
     @Parcelize

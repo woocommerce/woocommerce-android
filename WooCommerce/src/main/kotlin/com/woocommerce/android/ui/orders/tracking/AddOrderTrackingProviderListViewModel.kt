@@ -110,6 +110,7 @@ class AddOrderTrackingProviderListViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         shipmentProvidersRepository.onCleanup()
+        orderDetailRepository.onCleanup()
     }
 
     @Parcelize
