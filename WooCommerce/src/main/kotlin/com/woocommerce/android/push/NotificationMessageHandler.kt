@@ -54,6 +54,7 @@ class NotificationMessageHandler @Inject constructor(
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Notification>()
     }
 
+    @Synchronized
     fun onNotificationDismissed(localPushId: Int) {
         when {
             NotificationChannelType.isOrderNotification(localPushId) -> {
@@ -235,9 +236,9 @@ class NotificationMessageHandler @Inject constructor(
         return PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
     }
 
-    private fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
-    private fun clearNotifications() = ACTIVE_NOTIFICATIONS_MAP.clear()
-    private fun removeNotificationByPushId(localPushId: Int) = ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
+    @Synchronized private fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
+    @Synchronized private fun clearNotifications() = ACTIVE_NOTIFICATIONS_MAP.clear()
+    @Synchronized private fun removeNotificationByPushId(localPushId: Int) = ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
 
     /**
      * Find the matching notification and send a track event for [PUSH_NOTIFICATION_TAPPED].
@@ -313,7 +314,8 @@ class NotificationMessageHandler @Inject constructor(
     @Synchronized
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType) {
         val keptNotifs = HashMap<Int, Notification>()
-        ACTIVE_NOTIFICATIONS_MAP.asSequence().forEach { row ->
+        // Using a copy of the map to avoid concurrency problems
+        ACTIVE_NOTIFICATIONS_MAP.toMap().asSequence().forEach { row ->
             if (row.value.channelType == type) {
                 notificationBuilder.cancelNotification(row.key)
             } else {
