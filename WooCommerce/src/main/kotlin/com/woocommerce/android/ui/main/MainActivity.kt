@@ -689,15 +689,13 @@ class MainActivity :
     private fun initFragment(savedInstanceState: Bundle?) {
         setupObservers()
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
+        // Reset this flag now that it's being processed
+        intent.removeExtra(FIELD_OPENED_FROM_PUSH)
 
         if (savedInstanceState != null) {
             restoreSavedInstanceState(savedInstanceState)
         } else if (openedFromPush) {
             // Opened from a push notification
-            //
-            // Reset this flag now that it's being processed
-            intent.removeExtra(FIELD_OPENED_FROM_PUSH)
-
             menu?.close()
 
             val localPushId = intent.getIntExtra(FIELD_PUSH_ID, 0)
