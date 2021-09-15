@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -395,14 +396,20 @@ class VariationDetailViewModel @Inject constructor(
             .launchIn(this)
 
         mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteVariationId)
-            .onEach {
-                val errorMsg = resources.getMediaUploadErrorMessage(it.size)
-                triggerEvent(
-                    ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId)) }
-                )
+            .onEach { errorList ->
+                if (errorList.isEmpty()) {
+                    triggerEvent(HideImageUploadErrorSnackbar)
+                } else {
+                    val errorMsg = resources.getMediaUploadErrorMessage(errorList.size)
+                    triggerEvent(
+                        ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId)) }
+                    )
+                }
             }
             .launchIn(this)
     }
+
+    object HideImageUploadErrorSnackbar : Event()
 
     @Parcelize
     data class VariationViewState(

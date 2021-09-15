@@ -10,6 +10,9 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
+import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -23,8 +26,7 @@ import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -35,6 +37,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -640,6 +644,49 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             // The VM state should have been updated with the _fetched_ product's numVariations
             assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
         }
+
+    @Test
+    fun `when there image upload errors, then show a snackbar`() = testBlocking {
+        val errorEvents = MutableSharedFlow<List<ProductImageUploadData>>()
+        doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
+        doReturn(product).whenever(productRepository).fetchProduct(any())
+        doReturn(product).whenever(productRepository).getProduct(any())
+        val errorMessage = "message"
+        doReturn(errorMessage).whenever(resources).getString(any())
+        doReturn(errorMessage).whenever(resources).getString(any(), anyVararg())
+
+        viewModel.start()
+        val errors = listOf(
+            ProductImageUploadData(
+                PRODUCT_REMOTE_ID,
+                "uri",
+                UploadStatus.Failed(
+                    MediaModel(),
+                    MediaErrorType.GENERIC_ERROR,
+                    "error"
+                )
+            )
+        )
+        errorEvents.emit(errors)
+
+        assertThat(viewModel.event.value).matches {
+            it is ShowActionSnackbar &&
+                it.message == errorMessage
+        }
+    }
+
+    @Test
+    fun `when image uploads gets cleared, then auto-dismiss the snackbar`() = testBlocking {
+        val errorEvents = MutableSharedFlow<List<ProductImageUploadData>>()
+        doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
+        doReturn(product).whenever(productRepository).fetchProduct(any())
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        viewModel.start()
+        errorEvents.emit(emptyList())
+
+        assertThat(viewModel.event.value).isEqualTo(HideImageUploadErrorSnackbar)
+    }
 
     private val productsDraft
         get() = viewModel.productDetailViewStateData.liveData.value?.productDraft

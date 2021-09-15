@@ -24,7 +24,10 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImagesBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductImagesViewModel.*
@@ -63,7 +66,7 @@ class ProductImagesFragment :
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
-    private var detailSnackbar: Snackbar? = null
+    private var imageUploadErrorsSnackbar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -84,6 +87,7 @@ class ProductImagesFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        imageUploadErrorsSnackbar?.dismiss()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -218,16 +222,16 @@ class ProductImagesFragment :
         message: String,
         actionListener: View.OnClickListener
     ) {
-        if (detailSnackbar == null) {
-            detailSnackbar = uiMessageResolver.getIndefiniteActionSnack(
+        if (imageUploadErrorsSnackbar == null) {
+            imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
                 actionText = getString(R.string.details),
                 actionListener = actionListener
             )
         } else {
-            detailSnackbar?.setText(message)
+            imageUploadErrorsSnackbar?.setText(message)
         }
-        detailSnackbar?.show()
+        imageUploadErrorsSnackbar?.show()
     }
 
     private fun updateImages(images: List<Image>, uris: List<Uri>?) {
