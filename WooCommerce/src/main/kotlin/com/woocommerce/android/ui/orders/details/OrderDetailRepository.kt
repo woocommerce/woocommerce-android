@@ -81,13 +81,20 @@ class OrderDetailRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? =
-        withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+    suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
             orderStore.fetchSingleOrder(
                 selectedSite.get(),
                 orderIdentifier.toIdSet().remoteOrderId
-            )?.toAppModel()
+            )
         }
+
+        return if (result?.isError == false) {
+            getOrder(orderIdentifier)
+        } else {
+            null
+        }
+    }
 
     suspend fun fetchOrderNotes(
         localOrderId: Int,
