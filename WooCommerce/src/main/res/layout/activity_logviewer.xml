@@ -21,7 +21,7 @@
         style="@style/Woo.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/plane_16">
+        android:layout_margin="@dimen/plane_08">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

@@ -52,15 +52,19 @@ class WooLogViewerActivity : AppCompatActivity() {
             divider.setDrawable(drawable)
         }
 
+        setupDeviceInfo(binding)
+
+        binding.recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        binding.recycler.addItemDecoration(divider)
+        binding.recycler.adapter = LogAdapter(this)
+    }
+
+    private fun setupDeviceInfo(binding: ActivityLogviewerBinding) {
         with(DeviceInfo) {
             binding.deviceModelTvValue.text = name
             binding.osTvValue.text = OS
             binding.languageTvValue.text = locale
         }
-
-        binding.recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        binding.recycler.addItemDecoration(divider)
-        binding.recycler.adapter = LogAdapter(this)
     }
 
     private fun shareAppLog() {

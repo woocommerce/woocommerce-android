@@ -122,7 +122,6 @@ object WooLog {
     fun e(tag: T, message: String) {
         Log.e("$TAG-$tag", message)
         addEntry(tag, LogLevel.e, message)
-        addDeviceInfoEntry(tag, LogLevel.w)
     }
 
     /**
@@ -137,7 +136,6 @@ object WooLog {
             Log.e("$TAG-$tag", message, throwable)
             addEntry(tag, LogLevel.e, message + " - exception: " + throwable.message)
             addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(throwable))
-            addDeviceInfoEntry(tag, LogLevel.w)
         } ?: e(tag, message)
     }
 
@@ -151,7 +149,6 @@ object WooLog {
         Log.e("$TAG-$tag", tr.message, tr)
         addEntry(tag, LogLevel.e, tr.message ?: "")
         addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(tr))
-        addDeviceInfoEntry(tag, LogLevel.w)
     }
 
     /**
@@ -171,7 +168,6 @@ object WooLog {
         }
         Log.e("$TAG-$tag", logText)
         addEntry(tag, LogLevel.w, logText)
-        addDeviceInfoEntry(tag, LogLevel.w)
     }
 
     private fun addEntry(tag: T, level: LogLevel, text: String) {
@@ -185,7 +181,7 @@ object WooLog {
         }
     }
 
-    fun addDeviceInfoEntry(tag: T, level: LogLevel) {
+    fun addDeviceInfoEntry(tag: T, level: LogLevel = LogLevel.i) {
         with(DeviceInfo) {
             addEntry(tag, level, "OS: ${OS}\nDeviceName: ${name}\nLanguage: $locale")
         }
