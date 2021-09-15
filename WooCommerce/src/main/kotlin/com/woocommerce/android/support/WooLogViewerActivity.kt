@@ -77,6 +77,7 @@ class WooLogViewerActivity : AppCompatActivity() {
     }
 
     private fun shareAppLog() {
+        WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_TEXT, WooLog.toString())
