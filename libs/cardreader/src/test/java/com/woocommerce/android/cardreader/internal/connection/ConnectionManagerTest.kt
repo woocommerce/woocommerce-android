@@ -16,6 +16,7 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
+import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -42,6 +43,7 @@ class ConnectionManagerTest {
     private val bluetoothReaderListener: BluetoothReaderListenerImpl = mock()
     private val discoverReadersAction: DiscoverReadersAction = mock()
     private val terminalListenerImpl: TerminalListenerImpl = mock()
+    private val logWrapper: LogWrapper = mock()
 
     private val supportedReaders =
         CardReaderTypesToDiscover.SpecificReaders(listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2))
@@ -55,6 +57,7 @@ class ConnectionManagerTest {
             bluetoothReaderListener,
             discoverReadersAction,
             terminalListenerImpl,
+            logWrapper,
         )
     }
 
