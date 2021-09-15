@@ -116,7 +116,9 @@ data class Order(
         val attributesDescription
             get() = attributesList.filter {
                 it.value.isNotEmpty() && it.key.isNotEmpty() && it.isNotInternalAttributeData
-            }.joinToString { it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } }
+            }.joinToString {
+                it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            }
 
         @Parcelize
         data class Attribute(
