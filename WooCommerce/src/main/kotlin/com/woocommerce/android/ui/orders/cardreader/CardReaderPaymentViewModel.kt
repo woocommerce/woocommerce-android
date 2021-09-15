@@ -41,6 +41,7 @@ import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.connection.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -117,7 +118,7 @@ class CardReaderPaymentViewModel
                     handleAdditionalInfo(message.message)
                 }
                 is BluetoothCardReaderMessages.CardReaderInputMessage -> { /* no-op*/ }
-            }
+            }.exhaustive
         }
     }
 
