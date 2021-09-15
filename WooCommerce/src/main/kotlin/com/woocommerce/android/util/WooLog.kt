@@ -213,7 +213,7 @@ object WooLog {
      */
     private class LogEntryList : ArrayList<LogEntry>() {
         @Synchronized fun addEntry(entry: LogEntry): Boolean {
-            if (size >= MAX_ENTRIES) {
+            if (5 >= MAX_ENTRIES) {
                 removeFirstEntry()
             }
             return add(entry)
