@@ -27,9 +27,9 @@ internal class BluetoothReaderListenerImpl(
     val updateAvailabilityEvents = _updateAvailabilityEvents.asStateFlow()
 
     var cancelUpdateAction: Cancelable? = null
-    private var bluetoothCardReaderMessagesObserver: BluetoothCardReaderMessagesObserver? = null
+    private var bluetoothCardReaderMessagesObserver: ((BluetoothCardReaderMessages) -> Unit)? = null
 
-    fun registerBluetoothCardReaderMessagesObserver(messagesObserver: BluetoothCardReaderMessagesObserver) {
+    fun registerBluetoothCardReaderMessagesObserver(messagesObserver: (BluetoothCardReaderMessages) -> Unit) {
         bluetoothCardReaderMessagesObserver = messagesObserver
     }
 
@@ -73,9 +73,8 @@ internal class BluetoothReaderListenerImpl(
 
     override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
         logWrapper.d(LOG_TAG, "onRequestReaderDisplayMessage: $message")
-        bluetoothCardReaderMessagesObserver?.let { bluetoothCardReaderMessagesObserver ->
-            bluetoothCardReaderMessagesObserver
-                .sendMessage(BluetoothCardReaderMessages.CardReaderDisplayMessage(additionalInfoMapper.map(message)))
+        bluetoothCardReaderMessagesObserver?.let { messageObserver ->
+            messageObserver(BluetoothCardReaderMessages.CardReaderDisplayMessage(additionalInfoMapper.map(message)))
         } ?: run {
             logWrapper.e(LOG_TAG, "onRequestReaderDisplayMessage: Bluetooth card reader message observer is null")
         }
@@ -83,9 +82,8 @@ internal class BluetoothReaderListenerImpl(
 
     override fun onRequestReaderInput(options: ReaderInputOptions) {
         logWrapper.d(LOG_TAG, "onRequestReaderInput: $options")
-        bluetoothCardReaderMessagesObserver?.let { bluetoothCardReaderMessagesObserver ->
-            bluetoothCardReaderMessagesObserver
-                .sendMessage(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
+        bluetoothCardReaderMessagesObserver?.let { messageObserver ->
+            messageObserver(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
         } ?: run {
             logWrapper.e(LOG_TAG, "onRequestReaderInput: Bluetooth card reader message observer is null")
         }

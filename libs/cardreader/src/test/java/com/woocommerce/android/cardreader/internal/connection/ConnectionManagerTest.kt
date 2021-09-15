@@ -5,7 +5,6 @@ import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
@@ -331,11 +330,6 @@ class ConnectionManagerTest {
 
     @Test
     fun `given flow terminated, when listen bluetooth messages called, then unregister listener`() = runBlockingTest {
-        whenever(bluetoothReaderListener.registerBluetoothCardReaderMessagesObserver(any())).thenAnswer {
-            (it.arguments[0] as BluetoothCardReaderMessagesObserver)
-                .sendMessage(BluetoothCardReaderMessages.CardReaderDisplayMessage(REMOVE_CARD))
-        }
-
         val job = launch {
             connectionManager.listenForBluetoothCardReaderMessages().collect { }
         }
