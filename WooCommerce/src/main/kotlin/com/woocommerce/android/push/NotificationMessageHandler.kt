@@ -238,7 +238,8 @@ class NotificationMessageHandler @Inject constructor(
 
     @Synchronized private fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
     @Synchronized private fun clearNotifications() = ACTIVE_NOTIFICATIONS_MAP.clear()
-    @Synchronized private fun removeNotificationByPushId(localPushId: Int) = ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
+    @Synchronized private fun removeNotificationByPushId(localPushId: Int) =
+        ACTIVE_NOTIFICATIONS_MAP.remove(localPushId)
 
     /**
      * Find the matching notification and send a track event for [PUSH_NOTIFICATION_TAPPED].
