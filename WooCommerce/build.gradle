@@ -239,6 +239,8 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
     implementation "com.google.android.material:compose-theme-adapter:$composeVersion"
     implementation "androidx.compose.ui:ui-viewbinding:$composeVersion"
+    implementation 'io.coil-kt:coil-compose:1.3.2'
+    implementation 'com.github.a914-gowtham:compose-ratingbar:1.1.1'
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"

@@ -36,13 +36,18 @@ class ReviewDetailViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private var remoteReviewId = 0L
 
-    private val _uiState = MutableStateFlow(ViewState())
+    private val _uiState = MutableStateFlow(
+        ViewState(
+            enableModeration = savedState.get<Boolean>("enableModeration")!!,
+            reviewApproved = savedState.get<Boolean>("enableModeration")!!
+        )
+    )
     val uiState: StateFlow<ViewState> = _uiState.asStateFlow()
 
     init {
         loadProductReview(
             savedState.get<Long>("remoteReviewId")!!,
-            savedState.get<Boolean>("launchedFromNotification")!!
+            savedState.get<Boolean>("launchedFromNotification")!!,
         )
     }
 
@@ -70,7 +75,10 @@ class ReviewDetailViewModel @Inject constructor(
         }
     }
 
-    private fun loadProductReview(remoteReviewId: Long, launchedFromNotification: Boolean) {
+    private fun loadProductReview(
+        remoteReviewId: Long,
+        launchedFromNotification: Boolean,
+    ) {
         // Mark the notification as read
         launch {
             markAsRead(remoteReviewId, launchedFromNotification)
@@ -80,13 +88,16 @@ class ReviewDetailViewModel @Inject constructor(
         this.remoteReviewId = remoteReviewId
 
         launch {
-            _uiState.value = _uiState.value.copy(isSkeletonShown = true)
+            _uiState.value = _uiState.value.copy(
+                isSkeletonShown = true
+            )
 
             val reviewInDb = repository.getCachedProductReview(remoteReviewId)
             if (reviewInDb != null) {
                 _uiState.value = _uiState.value.copy(
                     productReview = reviewInDb,
-                    isSkeletonShown = false
+                    isSkeletonShown = false,
+                    reviewApproved = isReviewApproved(ProductReviewStatus.fromString(reviewInDb.status))
                 )
 
                 if (shouldFetch) {
@@ -107,7 +118,8 @@ class ReviewDetailViewModel @Inject constructor(
                         repository.getCachedProductReview(remoteReviewId)?.let { review ->
                             _uiState.value = _uiState.value.copy(
                                 productReview = review,
-                                isSkeletonShown = false
+                                isSkeletonShown = false,
+                                reviewApproved = isReviewApproved(ProductReviewStatus.fromString(review.status))
                             )
                         }
                     }
@@ -141,10 +153,18 @@ class ReviewDetailViewModel @Inject constructor(
         }
     }
 
+    private fun isReviewApproved(status: ProductReviewStatus) =
+        when (savedState.get<String>("tempStatus")?.let { ProductReviewStatus.fromString(it) } ?: status) {
+            ProductReviewStatus.APPROVED -> true
+            else -> false
+        }
+
     @Parcelize
     data class ViewState(
         val productReview: ProductReview? = null,
-        val isSkeletonShown: Boolean? = null
+        val isSkeletonShown: Boolean = false,
+        val enableModeration: Boolean = true,
+        val reviewApproved: Boolean = false
     ) : Parcelable
 
     sealed class ReviewDetailEvent : Event() {
