@@ -16,12 +16,6 @@ enum class NotificationChannelType {
     NEW_ORDER,
     REVIEW,
     OTHER;
-
-    companion object {
-        fun isOrderNotification(localPushId: Int) = localPushId == GROUP_NOTIFICATION_ID_ORDER
-        fun isReviewNotification(localPushId: Int) = localPushId == GROUP_NOTIFICATION_ID_REVIEW
-        fun isOtherNotification(localPushId: Int) = localPushId == GROUP_NOTIFICATION_ID_OTHER
-    }
 }
 
 private const val GROUP_NOTIFICATION_ID_ORDER = 30001
