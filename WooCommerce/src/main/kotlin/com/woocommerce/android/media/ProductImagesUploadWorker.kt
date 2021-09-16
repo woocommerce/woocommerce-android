@@ -213,9 +213,10 @@ class ProductImagesUploadWorker @Inject constructor(
                             )
                         )
                     }
-                    is UploadProgress -> TODO()
+                    is UploadProgress -> notificationHandler.setProgress(it.progress)
                     is UploadSuccess -> {
                         WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> upload succeeded for ${work.localUri}")
+                        notificationHandler.setProgress(1f)
                         emitEvent(
                             MediaUploadEvent.UploadSucceeded(
                                 productId = work.productId,

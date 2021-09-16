@@ -10,10 +10,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.ProducerScope
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.onFailure
-import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
@@ -77,7 +74,7 @@ class MediaFilesRepository @Inject constructor(
                     dispatcher.dispatch(MediaActionBuilder.newCancelMediaUploadAction(payload))
                 }
             }
-        }
+        }.buffer(capacity = Channel.CONFLATED)
     }
 
     suspend fun uploadFile(localUri: String): String {
@@ -101,7 +98,7 @@ class MediaFilesRepository @Inject constructor(
     }
 
     @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onMediaUploaded(event: OnMediaUploaded) {
         when {
             event.isError -> {
@@ -141,6 +138,16 @@ class MediaFilesRepository @Inject constructor(
                 }
                 producerScope.close()
             }
+            else -> {
+                producerScope.trySend(
+                    UploadResult.UploadProgress(event.progress)
+                ).onFailure {
+                    WooLog.w(
+                        T.MEDIA,
+                        "MediaFilesRepository > error delivering result, downstream collector may be cancelled"
+                    )
+                }
+            }
         }
     }
 
@@ -151,7 +158,7 @@ class MediaFilesRepository @Inject constructor(
     ) : Exception()
 
     sealed class UploadResult {
-        data class UploadProgress(val progress: Int) : UploadResult()
+        data class UploadProgress(val progress: Float) : UploadResult()
         data class UploadSuccess(val media: MediaModel) : UploadResult()
         data class UploadFailure(val error: MediaUploadException) : UploadResult()
     }
