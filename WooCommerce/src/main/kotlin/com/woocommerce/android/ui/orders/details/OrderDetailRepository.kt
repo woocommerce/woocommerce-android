@@ -47,13 +47,13 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    private var continuationFetchOrder = ContinuationWrapper<Boolean>(ORDERS)
-    private var continuationFetchOrderNotes = ContinuationWrapper<Boolean>(ORDERS)
-    private var continuationFetchOrderShipmentTrackingList = ContinuationWrapper<RequestResult>(ORDERS)
-    private var continuationUpdateOrderStatus = ContinuationWrapper<Boolean>(ORDERS)
-    private var continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
-    private var continuationAddShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
-    private var continuationDeleteShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
+    private val continuationFetchOrder = ContinuationWrapper<Boolean>(ORDERS)
+    private val continuationFetchOrderNotes = ContinuationWrapper<Boolean>(ORDERS)
+    private val continuationFetchOrderShipmentTrackingList = ContinuationWrapper<RequestResult>(ORDERS)
+    private val continuationUpdateOrderStatus = ContinuationWrapper<Boolean>(ORDERS)
+    private val continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
+    private val continuationAddShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
+    private val continuationDeleteShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
 
     init {
         dispatcher.register(this)
@@ -301,20 +301,10 @@ class OrderDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
-            WCOrderAction.FETCH_SINGLE_ORDER -> {
-                if (event.isError) {
-                    continuationFetchOrder.continueWith(false)
-                } else {
-                    continuationFetchOrder.continueWith(true)
-                }
-            }
-            WCOrderAction.FETCH_ORDER_NOTES -> {
-                if (event.isError) {
-                    continuationFetchOrderNotes.continueWith(false)
-                } else {
-                    continuationFetchOrderNotes.continueWith(true)
-                }
-            }
+            WCOrderAction.FETCH_SINGLE_ORDER ->
+                continuationFetchOrder.continueWith(event.isError.not())
+            WCOrderAction.FETCH_ORDER_NOTES ->
+                continuationFetchOrderNotes.continueWith(event.isError.not())
             WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS -> {
                 if (event.isError) {
                     val error = if (event.error.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {
@@ -325,71 +315,16 @@ class OrderDetailRepository @Inject constructor(
                     continuationFetchOrderShipmentTrackingList.continueWith(RequestResult.SUCCESS)
                 }
             }
-            WCOrderAction.UPDATE_ORDER_STATUS -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_STATUS_CHANGE_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
-                        )
-                    )
-                    continuationUpdateOrderStatus.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_SUCCESS)
-                    continuationUpdateOrderStatus.continueWith(true)
-                }
-            }
-            WCOrderAction.POST_ORDER_NOTE -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_NOTE_ADD_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
-                        )
-                    )
-                    continuationAddOrderNote.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
-                    continuationAddOrderNote.continueWith(true)
-                }
-            }
-            WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_TRACKING_ADD_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
-                        )
-                    )
-                    continuationAddShipmentTracking.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_TRACKING_ADD_SUCCESS)
-                    continuationAddShipmentTracking.continueWith(true)
-                }
-            }
-            WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_TRACKING_DELETE_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
-                        )
-                    )
-                    continuationDeleteShipmentTracking.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
-                    continuationDeleteShipmentTracking.continueWith(true)
-                }
-            }
+            WCOrderAction.UPDATE_ORDER_STATUS ->
+                continuationUpdateOrderStatus.continueWith(event.isError.not())
+            WCOrderAction.POST_ORDER_NOTE ->
+                continuationAddOrderNote.continueWith(event.isError.not())
+            WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING ->
+                continuationAddShipmentTracking.continueWith(event.isError.not())
+            WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING ->
+                continuationDeleteShipmentTracking.continueWith(event.isError.not())
             else -> {
+                // no-op
             }
         }
     }
