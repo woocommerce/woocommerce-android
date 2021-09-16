@@ -39,8 +39,6 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
 
     fun cancelAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
-    private fun getGroup(channelId: String, groupId: Int) = "$channelId $groupId"
-
     private fun getNotificationBuilder(
         channelId: String,
         notification: Notification
@@ -51,7 +49,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             .setOnlyAlertOnce(true)
             .setAutoCancel(true)
             .setCategory(NotificationCompat.CATEGORY_SOCIAL)
-            .setGroup(getGroup(channelId, notification.channelType.getGroupId()))
+            .setGroup(notification.getGroup(channelId))
             .setContentTitle(notification.noteTitle)
             .setContentText(notification.noteMessage)
             .setTicker(notification.noteMessage)
@@ -101,7 +99,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             if (!isGroupNotification) {
                 setGroupSummary(true)
                 setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
-                showNotification(channelType.getGroupId(), notification, this)
+                showNotification(notification.getGroupPushId(), notification, this)
             }
         }
     }
@@ -123,7 +121,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
             .setSmallIcon(R.drawable.ic_woo_w_notification)
             .setColor(ContextCompat.getColor(context, R.color.color_primary))
-            .setGroup(getGroup(channelId, notification.channelType.getGroupId()))
+            .setGroup(notification.getGroup(channelId))
             .setGroupSummary(true)
             .setAutoCancel(true)
             .setTicker(notification.noteMessage)
@@ -134,7 +132,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             .setVibrate(null)
             .apply {
                 showNotification(
-                    notification.channelType.getGroupId(),
+                    notification.getGroupPushId(),
                     notification,
                     this
                 )
