@@ -57,8 +57,8 @@ import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 import kotlin.math.abs
 
-// TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("LargeClass")
-@Suppress("LargeClass")
+// TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions")
 @AndroidEntryPoint
 class MainActivity :
     AppUpgradeActivity(),
