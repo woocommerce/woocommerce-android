@@ -51,6 +51,8 @@ import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.UrlUtils
 import java.util.Date
 
+private const val ICON_SIZE = 32
+
 @Composable
 fun ReviewDetailScreen(viewModel: ReviewDetailViewModel, productImageMap: ProductImageMap) {
     val uiState by viewModel.uiState.collectAsState()
@@ -59,7 +61,7 @@ fun ReviewDetailScreen(viewModel: ReviewDetailViewModel, productImageMap: Produc
     val productImage = if (product != null) {
         productImageMap.get(product.remoteProductId)?.run {
             val context = LocalContext.current
-            val size = remember { DisplayUtils.dpToPx(context, 32) }
+            val size = remember { DisplayUtils.dpToPx(context, ICON_SIZE) }
             PhotonUtils.getPhotonImageUrl(this, size, size)
         }
     } else {
@@ -117,6 +119,7 @@ private fun ReviewDetailSkeleton() {
 }
 
 @Composable
+@Suppress("LongParameterList")
 private fun ReviewDetailCard(
     productReview: ProductReview,
     enableModeration: Boolean,
@@ -168,7 +171,7 @@ private fun ReviewHeader(product: ProductReviewProduct, productImage: String?) {
                 placeholder(R.drawable.ic_product)
             },
             contentDescription = stringResource(R.string.product_image_content_description),
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier.size(ICON_SIZE.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
@@ -191,8 +194,7 @@ private fun ReviewContent(review: ProductReview) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-    )
-    {
+    ) {
         ReviewUserInfo(review)
         Spacer(modifier = Modifier.height(16.dp))
         RatingBar(
