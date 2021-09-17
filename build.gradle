@@ -90,7 +90,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'develop-36ce1347bd8dbb1b19f560eff7c6621ea07919a3'
+    fluxCVersion = 'develop-6087b5e9ed7e67b2b14e8e11a7680faed7d249ee'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.3.0'
@@ -114,6 +114,7 @@ ext {
     jUnitExtVersion = '1.1.2'
     robolectricVersion = '4.6.1'
     hiltJetpackVersion = '1.0.0'
+    wordPressUtilsVersion = "develop-eebc5d8e91a1d90190919f900f924b39c861a528"
 }
 
 // Onboarding and dev env setup tasks
