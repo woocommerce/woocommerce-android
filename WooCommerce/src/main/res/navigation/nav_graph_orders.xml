@@ -166,6 +166,14 @@
             android:name="refundId"
             android:defaultValue="0L"
             app:argType="long" />
+
+        <action
+            android:id="@+id/action_refundDetailFragment_to_orderedAddonFragment"
+            app:destination="@id/orderedAddonFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/orderDetailFragment"

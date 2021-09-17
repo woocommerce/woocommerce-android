@@ -194,13 +194,6 @@ open class Screen {
         clickOn(dialogButton)
     }
 
-    fun isDisplayingDialog(): Boolean {
-        val dialog = onView(withId(R.id.button1))
-            .inRoot(isDialog())
-
-        return isElementDisplayed(dialog)
-    }
-
     fun dismissSoftwareKeyboard() {
         closeSoftKeyboard()
     }

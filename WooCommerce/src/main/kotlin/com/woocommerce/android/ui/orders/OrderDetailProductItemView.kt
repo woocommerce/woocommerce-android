@@ -7,8 +7,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.databinding.OrderDetailProductItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
@@ -53,14 +51,11 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             binding.productInfoSKU.text = productSku
         }
 
-        onViewAddonsClick?.let {
+        onViewAddonsClick?.let { onClick ->
             binding.productInfoAddons.visibility =
                 if (item.containsAddons && AppPrefs.isProductAddonsEnabled) VISIBLE
                 else GONE
-            binding.productInfoAddons.setOnClickListener {
-                AnalyticsTracker.track(PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
-                it(item)
-            }
+            binding.productInfoAddons.setOnClickListener { onClick(item) }
         } ?: binding.productInfoAddons.let { it.visibility = GONE }
 
         productImage?.let {
