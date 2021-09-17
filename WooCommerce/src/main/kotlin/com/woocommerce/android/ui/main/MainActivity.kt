@@ -43,7 +43,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.*
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
-import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.ui.reviews.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration

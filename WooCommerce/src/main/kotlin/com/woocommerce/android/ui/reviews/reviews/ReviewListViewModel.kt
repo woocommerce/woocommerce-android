@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult.ERROR
@@ -15,7 +16,6 @@ import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType.REVIEW
-import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.OnRequestModerateReviewEvent
@@ -59,6 +59,7 @@ class ReviewListViewModel @Inject constructor(
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
+
     private val _moderateProductReview = SingleLiveEvent<ProductReviewModerationRequest?>()
     val moderateProductReview: LiveData<ProductReviewModerationRequest?> = _moderateProductReview
 
@@ -71,6 +72,7 @@ class ReviewListViewModel @Inject constructor(
     init {
         EventBus.getDefault().register(this)
         dispatcher.register(this)
+        start()
     }
 
     override fun onCleared() {
@@ -129,7 +131,8 @@ class ReviewListViewModel @Inject constructor(
 
     fun checkForUnreadReviews() {
         launch {
-            _viewState.value = _viewState.value.copy(hasUnreadReviews = reviewRepository.getHasUnreadCachedProductReviews())
+            _viewState.value =
+                _viewState.value.copy(hasUnreadReviews = reviewRepository.getHasUnreadCachedProductReviews())
         }
     }
 
