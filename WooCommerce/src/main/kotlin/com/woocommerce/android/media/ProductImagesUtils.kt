@@ -47,15 +47,11 @@ object ProductImagesUtils {
         // optimize the image if the setting is enabled
         @Suppress("TooGenericExceptionCaught")
         if (AppPrefs.getImageOptimizationEnabled()) {
-            try {
-                getOptimizedImagePath(context, path)?.let {
-                    // Delete original file if it's in the cache directly
-                    if (path.contains(context.cacheDir.absolutePath)) File(path).delete()
-                    // Use the optimized image
-                    path = it
-                } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image")
-            } catch (e: Exception) {
-                WooLog.e(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image", e)
+            getOptimizedImagePath(context, path)?.let {
+                // Delete original file if it's in the cache directly
+                if (path.contains(context.cacheDir.absolutePath)) File(path).delete()
+                // Use the optimized image
+                path = it
             }
         }
 
@@ -181,12 +177,18 @@ object ProductImagesUtils {
         return null
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun getOptimizedImagePath(context: Context, path: String): String? {
-        getOptimizedImageUri(context, path)?.let { optUri ->
-            MediaUtils.getRealPathFromURI(context, optUri)?.let {
-                return it
-            }
+        try {
+            getOptimizedImageUri(context, path)?.let { optUri ->
+                MediaUtils.getRealPathFromURI(context, optUri)?.let {
+                    return it
+                }
+            } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image")
+        } catch (e: Exception) {
+            WooLog.e(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image", e)
         }
+
         return null
     }
 }
