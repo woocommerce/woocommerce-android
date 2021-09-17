@@ -308,6 +308,11 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        orderDetailRepository.onCleanup()
+    }
+
     private fun Order.getShippableItems(): List<Order.Item> {
         val refunds = orderDetailRepository.getOrderRefunds(identifier.toIdSet().remoteOrderId)
         return refunds.getNonRefundedProducts(items)
