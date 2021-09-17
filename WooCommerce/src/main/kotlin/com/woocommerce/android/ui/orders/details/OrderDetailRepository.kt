@@ -37,6 +37,10 @@ import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
+/*
+ViewModelScope fixes a memory leak related to EventBus subscription. See PR-4780 for details.
+Can be safely removed as soon as we remove EventBus from here.
+ */
 @ViewModelScoped
 class OrderDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
