@@ -1321,6 +1321,8 @@
     <string name="support_contact_payments_detail">Reach our happiness engineers who can help answer payments related questions</string>
     <string name="support_application_log">Application log</string>
     <string name="support_application_log_detail">Advanced tool to review the app status</string>
+    <string name="support_system_status_report">System status report</string>
+    <string name="support_system_status_report_detail">Various system information about your site</string>
     <string name="help">Help</string>
     <string name="support_contact_email">Contact email</string>
     <string name="support_contact_email_not_set">Not set</string>
