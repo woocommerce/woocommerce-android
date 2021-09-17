@@ -54,7 +54,6 @@ class OrderDetailRepository @Inject constructor(
 ) {
     private val continuationFetchOrder = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationFetchOrderNotes = ContinuationWrapper<Boolean>(ORDERS)
-    private val continuationFetchOrderShipmentTrackingList = ContinuationWrapper<RequestResult>(ORDERS)
     private val continuationUpdateOrderStatus = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationAddShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
