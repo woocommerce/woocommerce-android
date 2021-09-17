@@ -1,5 +1,6 @@
 package com.woocommerce.android.media
 
+import com.woocommerce.android.media.MediaFilesRepository.UploadResult
 import com.woocommerce.android.media.ProductImagesUploadWorker.Companion.DURATION_BEFORE_STOPPING_SERVICE
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.FetchSucceeded
@@ -13,6 +14,7 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
@@ -43,7 +45,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     private lateinit var worker: ProductImagesUploadWorker
     private val mediaFilesRepository: MediaFilesRepository = mock {
         onBlocking { fetchMedia(TEST_URI) } doReturn FETCHED_MEDIA
-        onBlocking { uploadMedia(any(), any()) } doReturn UPLOADED_MEDIA
+        onBlocking { uploadMedia(any(), any()) } doReturn flowOf(UploadResult.UploadSuccess(UPLOADED_MEDIA))
     }
     private val productDetailRepository: ProductDetailRepository = mock()
 
