@@ -84,7 +84,6 @@ class CardReaderDetailViewModel @Inject constructor(
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
         viewState.value = if (updateAvailable) {
-            triggerEvent(NavigationTarget.CardReaderUpdateScreen)
             ConnectedState(
                 enforceReaderUpdate = UiStringRes(
                     R.string.card_reader_detail_connected_enforced_update_software

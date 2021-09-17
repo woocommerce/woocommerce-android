@@ -208,20 +208,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when view model init with connected state and update available should send card reader update screen event`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.Available)
-
-            // WHEN
-            val viewModel = createViewModel()
-
-            assertThat(viewModel.event.value).isEqualTo(
-                CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
-            )
-        }
-
-    @Test
     fun `when on update result with success should send snackbar event with success text`() {
         // GIVEN
         val viewModel = createViewModel()
