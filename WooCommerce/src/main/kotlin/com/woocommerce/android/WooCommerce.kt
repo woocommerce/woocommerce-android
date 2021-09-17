@@ -1,6 +1,6 @@
 package com.woocommerce.android
 
-import androidx.multidex.MultiDexApplication
+import android.app.Application
 import com.android.volley.VolleyLog
 import com.yarolegovich.wellsql.WellSql
 import dagger.Lazy
@@ -9,7 +9,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import javax.inject.Inject
 
-open class WooCommerce : MultiDexApplication(), HasAndroidInjector {
+open class WooCommerce : Application(), HasAndroidInjector {
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     // inject it lazily to avoid creating it before initializing WellSql
     @Inject lateinit var appInitializer: Lazy<AppInitializer>

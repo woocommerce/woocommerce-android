@@ -97,7 +97,6 @@ ext {
     mockitoKotlinVersion = '3.2.0'
     mockitoVersion = '3.8.0'
     constraintLayoutVersion = '1.2.0'
-    multidexVersion = '1.0.3'
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.2.0'
     googlePlayCoreVersion = '1.10.0'
