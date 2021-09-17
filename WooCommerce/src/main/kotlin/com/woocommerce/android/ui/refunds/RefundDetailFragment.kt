@@ -3,18 +3,20 @@ package com.woocommerce.android.ui.refunds
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentRefundDetailBinding
 import com.woocommerce.android.databinding.RefundByItemsProductsBinding
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.refunds.RefundDetailViewModel.ViewOrderedAddons
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -84,7 +86,8 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
                     isProductDetailList = true,
                     onItemClicked = { uniqueId ->
                         (activity as? MainNavigationRouter)?.showProductDetail(uniqueId)
-                    }
+                    },
+                    onViewAddonsClick = viewModel::onViewOrderedAddonButtonTapped
                 )
             }
             new.areItemsVisible?.takeIfNotEqualTo(old?.areItemsVisible) { isVisible ->
@@ -114,12 +117,22 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
             }
         }
 
-        viewModel.refundItems.observe(
-            viewLifecycleOwner,
-            Observer { list ->
-                val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
-                adapter.update(list)
+        viewModel.refundItems.observe(viewLifecycleOwner) { list ->
+            val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
+            adapter.update(list)
+        }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ViewOrderedAddons ->
+                    RefundDetailFragmentDirections
+                        .actionRefundDetailFragmentToOrderedAddonFragment(
+                            orderId = event.remoteOrderID,
+                            orderItemId = event.orderItemID,
+                            addonsProductId = event.addonsProductID
+                        ).let { findNavController().navigateSafely(it) }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 }

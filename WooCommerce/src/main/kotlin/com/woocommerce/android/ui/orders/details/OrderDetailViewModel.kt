@@ -10,8 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
@@ -460,7 +459,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
-        // track add-ons event
+        AnalyticsTracker.track(PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
         triggerEvent(
             ViewOrderedAddons(
                 orderIdSet.remoteOrderId,
@@ -514,17 +513,9 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun checkAddonAvailability(products: List<Order.Item>) {
         launch(coroutineDispatchers.computation) {
-            products.forEach { product ->
-                product.containsAddons = containsAddons(product)
-            }
+            products.forEach { it.containsAddons = addonsRepository.containsAddonsFrom(it) }
         }
     }
-
-    private fun containsAddons(product: Order.Item) =
-        addonsRepository
-            .getAddonsFrom(product.productId)
-            ?.any { addon -> product.attributesList.any { it.addonName == addon.name } }
-            ?: false
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
     private fun fetchOrderProductsAsync() = async {

@@ -4,20 +4,26 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.Transformations
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.ProductRefundListItem
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -29,16 +35,20 @@ import javax.inject.Inject
 class RefundDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     orderStore: WCOrderStore,
+    private val coroutineDispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
+    private val addonsRepository: AddonRepository,
     private val refundStore: WCRefundStore
 ) : ScopedViewModel(savedState) {
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     private val _refundItems = MutableLiveData<List<ProductRefundListItem>>()
-    val refundItems: LiveData<List<ProductRefundListItem>> = _refundItems
+    val refundItems: LiveData<List<ProductRefundListItem>> = Transformations.map(_refundItems) {
+        it.apply { checkAddonAvailability(this) }
+    }
 
     private lateinit var formatCurrency: (BigDecimal) -> String
 
@@ -58,6 +68,17 @@ class RefundDetailViewModel @Inject constructor(
                 displayRefundedProducts(order, refunds)
             }
         }
+    }
+
+    fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.PRODUCT_ADDONS_REFUND_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
+        triggerEvent(
+            ViewOrderedAddons(
+                navArgs.orderId,
+                orderItem.itemId,
+                orderItem.productId
+            )
+        )
     }
 
     private fun displayRefundedProducts(order: Order, refunds: List<Refund>) {
@@ -127,6 +148,12 @@ class RefundDetailViewModel @Inject constructor(
         }
     }
 
+    private fun checkAddonAvailability(refunds: List<ProductRefundListItem>) {
+        launch(coroutineDispatchers.computation) {
+            refunds.forEach { it.orderItem.containsAddons = addonsRepository.containsAddonsFrom(it.orderItem) }
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val screenTitle: String? = null,
@@ -139,4 +166,10 @@ class RefundDetailViewModel @Inject constructor(
         val areItemsVisible: Boolean? = null,
         val areDetailsVisible: Boolean? = null
     ) : Parcelable
+
+    data class ViewOrderedAddons(
+        val remoteOrderID: Long,
+        val orderItemID: Long,
+        val addonsProductID: Long
+    ) : Event()
 }
