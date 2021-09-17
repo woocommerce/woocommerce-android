@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-01 09:54:04+0000
+Translation-Revision-Date: 2021-09-16 22:17:35+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="settings_whats_new">WooCommerce의 새로운 기능</string>
+    <string name="settings_enable_product_addons_teaser_title">애드온 보기</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">죄송합니다. 지금은 이 기능 설정을 변경할 수 없습니다.</string>
+    <string name="product_category">카테고리</string>
+    <string name="notification_review_title">새 리뷰 1개가 있습니다! 🌟</string>
+    <string name="notification_order_title">새 주문 1개가 있습니다! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d개 아이템</string>
     <string name="upsell_product_count_many">상향 판매 상품 %d개</string>
     <string name="upsell_product_count_one">상향 판매 상품 %d개</string>
@@ -106,6 +112,7 @@ Language: ko_KR
     <string name="product_attributes_created_generate_action_text">변형 생성</string>
     <string name="product_attributes_created_description">이제 속성을 추가했으니 첫 번째 변형을 만드실 수 있습니다!</string>
     <string name="product_attributes_created_title">속성 생성됨</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">진행 중인 소프트웨어 업데이트는 취소하지 않는 것이 좋습니다.</string>
     <string name="card_reader_payment_failed_unexpected_error_state">죄송합니다. 이 결제는 처리할 수 없습니다.</string>
     <string name="card_reader_payment_failed_server_error_state">서버에 연결되지 않음</string>
@@ -428,11 +435,11 @@ Language: ko_KR
     <string name="shipping_label_create_packaging_details">포장 상세 정보</string>
     <string name="shipping_label_create_title">배송 레이블 만들기</string>
     <string name="shipping_label_more_information_link">추가 정보</string>
-    <string name="shipping_label_more_information_message">집에서 휴대폰으로 배송 레이블을 할인된 요금으로 인쇄하여 우체국에 가는 시간을 줄이세요!</string>
+    <string name="shipping_label_more_information_message">집에서 모바일 장치로 배송 레이블을 할인된 요금으로 인쇄하여 우체국에 가는 시간을 줄이세요!</string>
     <string name="shipping_label_more_information_heading">WooCommerce 배송으로 처리하여 시간과 비용 절약</string>
     <string name="shipping_label_more_information_title">WooCommerce 배송</string>
     <string name="order_mark_complete">주문을 완료로 표시</string>
-    <string name="orderdetail_shipping_label_notice">휴대폰으로 레이블 만들기에 대해 자세히 알아보기</string>
+    <string name="orderdetail_shipping_label_notice">모바일 장치로 레이블 만들기에 대해 자세히 알아보기</string>
     <string name="orderdetail_shipping_label_create_shipping_label">배송 레이블 만들기</string>
     <string name="orderdetail_shipping_label_m3_wip_message">이제 무료 WooCommerce 배송 플러그인으로 장치에서 직접 모든 실물 주문에 대한 배송 레이블을 만들 수 있습니다. \"배송 레이블 만들기\"를 눌러 베타 기능을 사용해 보세요!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">장치에서 배송 레이블을 만드세요!</string>
@@ -493,6 +500,7 @@ Language: ko_KR
     <string name="my_store_stats_availability_title">스토어의 분석을\n 표시할 수 없음</string>
     <string name="login_get_link_by_email">이메일로 로그인 링크 받기</string>
     <string name="email_not_registered_wpcom">이 이메일 주소와 연결된 워드프레스닷컴 계정을 찾을 수 없습니다.</string>
+    <string name="settings_enable_product_addons_teaser_message">출시 준비가 끝나면 주문 애드온 테스트해 보기</string>
     <string name="settings_enable_product_adding_teaser_title">제품 만들기</string>
     <string name="settings_preferences">기본 설정</string>
     <string name="product_trash_error">제품을 삭제하는 중 오류 발생</string>
@@ -515,7 +523,7 @@ Language: ko_KR
     <string name="shipping_label_paper_size_letter">편지지(8.5 x 11in)</string>
     <string name="shipping_label_paper_size_legal">법률 문서(8.5 x 14in)</string>
     <string name="shipping_label_preview_error">배송 레이블을 미리 보는 중 오류 발생</string>
-    <string name="shipping_label_print_info">휴대폰으로 인쇄하는 방법을 모르시나요?</string>
+    <string name="shipping_label_print_info">모바일 장치에서 인쇄하는 방법을 모르시나요?</string>
     <string name="shipping_label_paper_size_options_info">레이블 레이아웃 및 용지 크기 옵션 보기</string>
     <string name="shipping_label_print_button">배송 레이블 인쇄</string>
     <string name="shipping_label_paper_size_options_title">용지 크기 선택</string>
