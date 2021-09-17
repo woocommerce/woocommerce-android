@@ -19,6 +19,7 @@ import com.woocommerce.android.util.isSuccessful
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -98,13 +99,16 @@ class OrderDetailRepository @Inject constructor(
         localOrderId: Int,
         remoteOrderId: Long
     ): RequestResult {
-        val result = continuationFetchOrderShipmentTrackingList.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = FetchOrderShipmentTrackingsPayload(localOrderId, remoteOrderId, selectedSite.get())
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            orderStore.fetchOrderShipmentTrackings(localOrderId, remoteOrderId, selectedSite.get())
         }
-        return when (result) {
-            is Cancellation -> RequestResult.ERROR
-            is Success -> result.value
+
+        return if (result?.isError == false) {
+            RequestResult.SUCCESS
+        } else {
+            if (result?.error?.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {
+                RequestResult.API_ERROR
+            } else RequestResult.ERROR
         }
     }
 
@@ -309,16 +313,6 @@ class OrderDetailRepository @Inject constructor(
                 continuationFetchOrder.continueWith(event.isError.not())
             WCOrderAction.FETCH_ORDER_NOTES ->
                 continuationFetchOrderNotes.continueWith(event.isError.not())
-            WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS -> {
-                if (event.isError) {
-                    val error = if (event.error.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {
-                        RequestResult.API_ERROR
-                    } else RequestResult.ERROR
-                    continuationFetchOrderShipmentTrackingList.continueWith(error)
-                } else {
-                    continuationFetchOrderShipmentTrackingList.continueWith(RequestResult.SUCCESS)
-                }
-            }
             WCOrderAction.UPDATE_ORDER_STATUS ->
                 continuationUpdateOrderStatus.continueWith(event.isError.not())
             WCOrderAction.POST_ORDER_NOTE ->
