@@ -18,6 +18,7 @@ import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
+import java.io.File
 import javax.inject.Inject
 
 class MediaFilesRepository @Inject constructor(
@@ -60,21 +61,25 @@ class MediaFilesRepository @Inject constructor(
             dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
         }
 
-        return when (result) {
-            is Cancellation -> throw result.exception
-            is Success -> result.value
+        if (result is Cancellation) throw result.exception
+
+        // Remove local file if it's in cache directory
+        if (localMediaModel.filePath.contains(context.cacheDir.absolutePath)) {
+            File(localMediaModel.filePath).delete()
         }
+
+        return (result as Success<MediaModel>).value
     }
 
     suspend fun uploadFile(localUri: String): String {
-        val mediaModel = fetchMedia(localUri)
+        val fetchedMedia = fetchMedia(localUri)
 
-        if (mediaModel == null) {
+        if (fetchedMedia == null) {
             WooLog.w(T.MEDIA, "MediaFilesRepository > null media")
             throw NullPointerException("null media")
         }
 
-        return uploadMedia(mediaModel).url
+        return uploadMedia(fetchedMedia).url
     }
 
     @SuppressWarnings("unused")
