@@ -12,6 +12,7 @@ import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
@@ -100,6 +101,7 @@ class MediaFilesRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onMediaUploaded(event: OnMediaUploaded) {
+        if (!::producerScope.isInitialized) return
         when {
             event.isError -> {
                 WooLog.w(
