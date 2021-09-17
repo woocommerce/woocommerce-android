@@ -303,8 +303,6 @@ class OrderDetailRepository @Inject constructor(
         when (event.causeOfChange) {
             WCOrderAction.FETCH_SINGLE_ORDER ->
                 continuationFetchOrder.continueWith(event.isError.not())
-            WCOrderAction.FETCH_ORDER_NOTES ->
-                continuationFetchOrderNotes.continueWith(event.isError.not())
             WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS -> {
                 if (event.isError) {
                     val error = if (event.error.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {
