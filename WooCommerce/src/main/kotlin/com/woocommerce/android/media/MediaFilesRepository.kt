@@ -74,16 +74,7 @@ class MediaFilesRepository @Inject constructor(
             throw NullPointerException("null media")
         }
 
-        val result = uploadContinuation.callAndWait {
-            WooLog.d(T.MEDIA, "MediaFilesRepository > Dispatching request to upload $localUri")
-            val payload = UploadMediaPayload(selectedSite.get(), mediaModel, true)
-            dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
-        }
-
-        return when (result) {
-            is Cancellation -> throw result.exception
-            is Success -> result.value.url
-        }
+        return uploadMedia(mediaModel).url
     }
 
     @SuppressWarnings("unused")
