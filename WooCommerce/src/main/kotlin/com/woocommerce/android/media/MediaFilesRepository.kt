@@ -3,17 +3,12 @@ package com.woocommerce.android.media
 import android.content.Context
 import android.net.Uri
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -31,7 +26,6 @@ class MediaFilesRepository @Inject constructor(
     private val mediaStore: MediaStore,
     private val dispatchers: CoroutineDispatchers
 ) {
-    private var uploadContinuation = ContinuationWrapper<MediaModel>(T.MEDIA)
     private lateinit var producerScope: ProducerScope<UploadResult>
 
     init {
@@ -78,23 +72,25 @@ class MediaFilesRepository @Inject constructor(
         }.buffer(capacity = Channel.CONFLATED)
     }
 
-    suspend fun uploadFile(localUri: String): String {
-        val mediaModel = fetchMedia(localUri)
+    fun uploadFile(localUri: String): Flow<UploadResult> {
+        return flow {
+            val mediaModel = fetchMedia(localUri)
 
-        if (mediaModel == null) {
-            WooLog.w(T.MEDIA, "MediaFilesRepository > null media")
-            throw NullPointerException("null media")
-        }
+            if (mediaModel == null) {
+                WooLog.w(T.MEDIA, "MediaFilesRepository > null media")
+                emit(
+                    UploadResult.UploadFailure(
+                        error = MediaUploadException(
+                            media = MediaModel(),
+                            errorMessage = "Media couldn't be found",
+                            errorType = MediaStore.MediaErrorType.NULL_MEDIA_ARG
+                        )
+                    )
+                )
+                return@flow
+            }
 
-        val result = uploadContinuation.callAndWait {
-            WooLog.d(T.MEDIA, "MediaFilesRepository > Dispatching request to upload $localUri")
-            val payload = UploadMediaPayload(selectedSite.get(), mediaModel, true)
-            dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
-        }
-
-        return when (result) {
-            is Cancellation -> throw result.exception
-            is Success -> result.value.url
+            emitAll(uploadMedia(mediaModel))
         }
     }
 
@@ -113,7 +109,6 @@ class MediaFilesRepository @Inject constructor(
                     event.error.type,
                     event.error.message
                 )
-                uploadContinuation.continueWithException(exception)
                 producerScope.trySendBlocking(UploadResult.UploadFailure(exception))
                     .onFailure {
                         WooLog.w(
@@ -125,11 +120,9 @@ class MediaFilesRepository @Inject constructor(
             }
             event.canceled -> {
                 WooLog.d(T.MEDIA, "MediaFilesRepository > upload media cancelled")
-                uploadContinuation.cancel()
             }
             event.completed -> {
                 WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${event.media?.id}")
-                uploadContinuation.continueWith(event.media)
                 producerScope.trySendBlocking(
                     UploadResult.UploadSuccess(event.media)
                 ).onFailure {
