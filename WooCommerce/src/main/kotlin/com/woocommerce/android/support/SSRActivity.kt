@@ -15,9 +15,11 @@ import com.woocommerce.android.databinding.ActivitySsrBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 import java.lang.IllegalStateException
 
+@AndroidEntryPoint
 class SSRActivity : AppCompatActivity() {
     companion object {
         private const val ID_SHARE = 1

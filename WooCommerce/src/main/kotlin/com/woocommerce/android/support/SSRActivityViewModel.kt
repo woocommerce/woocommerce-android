@@ -21,9 +21,8 @@ class SSRActivityViewModel @Inject constructor(
 
     init {
         val exampleStream = resourceProvider.openRawResource(R.raw.system_status)
-        val exampleAsString = exampleStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
         viewState = viewState.copy(
-            exampleString = exampleAsString
+            exampleString = exampleStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
         )
     }
 
