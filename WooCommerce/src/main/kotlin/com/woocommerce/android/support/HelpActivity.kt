@@ -57,6 +57,7 @@ class HelpActivity : AppCompatActivity() {
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener { showZendeskFaq() }
         binding.appLogContainer.setOnClickListener { showApplicationLog() }
+        binding.ssrContainer.setOnClickListener { showSSR() }
 
         with(binding.contactPaymentsContainer) {
             visibility = if (FeatureFlag.CARD_READER.isEnabled()) View.VISIBLE else View.GONE
@@ -169,6 +170,10 @@ class HelpActivity : AppCompatActivity() {
     private fun showApplicationLog() {
         AnalyticsTracker.track(Stat.SUPPORT_APPLICATION_LOG_VIEWED)
         startActivity(Intent(this, WooLogViewerActivity::class.java))
+    }
+
+    private fun showSSR() {
+        startActivity(Intent(this, SSRActivity::class.java))
     }
 
     enum class Origin(private val stringValue: String) {
