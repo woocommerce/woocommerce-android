@@ -369,6 +369,10 @@
     <string name="ordered_add_ons_details_info_notice">If renaming an add-on in your web dashboard, please note that previous orders will no longer show that add-on within the app.</string>
     <string name="ordered_add_ons_wip_title">View add-ons from your device!</string>
     <string name="ordered_add_ons_wip_message">We are working on making it easier for you to see product add-ons from your device! For now, you’ll be able to see the add-ons for your orders. You can create and edit these add-ons in your web dashboard.</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Something went wrong</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Sorry, we couldn\'t load the Order Add-ons right now</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+
     <!--
         Shipping label Refunds
     -->
@@ -774,7 +778,7 @@
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
-    <string name="card_reader_payment_save_for_later">Save for later</string>
+    <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
 
     <string name="card_reader_payment_description">Online payment for order %s for %s</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
@@ -1153,6 +1157,7 @@
     <string name="cross_sell_product_count_many">%d cross-sell products</string>
     <string name="upsell_product_count_one">%d upsell product</string>
     <string name="upsell_product_count_many">%d upsell products</string>
+    <string name="product_detail_background_image_upload">Image uploading will continue in the background</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -1209,6 +1214,10 @@
     <string name="product_image_service_error_uploading_single">%d file couldn\'t be uploaded</string>
     <string name="product_image_service_error_uploading_multiple">%d files couldn\'t be uploaded</string>
     <string name="product_images_error_detail_title">Upload details (%d)</string>
+    <string name="product_update_notification">Updating product %1$s</string>
+    <string name="product_update_success_notification_title">Product Updated</string>
+    <string name="product_update_success_notification_content">%1$d images have been added to the product %2$s</string>
+    <string name="product_update_failure_notification">Updating product %1$s failed</string>
 
     <!--
         Empty list messages
@@ -1255,6 +1264,7 @@
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
     <string name="settings_selected_store">Selected store</string>
+    <string name="settings_switch_store">Switch store</string>
     <string name="settings_store">Store settings</string>
     <string name="settings_card_reader">Manage card reader</string>
     <string name="settings_card_reader_payments">In-Person Payments</string>
@@ -1273,6 +1283,7 @@
     <string name="settings_about">About the app</string>
     <string name="settings_licenses">Open source licenses</string>
     <string name="settings_whats_new">What\'s New in WooCommerce</string>
+    <string name="settings_whats_new_icon_description">New feature icon image</string>
     <string name="settings_privacy_policy_header">Privacy Policy</string>
     <string name="settings_cookie_policy_header">Cookie Policy</string>
     <string name="settings_third_party_policy_header">Third Party Policy</string>
@@ -1480,8 +1491,6 @@
     <!-- Promo dialogs -->
     <string name="promo_btn_got_it">Got it</string>
     <string name="promo_btn_try_it">Try it now</string>
-    <string name="promo_title_site_picker">Running multiple stores?</string>
-    <string name="promo_message_site_picker">You can now switch between stores by tapping the selected store in Settings</string>
 
     <!-- Product status -->
     <string name="product_status_published">Published</string>
