@@ -8,6 +8,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -294,6 +295,52 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init()
 
             verify(cardReaderManager).discoverReaders(anyBoolean(), any())
+        }
+
+    @Test
+    fun `given installation started, when cardReaderManager gets initialized, then show update in progress emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.softwareUpdateStatus).thenReturn(
+                flow {
+                    emit(SoftwareUpdateStatus.InstallationStarted)
+                }
+            )
+
+            init()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderConnectViewModel.CardReaderConnectEvent.ShowUpdateInProgress
+            )
+        }
+
+    @Test
+    fun `given installing update, when cardReaderManager gets initialized, then show update in progress emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.softwareUpdateStatus).thenReturn(
+                flow {
+                    emit(SoftwareUpdateStatus.Installing(0.1f))
+                }
+            )
+
+            init()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderConnectViewModel.CardReaderConnectEvent.ShowUpdateInProgress
+            )
+        }
+
+    @Test
+    fun `given unknown update, when cardReaderManager gets initialized, then initializing manager`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.softwareUpdateStatus).thenReturn(
+                flow {
+                    emit(SoftwareUpdateStatus.Unknown)
+                }
+            )
+
+            init()
+
+            assertThat(viewModel.event.value).isInstanceOf(InitializeCardReaderManager::class.java)
         }
 
     @Test
