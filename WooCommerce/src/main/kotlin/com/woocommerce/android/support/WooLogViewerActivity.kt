@@ -22,7 +22,6 @@ import com.woocommerce.android.R.layout
 import com.woocommerce.android.databinding.ActivityLogviewerBinding
 import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.util.AppThemeUtils
-import com.woocommerce.android.util.DeviceInfo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -46,8 +45,6 @@ class WooLogViewerActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        setupDeviceInfo(binding)
-
         setupRecyclerView(binding, setupRecyclerDivider())
     }
 
@@ -66,14 +63,6 @@ class WooLogViewerActivity : AppCompatActivity() {
         binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.addItemDecoration(divider)
         binding.recycler.adapter = LogAdapter(this)
-    }
-
-    private fun setupDeviceInfo(binding: ActivityLogviewerBinding) {
-        with(DeviceInfo) {
-            binding.deviceModelTvValue.text = name
-            binding.osTvValue.text = OS
-            binding.languageTvValue.text = locale
-        }
     }
 
     private fun shareAppLog() {

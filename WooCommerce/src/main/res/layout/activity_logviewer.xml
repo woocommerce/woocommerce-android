@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey_c"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/color_surface">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -13,90 +13,14 @@
         android:layout_height="wrap_content">
 
         <include
-            android:id="@+id/toolbar"
-            layout="@layout/view_toolbar" />
+            layout="@layout/view_toolbar"
+            android:id="@+id/toolbar"/>
     </com.google.android.material.appbar.AppBarLayout>
-
-    <com.google.android.material.card.MaterialCardView
-        style="@style/Woo.Card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/plane_08">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/device_model_tv"
-                style="@style/Woo.TextView.Body2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textStyle="bold"
-                android:text="@string/device_model"
-                tools:text="Device Model: " />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/device_model_tv_value"
-                style="@style/Woo.TextView.Body2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@id/device_model_tv"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:maxLines="1"
-                android:ellipsize="end"
-                tools:text="Oneplus 6T" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/os_tv"
-                style="@style/Woo.TextView.Body2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/device_model_tv_value"
-                android:textStyle="bold"
-                android:text="@string/os"
-                tools:text="OS: " />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/os_tv_value"
-                style="@style/Woo.TextView.Body2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@id/os_tv"
-                app:layout_constraintTop_toBottomOf="@id/device_model_tv"
-                tools:text="11" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/language_tv"
-                style="@style/Woo.TextView.Body2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/os_tv"
-                android:textStyle="bold"
-                android:text="@string/language"
-                tools:text="Language: " />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/language_tv_value"
-                style="@style/Woo.TextView.Body2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@id/language_tv"
-                app:layout_constraintTop_toBottomOf="@id/os_tv_value"
-                tools:text="English" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/color_surface"
-        tools:listitem="@layout/logviewer_listitem" />
+        tools:listitem="@layout/logviewer_listitem"/>
 
 </LinearLayout>
