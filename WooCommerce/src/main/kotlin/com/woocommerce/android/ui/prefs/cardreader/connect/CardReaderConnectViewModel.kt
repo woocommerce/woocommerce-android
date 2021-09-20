@@ -20,7 +20,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.S
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.SpecificReader
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -202,6 +202,9 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
         launch {
+            listenToSoftwareUpdateStatus()
+        }
+        launch {
             startScanning()
         }
     }
@@ -309,13 +312,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
-            launch {
-                cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
-                    if (updateStatus is SoftwareUpdateStatus.InstallationStarted) {
-                        triggerEvent(ShowUpdateInProgress)
-                    }
-                }
-            }
             val success = cardReaderManager.connectToReader(cardReader)
             if (success) {
                 tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
@@ -324,6 +320,14 @@ class CardReaderConnectViewModel @Inject constructor(
                 tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
                 WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
                 viewState.value = ConnectingFailedState({ startFlow() }, ::onCancelClicked)
+            }
+        }
+    }
+
+    private suspend fun listenToSoftwareUpdateStatus() {
+        cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
+            if (updateStatus is SoftwareUpdateInProgress) {
+                triggerEvent(ShowUpdateInProgress)
             }
         }
     }
