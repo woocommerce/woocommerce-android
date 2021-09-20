@@ -47,7 +47,6 @@ allOpen {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '30.0.0'
 
     defaultConfig {
         applicationId "com.woocommerce.android"
@@ -55,9 +54,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "7.4"
+            versionName "7.5"
         }
-        versionCode 242
+        versionCode 246
 
         minSdkVersion 21
         targetSdkVersion 30

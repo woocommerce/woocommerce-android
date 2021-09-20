@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.MediaUploadErrorItemBinding
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadUiModel
 import com.woocommerce.android.ui.media.MediaUploadErrorListAdapter.MediaUploadErrorListItemViewHolder
+import com.woocommerce.android.ui.media.MediaUploadErrorListViewModel.ErrorUiModel
 import java.io.File
 
 class MediaUploadErrorListAdapter : RecyclerView.Adapter<MediaUploadErrorListItemViewHolder>() {
-    var mediaErrorList: List<ProductImageUploadUiModel> = ArrayList()
+    var mediaErrorList: List<ErrorUiModel> = ArrayList()
         set(value) {
             val diffUtil = MediaUploadErrorDiffUtil(field, value)
             val diffResult = DiffUtil.calculateDiff(diffUtil, true)
@@ -33,8 +33,8 @@ class MediaUploadErrorListAdapter : RecyclerView.Adapter<MediaUploadErrorListIte
     }
 
     private class MediaUploadErrorDiffUtil(
-        private val oldList: List<ProductImageUploadUiModel>,
-        private val newList: List<ProductImageUploadUiModel>
+        private val oldList: List<ErrorUiModel>,
+        private val newList: List<ErrorUiModel>
     ) : DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
             oldList[oldItemPosition] == newList[newItemPosition]
@@ -49,13 +49,13 @@ class MediaUploadErrorListAdapter : RecyclerView.Adapter<MediaUploadErrorListIte
 
     class MediaUploadErrorListItemViewHolder(val viewBinding: MediaUploadErrorItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(productImageUploadUiModel: ProductImageUploadUiModel) {
-            with(productImageUploadUiModel) {
-                viewBinding.mediaFileName.text = media.fileName
-                viewBinding.mediaFileErrorText.text = mediaErrorMessage
-                if (media.filePath.isNotBlank()) {
+        fun bind(model: ErrorUiModel) {
+            with(model) {
+                viewBinding.mediaFileName.text = fileName
+                viewBinding.mediaFileErrorText.text = errorMessage
+                if (filePath.isNotBlank()) {
                     GlideApp.with(viewBinding.root.context)
-                        .load(File(media.filePath))
+                        .load(File(filePath))
                         .into(viewBinding.productImage)
                 }
             }

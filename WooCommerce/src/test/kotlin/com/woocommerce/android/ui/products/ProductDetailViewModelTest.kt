@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
@@ -39,6 +40,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -213,6 +215,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(flowOf(emptyList<Uri>())).whenever(mediaFileUploadHandler).observeCurrentUploads(any())
 
         viewModel = spy(
             ProductDetailViewModel(

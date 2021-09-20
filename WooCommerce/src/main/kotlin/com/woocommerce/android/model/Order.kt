@@ -11,8 +11,6 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.ShippingMethod
 import com.woocommerce.android.model.Order.Status
-import com.woocommerce.android.model.Order.Status.OnHold
-import com.woocommerce.android.model.Order.Status.Pending
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.StringUtils
@@ -31,6 +29,7 @@ import java.util.Locale
 @Parcelize
 data class Order(
     val identifier: OrderIdentifier,
+    val localOrderId: Int,
     val remoteId: Long,
     val number: String,
     val localSiteId: Int,
@@ -46,6 +45,7 @@ data class Order(
     val refundTotal: BigDecimal,
     val feesTotal: BigDecimal,
     val currency: String,
+    val orderKey: String,
     val customerNote: String,
     val discountCodes: String,
     val paymentMethod: String,
@@ -61,10 +61,7 @@ data class Order(
     val metaData: List<MetaData<String>>
 ) : Parcelable {
     @IgnoredOnParcel
-    val isOrderPaid = paymentMethodTitle.isEmpty() && datePaid == null
-
-    @IgnoredOnParcel
-    val isAwaitingPayment = status == Pending || status == OnHold || datePaid == null
+    val isOrderPaid = datePaid != null
 
     // Allow refunding only integer quantities
     @IgnoredOnParcel
@@ -119,7 +116,9 @@ data class Order(
         val attributesDescription
             get() = attributesList.filter {
                 it.value.isNotEmpty() && it.key.isNotEmpty() && it.isNotInternalAttributeData
-            }.joinToString { it.value.capitalize(Locale.getDefault()) }
+            }.joinToString {
+                it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            }
 
         @Parcelize
         data class Attribute(
@@ -261,6 +260,7 @@ data class Order(
 fun WCOrderModel.toAppModel(): Order {
     return Order(
         identifier = OrderIdentifier(this),
+        localOrderId = this.id,
         remoteId = this.remoteOrderId,
         number = this.number,
         localSiteId = this.localSiteId,
@@ -277,6 +277,7 @@ fun WCOrderModel.toAppModel(): Order {
         feesTotal = this.getFeeLineList()
             .sumByBigDecimal { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO },
         currency = this.currency,
+        orderKey = this.orderKey,
         customerNote = this.customerNote,
         discountCodes = this.discountCodes,
         paymentMethod = this.paymentMethod,

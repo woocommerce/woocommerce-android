@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -147,12 +146,10 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     init {
-        start()
+        dispatcher.register(this)
     }
 
-    final fun start() {
-        dispatcher.register(this)
-
+    fun start() {
         val orderInDb = orderDetailRepository.getOrder(navArgs.orderId)
         val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
         launch {
@@ -325,7 +322,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun refreshShipmentTracking() {
-        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
+        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(order.localOrderId)
     }
 
     fun onShippingLabelRefunded() {
@@ -359,8 +356,8 @@ class OrderDetailViewModel @Inject constructor(
         )
 
         val snackbarMessage = when (updateSource) {
-            is OrderStatusUpdateSource.Dialog -> R.string.order_status_updated
-            is OrderStatusUpdateSource.FullFillScreen -> R.string.order_fulfill_completed
+            is OrderStatusUpdateSource.Dialog -> string.order_status_updated
+            is OrderStatusUpdateSource.FullFillScreen -> string.order_fulfill_completed
         }
 
         triggerEvent(
@@ -384,7 +381,7 @@ class OrderDetailViewModel @Inject constructor(
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
             orderDetailRepository.getOrderShipmentTrackingByTrackingNumber(
-                orderIdSet.id, trackingNumber
+                order.localOrderId, trackingNumber
             )?.let { deletedShipmentTracking ->
                 deletedOrderShipmentTrackingSet.add(trackingNumber)
 
@@ -423,7 +420,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val deletedShipment = orderDetailRepository.deleteOrderShipmentTracking(
-                orderIdSet.id, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
+                order.localOrderId, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
             )
             if (deletedShipment) {
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
@@ -489,16 +486,16 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun loadOrderNotes() {
-        _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
+        _orderNotes.value = orderDetailRepository.getOrderNotes(order.localOrderId)
     }
 
     private fun fetchOrderNotes() {
         launch {
-            if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
+            if (!orderDetailRepository.fetchOrderNotes(order.localOrderId, orderIdSet.remoteOrderId)) {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
             }
             // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
+            _orderNotes.value = orderDetailRepository.getOrderNotes(order.localOrderId)
         }
     }
 
@@ -522,10 +519,9 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun containsAddons(product: Order.Item) =
-        addonsRepository
-            .getAddonsFrom(product.productId)
-            ?.any { addon -> product.attributesList.any { it.addonName == addon.name } }
+    private suspend fun containsAddons(product: Order.Item) =
+        addonsRepository.getAddonsFrom(product.productId)
+            ?.any { entity -> product.attributesList.any { it.addonName == entity.addon.name } }
             ?: false
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
@@ -544,7 +540,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
-        val trackingList = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
+        val trackingList = orderDetailRepository.getOrderShipmentTrackings(order.localOrderId)
         return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {
@@ -557,7 +553,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        val result = orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)
+        val result = orderDetailRepository.fetchOrderShipmentTrackingList(order.localOrderId, orderIdSet.remoteOrderId)
         appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
     }
 

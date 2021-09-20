@@ -157,6 +157,7 @@ class CardReaderPaymentViewModel
                 orderId = order.remoteId,
                 amount = order.total,
                 currency = order.currency,
+                orderKey = order.orderKey,
                 customerEmail = customerEmail.ifEmpty { null },
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },

@@ -15,7 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
-import com.woocommerce.android.push.NotificationHandler
+import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
@@ -43,6 +43,7 @@ class AppSettingsActivity :
     @Inject lateinit var presenter: AppSettingsContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var prefs: AppPrefs
+    @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private var siteChanged = false
@@ -111,7 +112,7 @@ class AppSettingsActivity :
         if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
         siteChanged = true
         setResult(RESULT_CODE_SITE_CHANGED)
-        NotificationHandler.removeAllNotificationsFromSystemBar(this)
+        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
         // Display a message to the user advising notifications will only be shown
         // for the current store.
@@ -130,17 +131,16 @@ class AppSettingsActivity :
         confirmLogout()
     }
 
-    override fun onProductsFeatureOptionChanged(enabled: Boolean) {
-        val isProductsFeatureEnabled = AppPrefs.isProductsFeatureEnabled()
-        if (isProductsFeatureEnabled != enabled) {
+    override fun onProductAddonsOptionChanged(enabled: Boolean) {
+        if (AppPrefs.isProductAddonsEnabled != enabled) {
             isBetaOptionChanged = true
-            AppPrefs.setIsProductsFeatureEnabled(enabled)
+            AppPrefs.isProductAddonsEnabled = enabled
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
     }
 
     override fun finishLogout() {
-        NotificationHandler.removeAllNotificationsFromSystemBar(this)
+        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
         val mainIntent = Intent(this, MainActivity::class.java)
         mainIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP

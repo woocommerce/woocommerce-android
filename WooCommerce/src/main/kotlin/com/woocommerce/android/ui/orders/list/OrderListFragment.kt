@@ -614,8 +614,6 @@ class OrderListFragment :
         viewModel.submitSearchOrFilter(searchQuery = query)
     }
 
-    private fun isOrderStatusFilterEnabled() = isFilterEnabled || !isSearching
-
     private fun showTabs(show: Boolean) {
         if (show && tabLayout.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(tabLayout)
