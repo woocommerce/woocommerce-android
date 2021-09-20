@@ -574,9 +574,12 @@ class OrderDetailViewModel @Inject constructor(
             _shipmentTrackings.value = shipmentTracking.list
         }
 
+        val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true &&
+            FeatureFlag.CARD_READER.isEnabled()
+
         val isOrderEligibleForSLCreation = isShippingPluginReady &&
             orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId) &&
-            viewState.orderInfo?.isPaymentCollectableWithCardReader != true
+            !orderEligibleForInPersonPayments
 
         if (isOrderEligibleForSLCreation &&
             viewState.isCreateShippingLabelButtonVisible != true &&
