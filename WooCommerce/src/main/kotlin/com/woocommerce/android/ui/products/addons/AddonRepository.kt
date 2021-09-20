@@ -23,7 +23,7 @@ class AddonRepository @Inject constructor(
         addonsStore.fetchAllGlobalAddonsGroups(selectedSite.get())
             .isError.not()
 
-    fun containsAddonsFrom(orderItem: Order.Item) =
+    suspend fun containsAddonsFrom(orderItem: Order.Item) =
         getAddonsFrom(orderItem.productId)
             ?.any { addon -> orderItem.attributesList.any { it.addonName == addon.name } }
             ?: false
@@ -57,11 +57,11 @@ class AddonRepository @Inject constructor(
             ?.filter { it.isNotInternalAttributeData }
 
     private suspend fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
+        getAddonsFrom(productID)
+            ?.let { addons -> Pair(addons, this) }
+
+    private suspend fun getAddonsFrom(productID: Long) =
         productStore.getProductByRemoteId(selectedSite.get(), productID)
             ?.let { addonsStore.observeAllAddonsForProduct(selectedSite.get().siteId, it) }
             ?.firstOrNull()
-            ?.let { addons -> Pair(addons, this) }
-
-    private fun getAddonsFrom(productID: Long) =
-        productStore.getProductByRemoteId(selectedSite.get(), productID)?.addons
 }
