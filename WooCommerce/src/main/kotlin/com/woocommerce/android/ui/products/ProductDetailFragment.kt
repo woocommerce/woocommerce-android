@@ -23,17 +23,13 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
-import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.show
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
@@ -46,9 +42,7 @@ import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
@@ -81,7 +75,7 @@ class ProductDetailFragment :
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
     private var updateMenuItem: MenuItem? = null
-    private var detailSnackbar: Snackbar? = null
+    private var imageUploadErrorsSnackbar: Snackbar? = null
 
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
     private val saveTitleId = R.string.save
@@ -103,6 +97,7 @@ class ProductDetailFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
+        imageUploadErrorsSnackbar?.dismiss()
         super.onDestroyView()
         _binding = null
     }
@@ -266,6 +261,7 @@ class ProductDetailFragment :
                         )
                     }
                     is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                    is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                     else -> event.isHandled = false
                 }
             }
@@ -276,7 +272,7 @@ class ProductDetailFragment :
         productName = updateProductNameFromDetails(product)
         productId = product.remoteId
 
-        if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
+        if (product.images.isEmpty() && !viewModel.isUploadingImages()) {
             binding.imageGallery.hide()
             startAddImageContainer()
         } else {
@@ -315,16 +311,16 @@ class ProductDetailFragment :
         message: String,
         actionListener: View.OnClickListener
     ) {
-        if (detailSnackbar == null) {
-            detailSnackbar = uiMessageResolver.getIndefiniteActionSnack(
+        if (imageUploadErrorsSnackbar == null) {
+            imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
                 actionText = getString(R.string.details),
                 actionListener = actionListener
             )
         } else {
-            detailSnackbar?.setText(message)
+            imageUploadErrorsSnackbar?.setText(message)
         }
-        detailSnackbar?.show()
+        imageUploadErrorsSnackbar?.show()
     }
 
     private fun startAddImageContainer() {

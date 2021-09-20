@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.products.ProductBackorderStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
-import com.woocommerce.android.ui.products.ProductTaxStatus.None
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
 import java.math.BigDecimal
@@ -79,7 +78,7 @@ object ProductHelper {
             saleEndDateGmt = null,
             saleStartDateGmt = null,
             isSoldIndividually = true,
-            taxStatus = None,
+            taxStatus = ProductTaxStatus.Taxable,
             isSaleScheduled = false,
             menuOrder = 0,
             categories = listOf(),
@@ -88,7 +87,6 @@ object ProductHelper {
             crossSellProductIds = listOf(),
             upsellProductIds = listOf(),
             downloads = listOf(),
-            addons = listOf()
         )
     }
 }

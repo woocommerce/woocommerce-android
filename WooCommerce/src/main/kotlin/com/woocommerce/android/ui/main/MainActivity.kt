@@ -49,10 +49,6 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
-import com.woocommerce.android.widgets.WCPromoDialog
-import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
-import com.woocommerce.android.widgets.WCPromoTooltip
-import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -61,16 +57,15 @@ import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 import kotlin.math.abs
 
-// TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("LargeClass")
-@Suppress("LargeClass")
+// TODO Extract logic out of MainActivity to reduce size and remove this @Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions")
 @AndroidEntryPoint
 class MainActivity :
     AppUpgradeActivity(),
     MainContract.View,
     MainNavigationRouter,
     MainBottomNavigationView.MainNavigationListener,
-    NavController.OnDestinationChangedListener,
-    WCPromoDialog.PromoDialogListener {
+    NavController.OnDestinationChangedListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
 
@@ -844,20 +839,6 @@ class MainActivity :
         if (!isBottomNavShowing) {
             isBottomNavShowing = true
             WooAnimUtils.animateBottomBar(binding.bottomNav, true, Duration.SHORT)
-        }
-    }
-
-    /**
-     * User tapped a button in WCPromoDialogFragment
-     */
-    override fun onPromoButtonClicked(promoButton: PromoButton) {
-        when (promoButton) {
-            PromoButton.SITE_PICKER_TRY_IT -> {
-                WCPromoTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
-                showSettingsScreen()
-            }
-            else -> {
-            }
         }
     }
 

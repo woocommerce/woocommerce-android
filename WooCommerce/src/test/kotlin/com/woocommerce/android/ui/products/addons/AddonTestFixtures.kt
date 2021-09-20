@@ -1,22 +1,21 @@
 package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.model.Order.Item.Attribute
-import com.woocommerce.android.model.ProductAddon
-import com.woocommerce.android.model.ProductAddon.PriceType.FlatFee
-import com.woocommerce.android.model.ProductAddon.PriceType.QuantityBased
-import com.woocommerce.android.model.ProductAddonOption
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
 import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
+import org.wordpress.android.fluxc.domain.Addon
+import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*
+import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.persistence.entity.AddonEntity
-import org.wordpress.android.fluxc.persistence.entity.AddonEntity.*
-import org.wordpress.android.fluxc.persistence.entity.AddonEntity.Type.*
-import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
-import org.wordpress.android.fluxc.persistence.entity.AddonWithOptions
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteAddonMapper
 
 object AddonTestFixtures {
+    val defaultWCOrderModel: WCOrderModel by lazy {
+        WCOrderModel()
+            .apply { lineItems = "mocks/order_items.json".jsonFileToString() ?: "" }
+    }
+
     val defaultWCOrderItemList: List<LineItem> by lazy {
         "mocks/order_items.json"
             .jsonFileAs(Array<LineItem>::class.java)
@@ -45,42 +44,47 @@ object AddonTestFixtures {
 
     val defaultProductAddonList by lazy {
         defaultWCProductModel
-            .toAppModel()
             .addons
+            ?.map { remoteAddonDto -> RemoteAddonMapper.toDomain(remoteAddonDto) }
+            .orEmpty()
     }
 
-    val defaultAddonWithOptionsList by lazy {
+    val defaultAddonsList by lazy {
         listOf(
-            AddonWithOptions(
-                defaultAddonEntity.copy(
-                    name = "Topping",
-                    description = "Pizza topping",
-                    priceType = PriceType.FlatFee
-                ),
+            Addon.Checkbox(
+                name = "Topping",
+                description = "Pizza topping",
+                position = 0,
+                required = false,
+                titleFormat = Addon.TitleFormat.Label,
                 options = listOf(
                     emptyAddonOptions.copy(
                         label = "Peperoni",
-                        price = "3",
-                        image = "",
-                        priceType = PriceType.FlatFee
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            value = "3",
+                            priceType = PriceType.FlatFee
+                        )
                     ),
                     emptyAddonOptions.copy(
                         label = "Extra cheese",
-                        price = "4",
-                        image = "",
-                        priceType = PriceType.FlatFee
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            value = "4",
+                            priceType = PriceType.FlatFee
+                        )
                     ),
                     emptyAddonOptions.copy(
                         label = "Salami",
-                        price = "3",
-                        image = "",
-                        priceType = PriceType.FlatFee
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            value = "3",
+                            priceType = PriceType.FlatFee
+                        )
                     ),
                     emptyAddonOptions.copy(
                         label = "Ham",
-                        price = "3",
-                        image = "",
-                        priceType = PriceType.FlatFee
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            value = "3",
+                            priceType = PriceType.FlatFee
+                        )
                     )
                 )
             )
@@ -92,12 +96,13 @@ object AddonTestFixtures {
             emptyProductAddon.copy(
                 name = "Topping",
                 description = "Pizza topping",
-                priceType = FlatFee,
-                rawOptions = listOf(
-                    ProductAddonOption(
-                        priceType = FlatFee,
+                options = listOf(
+                    Addon.HasOptions.Option(
                         label = "Peperoni",
-                        price = "3",
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "3"
+                        ),
                         image = ""
                     )
                 )
@@ -105,12 +110,13 @@ object AddonTestFixtures {
             emptyProductAddon.copy(
                 name = "Topping",
                 description = "Pizza topping",
-                priceType = FlatFee,
-                rawOptions = listOf(
-                    ProductAddonOption(
-                        priceType = FlatFee,
+                options = listOf(
+                    Addon.HasOptions.Option(
                         label = "Extra cheese",
-                        price = "4",
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "4"
+                        ),
                         image = ""
                     )
                 )
@@ -118,40 +124,42 @@ object AddonTestFixtures {
             emptyProductAddon.copy(
                 name = "Topping",
                 description = "Pizza topping",
-                priceType = FlatFee,
-                rawOptions = listOf(
-                    ProductAddonOption(
-                        priceType = FlatFee,
+                options = listOf(
+                    Addon.HasOptions.Option(
                         label = "Salami",
-                        price = "3",
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "3"
+                        ),
                         image = ""
                     )
-                )
+                ),
             ),
             emptyProductAddon.copy(
                 name = "Soda",
-                priceType = FlatFee,
-                price = "2",
-                rawOptions = listOf(
-                    ProductAddonOption(
-                        priceType = FlatFee,
+                options = listOf(
+                    Addon.HasOptions.Option(
                         label = "4",
-                        price = "$8,00",
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "$8,00",
+                        ),
                         image = ""
                     )
-                )
+                ),
             ),
             emptyProductAddon.copy(
                 name = "Delivery",
-                priceType = FlatFee,
-                rawOptions = listOf(
-                    ProductAddonOption(
-                        priceType = FlatFee,
+                options = listOf(
+                    Addon.HasOptions.Option(
                         label = "Yes",
-                        price = "5",
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "5",
+                        ),
                         image = ""
                     )
-                )
+                ),
             )
         )
     }
@@ -160,71 +168,47 @@ object AddonTestFixtures {
         listOf(
             emptyProductAddon.copy(
                 name = "test-name",
-                priceType = FlatFee,
-                rawOptions = listOf(
-                    ProductAddonOption(
-                        QuantityBased,
-                        "test-label-2",
-                        "test-price-2",
-                        "test-image-2"
+                options = listOf(
+                    Addon.HasOptions.Option(
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "test-price-2"
+                        ),
+                        label = "test-label-2",
+                        image = "test-image-2"
                     ),
-                    ProductAddonOption(
-                        FlatFee,
-                        "test-label",
-                        "test-price",
-                        "test-image"
-                    ),
+                    Addon.HasOptions.Option(
+                        price = Addon.HasAdjustablePrice.Price.Adjusted(
+                            priceType = PriceType.FlatFee,
+                            value = "test-price"
+                        ),
+                        label = "test-label",
+                        image = "test-image"
+                    )
                 )
             )
         )
     }
 
     val emptyProductAddon by lazy {
-        ProductAddon(
+        Addon.Checkbox(
             name = "",
             required = false,
-            description = "",
-            descriptionEnabled = false,
-            max = 0,
-            min = 0,
+            description = null,
             position = 0,
-            adjustPrice = false,
-            titleFormat = null,
-            restrictionsType = null,
-            priceType = null,
-            type = null,
-            display = null,
-            price = "",
-            rawOptions = listOf()
-        )
-    }
-
-    val defaultAddonEntity by lazy {
-        AddonEntity(
-            name = "",
-            required = false,
-            description = "",
-            descriptionEnabled = true,
-            max = 0,
-            min = 0,
-            position = 0,
-            priceAdjusted = false,
-            titleFormat = TitleFormat.Label,
-            restrictions = Restrictions.AnyText,
-            priceType = PriceType.FlatFee,
-            type = Checkbox,
-            display = Display.Select,
-            price = ""
+            titleFormat = Addon.TitleFormat.Label,
+            options = emptyList()
         )
     }
 
     val emptyAddonOptions by lazy {
-        AddonOptionEntity(
+        Addon.HasOptions.Option(
             label = "",
-            price = "",
             image = "",
-            priceType = PriceType.FlatFee,
-            addonLocalId = 0
+            price = Addon.HasAdjustablePrice.Price.Adjusted(
+                priceType = PriceType.FlatFee,
+                value = ""
+            )
         )
     }
 }

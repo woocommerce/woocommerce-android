@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -66,7 +67,7 @@ class VariationDetailFragment :
     private val skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-    private var detailSnackbar: Snackbar? = null
+    private var imageUploadErrorsSnackbar: Snackbar? = null
 
     private val viewModel: VariationDetailViewModel by viewModels()
 
@@ -85,6 +86,7 @@ class VariationDetailFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
+        imageUploadErrorsSnackbar?.dismiss()
         super.onDestroyView()
         _binding = null
     }
@@ -243,6 +245,7 @@ class VariationDetailFragment :
                 when (event) {
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                    is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                     is VariationNavigationTarget -> {
                         navigator.navigate(this, event)
                     }
@@ -256,7 +259,7 @@ class VariationDetailFragment :
     }
 
     private fun showVariationDetails(variation: ProductVariation) {
-        if (variation.image == null && !viewModel.isUploadingImages(variation.remoteVariationId)) {
+        if (variation.image == null && !viewModel.isUploadingImages()) {
             binding.imageGallery.hide()
             binding.addImageContainer.show()
             binding.addImageContainer.setOnClickListener {
@@ -320,16 +323,16 @@ class VariationDetailFragment :
         message: String,
         actionListener: View.OnClickListener
     ) {
-        if (detailSnackbar == null) {
-            detailSnackbar = uiMessageResolver.getIndefiniteActionSnack(
+        if (imageUploadErrorsSnackbar == null) {
+            imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
                 actionText = getString(R.string.details),
                 actionListener = actionListener
             )
         } else {
-            detailSnackbar?.setText(message)
+            imageUploadErrorsSnackbar?.setText(message)
         }
-        detailSnackbar?.show()
+        imageUploadErrorsSnackbar?.show()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

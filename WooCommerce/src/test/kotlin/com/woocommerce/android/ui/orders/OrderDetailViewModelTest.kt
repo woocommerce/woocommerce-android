@@ -74,6 +74,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefs = mock {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
     }
+    private val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+    private val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
     private val cardReaderManager: CardReaderManager = mock()
@@ -139,8 +141,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             resources
         )
 
-        val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
-        val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
         mock<Context> {
             whenever(it.applicationContext).thenReturn(it)
             whenever(it.getSharedPreferences(any(), any())).thenReturn(preferences)
@@ -575,6 +575,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
             doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+
+            doReturn(true).whenever(preferences).getBoolean("IS_CARD_PRESENT_ELIGIBLE", false)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {

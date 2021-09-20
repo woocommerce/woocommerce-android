@@ -51,6 +51,9 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_featureAnnouncementDialogFragment"
+            app:destination="@id/featureAnnouncementDialogFragment" />
     </fragment>
     <dialog
         android:id="@+id/cardReaderConnectFragment"
@@ -162,4 +165,8 @@
             android:name="surveyType"
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
     </fragment>
+    <dialog
+        android:id="@+id/featureAnnouncementDialogFragment"
+        android:name="com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment"
+        android:label="FeatureAnnouncementDialogFragment" />
 </navigation>

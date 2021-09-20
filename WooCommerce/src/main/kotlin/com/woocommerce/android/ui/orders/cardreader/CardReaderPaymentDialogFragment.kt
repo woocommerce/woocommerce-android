@@ -29,11 +29,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import android.nfc.NfcAdapter
 
 @AndroidEntryPoint
 class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_payment_dialog) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
+
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -145,6 +148,31 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
         printHtmlHelper.getAndClearPrintJobResult()?.let {
             viewModel.onPrintResult(it)
         }
+        disableDigitalWallets()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        reEnableDigitalWallets()
+    }
+
+    /**
+     * Disables digital wallets (eg. Google Pay) in order to prevent the merchant from accidentally charging themselves
+     * instead of the customer.
+     */
+    private fun disableDigitalWallets() {
+        NfcAdapter.getDefaultAdapter(requireContext())
+            ?.enableReaderMode(
+                requireActivity(),
+                { },
+                NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
+                null
+            )
+    }
+
+    private fun reEnableDigitalWallets() {
+        NfcAdapter.getDefaultAdapter(requireContext())
+            ?.disableReaderMode(requireActivity())
     }
 
     companion object {

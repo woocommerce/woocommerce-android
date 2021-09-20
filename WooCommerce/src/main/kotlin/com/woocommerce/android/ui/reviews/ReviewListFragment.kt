@@ -222,7 +222,9 @@ class ReviewListFragment :
                 showMarkAllReadMenuItem(show = false)
 
                 // Remove all active notifications from the system bar
-                notificationMessageHandler.removeNotificationsOfTypeFromSystemsBar(NotificationChannelType.REVIEW)
+                notificationMessageHandler.removeNotificationsOfTypeFromSystemsBar(
+                    NotificationChannelType.REVIEW, selectedSite.get().siteId
+                )
             }
             ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
             else -> {
