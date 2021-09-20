@@ -10,6 +10,7 @@ import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.LOG_TAG
+import com.woocommerce.android.cardreader.internal.connection.BluetoothCardReaderMessages.CardReaderNoMessage
 import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,16 +27,10 @@ internal class BluetoothReaderListenerImpl(
         MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
     val updateAvailabilityEvents = _updateAvailabilityEvents.asStateFlow()
 
+    private val _displayMessagesEvent = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
+    val displayMessagesEvent = _displayMessagesEvent.asStateFlow()
+
     var cancelUpdateAction: Cancelable? = null
-    private var bluetoothCardReaderMessagesObserver: ((BluetoothCardReaderMessages) -> Unit)? = null
-
-    fun registerBluetoothCardReaderMessagesObserver(messagesObserver: (BluetoothCardReaderMessages) -> Unit) {
-        bluetoothCardReaderMessagesObserver = messagesObserver
-    }
-
-    fun unregisterBluetoothCardReaderMessages() {
-        bluetoothCardReaderMessagesObserver = null
-    }
 
     override fun onFinishInstallingUpdate(update: ReaderSoftwareUpdate?, e: TerminalException?) {
         logWrapper.d(LOG_TAG, "onFinishInstallingUpdate: $update $e")
@@ -73,24 +68,21 @@ internal class BluetoothReaderListenerImpl(
 
     override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
         logWrapper.d(LOG_TAG, "onRequestReaderDisplayMessage: $message")
-        bluetoothCardReaderMessagesObserver?.let { messageObserver ->
-            messageObserver(BluetoothCardReaderMessages.CardReaderDisplayMessage(additionalInfoMapper.map(message)))
-        } ?: run {
-            logWrapper.e(LOG_TAG, "onRequestReaderDisplayMessage: Bluetooth card reader message observer is null")
-        }
+        _displayMessagesEvent.value = BluetoothCardReaderMessages
+            .CardReaderDisplayMessage(additionalInfoMapper.map(message))
     }
 
     override fun onRequestReaderInput(options: ReaderInputOptions) {
         logWrapper.d(LOG_TAG, "onRequestReaderInput: $options")
-        bluetoothCardReaderMessagesObserver?.let { messageObserver ->
-            messageObserver(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
-        } ?: run {
-            logWrapper.e(LOG_TAG, "onRequestReaderInput: Bluetooth card reader message observer is null")
-        }
+        _displayMessagesEvent.value = BluetoothCardReaderMessages.CardReaderInputMessage(options.toString())
     }
 
     fun resetConnectionState() {
         _updateStatusEvents.value = SoftwareUpdateStatus.Unknown
         _updateAvailabilityEvents.value = SoftwareUpdateAvailability.NotAvailable
+    }
+
+    fun resetDisplayMessage() {
+        _displayMessagesEvent.value = CardReaderNoMessage
     }
 }

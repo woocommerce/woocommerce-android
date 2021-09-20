@@ -45,7 +45,6 @@ object CardReaderManagerFactory {
                 bluetoothReaderListener,
                 DiscoverReadersAction(terminal, logWrapper),
                 terminalListener,
-                logWrapper,
             ),
             SoftwareUpdateManager(
                 terminal,

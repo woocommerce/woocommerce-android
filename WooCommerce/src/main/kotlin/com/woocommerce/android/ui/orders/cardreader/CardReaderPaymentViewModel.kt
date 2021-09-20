@@ -112,12 +112,13 @@ class CardReaderPaymentViewModel
     }
 
     private suspend fun listenForBluetoothCardReaderMessages() {
-        cardReaderManager.listenForBluetoothCardReaderMessagesAsync().collect { message ->
+        cardReaderManager.displayBluetoothCardReaderMessages.collect { message ->
             when (message) {
                 is BluetoothCardReaderMessages.CardReaderDisplayMessage -> {
                     handleAdditionalInfo(message.message)
                 }
                 is BluetoothCardReaderMessages.CardReaderInputMessage -> { /* no-op*/ }
+                is BluetoothCardReaderMessages.CardReaderNoMessage -> { /* no-op*/ }
             }.exhaustive
         }
     }

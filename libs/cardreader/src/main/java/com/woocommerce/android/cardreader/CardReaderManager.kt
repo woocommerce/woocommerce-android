@@ -21,6 +21,7 @@ interface CardReaderManager {
     val readerStatus: StateFlow<CardReaderStatus>
     val softwareUpdateStatus: Flow<SoftwareUpdateStatus>
     val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability>
+    val displayBluetoothCardReaderMessages: Flow<BluetoothCardReaderMessages>
 
     fun initialize(app: Application)
     fun discoverReaders(
@@ -35,8 +36,6 @@ interface CardReaderManager {
 
     suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus>
     fun cancelPayment(paymentData: PaymentData)
-
-    suspend fun listenForBluetoothCardReaderMessagesAsync(): Flow<BluetoothCardReaderMessages>
 
     suspend fun startAsyncSoftwareUpdate()
     suspend fun clearCachedCredentials()

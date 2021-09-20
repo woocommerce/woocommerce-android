@@ -15,15 +15,11 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -42,7 +38,6 @@ class ConnectionManagerTest {
     private val bluetoothReaderListener: BluetoothReaderListenerImpl = mock()
     private val discoverReadersAction: DiscoverReadersAction = mock()
     private val terminalListenerImpl: TerminalListenerImpl = mock()
-    private val logWrapper: LogWrapper = mock()
 
     private val supportedReaders =
         CardReaderTypesToDiscover.SpecificReaders(listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2))
@@ -56,7 +51,6 @@ class ConnectionManagerTest {
             bluetoothReaderListener,
             discoverReadersAction,
             terminalListenerImpl,
-            logWrapper,
         )
     }
 
@@ -326,17 +320,5 @@ class ConnectionManagerTest {
         connectionManager.disconnectReader()
 
         verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected)
-    }
-
-    @Test
-    fun `given flow terminated, when listen bluetooth messages called, then unregister listener`() = runBlockingTest {
-        val job = launch {
-            connectionManager.listenForBluetoothCardReaderMessages().collect { }
-        }
-
-        job.cancel()
-        joinAll(job)
-
-        verify(bluetoothReaderListener).unregisterBluetoothCardReaderMessages()
     }
 }

@@ -10,21 +10,13 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
-import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.ProducerScope
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.onClosed
-import kotlinx.coroutines.channels.onFailure
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
@@ -35,19 +27,10 @@ internal class ConnectionManager(
     private val bluetoothReaderListener: BluetoothReaderListenerImpl,
     private val discoverReadersAction: DiscoverReadersAction,
     private val terminalListenerImpl: TerminalListenerImpl,
-    private val logWrapper: LogWrapper,
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
-
-    suspend fun listenForBluetoothCardReaderMessages() = callbackFlow {
-        bluetoothReaderListener.registerBluetoothCardReaderMessagesObserver { message ->
-            this@callbackFlow.sendAndLog(message)
-        }
-        awaitClose {
-            bluetoothReaderListener.unregisterBluetoothCardReaderMessages()
-        }
-    }
+    val displayBluetoothCardReaderMessages = bluetoothReaderListener.displayMessagesEvent
 
     fun discoverReaders(isSimulated: Boolean, cardReaderTypesToDiscover: CardReaderTypesToDiscover) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->
@@ -133,14 +116,12 @@ internal class ConnectionManager(
         }
     }
 
+    fun resetBluetoothCardReaderDisplayMessage() {
+        bluetoothReaderListener.resetDisplayMessage()
+    }
+
     private fun updateReaderStatus(status: CardReaderStatus) {
         terminalListenerImpl.updateReaderStatus(status)
         startStateResettingJobIfNeeded(status)
-    }
-
-    private fun ProducerScope<BluetoothCardReaderMessages>.sendAndLog(status: BluetoothCardReaderMessages) {
-        trySendBlocking(status)
-            .onClosed { logWrapper.e(LOG_TAG, it?.message.orEmpty()) }
-            .onFailure { logWrapper.e(LOG_TAG, it?.message.orEmpty()) }
     }
 }

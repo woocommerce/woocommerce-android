@@ -119,7 +119,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given collect payment shown, when RETRY message received, then collect payment hint updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.listenForBluetoothCardReaderMessagesAsync()).thenAnswer {
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(RETRY_CARD))
                 }
@@ -138,7 +138,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given collect payment shown, when MULTIPLE_CARDS_DETECTED received, then collect payment hint updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.listenForBluetoothCardReaderMessagesAsync()).thenAnswer {
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(MULTIPLE_CONTACTLESS_CARDS_DETECTED))
                 }
@@ -157,7 +157,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given collect payment shown, when TRY_OTHER_CARD message received, then collect payment hint updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.listenForBluetoothCardReaderMessagesAsync()).thenAnswer {
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_CARD))
                 }
@@ -176,7 +176,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given collect payment shown, when TRY_OTHER_READ message received, then collect payment hint updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.listenForBluetoothCardReaderMessagesAsync()).thenAnswer {
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_READ_METHOD))
                 }
