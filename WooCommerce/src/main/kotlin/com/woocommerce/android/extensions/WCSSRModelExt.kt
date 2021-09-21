@@ -24,7 +24,7 @@ const val HEADING_THEME = "Theme"
 const val HEADING_TEMPLATES = "Templates"
 const val HEADING_STATUS_REPORT_INFORMATION = "Status report information"
 const val CHECK = "✔"
-const val NO_CHECK = "false"
+const val NO_CHECK = "–"
 const val PAGE_NOT_SET = "X Page not set"
 
 fun WCSSRModel.formatResult(): String {
