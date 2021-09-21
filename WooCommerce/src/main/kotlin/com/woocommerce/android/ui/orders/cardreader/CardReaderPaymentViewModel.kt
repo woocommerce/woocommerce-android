@@ -487,15 +487,23 @@ class CardReaderPaymentViewModel
         NO_NETWORK(R.string.card_reader_payment_failed_no_network_state),
         SERVER_ERROR(R.string.card_reader_payment_failed_server_error_state),
         PAYMENT_DECLINED(R.string.card_reader_payment_failed_card_declined_state),
-        GENERIC_ERROR(R.string.card_reader_payment_failed_unexpected_error_state)
+        GENERIC_ERROR(R.string.card_reader_payment_failed_unexpected_error_state),
+        AMOUNT_TOO_SMALL(R.string.card_reader_payment_failed_amount_too_small)
     }
 
     private fun CardPaymentStatusErrorType.mapToUiError(): PaymentFlowError =
         when (this) {
-            CardPaymentStatusErrorType.NO_NETWORK -> PaymentFlowError.NO_NETWORK
-            CardPaymentStatusErrorType.PAYMENT_DECLINED -> PaymentFlowError.PAYMENT_DECLINED
-            CardPaymentStatusErrorType.CARD_READ_TIMED_OUT,
-            CardPaymentStatusErrorType.GENERIC_ERROR -> PaymentFlowError.GENERIC_ERROR
-            CardPaymentStatusErrorType.SERVER_ERROR -> PaymentFlowError.SERVER_ERROR
+            CardPaymentStatusErrorType.NoNetwork -> PaymentFlowError.NO_NETWORK
+            is CardPaymentStatusErrorType.PaymentDeclined -> mapPaymentDeclinedErrorType(this)
+            CardPaymentStatusErrorType.CardReadTimeOut,
+            CardPaymentStatusErrorType.GenericError -> PaymentFlowError.GENERIC_ERROR
+            CardPaymentStatusErrorType.ServerError -> PaymentFlowError.SERVER_ERROR
+            else -> PaymentFlowError.GENERIC_ERROR
+        }
+
+    private fun mapPaymentDeclinedErrorType(cardPaymentStatusErrorType: CardPaymentStatusErrorType.PaymentDeclined) =
+        when (cardPaymentStatusErrorType) {
+            CardPaymentStatusErrorType.PaymentDeclined.AmountTooSmall -> PaymentFlowError.AMOUNT_TOO_SMALL
+            else -> PaymentFlowError.PAYMENT_DECLINED
         }
 }

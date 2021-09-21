@@ -3,11 +3,8 @@ package com.woocommerce.android.cardreader.internal.payments
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.CARD_READ_TIMED_OUT
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.SERVER_ERROR
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.PAYMENT_DECLINED
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.*
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.NetworkError
@@ -23,12 +20,19 @@ internal class PaymentErrorMapper {
                 PaymentDataImpl(exception.paymentIntent ?: originalPaymentIntent)
             }
         val type = when (exception.errorCode) {
-            TerminalErrorCode.CARD_READ_TIMED_OUT -> CARD_READ_TIMED_OUT
-            TerminalErrorCode.DECLINED_BY_STRIPE_API -> PAYMENT_DECLINED
-            TerminalErrorCode.REQUEST_TIMED_OUT -> NO_NETWORK
-            else -> GENERIC_ERROR
+            TerminalErrorCode.CARD_READ_TIMED_OUT -> CardReadTimeOut
+            TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapStripeAPIError(exception)
+            TerminalErrorCode.REQUEST_TIMED_OUT -> NoNetwork
+            else -> GenericError
         }
         return PaymentFailed(type, paymentData, exception.errorMessage)
+    }
+
+    private fun mapStripeAPIError(exception: TerminalException): PaymentDeclined {
+        return when (exception.apiError?.code) {
+            "amount_too_small" -> PaymentDeclined.AmountTooSmall
+            else -> PaymentDeclined.Declined
+        }
     }
 
     fun mapCapturePaymentError(
@@ -38,9 +42,9 @@ internal class PaymentErrorMapper {
         val paymentData = PaymentDataImpl(originalPaymentIntent)
         val message = "Capturing payment failed: $capturePaymentResponse"
         val type = when (capturePaymentResponse) {
-            NetworkError -> NO_NETWORK
-            ServerError -> SERVER_ERROR
-            else -> GENERIC_ERROR
+            NetworkError -> NoNetwork
+            ServerError -> CardPaymentStatusErrorType.ServerError
+            else -> GenericError
         }
         return PaymentFailed(type, paymentData, message)
     }
@@ -50,6 +54,6 @@ internal class PaymentErrorMapper {
         errorMessage: String
     ): PaymentFailed {
         val paymentData = originalPaymentIntent?.let { PaymentDataImpl(originalPaymentIntent) }
-        return PaymentFailed(GENERIC_ERROR, paymentData, errorMessage)
+        return PaymentFailed(GenericError, paymentData, errorMessage)
     }
 }
