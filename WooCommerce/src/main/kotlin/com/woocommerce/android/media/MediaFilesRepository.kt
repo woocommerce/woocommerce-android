@@ -116,12 +116,12 @@ class MediaFilesRepository @Inject constructor(
                         T.MEDIA,
                         "MediaFilesRepository > error uploading media ${event.media?.id}, null url"
                     )
-                    // TODO use a better error message
+
                     uploadContinuation.continueWithException(
                         MediaUploadException(
                             event.media,
                             GENERIC_ERROR,
-                            resourceProvider.getString(R.string.product_image_service_error_media_null)
+                            resourceProvider.getString(R.string.product_image_service_error_uploading)
                         )
                     )
                 }
