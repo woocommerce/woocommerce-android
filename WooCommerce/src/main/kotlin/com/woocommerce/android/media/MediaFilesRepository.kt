@@ -100,6 +100,7 @@ class MediaFilesRepository @Inject constructor(
                         event.media,
                         event.error.type,
                         event.error.message
+                            ?: resourceProvider.getString(R.string.product_image_service_error_uploading)
                     )
                 )
             }
