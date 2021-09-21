@@ -12,9 +12,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivitySsrBinding
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 import java.lang.IllegalStateException
@@ -42,7 +45,7 @@ class SSRActivity : AppCompatActivity() {
 
     private fun setupObservers(binding: ActivitySsrBinding) {
         viewModel.viewStateData.observe(this) { old, new ->
-            new.exampleString.takeIfNotEqualTo(old?.exampleString) {
+            new.formattedSSR.takeIfNotEqualTo(old?.formattedSSR) {
                 binding.ssrContent.text = it
             }
         }
@@ -50,6 +53,7 @@ class SSRActivity : AppCompatActivity() {
             when (it) {
                 is ShareSSR -> shareSSR(it.ssrText)
                 is CopySSR -> copySSRToClipboard(it.ssrText)
+                is ShowSnackbar -> ToastUtils.showToast(this, it.message)
                 else -> it.isHandled = false
             }
         }
