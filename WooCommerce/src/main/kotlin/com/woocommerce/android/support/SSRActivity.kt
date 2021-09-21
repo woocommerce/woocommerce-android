@@ -48,6 +48,16 @@ class SSRActivity : AppCompatActivity() {
             new.formattedSSR.takeIfNotEqualTo(old?.formattedSSR) {
                 binding.ssrContent.text = it
             }
+
+            new.isLoading.takeIfNotEqualTo(old?.isLoading) {
+                if (it) {
+                    binding.ssrLoading.show()
+                    binding.ssrContent.hide()
+                } else {
+                    binding.ssrLoading.hide()
+                    binding.ssrContent.show()
+                }
+            }
         }
         viewModel.event.observe(this) {
             when (it) {

@@ -28,6 +28,7 @@ class SSRActivityViewModel @Inject constructor(
     private var viewState by viewStateData
 
     init {
+        viewState = viewState.copy(isLoading = true)
         launch(dispatchers.io) {
             val result = wooCommerceStore.fetchSSR(selectedSite.get())
             if (result.isError) {
@@ -37,7 +38,7 @@ class SSRActivityViewModel @Inject constructor(
 
             result.model?.let {
                 withContext(dispatchers.main) {
-                    viewState = viewState.copy(formattedSSR = it.formatResult())
+                    viewState = viewState.copy(formattedSSR = it.formatResult(), isLoading = false)
                 }
             }
         }
@@ -53,7 +54,8 @@ class SSRActivityViewModel @Inject constructor(
 
     @Parcelize
     data class SSRViewState(
-        val formattedSSR: String = ""
+        val formattedSSR: String = "",
+        val isLoading: Boolean = false
     ) : Parcelable
 }
 
