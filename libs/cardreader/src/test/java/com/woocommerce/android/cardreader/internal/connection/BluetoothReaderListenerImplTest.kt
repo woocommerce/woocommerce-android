@@ -1,16 +1,23 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
+import com.stripe.stripeterminal.external.models.ReaderInputOptions
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.*
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class BluetoothReaderListenerImplTest {
     private val logWrapper: LogWrapper = mock()
-    private val listener = BluetoothReaderListenerImpl(logWrapper)
+    private val additionalInfoMapper: AdditionalInfoMapper = mock()
+    private val listener = BluetoothReaderListenerImpl(logWrapper, additionalInfoMapper)
 
     @Test
     fun `when finishes installing update with error, then failed emitted`() {
@@ -73,5 +80,27 @@ class BluetoothReaderListenerImplTest {
 
         // THEN
         assertThat(listener.updateStatusEvents.value).isEqualTo(SoftwareUpdateStatus.InstallationStarted)
+    }
+
+    @Test
+    fun `when on reader display message called, then display message emitted`() {
+        // WHEN
+        whenever(additionalInfoMapper.map(any())).thenReturn(REMOVE_CARD)
+        listener.onRequestReaderDisplayMessage(ReaderDisplayMessage.REMOVE_CARD)
+
+        // THEN
+        assertThat(listener.displayMessagesEvent.value)
+            .isEqualTo(BluetoothCardReaderMessages.CardReaderDisplayMessage(REMOVE_CARD))
+    }
+
+    @Test
+    fun `when on reader input message called, then input message emitted`() {
+        // WHEN
+        val options = ReaderInputOptions(listOf())
+        listener.onRequestReaderInput(options)
+
+        // THEN
+        assertThat(listener.displayMessagesEvent.value)
+            .isEqualTo(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
     }
 }
