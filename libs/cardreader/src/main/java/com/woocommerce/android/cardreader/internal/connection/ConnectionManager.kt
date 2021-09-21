@@ -59,11 +59,8 @@ internal class ConnectionManager(
             }
         }
 
-    suspend fun connectToReader(cardReader: CardReader) = suspendCoroutine<Boolean> { continuation ->
+    suspend fun connectToReader(cardReader: CardReader, locationId: String) = suspendCoroutine<Boolean> { continuation ->
         (cardReader as CardReaderImpl).let {
-            val locationId = cardReader.locationId ?: throw IllegalStateException(
-                "Only attached to a location readers are supported at the moment"
-            )
             updateReaderStatus(CardReaderStatus.Connecting)
             val configuration = ConnectionConfiguration.BluetoothConnectionConfiguration(locationId)
             val readerCallback = object : ReaderCallback {
