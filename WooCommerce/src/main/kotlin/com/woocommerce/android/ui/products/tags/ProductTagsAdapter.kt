@@ -7,6 +7,7 @@ import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductTagListItemBinding
+import com.woocommerce.android.extensions.areSameAs
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.ProductTagViewHolder
@@ -46,7 +47,14 @@ class ProductTagsAdapter(
         }
     }
 
+    private fun isSameList(newList: List<ProductTag>) =
+        this.productTags.areSameAs(newList) { this.isSameTag(it) }
+
     fun setProductTags(productsTags: List<ProductTag>) {
+        if (isSameList(productsTags)) {
+            return
+        }
+
         if (this.productTags.isEmpty()) {
             this.productTags.addAll(productsTags)
             notifyDataSetChanged()

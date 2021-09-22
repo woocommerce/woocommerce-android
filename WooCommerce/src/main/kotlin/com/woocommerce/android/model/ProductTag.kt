@@ -28,6 +28,13 @@ data class ProductTag(
         selectedTags.remove(this)
         return selectedTags
     }
+
+    fun isSameTag(otherTag: ProductTag): Boolean {
+        return this.remoteTagId == otherTag.remoteTagId &&
+            this.name == otherTag.name &&
+            this.slug == otherTag.slug &&
+            this.description == otherTag.description
+    }
 }
 
 /**
