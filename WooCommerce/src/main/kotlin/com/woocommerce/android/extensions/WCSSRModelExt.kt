@@ -286,7 +286,9 @@ private fun formatThemeData(data: JSONObject): String {
     val latestVersion = data.optString("version_latest", MISSING_VALUE)
 
     sb.append("Version: $currentVersion")
-    if (currentVersion != MISSING_VALUE && latestVersion != MISSING_VALUE && currentVersion != latestVersion) {
+    if (currentVersion != MISSING_VALUE &&
+        (latestVersion != MISSING_VALUE && latestVersion != "0")  &&
+        currentVersion != latestVersion) {
         sb.append(" (update to version $latestVersion available)")
     }
     sb.append("\n")
@@ -302,7 +304,7 @@ private fun formatThemeData(data: JSONObject): String {
         val parentLatestVersion = data.optString("parent_version_latest", MISSING_VALUE)
         sb.append("Parent Theme Version: $currentVersion")
         if (parentCurrentVersion != MISSING_VALUE &&
-            parentLatestVersion != MISSING_VALUE &&
+            (parentLatestVersion != MISSING_VALUE && parentLatestVersion != "0") &&
             parentCurrentVersion != parentLatestVersion
         ) {
             sb.append(" (update to version $latestVersion available)")
