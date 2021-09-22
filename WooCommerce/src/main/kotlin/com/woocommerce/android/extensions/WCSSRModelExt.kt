@@ -11,6 +11,8 @@ import org.wordpress.android.fluxc.model.WCSSRModel
 import java.text.SimpleDateFormat
 import java.util.*
 import org.apache.commons.io.FileUtils.byteCountToDisplaySize
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 const val MISSING_VALUE = "Info not found"
 const val HEADING_SSR = "### System Status Report generated via the WooCommerce Android app ### \n"
@@ -27,6 +29,7 @@ const val HEADING_STATUS_REPORT_INFORMATION = "Status report information"
 const val CHECK = "✔"
 const val NO_CHECK = "–"
 const val PAGE_NOT_SET = "X Page not set"
+const val DATABASE_SIZE_UNIT = "MB"
 
 fun WCSSRModel.formatResult(): String {
     val sb = StringBuilder()
@@ -150,17 +153,24 @@ private fun formatDatabaseData(data: JSONObject): String {
     val sb = StringBuilder()
     sb.append(formattedHeading(HEADING_DATABASE))
         .append("WC Database Version: ${data.optString("wc_database_version", MISSING_VALUE)}\n")
-        .append("WC Database Prefix: ${data.optString("wc_database_prefix", MISSING_VALUE)}\n")
+        .append("WC Database Prefix: ${data.optString("database_prefix", MISSING_VALUE)}\n")
 
     val sizeData = data.optJSONObject("database_size")
     sizeData?.let {
         val dataSize = it.optDouble("data", 0.0)
         val indexSize = it.optDouble("index", 0.0)
-        val total = dataSize + indexSize
-        sb.append("Total Database Size: " + if (total != 0.0) { total } else { MISSING_VALUE } + "\n")
 
-            .append("Database Data Size: ${it.optString("data", MISSING_VALUE)}\n")
-            .append("Database Index Size: ${it.optString("index", MISSING_VALUE)}\n")
+        val total = if (dataSize == 0.0 && indexSize == 0.0) {
+            MISSING_VALUE
+        } else {
+            roundDoubleDecimal(dataSize + indexSize)
+        }
+        val size = if (dataSize == 0.0) { MISSING_VALUE } else { roundDoubleDecimal(dataSize).toString() }
+        val index = if (indexSize == 0.0) { MISSING_VALUE } else { roundDoubleDecimal(indexSize).toString() }
+
+        sb.append("Total Database Size: $total $DATABASE_SIZE_UNIT\n")
+            .append("Database Data Size: $size $DATABASE_SIZE_UNIT\n")
+            .append("Database Index Size: $index $DATABASE_SIZE_UNIT\n")
     }
 
     val tablesData = data.optJSONObject("database_tables")
@@ -276,7 +286,11 @@ private fun formatThemeData(data: JSONObject): String {
     val latestVersion = data.optString("version_latest", MISSING_VALUE)
 
     sb.append("Version: $currentVersion")
-    if (currentVersion != MISSING_VALUE && latestVersion != MISSING_VALUE && currentVersion != latestVersion) {
+    val latestVersionExists = latestVersion != MISSING_VALUE && latestVersion != "0"
+    if (latestVersionExists &&
+        currentVersion != MISSING_VALUE &&
+        currentVersion != latestVersion
+    ) {
         sb.append(" (update to version $latestVersion available)")
     }
     sb.append("\n")
@@ -291,8 +305,9 @@ private fun formatThemeData(data: JSONObject): String {
         val parentCurrentVersion = data.optString("parent_version", MISSING_VALUE)
         val parentLatestVersion = data.optString("parent_version_latest", MISSING_VALUE)
         sb.append("Parent Theme Version: $currentVersion")
-        if (parentCurrentVersion != MISSING_VALUE &&
-            parentLatestVersion != MISSING_VALUE &&
+        val parentLatestVersionExists = parentLatestVersion != MISSING_VALUE && parentLatestVersion != "0"
+        if (parentLatestVersionExists &&
+            parentCurrentVersion != MISSING_VALUE &&
             parentCurrentVersion != parentLatestVersion
         ) {
             sb.append(" (update to version $latestVersion available)")
@@ -377,4 +392,8 @@ private fun parseFormatTaxonomy(taxonomies: JSONObject, taxonomyType: String): S
         sb.append("$key ($value)\n")
     }
     return sb.toString()
+}
+
+private fun roundDoubleDecimal(number: Double, scale: Int = 2, mode: RoundingMode = RoundingMode.UP): BigDecimal {
+    return number.toBigDecimal().setScale(scale, mode)
 }
