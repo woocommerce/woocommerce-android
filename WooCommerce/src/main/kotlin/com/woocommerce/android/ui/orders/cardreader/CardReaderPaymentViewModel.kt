@@ -488,7 +488,7 @@ class CardReaderPaymentViewModel
         SERVER_ERROR(R.string.card_reader_payment_failed_server_error_state),
         PAYMENT_DECLINED(R.string.card_reader_payment_failed_card_declined_state),
         GENERIC_ERROR(R.string.card_reader_payment_failed_unexpected_error_state),
-        AMOUNT_TOO_SMALL(R.string.card_reader_payment_failed_amount_too_small)
+        AMOUNT_TOO_SMALL(R.string.card_reader_payment_failed_amount_too_small),
     }
 
     private fun CardPaymentStatusErrorType.mapToUiError(): PaymentFlowError =

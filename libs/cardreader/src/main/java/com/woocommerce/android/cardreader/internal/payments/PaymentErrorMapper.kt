@@ -30,7 +30,7 @@ internal class PaymentErrorMapper {
 
     private fun mapStripeAPIError(exception: TerminalException): PaymentDeclined {
         return when (exception.apiError?.code) {
-            "amount_too_small" -> PaymentDeclined.AmountTooSmall
+            DeclinedPayment.AMOUNT_TOO_SMALL.message -> PaymentDeclined.AmountTooSmall
             else -> PaymentDeclined.Declined
         }
     }
@@ -55,5 +55,9 @@ internal class PaymentErrorMapper {
     ): PaymentFailed {
         val paymentData = originalPaymentIntent?.let { PaymentDataImpl(originalPaymentIntent) }
         return PaymentFailed(GenericError, paymentData, errorMessage)
+    }
+
+    enum class DeclinedPayment(val message: String) {
+        AMOUNT_TOO_SMALL("amount_too_small")
     }
 }
