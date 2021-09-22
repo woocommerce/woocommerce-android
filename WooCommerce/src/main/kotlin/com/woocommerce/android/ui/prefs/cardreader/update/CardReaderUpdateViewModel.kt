@@ -14,6 +14,7 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -64,7 +65,7 @@ class CardReaderUpdateViewModel @Inject constructor(
             is UpdateAboutToStart -> {
                 // noop. Update is initiating, we can not cancel it
             }
-            else -> triggerEvent(ExitWithResult(FAILED))
+            else -> finishFlow(FAILED)
         }
     }
 
@@ -89,7 +90,6 @@ class CardReaderUpdateViewModel @Inject constructor(
             null,
             "Unknown software update status"
         )
-        finishFlow(FAILED)
     }
 
     private fun onUpdateSucceeded() {
@@ -104,7 +104,19 @@ class CardReaderUpdateViewModel @Inject constructor(
             null,
             status.message
         )
-        finishFlow(FAILED)
+
+        val errorType = status.errorType
+        when (errorType) {
+            is SoftwareUpdateStatusErrorType.BatteryLow ->
+                viewState.value = ViewState.UpdateFailedBatteryLow(
+                    description = getLowBatteryErrorDescription(errorType.currentBatteryLevel),
+                    button = ButtonState(
+                        { finishFlow(FAILED) },
+                        UiStringRes(R.string.cancel)
+                    ),
+                )
+            else -> finishFlow(FAILED)
+        }.exhaustive
     }
 
     private fun finishFlow(result: UpdateResult) {
@@ -112,15 +124,15 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun updateProgress(currentState: ViewState?, progress: Int) {
-        if (currentState is StateWithProgress<*>) {
+        if (currentState is ViewState.StateWithProgress<*>) {
             viewState.value = currentState.copyWithUpdatedProgress(buildProgressText(progress))
         } else {
-            viewState.value = UpdatingState(progressText = buildProgressText(progress))
+            viewState.value = ViewState.UpdatingState(progressText = buildProgressText(progress))
         }
     }
 
-    private fun showCancelAnywayButton(currentState: UpdatingState) {
-        viewState.value = UpdatingCancelingState(
+    private fun showCancelAnywayButton(currentState: ViewState.UpdatingState) {
+        viewState.value = ViewState.UpdatingCancelingState(
             progressText = currentState.progressText,
             button = ButtonState(
                 ::onCancelClicked,
@@ -149,6 +161,17 @@ class CardReaderUpdateViewModel @Inject constructor(
         } else {
             R.string.card_reader_software_update_progress_cancel_warning
         }
+
+    private fun getLowBatteryErrorDescription(currentBatteryLevel: Float?): UiStringRes {
+        return if (currentBatteryLevel != null) {
+            UiStringRes(
+                R.string.card_reader_software_update_progress_description_low_battery,
+                listOf(UiStringText(convertProgressToPercentage(currentBatteryLevel).toString()))
+            )
+        } else {
+            UiStringRes(R.string.card_reader_software_update_progress_description_low_battery_level_unknown)
+        }
+    }
 
     private fun buildProgressText(progress: Int) =
         UiStringRes(
@@ -194,6 +217,14 @@ class CardReaderUpdateViewModel @Inject constructor(
                 return this.copy(progressText = progressText)
             }
         }
+
+        data class UpdateFailedBatteryLow(
+            override val description: UiString,
+            override val button: ButtonState,
+        ) : ViewState(
+            title = UiStringRes(R.string.card_reader_software_update_title_battery_low),
+            illustration = R.drawable.img_card_reader_update_failed_battery_low,
+        )
 
         data class ButtonState(
             val onActionClicked: (() -> Unit),

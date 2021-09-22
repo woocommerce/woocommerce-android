@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 internal class BluetoothReaderListenerImpl(
     private val logWrapper: LogWrapper,
+    private val updateErrorMapper: UpdateErrorMapper,
 ) : BluetoothReaderListener {
     private val _updateStatusEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
     val updateStatusEvents = _updateStatusEvents.asStateFlow()
@@ -32,7 +33,10 @@ internal class BluetoothReaderListenerImpl(
             _updateAvailabilityEvents.value = SoftwareUpdateAvailability.NotAvailable
             _updateStatusEvents.value = SoftwareUpdateStatus.Success
         } else {
-            _updateStatusEvents.value = SoftwareUpdateStatus.Failed(e.message)
+            _updateStatusEvents.value = SoftwareUpdateStatus.Failed(
+                updateErrorMapper.map(e.errorCode),
+                e.message
+            )
         }
     }
 
