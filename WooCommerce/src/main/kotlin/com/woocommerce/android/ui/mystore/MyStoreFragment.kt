@@ -370,7 +370,7 @@ class MyStoreFragment :
     }
 
     private fun handleFeedbackRequestPositiveClick() {
-        context?.let {
+        if (isAdded) {
             // Hide the card and set last feedback date to now
             binding.storeFeedbackRequestCard.visibility = View.GONE
             FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
