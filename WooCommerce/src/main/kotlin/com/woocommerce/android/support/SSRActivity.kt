@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 import java.lang.IllegalStateException
@@ -64,6 +65,7 @@ class SSRActivity : AppCompatActivity() {
                 is ShareSSR -> shareSSR(it.ssrText)
                 is CopySSR -> copySSRToClipboard(it.ssrText)
                 is ShowSnackbar -> ToastUtils.showToast(this, it.message)
+                is Exit -> finish()
                 else -> it.isHandled = false
             }
         }
@@ -120,10 +122,6 @@ class SSRActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                true
-            }
             ID_SHARE -> {
                 viewModel.onShareButtonTapped()
                 true
