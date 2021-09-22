@@ -74,8 +74,10 @@ class ProductTagsAdapter(
      * in the view model
      */
     fun setFilter(filter: String) {
-        currentFilter = filter
-        notifyDataSetChanged()
+        if (filter != currentFilter) {
+            currentFilter = filter
+            notifyDataSetChanged()
+        }
     }
 
     inner class ProductTagViewHolder(val viewBinding: ProductTagListItemBinding) :
