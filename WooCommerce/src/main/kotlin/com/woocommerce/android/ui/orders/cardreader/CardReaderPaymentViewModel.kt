@@ -488,6 +488,9 @@ class CardReaderPaymentViewModel
         SERVER_ERROR(R.string.card_reader_payment_failed_server_error_state),
         PAYMENT_DECLINED(R.string.card_reader_payment_failed_card_declined_state),
         GENERIC_ERROR(R.string.card_reader_payment_failed_unexpected_error_state),
+        // TODO cardreader handle different minimum amounts for different currency settlements
+        //  in future. Right now IPP is supported only in United States.
+        //  https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
         AMOUNT_TOO_SMALL(R.string.card_reader_payment_failed_amount_too_small),
     }
 
