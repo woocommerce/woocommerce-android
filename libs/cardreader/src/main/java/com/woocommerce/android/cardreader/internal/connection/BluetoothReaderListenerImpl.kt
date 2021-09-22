@@ -10,12 +10,15 @@ import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.LOG_TAG
+import com.woocommerce.android.cardreader.internal.connection.BluetoothCardReaderMessages.CardReaderNoMessage
+import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class BluetoothReaderListenerImpl(
     private val logWrapper: LogWrapper,
+    private val additionalInfoMapper: AdditionalInfoMapper,
 ) : BluetoothReaderListener {
     private val _updateStatusEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
     val updateStatusEvents = _updateStatusEvents.asStateFlow()
@@ -23,6 +26,9 @@ internal class BluetoothReaderListenerImpl(
     private val _updateAvailabilityEvents =
         MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
     val updateAvailabilityEvents = _updateAvailabilityEvents.asStateFlow()
+
+    private val _displayMessagesEvent = MutableStateFlow<BluetoothCardReaderMessages>(CardReaderNoMessage)
+    val displayMessagesEvent = _displayMessagesEvent.asStateFlow()
 
     var cancelUpdateAction: Cancelable? = null
 
@@ -62,14 +68,21 @@ internal class BluetoothReaderListenerImpl(
 
     override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
         logWrapper.d(LOG_TAG, "onRequestReaderDisplayMessage: $message")
+        _displayMessagesEvent.value = BluetoothCardReaderMessages
+            .CardReaderDisplayMessage(additionalInfoMapper.map(message))
     }
 
     override fun onRequestReaderInput(options: ReaderInputOptions) {
         logWrapper.d(LOG_TAG, "onRequestReaderInput: $options")
+        _displayMessagesEvent.value = BluetoothCardReaderMessages.CardReaderInputMessage(options.toString())
     }
 
     fun resetConnectionState() {
         _updateStatusEvents.value = SoftwareUpdateStatus.Unknown
         _updateAvailabilityEvents.value = SoftwareUpdateAvailability.NotAvailable
+    }
+
+    fun resetDisplayMessage() {
+        _displayMessagesEvent.value = CardReaderNoMessage
     }
 }

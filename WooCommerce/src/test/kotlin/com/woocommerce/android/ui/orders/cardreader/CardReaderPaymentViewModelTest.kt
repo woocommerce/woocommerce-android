@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErr
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.internal.connection.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
@@ -114,6 +115,82 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test url")
     }
+
+    @Test
+    fun `given collect payment shown, when RETRY message received, then collect payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(RETRY_CARD))
+                }
+            }
+
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_retry_card_prompt)
+        }
+
+    @Test
+    fun `given collect payment shown, when MULTIPLE_CARDS_DETECTED received, then collect payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(MULTIPLE_CONTACTLESS_CARDS_DETECTED))
+                }
+            }
+
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_multiple_contactless_cards_detected_prompt)
+        }
+
+    @Test
+    fun `given collect payment shown, when TRY_OTHER_CARD message received, then collect payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_CARD))
+                }
+            }
+
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_try_another_card_prompt)
+        }
+
+    @Test
+    fun `given collect payment shown, when TRY_OTHER_READ message received, then collect payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_READ_METHOD))
+                }
+            }
+
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_try_another_read_method_prompt)
+        }
 
     @Test
     fun `given fetching order fails, when payment screen shown, then FailedPayment state is shown`() =
@@ -910,22 +987,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.onCleared()
 
             verify(cardReaderManager, never()).cancelPayment(any())
-        }
-
-    @Test
-    fun `given collect payment shown, when retry card event received, then collect payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow {
-                    emit(CollectingPayment)
-                    emit(ShowAdditionalInfo(RETRY_CARD))
-                }
-            }
-
-            viewModel.start()
-
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
-                .isEqualTo(R.string.card_reader_payment_retry_card_prompt)
         }
 
     @Test

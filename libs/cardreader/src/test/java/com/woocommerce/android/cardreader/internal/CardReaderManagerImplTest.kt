@@ -23,7 +23,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class CardReaderManagerImplTest {
@@ -180,4 +179,12 @@ class CardReaderManagerImplTest {
 
         verify(softwareUpdateManager).cancelOngoingFirmwareUpdate()
     }
+
+    @Test
+    fun `when collect payment is initiated, then reset bluetooth card reader messages`() =
+        runBlockingTest {
+            cardReaderManager.collectPayment(mock())
+
+            verify(connectionManager).resetBluetoothCardReaderDisplayMessage()
+        }
 }

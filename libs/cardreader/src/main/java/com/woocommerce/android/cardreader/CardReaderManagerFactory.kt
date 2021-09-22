@@ -22,7 +22,7 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 object CardReaderManagerFactory {
     fun createCardReaderManager(cardReaderStore: CardReaderStore, logWrapper: LogWrapper): CardReaderManager {
         val terminal = TerminalWrapper()
-        val bluetoothReaderListener = BluetoothReaderListenerImpl(logWrapper)
+        val bluetoothReaderListener = BluetoothReaderListenerImpl(logWrapper, AdditionalInfoMapper())
         val terminalListener = TerminalListenerImpl(logWrapper)
 
         return CardReaderManagerImpl(
