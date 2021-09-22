@@ -769,6 +769,7 @@
     <string name="card_reader_payment_failed_card_declined_state">Card declined</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
+    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50 usd</string>
 
     <string name="card_reader_payment_retry_card_prompt">Retry with the same card</string>
     <string name="card_reader_payment_remove_card_prompt">Remove the card</string>
