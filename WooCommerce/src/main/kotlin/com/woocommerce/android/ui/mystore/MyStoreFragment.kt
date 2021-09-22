@@ -370,10 +370,12 @@ class MyStoreFragment :
     }
 
     private fun handleFeedbackRequestPositiveClick() {
+        // set last feedback date to now
+        FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+
         if (isAdded) {
-            // Hide the card and set last feedback date to now
+            // Hide the card
             binding.storeFeedbackRequestCard.visibility = View.GONE
-            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
 
             // Request a ReviewInfo object from the Google Reviews API. If this fails
             // we just move on as there isn't anything we can do.
