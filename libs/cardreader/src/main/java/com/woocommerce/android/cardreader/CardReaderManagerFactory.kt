@@ -24,7 +24,7 @@ object CardReaderManagerFactory {
     fun createCardReaderManager(cardReaderStore: CardReaderStore, logWrapper: LogWrapper): CardReaderManager {
         val terminal = TerminalWrapper()
         val batteryLevelProvider = { terminal.getConnectedReader()?.currentBatteryLevel }
-        val bluetoothReaderListener = BluetoothReaderListenerImpl(logWrapper, UpdateErrorMapper(batteryLevelProvider))
+        val bluetoothReaderListener = BluetoothReaderListenerImpl(logWrapper, AdditionalInfoMapper(), UpdateErrorMapper(batteryLevelProvider))
         val terminalListener = TerminalListenerImpl(logWrapper)
 
         return CardReaderManagerImpl(

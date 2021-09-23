@@ -39,7 +39,9 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.internal.connection.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -109,6 +111,18 @@ class CardReaderPaymentViewModel
         }
     }
 
+    private suspend fun listenForBluetoothCardReaderMessages() {
+        cardReaderManager.displayBluetoothCardReaderMessages.collect { message ->
+            when (message) {
+                is BluetoothCardReaderMessages.CardReaderDisplayMessage -> {
+                    handleAdditionalInfo(message.message)
+                }
+                is BluetoothCardReaderMessages.CardReaderInputMessage -> { /* no-op*/ }
+                is BluetoothCardReaderMessages.CardReaderNoMessage -> { /* no-op*/ }
+            }.exhaustive
+        }
+    }
+
     private fun initPaymentFlow(isRetry: Boolean) {
         paymentFlowJob = launch {
             viewState.postValue((LoadingDataState))
@@ -120,7 +134,12 @@ class CardReaderPaymentViewModel
                     exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
                 }
-                collectPaymentFlow(cardReaderManager, order)
+                launch {
+                    collectPaymentFlow(cardReaderManager, order)
+                }
+                launch {
+                    listenForBluetoothCardReaderMessages()
+                }
             } ?: run {
                 tracker.track(
                     AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
@@ -268,6 +287,8 @@ class CardReaderPaymentViewModel
             }?.let { hint ->
                 viewState.value = collectPaymentState.copy(hintLabel = hint)
             }
+        } ?: run {
+            WooLog.e(WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}")
         }
     }
 

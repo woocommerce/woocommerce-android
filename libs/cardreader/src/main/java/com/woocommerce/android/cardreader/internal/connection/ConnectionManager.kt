@@ -30,6 +30,7 @@ internal class ConnectionManager(
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
+    val displayBluetoothCardReaderMessages = bluetoothReaderListener.displayMessagesEvent
 
     fun discoverReaders(isSimulated: Boolean, cardReaderTypesToDiscover: CardReaderTypesToDiscover) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->
@@ -111,6 +112,10 @@ internal class ConnectionManager(
                 }
             }
         }
+    }
+
+    fun resetBluetoothCardReaderDisplayMessage() {
+        bluetoothReaderListener.resetDisplayMessage()
     }
 
     private fun updateReaderStatus(status: CardReaderStatus) {

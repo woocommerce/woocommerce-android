@@ -18,9 +18,10 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.F
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.SpecificReader
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -203,7 +204,24 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
         launch {
-            startScanning()
+            listenToSoftwareUpdateStatus()
+        }
+        launch {
+            if (cardReaderManager.readerStatus.value is CardReaderStatus.Connecting) {
+                handleConnectionInProgress(cardReaderManager)
+            } else {
+                startScanning()
+            }
+        }
+    }
+
+    private suspend fun handleConnectionInProgress(cardReaderManager: CardReaderManager) {
+        cardReaderManager.readerStatus.collect { status ->
+            when (status) {
+                is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
+                CardReaderStatus.NotConnected -> onReaderConnectionFailed()
+                CardReaderStatus.Connecting -> viewState.value = ConnectingState(::onCancelClicked)
+            }.exhaustive
         }
     }
 
@@ -310,25 +328,27 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
-            launch {
-                cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
-                    if (updateStatus is SoftwareUpdateStatus.InstallationStarted) {
-                        triggerEvent(ShowUpdateInProgress)
-                    }
-                }
-            }
-
             // TODO cardreader handle error cases
-//            val locationId = (cardReader.locationId ?: locationRepository.getDefaultLocationId())!!
-            val locationId = locationRepository.getDefaultLocationId()!!
+            val locationId = (cardReader.locationId ?: locationRepository.getDefaultLocationId())!!
             val success = cardReaderManager.connectToReader(cardReader, locationId)
             if (success) {
-                tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
                 onReaderConnected(cardReader)
             } else {
-                tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
-                WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
-                viewState.value = ConnectingFailedState({ startFlow() }, ::onCancelClicked)
+                onReaderConnectionFailed()
+            }
+        }
+    }
+
+    private fun onReaderConnectionFailed() {
+        tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
+        WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
+        viewState.value = ConnectingFailedState({ startFlow() }, ::onCancelClicked)
+    }
+
+    private suspend fun listenToSoftwareUpdateStatus() {
+        cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
+            if (updateStatus is SoftwareUpdateInProgress) {
+                triggerEvent(ShowUpdateInProgress)
             }
         }
     }
@@ -351,6 +371,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onReaderConnected(cardReader: CardReader) {
+        tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         storeConnectedReader(cardReader)
 

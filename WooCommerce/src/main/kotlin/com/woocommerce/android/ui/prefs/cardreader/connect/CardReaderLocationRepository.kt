@@ -12,7 +12,7 @@ class CardReaderLocationRepository @Inject constructor(
         val selectedSite = selectedSite.getIfExists() ?: return null
         val result = wcPayStore.getStoreLocationForSite(selectedSite)
         return if (result.isError) {
-            // TODO cardreader
+            // TODO cardreader handle the error
             null
         } else {
             result.locationId!!
