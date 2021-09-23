@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.products
 
-import android.content.DialogInterface
 import android.os.Parcelable
 import androidx.annotation.DimenRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.sortCategories
@@ -16,9 +14,7 @@ import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -27,10 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STATUS
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.TYPE
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.CATEGORY
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.*
 import javax.inject.Inject
 
 @HiltViewModel
