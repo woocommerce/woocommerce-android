@@ -5,10 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductAddonOptionItemBinding
 import com.woocommerce.android.ui.products.addons.options.AddonOptionListAdapter.AddonOptionsViewHolder
-import com.woocommerce.android.ui.products.addons.toFormattedPrice
+import com.woocommerce.android.ui.products.addons.handlePriceType
 import org.wordpress.android.fluxc.domain.Addon
-import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.FlatFee
-import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.PercentageBased
 import java.math.BigDecimal
 
 class AddonOptionListAdapter(
@@ -35,11 +33,7 @@ class AddonOptionListAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(option: Addon.HasOptions.Option) {
             binding.optionName.text = option.label
-            binding.optionPrice.text = when(option.price.priceType) {
-                FlatFee -> option.price.toFormattedPrice(formatCurrencyForDisplay)
-                PercentageBased -> "${option.price.value}%"
-                else -> option.price.value
-            }
+            binding.optionPrice.text = option.price.handlePriceType(formatCurrencyForDisplay)
         }
     }
 }

@@ -12,7 +12,7 @@ fun Addon.HasAdjustablePrice.Price.Adjusted.handlePriceType(
     QuantityBased -> value
 }
 
-fun Addon.HasAdjustablePrice.Price.Adjusted.toFormattedPrice(
+private fun Addon.HasAdjustablePrice.Price.Adjusted.toFormattedPrice(
     formatCurrencyForDisplay: (BigDecimal) -> String
 ) = value.toBigDecimalOrNull()
     ?.let { formatCurrencyForDisplay(it) }

@@ -70,7 +70,7 @@ class ProductAddonCard @JvmOverloads constructor(
             is Addon.HasAdjustablePrice.Price.Adjusted -> {
                 addonCustomPrice.apply {
                     visibility = View.VISIBLE
-                    text = price.toFormattedPrice(formatCurrencyForDisplay)
+                    text = price.handlePriceType(formatCurrencyForDisplay)
                 }
             }
             Addon.HasAdjustablePrice.Price.NotAdjusted -> {
