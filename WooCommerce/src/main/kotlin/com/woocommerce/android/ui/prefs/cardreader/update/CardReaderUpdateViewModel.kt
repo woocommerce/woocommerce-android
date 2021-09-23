@@ -124,15 +124,15 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun updateProgress(currentState: ViewState?, progress: Int) {
-        if (currentState is ViewState.StateWithProgress<*>) {
+        if (currentState is StateWithProgress<*>) {
             viewState.value = currentState.copyWithUpdatedProgress(buildProgressText(progress))
         } else {
-            viewState.value = ViewState.UpdatingState(progressText = buildProgressText(progress))
+            viewState.value = UpdatingState(progressText = buildProgressText(progress))
         }
     }
 
-    private fun showCancelAnywayButton(currentState: ViewState.UpdatingState) {
-        viewState.value = ViewState.UpdatingCancelingState(
+    private fun showCancelAnywayButton(currentState: UpdatingState) {
+        viewState.value = UpdatingCancelingState(
             progressText = currentState.progressText,
             button = ButtonState(
                 ::onCancelClicked,
