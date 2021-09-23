@@ -5,7 +5,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -68,7 +67,6 @@ class ProductFilterOptionListFragment :
             viewModel.onShowProductsClicked()
         }
     }
-
 
     private fun setupObservers(
         viewModel: ProductFilterListViewModel,
