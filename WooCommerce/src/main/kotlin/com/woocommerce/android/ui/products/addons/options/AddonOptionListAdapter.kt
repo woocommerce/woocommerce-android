@@ -37,7 +37,7 @@ class AddonOptionListAdapter(
             binding.optionName.text = option.label
             binding.optionPrice.text = when(option.price.priceType) {
                 FlatFee -> option.price.toFormattedPrice(formatCurrencyForDisplay)
-                PercentageBased -> "%${option.price}"
+                PercentageBased -> "${option.price.value}%"
                 else -> option.price.value
             }
         }
