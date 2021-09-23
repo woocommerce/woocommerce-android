@@ -2,11 +2,14 @@ package com.woocommerce.android.ui.products
 
 import android.content.DialogInterface
 import android.os.Parcelable
+import androidx.annotation.DimenRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.ui.products.ProductType.OTHER
@@ -169,13 +172,16 @@ class ProductFilterListViewModel @Inject constructor(
 
     private fun productCategoriesToOptionListItems(): List<FilterListOptionItemUiModel> {
         return addDefaultFilterOption(
-            productCategories.map { category ->
-                FilterListOptionItemUiModel(
-                    category.name,
-                    category.remoteCategoryId.toString(),
-                    isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString()
-                )
-            }.toMutableList(),
+            productCategories
+                .sortCategories(resourceProvider)
+                .map { (category, margin, _) ->
+                    FilterListOptionItemUiModel(
+                        category.name,
+                        category.remoteCategoryId.toString(),
+                        isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString(),
+                        margin
+                    )
+                }.toMutableList(),
             productFilterOptions[CATEGORY].isNullOrEmpty()
         )
     }
@@ -184,7 +190,7 @@ class ProductFilterListViewModel @Inject constructor(
         return if (hasChanges()) {
             triggerEvent(
                 ShowDialog.buildDiscardDialogEvent(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    positiveBtnAction = { _, _ ->
                         triggerEvent(Exit)
                     },
                     negativeButtonId = string.keep_changes
@@ -426,8 +432,13 @@ class ProductFilterListViewModel @Inject constructor(
     data class FilterListOptionItemUiModel(
         val filterOptionItemName: String,
         val filterOptionItemValue: String,
-        val isSelected: Boolean = false
+        val isSelected: Boolean = false,
+        var margin: Int = DEFAULT_FILTER_OPTION_MARGIN
     ) : Parcelable {
+        companion object {
+            @DimenRes const val DEFAULT_FILTER_OPTION_MARGIN = 0
+        }
+
         fun isSameFilterOption(updatedFilterOption: FilterListOptionItemUiModel): Boolean {
             if (this.isSelected == updatedFilterOption.isSelected &&
                 this.filterOptionItemName == updatedFilterOption.filterOptionItemName &&
