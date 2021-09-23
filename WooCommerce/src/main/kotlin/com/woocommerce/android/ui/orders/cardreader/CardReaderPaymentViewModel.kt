@@ -429,7 +429,7 @@ class CardReaderPaymentViewModel
         data class FailedPaymentState(
             private val errorType: PaymentFlowError,
             override val amountWithCurrencyLabel: String?,
-            val primaryLabel: Int? = R.string.try_again,
+            private val primaryLabel: Int? = R.string.try_again,
             override val onPrimaryActionClicked: (() -> Unit)
         ) : ViewState(
             headerLabel = R.string.card_reader_payment_payment_failed_header,
