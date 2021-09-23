@@ -14,7 +14,8 @@ import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -23,7 +24,10 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.*
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.CATEGORY
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STATUS
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.TYPE
 import javax.inject.Inject
 
 @HiltViewModel
@@ -184,7 +188,7 @@ class ProductFilterListViewModel @Inject constructor(
             triggerEvent(
                 ShowDialog.buildDiscardDialogEvent(
                     positiveBtnAction = { _, _ ->
-                        triggerEvent(Exit)
+                        triggerEvent(MultiLiveEvent.Event.Exit)
                     },
                     negativeButtonId = string.keep_changes
                 )
@@ -240,7 +244,7 @@ class ProductFilterListViewModel @Inject constructor(
             productCategory = getFilterByProductCategory(),
             productCategoryName = selectedCategoryName
         )
-        triggerEvent(ExitWithResult(result))
+        triggerEvent(MultiLiveEvent.Event.ExitWithResult(result))
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
