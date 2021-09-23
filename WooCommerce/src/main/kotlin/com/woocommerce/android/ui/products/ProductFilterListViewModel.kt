@@ -14,7 +14,8 @@ import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -188,7 +189,7 @@ class ProductFilterListViewModel @Inject constructor(
             triggerEvent(
                 ShowDialog.buildDiscardDialogEvent(
                     positiveBtnAction = { _, _ ->
-                        triggerEvent(MultiLiveEvent.Event.Exit)
+                        triggerEvent(Exit)
                     },
                     negativeButtonId = string.keep_changes
                 )
@@ -244,7 +245,7 @@ class ProductFilterListViewModel @Inject constructor(
             productCategory = getFilterByProductCategory(),
             productCategoryName = selectedCategoryName
         )
-        triggerEvent(MultiLiveEvent.Event.ExitWithResult(result))
+        triggerEvent(ExitWithResult(result))
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
