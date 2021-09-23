@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.products.addons.options.AddonOptionListAdapter
 import com.woocommerce.android.ui.products.addons.toFormattedPrice
 import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.FlatFee
+import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.PercentageBased
 import java.math.BigDecimal
 
 class AddonOptionListAdapter(
@@ -36,6 +37,7 @@ class AddonOptionListAdapter(
             binding.optionName.text = option.label
             binding.optionPrice.text = when(option.price.priceType) {
                 FlatFee -> option.price.toFormattedPrice(formatCurrencyForDisplay)
+                PercentageBased -> "%${option.price}"
                 else -> option.price.value
             }
         }
