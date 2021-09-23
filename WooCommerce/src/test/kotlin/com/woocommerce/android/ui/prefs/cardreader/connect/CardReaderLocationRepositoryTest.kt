@@ -57,5 +57,4 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
             // THEN
             assertThat(result).isNull()
         }
-
 }
