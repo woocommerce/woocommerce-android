@@ -329,8 +329,7 @@ class CardReaderConnectViewModel @Inject constructor(
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
             // TODO cardreader handle error cases
-//            val locationId = (cardReader.locationId ?: locationRepository.getDefaultLocationId())!!
-            val locationId = locationRepository.getDefaultLocationId()!!
+            val locationId = (cardReader.locationId ?: locationRepository.getDefaultLocationId())!!
             val success = cardReaderManager.connectToReader(cardReader, locationId)
             if (success) {
                 onReaderConnected(cardReader)
