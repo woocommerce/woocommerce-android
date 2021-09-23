@@ -71,6 +71,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock {
         on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+        on { softwareUpdateStatus }.thenReturn(flow { SoftwareUpdateStatus.Unknown })
     }
     private val appPrefs: AppPrefs = mock()
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
@@ -521,7 +522,20 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
-            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, locationId)
+            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, eq(locationId))
+        }
+
+    @Test
+    fun `given card reader has location id, when connect to, then readers location id used`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = MULTIPLE_READERS_FOUND)
+            val locationId = "old_location_id"
+            whenever(reader2.locationId).thenReturn(locationId)
+
+            val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
+            reader.onConnectClicked()
+
+            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, eq(locationId))
         }
 
     @Test
@@ -983,6 +997,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 }
             }
         }
+        whenever(locationRepository.getDefaultLocationId()).thenReturn(locationId)
         whenever(cardReaderManager.connectToReader(reader, locationId)).thenReturn(connectingSucceeds)
         whenever(cardReaderManager.connectToReader(reader2, locationId)).thenReturn(connectingSucceeds)
         (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)

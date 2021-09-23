@@ -41,6 +41,8 @@ class CardReaderManagerImplTest {
     private val supportedReaders =
         CardReaderTypesToDiscover.SpecificReaders(listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2))
 
+    private val locationId = "locationId"
+
     @Before
     fun setUp() {
         cardReaderManager = CardReaderManagerImpl(
@@ -112,7 +114,7 @@ class CardReaderManagerImplTest {
         runBlockingTest {
             whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-            cardReaderManager.connectToReader(mock())
+            cardReaderManager.connectToReader(mock(), locationId)
         }
 
     @Test
