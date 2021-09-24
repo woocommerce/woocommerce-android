@@ -64,7 +64,7 @@ class FeatureAnnouncementRepository @Inject constructor(
             whatsNewStore.fetchCachedAnnouncements()
         } else {
             whatsNewStore.fetchRemoteAnnouncements(
-                buildConfigWrapper.versionName, WhatsNewStore.WhatsNewAppId.WP_ANDROID
+                buildConfigWrapper.versionName, WhatsNewStore.WhatsNewAppId.WOO_ANDROID
             )
         }
         onWhatsNewFetched.whatsNewItems?.map { featureAnnouncements.add(it.build()) }?.toList()
