@@ -11,14 +11,16 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateFailedBatteryLow
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -104,11 +106,11 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given failed status, when view model created, then exit with failed`() =
+    fun `given failed status with failed type, when view model created, then exit with failed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val reason = "reason"
-            val status = Failed(reason)
+            val status = Failed(SoftwareUpdateStatusErrorType.Failed, reason)
 
             // WHEN
             val viewModel = createViewModel()
@@ -117,6 +119,51 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
             assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(FAILED)
+        }
+
+    @Test
+    fun `given failed status with battery low type, when view model created, then battery low status`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val reason = "reason"
+            val batteryLevel = 0.3f
+            val status = Failed(SoftwareUpdateStatusErrorType.BatteryLow(batteryLevel), reason)
+
+            // WHEN
+            val viewModel = createViewModel()
+            softwareStatus.value = status
+
+            // THEN
+            val state = viewModel.viewStateData.value as UpdateFailedBatteryLow
+            assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_title_battery_low))
+            assertThat(state.description).isEqualTo(
+                UiStringRes(
+                    R.string.card_reader_software_update_progress_description_low_battery,
+                    listOf(UiString.UiStringText("30"))
+                )
+            )
+            assertThat(state.progressText).isNull()
+            assertThat(state.illustration).isEqualTo(R.drawable.img_card_reader_update_failed_battery_low)
+        }
+
+    @Test
+    fun `given failed status with battery low with battery level, when view model created, then special description`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val reason = "reason"
+            val status = Failed(SoftwareUpdateStatusErrorType.BatteryLow(null), reason)
+
+            // WHEN
+            val viewModel = createViewModel()
+            softwareStatus.value = status
+
+            // THEN
+            val state = viewModel.viewStateData.value as UpdateFailedBatteryLow
+            assertThat(state.description).isEqualTo(
+                UiStringRes(
+                    R.string.card_reader_software_update_progress_description_low_battery_level_unknown
+                )
+            )
         }
 
     @Test
@@ -132,21 +179,6 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
             assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(SUCCESS)
-        }
-
-    @Test
-    fun `given unknown status, when view model created, then exit with failed`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            val status = Unknown
-
-            // WHEN
-            val viewModel = createViewModel()
-            softwareStatus.value = status
-
-            // THEN
-            assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
-            assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(FAILED)
         }
 
     @Test
@@ -167,7 +199,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     fun `given failed status, when view model created, then failed tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val status = Failed("")
+            val status = Failed(SoftwareUpdateStatusErrorType.Failed, "")
 
             // WHEN
             createViewModel()
