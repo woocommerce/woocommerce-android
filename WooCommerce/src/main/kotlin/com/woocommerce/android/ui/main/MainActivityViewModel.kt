@@ -38,10 +38,11 @@ class MainActivityViewModel @Inject constructor(
      * @return true if the notification has been handled, false otherwise
      */
     fun handleIncomingNotification(localPushId: Int, notification: Notification?): Boolean {
-        notification?.let {
+        return notification?.let {
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()
             if (it.remoteSiteId != currentSite.siteId) {
+                // Update selected store
                 siteStore.getSiteBySiteId(it.remoteSiteId)?.let { updatedSite ->
                     selectedSite.set(updatedSite)
                 }
@@ -51,18 +52,18 @@ class MainActivityViewModel @Inject constructor(
                 launch(Dispatchers.Main) {
                     triggerEvent(RecreateActivity)
                 }
-                return false
+                false
+            } else {
+                when (localPushId) {
+                    it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
+                    it.noteId -> onZendeskNotificationOpened(localPushId, it.noteId.toLong())
+                    else -> onSingleNotificationOpened(localPushId, it)
+                }
+                true
             }
-
-            when (localPushId) {
-                it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
-                it.noteId -> onZendeskNotificationOpened(localPushId, it.noteId.toLong())
-                else -> onSingleNotificationOpened(localPushId, it)
-            }
-            return true
         } ?: run {
             triggerEvent(ViewMyStoreStats)
-            return true
+            true
         }
     }
 
