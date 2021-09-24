@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-31 11:54:45+0000
+Translation-Revision-Date: 2021-09-16 22:17:45+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="settings_whats_new">Что нового в WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Просмотреть дополнения</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">К сожалению, нам пока не удалось исправить эту настройку функции</string>
+    <string name="product_category">Рубрика</string>
+    <string name="notification_review_title">У вас 1 новый отзыв! 🌟</string>
+    <string name="notification_order_title">У вас 1 новый заказ! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d товар</string>
     <string name="upsell_product_count_many">Продукты для апсела: %d</string>
     <string name="upsell_product_count_one">Продукт для апсела: %d</string>
@@ -106,6 +112,7 @@ Language: ru
     <string name="product_attributes_created_generate_action_text">Создать вариант</string>
     <string name="product_attributes_created_description">Теперь, добавив атрибуты, вы можете создать свой первый вариант.</string>
     <string name="product_attributes_created_title">Атрибуты созданы</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">Не рекомендуется отменять текущее обновление ПО</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Не удалось выполнить этот платеж</string>
     <string name="card_reader_payment_failed_server_error_state">Нет подключения к серверу</string>
@@ -428,11 +435,11 @@ Language: ru
     <string name="shipping_label_create_packaging_details">Сведения об упаковке</string>
     <string name="shipping_label_create_title">Создание почтового бланка</string>
     <string name="shipping_label_more_information_link">Узнать больше</string>
-    <string name="shipping_label_more_information_message">Сократите очередь на почте, распечатывая транспортные этикетки дома с телефона со скидкой!</string>
+    <string name="shipping_label_more_information_message">Сократите очередь на почте, распечатывая транспортные этикетки дома с мобильного устройства со скидкой!</string>
     <string name="shipping_label_more_information_heading">Экономьте время и деньги, выполняя заказы с помощью WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Отметить заказ как выполненный</string>
-    <string name="orderdetail_shipping_label_notice">Подробнее о распечатке этикеток с телефона</string>
+    <string name="orderdetail_shipping_label_notice">Узнать больше о распечатке этикеток с вашего мобильного устройства</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Создание почтового бланка</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Теперь вы можете создавать транспортные этикетки для всех физических заказов прямо со своего устройства с помощью бесплатного плагина WooCommerce Shipping. Нажмите \"Создать транспортную этикету\", чтобы попробовать новую бета-функцию!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Создавайте транспортные этикетки со своего устройства!</string>
@@ -493,6 +500,7 @@ Language: ru
     <string name="my_store_stats_availability_title">Мы не можем показать аналитику\n для вашего магазина</string>
     <string name="login_get_link_by_email">Получить ссылку для входа по email</string>
     <string name="email_not_registered_wpcom">Не получается найти учётную запись WordPress.com для этого адреса email.</string>
+    <string name="settings_enable_product_addons_teaser_message">Протестируйте наши дополнительные модули заказов в процессе подготовки к запуску</string>
     <string name="settings_enable_product_adding_teaser_title">Создание продуктов</string>
     <string name="settings_preferences">Параметры</string>
     <string name="product_trash_error">Не удалось отправить продукт в корзину</string>
@@ -515,7 +523,7 @@ Language: ru
     <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 in)</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 in)</string>
     <string name="shipping_label_preview_error">Не удалось выполнить предварительный просмотр транспортной этикетки</string>
-    <string name="shipping_label_print_info">Не знаете, как печатать с телефона?</string>
+    <string name="shipping_label_print_info">Не знаете, как печатать с помощью мобильного устройства?</string>
     <string name="shipping_label_paper_size_options_info">См. макет этикетки и варианты размера бумаги</string>
     <string name="shipping_label_print_button">Напечатать транспортную этикетку</string>
     <string name="shipping_label_paper_size_options_title">Выбрать размер бумаги</string>

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-01 09:54:04+0000
+Translation-Revision-Date: 2021-09-16 22:17:26+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="settings_whats_new">WooCommerce の最新情報</string>
+    <string name="settings_enable_product_addons_teaser_title">アドオンを表示</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">現在はこの機能の設定を変更できません</string>
+    <string name="product_category">カテゴリー</string>
+    <string name="notification_review_title">1件の新しいレビューがあります。 🌟</string>
+    <string name="notification_order_title">1件の新しい注文があります。 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d アイテム</string>
     <string name="upsell_product_count_many">%dアップセル商品</string>
     <string name="upsell_product_count_one">%dアップセル商品</string>
@@ -106,6 +112,7 @@ Language: ja_JP
     <string name="product_attributes_created_generate_action_text">バリエーションを生成</string>
     <string name="product_attributes_created_description">属性の追加が完了しました。最初のバリエーションを作成してください。</string>
     <string name="product_attributes_created_title">属性を作成しました</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">実行中のソフトウェア更新をキャンセルすることは推奨されません</string>
     <string name="card_reader_payment_failed_unexpected_error_state">支払いを処理できませんでした</string>
     <string name="card_reader_payment_failed_server_error_state">サーバーに接続していません</string>
@@ -428,11 +435,11 @@ Language: ja_JP
     <string name="shipping_label_create_packaging_details">梱包の詳細</string>
     <string name="shipping_label_create_title">配送ラベルを作成</string>
     <string name="shipping_label_more_information_link">さらに詳しく</string>
-    <string name="shipping_label_more_information_message">自宅でスマートフォンを使い、割引料金で配送ラベルを印刷して、郵便局での待ち時間をカット !</string>
+    <string name="shipping_label_more_information_message">自宅でモバイルデバイスを使い、割引料金で配送ラベルを印刷して、郵便局での待ち時間をカット !</string>
     <string name="shipping_label_more_information_heading">WooCommerce Shipping を利用して、時間とお金を節約</string>
     <string name="shipping_label_more_information_title">WooCommerce の送料</string>
     <string name="order_mark_complete">注文を完了としてマーク</string>
-    <string name="orderdetail_shipping_label_notice">スマートフォンでのラベル作成に関する詳細はこちら</string>
+    <string name="orderdetail_shipping_label_notice">モバイルデバイスでのラベル作成に関する詳細はこちら</string>
     <string name="orderdetail_shipping_label_create_shipping_label">配送ラベルを作成</string>
     <string name="orderdetail_shipping_label_m3_wip_message">無料の WooCommerce Shipping プラグインを使用して、お使いの端末から直接、すべての物理的な注文の配送ラベルを作成できるようになりました。 「配送ラベルを作成」をタップしてベータ機能をお試しください !</string>
     <string name="orderdetail_shipping_label_m2_wip_title">スマートフォンを使って配送ラベルを作成 !</string>
@@ -493,6 +500,7 @@ Language: ja_JP
     <string name="my_store_stats_availability_title">ストアのアナリティクスを表示できません</string>
     <string name="login_get_link_by_email">ログインリンクをメールで取得</string>
     <string name="email_not_registered_wpcom">このメールアドレスに紐付けられている WordPress.com アカウントが見つかりません</string>
+    <string name="settings_enable_product_addons_teaser_message">起動の準備ができたら、注文アドオンの表示をテストします</string>
     <string name="settings_enable_product_adding_teaser_title">商品を作成中</string>
     <string name="settings_preferences">設定</string>
     <string name="product_trash_error">商品をゴミ箱へ移動中にエラーが発生しました</string>
@@ -515,7 +523,7 @@ Language: ja_JP
     <string name="shipping_label_paper_size_letter">レター (8.5 x 11インチ)</string>
     <string name="shipping_label_paper_size_legal">リーガル (8.5 x 14インチ)</string>
     <string name="shipping_label_preview_error">配送ラベルのプレビューでエラーが発生しました</string>
-    <string name="shipping_label_print_info">スマートフォンから印刷する方法をご存知ですか ?</string>
+    <string name="shipping_label_print_info">モバイルデバイスから印刷する方法をご存知ですか ?</string>
     <string name="shipping_label_paper_size_options_info">ラベルのレイアウトと用紙サイズのオプションを見る</string>
     <string name="shipping_label_print_button">配送ラベルを印刷</string>
     <string name="shipping_label_paper_size_options_title">用紙サイズを選択</string>

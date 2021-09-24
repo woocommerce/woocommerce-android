@@ -251,7 +251,21 @@ class CardReaderPaymentViewModel
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
-        viewState.postValue(FailedPaymentState(error.type.mapToUiError(), amountLabel, onRetryClicked))
+        when (val errorType = error.type.mapToUiError()) {
+            PaymentFlowError.AMOUNT_TOO_SMALL -> {
+                val onBackPressed: () -> Unit = { onBackPressed() }
+                viewState.postValue(
+                    FailedPaymentState(
+                        errorType, amountLabel, R.string.card_reader_payment_payment_failed_ok, onBackPressed
+                    )
+                )
+            }
+            else -> {
+                viewState.postValue(
+                    FailedPaymentState(errorType, amountLabel, onPrimaryActionClicked = onRetryClicked)
+                )
+            }
+        }.exhaustive
     }
 
     private fun showPaymentSuccessfulState() {
@@ -435,12 +449,13 @@ class CardReaderPaymentViewModel
         data class FailedPaymentState(
             private val errorType: PaymentFlowError,
             override val amountWithCurrencyLabel: String?,
+            private val primaryLabel: Int? = R.string.try_again,
             override val onPrimaryActionClicked: (() -> Unit)
         ) : ViewState(
             headerLabel = R.string.card_reader_payment_payment_failed_header,
             paymentStateLabel = errorType.message,
             paymentStateLabelTopMargin = R.dimen.major_100,
-            primaryActionLabel = R.string.try_again,
+            primaryActionLabel = primaryLabel,
             illustration = R.drawable.img_products_error
         )
 
@@ -508,7 +523,8 @@ class CardReaderPaymentViewModel
         NO_NETWORK(R.string.card_reader_payment_failed_no_network_state),
         SERVER_ERROR(R.string.card_reader_payment_failed_server_error_state),
         PAYMENT_DECLINED(R.string.card_reader_payment_failed_card_declined_state),
-        GENERIC_ERROR(R.string.card_reader_payment_failed_unexpected_error_state)
+        GENERIC_ERROR(R.string.card_reader_payment_failed_unexpected_error_state),
+        AMOUNT_TOO_SMALL(R.string.card_reader_payment_failed_amount_too_small),
     }
 
     private fun CardPaymentStatusErrorType.mapToUiError(): PaymentFlowError =
@@ -518,5 +534,6 @@ class CardReaderPaymentViewModel
             CardPaymentStatusErrorType.CARD_READ_TIMED_OUT,
             CardPaymentStatusErrorType.GENERIC_ERROR -> PaymentFlowError.GENERIC_ERROR
             CardPaymentStatusErrorType.SERVER_ERROR -> PaymentFlowError.SERVER_ERROR
+            CardPaymentStatusErrorType.AMOUNT_TOO_SMALL -> PaymentFlowError.AMOUNT_TOO_SMALL
         }
 }

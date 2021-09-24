@@ -1,4 +1,0 @@
-7.4
-Las reseñas de productos que necesitan tu aprobación tienen una nueva etiqueta para que sea más fácil distinguirlas de las que ya están aprobadas.
-
-Esta actualización también incluye varias mejoras en la función de etiquetas de envío mediante la extensión WooCommerce Shipping & Tax. Apreciamos todos vuestros comentarios sobre esta nueva función.

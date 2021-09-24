@@ -3,14 +3,15 @@ package com.woocommerce.android.navigation
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
 import com.woocommerce.android.ui.base.TopLevelFragment
-import java.util.ArrayDeque
+import java.util.*
+
+private const val TOP_LEVEL_FRAGMENT_TAG_KEY = "top_level_fragment_tag"
 
 /**
  * A custom navigator that keeps the state of toplevel navigation fragments when navigating to other tabs.
@@ -24,7 +25,7 @@ class KeepStateNavigator(
 ) : FragmentNavigator(context, manager, containerId) {
     private var backStack: ArrayDeque<Int>
 
-    private var lastTopLevelFragment: Fragment? = null
+    private var tagOfLastTopLevelFragment: String? = null
 
     init {
         val field = FragmentNavigator::class.java.getDeclaredField("mBackStack")
@@ -56,7 +57,7 @@ class KeepStateNavigator(
         val tag = destination.id.toString()
         val transaction = manager.beginTransaction()
 
-        (lastTopLevelFragment ?: manager.primaryNavigationFragment)?.let {
+        manager.findFragmentByTag(tagOfLastTopLevelFragment)?.let {
             transaction.detach(it)
         }
 
@@ -65,6 +66,7 @@ class KeepStateNavigator(
         }
 
         var fragment = manager.findFragmentByTag(tag)
+
         if (fragment == null) {
             val className = destination.className
             fragment = manager.fragmentFactory.instantiate(context.classLoader, className)
@@ -72,7 +74,7 @@ class KeepStateNavigator(
         } else {
             transaction.attach(fragment)
         }
-        lastTopLevelFragment = fragment
+        tagOfLastTopLevelFragment = tag
 
         backStack.clear()
         backStack.add(destination.id)
@@ -82,5 +84,16 @@ class KeepStateNavigator(
         transaction.commit()
 
         return destination
+    }
+
+    override fun onSaveState(): Bundle {
+        return (super.onSaveState() ?: Bundle()).apply {
+            putString(TOP_LEVEL_FRAGMENT_TAG_KEY, tagOfLastTopLevelFragment)
+        }
+    }
+
+    override fun onRestoreState(savedState: Bundle?) {
+        super.onRestoreState(savedState)
+        tagOfLastTopLevelFragment = savedState?.getString(TOP_LEVEL_FRAGMENT_TAG_KEY)
     }
 }
