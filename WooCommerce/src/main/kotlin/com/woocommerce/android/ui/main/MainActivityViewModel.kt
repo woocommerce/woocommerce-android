@@ -5,9 +5,11 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
@@ -16,7 +18,8 @@ class MainActivityViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
-    private val notificationHandler: NotificationMessageHandler
+    private val notificationHandler: NotificationMessageHandler,
+    private val featureAnnouncementRepository: FeatureAnnouncementRepository
 ) : ScopedViewModel(savedState) {
     fun removeReviewNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
@@ -81,10 +84,19 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun updateFeatureAnnouncements() {
+        launch {
+            featureAnnouncementRepository.getLatestFeatureAnnouncement(true)
+            triggerEvent(ShowFeatureAnnouncement)
+        }
+    }
+
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
+    object ShowFeatureAnnouncement : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val localSiteId: Int, val remoteNoteId: Long) : Event()
 }
