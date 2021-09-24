@@ -265,4 +265,14 @@ class MainActivityViewModelTest : BaseUnitTest() {
         )
         assertThat(event).isEqualTo(ViewMyStoreStats)
     }
+
+    @Test
+    fun `when notification of non existing store is clicked, then show default screen`() {
+        doReturn(null).whenever(siteStore).getSiteBySiteId(any())
+        val notification = testOrderNotification.copy(remoteSiteId = TEST_REMOTE_SITE_ID_2)
+
+        viewModel.handleIncomingNotification(1000, notification)
+
+        assertThat(viewModel.event.value).isEqualTo(ViewMyStoreStats)
+    }
 }
