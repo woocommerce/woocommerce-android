@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -52,7 +53,14 @@ class ProductFilterOptionListAdapter(
     class ProductFilterOptionViewHolder(val viewBinding: ProductFilterOptionListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(filter: FilterListOptionItemUiModel) {
-            viewBinding.filterOptionItemName.text = filter.filterOptionItemName
+            viewBinding.filterOptionItemName.apply {
+                if (filter.margin != 0) {
+                    val newLayoutParams = layoutParams as LayoutParams
+                    newLayoutParams.marginStart = filter.margin
+                    layoutParams = newLayoutParams
+                }
+                text = filter.filterOptionItemName
+            }
             viewBinding.filterOptionItemTick.isVisible = filter.isSelected
         }
     }
