@@ -48,7 +48,7 @@ class ProductTagsAdapter(
     }
 
     private fun isSameList(newList: List<ProductTag>) =
-        this.productTags.areSameAs(newList) { this.isSameTag(it) }
+        this.productTags.areSameAs(newList) { this == it }
 
     fun setProductTags(productsTags: List<ProductTag>) {
         if (isSameList(productsTags)) {
