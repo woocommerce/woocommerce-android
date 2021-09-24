@@ -21,7 +21,7 @@ import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import java.util.Date
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -99,7 +99,7 @@ class ProductPricingViewModel @Inject constructor(
         onDataChanged(regularPrice = inputValue)
 
         val salePrice = pricingData.salePrice ?: BigDecimal.ZERO
-        viewState = if (salePrice > inputValue) {
+        viewState = if (salePrice > BigDecimal.ZERO && salePrice > inputValue) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else {
             viewState.copy(salePriceErrorMessage = 0)
@@ -119,7 +119,7 @@ class ProductPricingViewModel @Inject constructor(
         onDataChanged(salePrice = inputValue)
 
         val regularPrice = pricingData.regularPrice ?: BigDecimal.ZERO
-        viewState = if (inputValue > regularPrice) {
+        viewState = if (inputValue > BigDecimal.ZERO && inputValue > regularPrice) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else if (pricingData.isSaleScheduled == true && inputValue.isNotSet()) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_scheduled_sale_price_error)
