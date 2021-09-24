@@ -363,6 +363,49 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when payment fails because of AMOUNT_TOO_SMALL, then failed state has ok button`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithAmountTooSmall) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).primaryActionLabel,
+                R.string.card_reader_payment_payment_failed_ok
+            )
+        }
+
+    @Test
+    fun `when payment fails not because of AMOUNT_TOO_SMALL, then failed state has Try again button`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithServerError) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).primaryActionLabel,
+                R.string.try_again
+            )
+        }
+
+    @Test
+    fun `when payment fails because of AMOUNT_TOO_SMALL, then clicking on ok button triggers exit event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithAmountTooSmall) }
+            }
+
+            viewModel.start()
+            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
     fun `when payment fails, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
