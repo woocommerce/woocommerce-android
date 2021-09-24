@@ -190,23 +190,10 @@ class ConnectionManagerTest {
         whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
             (it.arguments[2] as ReaderCallback).onSuccess(cardReader.cardReader)
         }
-        val result = connectionManager.connectToReader(cardReader)
+        val result = connectionManager.connectToReader(cardReader, "location_id")
 
         assertThat(result).isTrue()
     }
-
-    @Test(expected = IllegalStateException::class)
-    fun `given reader without location id, when connectToReader, then IllegalStateException is thrown`() =
-        runBlockingTest {
-            val reader: Reader = mock()
-            val cardReader: CardReaderImpl = mock {
-                on { cardReader }.thenReturn(reader)
-            }
-            whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
-                (it.arguments[2] as ReaderCallback).onSuccess(cardReader.cardReader)
-            }
-            connectionManager.connectToReader(cardReader)
-        }
 
     @Test
     fun `given reader with location id, when connectToReader fails, then false is returned`() = runBlockingTest {
@@ -219,7 +206,7 @@ class ConnectionManagerTest {
             (it.arguments[2] as ReaderCallback).onFailure(mock())
         }
 
-        val result = connectionManager.connectToReader(cardReader)
+        val result = connectionManager.connectToReader(cardReader, "location_id")
 
         assertThat(result).isFalse()
     }
@@ -236,7 +223,7 @@ class ConnectionManagerTest {
                 (it.arguments[2] as ReaderCallback).onFailure(mock())
             }
 
-            connectionManager.connectToReader(cardReader)
+            connectionManager.connectToReader(cardReader, "location_id")
 
             verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.Connecting)
         }
@@ -253,7 +240,7 @@ class ConnectionManagerTest {
                 (it.arguments[2] as ReaderCallback).onFailure(mock())
             }
 
-            connectionManager.connectToReader(cardReader)
+            connectionManager.connectToReader(cardReader, "location_id")
 
             verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected)
         }
@@ -270,7 +257,7 @@ class ConnectionManagerTest {
                 (it.arguments[2] as ReaderCallback).onSuccess(cardReader.cardReader)
             }
 
-            connectionManager.connectToReader(cardReader)
+            connectionManager.connectToReader(cardReader, "location_id")
 
             val statusCaptor = argumentCaptor<CardReaderStatus>()
             verify(terminalListenerImpl, times(2)).updateReaderStatus(statusCaptor.capture())

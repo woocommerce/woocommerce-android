@@ -8,6 +8,8 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -43,6 +45,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -66,11 +69,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
     private val tracker: AnalyticsTrackerWrapper = mock()
-    private val cardReaderManager: CardReaderManager = mock()
+    private val cardReaderManager: CardReaderManager = mock {
+        on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+        on { softwareUpdateStatus }.thenReturn(flow { SoftwareUpdateStatus.Unknown })
+    }
     private val appPrefs: AppPrefs = mock()
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
+    private val locationRepository: CardReaderLocationRepository = mock()
+    private val locationId = "location_id"
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -297,6 +305,77 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given installation started, when cardReaderManager gets initialized, then show update in progress emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.softwareUpdateStatus).thenReturn(
+                flow {
+                    emit(SoftwareUpdateStatus.InstallationStarted)
+                }
+            )
+
+            init()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderConnectViewModel.CardReaderConnectEvent.ShowUpdateInProgress
+            )
+        }
+
+    @Test
+    fun `given installing update, when cardReaderManager gets initialized, then show update in progress emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.softwareUpdateStatus).thenReturn(
+                flow {
+                    emit(SoftwareUpdateStatus.Installing(0.1f))
+                }
+            )
+
+            init()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderConnectViewModel.CardReaderConnectEvent.ShowUpdateInProgress
+            )
+        }
+
+    @Test
+    fun `given connection in progress, when cardReaderManager gets initialized, then connecting status emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
+
+            init()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
+        }
+
+    @Test
+    fun `given connection in progress and connected, when cardReaderManager gets initialized, then exits with true`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.softwareUpdateStatus).thenReturn(
+                flow { emit(SoftwareUpdateStatus.Unknown) }
+            )
+            val readerStatusStateFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connecting)
+            whenever(cardReaderManager.readerStatus).thenReturn(readerStatusStateFlow)
+
+            init()
+            readerStatusStateFlow.emit(CardReaderStatus.Connected(mock()))
+
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(true))
+        }
+
+    @Test
+    fun `given unknown update, when cardReaderManager gets initialized, then initializing manager`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.softwareUpdateStatus).thenReturn(
+                flow {
+                    emit(SoftwareUpdateStatus.Unknown)
+                }
+            )
+
+            init()
+
+            assertThat(viewModel.event.value).isInstanceOf(InitializeCardReaderManager::class.java)
+        }
+
+    @Test
     fun `when scan started, then scanning state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = SCANNING)
@@ -432,7 +511,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).connectToReader(reader)
+            verify(cardReaderManager).connectToReader(reader, locationId)
         }
 
     @Test
@@ -443,7 +522,20 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
-            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId })
+            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, eq(locationId))
+        }
+
+    @Test
+    fun `given card reader has location id, when connect to, then readers location id used`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = MULTIPLE_READERS_FOUND)
+            val locationId = "old_location_id"
+            whenever(reader2.locationId).thenReturn(locationId)
+
+            val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
+            reader.onConnectClicked()
+
+            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, eq(locationId))
         }
 
     @Test
@@ -889,6 +981,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             tracker,
             appPrefs,
             onboardingChecker,
+            locationRepository
         )
     }
 
@@ -904,8 +997,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 }
             }
         }
-        whenever(cardReaderManager.connectToReader(reader)).thenReturn(connectingSucceeds)
-        whenever(cardReaderManager.connectToReader(reader2)).thenReturn(connectingSucceeds)
+        whenever(locationRepository.getDefaultLocationId()).thenReturn(locationId)
+        whenever(cardReaderManager.connectToReader(reader, locationId)).thenReturn(connectingSucceeds)
+        whenever(cardReaderManager.connectToReader(reader2, locationId)).thenReturn(connectingSucceeds)
         (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)

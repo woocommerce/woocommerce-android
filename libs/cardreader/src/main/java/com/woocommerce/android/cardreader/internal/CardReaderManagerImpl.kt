@@ -50,6 +50,8 @@ internal class CardReaderManagerImpl(
 
     override val softwareUpdateAvailability = connectionManager.softwareUpdateAvailability
 
+    override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
+
     override fun initialize(app: Application) {
         if (!terminal.isInitialized()) {
             application = app
@@ -83,9 +85,9 @@ internal class CardReaderManagerImpl(
         return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
     }
 
-    override suspend fun connectToReader(cardReader: CardReader): Boolean {
+    override suspend fun connectToReader(cardReader: CardReader, locationId: String): Boolean {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        return connectionManager.connectToReader(cardReader)
+        return connectionManager.connectToReader(cardReader, locationId)
     }
 
     override suspend fun disconnectReader(): Boolean {
@@ -94,8 +96,14 @@ internal class CardReaderManagerImpl(
         return connectionManager.disconnectReader()
     }
 
-    override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> =
-        paymentManager.acceptPayment(paymentInfo)
+    override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> {
+        resetBluetoothDisplayMessage()
+        return paymentManager.acceptPayment(paymentInfo)
+    }
+
+    private fun resetBluetoothDisplayMessage() {
+        connectionManager.resetBluetoothCardReaderDisplayMessage()
+    }
 
     override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
         paymentManager.retryPayment(orderId, paymentData)

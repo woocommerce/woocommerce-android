@@ -39,6 +39,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.internal.connection.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
@@ -110,6 +111,18 @@ class CardReaderPaymentViewModel
         }
     }
 
+    private suspend fun listenForBluetoothCardReaderMessages() {
+        cardReaderManager.displayBluetoothCardReaderMessages.collect { message ->
+            when (message) {
+                is BluetoothCardReaderMessages.CardReaderDisplayMessage -> {
+                    handleAdditionalInfo(message.message)
+                }
+                is BluetoothCardReaderMessages.CardReaderInputMessage -> { /* no-op*/ }
+                is BluetoothCardReaderMessages.CardReaderNoMessage -> { /* no-op*/ }
+            }.exhaustive
+        }
+    }
+
     private fun initPaymentFlow(isRetry: Boolean) {
         paymentFlowJob = launch {
             viewState.postValue((LoadingDataState))
@@ -121,7 +134,12 @@ class CardReaderPaymentViewModel
                     exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
                 }
-                collectPaymentFlow(cardReaderManager, order)
+                launch {
+                    collectPaymentFlow(cardReaderManager, order)
+                }
+                launch {
+                    listenForBluetoothCardReaderMessages()
+                }
             } ?: run {
                 tracker.track(
                     AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
@@ -283,6 +301,8 @@ class CardReaderPaymentViewModel
             }?.let { hint ->
                 viewState.value = collectPaymentState.copy(hintLabel = hint)
             }
+        } ?: run {
+            WooLog.e(WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}")
         }
     }
 
@@ -504,9 +524,6 @@ class CardReaderPaymentViewModel
         SERVER_ERROR(R.string.card_reader_payment_failed_server_error_state),
         PAYMENT_DECLINED(R.string.card_reader_payment_failed_card_declined_state),
         GENERIC_ERROR(R.string.card_reader_payment_failed_unexpected_error_state),
-        // TODO cardreader handle different minimum amounts for different currency settlements
-        //  in future. Right now IPP is supported only in United States.
-        //  https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
         AMOUNT_TOO_SMALL(R.string.card_reader_payment_failed_amount_too_small),
     }
 

@@ -1,4 +1,0 @@
-7.4
-Produktbewertungen, die deine Zustimmung erfordern, verfügen jetzt über ein neues Label, damit sie einfacher von den bereits genehmigten Bewertungen zu unterscheiden sind.
-
-Dieses Update umfasst auch mehrere Verbesserungen an der Funktion für Versandetiketten mit der Erweiterung „WooCommerce Shipping & Tax“. Wir wissen dein Feedback zu dieser neuen Funktion sehr zu schätzen!

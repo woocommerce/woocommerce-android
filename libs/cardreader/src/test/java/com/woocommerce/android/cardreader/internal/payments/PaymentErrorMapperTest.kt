@@ -87,6 +87,30 @@ class PaymentErrorMapperTest {
     }
 
     @Test
+    fun `when STRIPE_API_ERROR with amount_too_small code is thrown, then AMOUNT_TOO_SMALL type returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.STRIPE_API_ERROR)
+        whenever(terminalException.apiError).thenReturn(mock())
+        whenever(terminalException.apiError?.code).thenReturn(
+            PaymentErrorMapper.StripeApiError.AMOUNT_TOO_SMALL.message
+        )
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(AMOUNT_TOO_SMALL)
+    }
+
+    @Test
+    fun `when STRIPE_API_ERROR with code other than amount_too_small is thrown, then GENERIC_ERROR type returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.STRIPE_API_ERROR)
+        whenever(terminalException.apiError).thenReturn(mock())
+        whenever(terminalException.apiError?.code).thenReturn("error")
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(GENERIC_ERROR)
+    }
+
+    @Test
     fun `when NETWORK_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
         val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.NetworkError)
 
