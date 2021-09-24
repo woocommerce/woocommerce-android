@@ -74,9 +74,9 @@ class CardReaderUpdateViewModel @Inject constructor(
             when (status) {
                 is Failed -> onUpdateFailed(status)
                 is InstallationStarted -> viewState.value = UpdateAboutToStart(
-                    buildProgressText(convertProgressToPercentage(0f))
+                    buildProgressText(convertToPercentage(0f))
                 )
-                is Installing -> updateProgress(viewState.value, convertProgressToPercentage(status.progress))
+                is Installing -> updateProgress(viewState.value, convertToPercentage(status.progress))
                 Success -> onUpdateSucceeded()
                 Unknown -> onUpdateStatusUnknown()
             }.exhaustive
@@ -153,7 +153,7 @@ class CardReaderUpdateViewModel @Inject constructor(
         triggerEvent(ExitWithResult(FAILED))
     }
 
-    private fun convertProgressToPercentage(progress: Float) = (progress * PERCENT_100).toInt()
+    private fun convertToPercentage(progress: Float) = (progress * PERCENT_100).toInt()
 
     private fun getWarningDescriptionStringRes() =
         if (navArgs.requiredUpdate) {
@@ -166,7 +166,7 @@ class CardReaderUpdateViewModel @Inject constructor(
         return if (currentBatteryLevel != null) {
             UiStringRes(
                 R.string.card_reader_software_update_progress_description_low_battery,
-                listOf(UiStringText(convertProgressToPercentage(currentBatteryLevel).toString()))
+                listOf(UiStringText(convertToPercentage(currentBatteryLevel).toString()))
             )
         } else {
             UiStringRes(R.string.card_reader_software_update_progress_description_low_battery_level_unknown)
