@@ -8,8 +8,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
@@ -32,38 +30,29 @@ class MainActivityViewModel @Inject constructor(
         )
     }
 
-    /**
-     * Checks the active store against the incoming notification, then navigates to the correct screen
-     *
-     * @return true if the notification has been handled, false otherwise
-     */
-    fun handleIncomingNotification(localPushId: Int, notification: Notification?): Boolean {
-        return notification?.let {
+    fun handleIncomingNotification(localPushId: Int, notification: Notification?) {
+        notification?.let {
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()
             if (it.remoteSiteId != currentSite.siteId) {
                 // Update selected store
                 siteStore.getSiteBySiteId(it.remoteSiteId)?.let { updatedSite ->
                     selectedSite.set(updatedSite)
+                    // Recreate activity before showing notification
+                    triggerEvent(RestartActivityForNotification(localPushId, notification))
+                } ?: run {
+                    // If for any reason we can't get the store, show the default screen
+                    triggerEvent(ViewMyStoreStats)
                 }
-
-                // Recreate activity
-                // Post the event to the main thread, to give the consumer a chance to handle the result first
-                launch(Dispatchers.Main) {
-                    triggerEvent(RecreateActivity)
-                }
-                false
             } else {
                 when (localPushId) {
                     it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
                     it.noteId -> onZendeskNotificationOpened(localPushId, it.noteId.toLong())
                     else -> onSingleNotificationOpened(localPushId, it)
                 }
-                true
             }
         } ?: run {
             triggerEvent(ViewMyStoreStats)
-            true
         }
     }
 
@@ -102,7 +91,7 @@ class MainActivityViewModel @Inject constructor(
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
-    object RecreateActivity : Event()
+    data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val localSiteId: Int, val remoteNoteId: Long) : Event()
 }

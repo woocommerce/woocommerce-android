@@ -227,11 +227,11 @@ class MainActivityViewModelTest : BaseUnitTest() {
         )
         val groupOrderPushId = orderNotification2.getGroupPushId()
 
-        val isHandled = viewModel.handleIncomingNotification(groupOrderPushId, orderNotification2)
+        viewModel.handleIncomingNotification(groupOrderPushId, orderNotification2)
 
-        assertThat(viewModel.event.value).isEqualTo(RecreateActivity)
-        assertThat(isHandled).isFalse
         verify(selectedSite, atLeastOnce()).set(any())
+        assertThat(viewModel.event.value)
+            .isEqualTo(RestartActivityForNotification(groupOrderPushId, orderNotification2))
     }
 
     @Test
@@ -241,11 +241,10 @@ class MainActivityViewModelTest : BaseUnitTest() {
         )
         val reviewPushId = reviewNotification2.getGroupPushId()
 
-        val isHandled = viewModel.handleIncomingNotification(reviewPushId, reviewNotification2)
+        viewModel.handleIncomingNotification(reviewPushId, reviewNotification2)
 
-        assertThat(viewModel.event.value).isEqualTo(RecreateActivity)
-        assertThat(isHandled).isFalse
         verify(selectedSite, atLeastOnce()).set(any())
+        assertThat(viewModel.event.value).isEqualTo(RestartActivityForNotification(reviewPushId, reviewNotification2))
     }
 
     @Test

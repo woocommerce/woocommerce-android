@@ -695,14 +695,11 @@ class MainActivity :
 
             val localPushId = intent.getIntExtra(FIELD_PUSH_ID, 0)
             val notification = intent.getParcelableExtra<Notification>(FIELD_REMOTE_NOTIFICATION)
-            if (viewModel.handleIncomingNotification(localPushId, notification)) {
-                // Reset this flag now that it's being processed
-                intent.removeExtra(FIELD_REMOTE_NOTIFICATION)
-                intent.removeExtra(FIELD_PUSH_ID)
-            } else {
-                // Restore this flag to handle notification on next launch
-                intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
-            }
+            // Reset this flag now that it's being processed
+            intent.removeExtra(FIELD_REMOTE_NOTIFICATION)
+            intent.removeExtra(FIELD_PUSH_ID)
+
+            viewModel.handleIncomingNotification(localPushId, notification)
         }
     }
     // endregion
@@ -730,7 +727,13 @@ class MainActivity :
                     is ViewReviewDetail -> {
                         showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
                     }
-                    RecreateActivity -> restart()
+                    is RestartActivityForNotification -> {
+                        // Add flags for handling the push notification after restart
+                        intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
+                        intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
+                        intent.putExtra(FIELD_PUSH_ID, event.pushId)
+                        restart()
+                    }
                 }
             }
         )
