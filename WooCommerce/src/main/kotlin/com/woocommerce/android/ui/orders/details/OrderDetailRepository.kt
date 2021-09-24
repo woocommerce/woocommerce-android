@@ -19,6 +19,7 @@ import com.woocommerce.android.util.isSuccessful
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -52,7 +53,6 @@ class OrderDetailRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) {
     private val continuationFetchOrder = ContinuationWrapper<Boolean>(ORDERS)
-    private val continuationFetchOrderNotes = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationFetchOrderShipmentTrackingList = ContinuationWrapper<RequestResult>(ORDERS)
     private val continuationUpdateOrderStatus = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
@@ -84,14 +84,10 @@ class OrderDetailRepository @Inject constructor(
         localOrderId: Int,
         remoteOrderId: Long
     ): Boolean {
-        val result = continuationFetchOrderNotes.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = FetchOrderNotesPayload(localOrderId, remoteOrderId, selectedSite.get())
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            orderStore.fetchOrderNotes(localOrderId, remoteOrderId, selectedSite.get())
         }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        return result?.isError == false
     }
 
     suspend fun fetchOrderShipmentTrackingList(
@@ -307,8 +303,6 @@ class OrderDetailRepository @Inject constructor(
         when (event.causeOfChange) {
             WCOrderAction.FETCH_SINGLE_ORDER ->
                 continuationFetchOrder.continueWith(event.isError.not())
-            WCOrderAction.FETCH_ORDER_NOTES ->
-                continuationFetchOrderNotes.continueWith(event.isError.not())
             WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS -> {
                 if (event.isError) {
                     val error = if (event.error.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {

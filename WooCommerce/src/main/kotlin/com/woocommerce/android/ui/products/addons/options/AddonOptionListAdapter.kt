@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductAddonOptionItemBinding
 import com.woocommerce.android.ui.products.addons.options.AddonOptionListAdapter.AddonOptionsViewHolder
-import com.woocommerce.android.ui.products.addons.toFormattedPrice
+import com.woocommerce.android.ui.products.addons.handlePriceType
 import org.wordpress.android.fluxc.domain.Addon
 import java.math.BigDecimal
 
@@ -33,7 +33,7 @@ class AddonOptionListAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(option: Addon.HasOptions.Option) {
             binding.optionName.text = option.label
-            binding.optionPrice.text = option.price.toFormattedPrice(formatCurrencyForDisplay)
+            binding.optionPrice.text = option.price.handlePriceType(formatCurrencyForDisplay)
         }
     }
 }

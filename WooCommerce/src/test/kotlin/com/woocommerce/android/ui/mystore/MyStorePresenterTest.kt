@@ -26,7 +26,6 @@ import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDER_NOTES
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_NEW_VISITOR_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
@@ -149,15 +148,6 @@ class MyStorePresenterTest {
         // Simulate onOrderChanged event: UPDATE-ORDER-STATUS - My Store TAB should refresh
         presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
         verify(myStoreView, times(0)).refreshMyStoreStats(forced = any())
-    }
-
-    @Test
-    fun `Handles FETCH-ORDER-NOTES order event correctly`() {
-        presenter.takeView(myStoreView)
-
-        // Simulate onOrderChanged event: FETCH-ORDER-NOTES - My Store TAB should ignore
-        presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDER_NOTES })
-        verify(myStoreView, times(0)).refreshMyStoreStats(forced = true)
     }
 
     @Test
