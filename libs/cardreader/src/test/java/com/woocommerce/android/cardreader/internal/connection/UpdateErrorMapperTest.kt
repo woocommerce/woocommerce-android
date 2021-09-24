@@ -60,4 +60,16 @@ class UpdateErrorMapperTest {
         // THEN
         assertEquals(SoftwareUpdateStatusErrorType.BatteryLow(batteryLevel), result)
     }
+
+    @Test
+    fun `given interrupted error, when mapping, then interrupted error returns`() {
+        // GIVEN
+        val error = TerminalException.TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_INTERRUPTED
+
+        // WHEN
+        val result = mapper.map(error)
+
+        // THEN
+        assertEquals(SoftwareUpdateStatusErrorType.Interrupted, result)
+    }
 }
