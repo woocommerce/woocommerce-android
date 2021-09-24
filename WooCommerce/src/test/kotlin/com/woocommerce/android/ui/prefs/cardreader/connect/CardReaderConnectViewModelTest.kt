@@ -71,11 +71,14 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock {
         on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+        on { softwareUpdateStatus }.thenReturn(flow { SoftwareUpdateStatus.Unknown })
     }
     private val appPrefs: AppPrefs = mock()
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
+    private val locationRepository: CardReaderLocationRepository = mock()
+    private val locationId = "location_id"
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -508,7 +511,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).connectToReader(reader)
+            verify(cardReaderManager).connectToReader(reader, locationId)
         }
 
     @Test
@@ -519,7 +522,20 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
-            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId })
+            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, eq(locationId))
+        }
+
+    @Test
+    fun `given card reader has location id, when connect to, then readers location id used`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = MULTIPLE_READERS_FOUND)
+            val locationId = "old_location_id"
+            whenever(reader2.locationId).thenReturn(locationId)
+
+            val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
+            reader.onConnectClicked()
+
+            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, eq(locationId))
         }
 
     @Test
@@ -965,6 +981,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             tracker,
             appPrefs,
             onboardingChecker,
+            locationRepository
         )
     }
 
@@ -980,8 +997,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 }
             }
         }
-        whenever(cardReaderManager.connectToReader(reader)).thenReturn(connectingSucceeds)
-        whenever(cardReaderManager.connectToReader(reader2)).thenReturn(connectingSucceeds)
+        whenever(locationRepository.getDefaultLocationId()).thenReturn(locationId)
+        whenever(cardReaderManager.connectToReader(reader, locationId)).thenReturn(connectingSucceeds)
+        whenever(cardReaderManager.connectToReader(reader2, locationId)).thenReturn(connectingSucceeds)
         (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)

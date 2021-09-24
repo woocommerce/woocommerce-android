@@ -69,6 +69,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefs,
     private val onboardingChecker: CardReaderOnboardingChecker,
+    private val locationRepository: CardReaderLocationRepository,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
 
@@ -327,7 +328,9 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
-            val success = cardReaderManager.connectToReader(cardReader)
+            // TODO cardreader handle error cases
+            val locationId = (cardReader.locationId ?: locationRepository.getDefaultLocationId())!!
+            val success = cardReaderManager.connectToReader(cardReader, locationId)
             if (success) {
                 onReaderConnected(cardReader)
             } else {
