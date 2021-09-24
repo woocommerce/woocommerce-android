@@ -731,11 +731,8 @@ class MainActivity :
                         showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
                     }
                     is ShowFeatureAnnouncement -> {
-                        //val action = NavGraphMainDirections.actionOpenWhatsnewFromMain()
-                        //navController.navigateSafely(action)
-                        FeatureAnnouncementDialogFragment()
-                            .show(supportFragmentManager, FeatureAnnouncementDialogFragment.TAG)
-
+                        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain()
+                        navController.navigateSafely(action)
                     }
                 }
             }

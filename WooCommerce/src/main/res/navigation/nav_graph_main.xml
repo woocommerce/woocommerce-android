@@ -232,7 +232,7 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
-    <fragment
+    <dialog
         android:id="@+id/featureAnnouncementDialogFragmentOnMain"
         android:name="com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment"
         android:label="FeatureAnnouncementDialogFragment" />
