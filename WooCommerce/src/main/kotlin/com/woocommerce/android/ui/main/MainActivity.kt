@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -225,6 +226,8 @@ class MainActivity :
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+
+        viewModel.updateFeatureAnnouncements()
     }
 
     override fun hideProgressDialog() {
@@ -726,6 +729,13 @@ class MainActivity :
                     }
                     is ViewReviewDetail -> {
                         showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
+                    }
+                    is ShowFeatureAnnouncement -> {
+                        //val action = NavGraphMainDirections.actionOpenWhatsnewFromMain()
+                        //navController.navigateSafely(action)
+                        FeatureAnnouncementDialogFragment()
+                            .show(supportFragmentManager, FeatureAnnouncementDialogFragment.TAG)
+
                     }
                 }
             }

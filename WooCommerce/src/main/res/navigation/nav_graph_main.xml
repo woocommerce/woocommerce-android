@@ -232,4 +232,13 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
+    <fragment
+        android:id="@+id/featureAnnouncementDialogFragmentOnMain"
+        android:name="com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment"
+        android:label="FeatureAnnouncementDialogFragment" />
+    <action
+        android:id="@+id/action_open_Whatsnew_from_Main"
+        app:destination="@id/featureAnnouncementDialogFragmentOnMain"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out" />
 </navigation>

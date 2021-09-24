@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.whatsnew
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -18,7 +18,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
 
-    private val viewModel: FeatureAnnouncementViewModel by viewModels()
+    private val viewModel: FeatureAnnouncementViewModel by hiltNavGraphViewModels(R.id.nav_graph_main)
     private lateinit var listAdapter: FeatureAnnouncementListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
