@@ -1,3 +1,4 @@
-Viewing orders with products using WooCommerce’s Product Add-Ons Extension is a new feature! Head over to your store’s settings in the app on the My store tab and turn this on under Beta features. Be sure to send us feedback about the experience!
+- [***] Product Images: uploading will continue now in background to allow merchants to continue their other tasks without getting blocked [https://github.com/woocommerce/woocommerce-android/pull/4720]
+- [*] Fixed a bug that resulted in a failure when purchasing DHL shipping labels under some circumstances.
+- [*] Due to popular demand, we have added support to receive push notifications for all the stores that you are logged into from the app. [https://github.com/woocommerce/woocommerce-android/pull/4673]
 
-You’ll also find that you can filter the product list by category. You asked, and we delivered!
