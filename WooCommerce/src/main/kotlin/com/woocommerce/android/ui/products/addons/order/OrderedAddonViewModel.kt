@@ -22,6 +22,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.domain.Addon
+import org.wordpress.android.fluxc.persistence.entity.AddonEntity
+import org.wordpress.android.fluxc.persistence.entity.AddonEntity.LocalPriceType.FlatFee
+import org.wordpress.android.fluxc.persistence.entity.AddonEntity.LocalPriceType.PercentageBased
+import org.wordpress.android.fluxc.persistence.entity.AddonWithOptions
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -107,6 +111,9 @@ class OrderedAddonViewModel @Inject constructor(
     private fun findMatchingAddon(matchingTo: Order.Item.Attribute, addons: List<Addon>): Addon? = addons.firstOrNull {
         it.name == matchingTo.addonName
     }?.asAddonWithSingleSelectedOption(matchingTo)
+        ?.let { it as? AddonWithOptions }
+        ?.takeIf { it.options.first().priceType == PercentageBased }
+        ?.let { it.copy(options = listOf()) }
 
     private fun Addon.asAddonWithSingleSelectedOption(
         attribute: Order.Item.Attribute
