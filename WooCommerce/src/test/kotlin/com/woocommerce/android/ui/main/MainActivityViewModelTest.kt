@@ -6,12 +6,7 @@ import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.push.NotificationTestUtils
 import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
+import com.woocommerce.android.ui.main.MainActivityViewModel.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -226,51 +221,30 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when order notifications for a second store is clicked then the order list screen for that store is opened`() {
+    fun `when order notifications for a second store is clicked then switch to the this store and restart activity`() {
         val orderNotification2 = testOrderNotification.copy(
             remoteSiteId = TEST_REMOTE_SITE_ID_2, uniqueId = TEST_NEW_ORDER_ID_2
         )
         val groupOrderPushId = orderNotification2.getGroupPushId()
-        var event: ViewOrderList? = null
-        viewModel.event.observeForever {
-            if (it is ViewOrderList) event = it
-        }
 
         viewModel.handleIncomingNotification(groupOrderPushId, orderNotification2)
 
         verify(selectedSite, atLeastOnce()).set(any())
-        verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
-            eq(orderNotification2.channelType)
-        )
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationsOfTypeFromSystemsBar(
-            eq(orderNotification2.channelType),
-            eq(orderNotification2.remoteSiteId)
-        )
-        assertThat(event).isEqualTo(ViewOrderList)
+        assertThat(viewModel.event.value)
+            .isEqualTo(RestartActivityForNotification(groupOrderPushId, orderNotification2))
     }
 
     @Test
-    fun `when review notifications for second store is clicked then the review list screen for that store is opened`() {
+    fun `when review notifications for second store is clicked then switch to the this store and restart activity`() {
         val reviewNotification2 = testReviewNotification.copy(
             remoteSiteId = TEST_REMOTE_SITE_ID_2, uniqueId = TEST_NEW_REVIEW_ID_2
         )
         val reviewPushId = reviewNotification2.getGroupPushId()
-        var event: ViewReviewList? = null
-        viewModel.event.observeForever {
-            if (it is ViewReviewList) event = it
-        }
 
         viewModel.handleIncomingNotification(reviewPushId, reviewNotification2)
 
         verify(selectedSite, atLeastOnce()).set(any())
-        verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
-            eq(reviewNotification2.channelType)
-        )
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationsOfTypeFromSystemsBar(
-            eq(reviewNotification2.channelType),
-            eq(reviewNotification2.remoteSiteId)
-        )
-        assertThat(event).isEqualTo(ViewReviewList)
+        assertThat(viewModel.event.value).isEqualTo(RestartActivityForNotification(reviewPushId, reviewNotification2))
     }
 
     @Test
@@ -290,5 +264,15 @@ class MainActivityViewModelTest : BaseUnitTest() {
             eq(testZendeskNotification.remoteSiteId)
         )
         assertThat(event).isEqualTo(ViewMyStoreStats)
+    }
+
+    @Test
+    fun `when notification of non existing store is clicked, then show default screen`() {
+        doReturn(null).whenever(siteStore).getSiteBySiteId(any())
+        val notification = testOrderNotification.copy(remoteSiteId = TEST_REMOTE_SITE_ID_2)
+
+        viewModel.handleIncomingNotification(1000, notification)
+
+        assertThat(viewModel.event.value).isEqualTo(ViewMyStoreStats)
     }
 }
