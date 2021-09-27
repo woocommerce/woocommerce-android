@@ -99,7 +99,7 @@ class ProductPricingViewModel @Inject constructor(
         onDataChanged(regularPrice = inputValue)
 
         val salePrice = pricingData.salePrice ?: BigDecimal.ZERO
-        viewState = if (salePrice > BigDecimal.ZERO && salePrice > inputValue) {
+        viewState = if (salePrice > inputValue) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else {
             viewState.copy(salePriceErrorMessage = 0)
