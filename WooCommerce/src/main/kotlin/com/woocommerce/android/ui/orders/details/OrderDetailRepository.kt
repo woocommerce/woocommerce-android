@@ -44,7 +44,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelIte
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
@@ -70,7 +69,6 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    private val continuationFetchOrderShipmentTrackingList = ContinuationWrapper<RequestResult>(ORDERS)
     private val continuationUpdateOrderStatus = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationAddShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
@@ -113,13 +111,16 @@ class OrderDetailRepository @Inject constructor(
         localOrderId: Int,
         remoteOrderId: Long
     ): RequestResult {
-        val result = continuationFetchOrderShipmentTrackingList.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = FetchOrderShipmentTrackingsPayload(localOrderId, remoteOrderId, selectedSite.get())
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            orderStore.fetchOrderShipmentTrackings(localOrderId, remoteOrderId, selectedSite.get())
         }
-        return when (result) {
-            is Cancellation -> RequestResult.ERROR
-            is Success -> result.value
+
+        return if (result?.isError == false) {
+            RequestResult.SUCCESS
+        } else {
+            if (result?.error?.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {
+                RequestResult.API_ERROR
+            } else RequestResult.ERROR
         }
     }
 
@@ -320,16 +321,6 @@ class OrderDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
-            WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS -> {
-                if (event.isError) {
-                    val error = if (event.error.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {
-                        RequestResult.API_ERROR
-                    } else RequestResult.ERROR
-                    continuationFetchOrderShipmentTrackingList.continueWith(error)
-                } else {
-                    continuationFetchOrderShipmentTrackingList.continueWith(RequestResult.SUCCESS)
-                }
-            }
             WCOrderAction.UPDATE_ORDER_STATUS ->
                 continuationUpdateOrderStatus.continueWith(event.isError.not())
             WCOrderAction.POST_ORDER_NOTE ->
