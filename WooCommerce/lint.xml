@@ -13,7 +13,6 @@
     <issue id="MissingTranslation" severity="ignore" />
     <issue id="ExtraTranslation" severity="ignore" />
     <issue id="PluralsCandidate" severity="ignore" /> <!-- GlotPress doesn't support plurals -->
-    <issue id="NewApi" severity="ignore" /> <!-- TODO remove when new gradle plugin will be merged. #4659 -->
 
     <issue id="InvalidPackage">
         <ignore regexp="java-common-1.13.jar" />
