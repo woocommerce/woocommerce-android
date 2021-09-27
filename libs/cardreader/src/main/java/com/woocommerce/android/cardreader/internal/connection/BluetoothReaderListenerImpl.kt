@@ -73,7 +73,7 @@ internal class BluetoothReaderListenerImpl(
     override fun onRequestReaderDisplayMessage(message: ReaderDisplayMessage) {
         logWrapper.d(LOG_TAG, "onRequestReaderDisplayMessage: $message")
         _displayMessagesEvent.value = BluetoothCardReaderMessages
-            .CardReaderDisplayMessage(additionalInfoMapper.map(ReaderDisplayMessage.CHECK_MOBILE_DEVICE))
+            .CardReaderDisplayMessage(additionalInfoMapper.map(message))
     }
 
     override fun onRequestReaderInput(options: ReaderInputOptions) {
