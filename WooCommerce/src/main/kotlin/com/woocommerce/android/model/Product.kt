@@ -548,7 +548,7 @@ fun WCProductModel.toAppModel(): Product {
 fun MediaModel.toAppModel(): Product.Image {
     return Product.Image(
         id = this.mediaId,
-        name = this.fileName,
+        name = this.fileName.orEmpty(),
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
     )

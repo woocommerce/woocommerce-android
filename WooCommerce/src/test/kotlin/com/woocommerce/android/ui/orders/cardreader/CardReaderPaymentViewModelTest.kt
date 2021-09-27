@@ -43,6 +43,7 @@ import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import java.math.BigDecimal
+import kotlin.test.assertEquals
 
 private val DUMMY_TOTAL = BigDecimal(10.72)
 private const val DUMMY_CURRENCY_SYMBOL = "£"
@@ -68,6 +69,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
+    private val paymentFailedWithNoNetwork = PaymentFailed(NO_NETWORK, mock(), "dummy msg")
+    private val paymentFailedWithPaymentDeclined = PaymentFailed(PAYMENT_DECLINED, mock(), "dummy msg")
+    private val paymentFailedWithCardReadTimeOut = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
+    private val paymentFailedWithServerError = PaymentFailed(SERVER_ERROR, mock(), "dummy msg")
+    private val paymentFailedWithAmountTooSmall = PaymentFailed(AMOUNT_TOO_SMALL, mock(), "dummy msg")
 
     private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
         ORDER_IDENTIFIER
@@ -301,6 +307,139 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), any())
+        }
+
+    @Test
+    fun `when payment fails because of NO_NETWORK, then error is mapped correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithNoNetwork) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                CardReaderPaymentViewModel.PaymentFlowError.NO_NETWORK.message
+            )
+        }
+
+    @Test
+    fun `when payment fails because of PAYMENT_DECLINED, then error is mapped correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithPaymentDeclined) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                CardReaderPaymentViewModel.PaymentFlowError.PAYMENT_DECLINED.message
+            )
+        }
+
+    @Test
+    fun `when payment fails because of CARD_READ_TIME_OUT, then error is mapped correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithCardReadTimeOut) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                CardReaderPaymentViewModel.PaymentFlowError.GENERIC_ERROR.message
+            )
+        }
+
+    @Test
+    fun `when payment fails because of GENERIC_ERROR, then error is mapped correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithValidDataForRetry) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                CardReaderPaymentViewModel.PaymentFlowError.GENERIC_ERROR.message
+            )
+        }
+
+    @Test
+    fun `when payment fails because of SERVER_ERROR, then error is mapped correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithServerError) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                CardReaderPaymentViewModel.PaymentFlowError.SERVER_ERROR.message
+            )
+        }
+
+    @Test
+    fun `when payment fails because of AMOUNT_TOO_SMALL, then error is mapped correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithAmountTooSmall) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                CardReaderPaymentViewModel.PaymentFlowError.AMOUNT_TOO_SMALL.message
+            )
+        }
+
+    @Test
+    fun `when payment fails because of AMOUNT_TOO_SMALL, then failed state has ok button`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithAmountTooSmall) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).primaryActionLabel,
+                R.string.card_reader_payment_payment_failed_ok
+            )
+        }
+
+    @Test
+    fun `when payment fails not because of AMOUNT_TOO_SMALL, then failed state has Try again button`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithServerError) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).primaryActionLabel,
+                R.string.try_again
+            )
+        }
+
+    @Test
+    fun `when payment fails because of AMOUNT_TOO_SMALL, then clicking on ok button triggers exit event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithAmountTooSmall) }
+            }
+
+            viewModel.start()
+            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
         }
 
     @Test

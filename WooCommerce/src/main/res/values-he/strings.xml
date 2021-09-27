@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-31 13:54:45+0000
+Translation-Revision-Date: 2021-09-16 22:16:51+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="settings_whats_new">מה חדש ב-WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">להציג הרחבות</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">מצטערים, לא הצלחנו לשנות את הגדרות האפשרות כעת</string>
+    <string name="product_category">קטגוריה</string>
+    <string name="notification_review_title">יש לך ביקורת אחת חדשה! 🌟</string>
+    <string name="notification_order_title">יש לך הזמנה אחת חדשה! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">פריט %d</string>
     <string name="upsell_product_count_many">%d מוצרים של שדרוגי מכירות</string>
     <string name="upsell_product_count_one">מוצר %d של שדרוגי מכירות</string>
@@ -106,6 +112,7 @@ Language: he_IL
     <string name="product_attributes_created_generate_action_text">יצירת סוג</string>
     <string name="product_attributes_created_description">לאחר הוספת המאפיינים, באפשרותך ליצור את הסוג הראשון שלך!</string>
     <string name="product_attributes_created_title">המאפיינים נוספו</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">לא מומלץ לבטל עדכון תוכנה בזמן פעולתו</string>
     <string name="card_reader_payment_failed_unexpected_error_state">אנו מתנצלים, לא ניתן היה לעבד תשלום זה</string>
     <string name="card_reader_payment_failed_server_error_state">אין חיבור לשרת</string>
@@ -428,11 +435,11 @@ Language: he_IL
     <string name="shipping_label_create_packaging_details">פרטי האריזה</string>
     <string name="shipping_label_create_title">ליצור תווית משלוח</string>
     <string name="shipping_label_more_information_link">מידע נוסף</string>
-    <string name="shipping_label_more_information_message">אפשר לדלג על התורים בדואר על ידי הדפסה של תוויות משלוח בבית באמצעות הטלפון בתעריף מופחת!</string>
+    <string name="shipping_label_more_information_message">אפשר לדלג על התורים בדואר על ידי הדפסה של תוויות משלוח בבית באמצעות המכשיר הנייד בתעריף מופחת!</string>
     <string name="shipping_label_more_information_heading">כדאי לחסוך זמן וכסף על ידי השלמת ההזמנה עם WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">לסמן את ההזמנה כ\'הושלמה\'</string>
-    <string name="orderdetail_shipping_label_notice">למידע נוסף על יצירת תוויות באמצעות הטלפון</string>
+    <string name="orderdetail_shipping_label_notice">למידע נוסף על יצירת תוויות באמצעות המכשיר הנייד</string>
     <string name="orderdetail_shipping_label_create_shipping_label">ליצור תווית משלוח</string>
     <string name="orderdetail_shipping_label_m3_wip_message">כעת אפשר ליצור תוויות משלוח לכל ההזמנות הפיזיות ישירות מהמכשיר שלך באמצעות התוסף החינמי WooCommerce Shipping. יש להקיש על \'ליצור תווית משלוח\' כדי לנסות את אפשרות הביתא שלנו!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">אפשר ליצור תווית משלוח מהמכשיר שלך!</string>
@@ -493,6 +500,7 @@ Language: he_IL
     <string name="my_store_stats_availability_title">לא הצלחנו להפעיל את \nהניתוח הסטטיסטי של החנות</string>
     <string name="login_get_link_by_email">לקבל קישור להתחברות באימייל</string>
     <string name="email_not_registered_wpcom">מצטערים, לא הצלחנו לאתר את חשבון ה-WordPress.com שמקושר לכתובת האימייל הזו.</string>
+    <string name="settings_enable_product_addons_teaser_message">כדאי לבדוק את האפשרות להצגת הרחבות של הזמנות בזמן שאנחנו מתכוננים להשקה</string>
     <string name="settings_enable_product_adding_teaser_title">יצירת מוצרים</string>
     <string name="settings_preferences">העדפות</string>
     <string name="product_trash_error">שגיאה בהעברת המוצר לפח</string>
@@ -515,7 +523,7 @@ Language: he_IL
     <string name="shipping_label_paper_size_letter">מכתב (8.5 x‏ 11 אינץ\')</string>
     <string name="shipping_label_paper_size_legal">משפטי (8.5 x‏ 14 אינץ\')</string>
     <string name="shipping_label_preview_error">אירעה שגיאה בתצוגה המקדימה של תווית המשלוח</string>
-    <string name="shipping_label_print_info">אין לך מושג כיצד להדפיס באמצעות הטלפון שלך?</string>
+    <string name="shipping_label_print_info">אין לך מושג כיצד להדפיס באמצעות המכשיר הנייד שלך?</string>
     <string name="shipping_label_paper_size_options_info">להציג פריסות תווית ואפשרויות לגודל הנייר</string>
     <string name="shipping_label_print_button">להדפיס תווית משלוח</string>
     <string name="shipping_label_paper_size_options_title">יש לבחור גודל נייר</string>

@@ -110,7 +110,6 @@ class AppSettingsActivity :
         if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
         siteChanged = true
         setResult(RESULT_CODE_SITE_CHANGED)
-        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
         prefs.resetSitePreferences()
     }

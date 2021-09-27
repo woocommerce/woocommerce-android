@@ -54,6 +54,7 @@ class NotificationMessageHandler @Inject constructor(
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Notification>()
     }
 
+    @Synchronized
     fun onNotificationDismissed(localPushId: Int) {
         removeNotificationByPushIdFromSystemsBar(localPushId)
     }
@@ -290,7 +291,8 @@ class NotificationMessageHandler @Inject constructor(
     @Synchronized
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
-        ACTIVE_NOTIFICATIONS_MAP.asSequence().forEach { row ->
+        // Using a copy of the map to avoid concurrency problems
+        ACTIVE_NOTIFICATIONS_MAP.toMap().asSequence().forEach { row ->
             if (row.value.channelType == type && row.value.remoteSiteId == remoteSiteId) {
                 notificationBuilder.cancelNotification(row.key)
             } else {
