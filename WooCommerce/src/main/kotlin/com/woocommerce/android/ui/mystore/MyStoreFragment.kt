@@ -370,34 +370,32 @@ class MyStoreFragment :
     }
 
     private fun handleFeedbackRequestPositiveClick() {
-        context?.let {
-            // Hide the card and set last feedback date to now
-            binding.storeFeedbackRequestCard.visibility = View.GONE
-            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+        // set last feedback date to now and hide the card
+        FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+        binding.storeFeedbackRequestCard.visibility = View.GONE
 
-            // Request a ReviewInfo object from the Google Reviews API. If this fails
-            // we just move on as there isn't anything we can do.
-            val manager = ReviewManagerFactory.create(requireContext())
-            val reviewRequest = manager.requestReviewFlow()
-            reviewRequest.addOnCompleteListener {
-                if (it.isSuccessful) {
-                    // Request to start the Review flow so the user can be prompted to submit
-                    // a play store review. The prompt will only appear if the user hasn't already
-                    // reached their quota for how often we can ask for a review.
-                    val reviewInfo = it.result
-                    val flow = manager.launchReviewFlow(requireActivity(), reviewInfo)
-                    flow.addOnFailureListener { ex ->
-                        WooLog.e(WooLog.T.DASHBOARD, "Error launching google review API flow.", ex)
-                    }
-                } else {
-                    // There was an error, just log and continue. Google doesn't really tell you what
-                    // type of scenario would cause an error.
-                    WooLog.e(
-                        WooLog.T.DASHBOARD,
-                        "Error fetching ReviewInfo object from Review API to start in-app review process",
-                        it.exception
-                    )
+        // Request a ReviewInfo object from the Google Reviews API. If this fails
+        // we just move on as there isn't anything we can do.
+        val manager = ReviewManagerFactory.create(requireContext())
+        val reviewRequest = manager.requestReviewFlow()
+        reviewRequest.addOnCompleteListener {
+            if (activity != null && it.isSuccessful) {
+                // Request to start the Review flow so the user can be prompted to submit
+                // a play store review. The prompt will only appear if the user hasn't already
+                // reached their quota for how often we can ask for a review.
+                val reviewInfo = it.result
+                val flow = manager.launchReviewFlow(requireActivity(), reviewInfo)
+                flow.addOnFailureListener { ex ->
+                    WooLog.e(WooLog.T.DASHBOARD, "Error launching google review API flow.", ex)
                 }
+            } else {
+                // There was an error, just log and continue. Google doesn't really tell you what
+                // type of scenario would cause an error.
+                WooLog.e(
+                    WooLog.T.DASHBOARD,
+                    "Error fetching ReviewInfo object from Review API to start in-app review process",
+                    it.exception
+                )
             }
         }
     }
