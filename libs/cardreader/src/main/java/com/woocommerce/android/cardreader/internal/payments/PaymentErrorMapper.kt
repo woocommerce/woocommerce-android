@@ -21,14 +21,14 @@ internal class PaymentErrorMapper {
             }
         val type = when (exception.errorCode) {
             TerminalErrorCode.CARD_READ_TIMED_OUT -> CardReadTimeOut
-            TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapStripeAPIError(exception)
+            TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapStripeDeclinedError(exception)
             TerminalErrorCode.REQUEST_TIMED_OUT -> NoNetwork
             else -> GenericError
         }
         return PaymentFailed(type, paymentData, exception.errorMessage)
     }
 
-    private fun mapStripeAPIError(exception: TerminalException): PaymentDeclined {
+    private fun mapStripeDeclinedError(exception: TerminalException): PaymentDeclined {
         return when (exception.apiError?.code) {
             DeclinedPayment.AMOUNT_TOO_SMALL.message -> PaymentDeclined.AmountTooSmall
             else -> PaymentDeclined.Declined
