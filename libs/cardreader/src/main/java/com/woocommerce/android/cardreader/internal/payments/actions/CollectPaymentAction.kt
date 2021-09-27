@@ -3,8 +3,6 @@ package com.woocommerce.android.cardreader.internal.payments.actions
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
-import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
-import com.stripe.stripeterminal.external.models.ReaderInputOptions
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Failure
@@ -18,8 +16,6 @@ import kotlinx.coroutines.flow.callbackFlow
 
 internal class CollectPaymentAction(private val terminal: TerminalWrapper, private val logWrapper: LogWrapper) {
     sealed class CollectPaymentStatus {
-        data class DisplayMessageRequested(val msg: ReaderDisplayMessage) : CollectPaymentStatus()
-        data class ReaderInputRequested(val options: ReaderInputOptions) : CollectPaymentStatus()
         data class Success(val paymentIntent: PaymentIntent) : CollectPaymentStatus()
         data class Failure(val exception: TerminalException) : CollectPaymentStatus()
     }

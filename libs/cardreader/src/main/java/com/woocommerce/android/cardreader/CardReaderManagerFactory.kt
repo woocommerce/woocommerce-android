@@ -44,7 +44,6 @@ object CardReaderManagerFactory {
                 CancelPaymentAction(terminal),
                 PaymentUtils(),
                 PaymentErrorMapper(),
-                AdditionalInfoMapper(),
             ),
             ConnectionManager(
                 terminal,

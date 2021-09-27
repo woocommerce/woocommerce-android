@@ -23,8 +23,6 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
-import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.payments.PaymentInfo
@@ -101,7 +99,6 @@ class PaymentManagerTest {
             cancelPaymentAction,
             paymentUtils,
             paymentErrorMapper,
-            additionalInfoMapper
         )
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(createPaymentAction.createPaymentIntent(any()))
@@ -233,28 +230,6 @@ class PaymentManagerTest {
             .takeUntil(CollectingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(CollectingPayment::class.java)
-    }
-
-    @Test
-    fun `when card reader awaiting input, then WaitingForInput emitted`() = runBlockingTest {
-        whenever(collectPaymentAction.collectPayment(anyOrNull()))
-            .thenReturn(flow { emit(CollectPaymentStatus.ReaderInputRequested(mock())) })
-
-        val result = manager
-            .acceptPayment(createPaymentInfo()).toList()
-
-        assertThat(result.last()).isInstanceOf(WaitingForInput::class.java)
-    }
-
-    @Test
-    fun `when card reader requests to display message, then ShowAdditionalInfo emitted`() = runBlockingTest {
-        whenever(collectPaymentAction.collectPayment(anyOrNull()))
-            .thenReturn(flow { emit(CollectPaymentStatus.DisplayMessageRequested(mock())) })
-
-        val result = manager
-            .acceptPayment(createPaymentInfo()).toList()
-
-        assertThat(result.last()).isInstanceOf(ShowAdditionalInfo::class.java)
     }
 
     @Test
