@@ -9,6 +9,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalI
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.SWIPE_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.CHECK_MOBILE_DEVICE
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -85,6 +86,6 @@ class AdditionalInfoMapperTest {
     fun `given CHECK_MOBILE_DEVICE display message, then it is correctly mapped into AdditionalInfo type`() {
         val additionalInfoType = additionalInfoMapper.map(ReaderDisplayMessage.CHECK_MOBILE_DEVICE)
 
-        assertThat(additionalInfoType).isEqualTo(TRY_ANOTHER_CARD)
+        assertThat(additionalInfoType).isEqualTo(CHECK_MOBILE_DEVICE)
     }
 }

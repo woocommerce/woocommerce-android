@@ -1177,6 +1177,22 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given collect payment shown, when check mobile device event received, then collect payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow {
+                    emit(CollectingPayment)
+                    emit(ShowAdditionalInfo(CHECK_MOBILE_DEVICE))
+                }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_check_mobile_device_prompt)
+        }
+
+    @Test
     fun `given collect payment NOT shown, when show additional info event received, then event ignored`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
