@@ -88,7 +88,7 @@ class PaymentErrorMapperTest {
     }
 
     @Test
-    fun `when PAYMENT_DECLINED with amount_too_small code is thrown, then AMOUNT_TOO_SMALL type returned`() {
+    fun `when PAYMENT_DECLINED with amount_too_small code is thrown, then AmountTooSmall type returned`() {
         whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
         whenever(terminalException.apiError).thenReturn(mock())
         whenever(terminalException.apiError?.code).thenReturn(
@@ -147,7 +147,7 @@ class PaymentErrorMapperTest {
     }
 
     @Test
-    fun `when AMOUNT_TOO_SMALL Terminal exception thrown, then AMOUNT_TOO_SMALL type returned`() {
+    fun `when AMOUNT_TOO_SMALL Terminal exception thrown, then AmountTooSmall type returned`() {
         whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
         whenever(terminalException.apiError).thenReturn(mock())
         whenever(terminalException.apiError?.code).thenReturn("amount_too_small")
@@ -158,10 +158,10 @@ class PaymentErrorMapperTest {
     }
 
     @Test
-    fun `when STRIPE_API_ERROR Terminal exception thrown, then PAYMENT_DECLINED type returned`() {
+    fun `when PAYMENT_DECLINED Terminal exception thrown, then declined type returned`() {
         whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
         whenever(terminalException.apiError).thenReturn(mock())
-        whenever(terminalException.apiError?.code).thenReturn("generic_error")
+        whenever(terminalException.apiError?.code).thenReturn("declined")
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
