@@ -38,7 +38,7 @@
     $ cd woocommerce-android
     ```
 
-1. Generate the developer oauth2 tokens. These values get copied into the main `gradle.properties` file in the next step. See the [OAuth2 Authentication](docs/project_overview.md#oauth2-authentication) section for details.
+1. Generate the developer oauth2 tokens. These values get copied into the main `gradle.properties` file in the next step. See the [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication) section for details.
 1. Generate the `gradle.properties` file for this app:
 
     ```bash

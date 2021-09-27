@@ -3,11 +3,8 @@ package com.woocommerce.android.cardreader.internal.payments
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.TerminalException
 import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorCode
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.CARD_READ_TIMED_OUT
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.SERVER_ERROR
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.PAYMENT_DECLINED
+import com.woocommerce.android.cardreader.CardPaymentStatus
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.*
 import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.NetworkError
@@ -26,9 +23,17 @@ internal class PaymentErrorMapper {
             TerminalErrorCode.CARD_READ_TIMED_OUT -> CARD_READ_TIMED_OUT
             TerminalErrorCode.PAYMENT_DECLINED_BY_STRIPE_API -> PAYMENT_DECLINED
             TerminalErrorCode.REQUEST_TIMED_OUT -> NO_NETWORK
+            TerminalErrorCode.STRIPE_API_ERROR -> mapStripeAPIError(exception)
             else -> GENERIC_ERROR
         }
         return PaymentFailed(type, paymentData, exception.errorMessage)
+    }
+
+    private fun mapStripeAPIError(exception: TerminalException): CardPaymentStatus.CardPaymentStatusErrorType {
+        return when (exception.apiError?.code) {
+            StripeApiError.AMOUNT_TOO_SMALL.message -> AMOUNT_TOO_SMALL
+            else -> GENERIC_ERROR
+        }
     }
 
     fun mapCapturePaymentError(
@@ -51,5 +56,9 @@ internal class PaymentErrorMapper {
     ): PaymentFailed {
         val paymentData = originalPaymentIntent?.let { PaymentDataImpl(originalPaymentIntent) }
         return PaymentFailed(GENERIC_ERROR, paymentData, errorMessage)
+    }
+
+    enum class StripeApiError(val message: String) {
+        AMOUNT_TOO_SMALL("amount_too_small")
     }
 }

@@ -71,7 +71,6 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    private val continuationFetchOrderNotes = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationFetchOrderShipmentTrackingList = ContinuationWrapper<RequestResult>(ORDERS)
     private val continuationUpdateOrderStatus = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
@@ -105,14 +104,10 @@ class OrderDetailRepository @Inject constructor(
         localOrderId: Int,
         remoteOrderId: Long
     ): Boolean {
-        val result = continuationFetchOrderNotes.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = FetchOrderNotesPayload(localOrderId, remoteOrderId, selectedSite.get())
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            orderStore.fetchOrderNotes(localOrderId, remoteOrderId, selectedSite.get())
         }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        return result?.isError == false
     }
 
     suspend fun fetchOrderShipmentTrackingList(
@@ -326,8 +321,6 @@ class OrderDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
-            WCOrderAction.FETCH_ORDER_NOTES ->
-                continuationFetchOrderNotes.continueWith(event.isError.not())
             WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS -> {
                 if (event.isError) {
                     val error = if (event.error.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {

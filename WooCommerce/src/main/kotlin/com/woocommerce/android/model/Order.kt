@@ -29,6 +29,7 @@ import java.util.Locale
 @Parcelize
 data class Order(
     val identifier: OrderIdentifier,
+    val localOrderId: Int,
     val remoteId: Long,
     val number: String,
     val localSiteId: Int,
@@ -115,7 +116,9 @@ data class Order(
         val attributesDescription
             get() = attributesList.filter {
                 it.value.isNotEmpty() && it.key.isNotEmpty() && it.isNotInternalAttributeData
-            }.joinToString { it.value.capitalize(Locale.getDefault()) }
+            }.joinToString {
+                it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            }
 
         @Parcelize
         data class Attribute(
@@ -257,6 +260,7 @@ data class Order(
 fun WCOrderModel.toAppModel(): Order {
     return Order(
         identifier = OrderIdentifier(this),
+        localOrderId = this.id,
         remoteId = this.remoteOrderId,
         number = this.number,
         localSiteId = this.localSiteId,
