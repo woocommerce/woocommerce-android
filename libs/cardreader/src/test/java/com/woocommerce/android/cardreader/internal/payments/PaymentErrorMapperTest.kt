@@ -6,7 +6,7 @@ import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode.DECLINED_BY_READER
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.*
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before

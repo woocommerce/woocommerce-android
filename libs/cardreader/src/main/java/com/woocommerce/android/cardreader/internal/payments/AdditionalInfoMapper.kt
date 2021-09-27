@@ -10,7 +10,7 @@ import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.RETRY_CARD
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.SWIPE_CARD
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.TRY_ANOTHER_CARD
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.TRY_ANOTHER_READ_METHOD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType
 
 class AdditionalInfoMapper {
     fun map(displayMsg: ReaderDisplayMessage): AdditionalInfoType =
@@ -23,6 +23,6 @@ class AdditionalInfoMapper {
             MULTIPLE_CONTACTLESS_CARDS_DETECTED -> AdditionalInfoType.MULTIPLE_CONTACTLESS_CARDS_DETECTED
             TRY_ANOTHER_READ_METHOD -> AdditionalInfoType.TRY_ANOTHER_READ_METHOD
             TRY_ANOTHER_CARD -> AdditionalInfoType.TRY_ANOTHER_CARD
-            CHECK_MOBILE_DEVICE -> AdditionalInfoType.TRY_ANOTHER_CARD // TODO cardreader handle the properly
+            CHECK_MOBILE_DEVICE -> AdditionalInfoType.CHECK_MOBILE_DEVICE
         }
 }
