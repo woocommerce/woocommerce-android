@@ -19,6 +19,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PaymentFlowError.*
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.*
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
@@ -68,13 +69,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
 
-    private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GENERIC_ERROR, null, "dummy msg")
-    private val paymentFailedWithValidDataForRetry = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
-    private val paymentFailedWithNoNetwork = PaymentFailed(NO_NETWORK, mock(), "dummy msg")
-    private val paymentFailedWithPaymentDeclined = PaymentFailed(PAYMENT_DECLINED, mock(), "dummy msg")
-    private val paymentFailedWithCardReadTimeOut = PaymentFailed(GENERIC_ERROR, mock(), "dummy msg")
-    private val paymentFailedWithServerError = PaymentFailed(SERVER_ERROR, mock(), "dummy msg")
-    private val paymentFailedWithAmountTooSmall = PaymentFailed(AMOUNT_TOO_SMALL, mock(), "dummy msg")
+    private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GenericError, null, "dummy msg")
+    private val paymentFailedWithValidDataForRetry = PaymentFailed(GenericError, mock(), "dummy msg")
+    private val paymentFailedWithNoNetwork = PaymentFailed(NoNetwork, mock(), "dummy msg")
+    private val paymentFailedWithPaymentDeclined = PaymentFailed(PaymentDeclined.Declined, mock(), "dummy msg")
+    private val paymentFailedWithCardReadTimeOut = PaymentFailed(GenericError, mock(), "dummy msg")
+    private val paymentFailedWithServerError = PaymentFailed(ServerError, mock(), "dummy msg")
+    private val paymentFailedWithAmountTooSmall = PaymentFailed(PaymentDeclined.AmountTooSmall, mock(), "dummy msg")
 
     private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
         ORDER_IDENTIFIER
@@ -375,6 +376,44 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when payment fails because of NoNetwork, then error is mapped correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithNoNetwork) }
+            }
+
+            viewModel.start()
+
+            assertEquals((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel, NO_NETWORK.message)
+        }
+
+    @Test
+    fun `when payment fails because of PaymentDeclined, then error is mapped correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithPaymentDeclined) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel, PAYMENT_DECLINED.message
+            )
+        }
+
+    @Test
+    fun `when payment fails because of CARD_READ_TIMEOUT, then error is mapped correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithCardReadTimeOut) }
+            }
+
+            viewModel.start()
+
+            assertEquals((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel, GENERIC_ERROR.message)
+        }
+
+    @Test
     fun `when payment fails, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -397,7 +436,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                CardReaderPaymentViewModel.PaymentFlowError.NO_NETWORK.message
+                NO_NETWORK.message
             )
         }
 
@@ -412,7 +451,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                CardReaderPaymentViewModel.PaymentFlowError.PAYMENT_DECLINED.message
+                PAYMENT_DECLINED.message
             )
         }
 
@@ -427,7 +466,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                CardReaderPaymentViewModel.PaymentFlowError.GENERIC_ERROR.message
+                GENERIC_ERROR.message
             )
         }
 
@@ -442,7 +481,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                CardReaderPaymentViewModel.PaymentFlowError.GENERIC_ERROR.message
+                GENERIC_ERROR.message
             )
         }
 
@@ -457,7 +496,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                CardReaderPaymentViewModel.PaymentFlowError.SERVER_ERROR.message
+                SERVER_ERROR.message
             )
         }
 
@@ -472,7 +511,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                CardReaderPaymentViewModel.PaymentFlowError.AMOUNT_TOO_SMALL.message
+                AMOUNT_TOO_SMALL.message
             )
         }
 
@@ -553,7 +592,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val paymentData = mock<PaymentData>()
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(GENERIC_ERROR, paymentData, "dummy msg")) }
+                flow { emit(PaymentFailed(GenericError, paymentData, "dummy msg")) }
             }
             viewModel.start()
 
@@ -742,7 +781,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment fails with no network error, then correct paymentStateLabel is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(NO_NETWORK, null, "")) }
+                flow { emit(PaymentFailed(NoNetwork, null, "")) }
             }
 
             viewModel.start()
@@ -756,7 +795,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment fails with payment declined error, then correct paymentStateLabel is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(PAYMENT_DECLINED, null, "")) }
+                flow { emit(PaymentFailed(PaymentDeclined.Declined, null, "")) }
             }
 
             viewModel.start()
@@ -770,7 +809,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment fails with server error, then correct paymentStateLabel is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(SERVER_ERROR, null, "")) }
+                flow { emit(PaymentFailed(ServerError, null, "")) }
             }
 
             viewModel.start()

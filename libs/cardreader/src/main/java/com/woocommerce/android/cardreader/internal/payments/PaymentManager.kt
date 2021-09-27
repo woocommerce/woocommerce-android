@@ -5,7 +5,7 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
 import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus.*
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GenericError
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.PaymentData
@@ -93,7 +93,7 @@ internal class PaymentManager(
         paymentIntent: PaymentIntent
     ): String? {
         return paymentIntent.getCharges().takeIf { it.isNotEmpty() }?.get(0)?.receiptUrl ?: run {
-            emit(PaymentFailed(GENERIC_ERROR, null, "ReceiptUrl not available"))
+            emit(PaymentFailed(GenericError, null, "ReceiptUrl not available"))
             null
         }
     }
