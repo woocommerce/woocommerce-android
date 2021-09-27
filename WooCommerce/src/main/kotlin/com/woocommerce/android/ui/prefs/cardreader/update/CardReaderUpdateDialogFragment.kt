@@ -67,6 +67,10 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
                     UiHelpers.setTextOrHide(descriptionTextView, state.description)
                     UiHelpers.setTextOrHide(progressTextView, state.progressText)
                     UiHelpers.setTextOrHide(actionButton, state.button?.text)
+                    with(progressCircleProgressOverlayView) {
+                        UiHelpers.updateVisibility(this, state.progress != null)
+                        currentProgressPercentage = state.progress ?: 0
+                    }
                     UiHelpers.setImageOrHideInLandscape(progressImageView, state.illustration)
                     actionButton.setOnClickListener { state.button?.onActionClicked?.invoke() }
                 }

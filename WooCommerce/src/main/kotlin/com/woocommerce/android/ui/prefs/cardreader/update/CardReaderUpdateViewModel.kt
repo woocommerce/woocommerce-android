@@ -23,8 +23,8 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewMo
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ButtonState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.StateWithProgress
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -61,7 +61,10 @@ class CardReaderUpdateViewModel @Inject constructor(
     fun onBackPressed() {
         return when (val currentState = viewState.value) {
             is UpdatingState -> showCancelAnywayButton(currentState)
-            is UpdatingCancelingState -> viewState.value = UpdatingState(progressText = currentState.progressText)
+            is UpdatingCancelingState -> viewState.value = UpdatingState(
+                progress = currentState.progress,
+                progressText = currentState.progressText
+            )
             is UpdateAboutToStart -> {
                 // noop. Update is initiating, we can not cancel it
             }
@@ -125,14 +128,21 @@ class CardReaderUpdateViewModel @Inject constructor(
 
     private fun updateProgress(currentState: ViewState?, progress: Int) {
         if (currentState is StateWithProgress<*>) {
-            viewState.value = currentState.copyWithUpdatedProgress(buildProgressText(progress))
+            viewState.value = currentState.copyWithUpdatedProgress(
+                progress,
+                buildProgressText(progress)
+            )
         } else {
-            viewState.value = UpdatingState(progressText = buildProgressText(progress))
+            viewState.value = UpdatingState(
+                progress = progress,
+                progressText = buildProgressText(progress)
+            )
         }
     }
 
     private fun showCancelAnywayButton(currentState: UpdatingState) {
         viewState.value = UpdatingCancelingState(
+            progress = currentState.progress,
             progressText = currentState.progressText,
             button = ButtonState(
                 ::onCancelClicked,
@@ -183,17 +193,20 @@ class CardReaderUpdateViewModel @Inject constructor(
         val title: UiString? = null,
         @DrawableRes val illustration: Int = R.drawable.img_card_reader_update_progress,
         open val description: UiString? = null,
+        open val progress: Int? = null,
         open val progressText: UiString? = null,
         open val button: ButtonState? = null,
     ) {
         data class UpdateAboutToStart(
             override val progressText: UiString,
         ) : ViewState(
+            progress = 0,
             title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
             description = UiStringRes(R.string.card_reader_software_update_description),
         )
 
         data class UpdatingState(
+            override val progress: Int,
             override val progressText: UiString,
             override val description: UiStringRes = UiStringRes(
                 R.string.card_reader_software_update_description
@@ -201,20 +214,27 @@ class CardReaderUpdateViewModel @Inject constructor(
         ) : StateWithProgress<UpdatingState>, ViewState(
             title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
         ) {
-            override fun copyWithUpdatedProgress(progressText: UiString): UpdatingState {
-                return this.copy(progressText = progressText)
+            override fun copyWithUpdatedProgress(progress: Int, progressText: UiString): UpdatingState {
+                return this.copy(
+                    progress = progress,
+                    progressText = progressText
+                )
             }
         }
 
         data class UpdatingCancelingState(
+            override val progress: Int,
             override val progressText: UiString,
             override val button: ButtonState,
             override val description: UiStringRes,
         ) : StateWithProgress<UpdatingCancelingState>, ViewState(
             title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
         ) {
-            override fun copyWithUpdatedProgress(progressText: UiString): UpdatingCancelingState {
-                return this.copy(progressText = progressText)
+            override fun copyWithUpdatedProgress(progress: Int, progressText: UiString): UpdatingCancelingState {
+                return this.copy(
+                    progress = progress,
+                    progressText = progressText
+                )
             }
         }
 
@@ -232,7 +252,7 @@ class CardReaderUpdateViewModel @Inject constructor(
         )
 
         interface StateWithProgress<T : ViewState> {
-            fun copyWithUpdatedProgress(progressText: UiString): T
+            fun copyWithUpdatedProgress(progress: Int, progressText: UiString): T
         }
     }
 

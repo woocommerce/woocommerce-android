@@ -35,6 +35,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/titleTextView" />
 
+        <com.woocommerce.android.widgets.CircleProgressOverlayView
+            android:id="@+id/progressCircleProgressOverlayView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/progressImageView"
+            app:layout_constraintEnd_toEndOf="@id/progressImageView"
+            app:layout_constraintStart_toStartOf="@id/progressImageView"
+            app:layout_constraintTop_toTopOf="@id/progressImageView" />
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/progressTextView"
             style="@style/Woo.TextView.Subtitle2"
@@ -57,10 +66,10 @@
             android:layout_marginHorizontal="@dimen/major_125"
             android:gravity="center_horizontal"
             android:textColor="@color/color_on_surface_high"
+            app:layout_constraintBottom_toTopOf="@id/actionButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/progressTextView"
-            app:layout_constraintBottom_toTopOf="@id/actionButton"
             tools:text="@string/card_reader_software_update_progress_cancel_required_warning" />
 
         <com.google.android.material.button.MaterialButton
