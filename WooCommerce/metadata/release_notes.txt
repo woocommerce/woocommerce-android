@@ -1,3 +1,3 @@
-Viewing orders with products using WooCommerce’s Product Add-Ons Extension is a new feature! Head over to your store’s settings in the app on the My store tab and turn this on under Beta features. Be sure to send us feedback about the experience!
+We know that adding images to your products is one of the features you love using in the app! We’ve improved the experience to upload in the background while you continue on other tasks.
 
-You’ll also find that you can filter the product list by category. You asked, and we delivered!
+If you’re managing multiple stores in the app, you’ll be happy to hear this news. You’ll now receive push notifications for all of your stores, not just the current one! Surprise!
