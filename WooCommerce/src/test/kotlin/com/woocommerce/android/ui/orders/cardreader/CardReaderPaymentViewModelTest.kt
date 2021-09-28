@@ -1185,6 +1185,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(REMOVE_CARD))
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(MULTIPLE_CONTACTLESS_CARDS_DETECTED))
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_READ_METHOD))
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(CHECK_MOBILE_DEVICE))
                 }
             }
 

@@ -35,7 +35,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.Initializin
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.payments.PaymentData
