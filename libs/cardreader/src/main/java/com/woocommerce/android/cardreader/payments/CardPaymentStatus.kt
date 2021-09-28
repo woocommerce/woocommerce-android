@@ -1,4 +1,4 @@
-package com.woocommerce.android.cardreader
+package com.woocommerce.android.cardreader.payments
 
 sealed class CardPaymentStatus {
     object InitializingPayment : CardPaymentStatus()
@@ -34,7 +34,8 @@ sealed class CardPaymentStatus {
         REMOVE_CARD,
         MULTIPLE_CONTACTLESS_CARDS_DETECTED,
         TRY_ANOTHER_READ_METHOD,
-        TRY_ANOTHER_CARD;
+        TRY_ANOTHER_CARD,
+        CHECK_MOBILE_DEVICE,
     }
 }
 

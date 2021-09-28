@@ -1,6 +1,6 @@
 package com.woocommerce.android.cardreader.internal.connection
 
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType
 
 sealed class BluetoothCardReaderMessages {
     data class CardReaderDisplayMessage(val message: AdditionalInfoType) : BluetoothCardReaderMessages()
