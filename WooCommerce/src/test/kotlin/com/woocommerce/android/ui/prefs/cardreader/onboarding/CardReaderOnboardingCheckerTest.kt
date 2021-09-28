@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
+import com.woocommerce.android.AppPrefsWrapper
 import org.mockito.kotlin.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -23,6 +24,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val wooStore: WooCommerceStore = mock()
     private val wcPayStore: WCPayStore = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private val site = SiteModel()
 
@@ -30,6 +32,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     fun setUp() = testBlocking {
         checker = CardReaderOnboardingChecker(
             selectedSite,
+            appPrefsWrapper,
             wooStore,
             wcPayStore,
             coroutinesTestRule.testDispatchers,
@@ -42,6 +45,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(buildWCPayPluginInfo())
+        whenever(appPrefsWrapper.setCardReaderOnboardingCompleted(any(), any(), any())).thenReturn(Unit)
     }
 
     @Test

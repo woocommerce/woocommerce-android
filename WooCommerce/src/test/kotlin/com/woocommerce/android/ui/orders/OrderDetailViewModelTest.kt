@@ -117,6 +117,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(WooPlugin(true, true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
             .whenever(repository).getWooServicesPluginInfo()
         doReturn(SiteModel()).whenever(selectedSite).getIfExists()
+        doReturn(true).whenever(appPrefsWrapper.isCardReaderOnboardingCompleted(any(), any(), any()))
 
         viewModel = spy(
             OrderDetailViewModel(
@@ -1097,6 +1098,25 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             // Then
             assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartCardReaderConnectFlow::class.java)
+        }
+
+    @Test
+    fun `given onboarding not completed, when user clicks on accept card, then show welcome dialog`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
+            whenever(appPrefsWrapper.isCardReaderOnboardingCompleted(any(), any(), any())).thenReturn(false)
+            viewModel.start()
+
+            // When
+            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
+
+            // Then
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OrderNavigationTarget.ShowCardReaderWelcomeDialog::class.java)
         }
 
     @Test
