@@ -64,7 +64,6 @@ class ProductDetailBottomSheetBuilder(
             }
             EXTERNAL -> {
                 listOfNotNull(
-                    product.getShipping(),
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription(),
