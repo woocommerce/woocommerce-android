@@ -1129,68 +1129,23 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given collect payment shown, when multiple cards event received, then collect payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow {
-                    emit(CollectingPayment)
-                    emit(ShowAdditionalInfo(MULTIPLE_CONTACTLESS_CARDS_DETECTED))
-                }
-            }
-
-            viewModel.start()
-
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
-                .isEqualTo(R.string.card_reader_payment_multiple_contactless_cards_detected_prompt)
-        }
-
-    @Test
-    fun `given collect payment shown, when try another method event received, then collect payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow {
-                    emit(CollectingPayment)
-                    emit(ShowAdditionalInfo(TRY_ANOTHER_READ_METHOD))
-                }
-            }
-
-            viewModel.start()
-
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
-                .isEqualTo(R.string.card_reader_payment_try_another_read_method_prompt)
-        }
-
-    @Test
-    fun `given collect payment shown, when try another card event received, then collect payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow {
-                    emit(CollectingPayment)
-                    emit(ShowAdditionalInfo(TRY_ANOTHER_CARD))
-                }
-            }
-
-            viewModel.start()
-
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
-                .isEqualTo(R.string.card_reader_payment_try_another_card_prompt)
-        }
-
-    @Test
     fun `given collect payment NOT shown, when show additional info event received, then event ignored`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow {
                     emit(ProcessingPayment)
-                    emit(ShowAdditionalInfo(TRY_ANOTHER_CARD))
-                    emit(ShowAdditionalInfo(RETRY_CARD))
-                    emit(ShowAdditionalInfo(INSERT_CARD))
-                    emit(ShowAdditionalInfo(INSERT_OR_SWIPE_CARD))
-                    emit(ShowAdditionalInfo(SWIPE_CARD))
-                    emit(ShowAdditionalInfo(REMOVE_CARD))
-                    emit(ShowAdditionalInfo(MULTIPLE_CONTACTLESS_CARDS_DETECTED))
-                    emit(ShowAdditionalInfo(TRY_ANOTHER_READ_METHOD))
-                    emit(ShowAdditionalInfo(TRY_ANOTHER_CARD))
+                }
+            }
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_CARD))
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(RETRY_CARD))
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(INSERT_CARD))
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(INSERT_OR_SWIPE_CARD))
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(SWIPE_CARD))
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(REMOVE_CARD))
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(MULTIPLE_CONTACTLESS_CARDS_DETECTED))
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_READ_METHOD))
                 }
             }
 

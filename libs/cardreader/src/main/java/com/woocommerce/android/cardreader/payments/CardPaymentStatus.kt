@@ -4,7 +4,6 @@ sealed class CardPaymentStatus {
     object InitializingPayment : CardPaymentStatus()
     object CollectingPayment : CardPaymentStatus()
     object WaitingForInput : CardPaymentStatus()
-    data class ShowAdditionalInfo(val type: AdditionalInfoType) : CardPaymentStatus()
     object ProcessingPayment : CardPaymentStatus()
     object CapturingPayment : CardPaymentStatus()
     data class PaymentCompleted(val receiptUrl: String) : CardPaymentStatus()
