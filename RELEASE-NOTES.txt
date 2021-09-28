@@ -2,7 +2,7 @@
 
 7.7
 -----
-
+- [***] In-Person Payments: Adds support for accepting In-Person Card Payments in the US
 
 7.6
 -----
