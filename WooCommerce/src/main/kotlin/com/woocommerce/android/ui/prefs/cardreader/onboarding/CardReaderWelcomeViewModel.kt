@@ -8,5 +8,4 @@ import javax.inject.Inject
 @HiltViewModel
 class CardReaderWelcomeViewModel @Inject constructor(
     savedState: SavedStateHandle,
-) : ScopedViewModel(savedState) {
-}
+) : ScopedViewModel(savedState)

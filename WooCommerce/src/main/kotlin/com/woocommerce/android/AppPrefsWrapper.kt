@@ -1,7 +1,7 @@
 package com.woocommerce.android
 
 import javax.inject.Inject
-
+@Suppress("TooManyFunctions")
 class AppPrefsWrapper @Inject constructor() {
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)
