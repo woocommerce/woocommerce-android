@@ -181,6 +181,12 @@ object WooLog {
         }
     }
 
+    fun addDeviceInfoEntry(tag: T, level: LogLevel = LogLevel.i) {
+        with(DeviceInfo) {
+            addEntry(tag, level, "OS: ${OS}\nDeviceName: ${name}\nLanguage: $locale")
+        }
+    }
+
     private fun getStringStackTrace(throwable: Throwable): String {
         val errors = StringWriter()
         throwable.printStackTrace(PrintWriter(errors))
@@ -212,7 +218,8 @@ object WooLog {
      * Fix-sized list of log entries
      */
     private class LogEntryList : ArrayList<LogEntry>() {
-        @Synchronized fun addEntry(entry: LogEntry): Boolean {
+        @Synchronized
+        fun addEntry(entry: LogEntry): Boolean {
             if (size >= MAX_ENTRIES) {
                 removeFirstEntry()
             }

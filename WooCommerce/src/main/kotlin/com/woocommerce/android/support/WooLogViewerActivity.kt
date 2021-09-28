@@ -14,6 +14,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
@@ -43,20 +45,28 @@ class WooLogViewerActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        setupRecyclerView(binding, setupRecyclerDivider())
+    }
+
+    private fun setupRecyclerDivider(): AlignedDividerDecoration {
         val divider = AlignedDividerDecoration(
             this,
-            androidx.recyclerview.widget.DividerItemDecoration.VERTICAL, 0, clipToMargin = false
+            DividerItemDecoration.VERTICAL, 0, clipToMargin = false
         )
         ContextCompat.getDrawable(this, R.drawable.list_divider)?.let { drawable ->
             divider.setDrawable(drawable)
         }
+        return divider
+    }
 
-        binding.recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+    private fun setupRecyclerView(binding: ActivityLogviewerBinding, divider: AlignedDividerDecoration) {
+        binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.addItemDecoration(divider)
         binding.recycler.adapter = LogAdapter(this)
     }
 
     private fun shareAppLog() {
+        WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_TEXT, WooLog.toString())
@@ -70,6 +80,7 @@ class WooLogViewerActivity : AppCompatActivity() {
 
     private fun copyAppLogToClipboard() {
         try {
+            WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.setPrimaryClip(ClipData.newPlainText("AppLog", WooLog.toString()))
             ToastUtils.showToast(this, R.string.logviewer_copied_to_clipboard)
