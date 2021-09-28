@@ -176,7 +176,7 @@ class MediaFileUploadHandler @Inject constructor(
     fun observeCurrentUploadErrors(remoteProductId: Long): Flow<List<ProductImageUploadData>> =
         uploadsStatus.map { list ->
             list.filter { it.remoteProductId == remoteProductId && it.uploadStatus is Failed }
-        }.filter { it.isNotEmpty() }
+        }
 
     fun observeCurrentUploads(remoteProductId: Long): Flow<List<String>> {
         return uploadsStatus

@@ -8,8 +8,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -24,7 +22,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PreferencesWrapper
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -112,17 +110,6 @@ class AppSettingsActivity :
         if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
         siteChanged = true
         setResult(RESULT_CODE_SITE_CHANGED)
-        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
-
-        // Display a message to the user advising notifications will only be shown
-        // for the current store.
-        selectedSite.getIfExists()?.let {
-            Snackbar.make(
-                binding.mainContent,
-                getString(R.string.settings_switch_site_notifs_msg, it.name),
-                BaseTransientBottomBar.LENGTH_LONG
-            ).show()
-        }
 
         prefs.resetSitePreferences()
     }

@@ -1,4 +1,0 @@
-7.4:
-Ulasan produk yang memerlukan persetujuan Anda memiliki label baru untuk memudahkan Anda membedakannya dari ulasan yang sudah disetujui.
-
-Pembaruan ini juga mencakup beberapa peningkatan pada fitur label pengiriman menggunakan Ekstensi Pengiriman & Pajak WooCommerce. Kami menghargai semua saran Anda pada fitur-fitur baru ini!

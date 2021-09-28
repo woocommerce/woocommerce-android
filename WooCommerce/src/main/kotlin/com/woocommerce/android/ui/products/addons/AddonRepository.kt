@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.addons
 
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
@@ -22,9 +23,10 @@ class AddonRepository @Inject constructor(
         addonsStore.fetchAllGlobalAddonsGroups(selectedSite.get())
             .isError.not()
 
-    fun getAddonsFrom(productID: Long) =
-        productStore.getProductByRemoteId(selectedSite.get(), productID)
-            ?.addons
+    suspend fun containsAddonsFrom(orderItem: Order.Item) =
+        getAddonsFrom(orderItem.productId)
+            ?.any { addon -> orderItem.attributesList.any { it.addonName == addon.name } }
+            ?: false
 
     fun observeProductSpecificAddons(productRemoteID: Long): Flow<List<Addon>> =
         addonsStore.observeProductSpecificAddons(
@@ -55,8 +57,11 @@ class AddonRepository @Inject constructor(
             ?.filter { it.isNotInternalAttributeData }
 
     private suspend fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
+        getAddonsFrom(productID)
+            ?.let { addons -> Pair(addons, this) }
+
+    private suspend fun getAddonsFrom(productID: Long) =
         productStore.getProductByRemoteId(selectedSite.get(), productID)
             ?.let { addonsStore.observeAllAddonsForProduct(selectedSite.get().siteId, it) }
             ?.firstOrNull()
-            ?.let { addons -> Pair(addons, this) }
 }

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-31 15:54:04+0000
+Translation-Revision-Date: 2021-09-16 22:16:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="settings_whats_new">Nieuw in WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Add-ons bekijken</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">We kunnen deze functie-instelling momenteel niet wijzigen</string>
+    <string name="product_category">Categorie</string>
+    <string name="notification_review_title">Je hebt 1 nieuwe beoordeling! 🌟</string>
+    <string name="notification_order_title">Je hebt 1 nieuwe bestelling! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d artikel</string>
     <string name="upsell_product_count_many">%d upsell-producten</string>
     <string name="upsell_product_count_one">%d upsell-product</string>
@@ -106,6 +112,7 @@ Language: nl
     <string name="product_attributes_created_generate_action_text">Variatie genereren</string>
     <string name="product_attributes_created_description">Nu je eigenschappen hebt toegevoegd, kun je je eerste variatie aanmaken!</string>
     <string name="product_attributes_created_title">Eigenschappen aangemaakt</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">We raden af een software-update in uitvoering te annuleren</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Deze betaling kon niet worden verwerkt</string>
     <string name="card_reader_payment_failed_server_error_state">Geen verbinding met de server</string>
@@ -428,11 +435,11 @@ Language: nl
     <string name="shipping_label_create_packaging_details">Verpakkingsgegevens</string>
     <string name="shipping_label_create_title">Verzendlabel aanmaken</string>
     <string name="shipping_label_more_information_link">Meer informatie</string>
-    <string name="shipping_label_more_information_message">Vermijd wachttijden bij het postkantoor door verzendlabels thuis af te drukken, tegen afgeprijsde tarieven!</string>
+    <string name="shipping_label_more_information_message">Vermijd wachttijden bij het postkantoor door verzendlabels thuis te printen vanaf je mobiele apparaat, tegen lagere tarieven!</string>
     <string name="shipping_label_more_information_heading">Bespaar tijd en geld door gebruik te maken van WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Bestelling markeren als voltooid</string>
-    <string name="orderdetail_shipping_label_notice">Meer informatie over labels met je telefoon aanmaken</string>
+    <string name="orderdetail_shipping_label_notice">Meer informatie over labels met je mobiele apparaat aanmaken</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Verzendlabel aanmaken</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Je kunt nu verzendlabels rechtstreeks vanaf je apparaat aanmaken voor alle fysieke bestellingen met de gratis WooCommerce Shipping-plugin. Tik op \"Verzendlabel aanmaken\" om onze bètafunctie te proberen!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Maak verzendlabels vanaf je apparaat!!</string>
@@ -493,6 +500,7 @@ Language: nl
     <string name="my_store_stats_availability_title">We kunnen de statistieken van je\n winkel niet weergeven</string>
     <string name="login_get_link_by_email">Krijg een inloglink via e-mail</string>
     <string name="email_not_registered_wpcom">We kunnen geen WordPress.com-account vinden dat is gekoppeld aan dit e-mailadres.</string>
+    <string name="settings_enable_product_addons_teaser_message">Test onze Add-ons bestelling bekijken terwijl we ons voorbereiden op de lancering</string>
     <string name="settings_enable_product_adding_teaser_title">Producten aanmaken</string>
     <string name="settings_preferences">Voorkeuren</string>
     <string name="product_trash_error">Fout bij weggooien van product</string>
@@ -515,7 +523,7 @@ Language: nl
     <string name="shipping_label_paper_size_letter">Brief (8,5 x 11 inch)</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 inch)</string>
     <string name="shipping_label_preview_error">Fout bij voorbeeldweergave verzendlabel</string>
-    <string name="shipping_label_print_info">Weet je niet hoe je kan afdrukken met je telefoon?</string>
+    <string name="shipping_label_print_info">Weet je niet hoe je moet printen vanaf je mobiele apparaat?</string>
     <string name="shipping_label_paper_size_options_info">Zie opties voor labellay-out en papierformaat</string>
     <string name="shipping_label_print_button">Verzendlabel afdrukken</string>
     <string name="shipping_label_paper_size_options_title">Papierformaat kiezen</string>

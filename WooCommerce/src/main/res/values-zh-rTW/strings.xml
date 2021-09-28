@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-01 09:54:04+0000
+Translation-Revision-Date: 2021-09-16 22:13:45+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="settings_whats_new">WooCommerce 新功能</string>
+    <string name="settings_enable_product_addons_teaser_title">檢視附加元件</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">很抱歉，我們目前無法變更此功能</string>
+    <string name="product_category">分類</string>
+    <string name="notification_review_title">你有 1 則新評論！ 🌟</string>
+    <string name="notification_order_title">你有 1 份新訂單！ 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d 個項目</string>
     <string name="upsell_product_count_many">%d 個追加銷售產品</string>
     <string name="upsell_product_count_one">%d 個追加銷售產品</string>
@@ -106,6 +112,7 @@ Language: zh_TW
     <string name="product_attributes_created_generate_action_text">產生款式</string>
     <string name="product_attributes_created_description">現在你已新增屬性，可以建立第一個款式了！</string>
     <string name="product_attributes_created_title">已建立屬性</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">不建議取消正在進行的軟體更新</string>
     <string name="card_reader_payment_failed_unexpected_error_state">抱歉，無法處理此付款</string>
     <string name="card_reader_payment_failed_server_error_state">未連線至伺服器</string>
@@ -428,11 +435,11 @@ Language: zh_TW
     <string name="shipping_label_create_packaging_details">包裹詳細資訊</string>
     <string name="shipping_label_create_title">建立郵寄標籤</string>
     <string name="shipping_label_more_information_link">瞭解更多</string>
-    <string name="shipping_label_more_information_message">在家使用手機列印郵寄標籤，不必在郵局排隊，還可享優惠費率！</string>
+    <string name="shipping_label_more_information_message">在家使用行動裝置列印郵寄標籤，不必在郵局排隊，還可享優惠費率！</string>
     <string name="shipping_label_more_information_heading">使用 WooCommerce Shipping 操作，省時又省錢</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">將訂單標示為完成</string>
-    <string name="orderdetail_shipping_label_notice">深入瞭解如何使用手機建立標籤</string>
+    <string name="orderdetail_shipping_label_notice">深入瞭解如何使用行動裝置建立標籤</string>
     <string name="orderdetail_shipping_label_create_shipping_label">建立郵寄標籤</string>
     <string name="orderdetail_shipping_label_m3_wip_message">你現在可以使用免費的 WooCommerce Shipping 外掛程式，直接從你的裝置為所有實體訂單建立郵寄標籤。 點選「建立郵寄標籤」，開始試用 Beta 功能！</string>
     <string name="orderdetail_shipping_label_m2_wip_title">從你的裝置建立郵寄標籤！！</string>
@@ -493,6 +500,7 @@ Language: zh_TW
     <string name="my_store_stats_availability_title">無法顯示你的\n商店分析資料</string>
     <string name="login_get_link_by_email">透過電子郵件取得登入連結</string>
     <string name="email_not_registered_wpcom">很抱歉，我們找不到與此電子郵件地址連結的 WordPress.com 帳號。</string>
+    <string name="settings_enable_product_addons_teaser_message">搶先試用訂單附加元件檢視功能</string>
     <string name="settings_enable_product_adding_teaser_title">建立商品</string>
     <string name="settings_preferences">喜好設定</string>
     <string name="product_trash_error">將商品移至垃圾桶時發生錯誤</string>
@@ -515,7 +523,7 @@ Language: zh_TW
     <string name="shipping_label_paper_size_letter">信紙 (8.5 x 11 吋)</string>
     <string name="shipping_label_paper_size_legal">法律文件紙 (8.5 x 14 吋)</string>
     <string name="shipping_label_preview_error">預覽郵寄標籤時發生錯誤</string>
-    <string name="shipping_label_print_info">不知道如何使用手機列印？</string>
+    <string name="shipping_label_print_info">不知道如何使用行動裝置列印嗎？</string>
     <string name="shipping_label_paper_size_options_info">查看標籤版面配置和紙張大小選項</string>
     <string name="shipping_label_print_button">列印郵寄標籤</string>
     <string name="shipping_label_paper_size_options_title">選擇紙張大小</string>

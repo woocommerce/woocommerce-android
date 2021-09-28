@@ -24,6 +24,12 @@
         tools:optionTitle="testwooshop.mystagingwebsite.com"
         tools:optionValue="Woo Tester" />
 
+    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+        android:id="@+id/option_switch_store"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:optionTitle="@string/settings_switch_store" />
+
     <View style="@style/Woo.Divider" />
     <!--
         Help & support
@@ -33,8 +39,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:optionTitle="@string/support_help" />
-
-
 
     <LinearLayout
         android:id="@+id/store_settings_container"

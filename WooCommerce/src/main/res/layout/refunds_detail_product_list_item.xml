@@ -61,8 +61,28 @@
         app:layout_constraintStart_toEndOf="@+id/refundItem_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/refundItem_sku"
         app:layout_constraintEnd_toStartOf="@+id/refundItem_quantity"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/refundItem_addons"
         tools:text="$30.00 ($15.00 x 2)" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/refundItem_addons"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawableEnd="@drawable/ic_arrow_right"
+        android:focusable="true"
+        android:text="@string/orderdetail_product_lineitem_view_addons_action"
+        android:textColor="@color/woo_black"
+        android:visibility="gone"
+        app:drawableTint="@color/color_on_surface_medium"
+        app:layout_constraintStart_toEndOf="@+id/refundItem_iconFrame"
+        app:layout_constraintTop_toBottomOf="@+id/refundItem_description"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="View Add-ons"
+        tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/refundItem_quantity"

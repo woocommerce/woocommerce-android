@@ -6,45 +6,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.getNonRefundedProducts
-import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -323,7 +300,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun refreshShipmentTracking() {
-        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
+        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(order.localOrderId)
     }
 
     fun onShippingLabelRefunded() {
@@ -357,8 +334,8 @@ class OrderDetailViewModel @Inject constructor(
         )
 
         val snackbarMessage = when (updateSource) {
-            is OrderStatusUpdateSource.Dialog -> R.string.order_status_updated
-            is OrderStatusUpdateSource.FullFillScreen -> R.string.order_fulfill_completed
+            is OrderStatusUpdateSource.Dialog -> string.order_status_updated
+            is OrderStatusUpdateSource.FullFillScreen -> string.order_fulfill_completed
         }
 
         triggerEvent(
@@ -382,7 +359,7 @@ class OrderDetailViewModel @Inject constructor(
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
             orderDetailRepository.getOrderShipmentTrackingByTrackingNumber(
-                orderIdSet.id, trackingNumber
+                order.localOrderId, trackingNumber
             )?.let { deletedShipmentTracking ->
                 deletedOrderShipmentTrackingSet.add(trackingNumber)
 
@@ -421,7 +398,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val deletedShipment = orderDetailRepository.deleteOrderShipmentTracking(
-                orderIdSet.id, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
+                order.localOrderId, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
             )
             if (deletedShipment) {
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
@@ -460,7 +437,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
-        // track add-ons event
+        AnalyticsTracker.track(PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
         triggerEvent(
             ViewOrderedAddons(
                 orderIdSet.remoteOrderId,
@@ -487,16 +464,16 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun loadOrderNotes() {
-        _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
+        _orderNotes.value = orderDetailRepository.getOrderNotes(order.localOrderId)
     }
 
     private fun fetchOrderNotes() {
         launch {
-            if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
+            if (!orderDetailRepository.fetchOrderNotes(order.localOrderId, orderIdSet.remoteOrderId)) {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
             }
             // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
+            _orderNotes.value = orderDetailRepository.getOrderNotes(order.localOrderId)
         }
     }
 
@@ -514,17 +491,9 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun checkAddonAvailability(products: List<Order.Item>) {
         launch(coroutineDispatchers.computation) {
-            products.forEach { product ->
-                product.containsAddons = containsAddons(product)
-            }
+            products.forEach { it.containsAddons = addonsRepository.containsAddonsFrom(it) }
         }
     }
-
-    private fun containsAddons(product: Order.Item) =
-        addonsRepository
-            .getAddonsFrom(product.productId)
-            ?.any { addon -> product.attributesList.any { it.addonName == addon.name } }
-            ?: false
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
     private fun fetchOrderProductsAsync() = async {
@@ -542,7 +511,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
-        val trackingList = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
+        val trackingList = orderDetailRepository.getOrderShipmentTrackings(order.localOrderId)
         return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {
@@ -555,7 +524,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        val result = orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)
+        val result = orderDetailRepository.fetchOrderShipmentTrackingList(order.localOrderId, orderIdSet.remoteOrderId)
         appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
     }
 
@@ -604,9 +573,12 @@ class OrderDetailViewModel @Inject constructor(
             _shipmentTrackings.value = shipmentTracking.list
         }
 
+        val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true &&
+            FeatureFlag.CARD_READER.isEnabled()
+
         val isOrderEligibleForSLCreation = isShippingPluginReady &&
             orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId) &&
-            viewState.orderInfo?.isPaymentCollectableWithCardReader != true
+            !orderEligibleForInPersonPayments
 
         if (isOrderEligibleForSLCreation &&
             viewState.isCreateShippingLabelButtonVisible != true &&
@@ -640,10 +612,61 @@ class OrderDetailViewModel @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: WCOrderStore.OnOrderChanged) {
-        if (event.causeOfChange == WCOrderAction.UPDATED_ORDER_STATUS) {
-            reloadOrderDetails()
+        when (event.causeOfChange) {
+            WCOrderAction.UPDATED_ORDER_STATUS -> {
+                reloadOrderDetails()
+            }
+            WCOrderAction.UPDATE_ORDER_STATUS -> {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.ORDER_STATUS_CHANGE_FAILED,
+                        prepareTracksEventsDetails(event)
+                    )
+                } else {
+                    AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_SUCCESS)
+                }
+            }
+            WCOrderAction.POST_ORDER_NOTE -> {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.ORDER_NOTE_ADD_FAILED,
+                        prepareTracksEventsDetails(event)
+                    )
+                } else {
+                    AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
+                }
+            }
+            WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING -> {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.ORDER_TRACKING_ADD_FAILED,
+                        prepareTracksEventsDetails(event)
+                    )
+                } else {
+                    AnalyticsTracker.track(Stat.ORDER_TRACKING_ADD_SUCCESS)
+                }
+            }
+            WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING -> {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.ORDER_TRACKING_DELETE_FAILED,
+                        prepareTracksEventsDetails(event)
+                    )
+                } else {
+                    AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
+                }
+            }
+            else -> {
+                // no-op
+            }
         }
     }
+
+    private fun prepareTracksEventsDetails(event: WCOrderStore.OnOrderChanged) = mapOf(
+        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+        AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+    )
 
     fun onCardReaderPaymentCompleted() {
         reloadOrderDetails()

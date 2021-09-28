@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-30 16:54:04+0000
+Translation-Revision-Date: 2021-09-16 22:17:53+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="settings_whats_new">Novedades de WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Ver complementos</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">No hemos podido cambiar la configuración de esta función</string>
+    <string name="product_category">Categoría</string>
+    <string name="notification_review_title">¡Tienes 1 reseña nueva! 🌟</string>
+    <string name="notification_order_title">¡Tienes 1 pedido nuevo! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d elemento</string>
     <string name="upsell_product_count_many">%d ventas dirigidas de productos</string>
     <string name="upsell_product_count_one">%d venta dirigida de producto</string>
@@ -106,6 +112,7 @@ Language: es
     <string name="product_attributes_created_generate_action_text">Generar variación</string>
     <string name="product_attributes_created_description">Ahora que has añadido atributos, puedes crear tu primera variación.</string>
     <string name="product_attributes_created_title">Atributos creados</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">No se recomienda cancelar una actualización de software en curso</string>
     <string name="card_reader_payment_failed_unexpected_error_state">No se ha podido procesar este pago</string>
     <string name="card_reader_payment_failed_server_error_state">Sin conexión con el servidor</string>
@@ -428,11 +435,11 @@ Language: es
     <string name="shipping_label_create_packaging_details">Detalles del paquete</string>
     <string name="shipping_label_create_title">Crear etiqueta de envío</string>
     <string name="shipping_label_more_information_link">Más información</string>
-    <string name="shipping_label_more_information_message">Acorta la espera en la oficina de correos imprimiendo las etiquetas de envío en casa con tu teléfono por un precio más bajo.</string>
+    <string name="shipping_label_more_information_message">Acorta la espera en la oficina de correos imprimiendo las etiquetas de envío en casa con tu dispositivo móvil por un precio más bajo.</string>
     <string name="shipping_label_more_information_heading">Ahorra tiempo y dinero con los envíos de WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Marcar el pedido como completado</string>
-    <string name="orderdetail_shipping_label_notice">Obtén más información sobre la creación de etiquetas con tu teléfono</string>
+    <string name="orderdetail_shipping_label_notice">Obtén más información sobre la creación de etiquetas con tu dispositivo móvil</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Crear etiqueta de envío</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Ahora, puedes crear etiquetas de envío para todos los pedidos físicos directamente desde tu dispositivo con el plugin gratuito de WooCommerce Shipping. Toca en \"Crear etiqueta de envío\" para probar nuestra función beta.</string>
     <string name="orderdetail_shipping_label_m2_wip_title">¡Crea etiquetas de envío desde tu dispositivo!</string>
@@ -493,6 +500,7 @@ Language: es
     <string name="my_store_stats_availability_title">No podemos mostrar los análisis de tu tienda </string>
     <string name="login_get_link_by_email">Obtener un enlace de acceso por correo electrónico</string>
     <string name="email_not_registered_wpcom">Vaya, no encontramos una cuenta de WordPress.com conectada a esta dirección de correo electrónico.</string>
+    <string name="settings_enable_product_addons_teaser_message">Prueba la visualización de Complementos del pedido mientras preparamos la publicación</string>
     <string name="settings_enable_product_adding_teaser_title">Creación de productos</string>
     <string name="settings_preferences">Preferencias</string>
     <string name="product_trash_error">Error al enviar el producto a la papelera</string>
@@ -515,7 +523,7 @@ Language: es
     <string name="shipping_label_paper_size_letter">Carta (8,5\" x 11\")</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5\" x 14\")</string>
     <string name="shipping_label_preview_error">Error al obtener la vista previa de la etiqueta de envío</string>
-    <string name="shipping_label_print_info">¿No sabes cómo imprimir con tu teléfono?</string>
+    <string name="shipping_label_print_info">¿No sabes cómo imprimir con tu dispositivo móvil?</string>
     <string name="shipping_label_paper_size_options_info">Consulta las opciones de tamaño de papel y diseño de etiqueta</string>
     <string name="shipping_label_print_button">Imprimir etiqueta de envío</string>
     <string name="shipping_label_paper_size_options_title">Elegir tamaño de papel</string>

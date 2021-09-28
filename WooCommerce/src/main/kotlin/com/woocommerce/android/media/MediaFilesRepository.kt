@@ -2,6 +2,7 @@ package com.woocommerce.android.media
 
 import android.content.Context
 import android.net.Uri
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
@@ -9,6 +10,7 @@ import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Succe
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -16,8 +18,10 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
+import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
+import java.io.File
 import javax.inject.Inject
 
 class MediaFilesRepository @Inject constructor(
@@ -25,7 +29,8 @@ class MediaFilesRepository @Inject constructor(
     private val context: Context,
     private val selectedSite: SelectedSite,
     private val mediaStore: MediaStore,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val resourceProvider: ResourceProvider
 ) {
     private var uploadContinuation = ContinuationWrapper<MediaModel>(T.MEDIA)
 
@@ -60,30 +65,25 @@ class MediaFilesRepository @Inject constructor(
             dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
         }
 
-        return when (result) {
-            is Cancellation -> throw result.exception
-            is Success -> result.value
+        if (result is Cancellation) throw result.exception
+
+        // Remove local file if it's in cache directory
+        if (localMediaModel.filePath.contains(context.cacheDir.absolutePath)) {
+            File(localMediaModel.filePath).delete()
         }
+
+        return (result as Success<MediaModel>).value
     }
 
     suspend fun uploadFile(localUri: String): String {
-        val mediaModel = fetchMedia(localUri)
+        val fetchedMedia = fetchMedia(localUri)
 
-        if (mediaModel == null) {
+        if (fetchedMedia == null) {
             WooLog.w(T.MEDIA, "MediaFilesRepository > null media")
             throw NullPointerException("null media")
         }
 
-        val result = uploadContinuation.callAndWait {
-            WooLog.d(T.MEDIA, "MediaFilesRepository > Dispatching request to upload $localUri")
-            val payload = UploadMediaPayload(selectedSite.get(), mediaModel, true)
-            dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
-        }
-
-        return when (result) {
-            is Cancellation -> throw result.exception
-            is Success -> result.value.url
-        }
+        return uploadMedia(fetchedMedia).url
     }
 
     @SuppressWarnings("unused")
@@ -100,6 +100,7 @@ class MediaFilesRepository @Inject constructor(
                         event.media,
                         event.error.type,
                         event.error.message
+                            ?: resourceProvider.getString(R.string.product_image_service_error_uploading)
                     )
                 )
             }
@@ -108,8 +109,23 @@ class MediaFilesRepository @Inject constructor(
                 uploadContinuation.cancel()
             }
             event.completed -> {
-                WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${event.media?.id}")
-                uploadContinuation.continueWith(event.media)
+                if (event.media?.url != null) {
+                    WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${event.media?.id}")
+                    uploadContinuation.continueWith(event.media)
+                } else {
+                    WooLog.w(
+                        T.MEDIA,
+                        "MediaFilesRepository > error uploading media ${event.media?.id}, null url"
+                    )
+
+                    uploadContinuation.continueWithException(
+                        MediaUploadException(
+                            event.media,
+                            GENERIC_ERROR,
+                            resourceProvider.getString(R.string.product_image_service_error_uploading)
+                        )
+                    )
+                }
             }
         }
     }

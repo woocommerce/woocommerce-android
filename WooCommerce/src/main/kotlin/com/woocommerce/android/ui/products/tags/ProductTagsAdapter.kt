@@ -47,6 +47,10 @@ class ProductTagsAdapter(
     }
 
     fun setProductTags(productsTags: List<ProductTag>) {
+        if (productsTags == this.productTags) {
+            return
+        }
+
         if (this.productTags.isEmpty()) {
             this.productTags.addAll(productsTags)
             notifyDataSetChanged()
@@ -66,8 +70,10 @@ class ProductTagsAdapter(
      * in the view model
      */
     fun setFilter(filter: String) {
-        currentFilter = filter
-        notifyDataSetChanged()
+        if (filter != currentFilter) {
+            currentFilter = filter
+            notifyDataSetChanged()
+        }
     }
 
     inner class ProductTagViewHolder(val viewBinding: ProductTagListItemBinding) :

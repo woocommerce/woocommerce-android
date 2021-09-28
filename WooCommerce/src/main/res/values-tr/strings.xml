@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-01 11:54:05+0000
+Translation-Revision-Date: 2021-09-16 22:15:51+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="settings_whats_new">WooCommerce\'deki Yenilikler</string>
+    <string name="settings_enable_product_addons_teaser_title">Eklentileri Görüntüle</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Maalesef şu anda bu özellik ayarını değiştiremedik</string>
+    <string name="product_category">Kategori</string>
+    <string name="notification_review_title">1 yeni yorumunuz var. 🌟</string>
+    <string name="notification_order_title">1 yeni siparişiniz var! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d ürün</string>
     <string name="upsell_product_count_many">%d yukarı satış ürünü</string>
     <string name="upsell_product_count_one">%d yukarı satış ürünü</string>
@@ -106,6 +112,7 @@ Language: tr
     <string name="product_attributes_created_generate_action_text">Varyasyon Oluştur</string>
     <string name="product_attributes_created_description">Nitelikleri eklediğinize göre ilk varyasyonunuzu oluşturabilirsiniz!</string>
     <string name="product_attributes_created_title">Nitelikler oluşturuldu</string>
+    <string name="card_reader_software_update_progress_indicator">%%%1$s</string>
     <string name="card_reader_software_update_progress_cancel_warning">Sürmekte olan bir yazılım güncellemesini iptal etmeniz önerilmez</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Üzgünüz, ödemeniz işleme alınamadı</string>
     <string name="card_reader_payment_failed_server_error_state">Sunucu ile bağlantı kurulamadı</string>
@@ -201,7 +208,7 @@ Language: tr
     <string name="card_reader_detail_connected_disconnect_reader">Okuyucunun bağlantısını kes</string>
     <string name="card_reader_detail_connected_enforced_update_software">Ödemeleri kabul etmeye devam edebilmek için lütfen okuyucu yazılımınızı güncelleyin</string>
     <string name="card_reader_detail_connected_update_software">Okuyucunun yazılımını güncelleyin</string>
-    <string name="card_reader_detail_connected_battery_percentage">%s%% pil </string>
+    <string name="card_reader_detail_connected_battery_percentage">%%%s pil </string>
     <string name="card_reader_detail_connected_header">BAĞLANTILI OKUYUCU</string>
     <string name="card_reader_details_not_connected_connect_button_label">Kart okuyucu bağlayın</string>
     <string name="card_reader_detail_not_connected_second_hint_label">Kart okuyucuyu açın ve mobil cihazın yanına yerleştirin</string>
@@ -428,11 +435,11 @@ Language: tr
     <string name="shipping_label_create_packaging_details">Paketleme ayrıntıları</string>
     <string name="shipping_label_create_title">Gönderim etiketi oluşturun</string>
     <string name="shipping_label_more_information_link">Daha fazla bilgi</string>
-    <string name="shipping_label_more_information_message">Telefonunuzla evde indirimli fiyatlara gönderim etiketleri yazdırarak postane ile olan bağınızı koparın.</string>
+    <string name="shipping_label_more_information_message">Mobil cihazınızla evde indirimli fiyatlara gönderim etiketleri yazdırarak postane ile olan bağınızı koparın.</string>
     <string name="shipping_label_more_information_heading">İşinizi WooCommerce Shipping ile yaparak zamandan ve paradan tasarruf edin</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Siparişi tamamlandı olarak işaretle</string>
-    <string name="orderdetail_shipping_label_notice">Telefonunuzla etiket oluşturma hakkında daha fazla bilgi edinin</string>
+    <string name="orderdetail_shipping_label_notice">Mobil cihazınızla etiket oluşturma hakkında daha fazla bilgi edinin</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Gönderim etiketi oluşturun</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Artık ücretsiz WooCommerce Shipping eklentisi ile tüm fiziksel siparişler için gönderi etiketlerini doğrudan cihazınızdan oluşturabilirsiniz. Beta özelliğimizi denemek için \"Gönderim etiketi oluştur\"a dokunun.</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Gönderim etiketlerini cihazınızdan oluşturun.</string>
@@ -493,6 +500,7 @@ Language: tr
     <string name="my_store_stats_availability_title">Mağazanızın analizlerini gösteremiyoruz</string>
     <string name="login_get_link_by_email">E-posta ile bir oturum açma bağlantısı alın</string>
     <string name="email_not_registered_wpcom">Bu e-posta hesabına bağlı bir WordPress.com hesabı bulamıyoruz.</string>
+    <string name="settings_enable_product_addons_teaser_message">Biz lansmana hazırlanırken siz de Sipariş Eklentilerini görüntüleme işlevini test edin</string>
     <string name="settings_enable_product_adding_teaser_title">Ürün oluşturma</string>
     <string name="settings_preferences">Tercihler</string>
     <string name="product_trash_error">Ürün çöp kutusuna taşınırken hata oluştu</string>
@@ -515,7 +523,7 @@ Language: tr
     <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 inç)</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 inç)</string>
     <string name="shipping_label_preview_error">Kargo etiketi önizlenirken hata oluştu</string>
-    <string name="shipping_label_print_info">Telefonunuzla nasıl yazdıracağınızı bilmiyor musunuz?</string>
+    <string name="shipping_label_print_info">Mobil cihazınızla nasıl yazdıracağınızı bilmiyor musunuz?</string>
     <string name="shipping_label_paper_size_options_info">Etiket düzeni ve kağıt boyutu seçeneklerine bakın</string>
     <string name="shipping_label_print_button">Kargo etiketini yazdır</string>
     <string name="shipping_label_paper_size_options_title">Kağıt boyutu seç</string>
