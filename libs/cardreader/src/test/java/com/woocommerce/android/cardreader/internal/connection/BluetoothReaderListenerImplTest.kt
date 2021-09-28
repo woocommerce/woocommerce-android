@@ -3,7 +3,7 @@ package com.woocommerce.android.cardreader.internal.connection
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
 import com.stripe.stripeterminal.external.models.ReaderInputOptions
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType

@@ -1,4 +1,4 @@
-package com.woocommerce.android.cardreader
+package com.woocommerce.android.cardreader.payments
 
 sealed class CardPaymentStatus {
     object InitializingPayment : CardPaymentStatus()
@@ -14,13 +14,15 @@ sealed class CardPaymentStatus {
         val errorMessage: String
     ) : CardPaymentStatus()
 
-    enum class CardPaymentStatusErrorType {
-        CARD_READ_TIMED_OUT,
-        NO_NETWORK,
-        SERVER_ERROR,
-        PAYMENT_DECLINED,
-        GENERIC_ERROR,
-        AMOUNT_TOO_SMALL,
+    sealed class CardPaymentStatusErrorType {
+        object CardReadTimeOut : CardPaymentStatusErrorType()
+        object NoNetwork : CardPaymentStatusErrorType()
+        object ServerError : CardPaymentStatusErrorType()
+        sealed class PaymentDeclined : CardPaymentStatusErrorType() {
+            object AmountTooSmall : PaymentDeclined()
+            object Declined : PaymentDeclined()
+        }
+        object GenericError : CardPaymentStatusErrorType()
     }
 
     enum class AdditionalInfoType {
@@ -31,7 +33,8 @@ sealed class CardPaymentStatus {
         REMOVE_CARD,
         MULTIPLE_CONTACTLESS_CARDS_DETECTED,
         TRY_ANOTHER_READ_METHOD,
-        TRY_ANOTHER_CARD;
+        TRY_ANOTHER_CARD,
+        CHECK_MOBILE_DEVICE,
     }
 }
 

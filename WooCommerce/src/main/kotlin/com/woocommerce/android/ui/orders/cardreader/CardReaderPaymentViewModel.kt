@@ -17,26 +17,28 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_FAI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.CardPaymentStatus
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.INSERT_OR_SWIPE_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.MULTIPLE_CONTACTLESS_CARDS_DETECTED
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.RETRY_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.SWIPE_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
-import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
-import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
-import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_OR_SWIPE_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.MULTIPLE_CONTACTLESS_CARDS_DETECTED
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.RETRY_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.SWIPE_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.CHECK_MOBILE_DEVICE
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ShowAdditionalInfo
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.connection.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.PaymentInfo
@@ -294,6 +296,7 @@ class CardReaderPaymentViewModel
                     R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
                 TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
                 TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
+                CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
             }?.let { hint ->
                 viewState.value = collectPaymentState.copy(hintLabel = hint)
             }
@@ -525,11 +528,17 @@ class CardReaderPaymentViewModel
 
     private fun CardPaymentStatusErrorType.mapToUiError(): PaymentFlowError =
         when (this) {
-            CardPaymentStatusErrorType.NO_NETWORK -> PaymentFlowError.NO_NETWORK
-            CardPaymentStatusErrorType.PAYMENT_DECLINED -> PaymentFlowError.PAYMENT_DECLINED
-            CardPaymentStatusErrorType.CARD_READ_TIMED_OUT,
-            CardPaymentStatusErrorType.GENERIC_ERROR -> PaymentFlowError.GENERIC_ERROR
-            CardPaymentStatusErrorType.SERVER_ERROR -> PaymentFlowError.SERVER_ERROR
-            CardPaymentStatusErrorType.AMOUNT_TOO_SMALL -> PaymentFlowError.AMOUNT_TOO_SMALL
+            CardPaymentStatusErrorType.NoNetwork -> PaymentFlowError.NO_NETWORK
+            is CardPaymentStatusErrorType.PaymentDeclined -> mapPaymentDeclinedErrorType(this)
+            CardPaymentStatusErrorType.CardReadTimeOut,
+            CardPaymentStatusErrorType.GenericError -> PaymentFlowError.GENERIC_ERROR
+            CardPaymentStatusErrorType.ServerError -> PaymentFlowError.SERVER_ERROR
+            else -> PaymentFlowError.GENERIC_ERROR
+        }
+
+    private fun mapPaymentDeclinedErrorType(cardPaymentStatusErrorType: CardPaymentStatusErrorType.PaymentDeclined) =
+        when (cardPaymentStatusErrorType) {
+            CardPaymentStatusErrorType.PaymentDeclined.AmountTooSmall -> PaymentFlowError.AMOUNT_TOO_SMALL
+            else -> PaymentFlowError.PAYMENT_DECLINED
         }
 }

@@ -15,13 +15,16 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CA
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
-import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
-import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ShowAdditionalInfo
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.payments.PaymentInfo
@@ -115,11 +118,11 @@ class PaymentManagerTest {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Successful.Success)
         whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull<TerminalException>()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GenericError, null, ""))
         whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GenericError, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GenericError, null, ""))
         whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(true)
     }
 
