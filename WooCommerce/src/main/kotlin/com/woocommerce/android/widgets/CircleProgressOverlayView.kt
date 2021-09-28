@@ -1,36 +1,43 @@
 package com.woocommerce.android.widgets
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.LinearInterpolator
 import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils.dpToPx
 import java.lang.Math.toDegrees
+import kotlin.math.acos
 import kotlin.math.asin
 
 private const val PERCENTS_100 = 100.0
+private const val PERCENTS_50 = 50.0
 private const val ANGLE_180 = 180
+private const val ANGLE_90 = 90
+private const val ANIMATION_DURATION = 400L
 
 class CircleProgressOverlayView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : View(context, attrs, defStyle) {
-    private var progressAngle = 0f
+    private var progressAngle: Float? = null
 
     var currentProgressPercentage: Int = 0
         set(value) {
-            progressAngle = calculateProgressAngle(value)
+            if (measuredWidth <= 0) return
+            val newAngle = calculateProgressAngle(value)
+            animateProgress(progressAngle ?: ANGLE_90.toFloat(), newAngle)
             invalidate()
-            field = value
         }
 
     private var progressColor: Int = context.getColor(R.color.color_on_primary)
     private var restColor: Int = context.getColor(R.color.color_on_secondary)
     private var borderColor: Int = context.getColor(R.color.color_accent_1)
-    private var borderSize: Int = dpToPx(context, 2)
+    private var borderSizePx: Int = dpToPx(context, 2)
 
     private val progressPaint by lazy {
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -49,6 +56,8 @@ class CircleProgressOverlayView @JvmOverloads constructor(
         }
     }
 
+    private val animationInterpolator by lazy { LinearInterpolator() }
+
     init {
         attrs?.let {
             val attrArray = context.obtainStyledAttributes(it, R.styleable.CircleProgressOverlayView)
@@ -65,7 +74,7 @@ class CircleProgressOverlayView @JvmOverloads constructor(
                     R.styleable.CircleProgressOverlayView_circleProgressBorderColor,
                     borderColor
                 )
-                borderSize = attrArray.getDimensionPixelSize(
+                borderSizePx = attrArray.getDimensionPixelSize(
                     R.styleable.CircleProgressOverlayView_circleProgressBorderSize,
                     dpToPx(context, 2)
                 )
@@ -88,28 +97,45 @@ class CircleProgressOverlayView @JvmOverloads constructor(
         canvas.drawCircle(
             width.toFloat() / 2,
             height.toFloat() / 2,
-            (width.toFloat() - borderSize * 2) / 2,
+            (width.toFloat() - borderSizePx * 2) / 2,
             restPaint
         )
 
         // progress
-        canvas.drawArc(
-            borderSize.toFloat(),
-            borderSize.toFloat(),
-            width.toFloat() - borderSize,
-            height.toFloat() - borderSize,
-            progressAngle,
-            ANGLE_180 - progressAngle,
-            false,
-            progressPaint
-        )
-        println("Start $progressAngle sweep ${ANGLE_180 - progressAngle}")
+        progressAngle?.let {
+            canvas.drawArc(
+                borderSizePx.toFloat(),
+                borderSizePx.toFloat(),
+                width.toFloat() - borderSizePx,
+                height.toFloat() - borderSizePx,
+                it,
+                ANGLE_180 - (it * 2),
+                false,
+                progressPaint
+            )
+        }
+    }
+
+    private fun animateProgress(from: Float, to: Float) {
+        ValueAnimator.ofFloat(from, to).apply {
+            duration = ANIMATION_DURATION
+            interpolator = animationInterpolator
+            addUpdateListener { valueAnimator ->
+                progressAngle = valueAnimator.animatedValue as Float
+                invalidate()
+            }
+        }.start()
     }
 
     private fun calculateProgressAngle(progressPercent: Int): Float {
-        val wholeProgressHeight = height.toFloat() - borderSize * 2
+        val wholeProgressHeight = height.toFloat() - borderSizePx * 2
         val radius = wholeProgressHeight / 2
-        val sin = (wholeProgressHeight * progressPercent / PERCENTS_100) / radius
-        return 90 - toDegrees(asin(sin)).toFloat()
+        return if (progressPercent <= PERCENTS_50) {
+            val cos = (radius - (radius * progressPercent * 2 / PERCENTS_100)) / radius
+            ANGLE_90 - toDegrees(acos(cos)).toFloat()
+        } else {
+            val sin = (radius * (progressPercent - PERCENTS_50) * 2 / PERCENTS_100) / radius
+            -toDegrees(asin(sin)).toFloat()
+        }
     }
 }

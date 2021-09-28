@@ -25,24 +25,28 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/card_reader_software_update_title" />
 
+        <com.woocommerce.android.widgets.CircleProgressOverlayView
+            android:id="@+id/progressCircleProgressOverlayView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:circleProgressProgressColor="@color/woo_purple_50"
+            app:circleProgressRestColor="@color/woo_purple_30"
+            app:circleProgressBorderColor="@color/color_primary_variant"
+            app:circleProgressBorderSize="2dp"
+            app:layout_constraintBottom_toBottomOf="@id/progressImageView"
+            app:layout_constraintEnd_toEndOf="@id/progressImageView"
+            app:layout_constraintStart_toStartOf="@id/progressImageView"
+            app:layout_constraintTop_toTopOf="@id/progressImageView" />
+
         <ImageView
             android:id="@+id/progressImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_175"
-            android:src="@drawable/img_card_reader_update_progress"
+            tools:src="@drawable/img_card_reader_update_progress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/titleTextView" />
-
-        <com.woocommerce.android.widgets.CircleProgressOverlayView
-            android:id="@+id/progressCircleProgressOverlayView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@id/progressImageView"
-            app:layout_constraintEnd_toEndOf="@id/progressImageView"
-            app:layout_constraintStart_toStartOf="@id/progressImageView"
-            app:layout_constraintTop_toTopOf="@id/progressImageView" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/progressTextView"
