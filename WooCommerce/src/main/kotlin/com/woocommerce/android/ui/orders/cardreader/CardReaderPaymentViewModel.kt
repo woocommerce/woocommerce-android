@@ -35,7 +35,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.Initializin
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.payments.PaymentData
@@ -203,9 +202,6 @@ class CardReaderPaymentViewModel
             is PaymentCompleted -> {
                 tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
                 onPaymentCompleted(paymentStatus, orderId)
-            }
-            is ShowAdditionalInfo -> {
-                handleAdditionalInfo(paymentStatus.type)
             }
             WaitingForInput -> {
                 // noop
