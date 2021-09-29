@@ -14,7 +14,6 @@ import javax.inject.Inject
 class CardReaderWelcomeViewModel @Inject constructor(
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
-
     private val _viewState = MutableLiveData(ViewState(::onButtonClick))
     val viewState: LiveData<ViewState> = _viewState
 
