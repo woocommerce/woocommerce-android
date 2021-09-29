@@ -375,7 +375,17 @@ class ProductDetailFragment :
         with(menu.findItem(R.id.menu_trash_product)) {
             if (this == null) return@with
             val title = SpannableString(this.title)
-            title.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.woo_red_30)), 0, title.length, 0)
+            title.setSpan(
+                ForegroundColorSpan(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.woo_red_30
+                    )
+                ),
+                0,
+                title.length,
+                0
+            )
             this.title = title
             this.isVisible = viewModel.isTrashEnabled
         }
