@@ -17,7 +17,7 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
             ORDER_CREATION, WHATS_NEW -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
-            CARD_READER -> true
+            CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
         }
     }
 }
