@@ -27,6 +27,6 @@ class CardReaderWelcomeViewModelTest : BaseUnitTest() {
     fun `when user clicks on continue, then the app navigates to onboarding flow`() {
         viewModel.viewState.value!!.buttonAction.invoke()
 
-        assertThat(viewModel.event).isInstanceOf(NavigateToOnboardingFlow::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(NavigateToOnboardingFlow::class.java)
     }
 }
