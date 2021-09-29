@@ -492,7 +492,15 @@
     <dialog
         android:id="@+id/cardReaderWelcomeDialog"
         android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeDialog"
-        android:label="CardReaderWelcomeDialog" />
+        android:label="CardReaderWelcomeDialog" >
+        <action
+            android:id="@+id/action_cardReaderWelcomeFragment_to_cardReaderOnboardingFragment"
+            app:destination="@id/cardReaderOnboardingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+    </dialog>
     <dialog
         android:id="@+id/cardReaderPaymentDialog"
         android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
