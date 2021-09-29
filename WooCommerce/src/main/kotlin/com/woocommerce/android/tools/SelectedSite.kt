@@ -33,6 +33,12 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
             return it
         }
 
+        // if the selected site id is valid but the site isn't in the site store, reset the
+        // preference. this can happen if the user has been removed from the active site.
+        if (localSiteId > -1) {
+            getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
+        }
+
         throw IllegalStateException(
             "SelectedSite.get() was accessed before being initialized - siteId $localSiteId." +
                 "\nConsider calling selectedSite.exists() to ensure site exists prior to calling selectedSite.get()."
