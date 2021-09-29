@@ -9,6 +9,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyLong
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -45,7 +47,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(buildWCPayPluginInfo())
-        whenever(appPrefsWrapper.setCardReaderOnboardingCompleted(any(), any(), any())).thenReturn(Unit)
     }
 
     @Test
@@ -358,6 +359,25 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
         }
+
+    @Test
+    fun `when onboarding completed, then onboarding completed flag saved`() = testBlocking {
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())
+    }
+
+    @Test
+    fun `when onboarding NOT completed, then onboarding completed NOT saved`() = testBlocking {
+        whenever(wcPayStore.loadAccount(site)).thenReturn(
+            buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE,
+            )
+        )
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper, never()).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())
+    }
 
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPayAccountStatusEnum = WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE,
