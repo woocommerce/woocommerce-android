@@ -86,8 +86,7 @@ class SitePickerPresenter
 
     override fun fetchUserRoleFromAPI(site: SiteModel) {
         coroutineScope.launch {
-            val fetchUserJob = async { userEligibilityFetcher.fetchUserInfo() }
-            val userModel = fetchUserJob.await()
+            val userModel = userEligibilityFetcher.fetchUserInfo()
             view?.hideProgressDialog()
 
             userModel?.let {
