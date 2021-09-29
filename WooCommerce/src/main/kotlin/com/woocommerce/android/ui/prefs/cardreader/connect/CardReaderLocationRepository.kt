@@ -26,7 +26,7 @@ class CardReaderLocationRepository @Inject constructor(
 
     sealed class LocationIdFetchingResult {
         sealed class Error : LocationIdFetchingResult() {
-            data class MissingAddress(val url: String?) : Error()
+            data class MissingAddress(val url: String) : Error()
             object Other : Error()
         }
 
