@@ -27,6 +27,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -131,8 +132,13 @@ class OrderListViewModel @Inject constructor(
             _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
 
             // refresh plugin information
-            selectedSite.getIfExists()?.let {
-                wooCommerceStore.fetchSitePlugins(it)
+            if (selectedSite.exists()) {
+                wooCommerceStore.fetchSitePlugins(selectedSite.get())
+            } else {
+                WooLog.w(
+                    WooLog.T.ORDERS,
+                    "Order list can't fetch site plugins, no selected site - siteId ${selectedSite.getSelctedSiteId()}$"
+                )
             }
         }
     }
