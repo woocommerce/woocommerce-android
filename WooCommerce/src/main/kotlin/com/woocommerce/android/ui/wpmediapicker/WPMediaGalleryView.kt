@@ -291,8 +291,9 @@ class WPMediaGalleryView @JvmOverloads constructor(
             bundle.putParcelable(KEY_RECYCLER_STATE, WCSavedState(super.onSaveInstanceState(), recyclerState))
         }
 
-        // save the selected images
-        bundle.putParcelableArrayList(KEY_SELECTED_IMAGES, getSelectedImages())
+        if (getSelectedCount() > 0) {
+            bundle.putParcelableArrayList(KEY_SELECTED_IMAGES, getSelectedImages())
+        }
         bundle.putBoolean(KEY_MULTI_SELECT_ALLOWED, isMultiSelectionAllowed)
 
         return bundle
@@ -306,9 +307,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         // restore the selected images
         (state as? Bundle)?.getParcelableArrayList<Product.Image>(KEY_SELECTED_IMAGES)?.let { images ->
-            if (images.isNotEmpty()) {
-                setSelectedImages(images)
-            }
+            setSelectedImages(images)
         }
 
         // restore multi-selection
