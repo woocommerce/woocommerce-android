@@ -276,7 +276,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
             // redraw after the scale animation completes
             val delayMs: Long = Duration.SHORT.toMillis(context)
-            Handler().postDelayed({ notifyDataSetChanged() }, delayMs)
+            Handler().postDelayed({ notifyItemChanged(position) }, delayMs)
 
             // let the fragment know the count has changed
             listener.onSelectionCountChanged()
