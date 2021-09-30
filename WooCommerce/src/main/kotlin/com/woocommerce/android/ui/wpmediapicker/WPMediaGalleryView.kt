@@ -289,7 +289,9 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         // restore the selected images
         (state as? Bundle)?.getParcelableArrayList<Product.Image>(KEY_SELECTED_IMAGES)?.let { images ->
-            setSelectedImages(images)
+            if (images.isNotEmpty()) {
+                setSelectedImages(images)
+            }
         }
 
         // restore multi-selection
