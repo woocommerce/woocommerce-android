@@ -586,8 +586,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
             doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
 
-            doReturn(true).whenever(preferences).getBoolean("IS_CARD_PRESENT_ELIGIBLE", false)
-
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
                 it?.let { shippingLabels.addAll(it) }

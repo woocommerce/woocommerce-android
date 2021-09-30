@@ -52,7 +52,6 @@ object AppPrefs {
         IS_USER_ELIGIBLE,
         USER_EMAIL,
         RECEIPT_PREFIX,
-        IS_CARD_PRESENT_ELIGIBLE,
         CARD_READER_ONBOARDING_COMPLETED
     }
 
