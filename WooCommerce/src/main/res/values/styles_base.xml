@@ -17,6 +17,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="titleTextStyle">@style/TextAppearance.Woo.CollapsingToolbar.Collapsed</item>
         <item name="navigationIcon">@drawable/ic_back_24dp</item>
         <item name="android:theme">@style/Widget.Woo.Toolbar.Surface</item>
+        <item name="android:background">@color/color_toolbar</item>
     </style>
     <style name="Widget.Woo.Toolbar.Surface" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
         <item name="actionMenuTextColor">@color/woo_pink_50</item>
@@ -33,6 +34,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
     <style name="Woo.CollapsedToolbarLayout" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
+        <item name="android:background">@color/color_toolbar</item>
         <item name="collapsedTitleTextAppearance">
             @style/TextAppearance.Woo.CollapsingToolbar.Collapsed
         </item>
