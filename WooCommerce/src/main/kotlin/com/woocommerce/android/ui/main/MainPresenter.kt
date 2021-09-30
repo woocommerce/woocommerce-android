@@ -161,6 +161,12 @@ class MainPresenter @Inject constructor(
             // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
             mainView?.updateSelectedSite()
             isHandlingMagicLink = false
+            return
+        }
+
+        // handle the possibility that the user has been removed from the active site
+        if (!selectedSite.exists()) {
+            mainView?.showSitePickerScreen()
         }
     }
 
