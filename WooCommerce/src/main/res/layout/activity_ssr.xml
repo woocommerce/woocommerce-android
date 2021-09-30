@@ -30,13 +30,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/ssr_content"
-            style="@style/Woo.Card.Body"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textIsSelectable="true"
-            tools:text="This is where SSR info is shown." />
+            android:layout_height="match_parent">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ssr_content"
+                style="@style/Woo.Card.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                tools:text="This is where SSR info is shown." />
+        </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
