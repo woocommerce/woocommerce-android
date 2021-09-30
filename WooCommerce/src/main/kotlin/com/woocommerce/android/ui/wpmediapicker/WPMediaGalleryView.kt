@@ -53,7 +53,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
     var isMultiSelectionAllowed: Boolean = true
     private var imageSize = 0
-    private val selectedIds = ArrayList<Long>()
+    private val selectedIds = HashSet<Long>()
 
     private val adapter: WPMediaLibraryGalleryAdapter
     private val layoutInflater: LayoutInflater
