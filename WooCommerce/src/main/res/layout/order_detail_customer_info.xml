@@ -81,7 +81,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_shippingAddr"
                 style="@style/Woo.Card.Body"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
@@ -159,6 +159,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="@dimen/minor_50"
+                android:textAlignment="viewStart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel"
@@ -269,7 +270,7 @@
                 android:layout_weight="1"
                 android:clickable="false"
                 android:focusable="false"
-                android:textAlignment="textStart"
+                android:textAlignment="viewStart"
                 android:paddingStart="@dimen/major_100"
                 android:paddingEnd="@dimen/major_100"
                 android:importantForAccessibility="no"
