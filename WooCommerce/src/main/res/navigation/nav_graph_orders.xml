@@ -252,6 +252,11 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
+            android:id="@+id/action_orderDetailFragment_to_cardReaderWelcomeDialog"
+            app:destination="@id/cardReaderWelcomeDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderConnectDialog"
             app:destination="@id/cardReaderConnectDialog"
             app:enterAnim="@anim/activity_fade_in"
@@ -484,6 +489,18 @@
             android:name="selectedRates"
             app:argType="com.woocommerce.android.model.ShippingRate[]" />
     </fragment>
+    <dialog
+        android:id="@+id/cardReaderWelcomeDialog"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeDialog"
+        android:label="CardReaderWelcomeDialog" >
+        <action
+            android:id="@+id/action_cardReaderWelcomeFragment_to_cardReaderOnboardingFragment"
+            app:destination="@id/cardReaderOnboardingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+    </dialog>
     <dialog
         android:id="@+id/cardReaderPaymentDialog"
         android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"

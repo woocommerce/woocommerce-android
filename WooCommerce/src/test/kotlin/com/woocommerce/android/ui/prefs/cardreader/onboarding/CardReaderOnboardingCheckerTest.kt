@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
+import com.woocommerce.android.AppPrefsWrapper
 import org.mockito.kotlin.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -8,6 +9,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyLong
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -23,6 +26,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val wooStore: WooCommerceStore = mock()
     private val wcPayStore: WCPayStore = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private val site = SiteModel()
 
@@ -30,6 +34,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     fun setUp() = testBlocking {
         checker = CardReaderOnboardingChecker(
             selectedSite,
+            appPrefsWrapper,
             wooStore,
             wcPayStore,
             coroutinesTestRule.testDispatchers,
@@ -354,6 +359,25 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
         }
+
+    @Test
+    fun `when onboarding completed, then onboarding completed flag saved`() = testBlocking {
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())
+    }
+
+    @Test
+    fun `when onboarding NOT completed, then onboarding completed NOT saved`() = testBlocking {
+        whenever(wcPayStore.loadAccount(site)).thenReturn(
+            buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE,
+            )
+        )
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper, never()).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())
+    }
 
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPayAccountStatusEnum = WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE,

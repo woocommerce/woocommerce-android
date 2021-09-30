@@ -52,7 +52,7 @@ object AppPrefs {
         IS_USER_ELIGIBLE,
         USER_EMAIL,
         RECEIPT_PREFIX,
-        IS_CARD_PRESENT_ELIGIBLE
+        CARD_READER_ONBOARDING_COMPLETED
     }
 
     /**
@@ -389,6 +389,23 @@ object AppPrefs {
     fun setUnifiedLoginLastFlow(flow: String) {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
     }
+
+    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        PreferenceUtils.getBoolean(
+            getPreferences(),
+            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            false
+        )
+
+    fun setCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        PreferenceUtils.setBoolean(
+            getPreferences(),
+            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            true
+        )
+
+    private fun getCardReaderOnboardingCompletedKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        "${DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
     fun isTrackingExtensionAvailable(): Boolean {
         return getBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, false)
