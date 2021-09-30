@@ -25,12 +25,25 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/card_reader_software_update_title" />
 
+        <com.woocommerce.android.widgets.CircleProgressOverlayView
+            android:id="@+id/progressCircleProgressOverlayView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:circleProgressProgressColor="@color/reader_update_progress_color"
+            app:circleProgressRestColor="@color/reader_update_rest_color"
+            app:circleProgressBorderColor="@color/reader_update_border_color"
+            app:circleProgressBorderSize="2dp"
+            app:layout_constraintBottom_toBottomOf="@id/progressImageView"
+            app:layout_constraintEnd_toEndOf="@id/progressImageView"
+            app:layout_constraintStart_toStartOf="@id/progressImageView"
+            app:layout_constraintTop_toTopOf="@id/progressImageView" />
+
         <ImageView
             android:id="@+id/progressImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_175"
-            android:src="@drawable/img_card_reader_update_progress"
+            tools:src="@drawable/img_card_reader_update_progress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/titleTextView" />
@@ -57,10 +70,10 @@
             android:layout_marginHorizontal="@dimen/major_125"
             android:gravity="center_horizontal"
             android:textColor="@color/color_on_surface_high"
+            app:layout_constraintBottom_toTopOf="@id/actionButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/progressTextView"
-            app:layout_constraintBottom_toTopOf="@id/actionButton"
             tools:text="@string/card_reader_software_update_progress_cancel_required_warning" />
 
         <com.google.android.material.button.MaterialButton
