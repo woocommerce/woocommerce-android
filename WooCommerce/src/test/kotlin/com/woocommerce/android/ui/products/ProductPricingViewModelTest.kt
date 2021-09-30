@@ -1,12 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.initSavedStateHandle
@@ -25,6 +19,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
@@ -244,7 +244,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
         assertThat(state).isEqualTo(expectedState)
 
-        viewModel.onScheduledSaleChanged(false)
+        givenScheduleDateIsDisabled()
 
         val resetState = viewState.copy(
             pricingData = pricingData.copy(
@@ -264,5 +264,54 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         )
 
         assertThat((firedEvent as? ExitWithResult<*>)?.data).isEqualTo(expectedResultData)
+    }
+
+    @Test
+    fun `Displays sale price error message when sale price is greater than regular price`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            var state: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> state = new }
+
+            givenProductPricesInput(regularPrice = 4, salePrice = 5)
+
+            assertThat(state?.salePriceErrorMessage).isEqualTo(R.string.product_pricing_update_sale_price_error)
+        }
+
+    @Test
+    fun `Hides sale price error message when sale price is less than regular price`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            var state: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> state = new }
+
+            givenProductPricesInput(
+                regularPrice = 2,
+                salePrice = 1
+            )
+
+            assertThat(state?.salePriceErrorMessage).isEqualTo(0)
+        }
+
+    @Test
+    fun `Hides sale price error message when sale price is zero and regular price has any value`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            var state: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> state = new }
+
+            givenScheduleDateIsDisabled()
+            givenProductPricesInput(
+                regularPrice = -2,
+                salePrice = 0
+            )
+
+            assertThat(state?.salePriceErrorMessage).isEqualTo(0)
+        }
+
+    private fun givenScheduleDateIsDisabled() {
+        viewModel.onScheduledSaleChanged(false)
+    }
+
+    private fun givenProductPricesInput(regularPrice: Int, salePrice: Int) {
+        viewModel.onRegularPriceEntered(BigDecimal(regularPrice))
+        viewModel.onSalePriceEntered(BigDecimal(salePrice))
     }
 }

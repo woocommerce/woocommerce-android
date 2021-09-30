@@ -416,14 +416,6 @@ object AppPrefs {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
 
-    fun setIsCardPresentEligible(isEligible: Boolean) {
-        setBoolean(DeletablePrefKey.IS_CARD_PRESENT_ELIGIBLE, isEligible)
-    }
-
-    fun isCardPresentEligible(): Boolean {
-        return getBoolean(DeletablePrefKey.IS_CARD_PRESENT_ELIGIBLE, false)
-    }
-
     /**
      * Remove all user and site-related preferences.
      */
