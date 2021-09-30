@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.annotation.VisibleForTesting
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -23,6 +24,7 @@ const val SUPPORTED_WCPAY_VERSION = "2.8.2"
 @Suppress("TooManyFunctions")
 class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val wooStore: WooCommerceStore,
     private val wcPayStore: WCPayStore,
     private val dispatchers: CoroutineDispatchers,
@@ -53,6 +55,10 @@ class CardReaderOnboardingChecker @Inject constructor(
         )
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected
         if (isInUndefinedState(paymentAccount)) return GenericError
+
+        with(selectedSite.get()) {
+            appPrefsWrapper.setCardReaderOnboardingCompleted(this.id, this.siteId, this.selfHostedSiteId)
+        }
 
         return OnboardingCompleted
     }

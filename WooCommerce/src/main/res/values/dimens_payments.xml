@@ -2,5 +2,7 @@
 <resources>
     <dimen name="payments_dialog_width">280dp</dimen>
     <dimen name="payments_dialog_height">388dp</dimen>
+    <dimen name="payments_welcome_dialog_height">445dp</dimen>
+    <dimen name="payments_welcome_dialog_width">@dimen/payments_dialog_width</dimen>
     <dimen name="payments_dialog_bottom_padding">26dp</dimen>
 </resources>
