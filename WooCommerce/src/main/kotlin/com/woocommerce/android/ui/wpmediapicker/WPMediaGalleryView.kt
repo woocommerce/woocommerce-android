@@ -203,6 +203,16 @@ class WPMediaGalleryView @JvmOverloads constructor(
             return null
         }
 
+        private fun getImagePositionById(imageId: Long): Int {
+            for (position in 0 until imageList.count()) {
+                if (imageList[position].id == imageId) {
+                    return position
+                }
+            }
+
+            return -1
+        }
+
         fun getSelectedImages(): ArrayList<Product.Image> {
             val images = ArrayList<Product.Image>()
             for (imageId in selectedIds) {
@@ -214,16 +224,39 @@ class WPMediaGalleryView @JvmOverloads constructor(
         }
 
         fun setSelectedImages(images: ArrayList<Product.Image>) {
-            selectedIds.clear()
+            val newSelectedIds = HashSet<Long>()
 
             if (isMultiSelectionAllowed) {
                 for (image in images) {
-                    selectedIds.add(image.id)
+                    newSelectedIds.add(image.id)
                 }
             } else if (images.isNotEmpty()) {
-                selectedIds.add(images.first().id)
+                newSelectedIds.add(images.first().id)
             }
-            notifyDataSetChanged()
+
+            setSelectedImageIds(newSelectedIds)
+        }
+
+        private fun setSelectedImageIds(imageIds: HashSet<Long>) {
+            val addedIds = imageIds.filter { !selectedIds.contains(it) }
+            val removedIds = selectedIds.filter { !imageIds.contains(it) }
+
+            selectedIds.clear()
+            selectedIds.addAll(imageIds)
+
+            addedIds.forEach {
+                val position = getImagePositionById(it)
+                if (position > -1) {
+                    notifyItemChanged(position)
+                }
+            }
+
+            removedIds.forEach {
+                val position = getImagePositionById(it)
+                if (position > -1) {
+                    notifyItemChanged(position)
+                }
+            }
         }
 
         private fun setItemSelectedByPosition(
