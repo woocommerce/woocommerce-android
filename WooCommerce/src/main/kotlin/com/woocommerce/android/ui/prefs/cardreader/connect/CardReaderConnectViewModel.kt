@@ -348,7 +348,7 @@ class CardReaderConnectViewModel @Inject constructor(
                         )
                     }
                     CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
-                        // todo cardreader Tracking
+                        // todo cardreader Tracking?
                         onReaderConnectionFailed()
                     }
                 }
