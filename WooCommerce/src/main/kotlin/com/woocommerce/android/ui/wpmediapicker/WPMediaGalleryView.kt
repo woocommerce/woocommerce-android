@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -26,8 +27,7 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCSavedState
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
-import java.util.ArrayList
-import java.util.Locale
+import java.util.*
 
 /**
  * Custom recycler which displays images from the WP media library
@@ -116,6 +116,21 @@ class WPMediaGalleryView @JvmOverloads constructor(
         listener.onImageLongClicked(adapter.getImage(position))
     }
 
+    private class WPMediaLibraryDiffUtil(
+        private val oldList: List<Product.Image>,
+        private val newList: List<Product.Image>
+    ) : DiffUtil.Callback() {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldList[oldItemPosition].id == newList[newItemPosition].id
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            areItemsTheSame(oldItemPosition, newItemPosition)
+    }
+
     private inner class WPMediaLibraryGalleryAdapter : RecyclerView.Adapter<WPMediaViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
 
@@ -123,9 +138,11 @@ class WPMediaGalleryView @JvmOverloads constructor(
             if (isSameImageList(images)) {
                 return
             }
+            val diffUtil = WPMediaLibraryDiffUtil(imageList, images)
+            val diffResult = DiffUtil.calculateDiff(diffUtil, true)
             imageList.clear()
             imageList.addAll(images)
-            notifyDataSetChanged()
+            diffResult.dispatchUpdatesTo(this)
         }
 
         private fun isSameImageList(images: List<Product.Image>): Boolean {
