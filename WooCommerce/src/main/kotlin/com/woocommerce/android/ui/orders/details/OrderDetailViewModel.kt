@@ -217,10 +217,17 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
         AnalyticsTracker.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
-        if (cardReaderManager.readerStatus.value is Connected) {
-            triggerEvent(StartCardReaderPaymentFlow(order.identifier))
-        } else {
-            triggerEvent(StartCardReaderConnectFlow(skipOnboarding = false))
+        val site = selectedSite.get()
+        when {
+            cardReaderManager.readerStatus.value is Connected -> {
+                triggerEvent(StartCardReaderPaymentFlow(order.identifier))
+            }
+            !appPrefs.isCardReaderOnboardingCompleted(site.id, site.siteId, site.selfHostedSiteId) -> {
+                triggerEvent(ShowCardReaderWelcomeDialog)
+            }
+            else -> {
+                triggerEvent(StartCardReaderConnectFlow(skipOnboarding = false))
+            }
         }
     }
 

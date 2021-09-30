@@ -1,7 +1,7 @@
 package com.woocommerce.android
 
 import javax.inject.Inject
-
+@Suppress("TooManyFunctions")
 class AppPrefsWrapper @Inject constructor() {
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)
@@ -13,6 +13,15 @@ class AppPrefsWrapper @Inject constructor() {
         orderId: Long,
         url: String
     ) = AppPrefs.setReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId, url)
+
+    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        AppPrefs.isCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun setCardReaderOnboardingCompleted(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.setCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
 
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 

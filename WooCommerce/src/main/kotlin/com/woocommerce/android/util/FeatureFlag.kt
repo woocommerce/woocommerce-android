@@ -1,7 +1,6 @@
 package com.woocommerce.android.util
 
 import android.content.Context
-import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 
 /**
  * "Feature flags" are used to hide in-progress features from release versions
@@ -18,7 +17,7 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
             ORDER_CREATION, WHATS_NEW -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
-            CARD_READER -> CardPresentEligibleFeatureChecker.isCardPresentEligible
+            CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
         }
     }
 }

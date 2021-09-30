@@ -3,8 +3,10 @@ package com.woocommerce.android.viewmodel
 import android.content.Context
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
+import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import java.io.InputStream
 import javax.inject.Inject
 
 class ResourceProvider @Inject constructor(private val context: Context) {
@@ -23,5 +25,10 @@ class ResourceProvider @Inject constructor(private val context: Context) {
     fun getDimensionPixelSize(@DimenRes dimen: Int): Int {
         val resources = context.resources
         return resources.getDimensionPixelSize(dimen)
+    }
+
+    fun openRawResource(@RawRes rawId: Int): InputStream {
+        val resources = context.resources
+        return resources.openRawResource(rawId)
     }
 }
