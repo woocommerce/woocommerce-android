@@ -67,11 +67,15 @@ class SSRActivityViewModel @Inject constructor(
     }
 
     fun onShareButtonTapped() {
-        triggerEvent(ShareSSR(viewState.formattedSSR))
+        if (viewState.formattedSSR.isNotEmpty()) {
+            triggerEvent(ShareSSR(viewState.formattedSSR))
+        }
     }
 
     fun onCopyButtonTapped() {
-        triggerEvent(CopySSR(viewState.formattedSSR))
+        if (viewState.formattedSSR.isNotEmpty()) {
+            triggerEvent(CopySSR(viewState.formattedSSR))
+        }
     }
 
     @Parcelize
