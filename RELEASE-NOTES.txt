@@ -3,6 +3,7 @@
 7.7
 -----
 - [***] In-Person Payments: Added support for accepting In-Person Card Payments in the US
+- [*] Help & Support: A site's System Status Report can now be found, copied, and shared from Settings > Help & Support > System Status Report [https://github.com/woocommerce/woocommerce-android/pull/4890]
 
 7.6
 -----
