@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import android.graphics.Color
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.SpannableString
@@ -10,6 +10,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -339,6 +340,7 @@ class ProductDetailFragment :
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
@@ -373,7 +375,17 @@ class ProductDetailFragment :
         with(menu.findItem(R.id.menu_trash_product)) {
             if (this == null) return@with
             val title = SpannableString(this.title)
-            title.setSpan(ForegroundColorSpan(Color.RED), 0, title.length, 0)
+            title.setSpan(
+                ForegroundColorSpan(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.woo_red_30
+                    )
+                ),
+                0,
+                title.length,
+                0
+            )
             this.title = title
             this.isVisible = viewModel.isTrashEnabled
         }

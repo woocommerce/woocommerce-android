@@ -6,6 +6,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -99,7 +100,7 @@ class ProductPricingViewModel @Inject constructor(
         onDataChanged(regularPrice = inputValue)
 
         val salePrice = pricingData.salePrice ?: BigDecimal.ZERO
-        viewState = if (salePrice > inputValue) {
+        viewState = if (salePrice.isSet() && salePrice > inputValue) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else {
             viewState.copy(salePriceErrorMessage = 0)
@@ -119,7 +120,7 @@ class ProductPricingViewModel @Inject constructor(
         onDataChanged(salePrice = inputValue)
 
         val regularPrice = pricingData.regularPrice ?: BigDecimal.ZERO
-        viewState = if (inputValue > regularPrice) {
+        viewState = if (inputValue.isSet() && inputValue > regularPrice) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else if (pricingData.isSaleScheduled == true && inputValue.isNotSet()) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_scheduled_sale_price_error)

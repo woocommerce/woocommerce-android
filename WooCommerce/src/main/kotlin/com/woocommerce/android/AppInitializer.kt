@@ -27,13 +27,8 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
-import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -77,13 +72,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
 
     @Inject lateinit var prefs: AppPrefs
-    @Inject lateinit var cardPresentEligibleFeatureChecker: CardPresentEligibleFeatureChecker
 
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
-
-    private var appInForegroundScope: CoroutineScope? = null
 
     /**
      * Update WP.com and WooCommerce settings in a background task.
@@ -94,17 +86,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(it))
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchProductSettingsAction(it))
-            }
-            return true
-        }
-    }
-
-    private val checkIfPaymentsEligible: RateLimitedTask = object : RateLimitedTask(
-        CardPresentEligibleFeatureChecker.CACHE_VALIDITY_TIME_S
-    ) {
-        override fun run(): Boolean {
-            appInForegroundScope = CoroutineScope(Dispatchers.IO).apply {
-                launch { cardPresentEligibleFeatureChecker.doCheck() }
             }
             return true
         }
@@ -156,7 +137,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
-            checkIfPaymentsEligible.runIfNotLimited()
         }
     }
 
@@ -182,8 +162,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             connectionReceiverRegistered = false
             application.unregisterReceiver(connectionReceiver)
         }
-
-        appInForegroundScope?.cancel()
     }
 
     private fun isGooglePlayServicesAvailable(context: Context): Boolean {
