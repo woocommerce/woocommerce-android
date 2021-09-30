@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-01 11:54:05+0000
+Translation-Revision-Date: 2021-09-16 22:16:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="settings_whats_new">Neu in WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Add-ons anzeigen</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Diese Feature-Einstellung konnten wir leider gerade nicht ändern</string>
+    <string name="product_category">Kategorie</string>
+    <string name="notification_review_title">Du hast 1 neue Bewertung! 🌟</string>
+    <string name="notification_order_title">Du hast 1 neue Bestellung! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d Artikel</string>
     <string name="upsell_product_count_many">%d Verkaufe zusätzliche Produkte</string>
     <string name="upsell_product_count_one">%d Verkaufe ein zusätzliches Produkt</string>
@@ -106,6 +112,7 @@ Language: de
     <string name="product_attributes_created_generate_action_text">Variante erstellen</string>
     <string name="product_attributes_created_description">Nachdem du nun Attribute hinzugefügt hast, kannst du deine erste Variante erstellen!</string>
     <string name="product_attributes_created_title">Attribute erstellt</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">Es wird nicht empfohlen, ein laufendes Software-Update abzubrechen</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Leider konnte diese Zahlung nicht bearbeitet werden</string>
     <string name="card_reader_payment_failed_server_error_state">Keine Verbindung zum Server</string>
@@ -432,7 +439,7 @@ Language: de
     <string name="shipping_label_more_information_heading">Spare durch die Ausführung mit WooCommerce Shipping Zeit und Geld </string>
     <string name="shipping_label_more_information_title">WooCommerce Versand</string>
     <string name="order_mark_complete">Bestellung als abgeschlossen markieren</string>
-    <string name="orderdetail_shipping_label_notice">Weitere Informationen zum Erstellen von Etiketten mit deinem Mobiltelefon</string>
+    <string name="orderdetail_shipping_label_notice">Weitere Informationen zum Erstellen von Etiketten mit deinem Mobilgerät</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Versandetikett erstellen</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Mit dem kostenlosen WooCommerce Shipping-Plugin kannst du jetzt Versandetiketten für sämtliche Artikelbestellungen direkt über dein Gerät drucken. Tippe auf „Versandetikett erstellen“ und probiere unsere Beta-Version aus!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Erstelle Versandetiketten über dein Gerät!</string>
@@ -493,6 +500,7 @@ Language: de
     <string name="my_store_stats_availability_title">Die Analysen deines\n Shops können nicht angezeigt werden.</string>
     <string name="login_get_link_by_email">Anmeldelink per E-Mail erhalten</string>
     <string name="email_not_registered_wpcom">Hmm, wir können kein WordPress.com-Konto finden, das mit dieser E-Mail-Adresse verknüpft ist.</string>
+    <string name="settings_enable_product_addons_teaser_message">Teste unsere Add-ons zur Anzeige von Bestellungen, während wir uns auf die Einführung vorbereiten.</string>
     <string name="settings_enable_product_adding_teaser_title">Produkte erstellen</string>
     <string name="settings_preferences">Einstellungen</string>
     <string name="product_trash_error">Fehler beim Verschieben des Produkts in den Papierkorb</string>
@@ -515,7 +523,7 @@ Language: de
     <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 in)</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 in)</string>
     <string name="shipping_label_preview_error">Fehler bei der Vorschau des Versandetiketts</string>
-    <string name="shipping_label_print_info">Du weißt nicht, wie du mit deinem Mobiltelefon drucken kannst?</string>
+    <string name="shipping_label_print_info">Du weißt nicht, wie du mit deinem Mobilgerät drucken kannst?</string>
     <string name="shipping_label_paper_size_options_info">Siehe Optionen für Etikett-Layout und Papiergröße</string>
     <string name="shipping_label_print_button">Versandetikett drucken</string>
     <string name="shipping_label_paper_size_options_title">Papiergröße auswählen</string>

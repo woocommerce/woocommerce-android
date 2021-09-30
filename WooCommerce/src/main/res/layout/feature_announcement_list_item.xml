@@ -4,24 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/margin_extra_medium_large"
+    android:layout_marginBottom="@dimen/major_100"
     android:orientation="horizontal">
 
     <FrameLayout
         android:id="@+id/feature_item_icon_container"
-        android:layout_width="@dimen/image_major_64"
-        android:layout_height="@dimen/image_major_64"
+        android:layout_width="@dimen/image_minor_100"
+        android:layout_height="@dimen/image_minor_100"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:layout_gravity="center"
             android:id="@+id/feature_item_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:contentDescription="@null"
-            tools:src="@drawable/ic_email" />
+            android:contentDescription="@string/settings_whats_new_icon_description"
+            tools:src="@drawable/ic_info_outline_24dp" />
 
     </FrameLayout>
 
@@ -31,23 +31,24 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_extra_large"
         android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="@+id/feature_item_icon_container"
         app:layout_constraintBottom_toBottomOf="@+id/feature_item_icon_container"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/feature_item_icon_container"
-        app:layout_constraintTop_toTopOf="@+id/feature_item_icon_container">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/feature_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
+            android:layout_marginBottom="@dimen/minor_75"
             tools:text="Amazing Feature" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/feature_subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBody2"
+            android:textAppearance="@style/TextAppearance.Woo.Body2"
             tools:text="Great explanation of feature" />
 
     </LinearLayout>

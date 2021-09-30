@@ -4,9 +4,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
@@ -33,8 +31,7 @@ class SitePickerPresenter
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
     private val appPrefs: AppPrefs,
-    private val userEligibilityFetcher: UserEligibilityFetcher,
-    private val cardPresentEligibleFeatureChecker: CardPresentEligibleFeatureChecker
+    private val userEligibilityFetcher: UserEligibilityFetcher
 ) : SitePickerContract.Presenter {
     private var view: SitePickerContract.View? = null
 
@@ -88,10 +85,7 @@ class SitePickerPresenter
 
     override fun fetchUserRoleFromAPI(site: SiteModel) {
         coroutineScope.launch {
-            val fetchUserJob = async { userEligibilityFetcher.fetchUserInfo() }
-            AppPrefs.setIsCardPresentEligible(false)
-            async { cardPresentEligibleFeatureChecker.doCheck() }.await()
-            val userModel = fetchUserJob.await()
+            val userModel = userEligibilityFetcher.fetchUserInfo()
             view?.hideProgressDialog()
 
             userModel?.let {

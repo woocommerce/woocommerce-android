@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-31 09:54:04+0000
+Translation-Revision-Date: 2021-09-14 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="settings_whats_new">Novità in WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Visualizza componenti aggiuntivi</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Spiacenti, al momento non è stato possibile modificare l\'impostazione di questa funzionalità</string>
+    <string name="product_category">Categoria</string>
+    <string name="notification_review_title">Hai 1 nuova recensione. 🌟</string>
+    <string name="notification_order_title">Hai 1 nuovo ordine. 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d elemento</string>
     <string name="upsell_product_count_many">%d prodotti di upsell</string>
     <string name="upsell_product_count_one">%d prodotto di upsell</string>
@@ -55,13 +61,58 @@ Language: it
     <string name="shipping_label_print_multiple_purchase_success">Etichette di spedizione acquistate.</string>
     <string name="shipping_label_print_multiple_button">Stampa etichette di spedizione</string>
     <string name="settings_card_reader_payments">Pagamenti di persona</string>
+    <string name="card_reader_tutorial_charged_detail">Sono necessarie circa tre ore per una carica completa del lettore</string>
+    <string name="card_reader_tutorial_charged_label">Assicurati che il lettore sia sempre carico</string>
+    <string name="card_reader_tutorial_reconnect_detail">Il lettore entra in stand-by dopo 10 minuti di inattività. È sufficiente premere il pulsante di accensione per ricollegarlo.</string>
+    <string name="card_reader_tutorial_reconnect_label">Riconnessione di Automattic</string>
+    <string name="card_reader_tutorial_collect_detail">Per raccogliere i pagamenti, è sufficiente scorrere, toccare o inserire una carta nel lettore</string>
+    <string name="card_reader_tutorial_collect_label">Scorri, tocca o inserisci carta</string>
+    <string name="card_reader_tutorial_connected_detail">Congratulazioni, puoi ora accettare pagamenti con carte di debito e credito.</string>
+    <string name="card_reader_tutorial_connected_label">Lettore connesso</string>
+    <string name="card_reader_onboarding_contact_support">Ti serve aiuto? &lt;a href=\'\'&gt;Contatta il supporto&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Scopri di più&lt;/a&gt; sull\'accettazione di pagamenti con il tuo dispositivo mobile e sull\'ordinamento dei lettori di carte</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Pagamenti di persona non è disponibile nella Modalità di prova. Disattivare la funzione per proseguire.</string>
+    <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Pagamenti di persona attualmente non disponibile</string>
+    <string name="card_reader_onboarding_account_pending_requirements_hint">Ci sono requisiti in sospeso sull\'account. Completa i requisiti tramite %1$s per continuare ad accettare Pagamenti di persona.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Il tuo account WooCommerce Payments presenta requisiti in sospeso</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">C\'è almeno un requisito scaduto sul tuo account. Completalo per riprendere a utilizzare Pagamenti di persona</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Pagamenti di persona attualmente non disponibile</string>
+    <string name="card_reader_onboarding_account_under_review_hint">Potrai accettare Pagamenti di persona non appena avremo terminato la revisione del tuo account.</string>
+    <string name="card_reader_onboarding_account_under_review_header">Pagamenti di persona attualmente non disponibile</string>
+    <string name="card_reader_onboarding_account_rejected_hint">Siamo spiacenti, ma non possiamo supportare Pagamenti di persona per questo negozio.</string>
+    <string name="card_reader_onboarding_account_rejected_header">Pagamenti di persona non è disponibile per questo negozio</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Ricarica dopo l\'aggiornamento</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Sul tuo negozio è installata una versione non aggiornata dell\'estensione WooCommerce Payments. Esegui l\'aggiornamento per accettare Pagamenti di persona.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_version_header">Aggiorna WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Aggiorna</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Ci sei quasi! Completa la configurazione di WooCommerce Payments per iniziare ad accettare Pagamenti con carta.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_header">Completa la configurazione di WooCommerce Payments nella pagina di amministrazione del negozio</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Ricarica dopo l\'attivazione</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_hint">L\'estensione WooCommerce Payments è installata sul tuo negozio, ma non è attivata. Attivala per accettare Pagamenti di persona.</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_header">Attiva WooCommerce Payments</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Ricarica dopo l\'installazione</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_hint">Dovrai installare l\'estensione gratuita WooCommerce Payments sul tuo negozio per accettare Pagamenti di persona.</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_header">Installa WooCommerce Payments</string>
+    <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Scopri di più&lt;/a&gt; sull\'accettazione di pagamenti con il tuo dispositivo mobile e sull\'ordinamento dei lettori di carte</string>
+    <string name="card_reader_onboarding_country_not_supported_contact_support">Ti serve aiuto? &lt;a href=\'\'&gt;Contatta il supporto&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_country_not_supported_hint">Puoi comunque accettare pagamenti di persona in contanti attivando il metodo \"Pagamento alla consegna\" sul tuo negozio</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Non supportiamo Pagamenti di persona in %1$s</string>
+    <string name="card_reader_onboarding_loading">Connessione all\'account in corso</string>
     <string name="card_reader_onboarding_title">Pagamenti di persona</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_message">Verifica le dimensioni e il peso del pacco oppure prova a utilizzare un pacco diverso in Dettagli pacco</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable_title">Nessuna tariffa di spedizione disponibile</string>
+    <string name="shipping_label_activate_service_package_empty_title">Tutti i pacchi disponibili sono stati attivati</string>
+    <string name="shipping_label_activate_service_package_saving_progress_title">Attivazione del pacco in corso</string>
+    <string name="shipping_label_create_service_package_nothing_selected">Seleziona un pacco da attivare.</string>
+    <string name="error_required_field">Campo obbligatorio</string>
+    <string name="close">Chiudi</string>
     <string name="variation_created_title">Variante creata</string>
     <string name="variation_list_generate_new_variation">Genera nuova variante</string>
     <string name="product_wip_message_variations">Ora puoi creare e gestire le varianti del prodotto.</string>
     <string name="product_attributes_created_generate_action_text">Genera variante</string>
     <string name="product_attributes_created_description">Ora che hai aggiunto gli attributi, puoi creare la tua prima variante.</string>
     <string name="product_attributes_created_title">Attributi creati</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">Non è raccomandato l\'annullamento dell\'aggiornamento del software in corso</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Siamo spiacenti, impossibile elaborare questo pagamento</string>
     <string name="card_reader_payment_failed_server_error_state">Nessuna connessione al server</string>
@@ -76,6 +127,7 @@ Language: it
     <string name="shipping_label_create_custom_package_generic_failure">Creazione del pacchetto non riuscita. Riprova.</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">Creazione del pacchetto non riuscita: problema API sconosciuto.</string>
     <string name="shipping_label_create_custom_package_api_failure">Creazione del pacchetto non riuscita: %1$s</string>
+    <string name="shipping_label_create_package_saving_progress_message">Attendi…</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Creazione di un nuovo pacchetto</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Valore non valido.</string>
     <string name="shipping_label_create_custom_package_field_empty_hint">Campo richiesto.</string>
@@ -89,6 +141,7 @@ Language: it
     <string name="shipping_label_create_custom_package_field_type_box">Confezione</string>
     <string name="shipping_label_create_custom_package_field_type_info">Scegli tipo di pacchetto</string>
     <string name="shipping_label_create_custom_package_field_type">Tipo di pacchetto</string>
+    <string name="shipping_label_create_package_field_info">Configura il pacchetto che utilizzerai per spedire i tuoi prodotti. Lo salveremo per ordini futuri.</string>
     <string name="shipping_label_create_package_title">Aggiungi un nuovo pacchetto</string>
     <string name="shipping_label_create_new_package_button">Crea un nuovo pacchetto</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">Le dimensioni del pacchetto devono essere superiori a zero. Aggiorna le dimensioni dell\'elemento nella sezione Spedizione della pagina del prodotto per continuare.</string>
@@ -324,6 +377,7 @@ Language: it
     <string name="product_add_attribute">Aggiungi attributo</string>
     <string name="product_variation_attributes">Attributi</string>
     <string name="product_variations_edit_attr">Modifica attributi</string>
+    <string name="shipping_label_multi_packages_total_weight">Peso totale dei pacchi: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d articoli in %2$d pacchetti</string>
     <string name="shipping_label_single_package_total_weight">Peso del pacchetto totale: %1$s %2$s</string>
     <string name="shipping_label_packages_custom_section_title">Pacchetti personalizzati</string>
@@ -381,11 +435,11 @@ Language: it
     <string name="shipping_label_create_packaging_details">Dettagli imballaggio</string>
     <string name="shipping_label_create_title">Crea etichetta di spedizione</string>
     <string name="shipping_label_more_information_link">Ulteriori informazioni</string>
-    <string name="shipping_label_more_information_message">Evita la fila all\'ufficio postale stampando le etichette di spedizione a casa dal tuo telefono a prezzi scontati.</string>
+    <string name="shipping_label_more_information_message">Evita la fila all\'ufficio postale stampando le etichette di spedizione a casa dal tuo dispositivo mobile a prezzi scontati.</string>
     <string name="shipping_label_more_information_heading">Risparmia tempo e denaro con WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Contrassegna ordine come completo</string>
-    <string name="orderdetail_shipping_label_notice">Scopri di più su come creare etichette dal telefono</string>
+    <string name="orderdetail_shipping_label_notice">Scopri di più su come creare etichette dal dispositivo mobile</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Crea etichetta di spedizione</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Ora puoi creare etichette di spedizione per tutti gli ordini fisici direttamente dal tuo dispositivo con il plugin WooCommerce Shipping gratuito. Tocca \"Crea etichetta di spedizione\" per provare la funzionalità beta.</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Crea etichette di spedizione dal tuo dispositivo.</string>
@@ -446,6 +500,7 @@ Language: it
     <string name="my_store_stats_availability_title">Non possiamo mostrare l\'\nanalisi del tuo negozio</string>
     <string name="login_get_link_by_email">Ottieni un link di accesso tramite e-mail</string>
     <string name="email_not_registered_wpcom">Hmm, non riusciamo a trovare un account di WordPress.com collegato a questo indirizzo e-mail.</string>
+    <string name="settings_enable_product_addons_teaser_message">Prova a visualizzare i componenti aggiuntivi per gli ordini mentre ci prepariamo a lanciarli</string>
     <string name="settings_enable_product_adding_teaser_title">Creazione di prodotti</string>
     <string name="settings_preferences">Preferenze</string>
     <string name="product_trash_error">Errore durante lo spostamento nel cestino del prodotto</string>
@@ -468,7 +523,7 @@ Language: it
     <string name="shipping_label_paper_size_letter">Lettera (8,5 x 11 pollici)</string>
     <string name="shipping_label_paper_size_legal">Nota legale (8,5 x 14 pollici)</string>
     <string name="shipping_label_preview_error">Errore visualizzazione etichetta di spedizione</string>
-    <string name="shipping_label_print_info">Sai come stampare dal telefono?</string>
+    <string name="shipping_label_print_info">Non sai come stampare dal dispositivo mobile?</string>
     <string name="shipping_label_paper_size_options_info">Visualizza il layout dell\'etichetta e le opzioni delle dimensioni del foglio</string>
     <string name="shipping_label_print_button">Stampa etichetta di spedizione</string>
     <string name="shipping_label_paper_size_options_title">Scegli dimensione carta</string>

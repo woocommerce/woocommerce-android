@@ -20,7 +20,8 @@ sealed class CardPaymentStatus {
         NO_NETWORK,
         SERVER_ERROR,
         PAYMENT_DECLINED,
-        GENERIC_ERROR
+        GENERIC_ERROR,
+        AMOUNT_TOO_SMALL,
     }
 
     enum class AdditionalInfoType {

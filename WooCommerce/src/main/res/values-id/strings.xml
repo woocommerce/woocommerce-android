@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-03 00:52:21+0000
+Translation-Revision-Date: 2021-09-14 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="settings_whats_new">Apa yang Baru di WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Lihat Add-on</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Maaf, saat ini kami tidak dapat mengubah pengaturan fitur ini</string>
+    <string name="product_category">Kategori</string>
+    <string name="notification_review_title">Anda mendapat 1 ulasan baru! 🌟</string>
+    <string name="notification_order_title">Anda mendapat 1 pesanan baru! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d Item</string>
     <string name="upsell_product_count_many">%d produk upsell</string>
     <string name="upsell_product_count_one">%d produk upsell</string>
@@ -429,11 +435,11 @@ Language: id
     <string name="shipping_label_create_packaging_details">Informasi kemasan</string>
     <string name="shipping_label_create_title">Buat label pengiriman</string>
     <string name="shipping_label_more_information_link">Pelajari lebih lanjut</string>
-    <string name="shipping_label_more_information_message">Tak perlu antre saat di kantor pos dengan mencetak label pengiriman di rumah dari ponsel dengan harga diskon!</string>
+    <string name="shipping_label_more_information_message">Tak perlu antre saat di kantor pos dengan mencetak label pengiriman di rumah dari perangkat seluler dengan harga diskon!</string>
     <string name="shipping_label_more_information_heading">Hemat waktu dan biaya dengan memproses pesanan menggunakan WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">Pengiriman WooCommerce</string>
     <string name="order_mark_complete">Tandai pesanan selesai</string>
-    <string name="orderdetail_shipping_label_notice">Pelajari selengkapnya tentang membuat label menggunakan ponsel</string>
+    <string name="orderdetail_shipping_label_notice">Pelajari selengkapnya tentang membuat label menggunakan perangkat seluler</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Buat label pengiriman</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Sekarang Anda dapat membuat label pengiriman untuk semua pesanan fisik langsung dari perangkat Anda dengan plugin WooCommerce Shipping gratis. Ketuk \"Buat label pengiriman\" untuk mencoba fitur beta kami!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Buat label pengiriman dari perangkat Anda!</string>
@@ -494,6 +500,7 @@ Language: id
     <string name="my_store_stats_availability_title">Kami tidak dapat menampilkan\n analisis toko Anda</string>
     <string name="login_get_link_by_email">Dapatkan tautan masuk lewat email</string>
     <string name="email_not_registered_wpcom">Hmm, kami tidak dapat menemukan akun WordPress.com yang terhubung dengan alamat email ini.</string>
+    <string name="settings_enable_product_addons_teaser_message">Uji coba fitur melihat Add-on Pesanan menjelang peluncuran</string>
     <string name="settings_enable_product_adding_teaser_title">Membuat produk</string>
     <string name="settings_preferences">Preferensi</string>
     <string name="product_trash_error">Kesalahan saat membuang produk</string>
@@ -516,7 +523,7 @@ Language: id
     <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 inci)</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 inci)</string>
     <string name="shipping_label_preview_error">Kesalahan saat menampilkan pratinjau label pengiriman</string>
-    <string name="shipping_label_print_info">Tidak tahu cara mencetak dari telepon Anda?</string>
+    <string name="shipping_label_print_info">Tidak tahu cara mencetak dari perangkat seluler Anda?</string>
     <string name="shipping_label_paper_size_options_info">Lihat tata letak label dan opsi ukuran kertas</string>
     <string name="shipping_label_print_button">Cetak label pengiriman</string>
     <string name="shipping_label_paper_size_options_title">Pilih ukuran kertas</string>
