@@ -136,26 +136,11 @@ class WPMediaGalleryView @JvmOverloads constructor(
         private val imageList = mutableListOf<Product.Image>()
 
         fun showImages(images: List<Product.Image>) {
-            if (isSameImageList(images)) {
-                return
-            }
             val diffUtil = WPMediaLibraryDiffUtil(imageList, images)
             val diffResult = DiffUtil.calculateDiff(diffUtil, true)
             imageList.clear()
             imageList.addAll(images)
             diffResult.dispatchUpdatesTo(this)
-        }
-
-        private fun isSameImageList(images: List<Product.Image>): Boolean {
-            if (images.size != imageList.size) {
-                return false
-            }
-            for (index in images.indices) {
-                if (images[index].id != imageList[index].id) {
-                    return false
-                }
-            }
-            return true
         }
 
         fun getImage(position: Int) = imageList[position]
