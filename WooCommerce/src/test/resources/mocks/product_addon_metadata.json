@@ -78,6 +78,12 @@
             "price": "",
             "image": "",
             "price_type": "flat_fee"
+          },
+          {
+            "label": "Test",
+            "price": "50",
+            "image": "",
+            "price_type": "percentage_based"
           }
         ],
         "title_format": "label",
