@@ -22,10 +22,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.domain.Addon
-import org.wordpress.android.fluxc.persistence.entity.AddonEntity
-import org.wordpress.android.fluxc.persistence.entity.AddonEntity.LocalPriceType.FlatFee
-import org.wordpress.android.fluxc.persistence.entity.AddonEntity.LocalPriceType.PercentageBased
-import org.wordpress.android.fluxc.persistence.entity.AddonWithOptions
+import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.FlatFee
+import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.PercentageBased
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -108,19 +106,20 @@ class OrderedAddonViewModel @Inject constructor(
         orderAttributes: List<Order.Item.Attribute>
     ): List<Addon> = orderAttributes.mapNotNull { findMatchingAddon(it, productAddons) }
 
-    private fun findMatchingAddon(matchingTo: Order.Item.Attribute, addons: List<Addon>): Addon? = addons.firstOrNull {
-        it.name == matchingTo.addonName
-    }?.asAddonWithSingleSelectedOption(matchingTo)
-        ?.let { it as? AddonWithOptions }
-        ?.takeIf { it.options.first().priceType == PercentageBased }
-        ?.let { it.copy(options = listOf()) }
+    private fun findMatchingAddon(matchingTo: Order.Item.Attribute, addons: List<Addon>): Addon? =
+        addons.firstOrNull { it.name == matchingTo.addonName }
+            ?.asAddonWithSingleSelectedOption(matchingTo)
 
     private fun Addon.asAddonWithSingleSelectedOption(
         attribute: Order.Item.Attribute
     ): Addon {
         return when (this) {
             is Addon.HasOptions -> options.find { it.label == attribute.value }
-                ?.takeIf { (this is Addon.MultipleChoice) or (this is Addon.Checkbox) }
+                    ?.takeIf { (this is Addon.MultipleChoice) and (it.price.priceType == PercentageBased) }
+                ?.copy(price = Addon.HasAdjustablePrice.Price.Adjusted(FlatFee, attribute.asAddonPrice))
+                ?.let { this.asSelectableAddon(it) }
+                ?: takeIf { (this is Addon.MultipleChoice) or (this is Addon.Checkbox) }
+                    ?.let { options.find { it.label == attribute.value } }
                 ?.let { this.asSelectableAddon(it) }
                 ?: mergeOrderAttributeWithAddon(this, attribute)
             else -> this
@@ -159,7 +158,7 @@ class OrderedAddonViewModel @Inject constructor(
         Addon.HasOptions.Option(
             label = attribute.value,
             price = Addon.HasAdjustablePrice.Price.Adjusted(
-                priceType = Addon.HasAdjustablePrice.Price.Adjusted.PriceType.FlatFee,
+                priceType = FlatFee,
                 value = attribute.asAddonPrice
             ),
             image = ""
