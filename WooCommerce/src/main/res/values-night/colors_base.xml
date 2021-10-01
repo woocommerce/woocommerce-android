@@ -9,6 +9,7 @@
     <color name="color_secondary">@color/woo_pink_30</color>
     <color name="color_secondary_variant">@color/woo_pink_50</color>
     <color name="color_surface">@color/woo_black_90</color>
+    <color name="color_surface_elevated">@color/woo_black_80</color>
     <color name="color_error">@color/woo_red_30</color>
     <color name="color_alert">@color/woo_yellow_30</color>
 

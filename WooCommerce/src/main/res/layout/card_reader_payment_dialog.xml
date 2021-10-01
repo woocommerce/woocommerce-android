@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"
         android:layout_height="@dimen/payments_dialog_height"
-        android:background="?attr/colorSurface"
+        android:background="@color/color_surface_elevated"
         android:paddingTop="@dimen/major_150"
         android:paddingBottom="@dimen/major_150">
 
@@ -20,6 +20,7 @@
             android:layout_marginHorizontal="@dimen/major_125"
             android:layout_marginTop="0dp"
             android:gravity="center_horizontal"
+            android:textColor="@color/color_on_surface_high"
             app:layout_constraintBottom_toTopOf="@id/amount_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
