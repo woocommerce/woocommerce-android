@@ -128,6 +128,7 @@ class OrderedAddonViewModel @Inject constructor(
         attribute: Order.Item.Attribute
     ) = takeIf { it.price.priceType == PercentageBased }
         ?.copy(price = Adjusted(FlatFee, attribute.asAddonPrice))
+        ?: this
 
     private fun Addon.asSelectableAddon(selectedOption: Addon.HasOptions.Option): Addon? =
         when (this) {
