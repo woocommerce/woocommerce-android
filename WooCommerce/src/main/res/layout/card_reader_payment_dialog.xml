@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"
         android:layout_height="@dimen/payments_dialog_height"
-        android:background="?attr/colorSurface"
+        android:background="@color/color_surface_elevated"
         android:paddingTop="@dimen/major_150"
         android:paddingBottom="@dimen/major_150">
 
