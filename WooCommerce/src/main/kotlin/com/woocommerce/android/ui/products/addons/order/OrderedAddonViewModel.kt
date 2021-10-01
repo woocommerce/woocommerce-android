@@ -124,6 +124,13 @@ class OrderedAddonViewModel @Inject constructor(
         }
     }
 
+    /**
+     * When displaying the price of an Ordered addon with the PercentageBased price
+     * we don't want to display the percentage itself, but the price applied through the percentage.
+     *
+     * In this method we verify if that's the scenario and replace the percentage value with the price
+     * defined by the Order Attribute, if it's not the case, the Addon is returned untouched.
+     */
     private fun Addon.HasOptions.Option.handleOptionPriceType(
         attribute: Order.Item.Attribute
     ) = takeIf { it.price.priceType == PercentageBased }
