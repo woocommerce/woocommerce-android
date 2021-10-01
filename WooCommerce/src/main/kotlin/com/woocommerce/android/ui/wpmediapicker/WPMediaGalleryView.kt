@@ -131,6 +131,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
             areItemsTheSame(oldItemPosition, newItemPosition)
     }
 
+    @Suppress("TooManyFunctions")
     private inner class WPMediaLibraryGalleryAdapter : RecyclerView.Adapter<WPMediaViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
 
@@ -209,7 +210,6 @@ class WPMediaGalleryView @JvmOverloads constructor(
                     return position
                 }
             }
-
             return -1
         }
 
