@@ -116,10 +116,10 @@ class OrderedAddonViewModel @Inject constructor(
     ): Addon {
         return when (this) {
             is Addon.HasOptions -> options.find { it.label == attribute.value }
-                    ?.takeIf { (this is Addon.MultipleChoice) or (this is Addon.Checkbox) }
-                        ?.handleOptionPriceType(attribute)
-                        ?.let { this.asSelectableAddon(it) }
-                    ?: mergeOrderAttributeWithAddon(this, attribute)
+                ?.takeIf { (this is Addon.MultipleChoice) or (this is Addon.Checkbox) }
+                ?.handleOptionPriceType(attribute)
+                ?.let { this.asSelectableAddon(it) }
+                ?: mergeOrderAttributeWithAddon(this, attribute)
             else -> this
         }
     }
