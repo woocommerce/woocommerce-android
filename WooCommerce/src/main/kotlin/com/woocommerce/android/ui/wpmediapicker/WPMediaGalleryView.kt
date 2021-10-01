@@ -204,14 +204,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
             return null
         }
 
-        private fun getImagePositionById(imageId: Long): Int {
-            for (position in 0 until imageList.count()) {
-                if (imageList[position].id == imageId) {
-                    return position
-                }
-            }
-            return -1
-        }
+        private fun getImagePositionById(imageId: Long) = imageList.indexOfFirst { it.id == imageId }
 
         fun getSelectedImages(): ArrayList<Product.Image> {
             val images = ArrayList<Product.Image>()
