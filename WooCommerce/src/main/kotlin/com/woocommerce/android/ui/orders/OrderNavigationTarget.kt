@@ -51,6 +51,7 @@ sealed class OrderNavigationTarget : Event() {
     data class ViewPrintCustomsForm(val invoices: List<String>, val isReprint: Boolean) : OrderNavigationTarget()
     data class StartShippingLabelCreationFlow(val orderIdentifier: String) : OrderNavigationTarget()
     data class StartCardReaderConnectFlow(val skipOnboarding: Boolean) : OrderNavigationTarget()
+    object ShowCardReaderWelcomeDialog : OrderNavigationTarget()
     data class StartCardReaderPaymentFlow(val orderIdentifier: String) : OrderNavigationTarget()
     object ViewPrintingInstructions : OrderNavigationTarget()
     data class PreviewReceipt(val billingEmail: String, val receiptUrl: String, val orderId: Long) :

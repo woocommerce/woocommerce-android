@@ -54,6 +54,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyLong
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
@@ -73,6 +75,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefs = mock {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
+        on(it.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenAnswer { true }
     }
     private val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
     private val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
@@ -116,7 +119,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(WooPlugin(true, true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
             .whenever(repository).getWooServicesPluginInfo()
-        doReturn(SiteModel()).whenever(selectedSite).getIfExists()
+        val site = SiteModel().let {
+            it.id = 1
+            it.siteId = 1
+            it.selfHostedSiteId = 1
+            it
+        }
+        doReturn(site).whenever(selectedSite).getIfExists()
+        doReturn(site).whenever(selectedSite).get()
 
         viewModel = spy(
             OrderDetailViewModel(
@@ -575,8 +585,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
             doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
-
-            doReturn(true).whenever(preferences).getBoolean("IS_CARD_PRESENT_ELIGIBLE", false)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -1097,6 +1105,25 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             // Then
             assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartCardReaderConnectFlow::class.java)
+        }
+
+    @Test
+    fun `given onboarding not completed, when user clicks on accept card, then show welcome dialog`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(appPrefsWrapper.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenReturn(false)
+            viewModel.start()
+
+            // When
+            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
+
+            // Then
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OrderNavigationTarget.ShowCardReaderWelcomeDialog::class.java)
         }
 
     @Test

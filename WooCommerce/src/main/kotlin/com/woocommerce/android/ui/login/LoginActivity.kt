@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UrlUtils
+import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -442,6 +443,7 @@ class LoginActivity :
         memorizingTrustManager: MemorizingTrustManager?,
         callback: LoginListener.SelfSignedSSLCallback?
     ) {
+        WooLog.e(WooLog.T.LOGIN, "Self-signed SSL certificate detected - can't proceed with the login.")
         // TODO: Support self-signed SSL sites and show dialog (only needed when XML-RPC support is added)
     }
 
