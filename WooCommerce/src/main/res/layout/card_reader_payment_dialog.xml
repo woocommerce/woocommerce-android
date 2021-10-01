@@ -20,6 +20,7 @@
             android:layout_marginHorizontal="@dimen/major_125"
             android:layout_marginTop="0dp"
             android:gravity="center_horizontal"
+            android:textColor="@color/color_on_surface_high"
             app:layout_constraintBottom_toTopOf="@id/amount_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
