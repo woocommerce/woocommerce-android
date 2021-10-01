@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.domain.Addon
+import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.FlatFee
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.PercentageBased
 import javax.inject.Inject
@@ -115,16 +116,18 @@ class OrderedAddonViewModel @Inject constructor(
     ): Addon {
         return when (this) {
             is Addon.HasOptions -> options.find { it.label == attribute.value }
-                    ?.takeIf { (this is Addon.MultipleChoice) and (it.price.priceType == PercentageBased) }
-                ?.copy(price = Addon.HasAdjustablePrice.Price.Adjusted(FlatFee, attribute.asAddonPrice))
-                ?.let { this.asSelectableAddon(it) }
-                ?: takeIf { (this is Addon.MultipleChoice) or (this is Addon.Checkbox) }
-                    ?.let { options.find { it.label == attribute.value } }
-                ?.let { this.asSelectableAddon(it) }
-                ?: mergeOrderAttributeWithAddon(this, attribute)
+                    ?.takeIf { (this is Addon.MultipleChoice) or (this is Addon.Checkbox) }
+                        ?.handleOptionPriceType(attribute)
+                        ?.let { this.asSelectableAddon(it) }
+                    ?: mergeOrderAttributeWithAddon(this, attribute)
             else -> this
         }
     }
+
+    private fun Addon.HasOptions.Option.handleOptionPriceType(
+        attribute: Order.Item.Attribute
+    ) = takeIf { it.price.priceType == PercentageBased }
+        ?.copy(price = Adjusted(FlatFee, attribute.asAddonPrice))
 
     private fun Addon.asSelectableAddon(selectedOption: Addon.HasOptions.Option): Addon? =
         when (this) {
@@ -157,7 +160,7 @@ class OrderedAddonViewModel @Inject constructor(
     private fun prepareAddonOptionBasedOnAttribute(attribute: Order.Item.Attribute) = listOf(
         Addon.HasOptions.Option(
             label = attribute.value,
-            price = Addon.HasAdjustablePrice.Price.Adjusted(
+            price = Adjusted(
                 priceType = FlatFee,
                 value = attribute.asAddonPrice
             ),
