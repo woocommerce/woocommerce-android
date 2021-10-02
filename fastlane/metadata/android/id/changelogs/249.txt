@@ -1,0 +1,4 @@
+7.6:
+Kami tahu bahwa menambahkan gambar ke produk adalah salah satu fitur yang sering Anda gunakan di aplikasi! Kami telah meningkatkan pengalaman mengunggah di latar belakang sembari Anda melanjutkan tugas lainnya.
+
+Jika Anda mengelola beberapa toko di aplikasi, Anda pasti senang mendengar berita ini. Sekarang Anda akan menerima pemberitahuan push untuk semua toko Anda, tidak hanya toko saat ini! Kejutan!
