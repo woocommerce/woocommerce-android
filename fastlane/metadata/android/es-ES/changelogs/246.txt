@@ -1,4 +1,0 @@
-7.5:
-Hemos añadido una función nueva: ¡ahora podrás ver los pedidos de productos con la extensión Product Add-Ons de WooCommerce! Ve a la configuración de tu tienda en la pestaña Mi tienda de la aplicación y activa esta función desde Funciones beta. ¡No olvides contarnos cómo ha sido tu experiencia!
-
-También podrás filtrar la lista de productos por categoría. ¡Lo habíais pedido y aquí está!

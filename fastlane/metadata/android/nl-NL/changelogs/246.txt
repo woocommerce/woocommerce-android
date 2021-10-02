@@ -1,4 +1,0 @@
-7.5:
-Een nieuwe functie: bestellingen met producten bekijken met behulp van de extensie voor productadd-ons van WooCommerce! Ga in de app naar de instellingen van je winkel op het tabblad Mijn winkel en schakel deze functie in bij de bèta-functies. En stuur ons je feedback naar aanleiding van je ervaringen!
-
-Je kunt de productlijst nu ook filteren op categorie. Jij vraagt, wij draaien!

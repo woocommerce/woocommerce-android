@@ -1,4 +1,0 @@
-7.5:
-Conheça a nova funcionalidade de visualização de pedidos com produtos usando a extensão WooCommerce Product Add-Ons! Acesse as configurações da sua loja no aplicativo, na guia Minha loja, e ative essa funcionalidade na seção de recursos Beta. Não se esqueça de nos dar um feedback dizendo o que você achou!
-
-Você também verá que pode filtrar a lista de produtos por categoria. Vocês pediram e nós atendemos!
