@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:16:25+0000
+Translation-Revision-Date: 2021-09-29 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Icon-Bild für neue Funktion</string>
+    <string name="settings_switch_store">Shop wechseln</string>
+    <string name="product_update_failure_notification">Aktualisieren des Produkts %1$s fehlgeschlagen</string>
+    <string name="product_update_success_notification_content">%1$d Bilder wurden zum Produkt %2$s hinzugefügt</string>
+    <string name="product_update_success_notification_title">Produkt aktualisiert</string>
+    <string name="product_update_notification">Produkt aktualisieren %1$s</string>
+    <string name="product_detail_background_image_upload">Bilder werden im Hintergrund hochgeladen</string>
+    <string name="card_reader_payment_save_for_later">Beleg speichern und fortfahren</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Leider konnte das Add-on für Bestellungen nicht geladen werden</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Etwas ist schiefgelaufen</string>
     <string name="settings_whats_new">Neu in WooCommerce</string>
     <string name="settings_enable_product_addons_teaser_title">Add-ons anzeigen</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Diese Feature-Einstellung konnten wir leider gerade nicht ändern</string>
@@ -50,7 +61,6 @@ Language: de
     <string name="card_reader_onboarding_generic_error_hint">Leider konnten persönliche Zahlungen für diesen Store nicht verifiziert werden.</string>
     <string name="card_reader_onboarding_generic_error_header">Persönliche Zahlungen konnten für diesen Store nicht verifiziert werden.</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Für später speichern</string>
     <string name="card_reader_purchase_card_reader">Kartenlesegerät bestellen</string>
     <string name="card_reader_manage_card_reader">Kartenlesegerät verwalten</string>
     <string name="shipping_label_multiple_customs_form_print_button">Drucken</string>
@@ -1285,8 +1295,6 @@ Language: de
     <string name="error_copy_to_clipboard">Fehler beim Kopieren in Zwischenablage</string>
     <string name="settings_switch_site_notifs_msg">Zu %s gewechselt. Du bekommst nur von diesem Shop Benachrichtigungen</string>
     <string name="login_update_required_desc">Für diesen Shop wird eine ältere Version von WooCommerce verwendet. Um deinen Shop mit dieser App zu nutzen, musst du ihn auf WooCommerce 3.5 oder höher upgraden.</string>
-    <string name="promo_message_site_picker">Du kannst nun zwischen Shops wechseln, indem du in den Einstellungen auf den ausgewählten Shop tippst</string>
-    <string name="promo_title_site_picker">Du betreibst mehrere Shops?</string>
     <string name="promo_btn_try_it">Jetzt ausprobieren</string>
     <string name="promo_btn_got_it">Alles klar</string>
     <string name="tooltip_site_switcher">Hier tippen, um zwischen Shops zu wechseln</string>
