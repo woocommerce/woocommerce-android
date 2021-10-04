@@ -48,6 +48,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -57,6 +58,7 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -362,7 +364,12 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
         whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-            .thenReturn(ContinuationWrapper.ContinuationResult.Success(true))
+            .thenReturn (
+                flow {
+                    UpdateOrderStatusResult.OptimisticUpdateResult(mock())
+                    UpdateOrderStatusResult.RemoteUpdateResult(mock())
+                }
+            )
 
         viewModel.onPurchaseButtonClicked(fulfillOrder = true)
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
@@ -383,7 +390,12 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
                 .thenReturn(WooResult(purchasedLabels))
             whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-                .thenReturn(ContinuationWrapper.ContinuationResult.Success(false))
+                .thenReturn (
+                    flow {
+                        UpdateOrderStatusResult.OptimisticUpdateResult(mock())
+                        UpdateOrderStatusResult.RemoteUpdateResult(mock())
+                    }
+                )
 
             var event: MultiLiveEvent.Event? = null
             viewModel.event.observeForever {
