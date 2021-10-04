@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.sitepicker
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -28,7 +27,6 @@ class SitePickerPresenter
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val appPrefs: AppPrefs,
     private val userEligibilityFetcher: UserEligibilityFetcher
 ) : SitePickerContract.Presenter {
     private var view: SitePickerContract.View? = null
