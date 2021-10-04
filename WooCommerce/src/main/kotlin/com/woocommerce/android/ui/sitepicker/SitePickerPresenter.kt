@@ -85,8 +85,15 @@ class SitePickerPresenter
     }
 
     override fun fetchUpdatedSiteFromAPI(site: SiteModel) {
-        view?.showSkeleton(true)
-        dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(site))
+        coroutineScope.launch {
+            view?.showSkeleton(true)
+            val result = wooCommerceStore.fetchWooCommerceSite(site)
+            view?.showSkeleton(false)
+            if (result.isError) {
+                WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
+            }
+            loadSites()
+        }
     }
 
     override fun fetchUserRoleFromAPI(site: SiteModel) {
