@@ -74,7 +74,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var prefs: AppPrefs
 
-    @AppCoroutineScope @Inject lateinit var appCoroutineScope: CoroutineScope
+    @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
 
     private var connectionReceiverRegistered = false
 
