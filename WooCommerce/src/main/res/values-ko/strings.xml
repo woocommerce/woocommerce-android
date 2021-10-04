@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:17:35+0000
+Translation-Revision-Date: 2021-09-29 11:54:51+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">새 기능 아이콘 이미지</string>
+    <string name="settings_switch_store">스토어 전환</string>
+    <string name="product_update_failure_notification">상품 %1$s 업데이트 실패</string>
+    <string name="product_update_success_notification_content">%1$d개 이미지에 상품 %2$s에 추가되었음</string>
+    <string name="product_update_success_notification_title">상품 업데이트됨</string>
+    <string name="product_update_notification">상품 %1$s 업데이트 중</string>
+    <string name="product_detail_background_image_upload">백그라운드에서 계속 이미지 업로드 중</string>
+    <string name="card_reader_payment_save_for_later">영수증 저장 및 계속</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">확인</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">죄송합니다. 지금은 주문 애드온을 로드할 수 없습니다.</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">문제가 발생했습니다.</string>
     <string name="settings_whats_new">WooCommerce의 새로운 기능</string>
     <string name="settings_enable_product_addons_teaser_title">애드온 보기</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">죄송합니다. 지금은 이 기능 설정을 변경할 수 없습니다.</string>
@@ -50,7 +61,6 @@ Language: ko_KR
     <string name="card_reader_onboarding_generic_error_hint">죄송합니다. 이 스토어의 대면 결제를 확인할 수 없었습니다.</string>
     <string name="card_reader_onboarding_generic_error_header">이 스토어의 대면 결제를 확인할 수 없음</string>
     <string name="card_reader_detail_connected_firmware_version">펌웨어: %s</string>
-    <string name="card_reader_payment_save_for_later">나중에 사용할 수 있게 저장</string>
     <string name="card_reader_purchase_card_reader">카드 리더 주문</string>
     <string name="card_reader_manage_card_reader">카드 리더 관리</string>
     <string name="shipping_label_multiple_customs_form_print_button">인쇄</string>
@@ -1285,8 +1295,6 @@ Language: ko_KR
     <string name="error_copy_to_clipboard">클립보드에 복사하는 중 오류 발생</string>
     <string name="settings_switch_site_notifs_msg">%s(으)로 전환되었습니다. 이 저장소에 해당하는 알림만 받게 됩니다.</string>
     <string name="login_update_required_desc">이 저장소는 이전 버전의 WooCommerce를 사용합니다. 이 앱과 함께 사용하려면 저장소를 WooCommerce 3.5 이상으로 업그레이드하세요.</string>
-    <string name="promo_message_site_picker">이제 설정에서 선택한 스토어를 탭하여 스토어 간에 전환할 수도 있습니다.</string>
-    <string name="promo_title_site_picker">여러 스토어를 운영 중인가요?</string>
     <string name="promo_btn_try_it">지금 사용해 보기</string>
     <string name="promo_btn_got_it">이해함</string>
     <string name="tooltip_site_switcher">탭하여 스토어 전환</string>

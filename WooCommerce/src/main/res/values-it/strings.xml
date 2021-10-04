@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-14 09:54:04+0000
+Translation-Revision-Date: 2021-09-29 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Nuova immagine dell\'icona della funzionalità</string>
+    <string name="settings_switch_store">Cambia negozio</string>
+    <string name="product_update_failure_notification">Aggiornamento del prodotto %1$s non riuscito</string>
+    <string name="product_update_success_notification_content">Le %1$d immagini sono state aggiornate per il prodotto %2$s</string>
+    <string name="product_update_success_notification_title">Prodotto aggiornato</string>
+    <string name="product_update_notification">Aggiornamento prodotto %1$s</string>
+    <string name="product_detail_background_image_upload">Il caricamento dell\'immagine continuerà in background</string>
+    <string name="card_reader_payment_save_for_later">Salva la ricevuta e continua</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Siamo spiacenti, non possiamo caricare i componenti aggiuntivi dell\'ordine in questo momento</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Si è verificato un problema</string>
     <string name="settings_whats_new">Novità in WooCommerce</string>
     <string name="settings_enable_product_addons_teaser_title">Visualizza componenti aggiuntivi</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Spiacenti, al momento non è stato possibile modificare l\'impostazione di questa funzionalità</string>
@@ -50,7 +61,6 @@ Language: it
     <string name="card_reader_onboarding_generic_error_hint">Spiacenti, non è stato possibile verificare i Pagamenti di persona per questo negozio</string>
     <string name="card_reader_onboarding_generic_error_header">Impossibile verificare i Pagamenti di persona per questo negozio</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Salva per dopo</string>
     <string name="card_reader_purchase_card_reader">Ordina lettore di carte</string>
     <string name="card_reader_manage_card_reader">Gestisci lettore di carte</string>
     <string name="shipping_label_multiple_customs_form_print_button">Stampa</string>
@@ -1285,8 +1295,6 @@ Language: it
     <string name="error_copy_to_clipboard">Errore durante la copia negli appunti</string>
     <string name="settings_switch_site_notifs_msg">Passato a %s. Riceverai notifiche solo per questo negozio</string>
     <string name="login_update_required_desc">Questo negozio utilizza una versione meno recente di WooCommerce. Aggiorna il tuo negozio a WooCommerce 3.5 o versioni superiori per usare questa app.</string>
-    <string name="promo_message_site_picker">Puoi passare da un negozio all’altro toccando il negozio selezionato in Impostazioni</string>
-    <string name="promo_title_site_picker">Eseguire più negozi?</string>
     <string name="promo_btn_try_it">Prova ora</string>
     <string name="promo_btn_got_it">OK</string>
     <string name="tooltip_site_switcher">Tocca per passare da un negozio all’altro</string>

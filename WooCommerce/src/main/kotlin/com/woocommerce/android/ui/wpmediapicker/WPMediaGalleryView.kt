@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -26,8 +27,7 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCSavedState
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
-import java.util.ArrayList
-import java.util.Locale
+import java.util.*
 
 /**
  * Custom recycler which displays images from the WP media library
@@ -53,7 +53,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
     var isMultiSelectionAllowed: Boolean = true
     private var imageSize = 0
-    private val selectedIds = ArrayList<Long>()
+    private val selectedIds = HashSet<Long>()
 
     private val adapter: WPMediaLibraryGalleryAdapter
     private val layoutInflater: LayoutInflater
@@ -116,28 +116,31 @@ class WPMediaGalleryView @JvmOverloads constructor(
         listener.onImageLongClicked(adapter.getImage(position))
     }
 
+    private class WPMediaLibraryDiffUtil(
+        private val oldList: List<Product.Image>,
+        private val newList: List<Product.Image>
+    ) : DiffUtil.Callback() {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldList[oldItemPosition].id == newList[newItemPosition].id
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            areItemsTheSame(oldItemPosition, newItemPosition)
+    }
+
+    @Suppress("TooManyFunctions")
     private inner class WPMediaLibraryGalleryAdapter : RecyclerView.Adapter<WPMediaViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
 
         fun showImages(images: List<Product.Image>) {
-            if (isSameImageList(images)) {
-                return
-            }
+            val diffUtil = WPMediaLibraryDiffUtil(imageList, images)
+            val diffResult = DiffUtil.calculateDiff(diffUtil, true)
             imageList.clear()
             imageList.addAll(images)
-            notifyDataSetChanged()
-        }
-
-        private fun isSameImageList(images: List<Product.Image>): Boolean {
-            if (images.size != imageList.size) {
-                return false
-            }
-            for (index in images.indices) {
-                if (images[index].id != imageList[index].id) {
-                    return false
-                }
-            }
-            return true
+            diffResult.dispatchUpdatesTo(this)
         }
 
         fun getImage(position: Int) = imageList[position]
@@ -186,6 +189,8 @@ class WPMediaGalleryView @JvmOverloads constructor(
             return null
         }
 
+        private fun getImagePositionById(imageId: Long) = imageList.indexOfFirst { it.id == imageId }
+
         fun getSelectedImages(): ArrayList<Product.Image> {
             val images = ArrayList<Product.Image>()
             for (imageId in selectedIds) {
@@ -197,16 +202,39 @@ class WPMediaGalleryView @JvmOverloads constructor(
         }
 
         fun setSelectedImages(images: ArrayList<Product.Image>) {
-            selectedIds.clear()
+            val newSelectedIds = HashSet<Long>()
 
             if (isMultiSelectionAllowed) {
                 for (image in images) {
-                    selectedIds.add(image.id)
+                    newSelectedIds.add(image.id)
                 }
             } else if (images.isNotEmpty()) {
-                selectedIds.add(images.first().id)
+                newSelectedIds.add(images.first().id)
             }
-            notifyDataSetChanged()
+
+            setSelectedImageIds(newSelectedIds)
+        }
+
+        private fun setSelectedImageIds(imageIds: HashSet<Long>) {
+            val addedIds = imageIds.filter { !selectedIds.contains(it) }
+            val removedIds = selectedIds.filter { !imageIds.contains(it) }
+
+            selectedIds.clear()
+            selectedIds.addAll(imageIds)
+
+            addedIds.forEach {
+                val position = getImagePositionById(it)
+                if (position > -1) {
+                    notifyItemChanged(position)
+                }
+            }
+
+            removedIds.forEach {
+                val position = getImagePositionById(it)
+                if (position > -1) {
+                    notifyItemChanged(position)
+                }
+            }
         }
 
         private fun setItemSelectedByPosition(
@@ -259,7 +287,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
             // redraw after the scale animation completes
             val delayMs: Long = Duration.SHORT.toMillis(context)
-            Handler().postDelayed({ notifyDataSetChanged() }, delayMs)
+            Handler().postDelayed({ notifyItemChanged(position) }, delayMs)
 
             // let the fragment know the count has changed
             listener.onSelectionCountChanged()
@@ -274,8 +302,9 @@ class WPMediaGalleryView @JvmOverloads constructor(
             bundle.putParcelable(KEY_RECYCLER_STATE, WCSavedState(super.onSaveInstanceState(), recyclerState))
         }
 
-        // save the selected images
-        bundle.putParcelableArrayList(KEY_SELECTED_IMAGES, getSelectedImages())
+        if (getSelectedCount() > 0) {
+            bundle.putParcelableArrayList(KEY_SELECTED_IMAGES, getSelectedImages())
+        }
         bundle.putBoolean(KEY_MULTI_SELECT_ALLOWED, isMultiSelectionAllowed)
 
         return bundle

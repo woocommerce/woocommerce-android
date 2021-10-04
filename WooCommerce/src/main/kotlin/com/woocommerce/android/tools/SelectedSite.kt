@@ -26,11 +26,17 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
     fun get(): SiteModel {
         selectedSite?.let { return it }
 
-        val localSiteId = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
+        val localSiteId = getSelctedSiteId()
         val siteModel = siteStore.getSiteByLocalId(localSiteId)
         siteModel?.let {
             selectedSite = it
             return it
+        }
+
+        // if the selected site id is valid but the site isn't in the site store, reset the
+        // preference. this can happen if the user has been removed from the active site.
+        if (localSiteId > -1) {
+            getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
         }
 
         throw IllegalStateException(
@@ -50,12 +56,13 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
     }
 
     fun exists(): Boolean {
-        val localSiteId = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
-        val siteModel = siteStore.getSiteByLocalId(localSiteId)
+        val siteModel = siteStore.getSiteByLocalId(getSelctedSiteId())
         return siteModel != null
     }
 
     fun getIfExists(): SiteModel? = if (exists()) get() else null
+
+    fun getSelctedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
 
     fun reset() {
         selectedSite = null

@@ -26,7 +26,7 @@
             android:layout_marginTop="@dimen/minor_00"
             tools:text="George Carlin"/>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/orderStatus_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,18 +41,19 @@
 
             <com.woocommerce.android.widgets.FlowLayout
                 android:id="@+id/orderStatus_orderTags"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:contentDescription="@string/orderstatus_contentDesc"/>
+                android:layout_alignParentStart="true"
+                android:contentDescription="@string/orderstatus_contentDesc" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:focusable="false"
                 android:clickable="false"
+                android:layout_alignParentEnd="true"
                 android:importantForAccessibility="no"
-                android:background="@drawable/ic_edit_pencil"/>
-        </LinearLayout>
+                android:background="@drawable/ic_edit_pencil" />
+        </RelativeLayout>
     </LinearLayout>
 </merge>
