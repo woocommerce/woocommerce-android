@@ -61,6 +61,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 R.string.orderdetail_customer_note,
                 order.customerNote
             )
+            binding.customerInfoCustomerNoteSection.setOnClickListener {
+                // TODO
+            }
         } else {
             binding.customerInfoCustomerNoteSection.hide()
         }
