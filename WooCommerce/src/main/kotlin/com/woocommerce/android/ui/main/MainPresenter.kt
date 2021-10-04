@@ -148,19 +148,17 @@ class MainPresenter @Inject constructor(
             isFetchingSitesAfterDowngrade = false
             mainView?.hideProgressDialog()
             mainView?.updateSelectedSite()
-            return
-        }
-
-        if (event.isError) {
+        } else if (event.isError) {
             // TODO: Notify the user of the problem
             isHandlingMagicLink = false
-            return
-        }
-
-        if (isHandlingMagicLink) {
+        } else if (isHandlingMagicLink) {
             // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
             mainView?.updateSelectedSite()
             isHandlingMagicLink = false
+        } else if (!selectedSite.exists()) {
+            // handle the possibility that the user has been removed from the active site
+            WooLog.i(WooLog.T.DASHBOARD, "Selected site no longer exists, showing site picker")
+            mainView?.showSitePickerScreen()
         }
     }
 

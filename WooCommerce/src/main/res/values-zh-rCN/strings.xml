@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:17:15+0000
+Translation-Revision-Date: 2021-09-29 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">新功能图标图像</string>
+    <string name="settings_switch_store">切换商店</string>
+    <string name="product_update_failure_notification">产品 %1$s 更新失败</string>
+    <string name="product_update_success_notification_content">已将 %1$d 张图像添加到产品 %2$s 中</string>
+    <string name="product_update_success_notification_title">产品已更新</string>
+    <string name="product_update_notification">正在更新产品 %1$s</string>
+    <string name="product_detail_background_image_upload">图像上传将在后台继续</string>
+    <string name="card_reader_payment_save_for_later">保存收据并继续</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">确定</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">很抱歉，现在无法加载订单加载项</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">出错了</string>
     <string name="settings_whats_new">WooCommerce 中的新增功能</string>
     <string name="settings_enable_product_addons_teaser_title">查看插件</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">抱歉，我们现在无法更改此功能设置</string>
@@ -50,7 +61,6 @@ Language: zh_CN
     <string name="card_reader_onboarding_generic_error_hint">抱歉，我们无法验证此商店的现场付款</string>
     <string name="card_reader_onboarding_generic_error_header">无法验证此商店的现场付款</string>
     <string name="card_reader_detail_connected_firmware_version">固件：%s</string>
-    <string name="card_reader_payment_save_for_later">保存以供稍后查看</string>
     <string name="card_reader_purchase_card_reader">订购读卡器</string>
     <string name="card_reader_manage_card_reader">管理读卡器</string>
     <string name="shipping_label_multiple_customs_form_print_button">打印</string>
@@ -1285,8 +1295,6 @@ Language: zh_CN
     <string name="error_copy_to_clipboard">复制到剪贴板时出错</string>
     <string name="settings_switch_site_notifs_msg">已切换到 %s。您将只接收此商店的通知</string>
     <string name="login_update_required_desc">此商店使用的 WooCommerce 版本较旧。请将您的商店升级至 WooCommerce 3.5 或更高版本，以结合使用商店和此应用程序。</string>
-    <string name="promo_message_site_picker">现在，您可以在“设置”中轻点选定的商店来在商店之间切换。</string>
-    <string name="promo_title_site_picker">正在经营多家商店？</string>
     <string name="promo_btn_try_it">立即试用</string>
     <string name="promo_btn_got_it">知道了</string>
     <string name="tooltip_site_switcher">轻点可切换商店</string>

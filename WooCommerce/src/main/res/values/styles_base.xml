@@ -242,6 +242,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical|start</item>
+        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <!--
@@ -264,6 +265,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
         <item name="android:textColor">@color/color_on_surface_medium</item>
         <item name="android:gravity">center_vertical|start</item>
+        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <style name="Woo.TextView.Body1">
@@ -276,6 +278,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:gravity">center_horizontal|start</item>
         <item name="android:layout_marginTop">@dimen/minor_00</item>
         <item name="android:layout_marginBottom">@dimen/minor_00</item>
+        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <style name="Woo.TextView.Warning" parent="Woo.TextView.Body2">
@@ -423,6 +426,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="iconTint">@color/button_fg_selector</item>
+        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <!--  Borderless button with smaller text used for inner options  -->

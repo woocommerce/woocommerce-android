@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:16:39+0000
+Translation-Revision-Date: 2021-09-29 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Image de l’icône Nouvelle fonctionnalité</string>
+    <string name="settings_switch_store">Changer de boutique</string>
+    <string name="product_update_failure_notification">La mise à jour du produit %1$s a échoué</string>
+    <string name="product_update_success_notification_content">%1$d images ont été ajoutées au produit %2$s</string>
+    <string name="product_update_success_notification_title">Produit mis à jour</string>
+    <string name="product_update_notification">Mise à jour du produit %1$s</string>
+    <string name="product_detail_background_image_upload">Le chargement des images continuera en arrière-plan</string>
+    <string name="card_reader_payment_save_for_later">Enregistrer le reçu et continuer</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Désolé, le chargement des modules de commande a échoué</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Un problème est survenu…</string>
     <string name="settings_whats_new">Nouveautés WooCommerce</string>
     <string name="settings_enable_product_addons_teaser_title">Voir les modules</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Nous ne parvenons pas à modifier les paramètres de cette fonctionnalité pour le moment</string>
@@ -50,7 +61,6 @@ Language: fr
     <string name="card_reader_onboarding_generic_error_hint">Désolé, nous n’avons pas pu vérifier les paiements en personne pour cette boutique</string>
     <string name="card_reader_onboarding_generic_error_header">Impossible de vérifier les paiements en personne pour cette boutique</string>
     <string name="card_reader_detail_connected_firmware_version">Micrologiciel : %s</string>
-    <string name="card_reader_payment_save_for_later">Enregistrer pour plus tard</string>
     <string name="card_reader_purchase_card_reader">Commander un lecteur de carte</string>
     <string name="card_reader_manage_card_reader">Gérer le lecteur de carte</string>
     <string name="shipping_label_multiple_customs_form_print_button">Imprimer</string>
@@ -1285,8 +1295,6 @@ Language: fr
     <string name="error_copy_to_clipboard">Erreur lors de la copie dans le presse-papier</string>
     <string name="settings_switch_site_notifs_msg">Basculé vers %s. Vous recevrez uniquement des notifications pour cette boutique</string>
     <string name="login_update_required_desc">Cette boutique utilise une ancienne version de WooCommerce. Veuillez mettre votre boutique à niveau en installant la version 3.5 ou ultérieure de WooCommerce afin de l\'utiliser avec l\'application.</string>
-    <string name="promo_message_site_picker">Vous pouvez désormais basculer entre les boutiques en appuyant sur la boutique sélectionnée dans Paramètres</string>
-    <string name="promo_title_site_picker">Gestion de plusieurs boutiques ?</string>
     <string name="promo_btn_try_it">Essayer maintenant</string>
     <string name="promo_btn_got_it">Compris</string>
     <string name="tooltip_site_switcher">Appuyer pour passer d\'une boutique à l\'autre</string>

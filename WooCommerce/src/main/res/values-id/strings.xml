@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-14 09:54:05+0000
+Translation-Revision-Date: 2021-09-28 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Gambar ikon fitur baru</string>
+    <string name="settings_switch_store">Beralih toko</string>
+    <string name="product_update_failure_notification">Gagal memperbarui produk %1$s</string>
+    <string name="product_update_success_notification_content">Gambar %1$d telah ditambahkan ke produk %2$s</string>
+    <string name="product_update_success_notification_title">Produk Diperbarui</string>
+    <string name="product_update_notification">Memperbarui produk %1$s</string>
+    <string name="product_detail_background_image_upload">Pengunggahan gambar akan dilanjutkan di latar belakang</string>
+    <string name="card_reader_payment_save_for_later">Simpan tanda terima dan lanjutkan</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">Oke</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Maaf, kami tidak dapat memuat Add-on Pesanan sekarang</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Terjadi kesalahan</string>
     <string name="settings_whats_new">Apa yang Baru di WooCommerce</string>
     <string name="settings_enable_product_addons_teaser_title">Lihat Add-on</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Maaf, saat ini kami tidak dapat mengubah pengaturan fitur ini</string>
@@ -50,7 +61,6 @@ Language: id
     <string name="card_reader_onboarding_generic_error_hint">Maaf, kami tidak dapat memverifikasi Pembayaran Langsung untuk toko ini</string>
     <string name="card_reader_onboarding_generic_error_header">Tidak dapat memverifikasi Pembayaran Langsung untuk toko ini</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Simpan untuk nanti</string>
     <string name="card_reader_purchase_card_reader">Pesan Pembaca Kartu</string>
     <string name="card_reader_manage_card_reader">Kelola Pembaca Kartu</string>
     <string name="shipping_label_multiple_customs_form_print_button">Cetak</string>
@@ -1285,8 +1295,6 @@ Language: id
     <string name="error_copy_to_clipboard">Terjadi error saat menyalin ke clipboard</string>
     <string name="settings_switch_site_notifs_msg">Beralih ke %s. Anda hanya akan menerima pemberitahuan untuk toko ini</string>
     <string name="login_update_required_desc">Toko ini menggunakan WooCommerce versi lama. Upgrade toko Anda ke WooCommerce 3.5 atau yang lebih baru agar dapat menggunakannya dengan aplikasi ini.</string>
-    <string name="promo_message_site_picker">Sekarang Anda dapat beralih antartoko dengan mengetuk toko yang dipilih di Pengaturan</string>
-    <string name="promo_title_site_picker">Mengelola beberapa toko?</string>
     <string name="promo_btn_try_it">Coba sekarang</string>
     <string name="promo_btn_got_it">Saya mengerti</string>
     <string name="tooltip_site_switcher">Ketuk untuk beralih toko</string>

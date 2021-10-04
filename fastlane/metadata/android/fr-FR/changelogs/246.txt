@@ -1,4 +1,0 @@
-7.5 :
-Il est désormais possible d’afficher les commandes de produits à l’aide de l’extension Product Add-ons de WooCommerce ! Accédez aux paramètres de votre boutique dans l’application via l’onglet Ma boutique, et procédez à l’activation dans les fonctionnalités bêta. N’oubliez pas de nous envoyer votre avis à propos de l’expérience !
-
-Vous verrez également qu’il est possible de filtrer la liste de produits par catégorie. Vous l’avez demandé, nous vous avons écouté !
