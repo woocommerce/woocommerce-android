@@ -27,7 +27,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.AccountStore.*
-import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.*
 import javax.inject.Inject
 
@@ -147,16 +146,6 @@ class MainPresenter @Inject constructor(
                     }
                 }
             }
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSiteChanged(event: OnSiteChanged) {
-        if (!selectedSite.exists()) {
-            // handle the possibility that the user has been removed from the active site
-            WooLog.i(WooLog.T.DASHBOARD, "Selected site no longer exists, showing site picker")
-            mainView?.showSitePickerScreen()
         }
     }
 
