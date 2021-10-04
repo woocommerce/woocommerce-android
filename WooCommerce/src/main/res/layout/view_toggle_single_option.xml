@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/major_175"
-        android:gravity="center_vertical"
+        android:gravity="start|center_vertical"
         android:importantForAccessibility="no"
         android:switchPadding="@dimen/major_100"
         android:layout_marginEnd="@dimen/minor_00"
@@ -30,5 +30,6 @@
         android:paddingEnd="@dimen/minor_100"
         android:paddingStart="@dimen/minor_00"
         android:clickable="false"
+        android:textAlignment="viewStart"
         tools:text="If disabled will add the note as private"/>
 </merge>
