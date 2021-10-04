@@ -193,15 +193,7 @@ class SitePickerActivity :
                 loginSiteUrl = url
             }
 
-            // Signin M1: We still want the presenter to go out and fetch sites so we
-            // know whether or not to show the "view connected stores" button.
-            if (calledFromLogin) {
-                // Sites have already been fetched as part of the login process. Just load them
-                // from the db.
-                presenter.loadSites()
-            } else {
-                presenter.loadAndFetchSites()
-            }
+            presenter.loadAndFetchSites()
         }
     }
 

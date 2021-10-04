@@ -17,8 +17,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
-import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
 import org.wordpress.android.login.util.SiteUtils
@@ -75,7 +73,15 @@ class SitePickerPresenter
     }
 
     override fun fetchSitesFromAPI() {
-        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
+        coroutineScope.launch {
+            val result = wooCommerceStore.fetchWooCommerceSites()
+            view?.showSkeleton(false)
+            if (result.isError) {
+                WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
+            } else {
+                view?.showStoreList(result.model!!)
+            }
+        }
     }
 
     override fun fetchUpdatedSiteFromAPI(site: SiteModel) {
@@ -128,17 +134,6 @@ class SitePickerPresenter
             )
         } else if (!userIsLoggedIn()) {
             view?.didLogout()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSiteChanged(event: OnSiteChanged) {
-        view?.showSkeleton(false)
-        if (event.isError) {
-            WooLog.e(T.LOGIN, "Site error [${event.error.type}] : ${event.error.message}")
-        } else {
-            loadSites()
         }
     }
 
