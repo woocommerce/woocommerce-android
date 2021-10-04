@@ -29,9 +29,10 @@
             android:id="@+id/customerInfo_customerNoteSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"
+            android:background="?attr/selectableItemBackground"
             android:focusable="true"
             android:orientation="vertical"
-            android:layout_marginBottom="@dimen/major_100"
             tools:visibility="visible">
 
             <View
