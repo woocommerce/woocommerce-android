@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.sitepicker
 
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.Dispatchers
@@ -126,7 +127,9 @@ class SitePickerPresenter
     }
 
     override fun getSiteModelByUrl(url: String): SiteModel? =
-        SiteUtils.getSiteByMatchingUrl(siteStore, url)
+        SiteUtils.getSiteByMatchingUrl(siteStore, url)?.takeIf {
+            FeatureFlag.JETPACK_CP.isEnabled() || !it.isJetpackCPConnected
+        }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
