@@ -79,14 +79,16 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
-                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
+                viewModel = viewModel,
+                readerName = UiStringText(READER_NAME),
+                batteryLevel = UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                firmwareVersion = UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
                     listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
                 ),
-                updateAvailable = false
+                notice = null,
+                primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
+                secondaryButtonText = null
             )
         }
 
@@ -101,14 +103,17 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
+                viewModel = viewModel,
+                readerName = UiStringText(READER_NAME),
+                batteryLevel =
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("33"))),
-                UiStringRes(
+                firmwareVersion = UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
                     listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
                 ),
-                updateAvailable = false
+                notice = null,
+                primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
+                secondaryButtonText = null
             )
         }
 
@@ -124,14 +129,16 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             verifyConnectedState(
-                viewModel,
-                UiStringRes(R.string.card_reader_detail_connected_reader_unknown),
-                null,
-                UiStringRes(
+                viewModel = viewModel,
+                readerName = UiStringRes(R.string.card_reader_detail_connected_reader_unknown),
+                batteryLevel = null,
+                firmwareVersion = UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
                     listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
                 ),
-                updateAvailable = false
+                notice = null,
+                primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
+                secondaryButtonText = null
             )
         }
 
@@ -199,14 +206,17 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
+                viewModel = viewModel,
+                readerName = UiStringText(READER_NAME),
+                batteryLevel =
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
+                firmwareVersion = UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
                     listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
                 ),
-                updateAvailable = true
+                notice = UiStringRes(R.string.card_reader_detail_connected_enforced_update_software),
+                primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_update_software),
+                secondaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
             )
         }
 
@@ -221,14 +231,17 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
+                viewModel = viewModel,
+                readerName = UiStringText(READER_NAME),
+                batteryLevel =
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
+                firmwareVersion = UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
                     listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
                 ),
-                updateAvailable = false
+                notice = null,
+                primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
+                secondaryButtonText = null
             )
             assertThat(viewModel.event.value)
                 .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
@@ -271,14 +284,17 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
+                viewModel = viewModel,
+                readerName = UiStringText(READER_NAME),
+                batteryLevel =
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
+                firmwareVersion = UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
                     listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
                 ),
-                updateAvailable = false
+                notice = null,
+                primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
+                secondaryButtonText = null
             )
         }
     }
@@ -295,14 +311,17 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
+                viewModel = viewModel,
+                readerName = UiStringText(READER_NAME),
+                batteryLevel =
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
+                firmwareVersion = UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
                     listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
                 ),
-                updateAvailable = false
+                notice = null,
+                primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
+                secondaryButtonText = null
             )
         }
     }
@@ -321,14 +340,17 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
+                viewModel = viewModel,
+                readerName = UiStringText(READER_NAME),
+                batteryLevel =
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
+                firmwareVersion = UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
                     listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
                 ),
-                updateAvailable = false
+                notice = null,
+                primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
+                secondaryButtonText = null
             )
             assertThat(events[0])
                 .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
@@ -447,25 +469,17 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         readerName: UiString,
         batteryLevel: UiString?,
         firmwareVersion: UiString,
-        updateAvailable: Boolean
+        notice: UiString?,
+        primaryButtonText: UiString,
+        secondaryButtonText: UiString?,
     ) {
         val state = viewModel.viewStateData.value as ConnectedState
         assertThat(state.readerName).isEqualTo(readerName)
         assertThat(state.readerBattery).isEqualTo(batteryLevel)
         assertThat(state.readerFirmwareVersion).isEqualTo(firmwareVersion)
-        if (updateAvailable) {
-            assertThat(state.enforceReaderUpdate)
-                .isEqualTo(UiStringRes(R.string.card_reader_detail_connected_enforced_update_software))
-            assertThat(state.primaryButtonState?.text)
-                .isEqualTo(UiStringRes(R.string.card_reader_detail_connected_update_software))
-            assertThat(state.secondaryButtonState?.text)
-                .isEqualTo(UiStringRes(R.string.card_reader_detail_connected_disconnect_reader))
-        } else {
-            assertThat(state.enforceReaderUpdate).isNull()
-            assertThat(state.primaryButtonState?.text)
-                .isEqualTo(UiStringRes(R.string.card_reader_detail_connected_disconnect_reader))
-            assertThat(state.secondaryButtonState?.text).isNull()
-        }
+        assertThat(state.notice).isEqualTo(notice)
+        assertThat(state.primaryButtonState?.text).isEqualTo(primaryButtonText)
+        assertThat(state.secondaryButtonState?.text).isEqualTo(secondaryButtonText)
     }
 
     private fun initConnectedState(
