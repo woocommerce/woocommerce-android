@@ -82,7 +82,7 @@ class CardReaderDetailViewModel @Inject constructor(
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
         val lowBattery = readerStatus.cardReader.currentBatteryLevel ?: 1f <= LOW_BATTERY_LEVEL_THRESHOLD
         viewState.value = if (updateAvailable) {
-            triggerEvent(CardReaderUpdateScreen(startedByUser = false))
+            if (!lowBattery) triggerEvent(CardReaderUpdateScreen(startedByUser = false))
             ConnectedState(
                 notice = UiStringRes(
                     if (lowBattery) R.string.card_reader_detail_connected_update_software_low_battery

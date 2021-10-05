@@ -253,7 +253,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when view model init with connected state and update available should send card reader update screen event`() =
+    fun `when update available should send card reader update screen event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
@@ -262,6 +262,18 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
 
             assertThat(viewModel.event.value).isEqualTo(CardReaderUpdateScreen(startedByUser = false))
+        }
+
+    @Test
+    fun `when update available and low battery should NOT send card reader update screen event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable, batteryLevel = 0.1f)
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            assertThat(viewModel.event.value).isNull()
         }
 
     @Test
