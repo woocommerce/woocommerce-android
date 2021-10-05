@@ -18,6 +18,8 @@ class EditCustomerOrderNoteFragment :
         private const val KEY_ORIGINAL_NOTE = "key_original_note"
     }
 
+    override val resultKey = KEY_EDIT_NOTE_RESULT
+
     private var _binding: FragmentEditCustomerOrderNoteBinding? = null
     private val binding get() = _binding!!
 
@@ -67,6 +69,8 @@ class EditCustomerOrderNoteFragment :
     }
 
     override fun hasChanges() = originalNote != getCustomerNote()
+
+    override fun getResult() = getCustomerNote()
 
     private fun getCustomerNote() = binding.customerOrderNoteEditor.text.toString()
 }
