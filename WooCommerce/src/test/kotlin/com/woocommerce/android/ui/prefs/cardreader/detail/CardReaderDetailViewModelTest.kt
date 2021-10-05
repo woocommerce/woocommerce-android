@@ -88,7 +88,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 ),
                 notice = null,
                 primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
-                secondaryButtonText = null
+                secondaryButtonText = null,
+                primaryButtonEnabled = true
             )
         }
 
@@ -113,7 +114,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 ),
                 notice = null,
                 primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
-                secondaryButtonText = null
+                secondaryButtonText = null,
+                primaryButtonEnabled = true
             )
         }
 
@@ -138,7 +140,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 ),
                 notice = null,
                 primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
-                secondaryButtonText = null
+                secondaryButtonText = null,
+                primaryButtonEnabled = true
             )
         }
 
@@ -216,7 +219,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 ),
                 notice = UiStringRes(R.string.card_reader_detail_connected_enforced_update_software),
                 primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_update_software),
-                secondaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
+                secondaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
+                primaryButtonEnabled = true
             )
         }
 
@@ -241,7 +245,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 ),
                 notice = null,
                 primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
-                secondaryButtonText = null
+                secondaryButtonText = null,
+                primaryButtonEnabled = true
             )
             assertThat(viewModel.event.value)
                 .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
@@ -294,7 +299,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 ),
                 notice = null,
                 primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
-                secondaryButtonText = null
+                secondaryButtonText = null,
+                primaryButtonEnabled = true
             )
         }
     }
@@ -321,7 +327,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 ),
                 notice = null,
                 primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
-                secondaryButtonText = null
+                secondaryButtonText = null,
+                primaryButtonEnabled = true
             )
         }
     }
@@ -350,7 +357,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 ),
                 notice = null,
                 primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
-                secondaryButtonText = null
+                secondaryButtonText = null,
+                primaryButtonEnabled = true
             )
             assertThat(events[0])
                 .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
@@ -442,6 +450,64 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
         }
 
+    @Test
+    fun `given battery level low, when update available, then update button disabled and notice shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState(
+                updateAvailable = SoftwareUpdateAvailability.UpdateAvailable,
+                batteryLevel = 0.1f
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            verifyConnectedState(
+                viewModel = viewModel,
+                readerName = UiStringText(READER_NAME),
+                batteryLevel =
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("10"))),
+                firmwareVersion = UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                ),
+                notice = UiStringRes(R.string.card_reader_detail_connected_update_software_low_battery),
+                primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_update_software),
+                secondaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
+                primaryButtonEnabled = false
+            )
+        }
+
+    @Test
+    fun `given battery level NOT low, when update available, then update button enabled and notice not shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState(
+                updateAvailable = SoftwareUpdateAvailability.UpdateAvailable,
+                batteryLevel = 1.0f
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            verifyConnectedState(
+                viewModel = viewModel,
+                readerName = UiStringText(READER_NAME),
+                batteryLevel =
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("100"))),
+                firmwareVersion = UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                ),
+                notice = UiStringRes(R.string.card_reader_detail_connected_enforced_update_software),
+                primaryButtonText = UiStringRes(R.string.card_reader_detail_connected_update_software),
+                secondaryButtonText = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader),
+                primaryButtonEnabled = true
+            )
+        }
+
     private fun verifyNotConnectedState(viewModel: CardReaderDetailViewModel) {
         val state = viewModel.viewStateData.value as NotConnectedState
         assertThat(state.headerLabel)
@@ -472,6 +538,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         notice: UiString?,
         primaryButtonText: UiString,
         secondaryButtonText: UiString?,
+        primaryButtonEnabled: Boolean,
     ) {
         val state = viewModel.viewStateData.value as ConnectedState
         assertThat(state.readerName).isEqualTo(readerName)
@@ -480,6 +547,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         assertThat(state.notice).isEqualTo(notice)
         assertThat(state.primaryButtonState?.text).isEqualTo(primaryButtonText)
         assertThat(state.secondaryButtonState?.text).isEqualTo(secondaryButtonText)
+        assertThat(state.primaryButtonState?.enabled).isEqualTo(primaryButtonEnabled)
     }
 
     private fun initConnectedState(

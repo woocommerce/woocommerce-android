@@ -40,6 +40,7 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 private const val PERCENT_100 = 100
+const val LOW_BATTERY_LEVEL_THRESHOLD = 0.5f
 
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
@@ -79,18 +80,21 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
+        val lowBattery = readerStatus.cardReader.currentBatteryLevel ?: 1f <= LOW_BATTERY_LEVEL_THRESHOLD
         viewState.value = if (updateAvailable) {
             triggerEvent(CardReaderUpdateScreen(startedByUser = false))
             ConnectedState(
-                enforceReaderUpdate = UiStringRes(
-                    R.string.card_reader_detail_connected_enforced_update_software
+                notice = UiStringRes(
+                    if (lowBattery) R.string.card_reader_detail_connected_update_software_low_battery
+                    else R.string.card_reader_detail_connected_enforced_update_software
                 ),
                 readerName = readerStatus.cardReader.getReadersName(),
                 readerBattery = readerStatus.cardReader.getReadersBatteryLevel(),
                 readerFirmwareVersion = readerStatus.cardReader.getReaderFirmwareVersion(),
                 primaryButtonState = ButtonState(
                     onActionClicked = ::onUpdateReaderClicked,
-                    text = UiStringRes(R.string.card_reader_detail_connected_update_software)
+                    text = UiStringRes(R.string.card_reader_detail_connected_update_software),
+                    enabled = !lowBattery
                 ),
                 secondaryButtonState = ButtonState(
                     onActionClicked = ::onDisconnectClicked,
@@ -99,7 +103,7 @@ class CardReaderDetailViewModel @Inject constructor(
             )
         } else {
             ConnectedState(
-                enforceReaderUpdate = null,
+                notice = null,
                 readerName = readerStatus.cardReader.getReadersName(),
                 readerBattery = readerStatus.cardReader.getReadersBatteryLevel(),
                 readerFirmwareVersion = readerStatus.cardReader.getReaderFirmwareVersion(),
@@ -174,7 +178,7 @@ class CardReaderDetailViewModel @Inject constructor(
         }
 
         data class ConnectedState(
-            val enforceReaderUpdate: UiString?,
+            val notice: UiString?,
             val readerName: UiString,
             val readerBattery: UiString?,
             val readerFirmwareVersion: UiString,
@@ -185,7 +189,8 @@ class CardReaderDetailViewModel @Inject constructor(
 
             data class ButtonState(
                 val onActionClicked: (() -> Unit),
-                val text: UiString
+                val text: UiString,
+                val enabled: Boolean = true,
             )
         }
 

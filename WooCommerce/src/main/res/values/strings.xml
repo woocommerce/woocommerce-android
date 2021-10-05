@@ -829,6 +829,7 @@
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
     <string name="card_reader_detail_connected_update_software">Update reader\'s software</string>
     <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
+    <string name="card_reader_detail_connected_update_software_low_battery">An update is available, but your reader battery is too low to update. Please charge your reader right away to continue accepting payments</string>
     <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
     <string name="card_reader_detail_connected_reader_unknown">UNKNOWN CARD READER\'s NAME</string>
     <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed</string>
