@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 
@@ -61,8 +62,13 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 R.string.orderdetail_customer_note,
                 order.customerNote
             )
-            binding.customerInfoCustomerNoteSection.setOnClickListener {
-                // TODO
+            if (FeatureFlag.ORDER_EDITING.isEnabled()) {
+                binding.customerInfoCustomerNote.setTextIsSelectable(false)
+                binding.customerInfoCustomerNoteSection.setOnClickListener {
+                    // TODO
+                }
+            } else {
+                binding.customerInfoCustomerNote.setTextIsSelectable(true)
             }
         } else {
             binding.customerInfoCustomerNoteSection.hide()

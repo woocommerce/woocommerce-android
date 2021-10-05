@@ -20,6 +20,12 @@ class EditCustomerOrderNoteFragment : BaseFragment(R.layout.fragment_edit_custom
 
     private val navArgs: EditCustomerOrderNoteFragmentArgs by navArgs()
 
+    /** TODO
+     * cross icon
+     * DONE button
+     * discard dialog
+     * make text selectable in order detail when feature flag not enabled
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
