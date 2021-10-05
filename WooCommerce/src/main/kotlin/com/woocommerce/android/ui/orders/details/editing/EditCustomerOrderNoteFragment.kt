@@ -24,9 +24,6 @@ class EditCustomerOrderNoteFragment :
     private val navArgs: EditCustomerOrderNoteFragmentArgs by navArgs()
     private var originalNote: String = ""
 
-    /** TODO
-     * DONE button
-     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -40,10 +37,13 @@ class EditCustomerOrderNoteFragment :
         } else {
             originalNote = savedInstanceState.getString(KEY_ORIGINAL_NOTE, "")
         }
+
+        binding.customerOrderNoteEditor.addTextChangedListener(textWatcher)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.customerOrderNoteEditor.removeTextChangedListener(textWatcher)
         _binding = null
     }
 
