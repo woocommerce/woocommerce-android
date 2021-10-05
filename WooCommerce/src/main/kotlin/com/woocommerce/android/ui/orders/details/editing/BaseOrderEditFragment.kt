@@ -26,6 +26,6 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
             positiveBtnAction = { _, _ ->
                 findNavController().navigateUp()
             }
-        )
+        ).showDialog()
     }
 }
