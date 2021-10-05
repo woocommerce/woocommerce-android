@@ -11,7 +11,6 @@ import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
@@ -247,14 +246,14 @@ class OrderListFragment :
         // setup observers
         viewModel.isFetchingFirstPage.observe(
             viewLifecycleOwner,
-            Observer {
+            {
                 binding.orderRefreshLayout.isRefreshing = it == true
             }
         )
 
         viewModel.isLoadingMore.observe(
             viewLifecycleOwner,
-            Observer {
+            {
                 it?.let { isLoadingMore ->
                     binding.orderListView.setLoadingMoreIndicator(active = isLoadingMore)
                 }
@@ -263,7 +262,7 @@ class OrderListFragment :
 
         viewModel.orderStatusOptions.observe(
             viewLifecycleOwner,
-            Observer {
+            {
                 it?.let { options ->
                     // So the order status can be matched to the appropriate label
                     binding.orderListView.setOrderStatusOptions(options)
@@ -275,14 +274,14 @@ class OrderListFragment :
 
         viewModel.pagedListData.observe(
             viewLifecycleOwner,
-            Observer {
+            {
                 updatePagedListData(it)
             }
         )
 
         viewModel.event.observe(
             viewLifecycleOwner,
-            Observer { event ->
+            { event ->
                 when (event) {
                     is ShowErrorSnack -> {
                         uiMessageResolver.showSnack(event.messageRes)
@@ -295,7 +294,7 @@ class OrderListFragment :
 
         viewModel.emptyViewType.observe(
             viewLifecycleOwner,
-            Observer {
+            {
                 it?.let { emptyViewType ->
                     when (emptyViewType) {
                         EmptyViewType.SEARCH_RESULTS -> {
