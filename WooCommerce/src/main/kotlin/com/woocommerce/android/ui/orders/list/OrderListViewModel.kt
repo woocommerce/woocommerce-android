@@ -18,10 +18,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
@@ -80,7 +80,6 @@ class OrderListViewModel @Inject constructor(
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
     internal var allPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
-    internal var processingPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
     private val dataSource by lazy {
@@ -144,25 +143,13 @@ class OrderListViewModel @Inject constructor(
     }
 
     /**
-     * Create and prefetch the two main order lists to prevent them getting out of
+     * Create and prefetch order list to prevent from getting out of
      * sync when the device goes offline.
      */
-    fun initializeListsForMainTabs() {
-        // "ALL" tab
+    fun initializeOrderList() {
         if (allPagedListWrapper == null) {
             val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = false)
             allPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle)
-                .also { it.fetchFirstPage() }
-        }
-
-        // "PROCESSING" tab
-        if (processingPagedListWrapper == null) {
-            val processingDescriptor = WCOrderListDescriptor(
-                site = selectedSite.get(),
-                statusFilter = CoreOrderStatus.PROCESSING.value,
-                excludeFutureOrders = false
-            )
-            processingPagedListWrapper = listStore.getList(processingDescriptor, dataSource, lifecycle)
                 .also { it.fetchFirstPage() }
         }
 
@@ -170,24 +157,11 @@ class OrderListViewModel @Inject constructor(
         fetchOrdersAndOrderDependencies()
     }
 
-    /**
-     * Loads orders for the "ALL" tab.
-     */
-    fun loadAllList() {
+    fun loadAllOrders() {
         requireNotNull(allPagedListWrapper) {
-            "allPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
+            "allPagedListWrapper must be initialized by first calling loadAllOrders()"
         }
         activatePagedListWrapper(allPagedListWrapper!!)
-    }
-
-    /**
-     * Loads orders for the "PROCESSING" tab.
-     */
-    fun loadProcessingList() {
-        requireNotNull(processingPagedListWrapper) {
-            "processingPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
-        }
-        activatePagedListWrapper(processingPagedListWrapper!!)
     }
 
     /**
@@ -418,7 +392,6 @@ class OrderListViewModel @Inject constructor(
                     activePagedListWrapper?.fetchFirstPage()
                 }
                 allPagedListWrapper?.fetchFirstPage()
-                processingPagedListWrapper?.fetchFirstPage()
             }
         } else {
             // Invalidate the list data so that orders that have not
@@ -428,7 +401,6 @@ class OrderListViewModel @Inject constructor(
                 activePagedListWrapper?.invalidateData()
             }
             allPagedListWrapper?.invalidateData()
-            processingPagedListWrapper?.invalidateData()
         }
     }
 

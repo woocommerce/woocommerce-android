@@ -151,7 +151,7 @@ class OrderListFragment :
         } else if (isSearching) {
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
         } else {
-            viewModel.loadAllList()
+            viewModel.loadAllOrders()
         }
     }
 
@@ -230,7 +230,7 @@ class OrderListFragment :
 
     @Suppress("LongMethod")
     private fun initializeViewModel() {
-        viewModel.initializeListsForMainTabs()
+        viewModel.initializeOrderList()
 
         // populate views with any existing viewModel data
         viewModel.orderStatusOptions.value?.let { options ->
@@ -432,7 +432,7 @@ class OrderListFragment :
             clearSearchResults()
             searchMenuItem?.isVisible = true
         }
-        viewModel.loadAllList()
+        viewModel.loadAllOrders()
         onSearchViewActiveChanged(isActive = false)
         return true
     }
