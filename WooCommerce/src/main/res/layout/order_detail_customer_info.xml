@@ -25,7 +25,7 @@
             android:text="@string/customer_information"/>
 
         <!-- Label: Customer note -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/customerInfo_customerNoteSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,10 +38,7 @@
             <View
                 android:id="@+id/customerInfo_noteDivider"
                 style="@style/Woo.Divider"
-                android:layout_marginStart="@dimen/major_100"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_marginStart="@dimen/major_100" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_customerNoteTitle"
@@ -49,33 +46,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/minor_50"
-                android:text="@string/orderdetail_customer_provided_note"
-                app:layout_constraintEnd_toStartOf="@id/customerInfo_editButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/customerInfo_noteDivider" />
+                android:text="@string/orderdetail_customer_provided_note" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_customerNote"
                 style="@style/Woo.Card.Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/customerInfo_editButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/customerInfo_customerNoteTitle"
-                tools:text="This is a nice note from the customer" />
+                android:drawableEnd="@drawable/ic_edit_pencil"
+                android:drawablePadding="@dimen/major_100"
+                tools:text="This is a nice note from the customer. Let's make it wrap to multiple lines." />
 
-            <ImageView
-                android:id="@+id/customerInfo_editButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:contentDescription="@string/edit"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/customerInfo_customerNote"
-                app:srcCompat="@drawable/ic_edit_pencil" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
         <!-- Label: Shipping -->
         <LinearLayout
