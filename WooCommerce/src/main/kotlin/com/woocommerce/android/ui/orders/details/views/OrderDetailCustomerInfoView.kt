@@ -33,7 +33,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     fun updateCustomerInfo(
         order: Order,
-        isVirtualOrder: Boolean // don't display shipping section for virtual products
+        isVirtualOrder: Boolean, // don't display shipping section for virtual products
+        isReadOnly: Boolean
     ) {
         // shipping address info
         val shippingAddress = order.formatShippingInformationForDisplay()
@@ -65,7 +66,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 R.string.orderdetail_customer_note,
                 order.customerNote
             )
-            if (FeatureFlag.ORDER_EDITING.isEnabled()) {
+            if (FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly) {
                 binding.customerInfoCustomerNote.setTextIsSelectable(false)
                 binding.customerInfoCustomerNoteSection.setOnClickListener {
                     val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
