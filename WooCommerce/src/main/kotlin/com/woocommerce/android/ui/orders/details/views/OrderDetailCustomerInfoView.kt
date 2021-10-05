@@ -36,7 +36,35 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         isVirtualOrder: Boolean, // don't display shipping section for virtual products
         isReadOnly: Boolean
     ) {
-        // shipping address info
+        showCustomerNote(order, isReadOnly)
+        showShippingAddress(order, isVirtualOrder)
+        showBillingInfo(order)
+    }
+
+    private fun showCustomerNote(order: Order, isReadOnly: Boolean) {
+        if (order.customerNote.isNotEmpty()) {
+            binding.customerInfoCustomerNoteSection.show()
+            binding.customerInfoCustomerNote.text = context.getString(
+                R.string.orderdetail_customer_note,
+                order.customerNote
+            )
+            if (FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly) {
+                binding.customerInfoCustomerNote.setTextIsSelectable(false)
+                binding.customerInfoCustomerNoteSection.setOnClickListener {
+                    val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
+                        order.customerNote
+                    )
+                    findNavController().navigateSafely(action)
+                }
+            } else {
+                binding.customerInfoCustomerNote.setTextIsSelectable(true)
+            }
+        } else {
+            binding.customerInfoCustomerNoteSection.hide()
+        }
+    }
+
+    private fun showShippingAddress(order: Order, isVirtualOrder: Boolean) {
         val shippingAddress = order.formatShippingInformationForDisplay()
         when {
             isVirtualOrder -> {
@@ -58,30 +86,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 } ?: false
             }
         }
+    }
 
-        // customer note
-        if (order.customerNote.isNotEmpty()) {
-            binding.customerInfoCustomerNoteSection.show()
-            binding.customerInfoCustomerNote.text = context.getString(
-                R.string.orderdetail_customer_note,
-                order.customerNote
-            )
-            if (FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly) {
-                binding.customerInfoCustomerNote.setTextIsSelectable(false)
-                binding.customerInfoCustomerNoteSection.setOnClickListener {
-                    val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
-                        order.customerNote
-                    )
-                    findNavController().navigateSafely(action)
-                }
-            } else {
-                binding.customerInfoCustomerNote.setTextIsSelectable(true)
-            }
-        } else {
-            binding.customerInfoCustomerNoteSection.hide()
-        }
-
-        // billing info
+    @Suppress("LongMethod")
+    private fun showBillingInfo(order: Order) {
         val billingInfo = order.formatBillingInformationForDisplay()
         if (order.billingAddress.hasInfo()) {
             if (billingInfo.isNotEmpty()) {
@@ -143,6 +151,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoMorePanel.hide()
             binding.customerInfoViewMore.setOnClickListener(null)
         }
+        val shippingAddress = order.formatShippingInformationForDisplay()
         if (shippingAddress.isEmpty() && billingInfo.isEmpty()) {
             hide()
         }
