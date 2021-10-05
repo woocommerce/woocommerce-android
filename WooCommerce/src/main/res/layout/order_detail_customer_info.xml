@@ -71,9 +71,8 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:contentDescription="@string/edit"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@id/customerInfo_customerNote"
                 app:srcCompat="@drawable/ic_edit_pencil" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
