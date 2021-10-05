@@ -13,7 +13,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.viewModels
 import androidx.paging.PagedList
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -32,7 +31,6 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
@@ -53,8 +51,6 @@ class OrderListFragment :
         const val STATE_KEY_IS_FILTER_ENABLED = "is_filter_enabled"
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
-        private const val TAB_INDEX_PROCESSING = 0
-        private const val TAB_INDEX_ALL = 1
     }
 
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
@@ -389,33 +385,6 @@ class OrderListFragment :
 
             updateActivityTitle()
             searchMenuItem?.isVisible = shouldShowSearchMenuItem()
-        }
-    }
-
-    /**
-     * Calculates the default tab position to display using the following logic:
-     * - If no orders for selected store -> "All Orders" tab
-     * - If no orders to process -> "All Orders" tab
-     * - The last tab the user viewed (saved in SharedPrefs)
-     * - Else the "Processing" tab (default)
-     *
-     * @return the index of the tab to be activated
-     */
-    private fun calculateStartupTabPosition(): Int {
-        val orderStatusOptions = getOrderStatusOptions()
-        return if (orderStatusFilter == PROCESSING.value) {
-            TAB_INDEX_PROCESSING
-        } else if (AppPrefs.hasSelectedOrderListTabPosition()) {
-            // If the user has already changed tabs once then select
-            // the last tab they had selected.
-            AppPrefs.getSelectedOrderListTabPosition()
-        } else if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
-            // There are no "processing" orders to display, show all.
-            TAB_INDEX_ALL
-        } else {
-            // Default to the "processing" tab if there are orders to
-            // process.
-            TAB_INDEX_PROCESSING
         }
     }
 
