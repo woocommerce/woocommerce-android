@@ -631,7 +631,7 @@
     </fragment>
     <fragment
         android:id="@+id/editCustomerOrderNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.details.EditCustomerOrderNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.details.editing.EditCustomerOrderNoteFragment"
         android:label="EditCustomerOrderNoteFragment"
         tools:layout="@layout/fragment_edit_customer_order_note">
         <argument
