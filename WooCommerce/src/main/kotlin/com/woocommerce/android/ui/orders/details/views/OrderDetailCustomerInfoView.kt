@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
 import androidx.core.view.isVisible
+import androidx.navigation.findNavController
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -14,9 +15,11 @@ import com.woocommerce.android.databinding.OrderDetailCustomerInfoBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -65,7 +68,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             if (FeatureFlag.ORDER_EDITING.isEnabled()) {
                 binding.customerInfoCustomerNote.setTextIsSelectable(false)
                 binding.customerInfoCustomerNoteSection.setOnClickListener {
-                    // TODO
+                    val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
+                        order.customerNote
+                    )
+                    findNavController().navigateSafely(action)
                 }
             } else {
                 binding.customerInfoCustomerNote.setTextIsSelectable(true)

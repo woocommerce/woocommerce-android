@@ -14,14 +14,14 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
 
     override fun onRequestAllowBackPress(): Boolean {
         return if (hasChanges()) {
-            confirmDisard()
+            confirmDiscard()
             false
         } else {
             true
         }
     }
 
-    private fun confirmDisard() {
+    private fun confirmDiscard() {
         MultiLiveEvent.Event.ShowDialog.buildDiscardDialogEvent(
             positiveBtnAction = { _, _ ->
                 findNavController().navigateUp()
