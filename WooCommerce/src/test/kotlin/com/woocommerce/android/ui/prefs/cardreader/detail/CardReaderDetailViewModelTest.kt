@@ -81,7 +81,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             verifyConnectedState(
                 viewModel = viewModel,
                 readerName = UiStringText(READER_NAME),
-                batteryLevel = UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
+                batteryLevel =
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
                 firmwareVersion = UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
                     listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
@@ -542,6 +543,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             .isEqualTo(UiStringRes(R.string.card_reader_details_not_connected_connect_button_label))
     }
 
+    @Suppress("LongParameterList")
     private fun verifyConnectedState(
         viewModel: CardReaderDetailViewModel,
         readerName: UiString,
