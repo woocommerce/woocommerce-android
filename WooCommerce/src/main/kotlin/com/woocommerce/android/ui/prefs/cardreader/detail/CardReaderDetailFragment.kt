@@ -87,8 +87,8 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 when (state) {
                     is ConnectedState -> {
                         with(binding.readerConnectedState) {
-                            UiHelpers.setTextOrHide(enforcedUpdateTv, state.notice)
-                            enforcedUpdateDivider.visibility = enforcedUpdateTv.visibility
+                            UiHelpers.setTextOrHide(noticeTv, state.notice)
+                            enforcedUpdateDivider.visibility = noticeTv.visibility
                             UiHelpers.setTextOrHide(readerNameTv, state.readerName)
                             UiHelpers.setTextOrHide(readerBatteryTv, state.readerBattery)
                             UiHelpers.setTextOrHide(readerFirmwareVersionTv, state.readerFirmwareVersion)
@@ -100,7 +100,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                             }
                             primaryActionBtn.isEnabled = state.primaryButtonState?.enabled == true
                             secondaryActionBtn.isEnabled = state.secondaryButtonState?.enabled == true
-                            binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(
+                            binding.readerConnectedState.noticeTv.setDrawableColor(
                                 color.warning_banner_foreground_color
                             )
                             with(cardReaderDetailLearnMoreTv.root) {
