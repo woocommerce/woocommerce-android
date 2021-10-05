@@ -81,9 +81,11 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_shippingAddr"
                 style="@style/Woo.Card.Body"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
+                android:drawableEnd="@drawable/ic_edit_pencil"
+                android:drawablePadding="@dimen/major_100"
                 tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
 
             <!-- Label: Shipping method -->
