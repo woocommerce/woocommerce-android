@@ -9,7 +9,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.pay.WCTerminalStoreLocationError
-import org.wordpress.android.fluxc.model.pay.WCTerminalStoreLocationErrorType
 import org.wordpress.android.fluxc.model.pay.WCTerminalStoreLocationResult
 import org.wordpress.android.fluxc.store.WCPayStore
 
@@ -39,11 +38,11 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
             val result = repository.getDefaultLocationId()
 
             // THEN
-            assertThat(result).isEqualTo(CardReaderLocationRepository.LocationIdFetchingResult.Success(locationId))
+            assertThat(result).isEqualTo(locationId)
         }
 
     @Test
-    fun `given store returns generic error, when get default location, then other error returned`() =
+    fun `given store returns error, when get default location, then null returned`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             whenever(wcPayStore.getStoreLocationForSite(any())).thenReturn(
@@ -56,26 +55,6 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
             val result = repository.getDefaultLocationId()
 
             // THEN
-            assertThat(result).isEqualTo(CardReaderLocationRepository.LocationIdFetchingResult.Error.Other)
-        }
-
-    @Test
-    fun `given store returns missing address error, when get default location, then missing address error returned`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            val url = "https://wordpress.com"
-            whenever(wcPayStore.getStoreLocationForSite(any())).thenReturn(
-                WCTerminalStoreLocationResult(
-                    WCTerminalStoreLocationError(WCTerminalStoreLocationErrorType.MissingAddress(url)),
-                )
-            )
-
-            // WHEN
-            val result = repository.getDefaultLocationId()
-
-            // THEN
-            assertThat(result).isEqualTo(
-                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
-            )
+            assertThat(result).isNull()
         }
 }

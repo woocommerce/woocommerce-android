@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_settings"
     app:startDestination="@id/mainSettingsFragment">
 
@@ -175,19 +174,4 @@
         android:id="@+id/featureAnnouncementDialogFragment"
         android:name="com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment"
         android:label="FeatureAnnouncementDialogFragment" />
-    <fragment
-        android:id="@+id/WPComWebViewFragment"
-        android:name="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment"
-        android:label="WPComWebViewFragment"
-        tools:layout="@layout/fragment_wpcom_webview">
-        <argument
-            android:name="urlToLoad"
-            app:argType="string" />
-        <argument
-            android:name="urlToTriggerExit"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null"/>
-    </fragment>
-    <action android:id="@+id/action_global_WPComWebViewFragment" app:destination="@id/WPComWebViewFragment"/>
 </navigation>

@@ -21,7 +21,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -225,10 +224,6 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                 }
                 is CardReaderConnectViewModel.CardReaderConnectEvent.ShowToast ->
                     ToastUtils.showToast(requireContext(), getString(event.message))
-                is CardReaderConnectViewModel.CardReaderConnectEvent.OpenWebView ->
-                    findNavController().navigate(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
-                    )
                 else -> event.isHandled = false
             }
         }

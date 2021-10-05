@@ -40,7 +40,6 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.LocationDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingMerchantAddressError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MultipleReadersFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
@@ -329,39 +328,14 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
-            val cardReaderLocationId = cardReader.locationId
-            if (cardReaderLocationId != null) {
-                doConnectWithLocationId(cardReader, cardReaderLocationId)
+            // TODO cardreader handle error cases
+            val locationId = (cardReader.locationId ?: locationRepository.getDefaultLocationId())!!
+            val success = cardReaderManager.connectToReader(cardReader, locationId)
+            if (success) {
+                onReaderConnected(cardReader)
             } else {
-                when (val result = locationRepository.getDefaultLocationId()) {
-                    is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
-                        doConnectWithLocationId(cardReader, result.locationId)
-                    }
-                    is CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress -> {
-                        viewState.value = MissingMerchantAddressError(
-                            {
-                                triggerEvent(CardReaderConnectEvent.OpenWebView(result.url))
-                            },
-                            {
-                                onCancelClicked()
-                            }
-                        )
-                    }
-                    CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
-                        // todo cardreader Tracking?
-                        onReaderConnectionFailed()
-                    }
-                }
+                onReaderConnectionFailed()
             }
-        }
-    }
-
-    private suspend fun doConnectWithLocationId(cardReader: CardReader, locationId: String) {
-        val success = cardReaderManager.connectToReader(cardReader, locationId)
-        if (success) {
-            onReaderConnected(cardReader)
-        } else {
-            onReaderConnectionFailed()
         }
     }
 
@@ -449,8 +423,6 @@ class CardReaderConnectViewModel @Inject constructor(
         object NavigateToOnboardingFlow : CardReaderConnectEvent()
 
         data class ShowToast(@StringRes val message: Int) : CardReaderConnectEvent()
-
-        data class OpenWebView(val url: String) : CardReaderConnectEvent()
     }
 
     @Suppress("LongParameterList")
@@ -556,17 +528,6 @@ class CardReaderConnectViewModel @Inject constructor(
             headerLabel = UiStringRes(R.string.card_reader_connect_bluetooth_disabled_header),
             illustration = R.drawable.img_products_error,
             primaryActionLabel = R.string.card_reader_connect_open_bluetooth_settings,
-            secondaryActionLabel = R.string.cancel,
-            illustrationTopMargin = R.dimen.major_150
-        )
-
-        data class MissingMerchantAddressError(
-            override val onPrimaryActionClicked: () -> Unit,
-            override val onSecondaryActionClicked: () -> Unit
-        ) : ViewState(
-            headerLabel = UiStringRes(R.string.card_reader_connect_missing_address),
-            illustration = R.drawable.img_products_error,
-            primaryActionLabel = R.string.card_reader_connect_missing_address_button,
             secondaryActionLabel = R.string.cancel,
             illustrationTopMargin = R.dimen.major_150
         )
