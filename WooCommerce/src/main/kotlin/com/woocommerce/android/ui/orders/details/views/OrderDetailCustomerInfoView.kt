@@ -50,6 +50,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             )
             if (FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly) {
                 binding.customerInfoCustomerNote.setTextIsSelectable(false)
+                binding.customerInfoEditButton.show()
                 binding.customerInfoCustomerNoteSection.setOnClickListener {
                     val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
                         order.customerNote
@@ -58,6 +59,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 }
             } else {
                 binding.customerInfoCustomerNote.setTextIsSelectable(true)
+                binding.customerInfoEditButton.hide()
             }
         } else {
             binding.customerInfoCustomerNoteSection.hide()
