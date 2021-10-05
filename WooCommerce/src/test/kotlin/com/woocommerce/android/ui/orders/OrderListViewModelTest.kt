@@ -1,19 +1,11 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.reset
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
@@ -38,6 +30,14 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
@@ -135,75 +135,37 @@ class OrderListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `load orders for ALL tab activates list wrapper`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `load all orders activates list wrapper`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
         doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
 
-        viewModel.initializeListsForMainTabs()
-        viewModel.loadAllList()
+        viewModel.initializeOrderList()
+        viewModel.loadAllOrders()
 
         assertNotNull(viewModel.allPagedListWrapper)
         assertNotNull(viewModel.activePagedListWrapper)
-        verify(viewModel.allPagedListWrapper, times(2))?.fetchFirstPage()
+        verify(viewModel.allPagedListWrapper, times(1))?.fetchFirstPage()
         verify(viewModel.allPagedListWrapper, times(1))?.invalidateData()
         assertEquals(viewModel.allPagedListWrapper, viewModel.activePagedListWrapper)
     }
 
     @Test
-    fun `load orders for ALL tab after initial run does not fetch first page`() =
+    fun `load all orders after initial run does not fetch first page`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
             doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
 
-            viewModel.initializeListsForMainTabs()
+            viewModel.initializeOrderList()
             clearInvocations(viewModel.allPagedListWrapper)
-            viewModel.loadAllList()
+            viewModel.loadAllOrders()
 
             assertNotNull(viewModel.allPagedListWrapper)
             assertNotNull(viewModel.activePagedListWrapper)
             verify(viewModel.allPagedListWrapper, times(0))?.fetchFirstPage()
             verify(viewModel.allPagedListWrapper, times(1))?.invalidateData()
             assertEquals(viewModel.allPagedListWrapper, viewModel.activePagedListWrapper)
-        }
-
-    @Test
-    fun `load orders for PROCESSING activates list wrapper and fetches first page`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
-
-            viewModel.initializeListsForMainTabs()
-            clearInvocations(repository)
-            clearInvocations(viewModel.processingPagedListWrapper)
-            viewModel.loadProcessingList()
-
-            assertNotNull(viewModel.processingPagedListWrapper)
-            assertNotNull(viewModel.activePagedListWrapper)
-            verify(viewModel.processingPagedListWrapper, times(0))?.fetchFirstPage()
-            verify(viewModel.processingPagedListWrapper, times(1))?.invalidateData()
-            assertEquals(viewModel.processingPagedListWrapper, viewModel.activePagedListWrapper)
-        }
-
-    @Test
-    fun `load orders for PROCESSING tab after initial run does not fetch first page`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
-
-            viewModel.initializeListsForMainTabs()
-            viewModel.loadProcessingList()
-            clearInvocations(viewModel.processingPagedListWrapper)
-            viewModel.loadProcessingList()
-
-            assertNotNull(viewModel.processingPagedListWrapper)
-            assertNotNull(viewModel.activePagedListWrapper)
-            verify(viewModel.processingPagedListWrapper, times(0))?.fetchFirstPage()
-            verify(viewModel.processingPagedListWrapper, times(1))?.invalidateData()
-            assertEquals(viewModel.processingPagedListWrapper, viewModel.activePagedListWrapper)
         }
 
     /**
@@ -562,7 +524,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
             viewModel.isSearching = true
-            viewModel.initializeListsForMainTabs()
+            viewModel.initializeOrderList()
 
             viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
 
