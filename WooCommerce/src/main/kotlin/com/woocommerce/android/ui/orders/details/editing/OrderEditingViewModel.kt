@@ -17,19 +17,19 @@ class OrderEditingViewModel @Inject constructor(
     private val navArgs by savedState.navArgs<OrderDetailFragmentArgs>()
     private val order: Order
 
-    private val orderId: Long
-        get() = navArgs.orderId.toLong()
+    private val orderIdentifier: String
+        get() = navArgs.orderId
 
     val customerOrderNote: String
         get() = order.customerNote
 
     init {
-        order = orderEditingRepository.getOrder(orderId)
+        order = orderEditingRepository.getOrder(orderIdentifier)
     }
 
     fun updateCustomerOrderNote(updatedCustomerOrderNote: String) {
         launch {
-            orderEditingRepository.updateCustomerOrderNote(orderId, updatedCustomerOrderNote)
+            orderEditingRepository.updateCustomerOrderNote(order, updatedCustomerOrderNote)
         }
     }
 }

@@ -13,12 +13,10 @@ class OrderEditingRepository @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
 ) {
-    fun getOrder(orderId: Long): Order {
-        return orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))!!.toAppModel()
-    }
+    fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)!!.toAppModel()
 
     suspend fun updateCustomerOrderNote(
-        orderId: Long,
+        order: Order,
         customerOrderNote: String
     ) {
         // TODO
