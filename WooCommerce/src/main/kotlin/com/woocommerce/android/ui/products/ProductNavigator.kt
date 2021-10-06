@@ -97,7 +97,8 @@ class ProductNavigator @Inject constructor() {
                         target.description,
                         target.title,
                         null,
-                        RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION
+                        RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION,
+                        target.productTitle
                     )
                 fragment.findNavController().navigateSafely(action)
             }
