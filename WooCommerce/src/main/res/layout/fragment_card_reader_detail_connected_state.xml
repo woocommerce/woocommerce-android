@@ -44,8 +44,10 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/reader_name_tv"
         style="@style/Woo.TextView.Subtitle1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:paddingVertical="@dimen/minor_50"
         android:layout_marginBottom="0dp"
         tools:text="CHB204909005931" />
 
