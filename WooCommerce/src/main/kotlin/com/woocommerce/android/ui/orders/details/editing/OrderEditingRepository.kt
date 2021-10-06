@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
 @ViewModelScoped
+@Suppress("UnusedPrivateMember")
 class OrderEditingRepository @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
