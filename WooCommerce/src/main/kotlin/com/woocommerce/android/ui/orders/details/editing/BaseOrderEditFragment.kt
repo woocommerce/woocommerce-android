@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.annotation.LayoutRes
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -18,6 +19,8 @@ import org.wordpress.android.util.ActivityUtils
 abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
+
+    protected val viewModel: OrderEditingSharedViewModel by viewModels()
 
     private var doneMenuItem: MenuItem? = null
 
