@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -193,15 +194,7 @@ class SitePickerActivity :
                 loginSiteUrl = url
             }
 
-            // Signin M1: We still want the presenter to go out and fetch sites so we
-            // know whether or not to show the "view connected stores" button.
-            if (calledFromLogin) {
-                // Sites have already been fetched as part of the login process. Just load them
-                // from the db.
-                presenter.loadSites()
-            } else {
-                presenter.loadAndFetchSites()
-            }
+            presenter.loadAndFetchSites()
         }
     }
 
@@ -303,11 +296,14 @@ class SitePickerActivity :
     }
 
     override fun showStoreList(wcSites: List<SiteModel>) {
+        val sites = wcSites.filter {
+            FeatureFlag.JETPACK_CP.isEnabled() || !it.isJetpackCPConnected
+        }
         hideProgressDialog()
         showUserInfo(centered = false)
 
         if (deferLoadingSitesIntoView) {
-            if (wcSites.isNotEmpty()) {
+            if (sites.isNotEmpty()) {
                 hasConnectedStores = true
 
                 // Make "show connected stores" visible to the user
@@ -356,7 +352,7 @@ class SitePickerActivity :
 
         binding.sitePickerRoot.visibility = View.VISIBLE
 
-        if (wcSites.isEmpty()) {
+        if (sites.isEmpty()) {
             showNoStoresView()
             return
         }
@@ -365,16 +361,16 @@ class SitePickerActivity :
         binding.siteListContainer.visibility = View.VISIBLE
 
         binding.siteListLabel.text = when {
-            wcSites.size == 1 -> getString(R.string.login_connected_store)
+            sites.size == 1 -> getString(R.string.login_connected_store)
             calledFromLogin -> getString(R.string.login_pick_store)
             else -> getString(R.string.site_picker_title)
         }
 
-        siteAdapter.siteList = wcSites
+        siteAdapter.siteList = sites
         siteAdapter.selectedSiteId = if (clickedSiteId > 0) {
             clickedSiteId
         } else {
-            selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
+            selectedSite.getIfExists()?.siteId ?: sites[0].siteId
         }
 
         with(binding.loginEpilogueButtonBar.buttonPrimary) {

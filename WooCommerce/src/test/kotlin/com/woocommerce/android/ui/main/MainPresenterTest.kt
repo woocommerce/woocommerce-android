@@ -1,40 +1,34 @@
 package com.woocommerce.android.ui.main
 
-import org.mockito.kotlin.KArgumentCaptor
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class MainPresenterTest {
+@ExperimentalCoroutinesApi
+class MainPresenterTest : BaseUnitTest() {
     private val mainContractView: MainContract.View = mock()
 
     private val dispatcher: Dispatcher = mock()
@@ -94,13 +88,19 @@ class MainPresenterTest {
     }
 
     @Test
-    fun `Triggers a selected site update after site info fetch`() {
+    fun `Triggers a selected site update after site info fetch`() = testBlocking {
+        whenever(wooCommerceStore.fetchWooCommerceSites()).thenReturn(WooResult())
+
         // Magic link login requires the presenter to fetch account and site info
         // Trigger the beginning of magic link flow to put the presenter in 'magic link' mode
         mainPresenter.storeMagicLinkToken("a-token")
 
         // Check that the final OnSiteChanged triggers a site update
-        mainPresenter.onSiteChanged(OnSiteChanged(6))
+        mainPresenter.onAccountChanged(
+            OnAccountChanged().apply {
+                causeOfChange = AccountAction.FETCH_SETTINGS
+            }
+        )
         verify(mainContractView).updateSelectedSite()
     }
 
@@ -170,12 +170,12 @@ class MainPresenterTest {
     }
 
     @Test
-    fun `Handles database downgrade correctly`() {
+    fun `Handles database downgrade correctly`() = testBlocking {
         if (FeatureFlag.DB_DOWNGRADE.isEnabled()) {
+            whenever(wooCommerceStore.fetchWooCommerceSites()).thenReturn(WooResult())
             mainPresenter.takeView(mainContractView)
             mainPresenter.fetchSitesAfterDowngrade()
             verify(mainContractView).showProgressDialog(any())
-            mainPresenter.onSiteChanged(OnSiteChanged(1))
             verify(mainContractView).updateSelectedSite()
         }
     }
