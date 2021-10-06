@@ -107,7 +107,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.01"
                     android:background="?attr/selectableItemBackground"
-                    android:contentDescription="@string/orderdetail_call_or_message_contentdesc"
+                    android:contentDescription="@string/orderdetail_edit_shipping_address_contentdesc"
                     android:scaleType="center"
                     android:src="@drawable/ic_edit_pencil" />
 
