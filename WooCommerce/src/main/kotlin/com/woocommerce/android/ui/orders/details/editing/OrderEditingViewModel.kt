@@ -14,7 +14,7 @@ class OrderEditingViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val orderEditingRepository: OrderEditingRepository
 ) : ScopedViewModel(savedState) {
-    private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
+    private val navArgs by savedState.navArgs<OrderDetailFragmentArgs>()
     private val order: Order
 
     private val orderId: Long
