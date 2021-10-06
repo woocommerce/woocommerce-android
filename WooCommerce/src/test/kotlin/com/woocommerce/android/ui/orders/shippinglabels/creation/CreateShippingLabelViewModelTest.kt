@@ -362,13 +362,12 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
-        whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-            .thenReturn(
-                flow {
-                    UpdateOrderStatusResult.OptimisticUpdateResult(mock())
-                    UpdateOrderStatusResult.RemoteUpdateResult(mock())
-                }
-            )
+        whenever(orderDetailRepository.updateOrderStatus(any(), any())).thenReturn(
+            flow {
+                UpdateOrderStatusResult.OptimisticUpdateResult(mock())
+                UpdateOrderStatusResult.RemoteUpdateResult(mock())
+            }
+        )
 
         viewModel.onPurchaseButtonClicked(fulfillOrder = true)
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
@@ -388,13 +387,12 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             )
             whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
                 .thenReturn(WooResult(purchasedLabels))
-            whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-                .thenReturn (
-                    flow {
-                        UpdateOrderStatusResult.OptimisticUpdateResult(mock())
-                        UpdateOrderStatusResult.RemoteUpdateResult(mock())
-                    }
-                )
+            whenever(orderDetailRepository.updateOrderStatus(any(), any())).thenReturn(
+                flow {
+                    UpdateOrderStatusResult.OptimisticUpdateResult(mock())
+                    UpdateOrderStatusResult.RemoteUpdateResult(mock())
+                }
+            )
 
             var event: MultiLiveEvent.Event? = null
             viewModel.event.observeForever {

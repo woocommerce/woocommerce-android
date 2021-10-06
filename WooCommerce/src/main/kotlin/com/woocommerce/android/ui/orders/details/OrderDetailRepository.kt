@@ -141,8 +141,8 @@ class OrderDetailRepository @Inject constructor(
         orderModel: WCOrderModel,
         newStatus: String
     ): Flow<UpdateOrderStatusResult> {
-        return orderStore.updateOrderStatus(UpdateOrderStatusPayload(
-            orderModel, selectedSite.get(), newStatus)
+        return orderStore.updateOrderStatus(
+            UpdateOrderStatusPayload(orderModel, selectedSite.get(), newStatus)
         )
     }
 
