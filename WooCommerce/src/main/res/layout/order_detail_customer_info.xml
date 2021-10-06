@@ -65,6 +65,11 @@
             android:focusable="true"
             android:orientation="vertical">
 
+            <View
+                style="@style/Woo.Divider"
+                android:layout_marginEnd="@dimen/minor_00"
+                android:layout_marginStart="@dimen/major_100" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -75,11 +80,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_weight="0.99">
-
-                    <View
-                        style="@style/Woo.Divider"
-                        android:layout_marginEnd="@dimen/minor_00"
-                        android:layout_marginStart="@dimen/major_100" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/customerInfo_shippingLabel"
