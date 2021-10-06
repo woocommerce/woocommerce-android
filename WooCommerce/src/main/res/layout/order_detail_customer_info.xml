@@ -106,8 +106,6 @@
 
             </LinearLayout>
 
-
-
             <!-- Label: Shipping method -->
             <LinearLayout
                 android:id="@+id/customerInfo_shippingMethodSection"
