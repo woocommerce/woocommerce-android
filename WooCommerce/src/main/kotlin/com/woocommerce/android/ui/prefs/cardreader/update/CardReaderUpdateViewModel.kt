@@ -121,15 +121,7 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun onUpdateFailed(status: Failed) {
-        tracker.track(
-            CARD_READER_SOFTWARE_UPDATE_FAILED,
-            hashMapOf(
-                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
-                KEY_ERROR_CONTEXT to this@CardReaderUpdateViewModel.javaClass.simpleName,
-                KEY_ERROR_DESC to status.message
-            )
-        )
-
+        trackSoftwareUpdateFailedEvent(status.message)
         val errorType = status.errorType
         when (errorType) {
             is SoftwareUpdateStatusErrorType.BatteryLow ->
@@ -176,13 +168,19 @@ class CardReaderUpdateViewModel @Inject constructor(
 
     private fun onCancelClicked() {
         cardReaderManager.cancelOngoingFirmwareUpdate()
+        trackSoftwareUpdateFailedEvent("User manually cancelled the flow")
+        triggerEvent(ExitWithResult(FAILED))
+    }
+
+    private fun trackSoftwareUpdateFailedEvent(errorDescription: String?) {
         tracker.track(
             CARD_READER_SOFTWARE_UPDATE_FAILED,
-            this@CardReaderUpdateViewModel.javaClass.simpleName,
-            null,
-            "User manually cancelled the flow"
+            hashMapOf(
+                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
+                KEY_ERROR_CONTEXT to this@CardReaderUpdateViewModel.javaClass.simpleName,
+                KEY_ERROR_DESC to errorDescription
+            )
         )
-        triggerEvent(ExitWithResult(FAILED))
     }
 
     private fun convertToPercentage(progress: Float) = (progress * PERCENT_100).toInt()
