@@ -7,7 +7,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.annotation.LayoutRes
-import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
@@ -19,7 +19,7 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
-    protected val sharedViewModel: OrderEditingViewModel by viewModels()
+    protected val sharedViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
 
     private var doneMenuItem: MenuItem? = null
 
@@ -30,11 +30,9 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
         override fun afterTextChanged(s: Editable?) {
             // noop
         }
-
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             // noop
         }
-
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             updateDoneMenuItem()
         }
