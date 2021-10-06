@@ -10,6 +10,7 @@ import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -30,9 +31,11 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
         override fun afterTextChanged(s: Editable?) {
             // noop
         }
+
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             // noop
         }
+
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             updateDoneMenuItem()
         }
@@ -69,8 +72,7 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
                 saveChanges()
-                // TODO notify the order detail view model that changes werre made to the order
-                findNavController().navigateUp()
+                navigateBackWithNotice(KEY_ORDER_EDITED, R.id.orderDetailFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -96,5 +98,9 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
                 findNavController().navigateUp()
             }
         ).showDialog()
+    }
+
+    companion object {
+        const val KEY_ORDER_EDITED = "key_order_edited"
     }
 }

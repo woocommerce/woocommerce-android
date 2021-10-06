@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
+import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditFragment
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
@@ -263,6 +264,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
         handleNotice(CardReaderOnboardingFragment.KEY_READER_ONBOARDING_SUCCESS) {
             viewModel.onOnboardingSuccess()
+        }
+        handleNotice(BaseOrderEditFragment.KEY_ORDER_EDITED) {
+            viewModel.onOrderEdited()
         }
     }
 
