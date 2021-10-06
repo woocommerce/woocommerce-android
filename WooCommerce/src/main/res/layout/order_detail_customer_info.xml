@@ -67,8 +67,8 @@
 
             <View
                 style="@style/Woo.Divider"
-                android:layout_marginEnd="@dimen/minor_00"
-                android:layout_marginStart="@dimen/major_100" />
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/minor_00"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_shippingLabel"
@@ -76,36 +76,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/minor_50"
-                android:text="@string/orderdetail_shipping_details" />
+                android:text="@string/orderdetail_shipping_details"/>
 
-            <LinearLayout
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/customerInfo_shippingAddr"
+                style="@style/Woo.Card.Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/customerInfo_shippingAddr"
-                    style="@style/Woo.Card.Body"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.99"
-                    android:textIsSelectable="true"
-                    tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
-
-                <ImageButton
-                    android:id="@+id/customerInfo_editShippingAddr"
-                    style="@style/Woo.Button.TextButton"
-                    android:layout_width="@dimen/image_major_50"
-                    android:layout_height="@dimen/image_major_50"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="0.01"
-                    android:background="?attr/selectableItemBackground"
-                    android:contentDescription="@string/orderdetail_edit_shipping_address_contentdesc"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_edit_pencil"
-                    android:visibility="gone" />
-
-            </LinearLayout>
+                android:drawableEnd="@drawable/ic_edit_pencil"
+                android:drawablePadding="@dimen/major_100"
+                android:textIsSelectable="true"
+                tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
 
             <!-- Label: Shipping method -->
             <LinearLayout
@@ -178,29 +159,15 @@
                 style="@style/Woo.Card.Body"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textIsSelectable="true"
                 android:layout_marginTop="@dimen/minor_50"
+                android:drawableEnd="@drawable/ic_edit_pencil"
+                android:drawablePadding="@dimen/major_100"
                 android:textAlignment="viewStart"
+                android:textIsSelectable="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel"
                 tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
-
-            <ImageButton
-                android:id="@+id/customerInfo_editBillingAddr"
-                style="@style/Woo.Button.TextButton"
-                android:layout_width="@dimen/image_major_50"
-                android:layout_height="@dimen/image_major_50"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="0.01"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/orderdetail_edit_billing_address_contentdesc"
-                android:scaleType="center"
-                android:src="@drawable/ic_edit_pencil"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/customerInfo_billingAddr"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/customerInfo_billingAddr" />
 
             <!-- Divider -->
             <View
