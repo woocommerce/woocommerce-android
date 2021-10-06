@@ -19,7 +19,7 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
-    protected val sharedViewModel: OrderEditingSharedViewModel by viewModels()
+    protected val sharedViewModel: OrderEditingViewModel by viewModels()
 
     private var doneMenuItem: MenuItem? = null
 
