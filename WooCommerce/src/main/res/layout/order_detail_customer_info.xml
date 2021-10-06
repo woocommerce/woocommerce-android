@@ -102,7 +102,8 @@
                     android:background="?attr/selectableItemBackground"
                     android:contentDescription="@string/orderdetail_edit_shipping_address_contentdesc"
                     android:scaleType="center"
-                    android:src="@drawable/ic_edit_pencil" />
+                    android:src="@drawable/ic_edit_pencil"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -195,10 +196,11 @@
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/orderdetail_edit_shipping_address_contentdesc"
                 android:scaleType="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/customerInfo_billingAddr"
+                android:src="@drawable/ic_edit_pencil"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/customerInfo_billingAddr"
-                android:src="@drawable/ic_edit_pencil" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/customerInfo_billingAddr" />
 
             <!-- Divider -->
             <View
