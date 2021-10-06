@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -364,7 +363,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
         whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-            .thenReturn (
+            .thenReturn(
                 flow {
                     UpdateOrderStatusResult.OptimisticUpdateResult(mock())
                     UpdateOrderStatusResult.RemoteUpdateResult(mock())

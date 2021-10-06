@@ -93,7 +93,6 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.util.isSuccessful
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -512,7 +511,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                     orderModel = order,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 ).collect { result ->
-                    when(result){
+                    when (result) {
                         is OptimisticUpdateResult -> {
                             // noop
                         }

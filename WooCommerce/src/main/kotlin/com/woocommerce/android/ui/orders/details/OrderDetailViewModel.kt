@@ -49,7 +49,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.utils.sumBy
@@ -634,7 +634,7 @@ class OrderDetailViewModel @Inject constructor(
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
-    fun onOrderChanged(event: WCOrderStore.OnOrderChanged) {
+    fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
             WCOrderAction.POST_ORDER_NOTE -> {
                 if (event.isError) {
@@ -672,7 +672,7 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun prepareTracksEventsDetails(event: WCOrderStore.OnOrderChanged) = mapOf(
+    private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(
         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
         AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
         AnalyticsTracker.KEY_ERROR_DESC to event.error.message
