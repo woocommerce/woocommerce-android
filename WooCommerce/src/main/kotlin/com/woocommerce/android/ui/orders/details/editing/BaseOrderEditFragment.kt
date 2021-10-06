@@ -8,10 +8,12 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.wordpress.android.util.ActivityUtils
 
@@ -19,6 +21,7 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
+    protected val orderDetailViewModel: OrderDetailViewModel by hiltNavGraphViewModels(R.navigation.nav_graph_orders)
     protected val sharedViewModel: OrderEditingViewModel by viewModels()
 
     private var doneMenuItem: MenuItem? = null
@@ -71,6 +74,8 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
                 saveChanges()
+                // TODO notify the order detail view model that changes werre made to the order
+                findNavController().navigateUp()
                 true
             }
             else -> super.onOptionsItemSelected(item)
