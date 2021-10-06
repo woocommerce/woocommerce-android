@@ -61,36 +61,43 @@
             android:id="@+id/customerInfo_shippingSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="true"
             android:layout_marginBottom="@dimen/major_100"
+            android:focusable="true"
             android:orientation="vertical">
-
-            <View
-                style="@style/Woo.Divider"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/minor_00"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/customerInfo_shippingLabel"
-                style="@style/Woo.Card.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/minor_50"
-                android:text="@string/orderdetail_shipping_details"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/customerInfo_shippingAddr"
-                    style="@style/Woo.Card.Body"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.99"
-                    android:textIsSelectable="true"
-                    tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
+                    android:orientation="vertical"
+                    android:layout_weight="0.99">
+
+                    <View
+                        style="@style/Woo.Divider"
+                        android:layout_marginEnd="@dimen/minor_00"
+                        android:layout_marginStart="@dimen/major_100" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/customerInfo_shippingLabel"
+                        style="@style/Woo.Card.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/minor_50"
+                        android:text="@string/orderdetail_shipping_details" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/customerInfo_shippingAddr"
+                        style="@style/Woo.Card.Body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textIsSelectable="true"
+                        tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
+
+                </LinearLayout>
 
                 <ImageButton
                     android:id="@+id/customerInfo_editShippingAddr"
