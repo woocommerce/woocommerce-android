@@ -45,7 +45,7 @@ class OrderListRepository @Inject constructor(
     }
 
     suspend fun fetchOrderStatusOptionsFromApi(): RequestResult {
-        return if (!isFetchingOrderStatusOptions) {
+        return if (!isFetchingOrderStatusOptions && selectedSite.exists()) {
             val result = continuationOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
                 isFetchingOrderStatusOptions = true
 
@@ -80,7 +80,7 @@ class OrderListRepository @Inject constructor(
 
     suspend fun fetchPaymentGateways(): RequestResult {
         return withContext(coroutineDispatchers.io) {
-            if (!isFetchingPaymentGateways) {
+            if (!isFetchingPaymentGateways && selectedSite.exists()) {
                 isFetchingPaymentGateways = true
                 val result = gatewayStore.fetchAllGateways(selectedSite.get())
                 isFetchingPaymentGateways = false
@@ -97,7 +97,7 @@ class OrderListRepository @Inject constructor(
      *
      * @return True if there are orders in the db, else False
      */
-    fun hasCachedOrdersForSite() = orderStore.hasCachedOrdersForSite(selectedSite.get())
+    fun hasCachedOrdersForSite() = selectedSite.exists() && orderStore.hasCachedOrdersForSite(selectedSite.get())
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

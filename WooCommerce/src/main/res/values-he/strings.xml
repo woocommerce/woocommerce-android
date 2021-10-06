@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:16:51+0000
+Translation-Revision-Date: 2021-09-29 11:54:49+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">תמונת הסמל של האפשרות החדשה</string>
+    <string name="settings_switch_store">להחליף חנות</string>
+    <string name="product_update_failure_notification">עדכון המוצר ⁦%1$s⁩ נכשל</string>
+    <string name="product_update_success_notification_content">⁦%1$d⁩ תמונות נוספו למוצר ⁦%2$s⁩</string>
+    <string name="product_update_success_notification_title">המוצר עודכן</string>
+    <string name="product_update_notification">מעדכן את המוצר ⁦%1$s⁩</string>
+    <string name="product_detail_background_image_upload">העלאת התמונה תתבצע ברקע</string>
+    <string name="card_reader_payment_save_for_later">לשמור את הקבלה ולהמשיך</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">אישור</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">מצטערים, לא הצלחנו לטעון את ההרחבות של ההזמנה כרגע</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">משהו השתבש</string>
     <string name="settings_whats_new">מה חדש ב-WooCommerce</string>
     <string name="settings_enable_product_addons_teaser_title">להציג הרחבות</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">מצטערים, לא הצלחנו לשנות את הגדרות האפשרות כעת</string>
@@ -50,7 +61,6 @@ Language: he_IL
     <string name="card_reader_onboarding_generic_error_hint">מצטערים, לא הצלחנו לאמת תשלומים באופן אישי בחנות זו</string>
     <string name="card_reader_onboarding_generic_error_header">לא ניתן לאמת תשלומים באופן אישי בחנות זו</string>
     <string name="card_reader_detail_connected_firmware_version">קושחה: %s</string>
-    <string name="card_reader_payment_save_for_later">שמירה למועד מאוחר יותר</string>
     <string name="card_reader_purchase_card_reader">להזמין קורא כרטיסים</string>
     <string name="card_reader_manage_card_reader">לנהל את קורא הכרטיסים</string>
     <string name="shipping_label_multiple_customs_form_print_button">להדפיס</string>
@@ -1285,8 +1295,6 @@ Language: he_IL
     <string name="error_copy_to_clipboard">שגיאה בעת העתקה ללוח</string>
     <string name="settings_switch_site_notifs_msg">הוחלף אל %s. ההודעות שיתקבלו יהיו עבור החנות הזו בלבד</string>
     <string name="login_update_required_desc">החנות הזאת משתמשת בגרסה ישנה של WooCommerce. עליך לעדכן את החנות שלך ל-WooCommerce 3.5 או לגרסה מאוחרת יותר כדי להשתמש באפליקציה זאת.</string>
-    <string name="promo_message_site_picker">אפשר להחליף בין חנויות על ידי הקשה על החנות הנבחרת ב\'הגדרות\'</string>
-    <string name="promo_title_site_picker">יש לך מספר חנויות?</string>
     <string name="promo_btn_try_it">כדאי לנסות עכשיו</string>
     <string name="promo_btn_got_it">הבנתי</string>
     <string name="tooltip_site_switcher">להקיש להחלפה בין חנויות</string>

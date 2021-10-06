@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:17:01+0000
+Translation-Revision-Date: 2021-09-29 11:54:48+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">صورة أيقونة الميزة الجديدة</string>
+    <string name="settings_switch_store">تبديل المخزن</string>
+    <string name="product_update_failure_notification">فشل تحديث المنتج ⁦%1$s⁩</string>
+    <string name="product_update_success_notification_content">تمت إضافة ⁦%1$d⁩ من الصور إلى المنتج ⁦%2$s⁩</string>
+    <string name="product_update_success_notification_title">تم تحديث المنتج</string>
+    <string name="product_update_notification">تحديث المنتج ⁦%1$s⁩</string>
+    <string name="product_detail_background_image_upload">سيستمر رفع الصورة في الخلفية</string>
+    <string name="card_reader_payment_save_for_later">حفظ الإيصال والمتابعة</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">موافق</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">عذرًا، يتعذر علينا تحميل الوظائف الإضافية للطلب الآن</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">حدث خطأ ما</string>
     <string name="settings_whats_new">ما الجديد في WooCommerce</string>
     <string name="settings_enable_product_addons_teaser_title">عرض الوظائف الإضافية</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">عذرًا، تعذر علينا تغيير إعداد هذه الميزة الآن</string>
@@ -50,7 +61,6 @@ Language: ar
     <string name="card_reader_onboarding_generic_error_hint">عذرًا، يتعذر علينا التحقُّق من المدفوعات الشخصية لهذا المخزن</string>
     <string name="card_reader_onboarding_generic_error_header">يتعذر التحقُّق من المدفوعات الشخصية لهذا المخزن</string>
     <string name="card_reader_detail_connected_firmware_version">البرنامج الثابت: %s</string>
-    <string name="card_reader_payment_save_for_later">حفظ لوقت لاحق</string>
     <string name="card_reader_purchase_card_reader">طلب قارئ البطاقة</string>
     <string name="card_reader_manage_card_reader">إدارة قارئ البطاقة</string>
     <string name="shipping_label_multiple_customs_form_print_button">اطبع</string>
@@ -1285,8 +1295,6 @@ Language: ar
     <string name="error_copy_to_clipboard">حدث خطأ أثناء النسخ إلى الحافظة</string>
     <string name="settings_switch_site_notifs_msg">تم التبديل إلى %s. لن تتلقى إلا تنبيهات لهذا المتجر</string>
     <string name="login_update_required_desc">يستخدم هذا المتجر إصدارًا أقدم من WooCommerce. يرجى ترقية متجرك إلى WooCommerce 3.5 أو الإصدار الأعلى لاستخدامه مع هذا التطبيق.</string>
-    <string name="promo_message_site_picker">يمكنك التبديل بين المتاجر بالنقر على المتجر المحدد في \"الإعدادات\"</string>
-    <string name="promo_title_site_picker">هل تريد تشغيل متاجر متعددة؟</string>
     <string name="promo_btn_try_it">جرّبه الآن</string>
     <string name="promo_btn_got_it">فهمت</string>
     <string name="tooltip_site_switcher">انقر للتبديل بين المتاجر</string>

@@ -30,6 +30,7 @@
         android:layout_marginBottom="@dimen/minor_00"
         android:ellipsize="end"
         android:maxLines="1"
+        android:textAlignment="viewStart"
         app:layout_constraintEnd_toStartOf="@+id/imgProperty"
         app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
         app:layout_constraintTop_toTopOf="parent"
@@ -59,7 +60,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
         app:layout_goneMarginStart="@dimen/major_100"
         app:layout_goneMarginTop="@dimen/major_100"
-        tools:visibility="gone"
+        tools:visibility="visible"
         tools:text="textPropertyValue thil wrap." />
 
     <ImageView

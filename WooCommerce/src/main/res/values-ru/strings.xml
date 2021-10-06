@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:17:45+0000
+Translation-Revision-Date: 2021-09-29 15:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Новое изображение значка функции</string>
+    <string name="settings_switch_store">Переключиться на другой магазин</string>
+    <string name="product_update_failure_notification">Сбой при обновлении продукта %1$s</string>
+    <string name="product_update_success_notification_content">Добавлены изображения (%1$d) продукта %2$s</string>
+    <string name="product_update_success_notification_title">Продукт обновлён</string>
+    <string name="product_update_notification">Обновление продукта %1$s</string>
+    <string name="product_detail_background_image_upload">Загрузка изображения будет продолжена в фоновом режиме</string>
+    <string name="card_reader_payment_save_for_later">Сохранить чек и продолжить</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">ОК</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Не удалось загрузить дополнительный модуль заказов</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Что-то пошло не так</string>
     <string name="settings_whats_new">Что нового в WooCommerce</string>
     <string name="settings_enable_product_addons_teaser_title">Просмотреть дополнения</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">К сожалению, нам пока не удалось исправить эту настройку функции</string>
@@ -50,7 +61,6 @@ Language: ru
     <string name="card_reader_onboarding_generic_error_hint">К сожалению, нам не удалось подтвердить платежи, совершённые в этом физическом магазине</string>
     <string name="card_reader_onboarding_generic_error_header">Не удалось подтвердить платежи в этом физическом магазине</string>
     <string name="card_reader_detail_connected_firmware_version">Прошивка: %s</string>
-    <string name="card_reader_payment_save_for_later">Сохранить для последующего использования</string>
     <string name="card_reader_purchase_card_reader">Заказать устройство чтения карт</string>
     <string name="card_reader_manage_card_reader">Управление устройством чтения карт</string>
     <string name="shipping_label_multiple_customs_form_print_button">Печать</string>
@@ -1285,8 +1295,6 @@ Language: ru
     <string name="error_copy_to_clipboard">Ошибка при копировании в буфер обмена</string>
     <string name="settings_switch_site_notifs_msg">Переход в %s. Вы будете получать уведомления только для этого сайта</string>
     <string name="login_update_required_desc">В этом магазине используется старая версия плагина WooCommerce. Чтобы использовать его с этим приложением, обновите WooCommerce до версии 3.5 или более поздней.</string>
-    <string name="promo_message_site_picker">Теперь переключаться между ними можно нажатием одной кнопки в Настройках.</string>
-    <string name="promo_title_site_picker">Управляете несколькими магазинами?</string>
     <string name="promo_btn_try_it">Попробовать</string>
     <string name="promo_btn_got_it">Понятно</string>
     <string name="tooltip_site_switcher">Нажмите, чтобы переключиться между магазинами</string>
