@@ -10,7 +10,6 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -20,7 +19,7 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
-    protected val viewModel: OrderEditingSharedViewModel by viewModels()
+    protected val sharedViewModel: OrderEditingSharedViewModel by viewModels()
 
     private var doneMenuItem: MenuItem? = null
 
@@ -40,12 +39,6 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
             updateDoneMenuItem()
         }
     }
-
-    /**
-     * These are the key and the result we use in navigateBackWithResult() when user taps Done
-     */
-    abstract val resultKey: String
-    abstract fun getResult(): Any
 
     /**
      * Descendants should return true if the user made any changes
@@ -72,7 +65,7 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                navigateBackWithResult(resultKey, getResult())
+                // TODO
                 true
             }
             else -> super.onOptionsItemSelected(item)
