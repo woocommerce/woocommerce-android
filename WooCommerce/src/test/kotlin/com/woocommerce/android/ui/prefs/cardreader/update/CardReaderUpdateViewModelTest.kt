@@ -309,6 +309,50 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given user presses cancel, when optional update is shown, then failed event is tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            softwareStatus.value = Installing(0.5f)
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onBackPressed()
+            (viewModel.viewStateData.value as UpdatingCancelingState).button.onActionClicked.invoke()
+
+            // THEN
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel",
+                    AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
+                )
+            )
+        }
+
+    @Test
+    fun `given user presses cancel, when required update is shown, then failed event is tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            softwareStatus.value = Installing(0.5f)
+            val viewModel = createViewModel(requiredUpdate = true)
+
+            // WHEN
+            viewModel.onBackPressed()
+            (viewModel.viewStateData.value as UpdatingCancelingState).button.onActionClicked.invoke()
+
+            // THEN
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel",
+                    AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
+                )
+            )
+        }
+
+    @Test
     fun `given user presses back, when progress state shown, then dialog not dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
