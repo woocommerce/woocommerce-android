@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 
@@ -129,6 +130,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
         if (shippingAddress.isEmpty() && billingInfo.isEmpty()) {
             hide()
+        }
+
+        if (FeatureFlag.ORDER_EDITING.isEnabled()) {
+            binding.customerInfoEditShippingAddr.visibility = VISIBLE
+            binding.customerInfoEditBillingAddr.visibility = VISIBLE
         }
     }
 
