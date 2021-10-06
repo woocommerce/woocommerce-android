@@ -78,15 +78,35 @@
                 android:layout_marginBottom="@dimen/minor_50"
                 android:text="@string/orderdetail_shipping_details"/>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/customerInfo_shippingAddr"
-                style="@style/Woo.Card.Body"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textIsSelectable="true"
-                android:drawableEnd="@drawable/ic_edit_pencil"
-                android:drawablePadding="@dimen/major_100"
-                tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/customerInfo_shippingAddr"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.99"
+                    android:textIsSelectable="true"
+                    tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
+
+                <ImageButton
+                    android:id="@+id/customerInfo_editShippingAddr"
+                    style="@style/Woo.Button.TextButton"
+                    android:layout_width="@dimen/image_major_50"
+                    android:layout_height="@dimen/image_major_50"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.01"
+                    android:background="?attr/selectableItemBackground"
+                    android:contentDescription="@string/orderdetail_call_or_message_contentdesc"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_edit_pencil" />
+
+            </LinearLayout>
+
+
 
             <!-- Label: Shipping method -->
             <LinearLayout
