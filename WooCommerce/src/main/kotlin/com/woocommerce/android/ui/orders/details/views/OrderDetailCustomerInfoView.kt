@@ -33,16 +33,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     ) {
         val shippingAddress = bindShippingAddressInfo(order, isVirtualOrder)
 
-        bindCustomerNotes(order)
+        showCustomerNotes(order)
 
         val billingInfo = bindBillingAddressInfo(order)
         if (shippingAddress.isEmpty() && billingInfo.isEmpty()) {
             hide()
-        }
-
-        if (FeatureFlag.ORDER_EDITING.isEnabled()) {
-            binding.customerInfoEditShippingAddr.visibility = VISIBLE
-            binding.customerInfoEditBillingAddr.visibility = VISIBLE
         }
     }
 
@@ -65,6 +60,13 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoViewMore.hide()
             binding.customerInfoMorePanel.hide()
             binding.customerInfoViewMore.setOnClickListener(null)
+        }
+
+        if (FeatureFlag.ORDER_EDITING.isEnabled()) {
+            binding.customerInfoBillingAddr.setTextIsSelectable(false)
+        } else {
+            binding.customerInfoBillingAddr.setTextIsSelectable(true)
+            binding.customerInfoBillingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
         }
         return billingInfo
     }
@@ -119,7 +121,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
     }
 
-    private fun bindCustomerNotes(order: Order) {
+    private fun showCustomerNotes(order: Order) {
         if (order.customerNote.isNotEmpty()) {
             binding.customerInfoCustomerNoteSection.show()
             binding.customerInfoCustomerNote.text = context.getString(
@@ -152,6 +154,13 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                     true
                 } ?: false
             }
+        }
+
+        if (FeatureFlag.ORDER_EDITING.isEnabled()) {
+            binding.customerInfoShippingAddr.setTextIsSelectable(false)
+        } else {
+            binding.customerInfoShippingAddr.setTextIsSelectable(true)
+            binding.customerInfoShippingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
         }
         return shippingAddress
     }
