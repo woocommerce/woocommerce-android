@@ -305,8 +305,8 @@
     <string name="orderdetail_note_public">To customer</string>
     <string name="orderdetail_note_system">System</string>
     <string name="orderdetail_order_notes">Order notes</string>
-    <string name="orderdetail_edit_shipping_address_contentdesc">Edit the current shipping address</string>
-    <string name="orderdetail_edit_billing_address_contentdesc">Edit the current billing address</string>
+    <string name="orderdetail_edit_shipping_address_contentdesc">Edit shipping address</string>
+    <string name="orderdetail_edit_billing_address_contentdesc">Edit billing address</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
     <string name="orderdetail_hide_billing">Hide Billing</string>
