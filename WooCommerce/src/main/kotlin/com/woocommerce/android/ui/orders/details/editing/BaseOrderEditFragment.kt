@@ -45,6 +45,11 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
      */
     abstract fun hasChanges(): Boolean
 
+    /**
+     * Descendants should override this to tell the shared view model to save specific changes
+     */
+    abstract fun saveChanges()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -65,7 +70,7 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                // TODO
+                saveChanges()
                 true
             }
             else -> super.onOptionsItemSelected(item)
