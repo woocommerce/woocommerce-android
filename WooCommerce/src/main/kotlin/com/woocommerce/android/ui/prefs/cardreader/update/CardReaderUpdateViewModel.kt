@@ -5,6 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOFTWARE_UPDATE_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -49,13 +53,23 @@ class CardReaderUpdateViewModel @Inject constructor(
     private val navArgs: CardReaderUpdateDialogFragmentArgs by savedState.navArgs()
 
     init {
+        trackSoftwareUpdateStartedEvent()
         launch {
             if (navArgs.requiredUpdate.not()) {
                 cardReaderManager.startAsyncSoftwareUpdate()
             }
-
             listenToSoftwareUpdateStatus()
         }
+    }
+
+    private fun trackSoftwareUpdateStartedEvent() {
+        tracker.track(
+            CARD_READER_SOFTWARE_UPDATE_STARTED,
+            hashMapOf(
+                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
+                KEY_ERROR_CONTEXT to this@CardReaderUpdateViewModel.javaClass.simpleName
+            )
+        )
     }
 
     fun onBackPressed() {
@@ -96,16 +110,24 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun onUpdateSucceeded() {
-        tracker.track(CARD_READER_SOFTWARE_UPDATE_SUCCESS)
+        tracker.track(
+            CARD_READER_SOFTWARE_UPDATE_SUCCESS,
+            hashMapOf(
+                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
+                KEY_ERROR_CONTEXT to this@CardReaderUpdateViewModel.javaClass.simpleName
+            )
+        )
         finishFlow(SUCCESS)
     }
 
     private fun onUpdateFailed(status: Failed) {
         tracker.track(
             CARD_READER_SOFTWARE_UPDATE_FAILED,
-            this@CardReaderUpdateViewModel.javaClass.simpleName,
-            null,
-            status.message
+            hashMapOf(
+                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
+                KEY_ERROR_CONTEXT to this@CardReaderUpdateViewModel.javaClass.simpleName,
+                KEY_ERROR_DESC to status.message
+            )
         )
 
         val errorType = status.errorType
@@ -258,5 +280,10 @@ class CardReaderUpdateViewModel @Inject constructor(
 
     enum class UpdateResult {
         SUCCESS, FAILED
+    }
+
+    companion object {
+        private const val OPTIONAL_UPDATE: String = "Optional"
+        private const val REQUIRED_UPDATE: String = "Required"
     }
 }

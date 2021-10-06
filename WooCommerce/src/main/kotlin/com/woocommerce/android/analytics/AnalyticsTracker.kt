@@ -258,6 +258,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CARD_READER_CONNECTION_SUCCESS,
         CARD_READER_DISCONNECT_TAPPED,
         CARD_READER_AUTO_CONNECTION_STARTED,
+        CARD_READER_SOFTWARE_UPDATE_STARTED,
 
         // -- Card Reader - software update
         CARD_READER_SOFTWARE_UPDATE_SUCCESS,
@@ -690,6 +691,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FULFILL_ORDER = "fulfill_order"
         const val KEY_STEP = "step"
         const val KEY_ADDONS = "addons"
+        const val KEY_SOFTWARE_UPDATE_TYPE = "software_update_type"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
