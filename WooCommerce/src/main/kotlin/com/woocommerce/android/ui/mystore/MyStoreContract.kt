@@ -29,6 +29,7 @@ interface MyStoreContract {
         fun showTopPerformersError(granularity: StatsGranularity)
         fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity)
         fun showVisitorStatsError(granularity: StatsGranularity)
+        fun showEmptyVisitorStatsForJetpackCP()
         fun showErrorSnack()
         fun showEmptyView(show: Boolean)
 

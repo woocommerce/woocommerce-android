@@ -282,6 +282,10 @@ class MyStoreFragment :
         }
     }
 
+    override fun showEmptyVisitorStatsForJetpackCP() {
+        binding.myStoreStats.showEmptyVisitorStatsForJetpackCP()
+    }
+
     override fun showErrorSnack() {
         if (errorSnackbar?.isShownOrQueued == false || NetworkUtils.isNetworkAvailable(context)) {
             errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
