@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -41,6 +42,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
@@ -50,6 +52,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VariationDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    private val dispatchers: CoroutineDispatchers,
     private val variationRepository: VariationDetailRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
