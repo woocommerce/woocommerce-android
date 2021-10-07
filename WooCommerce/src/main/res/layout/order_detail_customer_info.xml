@@ -64,30 +64,40 @@
             android:id="@+id/customerInfo_shippingSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="true"
             android:layout_marginBottom="@dimen/major_100"
+            android:focusable="true"
             android:orientation="vertical">
 
-            <View
-                style="@style/Woo.Divider"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/minor_00"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/customerInfo_shippingLabel"
-                style="@style/Woo.Card.Title"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/minor_50"
-                android:text="@string/orderdetail_shipping_details"/>
+                android:background="?attr/selectableItemBackground"
+                android:orientation="vertical">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/customerInfo_shippingAddr"
-                style="@style/Woo.Card.Body"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textIsSelectable="true"
-                tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States"/>
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_00"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/customerInfo_shippingLabel"
+                    style="@style/Woo.Card.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/minor_50"
+                    android:text="@string/orderdetail_shipping_details"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/customerInfo_shippingAddr"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/ic_edit_pencil"
+                    android:drawablePadding="@dimen/major_100"
+                    android:textIsSelectable="true"
+                    tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
+
+            </LinearLayout>
 
             <!-- Label: Shipping method -->
             <LinearLayout
@@ -131,42 +141,55 @@
             android:visibility="gone"
             tools:visibility="visible">
 
-            <!-- Divider -->
-            <View
-                android:id="@+id/customerInfo_divider"
-                style="@style/Woo.Divider"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/minor_00"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-
-            <!-- Label: Billing Details -->
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/customerInfo_billingLabel"
-                style="@style/Woo.Card.Title"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/customerInfo_billingAddressSection"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/orderdetail_billing_details"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider"
-                app:layout_constrainedWidth="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <!-- Billing Address -->
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/customerInfo_billingAddr"
-                style="@style/Woo.Card.Body"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textIsSelectable="true"
-                android:layout_marginTop="@dimen/minor_50"
-                android:textAlignment="viewStart"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:background="?attr/selectableItemBackground"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel"
-                tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible">
+
+                <!-- Divider -->
+                <View
+                    android:id="@+id/customerInfo_divider"
+                    style="@style/Woo.Divider"
+                    android:layout_marginEnd="@dimen/minor_00"
+                    android:layout_marginStart="@dimen/major_100"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Label: Billing Details -->
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/customerInfo_billingLabel"
+                    style="@style/Woo.Card.Title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/orderdetail_billing_details"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider" />
+
+                <!-- Billing Address -->
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/customerInfo_billingAddr"
+                    style="@style/Woo.Card.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/minor_50"
+                    android:drawableEnd="@drawable/ic_edit_pencil"
+                    android:drawablePadding="@dimen/major_100"
+                    android:textAlignment="viewStart"
+                    android:textIsSelectable="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel"
+                    tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Divider -->
             <View
@@ -177,7 +200,7 @@
                 android:layout_marginEnd="@dimen/minor_00"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingAddr"/>
+                app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingAddressSection"/>
 
             <!-- Billing Phone -->
             <com.google.android.material.textview.MaterialTextView
