@@ -11,10 +11,10 @@ class EmailAddressScreen : Screen {
 
     constructor() : super(EMAIL_ADDRESS_FIELD)
 
-    fun proceedWith(emailAddress: String): MagicLinkScreen {
+    fun proceedWith(emailAddress: String): PasswordScreen {
         typeTextInto(EMAIL_ADDRESS_FIELD, emailAddress)
         clickOn(NEXT_BUTTON)
 
-        return MagicLinkScreen()
+        return PasswordScreen()
     }
 }
