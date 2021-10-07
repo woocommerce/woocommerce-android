@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -29,11 +31,8 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 
@@ -45,6 +44,10 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         on { softwareUpdateStatus }.thenReturn(softwareStatus)
     }
     private val tracker: AnalyticsTrackerWrapper = mock()
+    companion object {
+        private const val REQUIRED_UPDATE = "Required"
+        private const val OPTIONAL_UPDATE = "Optional"
+    }
 
     @Test
     fun `given required update, when view model created, then installation not started`() =
@@ -184,7 +187,26 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given success status, when view model created, then success tracked`() =
+    fun `given success status for required update, when view model created, then success tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = Success
+
+            // WHEN
+            createViewModel(requiredUpdate = true)
+            softwareStatus.value = status
+
+            // THEN
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_SUCCESS,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE
+                )
+            )
+        }
+
+    @Test
+    fun `given success status for optional update, when view model created, then success tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val status = Success
@@ -194,25 +216,135 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             softwareStatus.value = status
 
             // THEN
-            verify(tracker).track(CARD_READER_SOFTWARE_UPDATE_SUCCESS)
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_SUCCESS,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE
+                )
+            )
         }
 
     @Test
-    fun `given failed status, when view model created, then failed tracked`() =
+    fun `given failed status for optional update, when view model created, then failed tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val status = Failed(SoftwareUpdateStatusErrorType.Failed, "")
+            val status = Failed(SoftwareUpdateStatusErrorType.Failed, "Failed")
 
             // WHEN
             createViewModel()
             softwareStatus.value = status
 
             // THEN
-            verify(tracker, times(2)).track(
-                eq(CARD_READER_SOFTWARE_UPDATE_FAILED),
-                anyOrNull(),
-                anyOrNull(),
-                anyOrNull()
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel",
+                    AnalyticsTracker.KEY_ERROR_DESC to status.message
+                )
+            )
+        }
+
+    @Test
+    fun `given required update started, when view model created, then started tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = InstallationStarted
+
+            // WHEN
+            createViewModel(requiredUpdate = true)
+            softwareStatus.value = status
+
+            // THEN
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_STARTED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE
+                )
+            )
+        }
+
+    @Test
+    fun `given optional update started, when view model created, then started tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = InstallationStarted
+
+            // WHEN
+            createViewModel()
+            softwareStatus.value = status
+
+            // THEN
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_STARTED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE
+                )
+            )
+        }
+
+    @Test
+    fun `given failed status for required update, when view model created, then failed tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = Failed(SoftwareUpdateStatusErrorType.Failed, "")
+
+            // WHEN
+            createViewModel(requiredUpdate = true)
+            softwareStatus.value = status
+
+            // THEN
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel",
+                    AnalyticsTracker.KEY_ERROR_DESC to status.message
+                )
+            )
+        }
+
+    @Test
+    fun `given user presses cancel, when optional update is shown, then failed event is tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            softwareStatus.value = Installing(0.5f)
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onBackPressed()
+            (viewModel.viewStateData.value as UpdatingCancelingState).button.onActionClicked.invoke()
+
+            // THEN
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel",
+                    AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
+                )
+            )
+        }
+
+    @Test
+    fun `given user presses cancel, when required update is shown, then failed event is tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            softwareStatus.value = Installing(0.5f)
+            val viewModel = createViewModel(requiredUpdate = true)
+
+            // WHEN
+            viewModel.onBackPressed()
+            (viewModel.viewStateData.value as UpdatingCancelingState).button.onActionClicked.invoke()
+
+            // THEN
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel",
+                    AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
+                )
             )
         }
 
