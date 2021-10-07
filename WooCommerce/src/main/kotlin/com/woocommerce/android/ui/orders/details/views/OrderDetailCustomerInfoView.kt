@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
 import androidx.core.view.isVisible
+import androidx.navigation.findNavController
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -14,9 +15,12 @@ import com.woocommerce.android.databinding.OrderDetailCustomerInfoBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 
@@ -29,9 +33,39 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     fun updateCustomerInfo(
         order: Order,
-        isVirtualOrder: Boolean // don't display shipping section for virtual products
+        isVirtualOrder: Boolean, // don't display shipping section for virtual products
+        isReadOnly: Boolean
     ) {
-        // shipping address info
+        showCustomerNote(order, isReadOnly)
+        showShippingAddress(order, isVirtualOrder)
+        showBillingInfo(order)
+    }
+
+    private fun showCustomerNote(order: Order, isReadOnly: Boolean) {
+        if (order.customerNote.isNotEmpty()) {
+            binding.customerInfoCustomerNoteSection.show()
+            binding.customerInfoCustomerNote.text = context.getString(
+                R.string.orderdetail_customer_note,
+                order.customerNote
+            )
+            if (FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly) {
+                binding.customerInfoCustomerNote.setTextIsSelectable(false)
+                binding.customerInfoCustomerNoteSection.setOnClickListener {
+                    val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
+                        order.customerNote
+                    )
+                    findNavController().navigateSafely(action)
+                }
+            } else {
+                binding.customerInfoCustomerNote.setTextIsSelectable(true)
+                binding.customerInfoCustomerNote.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            }
+        } else {
+            binding.customerInfoCustomerNoteSection.hide()
+        }
+    }
+
+    private fun showShippingAddress(order: Order, isVirtualOrder: Boolean) {
         val shippingAddress = order.formatShippingInformationForDisplay()
         when {
             isVirtualOrder -> {
@@ -53,19 +87,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 } ?: false
             }
         }
+    }
 
-        // customer note
-        if (order.customerNote.isNotEmpty()) {
-            binding.customerInfoCustomerNoteSection.show()
-            binding.customerInfoCustomerNote.text = context.getString(
-                R.string.orderdetail_customer_note,
-                order.customerNote
-            )
-        } else {
-            binding.customerInfoCustomerNoteSection.hide()
-        }
-
-        // billing info
+    @Suppress("LongMethod")
+    private fun showBillingInfo(order: Order) {
         val billingInfo = order.formatBillingInformationForDisplay()
         if (order.billingAddress.hasInfo()) {
             if (billingInfo.isNotEmpty()) {
@@ -127,6 +152,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoMorePanel.hide()
             binding.customerInfoViewMore.setOnClickListener(null)
         }
+        val shippingAddress = order.formatShippingInformationForDisplay()
         if (shippingAddress.isEmpty() && billingInfo.isEmpty()) {
             hide()
         }

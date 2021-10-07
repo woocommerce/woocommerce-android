@@ -275,7 +275,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         binding.orderDetailShippingMethodNotice.isVisible = order.multiShippingLinesAvailable
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
-            isVirtualOrder = viewModel.hasVirtualProductsOnly()
+            isVirtualOrder = viewModel.hasVirtualProductsOnly(),
+            isReadOnly = false
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
