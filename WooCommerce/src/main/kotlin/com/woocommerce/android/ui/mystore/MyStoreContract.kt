@@ -11,7 +11,6 @@ interface MyStoreContract {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun getStatsCurrency(): String?
         fun fetchHasOrders()
-        fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean)
         fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean)
         fun getSelectedSiteName(): String?
         suspend fun fetchTopPerformersStats(granularity: StatsGranularity, forced: Boolean)
