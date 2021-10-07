@@ -337,11 +337,11 @@ class CardReaderConnectViewModel @Inject constructor(
         launch {
             val cardReaderLocationId = cardReader.locationId
             if (cardReaderLocationId != null) {
-                cardReaderManager.startConnectionToReader(cardReader, locationId)
+                cardReaderManager.startConnectionToReader(cardReader, cardReaderLocationId)
             } else {
                 when (val result = locationRepository.getDefaultLocationId()) {
                     is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
-                        cardReaderManager.startConnectionToReader(cardReader, locationId)
+                        cardReaderManager.startConnectionToReader(cardReader, result.locationId)
                     }
                     is CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress -> {
                         viewState.value = MissingMerchantAddressError(

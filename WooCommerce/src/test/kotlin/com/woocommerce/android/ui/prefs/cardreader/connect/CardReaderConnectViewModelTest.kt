@@ -519,7 +519,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager, never()).connectToReader(reader, locationId)
+            verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
         }
 
@@ -533,7 +533,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager, never()).connectToReader(reader, locationId)
+            verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
             assertThat(viewModel.viewStateData.value).isInstanceOf(MissingMerchantAddressError::class.java)
         }
 
