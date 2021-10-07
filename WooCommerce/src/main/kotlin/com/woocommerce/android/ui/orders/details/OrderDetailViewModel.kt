@@ -245,11 +245,20 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(ViewPrintingInstructions)
     }
 
+    /**
+     * This is triggered when the user taps "Done" on any of the order editing fragments - assumes that FluxC
+     * immediately updated the order in the database before the network request was sent
+     */
     fun onOrderEdited() {
         reloadOrderDetails()
     }
 
+    /**
+     * This is triggered when the above network request to edit an order fails - assumes that FluxC restored the
+     * original order in the database upon failure
+     */
     fun onOrderEditFailed() {
+        reloadOrderDetails()
         triggerEvent(ShowSnackbar(string.order_error_update_general))
     }
 
