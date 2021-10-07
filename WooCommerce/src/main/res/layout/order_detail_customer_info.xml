@@ -29,30 +29,33 @@
             android:id="@+id/customerInfo_customerNoteSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
             android:focusable="true"
             android:orientation="vertical"
-            android:layout_marginBottom="@dimen/major_100"
+            android:paddingBottom="@dimen/major_100"
             tools:visibility="visible">
 
             <View
+                android:id="@+id/customerInfo_noteDivider"
                 style="@style/Woo.Divider"
-                android:layout_marginStart="@dimen/major_100"/>
+                android:layout_marginStart="@dimen/major_100" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_customerNoteTitle"
                 style="@style/Woo.Card.Title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/minor_50"
-                android:text="@string/orderdetail_customer_provided_note"/>
+                android:text="@string/orderdetail_customer_provided_note" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_customerNote"
                 style="@style/Woo.Card.Body"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textIsSelectable="true"
-                tools:text="This is a nice note from the customer"/>
+                android:drawableEnd="@drawable/ic_edit_pencil"
+                android:drawablePadding="@dimen/major_100"
+                tools:text="This is a nice note from the customer. Let's make it wrap to multiple lines." />
 
         </LinearLayout>
 

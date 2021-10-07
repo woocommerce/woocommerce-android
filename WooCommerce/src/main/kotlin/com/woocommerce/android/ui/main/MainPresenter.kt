@@ -14,21 +14,19 @@ import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.WCOrderAction.*
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.AccountStore.*
-import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
-import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.*
 import javax.inject.Inject
 
@@ -46,7 +44,6 @@ class MainPresenter @Inject constructor(
 
     private var isHandlingMagicLink: Boolean = false
     private var pendingUnfilledOrderCountCheck: Boolean = false
-    private var isFetchingSitesAfterDowngrade = false
 
     override fun takeView(view: MainContract.View) {
         mainView = view
@@ -93,9 +90,12 @@ class MainPresenter @Inject constructor(
     }
 
     override fun fetchSitesAfterDowngrade() {
-        isFetchingSitesAfterDowngrade = true
         mainView?.showProgressDialog(R.string.loading_stores)
-        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
+        coroutineScope.launch {
+            wooCommerceStore.fetchWooCommerceSites()
+            mainView?.hideProgressDialog()
+            mainView?.updateSelectedSite()
+        }
     }
 
     override fun isUserEligible() = appPrefs.isUserEligible()
@@ -135,30 +135,17 @@ class MainPresenter @Inject constructor(
                 dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
                 // The user's account settings have also been fetched and stored - now we can fetch the user's sites
-                dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
+                coroutineScope.launch {
+                    val result = wooCommerceStore.fetchWooCommerceSites()
+                    if (result.isError) {
+                        // TODO: Notify the user of the problem
+                    } else {
+                        // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
+                        mainView?.updateSelectedSite()
+                        isHandlingMagicLink = false
+                    }
+                }
             }
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSiteChanged(event: OnSiteChanged) {
-        // if we were fetching sites due to a db downgrade, tell the main activity to update
-        if (isFetchingSitesAfterDowngrade) {
-            isFetchingSitesAfterDowngrade = false
-            mainView?.hideProgressDialog()
-            mainView?.updateSelectedSite()
-        } else if (event.isError) {
-            // TODO: Notify the user of the problem
-            isHandlingMagicLink = false
-        } else if (isHandlingMagicLink) {
-            // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
-            mainView?.updateSelectedSite()
-            isHandlingMagicLink = false
-        } else if (!selectedSite.exists()) {
-            // handle the possibility that the user has been removed from the active site
-            WooLog.i(WooLog.T.DASHBOARD, "Selected site no longer exists, showing site picker")
-            mainView?.showSitePickerScreen()
         }
     }
 
