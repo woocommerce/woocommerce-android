@@ -412,6 +412,14 @@ class VariationDetailViewModel @Inject constructor(
             .launchIn(this)
     }
 
+    private suspend fun VariationViewState.dispatchItself() =
+        withContext(dispatchers.main) { viewState = this@dispatchItself }
+
+    private suspend fun dispatch(vararg events: Event) =
+        withContext(dispatchers.main) {
+            events.forEach { triggerEvent(it) }
+        }
+
     object HideImageUploadErrorSnackbar : Event()
 
     @Parcelize
