@@ -19,7 +19,8 @@ class OrderEditingRepository @Inject constructor(
     suspend fun updateCustomerOrderNote(
         order: Order,
         customerOrderNote: String
-    ) {
+    ): Boolean {
         // TODO push changes once FluxC work is ready
+        return false
     }
 }

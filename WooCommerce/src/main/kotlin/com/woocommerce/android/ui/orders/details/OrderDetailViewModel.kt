@@ -249,6 +249,10 @@ class OrderDetailViewModel @Inject constructor(
         reloadOrderDetails()
     }
 
+    fun onOrderEditFailed() {
+        triggerEvent(ShowSnackbar(string.order_error_update_general))
+    }
+
     private fun loadReceiptUrl(): String? {
         return selectedSite.getIfExists()?.let {
             appPrefs.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, order.remoteId)

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -48,6 +49,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragm
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditFragment
+import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
@@ -72,6 +74,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
+    private val orderEditingViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
 
     @Inject lateinit var navigator: OrderNavigator
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -113,6 +116,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
         setHasOptionsMenu(true)
         setupObservers(viewModel)
+        setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
 
         binding.orderRefreshLayout.apply {
@@ -219,6 +223,14 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             }
         )
         viewModel.start()
+    }
+
+    private fun setupOrderEditingObservers(orderEditingViewModel: OrderEditingViewModel) {
+        orderEditingViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            if (new.orderEditingFailed == true) {
+                viewModel.onOrderEditFailed()
+            }
+        }
     }
 
     private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
