@@ -190,7 +190,7 @@ class ConnectionManagerTest {
         whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
             (it.arguments[2] as ReaderCallback).onSuccess(cardReader.cardReader)
         }
-        val result = connectionManager.connectToReader(cardReader, "location_id")
+        val result = connectionManager.startConnectionToReader(cardReader, "location_id")
 
         assertThat(result).isTrue()
     }
@@ -206,7 +206,7 @@ class ConnectionManagerTest {
             (it.arguments[2] as ReaderCallback).onFailure(mock())
         }
 
-        val result = connectionManager.connectToReader(cardReader, "location_id")
+        val result = connectionManager.startConnectionToReader(cardReader, "location_id")
 
         assertThat(result).isFalse()
     }
@@ -223,7 +223,7 @@ class ConnectionManagerTest {
                 (it.arguments[2] as ReaderCallback).onFailure(mock())
             }
 
-            connectionManager.connectToReader(cardReader, "location_id")
+            connectionManager.startConnectionToReader(cardReader, "location_id")
 
             verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.Connecting)
         }
@@ -240,7 +240,7 @@ class ConnectionManagerTest {
                 (it.arguments[2] as ReaderCallback).onFailure(mock())
             }
 
-            connectionManager.connectToReader(cardReader, "location_id")
+            connectionManager.startConnectionToReader(cardReader, "location_id")
 
             verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected)
         }
@@ -257,7 +257,7 @@ class ConnectionManagerTest {
                 (it.arguments[2] as ReaderCallback).onSuccess(cardReader.cardReader)
             }
 
-            connectionManager.connectToReader(cardReader, "location_id")
+            connectionManager.startConnectionToReader(cardReader, "location_id")
 
             val statusCaptor = argumentCaptor<CardReaderStatus>()
             verify(terminalListenerImpl, times(2)).updateReaderStatus(statusCaptor.capture())
