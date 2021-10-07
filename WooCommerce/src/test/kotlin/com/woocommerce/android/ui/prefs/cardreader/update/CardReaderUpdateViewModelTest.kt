@@ -200,8 +200,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             verify(tracker).track(
                 CARD_READER_SOFTWARE_UPDATE_SUCCESS,
                 hashMapOf(
-                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE,
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel"
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE
                 )
             )
         }
@@ -220,8 +219,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             verify(tracker).track(
                 CARD_READER_SOFTWARE_UPDATE_SUCCESS,
                 hashMapOf(
-                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE,
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel"
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE
                 )
             )
         }

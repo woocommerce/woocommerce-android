@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOFTWARE_UPDATE_TYPE
@@ -53,22 +54,13 @@ class CardReaderUpdateViewModel @Inject constructor(
     private val navArgs: CardReaderUpdateDialogFragmentArgs by savedState.navArgs()
 
     init {
-        trackSoftwareUpdateStartedEvent()
+        trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_STARTED)
         launch {
             if (navArgs.requiredUpdate.not()) {
                 cardReaderManager.startAsyncSoftwareUpdate()
             }
             listenToSoftwareUpdateStatus()
         }
-    }
-
-    private fun trackSoftwareUpdateStartedEvent() {
-        tracker.track(
-            CARD_READER_SOFTWARE_UPDATE_STARTED,
-            hashMapOf(
-                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE
-            )
-        )
     }
 
     fun onBackPressed() {
@@ -109,18 +101,12 @@ class CardReaderUpdateViewModel @Inject constructor(
     }
 
     private fun onUpdateSucceeded() {
-        tracker.track(
-            CARD_READER_SOFTWARE_UPDATE_SUCCESS,
-            hashMapOf(
-                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
-                KEY_ERROR_CONTEXT to this@CardReaderUpdateViewModel.javaClass.simpleName
-            )
-        )
+        trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_SUCCESS)
         finishFlow(SUCCESS)
     }
 
     private fun onUpdateFailed(status: Failed) {
-        trackSoftwareUpdateFailedEvent(status.message)
+        trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_FAILED, status.message)
         val errorType = status.errorType
         when (errorType) {
             is SoftwareUpdateStatusErrorType.BatteryLow ->
@@ -167,18 +153,28 @@ class CardReaderUpdateViewModel @Inject constructor(
 
     private fun onCancelClicked() {
         cardReaderManager.cancelOngoingFirmwareUpdate()
-        trackSoftwareUpdateFailedEvent("User manually cancelled the flow")
+        trackSoftwareUpdateEvent(
+            CARD_READER_SOFTWARE_UPDATE_FAILED,
+            "User manually cancelled the flow"
+        )
         triggerEvent(ExitWithResult(FAILED))
     }
 
-    private fun trackSoftwareUpdateFailedEvent(errorDescription: String?) {
-        tracker.track(
-            CARD_READER_SOFTWARE_UPDATE_FAILED,
+    private fun trackSoftwareUpdateEvent(event: AnalyticsTracker.Stat, errorDescription: String? = null) {
+        val eventPropertiesMap = errorDescription?.let { errorDescription ->
             hashMapOf(
                 KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
                 KEY_ERROR_CONTEXT to this@CardReaderUpdateViewModel.javaClass.simpleName,
                 KEY_ERROR_DESC to errorDescription
             )
+        } ?: run {
+            hashMapOf(
+                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE
+            )
+        }
+        tracker.track(
+            event,
+            eventPropertiesMap
         )
     }
 
