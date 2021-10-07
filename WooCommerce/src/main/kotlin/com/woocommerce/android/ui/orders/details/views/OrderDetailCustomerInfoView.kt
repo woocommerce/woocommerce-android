@@ -48,8 +48,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 binding.customerInfoDivider2.visibility = GONE
             }
 
-            bindBillingAddressPhoneInfo(order)
-            bindBillingAddressEmailInfo(order)
+            showBillingAddressPhoneInfo(order)
+            showBillingAddressEmailInfo(order)
             binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
         } else {
             binding.customerInfoViewMore.hide()
@@ -87,7 +87,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
     }
 
-    private fun bindBillingAddressEmailInfo(order: Order) {
+    private fun showBillingAddressEmailInfo(order: Order) {
         // display email address info only if available, otherwise, hide the view
         if (order.billingAddress.email.isNotEmpty()) {
             binding.customerInfoEmailAddr.text = order.billingAddress.email
@@ -105,7 +105,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
     }
 
-    private fun bindBillingAddressPhoneInfo(order: Order) {
+    private fun showBillingAddressPhoneInfo(order: Order) {
         // display phone only if available, otherwise, hide the view
         if (order.billingAddress.phone.isNotEmpty()) {
             binding.customerInfoPhone.text = PhoneUtils.formatPhone(order.billingAddress.phone)
