@@ -317,23 +317,22 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     private fun loadVariation(remoteProductId: Long, remoteVariationId: Long) {
-        launch {
+        launch(dispatchers.io) {
             val variationInDb = variationRepository.getVariation(remoteProductId, remoteVariationId)
             if (variationInDb != null) {
                 originalVariation = variationInDb
                 fetchVariation(remoteProductId, remoteVariationId)
             } else {
-                viewState = viewState.copy(isSkeletonShown = true)
+                viewState.copy(isSkeletonShown = true).dispatchItself()
                 fetchVariation(remoteProductId, remoteVariationId)
             }
-            viewState = viewState.copy(isSkeletonShown = false)
+            viewState.copy(isSkeletonShown = false).dispatchItself()
 
             // show the variation if we were able to get it, otherwise exit
             originalVariation?.let {
                 showVariation(it)
             } ?: run {
-                triggerEvent(ShowSnackbar(string.variation_detail_fetch_variation_error))
-                triggerEvent(Exit)
+                dispatch(ShowSnackbar(string.variation_detail_fetch_variation_error), Exit)
             }
         }
     }
