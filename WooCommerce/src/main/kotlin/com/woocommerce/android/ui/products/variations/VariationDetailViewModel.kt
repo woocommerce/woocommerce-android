@@ -290,18 +290,20 @@ class VariationDetailViewModel @Inject constructor(
         viewState.copy(isProgressDialogShown = false).dispatchItself()
     }
 
-    private fun deleteVariation() = launch {
+    private fun deleteVariation() {
         viewState = viewState.copy(isDeleteDialogShown = true)
-        viewState.parentProduct?.remoteId?.let { productID ->
-            viewState.variation?.let { variation ->
-                variationRepository.deleteVariation(productID, variation.remoteVariationId)
-                    .also { handleVariationDeletion(it, productID) }
+        launch(dispatchers.io) {
+            viewState.parentProduct?.remoteId?.let { productID ->
+                viewState.variation?.let { variation ->
+                    variationRepository.deleteVariation(productID, variation.remoteVariationId)
+                        .also { handleVariationDeletion(it, productID) }
+                }
             }
         }
     }
 
-    private fun handleVariationDeletion(deleted: Boolean, productID: Long) {
-        if (deleted) triggerEvent(
+    private suspend fun handleVariationDeletion(deleted: Boolean, productID: Long) {
+        if (deleted) dispatch(
             ExitWithResult(
                 viewState.variation?.let { variation ->
                     DeletedVariationData(
@@ -311,7 +313,7 @@ class VariationDetailViewModel @Inject constructor(
                 }
             )
         ) else if (deleted.not() && networkStatus.isConnected().not()) {
-            triggerEvent(ShowSnackbar(string.offline_error))
+            dispatch(ShowSnackbar(string.offline_error))
         }
 
         viewState = viewState.copy(isDeleteDialogShown = false)
