@@ -66,8 +66,7 @@ class CardReaderUpdateViewModel @Inject constructor(
         tracker.track(
             CARD_READER_SOFTWARE_UPDATE_STARTED,
             hashMapOf(
-                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
-                KEY_ERROR_CONTEXT to this@CardReaderUpdateViewModel.javaClass.simpleName
+                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE
             )
         )
     }
