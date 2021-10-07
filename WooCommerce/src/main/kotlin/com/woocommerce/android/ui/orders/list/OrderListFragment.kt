@@ -241,83 +241,65 @@ class OrderListFragment :
         }
 
         // setup observers
-        viewModel.isFetchingFirstPage.observe(
-            viewLifecycleOwner,
-            {
-                binding.orderRefreshLayout.isRefreshing = it == true
-            }
-        )
+        viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
+            binding.orderRefreshLayout.isRefreshing = it == true
+        }
 
-        viewModel.isLoadingMore.observe(
-            viewLifecycleOwner,
-            {
-                it?.let { isLoadingMore ->
-                    binding.orderListView.setLoadingMoreIndicator(active = isLoadingMore)
+        viewModel.isLoadingMore.observe(viewLifecycleOwner) {
+            it?.let { isLoadingMore ->
+                binding.orderListView.setLoadingMoreIndicator(active = isLoadingMore)
+            }
+        }
+
+        viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
+            it?.let { options ->
+                // So the order status can be matched to the appropriate label
+                binding.orderListView.setOrderStatusOptions(options)
+
+                updateOrderStatusList(options)
+            }
+        }
+
+        viewModel.pagedListData.observe(viewLifecycleOwner) {
+            updatePagedListData(it)
+        }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowErrorSnack -> {
+                    uiMessageResolver.showSnack(event.messageRes)
+                    binding.orderRefreshLayout.isRefreshing = false
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
 
-        viewModel.orderStatusOptions.observe(
-            viewLifecycleOwner,
-            {
-                it?.let { options ->
-                    // So the order status can be matched to the appropriate label
-                    binding.orderListView.setOrderStatusOptions(options)
-
-                    updateOrderStatusList(options)
-                }
-            }
-        )
-
-        viewModel.pagedListData.observe(
-            viewLifecycleOwner,
-            {
-                updatePagedListData(it)
-            }
-        )
-
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is ShowErrorSnack -> {
-                        uiMessageResolver.showSnack(event.messageRes)
-                        binding.orderRefreshLayout.isRefreshing = false
+        viewModel.emptyViewType.observe(viewLifecycleOwner) {
+            it?.let { emptyViewType ->
+                when (emptyViewType) {
+                    EmptyViewType.SEARCH_RESULTS -> {
+                        binding.orderStatusListView
+                        emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
                     }
-                    else -> event.isHandled = false
-                }
-            }
-        )
-
-        viewModel.emptyViewType.observe(
-            viewLifecycleOwner,
-            {
-                it?.let { emptyViewType ->
-                    when (emptyViewType) {
-                        EmptyViewType.SEARCH_RESULTS -> {
-                            binding.orderStatusListView
-                            emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
-                        }
-                        EmptyViewType.ORDER_LIST -> {
-                            emptyView.show(emptyViewType) {
-                                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
-                            }
-                        }
-                        EmptyViewType.ORDER_LIST_FILTERED -> {
-                            emptyView.show(emptyViewType, searchQueryOrFilter = viewModel.orderStatusFilter)
-                        }
-                        EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
-                            emptyView.show(emptyViewType) {
-                                refreshOrders()
-                            }
-                        }
-                        else -> {
-                            emptyView.show(emptyViewType)
+                    EmptyViewType.ORDER_LIST -> {
+                        emptyView.show(emptyViewType) {
+                            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
                     }
-                } ?: hideEmptyView()
-            }
-        )
+                    EmptyViewType.ORDER_LIST_FILTERED -> {
+                        emptyView.show(emptyViewType, searchQueryOrFilter = viewModel.orderStatusFilter)
+                    }
+                    EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
+                        emptyView.show(emptyViewType) {
+                            refreshOrders()
+                        }
+                    }
+                    else -> {
+                        emptyView.show(emptyViewType)
+                    }
+                }
+            } ?: hideEmptyView()
+        }
     }
 
     private fun hideEmptyView() {
