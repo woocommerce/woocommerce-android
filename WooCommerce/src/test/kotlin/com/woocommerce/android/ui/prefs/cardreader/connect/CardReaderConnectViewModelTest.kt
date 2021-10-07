@@ -432,8 +432,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given last connected reader is matching, when reader found, then reader connecting state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
+            val readerStatusStateFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connecting)
+            whenever(cardReaderManager.readerStatus).thenReturn(readerStatusStateFlow)
 
             init(scanState = READER_FOUND)
+            readerStatusStateFlow.emit(CardReaderStatus.Connected(mock()))
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
         }
@@ -541,7 +544,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).connectToReader(reader, locationId)
+            verify(cardReaderManager).startConnectionToReader(reader, locationId)
         }
 
     @Test
@@ -552,7 +555,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
-            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, eq(locationId))
+            verify(cardReaderManager).startConnectionToReader(argThat { this.id == reader.readerId }, eq(locationId))
         }
 
     @Test
@@ -565,7 +568,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
-            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, eq(locationId))
+            verify(cardReaderManager).startConnectionToReader(argThat { this.id == reader.readerId }, eq(locationId))
         }
 
     @Test
@@ -1054,12 +1057,19 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         whenever(locationRepository.getDefaultLocationId()).thenReturn(
             CardReaderLocationRepository.LocationIdFetchingResult.Success(locationId)
         )
-        whenever(cardReaderManager.connectToReader(reader, locationId)).thenReturn(connectingSucceeds)
-        whenever(cardReaderManager.connectToReader(reader2, locationId)).thenReturn(connectingSucceeds)
         (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
         (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
+        whenever(cardReaderManager.readerStatus).thenReturn(
+            MutableStateFlow(
+                if (connectingSucceeds) {
+                    CardReaderStatus.Connected(reader)
+                } else {
+                    CardReaderStatus.NotConnected
+                }
+            )
+        )
     }
 
     private enum class ScanResult {

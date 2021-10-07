@@ -57,6 +57,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
@@ -93,6 +94,8 @@ class CardReaderConnectViewModel @Inject constructor(
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(ScanningState(::onCancelClicked))
     val viewStateData: LiveData<ViewState> = viewState
+
+    private var updateStatusJob: Job? = null
 
     init {
         startFlow()
@@ -204,19 +207,19 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
-        launch {
+        updateStatusJob = launch {
             listenToSoftwareUpdateStatus()
         }
         launch {
             if (cardReaderManager.readerStatus.value is CardReaderStatus.Connecting) {
-                handleConnectionInProgress(cardReaderManager)
+                listenToConnectionStatus(cardReaderManager)
             } else {
                 startScanning()
             }
         }
     }
 
-    private suspend fun handleConnectionInProgress(cardReaderManager: CardReaderManager) {
+    private suspend fun listenToConnectionStatus(cardReaderManager: CardReaderManager) {
         cardReaderManager.readerStatus.collect { status ->
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
@@ -329,13 +332,16 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
+            listenToConnectionStatus(cardReaderManager)
+        }
+        launch {
             val cardReaderLocationId = cardReader.locationId
             if (cardReaderLocationId != null) {
-                doConnectWithLocationId(cardReader, cardReaderLocationId)
+                cardReaderManager.startConnectionToReader(cardReader, locationId)
             } else {
                 when (val result = locationRepository.getDefaultLocationId()) {
                     is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
-                        doConnectWithLocationId(cardReader, result.locationId)
+                        cardReaderManager.startConnectionToReader(cardReader, locationId)
                     }
                     is CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress -> {
                         viewState.value = MissingMerchantAddressError(
@@ -356,15 +362,6 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private suspend fun doConnectWithLocationId(cardReader: CardReader, locationId: String) {
-        val success = cardReaderManager.connectToReader(cardReader, locationId)
-        if (success) {
-            onReaderConnected(cardReader)
-        } else {
-            onReaderConnectionFailed()
-        }
-    }
-
     private fun onReaderConnectionFailed() {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
@@ -375,6 +372,7 @@ class CardReaderConnectViewModel @Inject constructor(
         cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
             if (updateStatus is SoftwareUpdateInProgress) {
                 triggerEvent(ShowUpdateInProgress)
+                updateStatusJob?.cancel()
             }
         }
     }
