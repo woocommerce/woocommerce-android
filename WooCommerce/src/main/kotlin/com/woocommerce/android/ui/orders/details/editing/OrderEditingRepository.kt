@@ -17,6 +17,7 @@ class OrderEditingRepository @Inject constructor(
 ) {
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)!!.toAppModel()
 
+    @Suppress("MagicNumber")
     suspend fun updateCustomerOrderNote(
         order: Order,
         customerOrderNote: String
