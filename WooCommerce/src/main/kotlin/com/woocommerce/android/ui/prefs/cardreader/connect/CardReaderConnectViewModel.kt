@@ -215,14 +215,14 @@ class CardReaderConnectViewModel @Inject constructor(
 
         launch {
             if (cardReaderManager.readerStatus.value is CardReaderStatus.Connecting) {
-                handleConnectionInProgress(cardReaderManager)
+                listenToConnectionStatus(cardReaderManager)
             } else {
                 startScanning()
             }
         }
     }
 
-    private suspend fun handleConnectionInProgress(cardReaderManager: CardReaderManager) {
+    private suspend fun listenToConnectionStatus(cardReaderManager: CardReaderManager) {
         cardReaderManager.readerStatus.collect { status ->
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
@@ -335,14 +335,17 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
+            listenToConnectionStatus(cardReaderManager)
+        }
+        launch {
             val cardReaderLocationId = cardReader.locationId
             if (cardReaderLocationId != null) {
-                doConnectWithLocationId(cardReader, cardReaderLocationId)
+                cardReaderManager.startConnectionToReader(cardReader, cardReaderLocationId)
             } else {
                 when (val result = locationRepository.getDefaultLocationId()) {
                     is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
                         tracker.track(CARD_READER_LOCATION_SUCCESS)
-                        doConnectWithLocationId(cardReader, result.locationId)
+                        cardReaderManager.startConnectionToReader(cardReader, result.locationId)
                     }
                     is CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress -> {
                         tracker.track(
@@ -374,26 +377,6 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun triggerOpenUrlEventAndExitIfNeeded(
-        result: CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress
-    ) {
-        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(CardReaderConnectEvent.OpenWPComWebView(result.url))
-        } else {
-            triggerEvent(CardReaderConnectEvent.OpenGenericWebView(result.url))
-            exitFlow(connected = false)
-        }
-    }
-
-    private suspend fun doConnectWithLocationId(cardReader: CardReader, locationId: String) {
-        val success = cardReaderManager.connectToReader(cardReader, locationId)
-        if (success) {
-            onReaderConnected(cardReader)
-        } else {
-            onReaderConnectionFailed()
-        }
-    }
-
     private fun onReaderConnectionFailed() {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
@@ -406,6 +389,17 @@ class CardReaderConnectViewModel @Inject constructor(
                 triggerEvent(ShowUpdateInProgress)
                 updateStatusJob?.cancel()
             }
+        }
+    }
+
+    private fun triggerOpenUrlEventAndExitIfNeeded(
+        result: CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress
+    ) {
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(CardReaderConnectEvent.OpenWPComWebView(result.url))
+        } else {
+            triggerEvent(CardReaderConnectEvent.OpenGenericWebView(result.url))
+            exitFlow(connected = false)
         }
     }
 
