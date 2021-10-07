@@ -633,9 +633,5 @@
         android:id="@+id/editCustomerOrderNoteFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.EditCustomerOrderNoteFragment"
         android:label="EditCustomerOrderNoteFragment"
-        tools:layout="@layout/fragment_edit_customer_order_note">
-        <argument
-            android:name="customerOrderNote"
-            app:argType="string" />
-    </fragment>
+        tools:layout="@layout/fragment_edit_customer_order_note" />
 </navigation>

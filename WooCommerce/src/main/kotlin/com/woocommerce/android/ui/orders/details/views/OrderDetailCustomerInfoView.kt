@@ -132,9 +132,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             if (FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly) {
                 binding.customerInfoCustomerNote.setTextIsSelectable(false)
                 binding.customerInfoCustomerNoteSection.setOnClickListener {
-                    val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
-                        order.customerNote
-                    )
+                    val action =
+                        OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment()
                     findNavController().navigateSafely(action)
                 }
             } else {

@@ -245,6 +245,10 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(ViewPrintingInstructions)
     }
 
+    fun onOrderEdited() {
+        reloadOrderDetails()
+    }
+
     private fun loadReceiptUrl(): String? {
         return selectedSite.getIfExists()?.let {
             appPrefs.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, order.remoteId)

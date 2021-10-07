@@ -7,9 +7,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.annotation.LayoutRes
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -18,6 +19,8 @@ import org.wordpress.android.util.ActivityUtils
 abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
+
+    protected val sharedViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
 
     private var doneMenuItem: MenuItem? = null
 
@@ -39,15 +42,14 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     }
 
     /**
-     * These are the key and the result we use in navigateBackWithResult() when user taps Done
-     */
-    abstract val resultKey: String
-    abstract fun getResult(): Any
-
-    /**
      * Descendants should return true if the user made any changes
      */
     abstract fun hasChanges(): Boolean
+
+    /**
+     * Descendants should override this to tell the shared view model to save specific changes
+     */
+    abstract fun saveChanges()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +71,8 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                navigateBackWithResult(resultKey, getResult())
+                saveChanges()
+                navigateBackWithNotice(KEY_ORDER_EDITED, R.id.orderDetailFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -95,5 +98,9 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
                 findNavController().navigateUp()
             }
         ).showDialog()
+    }
+
+    companion object {
+        const val KEY_ORDER_EDITED = "key_order_edited"
     }
 }
