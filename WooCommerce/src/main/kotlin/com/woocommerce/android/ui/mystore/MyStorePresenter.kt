@@ -20,7 +20,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
-import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_NEW_VISITOR_STATS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -31,8 +30,9 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
-import org.wordpress.android.fluxc.store.WCStatsStore.*
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchNewVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -105,10 +105,17 @@ class MyStorePresenter @Inject constructor(
                 statsRepository.fetchRevenueStats(granularity, forced)
             }
 
+            val visitorStatsTask = async {
+                statsRepository.fetchVisitorStats(granularity, forced)
+            }
+
             // fetch visitor stats
             fetchVisitorStats(granularity, forceRefresh)
 
-            handleRevenueStatsResult(granularity, revenueStatsTask.await())
+            val revenueStatsResult = revenueStatsTask.await()
+            val visitorStatsResult = visitorStatsTask.await()
+            handleRevenueStatsResult(granularity, revenueStatsResult)
+            handleVisitorStatsResults(granularity, visitorStatsResult)
         }
     }
 
@@ -153,6 +160,17 @@ class MyStorePresenter @Inject constructor(
                 } else {
                     myStoreView?.showStatsError(granularity)
                 }
+            }
+        )
+    }
+
+    private fun handleVisitorStatsResults(granularity: StatsGranularity, result: Result<Map<String, Int>>) {
+        result.fold(
+            onSuccess = { visitorStats ->
+                myStoreView?.showVisitorStats(visitorStats, granularity)
+            },
+            onFailure = {
+                myStoreView?.showVisitorStatsError(granularity)
             }
         )
     }
@@ -220,25 +238,6 @@ class MyStorePresenter @Inject constructor(
     override fun fetchHasOrders() {
         val payload = FetchHasOrdersPayload(selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchHasOrdersAction(payload))
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onWCStatsChanged(event: OnWCStatsChanged) {
-        when (event.causeOfChange) {
-            FETCH_NEW_VISITOR_STATS -> {
-                if (event.isError) {
-                    WooLog.e(DASHBOARD, "$TAG - Error fetching visitor stats: ${event.error.message}")
-                    myStoreView?.showVisitorStatsError(event.granularity)
-                    return
-                }
-
-                val visitorStats = wcStatsStore.getNewVisitorStats(
-                    selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField
-                )
-                myStoreView?.showVisitorStats(visitorStats, event.granularity)
-            }
-        }
     }
 
     fun onWCTopPerformersChanged(
