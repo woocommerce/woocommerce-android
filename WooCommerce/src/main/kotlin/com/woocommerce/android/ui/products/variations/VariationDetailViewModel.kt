@@ -39,6 +39,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -259,7 +260,7 @@ class VariationDetailViewModel @Inject constructor(
     fun onUpdateButtonClicked() {
         viewState.variation?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
-            launch {
+            launch(dispatchers.io) {
                 updateVariation(it)
             }
         }
@@ -269,24 +270,24 @@ class VariationDetailViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             if (variationRepository.updateVariation(variation)) {
                 originalVariation = variation
-                showVariation(variation)
+                runDispatching { showVariation(variation) }
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
-                triggerEvent(ShowSnackbar(string.variation_detail_update_product_success))
+                dispatch(ShowSnackbar(string.variation_detail_update_product_success))
             } else {
                 if (
                     variation.image?.id == 0L &&
                     variationRepository.lastUpdateVariationErrorType == ProductErrorType.INVALID_VARIATION_IMAGE_ID
                 ) {
-                    triggerEvent(ShowSnackbar(string.variation_detail_update_variation_image_error))
+                    dispatch(ShowSnackbar(string.variation_detail_update_variation_image_error))
                 } else {
-                    triggerEvent(ShowSnackbar(string.variation_detail_update_variation_error))
+                    dispatch(ShowSnackbar(string.variation_detail_update_variation_error))
                 }
             }
         } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
+            dispatch(ShowSnackbar(string.offline_error))
         }
 
-        viewState = viewState.copy(isProgressDialogShown = false)
+        viewState.copy(isProgressDialogShown = false).dispatchItself()
     }
 
     private fun deleteVariation() = launch {
@@ -368,7 +369,7 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     private fun showVariation(variation: ProductVariation) {
-        viewState = viewState.copy(
+        viewState.copy(
             variation = variation,
             isDoneButtonVisible = variation != originalVariation
         )
@@ -418,6 +419,10 @@ class VariationDetailViewModel @Inject constructor(
         withContext(dispatchers.main) {
             events.forEach { triggerEvent(it) }
         }
+
+    private suspend fun runDispatching(
+        action: suspend CoroutineScope.() -> Unit
+    ) = withContext(dispatchers.main, action)
 
     object HideImageUploadErrorSnackbar : Event()
 
