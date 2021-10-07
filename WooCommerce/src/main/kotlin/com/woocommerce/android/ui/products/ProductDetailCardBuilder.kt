@@ -496,6 +496,7 @@ class ProductDetailCardBuilder(
 
     private fun Product.description(): ProductProperty {
         val productDescription = this.description
+        val productTitle = this.name
         val showTitle = productDescription.isNotEmpty()
         val description = if (productDescription.isEmpty()) {
             resources.getString(string.product_description_empty)
@@ -510,7 +511,8 @@ class ProductDetailCardBuilder(
         ) {
             viewModel.onEditProductCardClicked(
                 ViewProductDescriptionEditor(
-                    productDescription, resources.getString(string.product_description)
+                    productDescription, resources.getString(string.product_description),
+                    productTitle
                 ),
                 PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
             )

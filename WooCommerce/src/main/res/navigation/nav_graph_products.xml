@@ -26,7 +26,7 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment"
@@ -61,7 +61,7 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
             app:destination="@id/productTypesBottomSheetFragment"
@@ -122,7 +122,7 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -171,7 +171,7 @@
             app:launchSingleTop="true"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right"
-            app:popUpTo="@id/productDetailFragment" >
+            app:popUpTo="@id/productDetailFragment">
             <argument
                 android:name="isVariationCreation"
                 android:defaultValue="false"
@@ -286,10 +286,10 @@
             app:destination="@id/productDetailFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
+            app:launchSingleTop="true"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/nav_graph_products"/>
+            app:popUpTo="@id/nav_graph_products" />
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
@@ -312,6 +312,11 @@
             android:name="requestCode"
             android:defaultValue="0"
             app:argType="integer" />
+        <argument
+            android:name="productTitle"
+            android:defaultValue='""'
+            app:argType="string" />
+
     </fragment>
     <fragment
         android:id="@+id/productInventoryFragment"
@@ -328,8 +333,8 @@
             app:argType="string" />
         <argument
             android:name="productType"
-            app:argType="com.woocommerce.android.ui.products.ProductType"
-            android:defaultValue="SIMPLE" />
+            android:defaultValue="SIMPLE"
+            app:argType="com.woocommerce.android.ui.products.ProductType" />
     </fragment>
     <fragment
         android:id="@+id/editVariationAttributesFragment"
@@ -481,7 +486,7 @@
             app:argType="long[]" />
         <argument
             android:name="groupedProductListType"
-            app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
+            app:argType="com.woocommerce.android.ui.products.GroupedProductListType" />
     </fragment>
     <fragment
         android:id="@+id/productSelectionListFragment"
@@ -493,7 +498,7 @@
             app:argType="long" />
         <argument
             android:name="groupedProductListType"
-            app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
+            app:argType="com.woocommerce.android.ui.products.GroupedProductListType" />
         <argument
             android:name="excludedProductIds"
             app:argType="long[]" />
@@ -621,7 +626,7 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_variationDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment" />
@@ -658,7 +663,7 @@
     <fragment
         android:id="@+id/productAddonsFragment"
         android:name="com.woocommerce.android.ui.products.addons.product.ProductAddonsFragment"
-        android:label="ProductAddonsFragment"/>
+        android:label="ProductAddonsFragment" />
     <fragment
         android:id="@+id/productDownloadDetailsFragment"
         android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment"
@@ -685,8 +690,8 @@
         <argument
             android:name="errorList"
             android:defaultValue="@null"
-            app:nullable="true"
-            app:argType="com.woocommerce.android.ui.media.MediaFileUploadHandler$ProductImageUploadData[]" />
+            app:argType="com.woocommerce.android.ui.media.MediaFileUploadHandler$ProductImageUploadData[]"
+            app:nullable="true" />
     </fragment>
     <dialog
         android:id="@+id/addProductDownloadBottomSheetFragment"
@@ -699,7 +704,7 @@
         app:enterAnim="@anim/activity_slide_in_from_right"
         app:exitAnim="@anim/activity_slide_out_to_left"
         app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right"/>
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_productDownloadDetailsFragment"
         app:destination="@id/productDownloadDetailsFragment"
