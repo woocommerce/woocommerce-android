@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.sitepicker
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.Dispatchers
@@ -17,8 +17,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
-import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
 import org.wordpress.android.login.util.SiteUtils
@@ -30,7 +28,6 @@ class SitePickerPresenter
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val appPrefs: AppPrefs,
     private val userEligibilityFetcher: UserEligibilityFetcher
 ) : SitePickerContract.Presenter {
     private var view: SitePickerContract.View? = null
@@ -75,12 +72,27 @@ class SitePickerPresenter
     }
 
     override fun fetchSitesFromAPI() {
-        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
+        coroutineScope.launch {
+            val result = wooCommerceStore.fetchWooCommerceSites()
+            view?.showSkeleton(false)
+            if (result.isError) {
+                WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
+            } else {
+                view?.showStoreList(result.model!!)
+            }
+        }
     }
 
     override fun fetchUpdatedSiteFromAPI(site: SiteModel) {
-        view?.showSkeleton(true)
-        dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(site))
+        coroutineScope.launch {
+            view?.showSkeleton(true)
+            val result = wooCommerceStore.fetchWooCommerceSite(site)
+            view?.showSkeleton(false)
+            if (result.isError) {
+                WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
+            }
+            loadSites()
+        }
     }
 
     override fun fetchUserRoleFromAPI(site: SiteModel) {
@@ -115,7 +127,9 @@ class SitePickerPresenter
     }
 
     override fun getSiteModelByUrl(url: String): SiteModel? =
-        SiteUtils.getSiteByMatchingUrl(siteStore, url)
+        SiteUtils.getSiteByMatchingUrl(siteStore, url)?.takeIf {
+            FeatureFlag.JETPACK_CP.isEnabled() || !it.isJetpackCPConnected
+        }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -128,17 +142,6 @@ class SitePickerPresenter
             )
         } else if (!userIsLoggedIn()) {
             view?.didLogout()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSiteChanged(event: OnSiteChanged) {
-        view?.showSkeleton(false)
-        if (event.isError) {
-            WooLog.e(T.LOGIN, "Site error [${event.error.type}] : ${event.error.message}")
-        } else {
-            loadSites()
         }
     }
 

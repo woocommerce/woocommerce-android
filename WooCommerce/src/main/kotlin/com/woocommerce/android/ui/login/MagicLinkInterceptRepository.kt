@@ -5,10 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.RequestResult.ERROR
-import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.model.RequestResult.RETRY
-import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.RequestResult.*
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
@@ -21,20 +18,16 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType
-import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
-import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
-import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
-import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.store.AccountStore.*
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.LoginAnalyticsListener
 import javax.inject.Inject
 
 class MagicLinkInterceptRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
+    private val wooCommerceStore: WooCommerceStore,
     private val loginAnalyticsListener: LoginAnalyticsListener
 ) {
     private var isHandlingMagicLink: Boolean = false
@@ -42,7 +35,6 @@ class MagicLinkInterceptRepository @Inject constructor(
     private var continuationUpdateToken = ContinuationWrapper<Boolean>(LOGIN)
     private var continuationFetchAccount = ContinuationWrapper<Boolean>(LOGIN)
     private var continuationFetchAccountSettings = ContinuationWrapper<Boolean>(LOGIN)
-    private var continuationFetchSites = ContinuationWrapper<Boolean>(LOGIN)
 
     init {
         dispatcher.register(this)
@@ -113,6 +105,8 @@ class MagicLinkInterceptRepository @Inject constructor(
             fetchAccountSettings.await()
             fetchSites.await()
 
+            isHandlingMagicLink = false
+
             if (fetchedAccount && fetchedAccountSettings && fetchedSites) SUCCESS else RETRY
         }
     }
@@ -168,12 +162,20 @@ class MagicLinkInterceptRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     private suspend fun fetchSites(): Boolean {
-        val result = continuationFetchSites.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
+        val result = wooCommerceStore.fetchWooCommerceSites()
+        return if (result.isError) {
+            AnalyticsTracker.track(
+                Stat.LOGIN_MAGIC_LINK_FETCH_SITES_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
+                )
+            )
+            false
+        } else {
+            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_SITES_SUCCESS)
+            true
         }
     }
 
@@ -232,26 +234,5 @@ class MagicLinkInterceptRepository @Inject constructor(
                 }
             }
         }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onSiteChanged(event: OnSiteChanged) {
-        if (event.isError) {
-            AnalyticsTracker.track(
-                Stat.LOGIN_MAGIC_LINK_FETCH_SITES_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                )
-            )
-
-            continuationFetchSites.continueWith(false)
-        } else {
-            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_SITES_SUCCESS)
-            continuationFetchSites.continueWith(true)
-        }
-        isHandlingMagicLink = false
     }
 }
