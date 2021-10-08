@@ -16,6 +16,7 @@ import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
@@ -191,6 +192,20 @@ class MyStorePresenterTest: BaseUnitTest() {
         verify(statsRepository).fetchVisitorStats(DAYS, false)
         verify(myStoreView).showVisitorStats(any(), eq(DAYS))
     }
+
+    @Test
+    fun `give the site is using jetpack cp, when the stats are loaded, then show an empty view for visitor stats`() =
+        testBlocking {
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel().apply {
+                setIsJetpackCPConnected(true)
+            })
+
+            presenter.takeView(myStoreView)
+            presenter.loadStats(DAYS)
+
+            verify(statsRepository, never()).fetchVisitorStats(DAYS, false)
+            verify(myStoreView).showEmptyVisitorStatsForJetpackCP()
+        }
 
     @Test
     fun `when fetching visitor stats fails, then show visitor stats error`() = testBlocking {

@@ -10,6 +10,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import com.woocommerce.android.ui.mystore.StatsRepository.StatsException
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -95,7 +96,11 @@ class MyStorePresenter @Inject constructor(
 
             // fetch visitor stats
             val visitorStatsTask = async {
-                statsRepository.fetchVisitorStats(granularity, forced)
+                if (selectedSite.getIfExists()?.isJetpackCPConnected != true) {
+                    statsRepository.fetchVisitorStats(granularity, forced)
+                } else {
+                    null
+                }
             }
 
             val storeHasNoOrders = hasNoOrdersTask.await().getOrNull()
@@ -106,7 +111,16 @@ class MyStorePresenter @Inject constructor(
                 val revenueStatsResult = revenueStatsTask.await()
                 val visitorStatsResult = visitorStatsTask.await()
                 handleRevenueStatsResult(granularity, revenueStatsResult)
-                handleVisitorStatsResults(granularity, visitorStatsResult)
+
+                visitorStatsResult?.let {
+                    handleVisitorStatsResults(granularity, it)
+                } ?: run {
+                    // Which means the site is using Jetpack Connection package
+                    if (FeatureFlag.JETPACK_CP.isEnabled()) {
+                        myStoreView?.showEmptyVisitorStatsForJetpackCP()
+                    }
+                }
+
             }
         }
     }
