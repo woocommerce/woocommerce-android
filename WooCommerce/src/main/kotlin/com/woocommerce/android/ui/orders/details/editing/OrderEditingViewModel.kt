@@ -38,6 +38,10 @@ class OrderEditingViewModel @Inject constructor(
 
     internal lateinit var order: Order
 
+    fun start() {
+        order = orderEditingRepository.getOrder(orderIdentifier)
+    }
+
     private fun resetViewState() {
         viewState = viewState.copy(
             orderEdited = false,
@@ -45,30 +49,25 @@ class OrderEditingViewModel @Inject constructor(
         )
     }
 
-    fun start() {
-        order = orderEditingRepository.getOrder(orderIdentifier)
-    }
-
     private fun checkConnectionAndResetState(): Boolean {
-        if (networkStatus.isConnected()) {
+        return if (networkStatus.isConnected()) {
             resetViewState()
-            return true
+            true
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
-            return false
+            false
         }
     }
 
     fun updateCustomerOrderNote(updatedNote: String): Boolean {
-        if (!checkConnectionAndResetState()) {
-            return false
+        return if (checkConnectionAndResetState()) {
+            launch(dispatchers.io) {
+                collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order, updatedNote))
+            }
+            true
+        } else {
+            false
         }
-
-        launch(dispatchers.io) {
-            collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order, updatedNote))
-        }
-
-        return true
     }
 
     private suspend fun collectUpdateFlow(flow: Flow<WCOrderStore.UpdateOrderResult>) {

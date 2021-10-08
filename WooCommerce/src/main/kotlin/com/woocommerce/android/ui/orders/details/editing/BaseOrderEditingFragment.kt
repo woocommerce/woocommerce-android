@@ -28,7 +28,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     private var doneMenuItem: MenuItem? = null
 
     /**
-     * This TextWatcher can be used to detect EditText changes in any descendant
+     * This TextWatcher can be used to detect EditText changes in any order editing fragment
      */
     protected val textWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
@@ -50,10 +50,10 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     abstract fun hasChanges(): Boolean
 
     /**
-     * Descendants should override this to tell the shared view model to save specific changes - note that since
-     * we're using optimistic updating, a True result doesn't necessarily mean the update succeeded, just that it
-     * was sent. A False result means the request couldn't be sent, either due to connectivity woes or validation
-     * issues.
+     * Descendants should override this to tell the shared view model to save specific changes. Note that
+     * since we're using optimistic updating, a True result doesn't necessarily mean the update succeeded,
+     * just that it was sent. A False result means the request couldn't be sent, either due to connection
+     * problems or validation issues.
      */
     abstract fun saveChanges(): Boolean
 
