@@ -25,7 +25,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.ui.products.addons.AddonRepository
-import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
@@ -40,6 +39,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.Subscribe
@@ -49,7 +49,9 @@ import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 
@@ -437,9 +439,23 @@ class OrderDetailViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             launch {
                 orderDetailRepository.updateOrderStatus(order.toDataModel(), newStatus)
-                    .let { it as? ContinuationWrapper.ContinuationResult.Success }
-                    ?.takeIf { it.value.not() }
-                    ?.let { triggerEvent(ShowSnackbar(string.order_error_update_general)) }
+                    .collect { result ->
+                        when (result) {
+                            is OptimisticUpdateResult -> reloadOrderDetails()
+                            is RemoteUpdateResult -> {
+                                if (result.event.isError) {
+                                    reloadOrderDetails()
+                                    triggerEvent(ShowSnackbar(string.order_error_update_general))
+                                    AnalyticsTracker.track(
+                                        Stat.ORDER_STATUS_CHANGE_FAILED,
+                                        prepareTracksEventsDetails(result.event)
+                                    )
+                                } else {
+                                    AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_SUCCESS)
+                                }
+                            }
+                        }
+                    }
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -635,21 +651,8 @@ class OrderDetailViewModel @Inject constructor(
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
-    fun onOrderChanged(event: WCOrderStore.OnOrderChanged) {
+    fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
-            WCOrderAction.UPDATED_ORDER_STATUS -> {
-                reloadOrderDetails()
-            }
-            WCOrderAction.UPDATE_ORDER_STATUS -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_STATUS_CHANGE_FAILED,
-                        prepareTracksEventsDetails(event)
-                    )
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_SUCCESS)
-                }
-            }
             WCOrderAction.POST_ORDER_NOTE -> {
                 if (event.isError) {
                     AnalyticsTracker.track(
@@ -686,7 +689,7 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun prepareTracksEventsDetails(event: WCOrderStore.OnOrderChanged) = mapOf(
+    private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(
         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
         AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
         AnalyticsTracker.KEY_ERROR_DESC to event.error.message
