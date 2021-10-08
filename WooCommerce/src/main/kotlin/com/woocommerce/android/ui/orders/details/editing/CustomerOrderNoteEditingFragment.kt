@@ -32,7 +32,7 @@ class CustomerOrderNoteEditingFragment :
             binding.customerOrderNoteEditor.requestFocus()
             ActivityUtils.showKeyboard(binding.customerOrderNoteEditor)
         } else {
-            originalNote = savedInstanceState.getString(KEY_ORIGINAL_NOTE) ?: ""
+            originalNote = savedInstanceState.getString(KEY_ORIGINAL_NOTE, "")
         }
 
         binding.customerOrderNoteEditor.addTextChangedListener(textWatcher)
