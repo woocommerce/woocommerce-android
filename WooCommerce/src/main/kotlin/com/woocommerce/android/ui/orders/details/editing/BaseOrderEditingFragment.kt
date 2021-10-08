@@ -96,9 +96,8 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
                 if (saveChanges()) {
-                    findNavController().navigateUp()
+                    navigateUp()
                 }
                 true
             }
@@ -122,8 +121,13 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     private fun confirmDiscard() {
         MultiLiveEvent.Event.ShowDialog.buildDiscardDialogEvent(
             positiveBtnAction = { _, _ ->
-                findNavController().navigateUp()
+                navigateUp()
             }
         ).showDialog()
+    }
+
+    private fun navigateUp() {
+        ActivityUtils.hideKeyboard(activity)
+        findNavController().navigateUp()
     }
 }
