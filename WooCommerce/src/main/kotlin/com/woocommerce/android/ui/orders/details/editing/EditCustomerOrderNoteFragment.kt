@@ -13,10 +13,13 @@ class EditCustomerOrderNoteFragment :
     BaseOrderEditFragment(R.layout.fragment_edit_customer_order_note) {
     companion object {
         const val TAG = "EditCustomerOrderNoteFragment"
+        private const val KEY_ORIGINAL_NOTE = "original_note"
     }
 
     private var _binding: FragmentEditCustomerOrderNoteBinding? = null
     private val binding get() = _binding!!
+
+    private var originalNote: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -24,9 +27,12 @@ class EditCustomerOrderNoteFragment :
         _binding = FragmentEditCustomerOrderNoteBinding.bind(view)
 
         if (savedInstanceState == null) {
-            binding.customerOrderNoteEditor.setText(sharedViewModel.customerOrderNote)
+            originalNote = sharedViewModel.customerOrderNote
+            binding.customerOrderNoteEditor.setText(originalNote)
             binding.customerOrderNoteEditor.requestFocus()
             ActivityUtils.showKeyboard(binding.customerOrderNoteEditor)
+        } else {
+            originalNote = savedInstanceState.getString(KEY_ORIGINAL_NOTE) ?: ""
         }
 
         binding.customerOrderNoteEditor.addTextChangedListener(textWatcher)
@@ -36,6 +42,11 @@ class EditCustomerOrderNoteFragment :
         super.onDestroyView()
         binding.customerOrderNoteEditor.removeTextChangedListener(textWatcher)
         _binding = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(KEY_ORIGINAL_NOTE, originalNote)
     }
 
     override fun getFragmentTitle() = requireActivity().getString(R.string.orderdetail_customer_provided_note)
@@ -52,7 +63,7 @@ class EditCustomerOrderNoteFragment :
         }
     }
 
-    override fun hasChanges() = getCustomerNote() != sharedViewModel.customerOrderNote
+    override fun hasChanges() = getCustomerNote() != originalNote
 
     override fun saveChanges() = sharedViewModel.updateCustomerOrderNote(getCustomerNote())
 
