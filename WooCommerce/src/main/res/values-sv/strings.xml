@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-15 13:54:04+0000
+Translation-Revision-Date: 2021-09-30 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Bild på ny funktionsikon</string>
+    <string name="settings_switch_store">Växla butik</string>
+    <string name="product_update_failure_notification">Uppdatering av produkt %1$s misslyckades</string>
+    <string name="product_update_success_notification_content">%1$d bilder har lagts till för produkten %2$s</string>
+    <string name="product_update_success_notification_title">Produkt uppdaterad</string>
+    <string name="product_update_notification">Uppdaterar produkt %1$s</string>
+    <string name="product_detail_background_image_upload">Bilduppladdning kommer fortsätta i bakgrunden</string>
+    <string name="card_reader_payment_save_for_later">Spara kvitto och fortsätt</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Vi kan inte läsa in Beställningstillägg för närvarande</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Något gick fel</string>
     <string name="settings_whats_new">Vad som är nytt i WooCommerce</string>
     <string name="settings_enable_product_addons_teaser_title">Visa utökningar</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Vi kan tyvärr inte ändra den här funktionsinställningen för tillfället</string>
@@ -50,7 +61,6 @@ Language: sv_SE
     <string name="card_reader_onboarding_generic_error_hint">Vi kunde inte verifiera personliga betalningar för den här butiken.</string>
     <string name="card_reader_onboarding_generic_error_header">Det gick inte att verifiera personliga betalningar för den här butiken.</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Spara till senare</string>
     <string name="card_reader_purchase_card_reader">Beställ kortläsare</string>
     <string name="card_reader_manage_card_reader">Hantera kortläsare</string>
     <string name="shipping_label_multiple_customs_form_print_button">Skriv ut</string>
@@ -1285,8 +1295,6 @@ Language: sv_SE
     <string name="error_copy_to_clipboard">Det gick inte att kopiera till urklipp</string>
     <string name="settings_switch_site_notifs_msg">Växlade till %s. Du kommer bara att få meddelanden för den här affären</string>
     <string name="login_update_required_desc">Den här affären använder en äldre version av WooCommerce. Uppgradera din affär till WooCommerce 3.5 eller senare för att använda den med den här appen.</string>
-    <string name="promo_message_site_picker">Du kan nu byta mellan butiker genom att trycka på den valda butiken i Inställningar</string>
-    <string name="promo_title_site_picker">Kör du flera butiker?</string>
     <string name="promo_btn_try_it">Prova nu</string>
     <string name="promo_btn_got_it">Klart</string>
     <string name="tooltip_site_switcher">Peka för att byta butiker</string>
