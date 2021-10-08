@@ -21,6 +21,7 @@ import javax.inject.Singleton
  * Shows the standard uploading arrow animated notification icon to signify that images are being uploaded
  */
 @Singleton
+@Suppress("TooManyFunctions")
 class ProductImagesNotificationHandler @Inject constructor(
     val context: Context
 ) {

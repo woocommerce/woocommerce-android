@@ -93,7 +93,7 @@ class MediaFilesRepository @Inject constructor(
             if (mediaModel == null) {
                 WooLog.w(T.MEDIA, "MediaFilesRepository > null media")
                 emit(
-                    UploadResult.UploadFailure(
+                    UploadFailure(
                         error = MediaUploadException(
                             media = MediaModel(),
                             errorMessage = "Media couldn't be found",
@@ -108,6 +108,7 @@ class MediaFilesRepository @Inject constructor(
         }
     }
 
+    @Suppress("LongMethod")
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onMediaUploaded(event: OnMediaUploaded) {
@@ -124,7 +125,7 @@ class MediaFilesRepository @Inject constructor(
                     event.error.message
                         ?: resourceProvider.getString(R.string.product_image_service_error_uploading)
                 )
-                producerScope.trySendBlocking(UploadResult.UploadFailure(exception))
+                producerScope.trySendBlocking(UploadFailure(exception))
                     .onFailure {
                         WooLog.w(
                             T.MEDIA,
@@ -140,7 +141,7 @@ class MediaFilesRepository @Inject constructor(
                 val channelResult = if (event.media?.url != null) {
                     WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${event.media?.id}")
                     producerScope.trySendBlocking(
-                        UploadResult.UploadSuccess(event.media)
+                        UploadSuccess(event.media)
                     )
                 } else {
                     WooLog.w(
@@ -148,13 +149,15 @@ class MediaFilesRepository @Inject constructor(
                         "MediaFilesRepository > error uploading media ${event.media?.id}, null url"
                     )
 
-                    producerScope.trySendBlocking(UploadFailure(
-                        error = MediaUploadException(
-                            event.media,
-                            GENERIC_ERROR,
-                            resourceProvider.getString(R.string.product_image_service_error_uploading)
+                    producerScope.trySendBlocking(
+                        UploadFailure(
+                            error = MediaUploadException(
+                                event.media,
+                                GENERIC_ERROR,
+                                resourceProvider.getString(R.string.product_image_service_error_uploading)
+                            )
                         )
-                    ))
+                    )
                 }
                 channelResult.onFailure {
                     WooLog.w(
