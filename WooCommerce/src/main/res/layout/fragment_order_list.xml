@@ -18,6 +18,15 @@
             android:layout_height="match_parent"
             android:id="@+id/order_list_view_root">
 
+            <com.woocommerce.android.ui.orders.OrderFiltersCard
+                android:id="@+id/order_filters_card"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.woocommerce.android.ui.orders.list.OrderListView
                 android:id="@+id/order_list_view"
                 android:layout_width="match_parent"
@@ -25,7 +34,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/order_filters_card"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:visibility="gone"/>
 
