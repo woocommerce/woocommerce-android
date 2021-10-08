@@ -16,6 +16,10 @@ import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCLeaderboardsStore
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -25,7 +29,10 @@ import javax.inject.Inject
 class StatsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dispatcher: Dispatcher,
-    private val wcStatsStore: WCStatsStore
+    private val wcStatsStore: WCStatsStore,
+    @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
+    private val wcOrderStore: WCOrderStore,
+    private val wcLeaderboardsStore: WCLeaderboardsStore
 ) {
     companion object {
         private val TAG = MyStorePresenter::class.java
@@ -64,6 +71,20 @@ class StatsRepository @Inject constructor(
         return when (result) {
             is Cancellation -> Result.failure(result.exception)
             is Success -> result.value
+        }
+    }
+
+    suspend fun fetchProductLeaderboards(granularity: StatsGranularity, quantity: Int, forced: Boolean): WooResult<List<WCTopPerformerProductModel>> {
+        return when (forced) {
+            true -> wcLeaderboardsStore.fetchProductLeaderboards(
+                site = selectedSite.get(),
+                unit = granularity,
+                quantity = quantity
+            )
+            false -> wcLeaderboardsStore.fetchCachedProductLeaderboards(
+                site = selectedSite.get(),
+                unit = granularity
+            )
         }
     }
 

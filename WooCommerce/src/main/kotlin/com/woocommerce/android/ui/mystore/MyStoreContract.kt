@@ -11,7 +11,6 @@ interface MyStoreContract {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun getStatsCurrency(): String?
         fun getSelectedSiteName(): String?
-        suspend fun fetchTopPerformersStats(granularity: StatsGranularity, forced: Boolean)
         suspend fun loadTopPerformersStats(granularity: StatsGranularity, forced: Boolean = false)
     }
 

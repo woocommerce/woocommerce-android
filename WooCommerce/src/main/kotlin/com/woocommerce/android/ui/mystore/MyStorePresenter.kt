@@ -20,9 +20,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.store.WCLeaderboardsStore
-import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -31,11 +28,7 @@ import javax.inject.Inject
 class MyStorePresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!
-    private val wcLeaderboardsStore: WCLeaderboardsStore,
-    private val wcStatsStore: WCStatsStore,
     private val statsRepository: StatsRepository,
-    @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
-    private val wcOrderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus
 ) : Presenter {
@@ -107,6 +100,11 @@ class MyStorePresenter @Inject constructor(
                 statsRepository.fetchVisitorStats(granularity, forced)
             }
 
+            // fetch top performers
+            val topPerformersTask = async {
+                loadTopPerformersStats(granularity, forced)
+            }
+
             val storeHasNoOrders = hasNoOrdersTask.await().getOrNull()
             if (storeHasNoOrders == true) {
                 myStoreView?.showEmptyView(true)
@@ -116,6 +114,7 @@ class MyStorePresenter @Inject constructor(
                 val visitorStatsResult = visitorStatsTask.await()
                 handleRevenueStatsResult(granularity, revenueStatsResult)
                 handleVisitorStatsResults(granularity, visitorStatsResult)
+                topPerformersTask.await()
             }
         }
     }
@@ -136,7 +135,8 @@ class MyStorePresenter @Inject constructor(
             }
         }
 
-        fetchTopPerformersStats(granularity, forceRefresh)
+        val result = statsRepository.fetchProductLeaderboards(granularity, quantity = NUM_TOP_PERFORMERS, forced)
+        handleTopPerformersResult(granularity, result)
     }
 
     private fun handleRevenueStatsResult(granularity: StatsGranularity, result: Result<WCRevenueStatsModel?>) {
@@ -176,14 +176,25 @@ class MyStorePresenter @Inject constructor(
         )
     }
 
-    override suspend fun fetchTopPerformersStats(
+    private fun handleTopPerformersResult(
         granularity: StatsGranularity,
-        forced: Boolean
+        result: WooResult<List<WCTopPerformerProductModel>>
     ) {
-        withContext(Dispatchers.Default) {
-            requestProductLeaderboards(granularity, forced)
-                .also { handleTopPerformersResult(it, granularity) }
-        }
+        myStoreView?.showTopPerformersSkeleton(false)
+        result.model?.let { topPerformers ->
+            topPerformers
+                .sortedWith(
+                    compareByDescending(WCTopPerformerProductModel::quantity)
+                        .thenByDescending(WCTopPerformerProductModel::total)
+                ).let {
+                    // Track fresh data loaded
+                    AnalyticsTracker.track(
+                        Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
+                        mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.toLowerCase())
+                    )
+                    myStoreView?.showTopPerformers(it, granularity)
+                } ?: myStoreView?.showTopPerformersError(granularity)
+        } ?: myStoreView?.showTopPerformersError(granularity)
     }
 
     override fun getSelectedSiteName(): String? =
@@ -195,56 +206,7 @@ class MyStorePresenter @Inject constructor(
             }
         }
 
-    private suspend fun handleTopPerformersResult(
-        result: WooResult<List<WCTopPerformerProductModel>>,
-        granularity: StatsGranularity
-    ) {
-        withContext(Dispatchers.Main) {
-            myStoreView?.showTopPerformersSkeleton(false)
-            result.model?.let {
-                onWCTopPerformersChanged(it, granularity)
-            } ?: myStoreView?.showTopPerformersError(granularity)
-        }
-    }
-
-    private suspend fun requestProductLeaderboards(granularity: StatsGranularity, forced: Boolean) =
-        when (forced) {
-            true -> requestUpdatedProductLeaderboards(granularity)
-            false -> requestStoredProductLeaderboards(granularity)
-        }
-
-    private suspend fun requestUpdatedProductLeaderboards(granularity: StatsGranularity) =
-        wcLeaderboardsStore.fetchProductLeaderboards(
-            site = selectedSite.get(),
-            unit = granularity,
-            quantity = NUM_TOP_PERFORMERS
-        )
-
-    private fun requestStoredProductLeaderboards(granularity: StatsGranularity) =
-        wcLeaderboardsStore.fetchCachedProductLeaderboards(
-            site = selectedSite.get(),
-            unit = granularity
-        )
-
     override fun getStatsCurrency() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
-
-    fun onWCTopPerformersChanged(
-        topPerformers: List<WCTopPerformerProductModel>?,
-        granularity: StatsGranularity
-    ) {
-        topPerformers
-            ?.sortedWith(
-                compareByDescending(WCTopPerformerProductModel::quantity)
-                    .thenByDescending(WCTopPerformerProductModel::total)
-            )?.let {
-                // Track fresh data loaded
-                AnalyticsTracker.track(
-                    Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
-                    mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.toLowerCase())
-                )
-                myStoreView?.showTopPerformers(it, granularity)
-            } ?: myStoreView?.showTopPerformersError(granularity)
-    }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
