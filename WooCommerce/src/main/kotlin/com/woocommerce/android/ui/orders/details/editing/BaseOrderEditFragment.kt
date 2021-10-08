@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -51,7 +52,7 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     /**
      * Descendants should override this to tell the shared view model to save specific changes - note that since
      * we're using optimistic updating, a True result doesn't necessarily mean the update succeeded, just that it
-     * was sent. A False result means the request couldn't be sent, either due to connectivity issues or validation
+     * was sent. A False result means the request couldn't be sent, either due to connectivity woes or validation
      * issues.
      */
     abstract fun saveChanges(): Boolean
@@ -59,6 +60,10 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupObservers()
     }
 
