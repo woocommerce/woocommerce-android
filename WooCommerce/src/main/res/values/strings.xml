@@ -305,6 +305,7 @@
     <string name="orderdetail_note_public">To customer</string>
     <string name="orderdetail_note_system">System</string>
     <string name="orderdetail_order_notes">Order notes</string>
+    <string name="orderdetail_customer_note_hint">Edit a customer order note</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
     <string name="orderdetail_hide_billing">Hide Billing</string>
@@ -1058,7 +1059,8 @@
     <string name="product_variant_list_empty">Adding options like size and color is currently available only on the web. These will show up as options on the product page of your site.</string>
     <string name="product_variant_list_add_first_variation">Add your first variation</string>
     <string name="product_variant_list_empty_action">Add Variation</string>
-    <string name="product_description_hint">Start writing…</string>
+    <string name="product_description_hint_no_title">Describe your product to your future customers…</string>
+    <string name="product_description_hint_with_title">Tell us more about %s…</string>
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
     <string name="product_description_empty">Describe your product</string>
