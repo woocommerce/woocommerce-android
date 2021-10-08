@@ -50,8 +50,8 @@ import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusResult.OptimisticUpdateResult
-import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusResult.RemoteUpdateResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 

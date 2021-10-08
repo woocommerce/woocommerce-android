@@ -1022,7 +1022,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 .thenReturn(
                     flow {
                         val event = OnOrderChanged(0).apply { this.error = OrderError() }
-                        emit(UpdateOrderStatusResult.RemoteUpdateResult(event))
+                        emit(UpdateOrderResult.RemoteUpdateResult(event))
                     }
                 )
             var snackbar: ShowSnackbar? = null

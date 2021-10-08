@@ -108,8 +108,8 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusResult.OptimisticUpdateResult
-import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusResult.RemoteUpdateResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat

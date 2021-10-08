@@ -140,7 +140,7 @@ class OrderDetailRepository @Inject constructor(
     suspend fun updateOrderStatus(
         orderModel: WCOrderModel,
         newStatus: String
-    ): Flow<UpdateOrderStatusResult> {
+    ): Flow<UpdateOrderResult> {
         return orderStore.updateOrderStatus(
             UpdateOrderStatusPayload(orderModel, selectedSite.get(), newStatus)
         )

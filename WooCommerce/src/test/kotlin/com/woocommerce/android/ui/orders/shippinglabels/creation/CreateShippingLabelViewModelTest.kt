@@ -57,7 +57,7 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -364,8 +364,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             .thenReturn(WooResult(purchasedLabels))
         whenever(orderDetailRepository.updateOrderStatus(any(), any())).thenReturn(
             flow {
-                UpdateOrderStatusResult.OptimisticUpdateResult(mock())
-                UpdateOrderStatusResult.RemoteUpdateResult(mock())
+                UpdateOrderResult.OptimisticUpdateResult(mock())
+                UpdateOrderResult.RemoteUpdateResult(mock())
             }
         )
 
@@ -389,8 +389,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 .thenReturn(WooResult(purchasedLabels))
             whenever(orderDetailRepository.updateOrderStatus(any(), any())).thenReturn(
                 flow {
-                    UpdateOrderStatusResult.OptimisticUpdateResult(mock())
-                    UpdateOrderStatusResult.RemoteUpdateResult(mock())
+                    UpdateOrderResult.OptimisticUpdateResult(mock())
+                    UpdateOrderResult.RemoteUpdateResult(mock())
                 }
             )
 
