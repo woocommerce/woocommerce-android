@@ -908,6 +908,30 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when app in missing address failed state, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = READER_FOUND, connectingSucceeds = false)
+            val url = "https://wordpress.com"
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingMerchantAddressError::class.java)
+            assertThat(viewModel.viewStateData.value!!.headerLabel)
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_missing_address))
+            assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
+                .isEqualTo(R.string.card_reader_connect_missing_address_button)
+            assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
+                .isEqualTo(R.string.cancel)
+            assertThat(viewModel.viewStateData.value!!.illustration)
+                .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .isEqualTo(R.dimen.major_150)
+        }
+
+    @Test
     fun `when app in missing location permissions state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
