@@ -373,6 +373,16 @@
     <string name="ordered_add_ons_loading_failed_dialog_title">Something went wrong</string>
     <string name="ordered_add_ons_loading_failed_dialog_message">Sorry, we couldn\'t load the Order Add-ons right now</string>
     <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="order_detail_edit_address_details_first_name">First name</string>
+    <string name="order_detail_edit_address_details_last_name">Last name</string>
+    <string name="order_detail_edit_address_details_email">Email</string>
+    <string name="order_detail_edit_address_details_phone">Phone</string>
+    <string name="order_detail_edit_address_line1">Address 1</string>
+    <string name="order_detail_edit_address_line2">Address 2</string>
+    <string name="order_detail_edit_address_city">City</string>
+    <string name="order_detail_edit_address_zip">Zip / Postal Code</string>
+    <string name="order_detail_edit_address_state">State / County</string>
+    <string name="order_detail_edit_address_country">Country</string>
 
     <!--
         Shipping label Refunds
