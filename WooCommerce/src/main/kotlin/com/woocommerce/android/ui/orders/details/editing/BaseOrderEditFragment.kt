@@ -10,7 +10,6 @@ import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -72,7 +71,7 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
                 saveChanges()
-                navigateBackWithNotice(KEY_ORDER_EDITED, R.id.orderDetailFragment)
+                findNavController().navigateUp()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -98,9 +97,5 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
                 findNavController().navigateUp()
             }
         ).showDialog()
-    }
-
-    companion object {
-        const val KEY_ORDER_EDITED = "key_order_edited"
     }
 }

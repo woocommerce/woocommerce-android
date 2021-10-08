@@ -48,7 +48,6 @@ import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
-import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditFragment
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
@@ -226,7 +225,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun setupOrderEditingObservers(orderEditingViewModel: OrderEditingViewModel) {
-        orderEditingViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+        orderEditingViewModel.viewStateData.observe(viewLifecycleOwner) { _, new ->
+            if (new.orderEdited == true) {
+                viewModel.onOrderEdited()
+            }
             if (new.orderEditingFailed == true) {
                 viewModel.onOrderEditFailed()
             }
@@ -276,9 +278,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
         handleNotice(CardReaderOnboardingFragment.KEY_READER_ONBOARDING_SUCCESS) {
             viewModel.onOnboardingSuccess()
-        }
-        handleNotice(BaseOrderEditFragment.KEY_ORDER_EDITED) {
-            viewModel.onOrderEdited()
         }
     }
 
