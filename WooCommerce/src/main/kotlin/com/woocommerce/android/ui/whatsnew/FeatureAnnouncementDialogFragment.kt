@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FeatureAnnouncementDialogFragmentBinding
@@ -22,6 +22,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
     }
 
     private val viewModel: FeatureAnnouncementViewModel by viewModels()
+    private val navArgs: FeatureAnnouncementDialogFragmentArgs by navArgs()
     private lateinit var listAdapter: FeatureAnnouncementListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,6 +44,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         val binding = FeatureAnnouncementDialogFragmentBinding.bind(view)
 
+        viewModel.setAnnouncementData(navArgs.announcement)
         setupView(binding)
         setupObservers()
     }

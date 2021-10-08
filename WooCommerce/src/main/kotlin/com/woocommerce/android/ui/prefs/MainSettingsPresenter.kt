@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.StringUtils
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -9,7 +11,8 @@ import javax.inject.Inject
 class MainSettingsPresenter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val accountStore: AccountStore,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val featureAnnouncementRepository: FeatureAnnouncementRepository
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -30,4 +33,14 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 1
+
+    override fun getOrFetchLatestAnnouncement() {
+        coroutineScope.launch {
+            val result = featureAnnouncementRepository.getLatestFeatureAnnouncement(true)
+                ?: featureAnnouncementRepository.getLatestFeatureAnnouncement(false)
+            result?.let {
+                appSettingsFragmentView?.showLatestAnnouncementButton(it)
+            }
+        }
+    }
 }

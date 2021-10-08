@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
@@ -86,17 +87,18 @@ class MainActivityViewModel @Inject constructor(
 
     fun updateFeatureAnnouncements() {
         launch {
-            featureAnnouncementRepository.getLatestFeatureAnnouncement(true)
-            triggerEvent(ShowFeatureAnnouncement)
+            val announcement = featureAnnouncementRepository.getLatestFeatureAnnouncement(true)
+            announcement?.let {
+                triggerEvent(ShowFeatureAnnouncement(it))
+            }
         }
     }
-
 
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
-    object ShowFeatureAnnouncement : Event()
+    data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val localSiteId: Int, val remoteNoteId: Long) : Event()
 }
