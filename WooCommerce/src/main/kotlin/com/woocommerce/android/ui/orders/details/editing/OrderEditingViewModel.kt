@@ -48,7 +48,7 @@ class OrderEditingViewModel @Inject constructor(
         )
     }
 
-    fun updateCustomerOrderNote(updatedCustomerOrderNote: String): Boolean {
+    fun updateCustomerOrderNote(updatedNote: String): Boolean {
         resetViewState()
 
         if (!networkStatus.isConnected()) {
@@ -57,7 +57,7 @@ class OrderEditingViewModel @Inject constructor(
         }
 
         launch(dispatchers.io) {
-            orderEditingRepository.updateCustomerOrderNote(order, updatedCustomerOrderNote).collect { result ->
+            orderEditingRepository.updateCustomerOrderNote(order, updatedNote).collect { result ->
                 when (result) {
                     is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {
                         withContext(Dispatchers.Main) {
