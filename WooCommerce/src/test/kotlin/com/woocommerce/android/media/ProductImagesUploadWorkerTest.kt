@@ -2,6 +2,8 @@ package com.woocommerce.android.media
 
 import com.woocommerce.android.media.MediaFilesRepository.MediaUploadException
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult
+import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadProgress
+import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
 import com.woocommerce.android.media.ProductImagesUploadWorker.Companion.DURATION_BEFORE_STOPPING_SERVICE
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.*
@@ -115,6 +117,17 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         verify(mediaFilesRepository).uploadMedia(any(), any())
         assertThat(eventsList[0]).isEqualTo(UploadSucceeded(REMOTE_PRODUCT_ID, TEST_URI, UPLOADED_MEDIA))
         job.cancel()
+    }
+
+    @Test
+    fun `when media upload progress changes, then update notification`() = testBlocking {
+        whenever(mediaFilesRepository.uploadMedia(any(), any()))
+            .thenReturn(flowOf(UploadProgress(0.5f), UploadSuccess(MediaModel())))
+
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+        advanceUntilIdle()
+
+        verify(notificationHandler).setProgress(0.5f)
     }
 
     @Test
