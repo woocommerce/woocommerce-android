@@ -11,15 +11,18 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.wordpress.android.util.ActivityUtils
+import javax.inject.Inject
 
 abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     protected val sharedViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var doneMenuItem: MenuItem? = null
 
@@ -46,13 +49,17 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     abstract fun hasChanges(): Boolean
 
     /**
-     * Descendants should override this to tell the shared view model to save specific changes
+     * Descendants should override this to tell the shared view model to save specific changes - note that since
+     * we're using optimistic updating, a True result doesn't necessarily mean the update succeeded, just that it
+     * was sent. A False result means the request couldn't be sent, either due to connectivity issues or validation
+     * issues.
      */
-    abstract fun saveChanges()
+    abstract fun saveChanges(): Boolean
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        setupObservers()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -66,12 +73,26 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
         updateDoneMenuItem()
     }
 
+    private fun setupObservers() {
+        sharedViewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is MultiLiveEvent.Event.ShowSnackbar -> {
+                        uiMessageResolver.showSnack(event.message)
+                    }
+                }
+            }
+        )
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                saveChanges()
-                findNavController().navigateUp()
+                if (saveChanges()) {
+                    findNavController().navigateUp()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)

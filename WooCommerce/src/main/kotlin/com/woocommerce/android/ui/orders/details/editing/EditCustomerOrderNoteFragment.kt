@@ -54,9 +54,7 @@ class EditCustomerOrderNoteFragment :
 
     override fun hasChanges() = getCustomerNote() != sharedViewModel.customerOrderNote
 
-    override fun saveChanges() {
-        sharedViewModel.updateCustomerOrderNote(getCustomerNote())
-    }
+    override fun saveChanges() = sharedViewModel.updateCustomerOrderNote(getCustomerNote())
 
     private fun getCustomerNote() = binding.customerOrderNoteEditor.text.toString()
 }
