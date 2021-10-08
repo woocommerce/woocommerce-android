@@ -6,8 +6,6 @@ import android.content.Intent
 import android.content.res.Resources.Theme
 import android.net.Uri
 import android.os.Bundle
-import android.util.LayoutDirection
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -18,7 +16,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.text.layoutDirection
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
@@ -181,12 +178,6 @@ class MainActivity :
         toolbar = binding.toolbar.toolbar
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
-
-        // workaround for ensuring collapsing toolbar appears correct in RTL - note that Gravity.START doesn't work
-        if (Locale.getDefault().layoutDirection == LayoutDirection.RTL) {
-            binding.collapsingToolbar.collapsedTitleGravity = Gravity.RIGHT
-            binding.collapsingToolbar.expandedTitleGravity = Gravity.RIGHT
-        }
 
         presenter.takeView(this)
 
@@ -414,7 +405,8 @@ class MainActivity :
                 R.id.addOrderNoteFragment,
                 R.id.printShippingLabelInfoFragment,
                 R.id.shippingLabelFormatOptionsFragment,
-                R.id.printingInstructionsFragment -> {
+                R.id.printingInstructionsFragment,
+                R.id.editCustomerOrderNoteFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {

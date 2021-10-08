@@ -58,7 +58,6 @@
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:maxLines="2"
-            android:textAlignment="viewStart"
             tools:text="Awesome Sauce and all that jazz is all I gotta tell you how do we go " />
 
         <com.google.android.material.textview.MaterialTextView
@@ -67,7 +66,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/minor_00"
-            android:textAlignment="viewStart"
             tools:text="Out of stock this is a really long version to see what happens when we move o"
             tools:visibility="visible" />
     </LinearLayout>
