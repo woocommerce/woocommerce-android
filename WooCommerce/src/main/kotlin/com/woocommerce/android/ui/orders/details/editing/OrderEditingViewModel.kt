@@ -28,7 +28,6 @@ class OrderEditingViewModel @Inject constructor(
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
     private val navArgs by savedState.navArgs<OrderDetailFragmentArgs>()
-    private val order: Order
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -39,9 +38,8 @@ class OrderEditingViewModel @Inject constructor(
     val customerOrderNote: String
         get() = order.customerNote
 
-    init {
-        order = orderEditingRepository.getOrder(orderIdentifier)
-    }
+    private val order: Order
+        get() = orderEditingRepository.getOrder(orderIdentifier)
 
     private fun resetViewState() {
         viewState = viewState.copy(
