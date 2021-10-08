@@ -36,17 +36,17 @@ class OrderEditingViewModel @Inject constructor(
     private val orderIdentifier: String
         get() = navArgs.orderId
 
-    val customerOrderNote: String
-        get() = order.customerNote
-
-    private val order: Order
-        get() = orderEditingRepository.getOrder(orderIdentifier)
+    internal lateinit var order: Order
 
     private fun resetViewState() {
         viewState = viewState.copy(
             orderEdited = false,
             orderEditingFailed = false
         )
+    }
+
+    fun start() {
+        order = orderEditingRepository.getOrder(orderIdentifier)
     }
 
     private fun checkConnectionAndResetState(): Boolean {

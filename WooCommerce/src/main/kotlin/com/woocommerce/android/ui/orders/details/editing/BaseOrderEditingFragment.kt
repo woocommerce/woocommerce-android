@@ -89,6 +89,8 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
                 }
             }
         )
+
+        sharedViewModel.start()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
