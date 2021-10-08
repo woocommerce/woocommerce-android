@@ -57,6 +57,7 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -389,20 +390,19 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 .thenReturn(WooResult(purchasedLabels))
             whenever(orderDetailRepository.updateOrderStatus(any(), any())).thenReturn(
                 flow {
-                    UpdateOrderResult.OptimisticUpdateResult(mock())
-                    UpdateOrderResult.RemoteUpdateResult(mock())
+                    emit(UpdateOrderResult.OptimisticUpdateResult(mock()))
+                    val onOrderChangedWithError = mock<OnOrderChanged>()
+                        .apply { whenever(this.isError).thenReturn(true) }
+                    emit(UpdateOrderResult.RemoteUpdateResult(onOrderChangedWithError))
                 }
             )
 
-            var event: MultiLiveEvent.Event? = null
-            viewModel.event.observeForever {
-                event = it
-            }
-
             viewModel.onPurchaseButtonClicked(fulfillOrder = true)
             stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
+            advanceUntilIdle()
 
-            assertThat(event).isEqualTo(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
         }
 
     @Test
