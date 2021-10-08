@@ -92,49 +92,13 @@
             android:nextFocusForward="@+id/state"
             app:errorEnabled="true"/>
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-            android:id="@+id/countrySpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_00"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:hint="@string/shipping_label_edit_address_country"
-            android:inputType="text"
-            android:nextFocusForward="@+id/useAddressAsIsButton"
-            android:textAppearance="@style/TextAppearance.Woo.Caption" />
-
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/state"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/shipping_label_edit_address_state"
-            android:layout_marginHorizontal="@dimen/major_100"
-            android:inputType="text"
-            android:nextFocusForward="@+id/zip"
-            app:errorEnabled="true"/>
-
-        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-            android:id="@+id/stateSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_00"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:hint="@string/shipping_label_edit_address_state"
-            android:inputType="text"
-            android:nextFocusForward="@+id/zip"
-            android:textAppearance="@style/TextAppearance.Woo.Caption" />
-
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
             android:id="@+id/zip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_100"
             android:inputType="text"
-            android:hint="@string/shipping_label_edit_address_zip"
+            android:hint="@string/order_detail_edit_address_zip"
             android:nextFocusForward="@+id/countrySpinner"
             app:errorEnabled="true"/>
 
