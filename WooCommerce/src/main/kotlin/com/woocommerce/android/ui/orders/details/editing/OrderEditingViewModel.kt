@@ -49,8 +49,9 @@ class OrderEditingViewModel @Inject constructor(
         )
     }
 
-    private fun checkConnection(): Boolean {
+    private fun checkConnectionAndResetState(): Boolean {
         if (networkStatus.isConnected()) {
+            resetViewState()
             return true
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
@@ -59,9 +60,7 @@ class OrderEditingViewModel @Inject constructor(
     }
 
     fun updateCustomerOrderNote(updatedNote: String): Boolean {
-        resetViewState()
-
-        if (!checkConnection()) {
+        if (!checkConnectionAndResetState()) {
             return false
         }
 
