@@ -10,8 +10,6 @@ interface MyStoreContract {
     interface Presenter : BasePresenter<View> {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun getStatsCurrency(): String?
-        fun fetchHasOrders()
-        fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean)
         fun getSelectedSiteName(): String?
         suspend fun fetchTopPerformersStats(granularity: StatsGranularity, forced: Boolean)
         suspend fun loadTopPerformersStats(granularity: StatsGranularity, forced: Boolean = false)

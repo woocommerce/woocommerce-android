@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.mystore
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.mystore.MyStorePresenter.Companion
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
@@ -9,10 +10,14 @@ import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_NEW_VISITOR_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
+import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.*
 import javax.inject.Inject
@@ -28,6 +33,7 @@ class StatsRepository @Inject constructor(
 
     private val continuationRevenueStats = ContinuationWrapper<Result<WCRevenueStatsModel?>>(DASHBOARD)
     private val continuationVisitorStats = ContinuationWrapper<Result<Map<String, Int>>>(DASHBOARD)
+    private val continuationHasOrders = ContinuationWrapper<Result<Boolean>>(DASHBOARD)
 
     fun init() {
         dispatcher.register(this)
@@ -53,6 +59,18 @@ class StatsRepository @Inject constructor(
         val result = continuationVisitorStats.callAndWait {
             val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
             dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
+        }
+
+        return when (result) {
+            is Cancellation -> Result.failure(result.exception)
+            is Success -> result.value
+        }
+    }
+
+    suspend fun checkIfStoreHasNoOrders(): Result<Boolean> {
+        val result = continuationHasOrders.callAndWait {
+            val payload = FetchHasOrdersPayload(selectedSite.get())
+            dispatcher.dispatch(WCOrderActionBuilder.newFetchHasOrdersAction(payload))
         }
 
         return when (result) {
@@ -96,6 +114,23 @@ class StatsRepository @Inject constructor(
                 selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField
             )
             continuationVisitorStats.continueWith(Result.success(visitorStats))
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrderChanged(event: OnOrderChanged) {
+        if (event.causeOfChange == FETCH_HAS_ORDERS) {
+            if (event.isError) {
+                WooLog.e(
+                    DASHBOARD,
+                    "$TAG - Error fetching whether orders exist: ${event.error.message}"
+                )
+                continuationHasOrders.continueWith(Result.failure(Exception()))
+            } else {
+                val hasNoOrders = event.rowsAffected == 0
+                continuationHasOrders.continueWith(Result.success(hasNoOrders))
+            }
         }
     }
 

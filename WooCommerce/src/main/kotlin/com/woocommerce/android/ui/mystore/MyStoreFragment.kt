@@ -312,7 +312,6 @@ class MyStoreFragment :
         presenter.run {
             loadStats(activeGranularity, forced)
             coroutineScope.launch { loadTopPerformersStats(activeGranularity, forced) }
-            fetchHasOrders()
         }
     }
 

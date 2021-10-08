@@ -10,8 +10,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import com.woocommerce.android.ui.mystore.StatsRepository.StatsException
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -19,18 +17,12 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
-import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
-import org.wordpress.android.fluxc.store.WCStatsStore.FetchNewVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -100,22 +92,31 @@ class MyStorePresenter @Inject constructor(
         }
 
         coroutineScope.launch {
+            // check if the store has orders
+            val hasNoOrdersTask = async {
+                statsRepository.checkIfStoreHasNoOrders()
+            }
+
             // fetch revenue stats
             val revenueStatsTask = async {
                 statsRepository.fetchRevenueStats(granularity, forced)
             }
 
+            // fetch visitor stats
             val visitorStatsTask = async {
                 statsRepository.fetchVisitorStats(granularity, forced)
             }
 
-            // fetch visitor stats
-            fetchVisitorStats(granularity, forceRefresh)
-
-            val revenueStatsResult = revenueStatsTask.await()
-            val visitorStatsResult = visitorStatsTask.await()
-            handleRevenueStatsResult(granularity, revenueStatsResult)
-            handleVisitorStatsResults(granularity, visitorStatsResult)
+            val storeHasNoOrders = hasNoOrdersTask.await().getOrNull()
+            if (storeHasNoOrders == true) {
+                myStoreView?.showEmptyView(true)
+            } else {
+                myStoreView?.showEmptyView(false)
+                val revenueStatsResult = revenueStatsTask.await()
+                val visitorStatsResult = visitorStatsTask.await()
+                handleRevenueStatsResult(granularity, revenueStatsResult)
+                handleVisitorStatsResults(granularity, visitorStatsResult)
+            }
         }
     }
 
@@ -175,11 +176,6 @@ class MyStorePresenter @Inject constructor(
         )
     }
 
-    override fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean) {
-        val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
-        dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
-    }
-
     override suspend fun fetchTopPerformersStats(
         granularity: StatsGranularity,
         forced: Boolean
@@ -232,14 +228,6 @@ class MyStorePresenter @Inject constructor(
 
     override fun getStatsCurrency() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
-    /**
-     * dispatches a FETCH_HAS_ORDERS action which tells us whether this store has *ever* had any orders
-     */
-    override fun fetchHasOrders() {
-        val payload = FetchHasOrdersPayload(selectedSite.get())
-        dispatcher.dispatch(WCOrderActionBuilder.newFetchHasOrdersAction(payload))
-    }
-
     fun onWCTopPerformersChanged(
         topPerformers: List<WCTopPerformerProductModel>?,
         granularity: StatsGranularity
@@ -256,24 +244,6 @@ class MyStorePresenter @Inject constructor(
                 )
                 myStoreView?.showTopPerformers(it, granularity)
             } ?: myStoreView?.showTopPerformersError(granularity)
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onOrderChanged(event: OnOrderChanged) {
-        when (event.causeOfChange) {
-            FETCH_HAS_ORDERS -> {
-                if (event.isError) {
-                    WooLog.e(
-                        DASHBOARD,
-                        "$TAG - Error fetching whether orders exist: ${event.error.message}"
-                    )
-                } else {
-                    val hasNoOrders = event.rowsAffected == 0
-                    myStoreView?.showEmptyView(hasNoOrders)
-                }
-            }
-        }
     }
 
     @Suppress("unused")
