@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.woocommerce.android.widgets.WCElevatedLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/errorBanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="@color/warning_banner_background_color"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/errorBannerIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:contentDescription="@string/shipping_label_edit_address_validation_error"
+                android:src="@drawable/ic_info_outline_24dp"
+                app:layout_constraintBottom_toTopOf="@id/errorBannerDivider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/errorBannerMessage"
+                app:layout_constraintVertical_bias="0.0"
+                app:tint="@color/warning_banner_foreground_color"
+                tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/contactCustomerButton"
+                style="@style/Woo.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shipping_label_validation_contact_customer"
+                android:textColor="@color/color_on_surface_high"
+                app:layout_constraintBottom_toTopOf="@id/errorBannerDivider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/errorBannerMessage" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/errorBannerMessage"
+                style="@style/Woo.TextView.Warning"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_200"
+                android:layout_marginTop="@dimen/major_100"
+                android:text="@string/shipping_label_edit_address_error_warning"
+                app:layout_constraintBottom_toTopOf="@id/openMapButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/errorBannerIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/openMapButton"
+                style="@style/Woo.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shipping_label_validation_view_map"
+                android:textColor="@color/color_on_surface_high"
+                app:layout_constraintBottom_toTopOf="@id/errorBannerDivider"
+                app:layout_constraintEnd_toStartOf="@id/contactCustomerButton"
+                app:layout_constraintTop_toBottomOf="@id/errorBannerMessage" />
+
+            <View
+                android:id="@+id/errorBannerDivider"
+                style="@style/Woo.Divider.Warning"
+                android:layout_width="@dimen/minor_00"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_name"
+            android:inputType="text"
+            android:nextFocusForward="@id/company"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/company"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_company"
+            android:inputType="text"
+            android:nextFocusForward="@+id/phone"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_phone"
+            android:inputType="text"
+            android:nextFocusForward="@+id/address1"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/address1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_line1"
+            android:inputType="text"
+            android:nextFocusForward="@+id/address2"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/address2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_line2"
+            android:inputType="text"
+            android:nextFocusForward="@+id/city"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/shipping_label_edit_address_city"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:inputType="text"
+            android:nextFocusForward="@+id/state"
+            app:errorEnabled="true"/>
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+            android:id="@+id/countrySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_country"
+            android:inputType="text"
+            android:nextFocusForward="@+id/useAddressAsIsButton"
+            android:textAppearance="@style/TextAppearance.Woo.Caption" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/shipping_label_edit_address_state"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:inputType="text"
+            android:nextFocusForward="@+id/zip"
+            app:errorEnabled="true"/>
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+            android:id="@+id/stateSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_state"
+            android:inputType="text"
+            android:nextFocusForward="@+id/zip"
+            android:textAppearance="@style/TextAppearance.Woo.Caption" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/zip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:inputType="text"
+            android:hint="@string/shipping_label_edit_address_zip"
+            android:nextFocusForward="@+id/countrySpinner"
+            app:errorEnabled="true"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/useAddressAsIsButton"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:text="@string/shipping_label_edit_address_use_address_as_is"
+            app:layout_goneMarginBottom="@dimen/major_100" />
+
+    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+</ScrollView>
