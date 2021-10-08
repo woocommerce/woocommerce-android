@@ -32,7 +32,6 @@ class MyStorePresenter @Inject constructor(
     private val networkStatus: NetworkStatus
 ) : Presenter {
     companion object {
-        private val TAG = MyStorePresenter::class.java
         private const val NUM_TOP_PERFORMERS = 3
         private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
         private val topPerformersForceRefresh = BooleanArray(StatsGranularity.values().size)
