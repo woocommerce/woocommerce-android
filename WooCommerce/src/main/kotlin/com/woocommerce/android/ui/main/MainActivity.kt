@@ -226,7 +226,7 @@ class MainActivity :
             checkForAppUpdates()
         }
 
-        viewModel.maybeShowFeatureAnnouncements()
+        viewModel.updateFeatureAnnouncements()
     }
 
     override fun hideProgressDialog() {
@@ -250,6 +250,7 @@ class MainActivity :
         updateOrderBadge(false)
 
         checkConnection()
+        viewModel.maybeShowFeatureAnnouncements()
     }
 
     override fun onPause() {

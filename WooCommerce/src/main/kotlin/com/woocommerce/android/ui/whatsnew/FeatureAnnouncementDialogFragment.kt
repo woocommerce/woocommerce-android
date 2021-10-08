@@ -68,6 +68,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
 
     private fun setupView(binding: FeatureAnnouncementDialogFragmentBinding) {
         binding.closeFeatureAnnouncementButton.setOnClickListener {
+            // TODO Mark current announcement as already seen.
             findNavController().popBackStack()
         }
 

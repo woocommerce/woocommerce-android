@@ -7,6 +7,7 @@ import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
+import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +21,8 @@ class MainActivityViewModel @Inject constructor(
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val notificationHandler: NotificationMessageHandler,
-    private val featureAnnouncementRepository: FeatureAnnouncementRepository
+    private val featureAnnouncementRepository: FeatureAnnouncementRepository,
+    private val buildConfigWrapper: BuildConfigWrapper
 ) : ScopedViewModel(savedState) {
     fun removeReviewNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
@@ -90,12 +92,22 @@ class MainActivityViewModel @Inject constructor(
     // "We can’t guarantee when response will be available and at what time the announcement will be displayed.
     // Because of this, we store announcements in cache, and wait for the user to navigate to the main application
     // screen, so we can show announcements in-between any actions."
+    fun updateFeatureAnnouncements() {
+        launch {
+            featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
+        }
+    }
+
     fun maybeShowFeatureAnnouncements() {
         launch {
-            val announcement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
-            announcement?.let {
-                triggerEvent(ShowFeatureAnnouncement(it))
-            } ?: featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
+            val cachedAnnouncement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
+            cachedAnnouncement?.let {
+                // TODO We only want to display the pop-up once per app upgrade, so only show if a current dialog
+                // has not been closed before.
+                if (it.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)) {
+                    triggerEvent(ShowFeatureAnnouncement(it))
+                }
+            }
         }
     }
 
