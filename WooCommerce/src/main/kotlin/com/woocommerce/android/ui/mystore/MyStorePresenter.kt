@@ -32,7 +32,7 @@ class MyStorePresenter @Inject constructor(
     private val networkStatus: NetworkStatus
 ) : Presenter {
     companion object {
-        private const val NUM_TOP_PERFORMERS = 3
+        const val NUM_TOP_PERFORMERS = 3
         private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
         private val topPerformersForceRefresh = BooleanArray(StatsGranularity.values().size)
 
@@ -98,11 +98,6 @@ class MyStorePresenter @Inject constructor(
                 statsRepository.fetchVisitorStats(granularity, forced)
             }
 
-            // fetch top performers
-            val topPerformersTask = async {
-                loadTopPerformersStats(granularity, forced)
-            }
-
             val storeHasNoOrders = hasNoOrdersTask.await().getOrNull()
             if (storeHasNoOrders == true) {
                 myStoreView?.showEmptyView(true)
@@ -112,7 +107,6 @@ class MyStorePresenter @Inject constructor(
                 val visitorStatsResult = visitorStatsTask.await()
                 handleRevenueStatsResult(granularity, revenueStatsResult)
                 handleVisitorStatsResults(granularity, visitorStatsResult)
-                topPerformersTask.await()
             }
         }
     }

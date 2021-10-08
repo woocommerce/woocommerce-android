@@ -311,6 +311,9 @@ class MyStoreFragment :
         }
         presenter.run {
             loadStats(activeGranularity, forced)
+            coroutineScope.launch {
+                presenter.loadTopPerformersStats(activeGranularity, forced)
+            }
         }
     }
 
