@@ -1,10 +1,10 @@
 package com.woocommerce.android.media
 
+import com.woocommerce.android.media.MediaFilesRepository.MediaUploadException
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult
 import com.woocommerce.android.media.ProductImagesUploadWorker.Companion.DURATION_BEFORE_STOPPING_SERVICE
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
-import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.FetchSucceeded
-import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.*
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateFailed
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUploadsCompleted
@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import org.wordpress.android.util.DateTimeUtils
 import java.util.*
 
@@ -113,6 +114,26 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         advanceUntilIdle()
         verify(mediaFilesRepository).uploadMedia(any(), any())
         assertThat(eventsList[0]).isEqualTo(UploadSucceeded(REMOTE_PRODUCT_ID, TEST_URI, UPLOADED_MEDIA))
+        job.cancel()
+    }
+
+    @Test
+    fun `when media upload fails for an image, then send an event`() = testBlocking {
+        val error = MediaUploadException(
+            MediaModel(),
+            GENERIC_ERROR,
+            ""
+        )
+        whenever(mediaFilesRepository.uploadMedia(any(), any())).thenReturn(flowOf(UploadResult.UploadFailure(error)))
+
+        val eventsList = mutableListOf<Event>()
+        val job = launch {
+            worker.events.toList(eventsList)
+        }
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+
+        advanceUntilIdle()
+        assertThat(eventsList).contains(UploadFailed(REMOTE_PRODUCT_ID, TEST_URI, error))
         job.cancel()
     }
 
