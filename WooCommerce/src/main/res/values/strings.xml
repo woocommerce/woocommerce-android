@@ -377,6 +377,7 @@
     <string name="order_detail_edit_address_details_last_name">Last name</string>
     <string name="order_detail_edit_address_details_email">Email</string>
     <string name="order_detail_edit_address_details_phone">Phone</string>
+    <string name="order_detail_edit_address_company">Company</string>
     <string name="order_detail_edit_address_line1">Address 1</string>
     <string name="order_detail_edit_address_line2">Address 2</string>
     <string name="order_detail_edit_address_city">City</string>
