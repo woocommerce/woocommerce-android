@@ -226,7 +226,7 @@ class MainActivity :
             checkForAppUpdates()
         }
 
-        viewModel.updateFeatureAnnouncements()
+        viewModel.maybeShowFeatureAnnouncements()
     }
 
     override fun hideProgressDialog() {

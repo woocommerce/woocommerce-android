@@ -13,7 +13,6 @@ import javax.inject.Inject
 class FeatureAnnouncementViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-
     val viewStateData = LiveDataDelegate(savedState, FeatureAnnouncementViewState())
     private var viewState by viewStateData
 
