@@ -9,7 +9,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
 @AndroidEntryPoint
-class EditCustomerOrderNoteFragment :
+class CustomerOrderNoteEditingFragment :
     BaseOrderEditingFragment(R.layout.fragment_edit_customer_order_note) {
     companion object {
         const val TAG = "EditCustomerOrderNoteFragment"
