@@ -120,7 +120,6 @@ class MyStorePresenter @Inject constructor(
                         myStoreView?.showEmptyVisitorStatsForJetpackCP()
                     }
                 }
-
             }
         }
     }

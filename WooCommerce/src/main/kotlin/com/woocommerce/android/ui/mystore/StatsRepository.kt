@@ -72,7 +72,8 @@ class StatsRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchProductLeaderboards(granularity: StatsGranularity, quantity: Int, forced: Boolean): Result<List<WCTopPerformerProductModel>> {
+    suspend fun fetchProductLeaderboards(granularity: StatsGranularity, quantity: Int, forced: Boolean):
+        Result<List<WCTopPerformerProductModel>> {
         return when (forced) {
             true -> wcLeaderboardsStore.fetchProductLeaderboards(
                 site = selectedSite.get(),
@@ -152,7 +153,7 @@ class StatsRepository @Inject constructor(
                     DASHBOARD,
                     "$TAG - Error fetching whether orders exist: ${event.error.message}"
                 )
-                continuationHasOrders.continueWith(Result.failure(Exception()))
+                continuationHasOrders.continueWith(Result.failure(Exception(event.error.message)))
             } else {
                 val hasNoOrders = event.rowsAffected == 0
                 continuationHasOrders.continueWith(Result.success(hasNoOrders))

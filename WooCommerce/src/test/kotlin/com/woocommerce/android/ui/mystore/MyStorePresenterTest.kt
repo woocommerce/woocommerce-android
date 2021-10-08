@@ -23,7 +23,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
-class MyStorePresenterTest: BaseUnitTest() {
+class MyStorePresenterTest : BaseUnitTest() {
     private val myStoreView: MyStoreContract.View = mock()
     private val dispatcher: Dispatcher = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -196,9 +196,10 @@ class MyStorePresenterTest: BaseUnitTest() {
     @Test
     fun `give the site is using jetpack cp, when the stats are loaded, then show an empty view for visitor stats`() =
         testBlocking {
-            whenever(selectedSite.getIfExists()).thenReturn(SiteModel().apply {
+            val site = SiteModel().apply {
                 setIsJetpackCPConnected(true)
-            })
+            }
+            whenever(selectedSite.getIfExists()).thenReturn(site)
 
             presenter.takeView(myStoreView)
             presenter.loadStats(DAYS)
