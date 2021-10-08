@@ -683,6 +683,11 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        orderDetailRepository.onCleanup()
+    }
+
     private fun getRefundableShippingLineIds(): List<Long> {
         val availableShippingLines = allShippingLineIds.toMutableList()
         refunds.forEach {

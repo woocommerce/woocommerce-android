@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrder
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultProductAddonList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.emptyProductAddon
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.listWithSingleAddonAndTwoValidOptions
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.orderAttributesWithPercentageBasedItem
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.orderedAddonWithPercentageBasedDeliveryOptionList
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -75,6 +77,25 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
 
             val expectedResult = defaultOrderedAddonList
+
+            var actualResult: List<Addon>? = null
+            viewModelUnderTest.orderedAddonsData.observeForever {
+                actualResult = it
+            }
+
+            viewModelUnderTest.start(321, 999, 123)
+
+            assertThat(actualResult).isEqualTo(expectedResult)
+        }
+
+    @Test
+    fun `should parse Addons with parsed option as FlatFee when matching PercentageBased option is found`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
+                .thenReturn(Pair(defaultProductAddonList, orderAttributesWithPercentageBasedItem))
+            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+
+            val expectedResult = orderedAddonWithPercentageBasedDeliveryOptionList
 
             var actualResult: List<Addon>? = null
             viewModelUnderTest.orderedAddonsData.observeForever {

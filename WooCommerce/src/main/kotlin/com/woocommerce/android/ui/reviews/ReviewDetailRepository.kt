@@ -186,7 +186,7 @@ class ReviewDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
-            if (continuationReview.isWaiting) {
+            if (continuationProduct.isWaiting) {
                 if (event.isError) {
                     AnalyticsTracker.track(
                         Stat.REVIEW_PRODUCT_LOAD_FAILED,

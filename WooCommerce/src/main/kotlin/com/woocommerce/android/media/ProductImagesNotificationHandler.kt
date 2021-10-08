@@ -40,25 +40,24 @@ class ProductImagesNotificationHandler @Inject constructor(
     private val notificationManager =
         SystemServiceFactory.get(context, Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    private lateinit var notificationBuilder: NotificationCompat.Builder
+    private val notificationBuilder: NotificationCompat.Builder
 
     init {
         createChannel()
-    }
-
-    fun attachToService(service: ProductImagesService) {
         notificationBuilder = NotificationCompat.Builder(
             context,
             CHANNEL_ID
-        ).also {
-            it.color = ContextCompat.getColor(context, R.color.woo_gray_40)
-            it.setSmallIcon(android.R.drawable.stat_sys_upload)
-            it.setOnlyAlertOnce(true)
-            it.setOngoing(true)
-            it.setProgress(0, 0, true)
-            it.setGroup(FOREGROUND_NOTIFICATION_ID.toString())
+        ).apply {
+            color = ContextCompat.getColor(context, R.color.woo_gray_40)
+            setSmallIcon(android.R.drawable.stat_sys_upload)
+            setOnlyAlertOnce(true)
+            setOngoing(true)
+            setProgress(0, 0, true)
+            setGroup(FOREGROUND_NOTIFICATION_ID.toString())
         }
+    }
 
+    fun attachToService(service: ProductImagesService) {
         val notification = notificationBuilder.build()
         service.startForeground(FOREGROUND_NOTIFICATION_ID, notification)
         notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notification)

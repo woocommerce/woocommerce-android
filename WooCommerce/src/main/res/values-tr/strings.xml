@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-01 11:54:05+0000
+Translation-Revision-Date: 2021-09-29 21:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Yeni özellik simgesinin görseli</string>
+    <string name="settings_switch_store">Mağaza değiştir</string>
+    <string name="product_update_failure_notification">%1$s ürünü güncellenemedi</string>
+    <string name="product_update_success_notification_content">%2$s ürününe %1$d görsel eklendi</string>
+    <string name="product_update_success_notification_title">Ürün Güncellendi</string>
+    <string name="product_update_notification">Ürün güncelleniyor %1$s</string>
+    <string name="product_detail_background_image_upload">Görsel yükleme işlemi arka planda devam edecek </string>
+    <string name="card_reader_payment_save_for_later">Makbuzu kaydet ve devam et</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">Tamam</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Maalesef Sipariş Eklentilerini şu anda yükleyemedik</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Bir şeyler yanlış gitti</string>
+    <string name="settings_whats_new">WooCommerce\'deki Yenilikler</string>
+    <string name="settings_enable_product_addons_teaser_title">Eklentileri Görüntüle</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Maalesef şu anda bu özellik ayarını değiştiremedik</string>
+    <string name="product_category">Kategori</string>
+    <string name="notification_review_title">1 yeni yorumunuz var. 🌟</string>
+    <string name="notification_order_title">1 yeni siparişiniz var! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d ürün</string>
     <string name="upsell_product_count_many">%d yukarı satış ürünü</string>
     <string name="upsell_product_count_one">%d yukarı satış ürünü</string>
@@ -44,7 +61,6 @@ Language: tr
     <string name="card_reader_onboarding_generic_error_hint">Maalesef bu mağaza için Şahsen Ödemeleri doğrulayamadık</string>
     <string name="card_reader_onboarding_generic_error_header">Bu mağaza için Şahsen Ödemeler doğrulanamıyor</string>
     <string name="card_reader_detail_connected_firmware_version">Ürün Yazılımı: %s</string>
-    <string name="card_reader_payment_save_for_later">Daha sonra kullanmak için kaydet</string>
     <string name="card_reader_purchase_card_reader">Kart Okuyucu Siparişi</string>
     <string name="card_reader_manage_card_reader">Kart Okuyucuyu Yönet</string>
     <string name="shipping_label_multiple_customs_form_print_button">Yazdır</string>
@@ -106,6 +122,7 @@ Language: tr
     <string name="product_attributes_created_generate_action_text">Varyasyon Oluştur</string>
     <string name="product_attributes_created_description">Nitelikleri eklediğinize göre ilk varyasyonunuzu oluşturabilirsiniz!</string>
     <string name="product_attributes_created_title">Nitelikler oluşturuldu</string>
+    <string name="card_reader_software_update_progress_indicator">%%%1$s</string>
     <string name="card_reader_software_update_progress_cancel_warning">Sürmekte olan bir yazılım güncellemesini iptal etmeniz önerilmez</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Üzgünüz, ödemeniz işleme alınamadı</string>
     <string name="card_reader_payment_failed_server_error_state">Sunucu ile bağlantı kurulamadı</string>
@@ -201,7 +218,7 @@ Language: tr
     <string name="card_reader_detail_connected_disconnect_reader">Okuyucunun bağlantısını kes</string>
     <string name="card_reader_detail_connected_enforced_update_software">Ödemeleri kabul etmeye devam edebilmek için lütfen okuyucu yazılımınızı güncelleyin</string>
     <string name="card_reader_detail_connected_update_software">Okuyucunun yazılımını güncelleyin</string>
-    <string name="card_reader_detail_connected_battery_percentage">%s%% pil </string>
+    <string name="card_reader_detail_connected_battery_percentage">%%%s pil </string>
     <string name="card_reader_detail_connected_header">BAĞLANTILI OKUYUCU</string>
     <string name="card_reader_details_not_connected_connect_button_label">Kart okuyucu bağlayın</string>
     <string name="card_reader_detail_not_connected_second_hint_label">Kart okuyucuyu açın ve mobil cihazın yanına yerleştirin</string>
@@ -428,11 +445,11 @@ Language: tr
     <string name="shipping_label_create_packaging_details">Paketleme ayrıntıları</string>
     <string name="shipping_label_create_title">Gönderim etiketi oluşturun</string>
     <string name="shipping_label_more_information_link">Daha fazla bilgi</string>
-    <string name="shipping_label_more_information_message">Telefonunuzla evde indirimli fiyatlara gönderim etiketleri yazdırarak postane ile olan bağınızı koparın.</string>
+    <string name="shipping_label_more_information_message">Mobil cihazınızla evde indirimli fiyatlara gönderim etiketleri yazdırarak postane ile olan bağınızı koparın.</string>
     <string name="shipping_label_more_information_heading">İşinizi WooCommerce Shipping ile yaparak zamandan ve paradan tasarruf edin</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Siparişi tamamlandı olarak işaretle</string>
-    <string name="orderdetail_shipping_label_notice">Telefonunuzla etiket oluşturma hakkında daha fazla bilgi edinin</string>
+    <string name="orderdetail_shipping_label_notice">Mobil cihazınızla etiket oluşturma hakkında daha fazla bilgi edinin</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Gönderim etiketi oluşturun</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Artık ücretsiz WooCommerce Shipping eklentisi ile tüm fiziksel siparişler için gönderi etiketlerini doğrudan cihazınızdan oluşturabilirsiniz. Beta özelliğimizi denemek için \"Gönderim etiketi oluştur\"a dokunun.</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Gönderim etiketlerini cihazınızdan oluşturun.</string>
@@ -493,6 +510,7 @@ Language: tr
     <string name="my_store_stats_availability_title">Mağazanızın analizlerini gösteremiyoruz</string>
     <string name="login_get_link_by_email">E-posta ile bir oturum açma bağlantısı alın</string>
     <string name="email_not_registered_wpcom">Bu e-posta hesabına bağlı bir WordPress.com hesabı bulamıyoruz.</string>
+    <string name="settings_enable_product_addons_teaser_message">Biz lansmana hazırlanırken siz de Sipariş Eklentilerini görüntüleme işlevini test edin</string>
     <string name="settings_enable_product_adding_teaser_title">Ürün oluşturma</string>
     <string name="settings_preferences">Tercihler</string>
     <string name="product_trash_error">Ürün çöp kutusuna taşınırken hata oluştu</string>
@@ -515,7 +533,7 @@ Language: tr
     <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 inç)</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 inç)</string>
     <string name="shipping_label_preview_error">Kargo etiketi önizlenirken hata oluştu</string>
-    <string name="shipping_label_print_info">Telefonunuzla nasıl yazdıracağınızı bilmiyor musunuz?</string>
+    <string name="shipping_label_print_info">Mobil cihazınızla nasıl yazdıracağınızı bilmiyor musunuz?</string>
     <string name="shipping_label_paper_size_options_info">Etiket düzeni ve kağıt boyutu seçeneklerine bakın</string>
     <string name="shipping_label_print_button">Kargo etiketini yazdır</string>
     <string name="shipping_label_paper_size_options_title">Kağıt boyutu seç</string>
@@ -1277,8 +1295,6 @@ Language: tr
     <string name="error_copy_to_clipboard">Panoya kopyalamada hata</string>
     <string name="settings_switch_site_notifs_msg">%s mağazasına geçildi. Sadece bu mağaza için bildirim alacaksınız</string>
     <string name="login_update_required_desc">Bu mağazada WooCommerce\'in eski bir sürümü kullanılıyor. Lütfen bu uygulamayla kullanmak için mağazanızı WooCommerce 3.5 veya üstü bir sürüme yükseltin.</string>
-    <string name="promo_message_site_picker">Şimdi Ayarlar\'da seçilen mağazaya dokunarak mağazalar arasında geçiş yapabilirsiniz</string>
-    <string name="promo_title_site_picker">Birden fazla mağaza mı işletiyorsunuz?</string>
     <string name="promo_btn_try_it">Şimdi deneyin</string>
     <string name="promo_btn_got_it">Anladım</string>
     <string name="tooltip_site_switcher">Mağazalar arasında geçiş yapmak için dokunun</string>

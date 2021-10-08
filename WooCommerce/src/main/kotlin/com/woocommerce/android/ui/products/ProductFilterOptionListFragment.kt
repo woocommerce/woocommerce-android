@@ -5,7 +5,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +20,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,9 +46,8 @@ class ProductFilterOptionListFragment :
         mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this, this)
         with(binding.filterOptionList) {
             addItemDecoration(
-                DividerItemDecoration(
-                    requireActivity(),
-                    DividerItemDecoration.VERTICAL
+                AlignedDividerDecoration(
+                    requireActivity(), DividerItemDecoration.VERTICAL, R.id.filterOptionItem_name, clipToMargin = false
                 )
             )
             layoutManager = LinearLayoutManager(activity)
@@ -90,14 +89,17 @@ class ProductFilterOptionListFragment :
             }
         )
 
-        viewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is ExitWithResult<*> -> {
-                    navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when (event) {
+                    is ExitWithResult<*> -> {
+                        navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
+                    }
+                    else -> event.isHandled = false
                 }
-                else -> event.isHandled = false
             }
-        }
+        )
 
         viewModel.loadFilterOptions(arguments.selectedFilterItemPosition)
     }

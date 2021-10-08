@@ -140,6 +140,10 @@ class OrderNavigator @Inject constructor() {
                     .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderIdentifier)
                 fragment.findNavController().navigateSafely(action)
             }
+            is OrderNavigationTarget.ShowCardReaderWelcomeDialog -> {
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderWelcomeDialog()
+                fragment.findNavController().navigateSafely(action)
+            }
             is StartCardReaderConnectFlow -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToCardReaderConnectDialog(target.skipOnboarding)

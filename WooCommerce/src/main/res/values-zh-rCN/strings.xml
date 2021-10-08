@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-31 11:54:45+0000
+Translation-Revision-Date: 2021-09-29 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">新功能图标图像</string>
+    <string name="settings_switch_store">切换商店</string>
+    <string name="product_update_failure_notification">产品 %1$s 更新失败</string>
+    <string name="product_update_success_notification_content">已将 %1$d 张图像添加到产品 %2$s 中</string>
+    <string name="product_update_success_notification_title">产品已更新</string>
+    <string name="product_update_notification">正在更新产品 %1$s</string>
+    <string name="product_detail_background_image_upload">图像上传将在后台继续</string>
+    <string name="card_reader_payment_save_for_later">保存收据并继续</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">确定</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">很抱歉，现在无法加载订单加载项</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">出错了</string>
+    <string name="settings_whats_new">WooCommerce 中的新增功能</string>
+    <string name="settings_enable_product_addons_teaser_title">查看插件</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">抱歉，我们现在无法更改此功能设置</string>
+    <string name="product_category">类别</string>
+    <string name="notification_review_title">您有 1 条新评论！ 🌟</string>
+    <string name="notification_order_title">您有 1 个新订单！ 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d 商品</string>
     <string name="upsell_product_count_many">%d 个追加销售产品</string>
     <string name="upsell_product_count_one">%d 个追加销售产品</string>
@@ -44,7 +61,6 @@ Language: zh_CN
     <string name="card_reader_onboarding_generic_error_hint">抱歉，我们无法验证此商店的现场付款</string>
     <string name="card_reader_onboarding_generic_error_header">无法验证此商店的现场付款</string>
     <string name="card_reader_detail_connected_firmware_version">固件：%s</string>
-    <string name="card_reader_payment_save_for_later">保存以供稍后查看</string>
     <string name="card_reader_purchase_card_reader">订购读卡器</string>
     <string name="card_reader_manage_card_reader">管理读卡器</string>
     <string name="shipping_label_multiple_customs_form_print_button">打印</string>
@@ -106,6 +122,7 @@ Language: zh_CN
     <string name="product_attributes_created_generate_action_text">生成变体</string>
     <string name="product_attributes_created_description">添加属性后，您就可以创建第一个变体了！</string>
     <string name="product_attributes_created_title">已创建属性</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">不建议取消正在进行的软件更新</string>
     <string name="card_reader_payment_failed_unexpected_error_state">抱歉，我们无法处理本次付款</string>
     <string name="card_reader_payment_failed_server_error_state">无法连接到服务器</string>
@@ -428,11 +445,11 @@ Language: zh_CN
     <string name="shipping_label_create_packaging_details">包装详细信息</string>
     <string name="shipping_label_create_title">创建配送标签</string>
     <string name="shipping_label_more_information_link">了解更多</string>
-    <string name="shipping_label_more_information_message">在家中使用手机以折扣价打印配送标签，节省在邮局处理的时间！</string>
+    <string name="shipping_label_more_information_message">在家中使用移动设备以折扣价打印配送标签，节省在邮局处理的时间！</string>
     <string name="shipping_label_more_information_heading">利用 WooCommerce Shipping 节省时间和资金</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">将订单标记为完成</string>
-    <string name="orderdetail_shipping_label_notice">详细了解如何使用手机创建配送标签</string>
+    <string name="orderdetail_shipping_label_notice">详细了解如何使用移动设备创建配送标签</string>
     <string name="orderdetail_shipping_label_create_shipping_label">创建配送标签</string>
     <string name="orderdetail_shipping_label_m3_wip_message">现在，您可以利用免费的 WooCommerce Shipping 插件，直接通过您的设备为所有实体订单创建配送标签。 轻按“创建配送标签”试用我们的 Beta 版功能！</string>
     <string name="orderdetail_shipping_label_m2_wip_title">通过您的设备创建配送标签！！</string>
@@ -493,6 +510,7 @@ Language: zh_CN
     <string name="my_store_stats_availability_title">我们无法显示您的\n商店分析</string>
     <string name="login_get_link_by_email">通过电子邮件获取登录链接</string>
     <string name="email_not_registered_wpcom">找不到与此电子邮件地址关联的 WordPress.com 帐户。</string>
+    <string name="settings_enable_product_addons_teaser_message">当我们准备发布时，测试查看订单加载项</string>
     <string name="settings_enable_product_adding_teaser_title">创建产品</string>
     <string name="settings_preferences">首选项</string>
     <string name="product_trash_error">将产品移动到回收站时出错</string>
@@ -515,7 +533,7 @@ Language: zh_CN
     <string name="shipping_label_paper_size_letter">Letter （8.5 x 11 英寸）</string>
     <string name="shipping_label_paper_size_legal">Legal （8.5 x 14 英寸）</string>
     <string name="shipping_label_preview_error">预览配送标签时出错</string>
-    <string name="shipping_label_print_info">不知道如何通过手机打印？</string>
+    <string name="shipping_label_print_info">不知道如何通过移动设备打印？</string>
     <string name="shipping_label_paper_size_options_info">查看标签布局和纸张尺寸选项</string>
     <string name="shipping_label_print_button">打印配送标签</string>
     <string name="shipping_label_paper_size_options_title">选择纸张尺寸</string>
@@ -1277,8 +1295,6 @@ Language: zh_CN
     <string name="error_copy_to_clipboard">复制到剪贴板时出错</string>
     <string name="settings_switch_site_notifs_msg">已切换到 %s。您将只接收此商店的通知</string>
     <string name="login_update_required_desc">此商店使用的 WooCommerce 版本较旧。请将您的商店升级至 WooCommerce 3.5 或更高版本，以结合使用商店和此应用程序。</string>
-    <string name="promo_message_site_picker">现在，您可以在“设置”中轻点选定的商店来在商店之间切换。</string>
-    <string name="promo_title_site_picker">正在经营多家商店？</string>
     <string name="promo_btn_try_it">立即试用</string>
     <string name="promo_btn_got_it">知道了</string>
     <string name="tooltip_site_switcher">轻点可切换商店</string>

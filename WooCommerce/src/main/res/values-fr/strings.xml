@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-31 13:54:44+0000
+Translation-Revision-Date: 2021-09-29 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Image de l’icône Nouvelle fonctionnalité</string>
+    <string name="settings_switch_store">Changer de boutique</string>
+    <string name="product_update_failure_notification">La mise à jour du produit %1$s a échoué</string>
+    <string name="product_update_success_notification_content">%1$d images ont été ajoutées au produit %2$s</string>
+    <string name="product_update_success_notification_title">Produit mis à jour</string>
+    <string name="product_update_notification">Mise à jour du produit %1$s</string>
+    <string name="product_detail_background_image_upload">Le chargement des images continuera en arrière-plan</string>
+    <string name="card_reader_payment_save_for_later">Enregistrer le reçu et continuer</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Désolé, le chargement des modules de commande a échoué</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Un problème est survenu…</string>
+    <string name="settings_whats_new">Nouveautés WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Voir les modules</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Nous ne parvenons pas à modifier les paramètres de cette fonctionnalité pour le moment</string>
+    <string name="product_category">Catégorie</string>
+    <string name="notification_review_title">Vous avez un nouvel avis ! 🌟</string>
+    <string name="notification_order_title">Vous avez une nouvelle commande ! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d article</string>
     <string name="upsell_product_count_many">%d produits suggérés</string>
     <string name="upsell_product_count_one">%d produit suggéré</string>
@@ -44,7 +61,6 @@ Language: fr
     <string name="card_reader_onboarding_generic_error_hint">Désolé, nous n’avons pas pu vérifier les paiements en personne pour cette boutique</string>
     <string name="card_reader_onboarding_generic_error_header">Impossible de vérifier les paiements en personne pour cette boutique</string>
     <string name="card_reader_detail_connected_firmware_version">Micrologiciel : %s</string>
-    <string name="card_reader_payment_save_for_later">Enregistrer pour plus tard</string>
     <string name="card_reader_purchase_card_reader">Commander un lecteur de carte</string>
     <string name="card_reader_manage_card_reader">Gérer le lecteur de carte</string>
     <string name="shipping_label_multiple_customs_form_print_button">Imprimer</string>
@@ -106,6 +122,7 @@ Language: fr
     <string name="product_attributes_created_generate_action_text">Générer une variante</string>
     <string name="product_attributes_created_description">Maintenant que vous avez ajouté des attributs, vous pouvez créer votre première variante !</string>
     <string name="product_attributes_created_title">Attributs créés</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s %%</string>
     <string name="card_reader_software_update_progress_cancel_warning">Il n’est pas recommandé d’annuler une mise à jour logicielle en cours</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Désolé, impossible de traiter ce paiement</string>
     <string name="card_reader_payment_failed_server_error_state">Aucune connexion au serveur</string>
@@ -428,11 +445,11 @@ Language: fr
     <string name="shipping_label_create_packaging_details">Détails du colis</string>
     <string name="shipping_label_create_title">Créer une étiquette d’expédition</string>
     <string name="shipping_label_more_information_link">En savoir plus</string>
-    <string name="shipping_label_more_information_message">Évitez un déplacement à la Poste en imprimant les étiquettes d’expédition de chez vous avec votre téléphone à prix réduit !</string>
+    <string name="shipping_label_more_information_message">Évitez un déplacement à la Poste en imprimant les étiquettes d’expédition de chez vous avec votre appareil mobile à prix réduit !</string>
     <string name="shipping_label_more_information_heading">Économisez de l’argent en passant par WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Marquer la commande comme terminée</string>
-    <string name="orderdetail_shipping_label_notice">En savoir plus sur la création d’étiquettes avec votre téléphone</string>
+    <string name="orderdetail_shipping_label_notice">En savoir plus sur la création d’étiquettes avec votre appareil mobile</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Créer une étiquette d’expédition</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Vous pouvez désormais créer des étiquettes d’expédition pour les commandes physiques directement depuis votre appareil grâce à l’extension gratuite WooCommerce Shipping. Appuyez sur « Créer une étiquette d’expédition » pour essayer !</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Créez une étiquette d’expédition à partir de votre appareil !</string>
@@ -493,6 +510,7 @@ Language: fr
     <string name="my_store_stats_availability_title">Nous ne pouvons pas afficher\n l’analyse de votre boutique</string>
     <string name="login_get_link_by_email">Obtenir un lien de connexion par e-mail</string>
     <string name="email_not_registered_wpcom">Désolé, nous ne trouvons pas de compte WordPress.com connecté à cette adresse e-mail.</string>
+    <string name="settings_enable_product_addons_teaser_message">Tester l’affichage des modules de commande peu avant le lancement</string>
     <string name="settings_enable_product_adding_teaser_title">Création des produits</string>
     <string name="settings_preferences">Préférences</string>
     <string name="product_trash_error">Erreur lors du déplacement du produit vers la corbeille</string>
@@ -515,7 +533,7 @@ Language: fr
     <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 po)</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 po)</string>
     <string name="shipping_label_preview_error">Erreur lors de l’aperçu de l’étiquette d’expédition</string>
-    <string name="shipping_label_print_info">Vous ne savez pas comment imprimer avec votre téléphone ?</string>
+    <string name="shipping_label_print_info">Vous ne savez pas comment imprimer avec votre appareil mobile ?</string>
     <string name="shipping_label_paper_size_options_info">Voir les options de mise en page et de format papier de l’étiquette</string>
     <string name="shipping_label_print_button">Imprimer l’étiquette d’expédition</string>
     <string name="shipping_label_paper_size_options_title">Choisir le format papier</string>
@@ -1277,8 +1295,6 @@ Language: fr
     <string name="error_copy_to_clipboard">Erreur lors de la copie dans le presse-papier</string>
     <string name="settings_switch_site_notifs_msg">Basculé vers %s. Vous recevrez uniquement des notifications pour cette boutique</string>
     <string name="login_update_required_desc">Cette boutique utilise une ancienne version de WooCommerce. Veuillez mettre votre boutique à niveau en installant la version 3.5 ou ultérieure de WooCommerce afin de l\'utiliser avec l\'application.</string>
-    <string name="promo_message_site_picker">Vous pouvez désormais basculer entre les boutiques en appuyant sur la boutique sélectionnée dans Paramètres</string>
-    <string name="promo_title_site_picker">Gestion de plusieurs boutiques ?</string>
     <string name="promo_btn_try_it">Essayer maintenant</string>
     <string name="promo_btn_got_it">Compris</string>
     <string name="tooltip_site_switcher">Appuyer pour passer d\'une boutique à l\'autre</string>

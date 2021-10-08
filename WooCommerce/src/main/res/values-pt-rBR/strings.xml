@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-31 15:54:04+0000
+Translation-Revision-Date: 2021-09-27 15:54:09+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Imagem do ícone de nova funcionalidade</string>
+    <string name="settings_switch_store">Alterar loja</string>
+    <string name="product_update_failure_notification">Falha na atualização do produto %1$s</string>
+    <string name="product_update_success_notification_content">%1$d imagens foram adicionadas ao produto %2$s</string>
+    <string name="product_update_success_notification_title">Produto atualizado.</string>
+    <string name="product_update_notification">Atualizando produto %1$s</string>
+    <string name="product_detail_background_image_upload">O upload de imagem prosseguirá em segundo plano</string>
+    <string name="card_reader_payment_save_for_later">Salvar recibo e continuar</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Não é possível carregar Complementos de pedidos no momento</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Ocorreu um erro</string>
+    <string name="settings_whats_new">Novidades no WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Visualizar complementos</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Não é possível alterar as configurações desta funcionalidade no momento</string>
+    <string name="product_category">Categoria</string>
+    <string name="notification_review_title">Você tem 1 nova avaliação! 🌟</string>
+    <string name="notification_order_title">Você recebeu 1 novo pedido! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d item</string>
     <string name="upsell_product_count_many">%d produtos para upselling</string>
     <string name="upsell_product_count_one">%d produto para upselling</string>
@@ -44,7 +61,6 @@ Language: pt_BR
     <string name="card_reader_onboarding_generic_error_hint">Não conseguimos verificar os pagamentos presenciais para esta loja</string>
     <string name="card_reader_onboarding_generic_error_header">Não foi possível verificar os pagamentos presenciais para esta loja</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Salvar para mais tarde</string>
     <string name="card_reader_purchase_card_reader">Pedir leitor de cartão</string>
     <string name="card_reader_manage_card_reader">Gerenciar leitor de cartão</string>
     <string name="shipping_label_multiple_customs_form_print_button">Imprimir</string>
@@ -106,6 +122,7 @@ Language: pt_BR
     <string name="product_attributes_created_generate_action_text">Gerar variação</string>
     <string name="product_attributes_created_description">Agora que adicionou atributos, você pode criar sua primeira variação!</string>
     <string name="product_attributes_created_title">Atributos criados</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">Não é recomendado cancelar uma atualização de software em andamento</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Não foi possível processar este pagamento</string>
     <string name="card_reader_payment_failed_server_error_state">Sem conexão com o servidor</string>
@@ -427,11 +444,11 @@ Language: pt_BR
     <string name="shipping_label_create_packaging_details">Detalhes do pacote</string>
     <string name="shipping_label_create_title">Criar etiqueta de envio</string>
     <string name="shipping_label_more_information_link">Saiba mais</string>
-    <string name="shipping_label_more_information_message">Pule a fila dos correios imprimindo as etiquetas de envio em casa pelo seu celular a preços com desconto!</string>
+    <string name="shipping_label_more_information_message">Pule a fila dos correios imprimindo as etiquetas de envio em casa pelo seu dispositivo móvel a preços com desconto!</string>
     <string name="shipping_label_more_information_heading">Economize tempo e dinheiro com o WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Marcar pedido como concluído</string>
-    <string name="orderdetail_shipping_label_notice">Saiba mais sobre como criar etiquetas no seu celular</string>
+    <string name="orderdetail_shipping_label_notice">Saiba mais sobre como criar etiquetas no seu dispositivo móvel</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Criar etiqueta de envio</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Agora você pode criar etiquetas de envio para todos os pedidos físicos diretamente no seu dispositivo com o plugin gratuito do WooCommerce Shipping. Toque em \"Criar etiqueta de envio\" para experimentar a versão beta da nossa funcionalidade!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Crie etiquetas de envio pelo seu dispositivo!</string>
@@ -492,6 +509,7 @@ Language: pt_BR
     <string name="my_store_stats_availability_title">Não é possível exibir a \nanálise da sua loja</string>
     <string name="login_get_link_by_email">Receber um link de acesso por e-mail</string>
     <string name="email_not_registered_wpcom">Não foi possível encontrar uma conta do WordPress.com conectada a este endereço de e-mail.</string>
+    <string name="settings_enable_product_addons_teaser_message">Teste a visualização dos complementos de pedidos enquanto nos preparamos para lançar</string>
     <string name="settings_enable_product_adding_teaser_title">Criação de produtos</string>
     <string name="settings_preferences">Preferências</string>
     <string name="product_trash_error">Erro ao mover o produto para a lixeira</string>
@@ -514,7 +532,7 @@ Language: pt_BR
     <string name="shipping_label_paper_size_letter">Carta (22 x 28 cm)</string>
     <string name="shipping_label_paper_size_legal">Legal (22 x 36 cm)</string>
     <string name="shipping_label_preview_error">Erro ao pré-visualizar a etiqueta de envio</string>
-    <string name="shipping_label_print_info">Não sabe como imprimir do seu celular?</string>
+    <string name="shipping_label_print_info">Não sabe como imprimir usando o seu dispositivo móvel?</string>
     <string name="shipping_label_paper_size_options_info">Consulte as opções de layout e tamanho do papel para a etiqueta</string>
     <string name="shipping_label_print_button">Imprimir etiquetas de entrega</string>
     <string name="shipping_label_paper_size_options_title">Escolher o tamanho do papel</string>
@@ -1276,8 +1294,6 @@ Language: pt_BR
     <string name="error_copy_to_clipboard">Erro ao copiar para a área de transferência</string>
     <string name="settings_switch_site_notifs_msg">Alterado para %s. Você receberá apenas notificações desta loja</string>
     <string name="login_update_required_desc">Esta loja usa uma versão antiga do WooCommerce. Faça o upgrade da sua loja para o WooCommerce 3.5 ou superior para usá-la com este aplicativo.</string>
-    <string name="promo_message_site_picker">Agora você pode trocar de loja, clicando na loja selecionada em Configurações</string>
-    <string name="promo_title_site_picker">Você está à frente de várias lojas?</string>
     <string name="promo_btn_try_it">Experimente já</string>
     <string name="promo_btn_got_it">Entendi</string>
     <string name="tooltip_site_switcher">Toque para trocar de loja</string>

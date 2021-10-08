@@ -2,10 +2,14 @@ package com.woocommerce.android.media
 
 import android.content.Context
 import android.net.Uri
+import com.woocommerce.android.R
+import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadFailure
+import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.flow.*
@@ -17,6 +21,8 @@ import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.*
+import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
+import java.io.File
 import javax.inject.Inject
 
 class MediaFilesRepository @Inject constructor(
@@ -24,7 +30,8 @@ class MediaFilesRepository @Inject constructor(
     private val context: Context,
     private val selectedSite: SelectedSite,
     private val mediaStore: MediaStore,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val resourceProvider: ResourceProvider
 ) {
     private lateinit var producerScope: ProducerScope<UploadResult>
 
@@ -69,7 +76,14 @@ class MediaFilesRepository @Inject constructor(
                     dispatcher.dispatch(MediaActionBuilder.newCancelMediaUploadAction(payload))
                 }
             }
-        }.buffer(capacity = Channel.CONFLATED)
+        }.onEach {
+            if (it is UploadSuccess) {
+                // Remove local file if it's in cache directory
+                if (localMediaModel.filePath.contains(context.cacheDir.absolutePath)) {
+                    File(localMediaModel.filePath).delete()
+                }
+            }
+        }
     }
 
     fun uploadFile(localUri: String): Flow<UploadResult> {
@@ -108,6 +122,7 @@ class MediaFilesRepository @Inject constructor(
                     event.media,
                     event.error.type,
                     event.error.message
+                        ?: resourceProvider.getString(R.string.product_image_service_error_uploading)
                 )
                 producerScope.trySendBlocking(UploadResult.UploadFailure(exception))
                     .onFailure {
@@ -122,10 +137,26 @@ class MediaFilesRepository @Inject constructor(
                 WooLog.d(T.MEDIA, "MediaFilesRepository > upload media cancelled")
             }
             event.completed -> {
-                WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${event.media?.id}")
-                producerScope.trySendBlocking(
-                    UploadResult.UploadSuccess(event.media)
-                ).onFailure {
+                val channelResult = if (event.media?.url != null) {
+                    WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${event.media?.id}")
+                    producerScope.trySendBlocking(
+                        UploadResult.UploadSuccess(event.media)
+                    )
+                } else {
+                    WooLog.w(
+                        T.MEDIA,
+                        "MediaFilesRepository > error uploading media ${event.media?.id}, null url"
+                    )
+
+                    producerScope.trySendBlocking(UploadFailure(
+                        error = MediaUploadException(
+                            event.media,
+                            GENERIC_ERROR,
+                            resourceProvider.getString(R.string.product_image_service_error_uploading)
+                        )
+                    ))
+                }
+                channelResult.onFailure {
                     WooLog.w(
                         T.MEDIA,
                         "MediaFilesRepository > error delivering result, downstream collector may be cancelled"

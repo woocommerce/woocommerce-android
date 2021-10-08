@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-31 14:25:58+0000
+Translation-Revision-Date: 2021-09-30 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Bild på ny funktionsikon</string>
+    <string name="settings_switch_store">Växla butik</string>
+    <string name="product_update_failure_notification">Uppdatering av produkt %1$s misslyckades</string>
+    <string name="product_update_success_notification_content">%1$d bilder har lagts till för produkten %2$s</string>
+    <string name="product_update_success_notification_title">Produkt uppdaterad</string>
+    <string name="product_update_notification">Uppdaterar produkt %1$s</string>
+    <string name="product_detail_background_image_upload">Bilduppladdning kommer fortsätta i bakgrunden</string>
+    <string name="card_reader_payment_save_for_later">Spara kvitto och fortsätt</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Vi kan inte läsa in Beställningstillägg för närvarande</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Något gick fel</string>
+    <string name="settings_whats_new">Vad som är nytt i WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Visa utökningar</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Vi kan tyvärr inte ändra den här funktionsinställningen för tillfället</string>
+    <string name="product_category">Kategori</string>
+    <string name="notification_review_title">Du har 1 ny recension! 🌟</string>
+    <string name="notification_order_title">Du har 1 ny beställning! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d artikel</string>
     <string name="upsell_product_count_many">%d merförsäljningsprodukter</string>
     <string name="upsell_product_count_one">%d merförsäljningsprodukt</string>
@@ -44,7 +61,6 @@ Language: sv_SE
     <string name="card_reader_onboarding_generic_error_hint">Vi kunde inte verifiera personliga betalningar för den här butiken.</string>
     <string name="card_reader_onboarding_generic_error_header">Det gick inte att verifiera personliga betalningar för den här butiken.</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Spara till senare</string>
     <string name="card_reader_purchase_card_reader">Beställ kortläsare</string>
     <string name="card_reader_manage_card_reader">Hantera kortläsare</string>
     <string name="shipping_label_multiple_customs_form_print_button">Skriv ut</string>
@@ -429,11 +445,11 @@ Language: sv_SE
     <string name="shipping_label_create_packaging_details">Förpackningsinformation</string>
     <string name="shipping_label_create_title">Skapa fraktetikett</string>
     <string name="shipping_label_more_information_link">Läs mer</string>
-    <string name="shipping_label_more_information_message">Skippa kön på postkontoret genom att skriva ut fraktetiketter till rabatterade priser hemma med din telefon!</string>
+    <string name="shipping_label_more_information_message">Skippa kön på postkontoret genom att skriva ut fraktetiketter till rabatterade priser hemma med din mobila enhet!</string>
     <string name="shipping_label_more_information_heading">Spara tid och pengar genom att fullfölja med WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Markera ordern som slutförd</string>
-    <string name="orderdetail_shipping_label_notice">Läs mer om att skapa etiketter med hjälp av din telefon</string>
+    <string name="orderdetail_shipping_label_notice">Lär dig mer om att skapa etiketter med din mobila enhet</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Skapa fraktetikett</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Du kan nu skapa fraktetiketter för alla fysiska beställningar direkt från din enhet med hjälp av gratistillägget WooCommerce Shipping. Tryck på \"Skapa fraktetikett\" för att prova vår betafunktion!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Skapa fraktetiketter från din enhet!</string>
@@ -494,6 +510,7 @@ Language: sv_SE
     <string name="my_store_stats_availability_title">Vi kan inte visa din\n butiks analys</string>
     <string name="login_get_link_by_email">Skaffa en länk för inloggning via e-post</string>
     <string name="email_not_registered_wpcom">Hmm. Vi hittar inget konto hos WordPress.com som är kopplat till denna e-postadress.</string>
+    <string name="settings_enable_product_addons_teaser_message">Testa att visa Beställningstillägg medan vi gör oss redo för lanseringen</string>
     <string name="settings_enable_product_adding_teaser_title">Skapar produkter</string>
     <string name="settings_preferences">Inställningar</string>
     <string name="product_trash_error">Ett fel inträffade när produkten skulle slängas</string>
@@ -516,7 +533,7 @@ Language: sv_SE
     <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 tum)</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 tum)</string>
     <string name="shipping_label_preview_error">Fel vid förhandsgranskning av fraktetikett</string>
-    <string name="shipping_label_print_info">Vet du hur du skriver ut med din telefon?</string>
+    <string name="shipping_label_print_info">Vet du hur du skriver ut med din mobila enhet?</string>
     <string name="shipping_label_paper_size_options_info">Se alternativen för etikettlayout och pappersstorlek</string>
     <string name="shipping_label_print_button">Skriv ut fraktetikett</string>
     <string name="shipping_label_paper_size_options_title">Välj pappersstorlek</string>
@@ -1278,8 +1295,6 @@ Language: sv_SE
     <string name="error_copy_to_clipboard">Det gick inte att kopiera till urklipp</string>
     <string name="settings_switch_site_notifs_msg">Växlade till %s. Du kommer bara att få meddelanden för den här affären</string>
     <string name="login_update_required_desc">Den här affären använder en äldre version av WooCommerce. Uppgradera din affär till WooCommerce 3.5 eller senare för att använda den med den här appen.</string>
-    <string name="promo_message_site_picker">Du kan nu byta mellan butiker genom att trycka på den valda butiken i Inställningar</string>
-    <string name="promo_title_site_picker">Kör du flera butiker?</string>
     <string name="promo_btn_try_it">Prova nu</string>
     <string name="promo_btn_got_it">Klart</string>
     <string name="tooltip_site_switcher">Peka för att byta butiker</string>

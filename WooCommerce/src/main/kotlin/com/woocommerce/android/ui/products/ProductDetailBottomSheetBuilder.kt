@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import androidx.annotation.StringRes
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
@@ -32,7 +31,7 @@ class ProductDetailBottomSheetBuilder(
         PRODUCT_TAGS(string.product_tags, string.bottom_sheet_tags_desc),
         SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc),
         LINKED_PRODUCTS(string.product_detail_linked_products, string.bottom_sheet_linked_products_desc),
-        PRODUCT_DOWNLOADS(R.string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc)
+        PRODUCT_DOWNLOADS(string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc)
     }
 
     data class ProductDetailBottomSheetUiItem(
@@ -64,7 +63,6 @@ class ProductDetailBottomSheetBuilder(
             }
             EXTERNAL -> {
                 listOfNotNull(
-                    product.getShipping(),
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription(),

@@ -61,6 +61,12 @@ class AztecEditorFragment :
         aztec = Aztec.with(binding.visualEditor, binding.sourceEditor, binding.aztecToolbar, this)
             .setImageGetter(GlideImageLoader(requireContext()))
 
+        if (navArgs.productTitle.isNullOrBlank()) {
+            aztec.visualEditor.setHint(R.string.product_description_hint_no_title)
+        } else {
+            aztec.visualEditor.hint = getString(R.string.product_description_hint_with_title, navArgs.productTitle)
+        }
+
         aztec.initSourceEditorHistory()
 
         aztec.visualEditor.fromHtml(navArgs.aztecText)

@@ -1,0 +1,4 @@
+7.6:
+Ürünlerinize görsel eklemenin uygulamada kullanmayı sevdiğiniz özelliklerden biri olduğunu biliyoruz. Siz diğer görevlere devam ederken arka planda yükleme deneyimini iyileştirdik.
+
+Uygulamada birden fazla mağaza yönetiyorsanız bu haber sizi çok sevindirecek. Artık sadece mevcut mağazanız için değil, tüm mağazalarınız için anlık bildirimler alacaksınız. Sürpriz!

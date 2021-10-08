@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-01 09:54:04+0000
+Translation-Revision-Date: 2021-09-29 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">新機能アイコンの画像</string>
+    <string name="settings_switch_store">ストアを切り替える</string>
+    <string name="product_update_failure_notification">商品 %1$s の更新に失敗しました。</string>
+    <string name="product_update_success_notification_content">%1$d個の画像が商品 %2$s に追加されました</string>
+    <string name="product_update_success_notification_title">商品を更新</string>
+    <string name="product_update_notification">商品を更新しています %1$s</string>
+    <string name="product_detail_background_image_upload">画像のアップロードはバックグラウンドで続行されます</string>
+    <string name="card_reader_payment_save_for_later">レシピを保存して続行</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">注文アドオンを読み込めませんでした</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">問題が発生しました</string>
+    <string name="settings_whats_new">WooCommerce の最新情報</string>
+    <string name="settings_enable_product_addons_teaser_title">アドオンを表示</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">現在はこの機能の設定を変更できません</string>
+    <string name="product_category">カテゴリー</string>
+    <string name="notification_review_title">1件の新しいレビューがあります。 🌟</string>
+    <string name="notification_order_title">1件の新しい注文があります。 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d アイテム</string>
     <string name="upsell_product_count_many">%dアップセル商品</string>
     <string name="upsell_product_count_one">%dアップセル商品</string>
@@ -44,7 +61,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_generic_error_hint">このストアのオフラインでの支払いを検証できませんでした</string>
     <string name="card_reader_onboarding_generic_error_header">このストアのオフラインでの支払いを検証できません</string>
     <string name="card_reader_detail_connected_firmware_version">ファームウェア: %s</string>
-    <string name="card_reader_payment_save_for_later">保存して後で使用</string>
     <string name="card_reader_purchase_card_reader">カードリーダーを注文</string>
     <string name="card_reader_manage_card_reader">カードリーダーを管理</string>
     <string name="shipping_label_multiple_customs_form_print_button">印刷</string>
@@ -106,6 +122,7 @@ Language: ja_JP
     <string name="product_attributes_created_generate_action_text">バリエーションを生成</string>
     <string name="product_attributes_created_description">属性の追加が完了しました。最初のバリエーションを作成してください。</string>
     <string name="product_attributes_created_title">属性を作成しました</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">実行中のソフトウェア更新をキャンセルすることは推奨されません</string>
     <string name="card_reader_payment_failed_unexpected_error_state">支払いを処理できませんでした</string>
     <string name="card_reader_payment_failed_server_error_state">サーバーに接続していません</string>
@@ -428,11 +445,11 @@ Language: ja_JP
     <string name="shipping_label_create_packaging_details">梱包の詳細</string>
     <string name="shipping_label_create_title">配送ラベルを作成</string>
     <string name="shipping_label_more_information_link">さらに詳しく</string>
-    <string name="shipping_label_more_information_message">自宅でスマートフォンを使い、割引料金で配送ラベルを印刷して、郵便局での待ち時間をカット !</string>
+    <string name="shipping_label_more_information_message">自宅でモバイルデバイスを使い、割引料金で配送ラベルを印刷して、郵便局での待ち時間をカット !</string>
     <string name="shipping_label_more_information_heading">WooCommerce Shipping を利用して、時間とお金を節約</string>
     <string name="shipping_label_more_information_title">WooCommerce の送料</string>
     <string name="order_mark_complete">注文を完了としてマーク</string>
-    <string name="orderdetail_shipping_label_notice">スマートフォンでのラベル作成に関する詳細はこちら</string>
+    <string name="orderdetail_shipping_label_notice">モバイルデバイスでのラベル作成に関する詳細はこちら</string>
     <string name="orderdetail_shipping_label_create_shipping_label">配送ラベルを作成</string>
     <string name="orderdetail_shipping_label_m3_wip_message">無料の WooCommerce Shipping プラグインを使用して、お使いの端末から直接、すべての物理的な注文の配送ラベルを作成できるようになりました。 「配送ラベルを作成」をタップしてベータ機能をお試しください !</string>
     <string name="orderdetail_shipping_label_m2_wip_title">スマートフォンを使って配送ラベルを作成 !</string>
@@ -493,6 +510,7 @@ Language: ja_JP
     <string name="my_store_stats_availability_title">ストアのアナリティクスを表示できません</string>
     <string name="login_get_link_by_email">ログインリンクをメールで取得</string>
     <string name="email_not_registered_wpcom">このメールアドレスに紐付けられている WordPress.com アカウントが見つかりません</string>
+    <string name="settings_enable_product_addons_teaser_message">起動の準備ができたら、注文アドオンの表示をテストします</string>
     <string name="settings_enable_product_adding_teaser_title">商品を作成中</string>
     <string name="settings_preferences">設定</string>
     <string name="product_trash_error">商品をゴミ箱へ移動中にエラーが発生しました</string>
@@ -515,7 +533,7 @@ Language: ja_JP
     <string name="shipping_label_paper_size_letter">レター (8.5 x 11インチ)</string>
     <string name="shipping_label_paper_size_legal">リーガル (8.5 x 14インチ)</string>
     <string name="shipping_label_preview_error">配送ラベルのプレビューでエラーが発生しました</string>
-    <string name="shipping_label_print_info">スマートフォンから印刷する方法をご存知ですか ?</string>
+    <string name="shipping_label_print_info">モバイルデバイスから印刷する方法をご存知ですか ?</string>
     <string name="shipping_label_paper_size_options_info">ラベルのレイアウトと用紙サイズのオプションを見る</string>
     <string name="shipping_label_print_button">配送ラベルを印刷</string>
     <string name="shipping_label_paper_size_options_title">用紙サイズを選択</string>
@@ -1277,8 +1295,6 @@ Language: ja_JP
     <string name="error_copy_to_clipboard">クリップボードへのコピー中にエラーが発生しました</string>
     <string name="settings_switch_site_notifs_msg">%s に切り替えました。このストアの通知のみ受信します。</string>
     <string name="login_update_required_desc">このストアは古いバージョンの WooCommerce を使用しています。このアプリで使用するには、ストアの WooCommerce を 3.5以上にアップグレードしてください。</string>
-    <string name="promo_message_site_picker">「設定」で選択したストアをタップすると、ストアの切り替えができます</string>
-    <string name="promo_title_site_picker">複数のストアを実行していますか ?</string>
     <string name="promo_btn_try_it">今すぐお試しください</string>
     <string name="promo_btn_got_it">了解</string>
     <string name="tooltip_site_switcher">タップするとストアの切り替えができます</string>
