@@ -10,7 +10,7 @@ import org.wordpress.android.util.ActivityUtils
 
 @AndroidEntryPoint
 class EditCustomerOrderNoteFragment :
-    BaseOrderEditFragment(R.layout.fragment_edit_customer_order_note) {
+    BaseOrderEditingFragment(R.layout.fragment_edit_customer_order_note) {
     companion object {
         const val TAG = "EditCustomerOrderNoteFragment"
         private const val KEY_ORIGINAL_NOTE = "original_note"

@@ -18,7 +18,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
+abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
