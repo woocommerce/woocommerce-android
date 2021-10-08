@@ -12,7 +12,7 @@
             "isJetpackActive": true,
             "isJetpackConnected": true,
             "isWordPressDotCom": true,
-            "urlAfterRedirects": "https:\/\/automatticwidgets.wpcomstaging.com",
+            "urlAfterRedirects": "https:\/\/automatticwidgets.com",
             "jetpackVersion": false
         },
         "headers": {

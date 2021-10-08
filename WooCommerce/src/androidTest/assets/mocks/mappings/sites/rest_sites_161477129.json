@@ -17,7 +17,7 @@
             "ID": 161477129,
             "name": "Automattic Widgets",
             "description": "",
-            "URL": "https:\/\/automatticwidgets.wpcomstaging.com",
+            "URL": "https:\/\/automatticwidgets.com",
             "capabilities": {
                 "edit_pages": true,
                 "edit_posts": true,
@@ -50,11 +50,11 @@
                 "blog_public": 1,
                 "videopress_enabled": false,
                 "upgraded_filetypes_enabled": true,
-                "login_url": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-login.php",
-                "admin_url": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-admin\/",
+                "login_url": "https:\/\/automatticwidgets.com\/wp-login.php",
+                "admin_url": "https:\/\/automatticwidgets.com\/wp-admin\/",
                 "is_mapped_domain": true,
                 "is_redirect": false,
-                "unmapped_url": "https:\/\/automatticwidgets.wpcomstaging.com",
+                "unmapped_url": "https:\/\/automatticwidgets.com",
                 "featured_images_enabled": true,
                 "theme_slug": "storefront",
                 "header_image": false,
@@ -104,7 +104,7 @@
                 "is_wpforteams_site": false,
                 "is_cloud_eligible": false,
                 "jetpack_version": "8.9",
-                "main_network_site": "https:\/\/automatticwidgets.wpcomstaging.com",
+                "main_network_site": "https:\/\/automatticwidgets.com",
                 "active_modules": ["carousel", "comment-likes", "comments", "contact-form", "copy-post", "custom-content-types", "custom-css", "enhanced-distribution", "gravatar-hovercards", "infinite-scroll", "json-api", "latex", "lazy-images", "likes", "masterbar", "notes", "photon", "photon-cdn", "post-by-email", "protect", "publicize", "sharedaddy", "shortcodes", "shortlinks", "sitemaps", "sso", "stats", "subscriptions", "tiled-gallery", "verification-tools", "widget-visibility", "widgets", "woocommerce-analytics"],
                 "max_upload_size": 2146435072,
                 "wp_memory_limit": 268435456,
@@ -156,7 +156,7 @@
                     "help": "https:\/\/public-api.wordpress.com\/rest\/v1.2\/sites\/161477129\/help",
                     "posts": "https:\/\/public-api.wordpress.com\/rest\/v1.2\/sites\/161477129\/posts\/",
                     "comments": "https:\/\/public-api.wordpress.com\/rest\/v1.1\/sites\/161477129\/comments\/",
-                    "xmlrpc": "https:\/\/automatticwidgets.wpcomstaging.com\/xmlrpc.php"
+                    "xmlrpc": "https:\/\/automatticwidgets.com\/xmlrpc.php"
                 }
             }
         }

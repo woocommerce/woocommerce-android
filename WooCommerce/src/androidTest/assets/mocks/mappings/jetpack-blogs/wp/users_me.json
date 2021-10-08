@@ -29,7 +29,7 @@
         "email": "woocommercescreenshotuser@example.com",
         "url": "",
         "description": "",
-        "link": "https:\/\/automatticwidgets.wpcomstaging.com\/author\/woocommercescreenshotuser\/",
+        "link": "https:\/\/automatticwidgets.com\/author\/woocommercescreenshotuser\/",
         "locale": "en_US",
         "nickname": "woocommercescreenshotuser",
         "slug": "woocommercescreenshotuser",
@@ -188,10 +188,10 @@
         },
         "_links": {
           "self": [{
-            "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wp\/v2\/users\/742099"
+            "href": "https:\/\/automatticwidgets.com\/wp-json\/wp\/v2\/users\/742099"
           }],
           "collection": [{
-            "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wp\/v2\/users"
+            "href": "https:\/\/automatticwidgets.com\/wp-json\/wp\/v2\/users"
           }]
         }
       }
