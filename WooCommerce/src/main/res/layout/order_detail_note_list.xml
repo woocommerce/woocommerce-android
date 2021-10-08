@@ -13,12 +13,11 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/notesList_lblNotes"
             style="@style/Woo.Card.Header"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/orderdetail_order_notes"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/divider"

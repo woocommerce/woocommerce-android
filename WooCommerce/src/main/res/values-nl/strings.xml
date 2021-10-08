@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:16:05+0000
+Translation-Revision-Date: 2021-09-29 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Nieuwe afbeelding van functiepictogram</string>
+    <string name="settings_switch_store">Winkel wijzigen</string>
+    <string name="product_update_failure_notification">Het is niet gelukt om product %1$s bij te werken</string>
+    <string name="product_update_success_notification_content">%1$d afbeeldingen zijn toegevoegd aan het product %2$s</string>
+    <string name="product_update_success_notification_title">Product bijgewerkt</string>
+    <string name="product_update_notification">Product wordt bijgewerkt %1$s</string>
+    <string name="product_detail_background_image_upload">Afbeeldingen worden op de achtergrond geüpload</string>
+    <string name="card_reader_payment_save_for_later">Sla kwitantie op en ga verder</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">We konden helaas de bestelling met add-ons nu niet laden</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Er is iets fout gegaan</string>
     <string name="settings_whats_new">Nieuw in WooCommerce</string>
     <string name="settings_enable_product_addons_teaser_title">Add-ons bekijken</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">We kunnen deze functie-instelling momenteel niet wijzigen</string>
@@ -50,7 +61,6 @@ Language: nl
     <string name="card_reader_onboarding_generic_error_hint">We kunnen fysieke betalingen helaas niet verifiëren voor deze winkel</string>
     <string name="card_reader_onboarding_generic_error_header">Fysieke betalingen kunnen niet worden geverifieerd voor deze winkel</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Opslaan voor later</string>
     <string name="card_reader_purchase_card_reader">Kaartlezer bestellen</string>
     <string name="card_reader_manage_card_reader">Kaartlezer beheren</string>
     <string name="shipping_label_multiple_customs_form_print_button">Afdrukken</string>
@@ -1285,8 +1295,6 @@ Language: nl
     <string name="error_copy_to_clipboard">Fout bij kopiëren naar klembord</string>
     <string name="settings_switch_site_notifs_msg">Omgezet naar %s Je ontvangt alleen meldingen voor deze winkel</string>
     <string name="login_update_required_desc">Deze winkel maakt gebruik van een oudere versie van WooCommerce. Upgrade je winkel naar WooCommerce 3.5 of hoger om deze app te kunnen gebruiken.</string>
-    <string name="promo_message_site_picker">Je kunt nu omschakelen tussen winkels door in Instellingen op de geselecteerde winkel te tikken</string>
-    <string name="promo_title_site_picker">Heb je meerdere winkels onder je beheer?</string>
     <string name="promo_btn_try_it">Probeer het nu</string>
     <string name="promo_btn_got_it">Duidelijk</string>
     <string name="tooltip_site_switcher">Tik om tussen winkels te schakelen</string>

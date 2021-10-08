@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:17:26+0000
+Translation-Revision-Date: 2021-09-29 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">新機能アイコンの画像</string>
+    <string name="settings_switch_store">ストアを切り替える</string>
+    <string name="product_update_failure_notification">商品 %1$s の更新に失敗しました。</string>
+    <string name="product_update_success_notification_content">%1$d個の画像が商品 %2$s に追加されました</string>
+    <string name="product_update_success_notification_title">商品を更新</string>
+    <string name="product_update_notification">商品を更新しています %1$s</string>
+    <string name="product_detail_background_image_upload">画像のアップロードはバックグラウンドで続行されます</string>
+    <string name="card_reader_payment_save_for_later">レシピを保存して続行</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">注文アドオンを読み込めませんでした</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">問題が発生しました</string>
     <string name="settings_whats_new">WooCommerce の最新情報</string>
     <string name="settings_enable_product_addons_teaser_title">アドオンを表示</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">現在はこの機能の設定を変更できません</string>
@@ -50,7 +61,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_generic_error_hint">このストアのオフラインでの支払いを検証できませんでした</string>
     <string name="card_reader_onboarding_generic_error_header">このストアのオフラインでの支払いを検証できません</string>
     <string name="card_reader_detail_connected_firmware_version">ファームウェア: %s</string>
-    <string name="card_reader_payment_save_for_later">保存して後で使用</string>
     <string name="card_reader_purchase_card_reader">カードリーダーを注文</string>
     <string name="card_reader_manage_card_reader">カードリーダーを管理</string>
     <string name="shipping_label_multiple_customs_form_print_button">印刷</string>
@@ -1285,8 +1295,6 @@ Language: ja_JP
     <string name="error_copy_to_clipboard">クリップボードへのコピー中にエラーが発生しました</string>
     <string name="settings_switch_site_notifs_msg">%s に切り替えました。このストアの通知のみ受信します。</string>
     <string name="login_update_required_desc">このストアは古いバージョンの WooCommerce を使用しています。このアプリで使用するには、ストアの WooCommerce を 3.5以上にアップグレードしてください。</string>
-    <string name="promo_message_site_picker">「設定」で選択したストアをタップすると、ストアの切り替えができます</string>
-    <string name="promo_title_site_picker">複数のストアを実行していますか ?</string>
     <string name="promo_btn_try_it">今すぐお試しください</string>
     <string name="promo_btn_got_it">了解</string>
     <string name="tooltip_site_switcher">タップするとストアの切り替えができます</string>

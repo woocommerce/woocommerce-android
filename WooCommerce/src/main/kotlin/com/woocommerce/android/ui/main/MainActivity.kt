@@ -54,6 +54,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -407,7 +408,8 @@ class MainActivity :
                 R.id.addOrderNoteFragment,
                 R.id.printShippingLabelInfoFragment,
                 R.id.shippingLabelFormatOptionsFragment,
-                R.id.printingInstructionsFragment -> {
+                R.id.printingInstructionsFragment,
+                R.id.editCustomerOrderNoteFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -729,6 +731,13 @@ class MainActivity :
                     }
                     is ViewReviewDetail -> {
                         showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
+                    }
+                    is RestartActivityForNotification -> {
+                        // Add flags for handling the push notification after restart
+                        intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
+                        intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
+                        intent.putExtra(FIELD_PUSH_ID, event.pushId)
+                        restart()
                     }
                     is ShowFeatureAnnouncement -> {
                         val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)

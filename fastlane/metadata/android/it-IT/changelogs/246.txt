@@ -1,4 +1,0 @@
-7.5:
-La visualizzazione degli ordini con i prodotti usando l'estensione Product Add-Ons di WooCommerce è una nuova funzionalità. Passa alle impostazioni del tuo negozio nell'app nella scheda Il mio negozio e attiva questa opzione in Funzionalità beta. Assicurati di inviarci un feedback sull'esperienza.
-
-Scoprirai anche che puoi filtrare l'elenco dei prodotti per categoria. Tu hai chiesto, noi abbiamo rilasciato.

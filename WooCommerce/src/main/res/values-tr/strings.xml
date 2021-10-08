@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:15:51+0000
+Translation-Revision-Date: 2021-09-29 21:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Yeni özellik simgesinin görseli</string>
+    <string name="settings_switch_store">Mağaza değiştir</string>
+    <string name="product_update_failure_notification">%1$s ürünü güncellenemedi</string>
+    <string name="product_update_success_notification_content">%2$s ürününe %1$d görsel eklendi</string>
+    <string name="product_update_success_notification_title">Ürün Güncellendi</string>
+    <string name="product_update_notification">Ürün güncelleniyor %1$s</string>
+    <string name="product_detail_background_image_upload">Görsel yükleme işlemi arka planda devam edecek </string>
+    <string name="card_reader_payment_save_for_later">Makbuzu kaydet ve devam et</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">Tamam</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Maalesef Sipariş Eklentilerini şu anda yükleyemedik</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Bir şeyler yanlış gitti</string>
     <string name="settings_whats_new">WooCommerce\'deki Yenilikler</string>
     <string name="settings_enable_product_addons_teaser_title">Eklentileri Görüntüle</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Maalesef şu anda bu özellik ayarını değiştiremedik</string>
@@ -50,7 +61,6 @@ Language: tr
     <string name="card_reader_onboarding_generic_error_hint">Maalesef bu mağaza için Şahsen Ödemeleri doğrulayamadık</string>
     <string name="card_reader_onboarding_generic_error_header">Bu mağaza için Şahsen Ödemeler doğrulanamıyor</string>
     <string name="card_reader_detail_connected_firmware_version">Ürün Yazılımı: %s</string>
-    <string name="card_reader_payment_save_for_later">Daha sonra kullanmak için kaydet</string>
     <string name="card_reader_purchase_card_reader">Kart Okuyucu Siparişi</string>
     <string name="card_reader_manage_card_reader">Kart Okuyucuyu Yönet</string>
     <string name="shipping_label_multiple_customs_form_print_button">Yazdır</string>
@@ -1285,8 +1295,6 @@ Language: tr
     <string name="error_copy_to_clipboard">Panoya kopyalamada hata</string>
     <string name="settings_switch_site_notifs_msg">%s mağazasına geçildi. Sadece bu mağaza için bildirim alacaksınız</string>
     <string name="login_update_required_desc">Bu mağazada WooCommerce\'in eski bir sürümü kullanılıyor. Lütfen bu uygulamayla kullanmak için mağazanızı WooCommerce 3.5 veya üstü bir sürüme yükseltin.</string>
-    <string name="promo_message_site_picker">Şimdi Ayarlar\'da seçilen mağazaya dokunarak mağazalar arasında geçiş yapabilirsiniz</string>
-    <string name="promo_title_site_picker">Birden fazla mağaza mı işletiyorsunuz?</string>
     <string name="promo_btn_try_it">Şimdi deneyin</string>
     <string name="promo_btn_got_it">Anladım</string>
     <string name="tooltip_site_switcher">Mağazalar arasında geçiş yapmak için dokunun</string>

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-16 22:17:53+0000
+Translation-Revision-Date: 2021-09-30 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="settings_whats_new_icon_description">Imagen del icono de la nueva función</string>
+    <string name="settings_switch_store">Cambiar de tienda</string>
+    <string name="product_update_failure_notification">Se ha producido un error al actualizar el producto %1$s</string>
+    <string name="product_update_success_notification_content">Se han añadido %1$d imágenes al producto %2$s</string>
+    <string name="product_update_success_notification_title">Producto actualizado</string>
+    <string name="product_update_notification">Actualizando el producto %1$s</string>
+    <string name="product_detail_background_image_upload">La subida de imágenes continuará en segundo plano</string>
+    <string name="card_reader_payment_save_for_later">Guarda el recibo y continua</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">Aceptar</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Lo sentimos, no hemos podido cargar los complementos del pedido en este momento</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Algo ha salido mal</string>
     <string name="settings_whats_new">Novedades de WooCommerce</string>
     <string name="settings_enable_product_addons_teaser_title">Ver complementos</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">No hemos podido cambiar la configuración de esta función</string>
@@ -50,7 +61,6 @@ Language: es
     <string name="card_reader_onboarding_generic_error_hint">No hemos podido verificar Pagos en Persona para esta tienda</string>
     <string name="card_reader_onboarding_generic_error_header">No se ha podido verificar Pagos en Persona para esta tienda</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Guardar para más adelante</string>
     <string name="card_reader_purchase_card_reader">Pedir el lector de tarjetas</string>
     <string name="card_reader_manage_card_reader">Gestionar el lector de tarjetas</string>
     <string name="shipping_label_multiple_customs_form_print_button">Imprimir</string>
@@ -1285,8 +1295,6 @@ Language: es
     <string name="error_copy_to_clipboard">Se ha producido un error al copiar en el portapapeles</string>
     <string name="settings_switch_site_notifs_msg">Se ha cambiado a %s. Solo recibirás notificaciones de esta tienda</string>
     <string name="login_update_required_desc">Esta tienda usa una versión antigua de WooCommerce. Actualiza tu tienda a WooCommerce 3.5 o a una versión posterior para usarla con esta aplicación.</string>
-    <string name="promo_message_site_picker">Ahora puedes cambiar de tienda con tan solo tocar la tienda seleccionada en Configuración</string>
-    <string name="promo_title_site_picker">¿Gestionas más de una tienda?</string>
     <string name="promo_btn_try_it">Probar ahora</string>
     <string name="promo_btn_got_it">De acuerdo</string>
     <string name="tooltip_site_switcher">Toca para cambiar de tienda</string>

@@ -2,13 +2,17 @@ package com.woocommerce.android
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.push.WooNotificationBuilder
@@ -17,35 +21,27 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
-import com.woocommerce.android.util.AppThemeUtils
-import com.woocommerce.android.util.ApplicationLifecycleMonitor
+import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.util.*
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
-import com.woocommerce.android.util.PackageUtils
-import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
-import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
-import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import javax.inject.Inject
@@ -77,13 +73,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
 
     @Inject lateinit var prefs: AppPrefs
-    @Inject lateinit var cardPresentEligibleFeatureChecker: CardPresentEligibleFeatureChecker
+
+    @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
 
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
-
-    private var appInForegroundScope: CoroutineScope? = null
 
     /**
      * Update WP.com and WooCommerce settings in a background task.
@@ -91,20 +86,11 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     private val updateSelectedSite: RateLimitedTask = object : RateLimitedTask(SECONDS_BETWEEN_SITE_UPDATE) {
         override fun run(): Boolean {
             selectedSite.getIfExists()?.let {
-                dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(it))
+                appCoroutineScope.launch {
+                    wooCommerceStore.fetchWooCommerceSite(it)
+                }
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchProductSettingsAction(it))
-            }
-            return true
-        }
-    }
-
-    private val checkIfPaymentsEligible: RateLimitedTask = object : RateLimitedTask(
-        CardPresentEligibleFeatureChecker.CACHE_VALIDITY_TIME_S
-    ) {
-        override fun run(): Boolean {
-            appInForegroundScope = CoroutineScope(Dispatchers.IO).apply {
-                launch { cardPresentEligibleFeatureChecker.doCheck() }
             }
             return true
         }
@@ -156,7 +142,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
-            checkIfPaymentsEligible.runIfNotLimited()
         }
     }
 
@@ -166,7 +151,16 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         if (networkStatus.isConnected() && accountStore.hasAccessToken()) {
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
-            dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
+            appCoroutineScope.launch {
+                wooCommerceStore.fetchWooCommerceSites()
+                if (!selectedSite.exists() && ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)) {
+                    // The previously selected site is not connected anymore, take the user to the site picker
+                    WooLog.i(DASHBOARD, "Selected site no longer exists, showing site picker")
+                    val intent = Intent(application, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    application.startActivity(intent)
+                }
+            }
 
             // Update the user info for the currently logged in user
             if (selectedSite.exists()) {
@@ -182,8 +176,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             connectionReceiverRegistered = false
             application.unregisterReceiver(connectionReceiver)
         }
-
-        appInForegroundScope?.cancel()
     }
 
     private fun isGooglePlayServicesAvailable(context: Context): Boolean {

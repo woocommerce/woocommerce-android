@@ -49,6 +49,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
@@ -211,6 +213,7 @@ class ProductDetailViewModel @Inject constructor(
         get() = parameters.currencyCode.orEmpty()
 
     private var imageUploadsJob: Job? = null
+    private val mutex = Mutex()
 
     init {
         start()
@@ -928,9 +931,11 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun updateCards(product: Product) {
         launch(dispatchers.io) {
-            val cards = cardBuilder.buildPropertyCards(product, viewState.storedProduct?.sku ?: "")
-            withContext(dispatchers.main) {
-                _productDetailCards.value = cards
+            mutex.withLock {
+                val cards = cardBuilder.buildPropertyCards(product, viewState.storedProduct?.sku ?: "")
+                withContext(dispatchers.main) {
+                    _productDetailCards.value = cards
+                }
             }
         }
         fetchBottomSheetList()

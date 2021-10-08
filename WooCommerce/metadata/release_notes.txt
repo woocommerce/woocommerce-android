@@ -1,3 +1,3 @@
-Viewing orders with products using WooCommerce’s Product Add-Ons Extension is a new feature! Head over to your store’s settings in the app on the My store tab and turn this on under Beta features. Be sure to send us feedback about the experience!
+- [***] In-Person Payments: Added support for accepting In-Person Card Payments in the US
+- [*] Help & Support: A site's System Status Report can now be found, copied, and shared from Settings > Help & Support > System Status Report [https://github.com/woocommerce/woocommerce-android/pull/4890]
 
-You’ll also find that you can filter the product list by category. You asked, and we delivered!

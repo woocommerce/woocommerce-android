@@ -41,15 +41,21 @@ class MainActivityViewModel @Inject constructor(
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()
             if (it.remoteSiteId != currentSite.siteId) {
+                // Update selected store
                 siteStore.getSiteBySiteId(it.remoteSiteId)?.let { updatedSite ->
                     selectedSite.set(updatedSite)
+                    // Recreate activity before showing notification
+                    triggerEvent(RestartActivityForNotification(localPushId, notification))
+                } ?: run {
+                    // If for any reason we can't get the store, show the default screen
+                    triggerEvent(ViewMyStoreStats)
                 }
-            }
-
-            when (localPushId) {
-                it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
-                it.noteId -> onZendeskNotificationOpened(localPushId, it.noteId.toLong())
-                else -> onSingleNotificationOpened(localPushId, it)
+            } else {
+                when (localPushId) {
+                    it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
+                    it.noteId -> onZendeskNotificationOpened(localPushId, it.noteId.toLong())
+                    else -> onSingleNotificationOpened(localPushId, it)
+                }
             }
         } ?: run {
             triggerEvent(ViewMyStoreStats)
@@ -115,6 +121,7 @@ class MainActivityViewModel @Inject constructor(
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
+    data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val localSiteId: Int, val remoteNoteId: Long) : Event()
