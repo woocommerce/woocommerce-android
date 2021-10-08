@@ -19,7 +19,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -178,23 +177,28 @@ class MyStorePresenter @Inject constructor(
 
     private fun handleTopPerformersResult(
         granularity: StatsGranularity,
-        result: WooResult<List<WCTopPerformerProductModel>>
+        result: Result<List<WCTopPerformerProductModel>>
     ) {
         myStoreView?.showTopPerformersSkeleton(false)
-        result.model?.let { topPerformers ->
-            topPerformers
-                .sortedWith(
-                    compareByDescending(WCTopPerformerProductModel::quantity)
-                        .thenByDescending(WCTopPerformerProductModel::total)
-                ).let {
-                    // Track fresh data loaded
-                    AnalyticsTracker.track(
-                        Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
-                        mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.toLowerCase())
-                    )
-                    myStoreView?.showTopPerformers(it, granularity)
-                } ?: myStoreView?.showTopPerformersError(granularity)
-        } ?: myStoreView?.showTopPerformersError(granularity)
+        result.fold(
+            onSuccess = { topPerformers ->
+                topPerformers
+                    .sortedWith(
+                        compareByDescending(WCTopPerformerProductModel::quantity)
+                            .thenByDescending(WCTopPerformerProductModel::total)
+                    ).let {
+                        // Track fresh data loaded
+                        AnalyticsTracker.track(
+                            Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
+                            mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.toLowerCase())
+                        )
+                        myStoreView?.showTopPerformers(it, granularity)
+                    }
+            },
+            onFailure = {
+                myStoreView?.showTopPerformersError(granularity)
+            }
+        )
     }
 
     override fun getSelectedSiteName(): String? =

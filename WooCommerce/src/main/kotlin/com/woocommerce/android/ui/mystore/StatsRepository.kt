@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.mystore.MyStorePresenter.Companion
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
@@ -17,7 +16,6 @@ import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
@@ -74,7 +72,7 @@ class StatsRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchProductLeaderboards(granularity: StatsGranularity, quantity: Int, forced: Boolean): WooResult<List<WCTopPerformerProductModel>> {
+    suspend fun fetchProductLeaderboards(granularity: StatsGranularity, quantity: Int, forced: Boolean): Result<List<WCTopPerformerProductModel>> {
         return when (forced) {
             true -> wcLeaderboardsStore.fetchProductLeaderboards(
                 site = selectedSite.get(),
@@ -85,6 +83,13 @@ class StatsRepository @Inject constructor(
                 site = selectedSite.get(),
                 unit = granularity
             )
+        }.let { result ->
+            val model = result.model
+            if (result.isError || model == null) {
+                Result.failure(Exception(result.error?.message.orEmpty()))
+            } else {
+                Result.success(model)
+            }
         }
     }
 
