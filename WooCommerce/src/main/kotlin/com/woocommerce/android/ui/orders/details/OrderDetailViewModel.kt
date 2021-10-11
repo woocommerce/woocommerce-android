@@ -247,8 +247,19 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(ViewPrintingInstructions)
     }
 
+    /**
+     * This is triggered when the user taps "Done" on any of the order editing fragments
+     */
     fun onOrderEdited() {
         reloadOrderDetails()
+    }
+
+    /**
+     * This is triggered when the above network request to edit an order fails
+     */
+    fun onOrderEditFailed() {
+        reloadOrderDetails()
+        triggerEvent(ShowSnackbar(string.order_error_update_general))
     }
 
     private fun loadReceiptUrl(): String? {
