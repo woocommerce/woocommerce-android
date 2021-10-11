@@ -99,6 +99,12 @@ object AppPrefs {
 
         // show card reader tutorial after a reader is connected
         SHOW_CARD_READER_CONNECTED_TUTORIAL,
+
+        // These two are used to check whether to show the Feature Announcement dialog or not during app upgrade.
+        // LAST_VERSION_WITH_ANNOUNCEMENT: the last version of the app where an announcement was shown,
+        // NEW_ANNOUNCEMENT_VIEWED: whether merchants have viewed the current version's announcement or not.
+        LAST_VERSION_WITH_ANNOUNCEMENT,
+        NEW_ANNOUNCEMENT_VIEWED,
     }
 
     fun init(context: Context) {
@@ -225,6 +231,17 @@ object AppPrefs {
 
     fun setShowCardReaderConnectedTutorial(show: Boolean) =
         setBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, show)
+
+    fun getLastVersionWithAnnouncement() =
+        getString(UndeletablePrefKey.LAST_VERSION_WITH_ANNOUNCEMENT, "0")
+
+    fun setLastVersionWithAnnouncement(version: String) =
+        setString(UndeletablePrefKey.LAST_VERSION_WITH_ANNOUNCEMENT, version)
+
+    fun isNewAnnouncementViewed() = getBoolean(UndeletablePrefKey.NEW_ANNOUNCEMENT_VIEWED, true)
+
+    fun setNewAnnouncementViewed(isViewed: Boolean) =
+        setBoolean(UndeletablePrefKey.NEW_ANNOUNCEMENT_VIEWED, isViewed)
 
     /**
      * Flag to check products features are enabled
