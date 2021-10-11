@@ -95,11 +95,6 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    // Show Feature Announcements if we already have one cached, or fetch only otherwise.
-    // We're not displaying fetch result immediately. This mimics the behavior in the WordPress app, and the reason is:
-    // "We can’t guarantee when response will be available and at what time the announcement will be displayed.
-    // Because of this, we store announcements in cache, and wait for the user to navigate to the main application
-    // screen, so we can show announcements in-between any actions."
     fun updateFeatureAnnouncements() {
         launch {
             featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
