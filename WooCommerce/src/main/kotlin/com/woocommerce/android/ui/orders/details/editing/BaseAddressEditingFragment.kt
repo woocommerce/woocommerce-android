@@ -6,7 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
 
-abstract class BaseEditAddressFragment :
+abstract class BaseAddressEditingFragment :
     BaseOrderEditingFragment(R.layout.fragment_base_edit_address) {
     companion object {
         const val TAG = "BaseEditAddressFragment"
