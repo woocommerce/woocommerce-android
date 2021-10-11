@@ -9,8 +9,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
 @AndroidEntryPoint
-class EditCustomerOrderNoteFragment :
-    BaseOrderEditFragment(R.layout.fragment_edit_customer_order_note) {
+class CustomerOrderNoteEditingFragment :
+    BaseOrderEditingFragment(R.layout.fragment_edit_customer_order_note) {
     companion object {
         const val TAG = "EditCustomerOrderNoteFragment"
     }
@@ -24,7 +24,7 @@ class EditCustomerOrderNoteFragment :
         _binding = FragmentEditCustomerOrderNoteBinding.bind(view)
 
         if (savedInstanceState == null) {
-            binding.customerOrderNoteEditor.setText(sharedViewModel.customerOrderNote)
+            binding.customerOrderNoteEditor.setText(sharedViewModel.order.customerNote)
             binding.customerOrderNoteEditor.requestFocus()
             ActivityUtils.showKeyboard(binding.customerOrderNoteEditor)
         }
@@ -52,11 +52,9 @@ class EditCustomerOrderNoteFragment :
         }
     }
 
-    override fun hasChanges() = getCustomerNote() != sharedViewModel.customerOrderNote
+    override fun hasChanges() = getCustomerNote() != sharedViewModel.order.customerNote
 
-    override fun saveChanges() {
-        sharedViewModel.updateCustomerOrderNote(getCustomerNote())
-    }
+    override fun saveChanges() = sharedViewModel.updateCustomerOrderNote(getCustomerNote())
 
     private fun getCustomerNote() = binding.customerOrderNoteEditor.text.toString()
 }

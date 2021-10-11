@@ -8,8 +8,8 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.CheckForUpdatesFailed
@@ -95,7 +95,8 @@ class CardReaderDetailViewModel @Inject constructor(
                 secondaryButtonState = ButtonState(
                     onActionClicked = ::onDisconnectClicked,
                     text = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
-                )
+                ),
+                onReaderNameLongClick = { onReadersNameLongClick(readerStatus.cardReader.id) },
             )
         } else {
             ConnectedState(
@@ -107,7 +108,8 @@ class CardReaderDetailViewModel @Inject constructor(
                     onActionClicked = ::onDisconnectClicked,
                     text = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
                 ),
-                secondaryButtonState = null
+                secondaryButtonState = null,
+                onReaderNameLongClick = { onReadersNameLongClick(readerStatus.cardReader.id) },
             )
         }
     }
@@ -150,9 +152,19 @@ class CardReaderDetailViewModel @Inject constructor(
         appPrefs.removeLastConnectedCardReaderId()
     }
 
+    private fun onReadersNameLongClick(readersName: String?) {
+        if (readersName.isNullOrBlank()) return
+        triggerEvent(CardReaderDetailEvent.CopyReadersNameToClipboard(readersName))
+        triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_readers_name_clipboard))
+    }
+
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
         data class CardReaderUpdateScreen(val startedByUser: Boolean) : NavigationTarget()
+    }
+
+    sealed class CardReaderDetailEvent : Event() {
+        data class CopyReadersNameToClipboard(val readersName: String) : CardReaderDetailEvent()
     }
 
     sealed class ViewState {
@@ -179,7 +191,8 @@ class CardReaderDetailViewModel @Inject constructor(
             val readerBattery: UiString?,
             val readerFirmwareVersion: UiString,
             val primaryButtonState: ButtonState?,
-            val secondaryButtonState: ButtonState?
+            val secondaryButtonState: ButtonState?,
+            val onReaderNameLongClick: (() -> Unit),
         ) : ViewState() {
             val learnMoreLabel = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true)
 
@@ -215,6 +228,6 @@ private fun CardReader.getReadersBatteryLevel(): UiString? {
 private fun CardReader.getReaderFirmwareVersion(): UiString {
     return UiStringRes(
         R.string.card_reader_detail_connected_firmware_version,
-        listOf(UiStringText(this.firmwareVersion.substringBefore("-")))
+        listOf(UiStringText(firmwareVersion))
     )
 }

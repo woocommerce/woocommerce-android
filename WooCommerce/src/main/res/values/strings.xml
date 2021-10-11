@@ -846,6 +846,7 @@
     <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed</string>
     <string name="card_reader_detail_connected_update_success">Reader\’s software updated</string>
     <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Reader\'s serial number copied to the clipboard</string>
 
     <!--
         Card Reader Software update
