@@ -44,7 +44,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when country not supported, then country not supported state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.CountryNotSupported(""))
+                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
 
             val viewModel = createVM()
 
@@ -55,7 +55,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when country not supported, then current store country name shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.CountryNotSupported("US"))
+                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported("US"))
             val viewModel = createVM()
 
             val countryName = (viewModel.viewStateData.value as UnsupportedCountryState).headerLabel.params[0]
@@ -67,7 +67,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given country not supported, when learn more clicked, then app shows learn more section`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.CountryNotSupported(""))
+                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
             val viewModel = createVM()
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
@@ -80,7 +80,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given country not supported, when contact support clicked, then app navigates to support screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.CountryNotSupported(""))
+                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
             val viewModel = createVM()
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onContactSupportActionClicked.invoke()
@@ -258,7 +258,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when country not supported, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.CountryNotSupported(""))
+                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
 
             createVM()
 

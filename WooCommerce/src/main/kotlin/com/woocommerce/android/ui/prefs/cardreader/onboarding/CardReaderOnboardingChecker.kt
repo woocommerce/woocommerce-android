@@ -34,7 +34,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
         val countryCode = getCountryCode()
-        if (!isCountrySupported(countryCode)) return CountryNotSupported(countryCode)
+        if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
@@ -119,7 +119,7 @@ sealed class CardReaderOnboardingState {
     /**
      * Store is not located in one of the supported countries.
      */
-    data class CountryNotSupported(val countryCode: String?) : CardReaderOnboardingState()
+    data class StoreCountryNotSupported(val countryCode: String?) : CardReaderOnboardingState()
 
     /**
      * WCPay plugin is not installed on the store.
