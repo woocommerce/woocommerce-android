@@ -106,6 +106,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value = OnboardingViewState.NoConnectionErrorState(
                         onRetryButtonActionClicked = ::refreshState
                     )
+                is CardReaderOnboardingState.StripeAccountCountryNotSupported ->
+                    viewState.value = OnboardingViewState.UnsupportedCountryState(
+                        convertCountryCodeToCountry(state.countryCode),
+                        ::onContactSupportClicked,
+                        ::onLearnMoreClicked
+                    )
             }.exhaustive
         }
     }
@@ -124,6 +130,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             is CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
             CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
             CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
+            is CardReaderOnboardingState.StripeAccountCountryNotSupported -> "account_country_not_supported"
             CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
             CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
             CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"

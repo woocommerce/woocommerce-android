@@ -385,6 +385,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         hadOverdueRequirements: Boolean = false,
         liveAccount: Boolean = true,
         testModeEnabled: Boolean? = false,
+        countryCode: String = "US",
     ) = WooResult(
         WCPaymentAccountResult(
             status,
@@ -393,7 +394,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             currentDeadline = null,
             statementDescriptor = "",
             storeCurrencies = WCPaymentAccountResult.WCPayAccountStatusEnum.StoreCurrencies("", listOf()),
-            country = "US",
+            country = countryCode,
             isCardPresentEligible = true,
             isLive = liveAccount,
             testMode = testModeEnabled
