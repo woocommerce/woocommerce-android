@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.getColorCompat
 import org.wordpress.android.util.DisplayUtils.dpToPx
 import java.lang.Math.toDegrees
 import kotlin.math.acos
@@ -34,9 +35,9 @@ class CircleProgressOverlayView @JvmOverloads constructor(
             invalidate()
         }
 
-    private var progressColor: Int = context.getColor(R.color.color_on_primary)
-    private var restColor: Int = context.getColor(R.color.color_on_secondary)
-    private var borderColor: Int = context.getColor(R.color.color_accent_1)
+    private var progressColor: Int = context.getColorCompat(R.color.color_on_primary)
+    private var restColor: Int = context.getColorCompat(R.color.color_on_secondary)
+    private var borderColor: Int = context.getColorCompat(R.color.color_accent_1)
     private var borderSizePx: Int = dpToPx(context, 2)
 
     private val progressPaint by lazy {
