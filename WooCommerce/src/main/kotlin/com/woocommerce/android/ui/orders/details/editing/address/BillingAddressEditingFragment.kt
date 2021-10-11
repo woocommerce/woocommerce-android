@@ -6,7 +6,6 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override val storedAddress: Address
         get() = sharedViewModel.order.billingAddress
 
-    override fun saveChanges(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun saveChanges() =
+        sharedViewModel.updateBillingAddress(addressDraft)
 }
