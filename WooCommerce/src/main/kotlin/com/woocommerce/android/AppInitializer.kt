@@ -116,7 +116,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         application.registerActivityLifecycleCallbacks(lifecycleMonitor)
         application.registerComponentCallbacks(lifecycleMonitor)
 
-        trackStartupAnalytics()
+        handleAppInstallOrUpgrade()
 
         zendeskHelper.setupZendesk(
             application, BuildConfig.ZENDESK_DOMAIN, BuildConfig.ZENDESK_APP_ID,
@@ -204,34 +204,44 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
     }
 
-    private fun trackStartupAnalytics() {
+    private fun handleAppInstallOrUpgrade() {
         // Track app upgrade and install
         val versionCode = PackageUtils.getVersionCode(application)
         val oldVersionCode = prefs.getLastAppVersionCode()
 
-        if (oldVersionCode == 0) {
-            AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
-
-            // Store the current app version code to SharedPrefs, even if the value is -1
-            // to prevent duplicate install events being called
-            prefs.setLastAppVersionCode(versionCode)
-        } else if (oldVersionCode < versionCode) {
-            // Track upgrade event only if oldVersionCode is not -1, to prevent
-            // duplicate upgrade events being called
-            if (oldVersionCode > PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
-                AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
+        when {
+            oldVersionCode == 0 -> {
+                AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
+                // Store the current app version code to SharedPrefs, even if the value is -1
+                // to prevent duplicate install events being called
+                prefs.setLastAppVersionCode(versionCode)
             }
+            oldVersionCode < versionCode -> {
+                // Track upgrade event only if oldVersionCode is not -1, to prevent
+                // duplicate upgrade events being called
+                if (oldVersionCode > PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
+                    AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
 
-            // store the latest version code to SharedPrefs, only if the value
-            // is greater than the stored version code
-            prefs.setLastAppVersionCode(versionCode)
-        } else if (versionCode == PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
-            // we are not able to read the current app version code
-            // track this event along with the last stored version code
-            AnalyticsTracker.track(
-                Stat.APPLICATION_VERSION_CHECK_FAILED,
-                mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
-            )
+                    // Optimistically assume that there is a new announcement that has not been seen yet.
+                    // This does not always mean that a new announcement exists, and as such this preference
+                    // has to be used with other checks to decide whether to show the Feature Announcement dialog
+                    // or not.
+                    // For more details, check its usage in MainActivityViewModel.
+                    prefs.setNewAnnouncementViewed(false)
+                }
+
+                // store the latest version code to SharedPrefs, only if the value
+                // is greater than the stored version code
+                prefs.setLastAppVersionCode(versionCode)
+            }
+            versionCode == PackageUtils.PACKAGE_VERSION_CODE_DEFAULT -> {
+                // we are not able to read the current app version code
+                // track this event along with the last stored version code
+                AnalyticsTracker.track(
+                    Stat.APPLICATION_VERSION_CHECK_FAILED,
+                    mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
+                )
+            }
         }
     }
 
