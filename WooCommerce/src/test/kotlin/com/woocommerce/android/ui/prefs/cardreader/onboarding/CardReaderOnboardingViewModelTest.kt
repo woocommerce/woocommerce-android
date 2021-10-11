@@ -41,10 +41,21 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when country not supported, then country not supported state shown`() =
+    fun `when store country not supported, then country not supported state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+
+            val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedCountryState::class.java)
+        }
+
+    @Test
+    fun `when account country not supported, then country not supported state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(""))
 
             val viewModel = createVM()
 
@@ -255,7 +266,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when country not supported, then event tracked`() =
+    fun `when store country not supported, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
@@ -264,6 +275,20 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             verify(tracker).track(
                 AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "country_not_supported")
+            )
+        }
+
+    @Test
+    fun `when account country not supported, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(""))
+
+            createVM()
+
+            verify(tracker).track(
+                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
+                mapOf("reason" to "account_country_not_supported")
             )
         }
 
