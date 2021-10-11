@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
@@ -169,6 +170,8 @@ class OrderListFragment :
         } else {
             loadListForActiveTab()
         }
+
+        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
     }
 
     private fun initializeTabs() {
@@ -349,7 +352,7 @@ class OrderListFragment :
                         uiMessageResolver.showSnack(event.messageRes)
                         binding.orderRefreshLayout.isRefreshing = false
                     }
-                    else -> event.isHandled = false
+                    is ShowOrderFilters -> (activity as? MainNavigationRouter)?.showOrderFilters()else -> event.isHandled = false
                 }
             }
         )
