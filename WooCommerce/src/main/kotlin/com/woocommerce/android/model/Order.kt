@@ -53,7 +53,6 @@ data class Order(
     val shippingLines: List<ShippingLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
-
     val id
         get() = LocalOrRemoteId.RemoteId(this.remoteId)
 
