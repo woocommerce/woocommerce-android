@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
@@ -14,6 +15,24 @@ abstract class BaseAddressEditingFragment :
     }
 
     abstract val address: Address
+
+    val addressDraft
+        get() = binding.run {
+            Address(
+                firstName = firstName.getText(),
+                lastName = lastName.getText(),
+                email = email.getText(),
+                phone = phone.getText(),
+                company = company.getText(),
+                address1 = address1.getText(),
+                address2 = address2.getText(),
+                city = city.getText(),
+                postcode = postcode.getText(),
+                // temporary field assignments, must be replaced with actual input
+                country = address.country,
+                state = address.state
+            )
+        }
 
     private var _binding: FragmentBaseEditAddressBinding? = null
     private val binding get() = _binding!!
