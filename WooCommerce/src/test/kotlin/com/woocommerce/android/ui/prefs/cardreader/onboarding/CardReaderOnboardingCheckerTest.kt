@@ -116,6 +116,46 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when account country not supported, then STRIPE_COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
+        whenever(wcPayStore.loadAccount(site)).thenReturn(
+            buildPaymentAccountResult(
+                countryCode = "unsupported country abc"
+            )
+        )
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountCountryNotSupported::class.java)
+    }
+
+    @Test
+    fun `when account country supported, then ACCOUNT_COUNTRY_NOT_SUPPORTED not returned`() = testBlocking {
+        whenever(wcPayStore.loadAccount(site)).thenReturn(
+            buildPaymentAccountResult(
+                countryCode = "US"
+            )
+        )
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.StripeAccountCountryNotSupported::class.java)
+    }
+
+    @Test
+    fun `given country in lower case, when country supported, then ACCOUNT_COUNTRY_NOT_SUPPORTED not returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(
+                    countryCode = "us"
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isNotInstanceOf(CardReaderOnboardingState.StripeAccountCountryNotSupported::class.java)
+        }
+
+    @Test
     fun `when woocommerce payments plugin not installed, then WCPAY_NOT_INSTALLED returned`() =
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
