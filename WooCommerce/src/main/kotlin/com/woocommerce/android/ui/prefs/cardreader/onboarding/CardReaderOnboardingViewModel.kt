@@ -39,7 +39,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         refreshState()
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun refreshState() {
         launch {
             viewState.value = OnboardingViewState.LoadingState
@@ -122,6 +122,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
     }
 
+    @Suppress("ComplexMethod")
     private fun getTrackingReason(state: CardReaderOnboardingState): String? =
         when (state) {
             CardReaderOnboardingState.OnboardingCompleted -> null

@@ -46,7 +46,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GenericError
 
-        if (!isCountrySupported(paymentAccount.country))  return StripeAccountCountryNotSupported(paymentAccount.country)
+        if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
         if (!isWCPaySetupCompleted(paymentAccount)) return WcpaySetupNotCompleted
         if (isWCPayInTestModeWithLiveStripeAccount(paymentAccount)) return WcpayInTestModeWithLiveStripeAccount
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
