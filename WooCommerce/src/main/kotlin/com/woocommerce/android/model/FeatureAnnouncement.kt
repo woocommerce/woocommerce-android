@@ -19,35 +19,40 @@ data class FeatureAnnouncement(
         const val openEndedVersionBracketIndicator = "-1.0"
     }
 
+    // An announcement is valid and can be shown if:
+    // - It is already localized, and
+    // - Its features are not empty, and
+    // - Current app version is included in the `appVersionTargets` list, or current app version is within the range
+    //   of `minimumAppVersion` and `maximumAppVersion`
     fun canBeDisplayedOnAppUpgrade(appVersionName: String): Boolean {
-        val isTargetingCurrent = if (appVersionTargets.contains(appVersionName)) {
+        if (!isLocalized || features.isEmpty()) return false
+
+        return if (appVersionTargets.contains(appVersionName)) {
             true
         } else {
             val integerRepresentationOfVersionName = WhatsNewAppVersionUtils.versionNameToInt(appVersionName)
-
             if (integerRepresentationOfVersionName == -1) {
-                return false
-            }
+                false
+            } else {
+                val minAppVersion = WhatsNewAppVersionUtils.versionNameToInt(minimumAppVersion)
+                val maxAppVersion = WhatsNewAppVersionUtils.versionNameToInt(maximumAppVersion)
 
-            val minAppVersion = WhatsNewAppVersionUtils.versionNameToInt(minimumAppVersion)
-            val maxAppVersion = WhatsNewAppVersionUtils.versionNameToInt(maximumAppVersion)
-
-            when {
-                minimumAppVersion == openEndedVersionBracketIndicator -> {
-                    integerRepresentationOfVersionName <= maxAppVersion
-                }
-                maximumAppVersion == openEndedVersionBracketIndicator -> {
-                    integerRepresentationOfVersionName >= minAppVersion
-                }
-                else -> {
-                    IntRange(
-                        minAppVersion,
-                        maxAppVersion
-                    ).contains(integerRepresentationOfVersionName)
+                when {
+                    minimumAppVersion == openEndedVersionBracketIndicator -> {
+                        integerRepresentationOfVersionName <= maxAppVersion
+                    }
+                    maximumAppVersion == openEndedVersionBracketIndicator -> {
+                        integerRepresentationOfVersionName >= minAppVersion
+                    }
+                    else -> {
+                        IntRange(
+                            minAppVersion,
+                            maxAppVersion
+                        ).contains(integerRepresentationOfVersionName)
+                    }
                 }
             }
         }
-        return isLocalized && features.isNotEmpty() && isTargetingCurrent
     }
 }
 
