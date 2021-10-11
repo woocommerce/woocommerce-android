@@ -436,7 +436,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
-                orderDetailRepository.updateOrderStatus(order.toDataModel(), newStatus)
+                orderDetailRepository.updateOrderStatus(order.id, newStatus)
                     .collect { result ->
                         when (result) {
                             is OptimisticUpdateResult -> reloadOrderDetails()

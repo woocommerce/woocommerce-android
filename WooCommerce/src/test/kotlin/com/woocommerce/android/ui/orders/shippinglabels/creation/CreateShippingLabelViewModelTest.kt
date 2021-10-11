@@ -374,7 +374,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
         verify(orderDetailRepository).updateOrderStatus(
-            doneData.order.toDataModel(), CoreOrderStatus.COMPLETED.value
+            doneData.order.id, CoreOrderStatus.COMPLETED.value
         )
     }
 
