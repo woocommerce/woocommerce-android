@@ -21,7 +21,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Stock Status" />
+        tools:text="Filter Name" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/filterItemSelection"
