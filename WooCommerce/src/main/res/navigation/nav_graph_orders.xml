@@ -645,10 +645,5 @@
         android:id="@+id/baseEditAddressFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.BaseEditAddressFragment"
         android:label="BaseEditAddressFragment"
-        tools:layout="@layout/fragment_edit_order_address">
-        <argument
-            android:name="orderId"
-            app:argType="long"
-            app:nullable="false" />
-    </fragment>
+        tools:layout="@layout/fragment_edit_order_address"/>
 </navigation>
