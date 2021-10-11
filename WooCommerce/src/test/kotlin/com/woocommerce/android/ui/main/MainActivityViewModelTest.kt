@@ -89,6 +89,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         maximumAppVersion = "14.3",
         appVersionTargets = listOf("alpha-centauri-1", "alpha-centauri-2"),
         detailsUrl = "https://woocommerce.com/",
+        isLocalized = true,
         features = listOf(
             FeatureAnnouncementItem(
                 title = "Super Publishing",
@@ -110,7 +111,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
             )
         )
     )
-
 
     @Before
     fun setup() {
@@ -321,11 +321,11 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given existing announcement cache, when announcement is valid, then show dialog announcement`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        runBlockingTest {
             doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(true)
-            doReturn("14.2").whenever(buildConfigWrapper).versionName
             doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
             doReturn(false).whenever(prefs).isNewAnnouncementViewed()
+            doReturn("14.2").whenever(buildConfigWrapper).versionName
 
             viewModel.maybeShowFeatureAnnouncements()
             assertThat(viewModel.event.value).isEqualTo(ShowFeatureAnnouncement(testAnnouncement))
