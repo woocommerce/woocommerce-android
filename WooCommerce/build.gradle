@@ -68,6 +68,10 @@ android {
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
         buildConfigField "boolean", "USE_SIMULATED_READER", project.hasProperty("useSimulatedReader").toString()
+
+        packagingOptions {
+            exclude 'META-INF/gradle/incremental.annotation.processors'
+        }
     }
 
     buildFeatures {
@@ -290,6 +294,10 @@ dependencies {
     implementation "commons-io:commons-io:2.11.0"
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
+
+
+    implementation 'com.github.wordpress-mobile.WordPress-MediaPicker-Android:mediapicker:687099d'
+    implementation 'com.github.wordpress-mobile.WordPress-MediaPicker-Android:source-device:687099d'
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
