@@ -1,10 +1,26 @@
 package com.woocommerce.android.ui.orders.details.editing
 
+import android.os.Bundle
+import android.view.View
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 
 class BaseEditAddressFragment :
-    BaseOrderEditingFragment(R.layout.fragment_edit_order_address) {
+    BaseOrderEditingFragment(R.layout.fragment_base_edit_address) {
+    companion object {
+        const val TAG = "BaseEditAddressFragment"
+    }
+
+    private var _binding: FragmentBaseEditAddressBinding? = null
+    private val binding get() = _binding!!
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+    }
+
     override fun hasChanges(): Boolean {
         TODO("Not yet implemented")
     }
