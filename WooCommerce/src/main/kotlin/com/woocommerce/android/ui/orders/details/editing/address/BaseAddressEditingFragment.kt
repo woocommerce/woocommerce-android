@@ -1,10 +1,11 @@
-package com.woocommerce.android.ui.orders.details.editing
+package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
 
 abstract class BaseAddressEditingFragment :
     BaseOrderEditingFragment(R.layout.fragment_base_edit_address) {
