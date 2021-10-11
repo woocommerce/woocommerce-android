@@ -13,6 +13,9 @@ abstract class BaseAddressEditingFragment :
         const val TAG = "BaseEditAddressFragment"
     }
 
+    private var _binding: FragmentBaseEditAddressBinding? = null
+    private val binding get() = _binding!!
+
     abstract val storedAddress: Address
 
     val addressDraft
@@ -33,13 +36,12 @@ abstract class BaseAddressEditingFragment :
             )
         }
 
-    private var _binding: FragmentBaseEditAddressBinding? = null
-    private val binding get() = _binding!!
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         storedAddress.bindToView()
     }
+
+    override fun hasChanges() = addressDraft != storedAddress
 
     private fun Address.bindToView() {
         binding.firstName.setText(firstName)
@@ -52,6 +54,4 @@ abstract class BaseAddressEditingFragment :
         binding.city.setText(city)
         binding.postcode.setText(postcode)
     }
-
-    override fun hasChanges() = addressDraft != storedAddress
 }
