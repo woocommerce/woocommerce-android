@@ -1,7 +1,6 @@
-package com.woocommerce.android.ui.orders.details.editing
+package com.woocommerce.android.ui.orders.details.editing.address
 
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.ui.orders.details.editing.address.BaseAddressEditingFragment
 
 class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override val address: Address
