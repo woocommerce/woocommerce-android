@@ -32,6 +32,6 @@ abstract class BaseEditAddressFragment :
         binding.address1.setText(address1)
         binding.address2.setText(address2)
         binding.city.setText(city)
-        binding.zip.setText(postcode)
+        binding.postcode.setText(postcode)
     }
 }

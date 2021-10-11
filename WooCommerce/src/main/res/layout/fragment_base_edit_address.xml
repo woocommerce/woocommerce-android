@@ -88,11 +88,11 @@
             android:hint="@string/order_detail_edit_address_city"
             android:layout_marginHorizontal="@dimen/major_100"
             android:inputType="text"
-            android:nextFocusForward="@+id/state"
+            android:nextFocusForward="@+id/postcode"
             app:errorEnabled="true"/>
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/zip"
+            android:id="@+id/postcode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_100"
