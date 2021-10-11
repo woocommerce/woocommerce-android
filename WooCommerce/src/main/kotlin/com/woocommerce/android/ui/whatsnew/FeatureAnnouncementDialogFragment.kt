@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.whatsnew
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
@@ -68,13 +69,19 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
 
     private fun setupView(binding: FeatureAnnouncementDialogFragmentBinding) {
         binding.closeFeatureAnnouncementButton.setOnClickListener {
-            // TODO Mark current announcement as already seen.
+            viewModel.handleAnnouncementIsViewed()
             findNavController().popBackStack()
         }
 
         listAdapter = FeatureAnnouncementListAdapter()
         binding.featureList.adapter = listAdapter
         binding.featureList.layoutManager = LinearLayoutManager(activity)
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        viewModel.handleAnnouncementIsViewed()
+
+        super.onDismiss(dialog)
     }
 
     private fun setupObservers() {
