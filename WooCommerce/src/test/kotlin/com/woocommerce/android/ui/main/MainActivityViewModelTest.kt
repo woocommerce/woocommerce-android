@@ -1,14 +1,20 @@
 package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.model.FeatureAnnouncement
+import com.woocommerce.android.model.FeatureAnnouncementItem
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.push.NotificationTestUtils
 import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.*
+import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
+import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -72,6 +78,40 @@ class MainActivityViewModelTest : BaseUnitTest() {
         noteType = WooNotificationType.ZENDESK
     )
 
+    private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
+    private val buildConfigWrapper: BuildConfigWrapper = mock()
+    private val prefs: AppPrefs = mock()
+
+    private val testAnnouncement = FeatureAnnouncement(
+        appVersionName = "14.2",
+        announcementVersion = 1337,
+        minimumAppVersion = "14.2",
+        maximumAppVersion = "14.3",
+        appVersionTargets = listOf("alpha-centauri-1", "alpha-centauri-2"),
+        detailsUrl = "https://woocommerce.com/",
+        features = listOf(
+            FeatureAnnouncementItem(
+                title = "Super Publishing",
+                subtitle = "Super Publishing is here! Publish using the power of your mind.",
+                iconBase64 = "",
+                iconUrl = "https://s0.wordpress.com/i/store/mobile/plans-personal.png"
+            ),
+            FeatureAnnouncementItem(
+                title = "Amazing Feature",
+                subtitle = "That's right! They are right in the app! They require pets right now.",
+                iconBase64 = "",
+                iconUrl = "https://s0.wordpress.com/i/store/mobile/plans-premium.png"
+            ),
+            FeatureAnnouncementItem(
+                title = "Third feature",
+                subtitle = "Sorry we forgot to include an image here!",
+                iconBase64 = "",
+                iconUrl = ""
+            )
+        )
+    )
+
+
     @Before
     fun setup() {
         viewModel = spy(
@@ -79,7 +119,10 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 savedStateHandle,
                 siteStore,
                 selectedSite,
-                notificationMessageHandler
+                notificationMessageHandler,
+                featureAnnouncementRepository,
+                buildConfigWrapper,
+                prefs
             )
         )
 
@@ -275,4 +318,16 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.value).isEqualTo(ViewMyStoreStats)
     }
+
+    @Test
+    fun `given existing announcement cache, when announcement is valid, then show dialog announcement`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(true)
+            doReturn("14.2").whenever(buildConfigWrapper).versionName
+            doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
+            doReturn(false).whenever(prefs).isNewAnnouncementViewed()
+
+            viewModel.maybeShowFeatureAnnouncements()
+            assertThat(viewModel.event.value).isEqualTo(ShowFeatureAnnouncement(testAnnouncement))
+        }
 }
