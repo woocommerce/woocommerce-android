@@ -11,8 +11,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.HashMap
-import java.util.UUID
+import java.util.*
 
 class AnalyticsTracker private constructor(private val context: Context) {
     // region Track Event Enums
@@ -529,7 +528,22 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
-        TOP_EARNER_PRODUCT_TAPPED
+        TOP_EARNER_PRODUCT_TAPPED,
+
+        // -- Media picker
+        MEDIA_PICKER_PREVIEW_OPENED,
+        MEDIA_PICKER_RECENT_MEDIA_SELECTED,
+        MEDIA_PICKER_OPEN_GIF_LIBRARY,
+        MEDIA_PICKER_OPEN_DEVICE_LIBRARY,
+        MEDIA_PICKER_CAPTURE_PHOTO,
+        MEDIA_PICKER_SEARCH_TRIGGERED,
+        MEDIA_PICKER_SEARCH_EXPANDED,
+        MEDIA_PICKER_SEARCH_COLLAPSED,
+        MEDIA_PICKER_SHOW_PERMISSIONS_SCREEN,
+        MEDIA_PICKER_ITEM_SELECTED,
+        MEDIA_PICKER_ITEM_UNSELECTED,
+        MEDIA_PICKER_SELECTION_CLEARED,
+        MEDIA_PICKER_OPENED
     }
     // endregion
 
