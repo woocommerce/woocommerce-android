@@ -206,9 +206,12 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
+
+        updateStatusJob?.cancel()
         updateStatusJob = launch {
             listenToSoftwareUpdateStatus()
         }
+
         launch {
             if (cardReaderManager.readerStatus.value is CardReaderStatus.Connecting) {
                 listenToConnectionStatus(cardReaderManager)
