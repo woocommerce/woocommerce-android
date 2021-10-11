@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.filters
 
 import android.content.Context
 import android.util.AttributeSet
@@ -14,7 +14,7 @@ class OrderFiltersCard @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderFiltersCardBinding.inflate(LayoutInflater.from(ctx), this)
 
-    fun initView(onFiltersSelected: () -> Unit) {
+    fun setClickListener(onFiltersSelected: () -> Unit) {
         binding.btnOrderFilter.setOnClickListener { onFiltersSelected() }
     }
 

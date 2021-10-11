@@ -264,6 +264,11 @@
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
     <!--
+        Order Filters
+    -->
+    <string name="orderfilters_show_orders_button">Show Orders</string>
+    <string name="orderfilters_default_filter_value">All</string>
+    <!--
         Order Detail Views
     -->
     <string name="customer_information">Customer information</string>

@@ -28,6 +28,11 @@
                 android:defaultValue="0L"
                 app:argType="long" />
         </action>
+        <action
+            android:id="@+id/action_orderListFragment_to_orderFilterListFragment"
+            app:destination="@id/nav_graph_order_filters"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/products"
@@ -155,6 +160,7 @@
             app:argType="boolean" />
     </fragment>
     <include app:graph="@navigation/nav_graph_orders" />
+    <include app:graph="@navigation/nav_graph_order_filters" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
 

@@ -24,7 +24,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.*
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
@@ -430,8 +430,13 @@ class OrderListViewModel @Inject constructor(
         )
     }
 
+    fun onFiltersButtonTapped() {
+        triggerEvent(ShowOrderFilters)
+    }
+
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
+        object ShowOrderFilters : OrderListEvent()
     }
 
     @Parcelize
