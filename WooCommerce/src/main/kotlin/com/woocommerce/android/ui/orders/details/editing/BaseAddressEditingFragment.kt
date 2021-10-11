@@ -17,7 +17,6 @@ abstract class BaseAddressEditingFragment :
     private var _binding: FragmentBaseEditAddressBinding? = null
     private val binding get() = _binding!!
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         address.bindToView()
