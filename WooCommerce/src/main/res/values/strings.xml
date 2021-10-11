@@ -381,9 +381,10 @@
     <string name="order_detail_edit_address_line1">Address 1</string>
     <string name="order_detail_edit_address_line2">Address 2</string>
     <string name="order_detail_edit_address_city">City</string>
-    <string name="order_detail_edit_address_zip">Zip / Postal Code</string>
+    <string name="order_detail_edit_address_zip">Postal Code</string>
     <string name="order_detail_edit_address_state">State / County</string>
     <string name="order_detail_edit_address_country">Country</string>
+    <string name="order_detail_address_section">Address</string>
 
     <!--
         Shipping label Refunds
