@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
@@ -17,6 +18,11 @@ abstract class BaseAddressEditingFragment :
     private val binding get() = _binding!!
 
     abstract val storedAddress: Address
+
+    private val supportActionBar
+        get() = activity
+            ?.let { it as? AppCompatActivity }
+            ?.supportActionBar
 
     val addressDraft
         get() = binding.run {
@@ -39,6 +45,7 @@ abstract class BaseAddressEditingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBaseEditAddressBinding.bind(view)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
         storedAddress.bindToView()
     }
 
