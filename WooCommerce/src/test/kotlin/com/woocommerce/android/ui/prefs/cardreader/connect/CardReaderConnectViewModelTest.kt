@@ -513,7 +513,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
             whenever(locationRepository.getDefaultLocationId()).thenReturn(
-                CardReaderLocationRepository.LocationIdFetchingResult.Error.Other
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.Other("Error")
             )
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
@@ -559,7 +559,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
             whenever(locationRepository.getDefaultLocationId()).thenReturn(
-                CardReaderLocationRepository.LocationIdFetchingResult.Error.Other
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.Other("selected site missing")
             )
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
@@ -568,7 +568,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CARD_READER_LOCATION_FAILURE,
                 "CardReaderConnectViewModel",
                 null,
-                null
+                "selected site missing"
             )
         }
 

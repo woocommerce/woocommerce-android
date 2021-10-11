@@ -357,13 +357,12 @@ class CardReaderConnectViewModel @Inject constructor(
                             }
                         )
                     }
-                    CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
-                        // todo cardreader Tracking?
+                    is CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
                         tracker.track(
                             CARD_READER_LOCATION_FAILURE,
                             this@CardReaderConnectViewModel.javaClass.simpleName,
                             null,
-                            null
+                            result.error
                         )
                         onReaderConnectionFailed()
                     }
