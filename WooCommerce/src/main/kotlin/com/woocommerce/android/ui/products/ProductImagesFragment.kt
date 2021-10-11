@@ -43,6 +43,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
+import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -286,13 +288,22 @@ class ProductImagesFragment :
     }
 
     private fun chooseProductImage() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).also {
-            it.type = "image/*"
-            it.addCategory(Intent.CATEGORY_OPENABLE)
-            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, viewModel.isMultiSelectionAllowed)
-        }
-        val chooser = Intent.createChooser(intent, null)
-        activity?.startActivityFromFragment(this, chooser, RequestCodes.CHOOSE_PHOTO)
+        val intent = MediaPickerActivity.buildIntent(
+            requireContext(),
+            DeviceMediaPickerSetup.build(
+                isImagePicker = true,
+                isVideoPicker = false,
+                canMultiSelect = true
+            )
+        )
+
+//        val intent = Intent(Intent.ACTION_GET_CONTENT).also {
+//            it.type = "image/*"
+//            it.addCategory(Intent.CATEGORY_OPENABLE)
+//            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, viewModel.isMultiSelectionAllowed)
+//        }
+//        val chooser = Intent.createChooser(intent, null)
+        activity?.startActivityFromFragment(this, intent, RequestCodes.CHOOSE_PHOTO)
     }
 
     private fun captureProductImage() {
