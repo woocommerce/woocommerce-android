@@ -6,8 +6,6 @@ class ShippingAddressEditingFragment : BaseAddressEditingFragment() {
     override val storedAddress: Address
         get() = sharedViewModel.order.shippingAddress
 
-    override fun hasChanges() = addressDraft != storedAddress
-
     override fun saveChanges() =
         sharedViewModel.updateShippingAddress(addressDraft)
 }

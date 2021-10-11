@@ -52,4 +52,6 @@ abstract class BaseAddressEditingFragment :
         binding.city.setText(city)
         binding.postcode.setText(postcode)
     }
+
+    override fun hasChanges() = addressDraft != storedAddress
 }
