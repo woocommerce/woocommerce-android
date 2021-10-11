@@ -4,7 +4,7 @@ import com.woocommerce.android.model.Address
 
 class ShippingAddressEditingFragment : BaseAddressEditingFragment() {
     override val address: Address
-        get() = TODO("Not yet implemented")
+        get() = sharedViewModel.order.shippingAddress
 
     override fun hasChanges(): Boolean {
         TODO("Not yet implemented")

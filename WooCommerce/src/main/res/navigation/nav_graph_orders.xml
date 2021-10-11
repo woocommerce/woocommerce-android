@@ -297,8 +297,8 @@
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
-            android:id="@+id/action_orderDetailFragment_to_baseEditAddressFragment"
-            app:destination="@id/baseEditAddressFragment"
+            android:id="@+id/action_orderDetailFragment_to_shippingAddressEditingFragment"
+            app:destination="@id/shippingAddressEditingFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
@@ -642,8 +642,8 @@
         android:label="EditCustomerOrderNoteFragment"
         tools:layout="@layout/fragment_edit_customer_order_note" />
     <fragment
-        android:id="@+id/baseEditAddressFragment"
-        android:name="com.woocommerce.android.ui.orders.details.editing.BaseAddressEditingFragment"
-        android:label="BaseEditAddressFragment"
+        android:id="@+id/shippingAddressEditingFragment"
+        android:name="com.woocommerce.android.ui.orders.details.editing.ShippingAddressEditingFragment"
+        android:label="ShippingAddressEditingFragment"
         tools:layout="@layout/fragment_base_edit_address"/>
 </navigation>
