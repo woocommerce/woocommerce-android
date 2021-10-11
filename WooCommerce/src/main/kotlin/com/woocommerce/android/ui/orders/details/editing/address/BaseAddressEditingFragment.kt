@@ -38,6 +38,7 @@ abstract class BaseAddressEditingFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentBaseEditAddressBinding.bind(view)
         storedAddress.bindToView()
     }
 
