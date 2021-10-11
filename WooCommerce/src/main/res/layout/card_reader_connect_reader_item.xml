@@ -31,6 +31,7 @@
         android:layout_marginTop="0dp"
         android:layout_marginEnd="0dp"
         android:ellipsize="middle"
+        android:paddingEnd="@dimen/minor_25"
         android:singleLine="true"
         android:textColor="@color/color_on_surface_high"
         android:textSize="@dimen/text_minor_100"
@@ -38,7 +39,8 @@
         app:layout_constraintEnd_toStartOf="@+id/readers_found_reader_connect_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/readers_found_reader_connect_button"
-        tools:text="CHB124817924121212481792412121248179241212" />
+        tools:text="CHB124817924121212481792412121248179241212"
+        tools:ignore="RtlSymmetry" />
 
     <TextView
         android:id="@+id/readers_found_reader_type"
