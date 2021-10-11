@@ -26,7 +26,6 @@ class FeatureAnnouncementViewModel @Inject constructor(
 
     fun handleAnnouncementIsViewed() {
         prefs.setLastVersionWithAnnouncement(buildConfigWrapper.versionName)
-        prefs.setNewAnnouncementViewed(true)
     }
 
     @Parcelize

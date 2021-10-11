@@ -324,7 +324,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
         runBlockingTest {
             doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(true)
             doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
-            doReturn(false).whenever(prefs).isNewAnnouncementViewed()
             doReturn("14.2").whenever(buildConfigWrapper).versionName
 
             viewModel.maybeShowFeatureAnnouncements()

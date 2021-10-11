@@ -106,12 +106,10 @@ class MainActivityViewModel @Inject constructor(
             val cachedAnnouncement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
 
             // Feature Announcement dialog can be shown on app resume, if these criteria are filled:
-            // 1. the app just get upgraded,
-            // 2. The user hasn't seen and closed the dialog before (because we only want to show it once)
-            // 3. Announcement content is valid and can be displayed
+            // 1. Current version is different from the last version where announcement was shown
+            // 2. Announcement content is valid and can be displayed
             cachedAnnouncement?.let {
                 if (prefs.getLastVersionWithAnnouncement() != buildConfigWrapper.versionName &&
-                    !prefs.isNewAnnouncementViewed() &&
                     cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
                 ) {
                     triggerEvent(ShowFeatureAnnouncement(it))
