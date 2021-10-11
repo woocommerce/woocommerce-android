@@ -4,6 +4,7 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
 
 /**
  * A helper function that sets the submitted key-value pair in the Fragment's SavedStateHandle. The value can be
@@ -28,6 +29,22 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinati
     } else {
         findNavController().navigateUp()
     }
+}
+
+/**
+ * A helper function that pops back stack to the [destinationId] and then invokes
+ * [navigateBackWithResult]
+ *
+ * @param [key] A unique string that is the same as the one used in [handleResult]
+ * @param [result] A result value to be returned
+ * @param [destinationId] an destinationId, that used to navigate up from the specified destination
+ *
+ */
+fun <T> Fragment.navigateBackWithResultFromDestination(key: String, result: T, @IdRes destinationId: Int) {
+    if (findNavController().currentDestination?.id != destinationId) {
+        findNavController().popBackStack(R.id.cardReaderConnectDialogFragment, false)
+    }
+    navigateBackWithResult(key, result, null)
 }
 
 /**
