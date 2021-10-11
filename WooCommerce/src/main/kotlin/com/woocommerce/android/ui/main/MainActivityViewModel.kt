@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
@@ -22,7 +23,8 @@ class MainActivityViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val notificationHandler: NotificationMessageHandler,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
-    private val buildConfigWrapper: BuildConfigWrapper
+    private val buildConfigWrapper: BuildConfigWrapper,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState) {
     fun removeReviewNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
@@ -93,7 +95,7 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    // Show Feature Announcements if we already have one in DB, or fetch only otherwise.
+    // Show Feature Announcements if we already have one cached, or fetch only otherwise.
     // We're not displaying fetch result immediately. This mimics the behavior in the WordPress app, and the reason is:
     // "We can’t guarantee when response will be available and at what time the announcement will be displayed.
     // Because of this, we store announcements in cache, and wait for the user to navigate to the main application
@@ -107,10 +109,16 @@ class MainActivityViewModel @Inject constructor(
     fun maybeShowFeatureAnnouncements() {
         launch {
             val cachedAnnouncement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
+
+            // Feature Announcement dialog can be shown on app resume, if these criteria are filled:
+            // 1. the app just get upgraded,
+            // 2. The user hasn't seen and closed the dialog before (because we only want to show it once)
+            // 3. Announcement content is valid and can be displayed
             cachedAnnouncement?.let {
-                // TODO We only want to display the pop-up once per app upgrade, so only show if a current dialog
-                // has not been closed before.
-                if (it.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)) {
+                if (prefs.getLastVersionWithAnnouncement() != buildConfigWrapper.versionName &&
+                    !prefs.isNewAnnouncementViewed() &&
+                    cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
+                ) {
                     triggerEvent(ShowFeatureAnnouncement(it))
                 }
             }
