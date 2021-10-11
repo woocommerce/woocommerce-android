@@ -116,7 +116,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         application.registerActivityLifecycleCallbacks(lifecycleMonitor)
         application.registerComponentCallbacks(lifecycleMonitor)
 
-        handleAppInstallOrUpgrade()
+        trackStartupAnalytics()
 
         zendeskHelper.setupZendesk(
             application, BuildConfig.ZENDESK_DOMAIN, BuildConfig.ZENDESK_APP_ID,
@@ -204,7 +204,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
     }
 
-    private fun handleAppInstallOrUpgrade() {
+    private fun trackStartupAnalytics() {
         // Track app upgrade and install
         val versionCode = PackageUtils.getVersionCode(application)
         val oldVersionCode = prefs.getLastAppVersionCode()
@@ -221,13 +221,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // duplicate upgrade events being called
                 if (oldVersionCode > PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
                     AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
-
-                    // Optimistically assume that there is a new announcement that has not been seen yet.
-                    // This does not always mean that a new announcement exists, and as such this preference
-                    // has to be used with other checks to decide whether to show the Feature Announcement dialog
-                    // or not.
-                    // For more details, check its usage in MainActivityViewModel.
-                    prefs.setNewAnnouncementViewed(false)
                 }
 
                 // store the latest version code to SharedPrefs, only if the value
