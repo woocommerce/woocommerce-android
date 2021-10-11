@@ -3,6 +3,9 @@
 7.7
 -----
 
+7.6.1
+-----
+- [*] Reverted the support for multi store notifications due to a bug with new order notifications not being received.
 
 7.6
 -----
