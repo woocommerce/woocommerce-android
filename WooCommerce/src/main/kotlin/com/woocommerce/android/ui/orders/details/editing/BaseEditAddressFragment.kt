@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
+import com.woocommerce.android.model.Address
 
-class BaseEditAddressFragment :
+abstract class BaseEditAddressFragment :
     BaseOrderEditingFragment(R.layout.fragment_base_edit_address) {
     companion object {
         const val TAG = "BaseEditAddressFragment"
     }
+
+    abstract val address: Address
 
     private var _binding: FragmentBaseEditAddressBinding? = null
     private val binding get() = _binding!!
@@ -17,16 +20,18 @@ class BaseEditAddressFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
+        address.bindToView()
     }
 
-    override fun hasChanges(): Boolean {
-        TODO("Not yet implemented")
+    private fun Address.bindToView() {
+        binding.firstName.setText(firstName)
+        binding.lastName.setText(lastName)
+        binding.email.setText(email)
+        binding.phone.setText(phone)
+        binding.company.setText(company)
+        binding.address1.setText(address1)
+        binding.address2.setText(address2)
+        binding.city.setText(city)
+        binding.zip.setText(postcode)
     }
-
-    override fun saveChanges(): Boolean {
-        TODO("Not yet implemented")
-    }
-
 }
