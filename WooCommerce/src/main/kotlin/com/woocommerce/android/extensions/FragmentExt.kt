@@ -41,7 +41,7 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinati
  * @param [destinationId] an destinationId, that used to navigate up from the specified destination
  *
  */
-fun <T> Fragment.navigateBackWithResultFromDestination(key: String, result: T, @IdRes destinationId: Int) {
+fun <T> Fragment.navigateToParentWithResult(key: String, result: T, @IdRes destinationId: Int) {
     if (findNavController().currentDestination?.id != destinationId) {
         findNavController().popBackStack(destinationId, false)
     }
