@@ -17,6 +17,10 @@ class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: Attr
     FrameLayout(ctx, attrs) {
     private val binding = WcActionableEmptyLabelBinding.inflate(LayoutInflater.from(context), this, true)
 
+    /**
+     * @param text - the text to appear if it's not empty
+     * @param emptyTextId - string id of the text to appear if text is empty
+     */
     fun setText(text: String, @StringRes emptyTextId: Int) {
         if (text.isEmpty()) {
             binding.emptyLabel.setText(emptyTextId)
