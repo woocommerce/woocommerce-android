@@ -68,9 +68,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         if (FeatureFlag.ORDER_EDITING.isEnabled()) {
             binding.customerInfoBillingAddr.setTextIsSelectable(false)
+            binding.customerInfoBillingAddr.setOnClickListener { navigateToBillingAddressEditingView() }
         } else {
             binding.customerInfoBillingAddr.setTextIsSelectable(true)
             binding.customerInfoBillingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            binding.customerInfoBillingAddr.setOnClickListener(null)
         }
 
         return billingInfo
@@ -185,11 +187,25 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         if (FeatureFlag.ORDER_EDITING.isEnabled()) {
             binding.customerInfoShippingAddr.setTextIsSelectable(false)
+            binding.customerInfoShippingAddr.setOnClickListener { navigateToShippingAddressEditingView() }
         } else {
             binding.customerInfoShippingAddr.setTextIsSelectable(true)
             binding.customerInfoShippingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            binding.customerInfoShippingAddr.setOnClickListener(null)
         }
         return shippingAddress
+    }
+
+    private fun navigateToShippingAddressEditingView() {
+        OrderDetailFragmentDirections
+            .actionOrderDetailFragmentToShippingAddressEditingFragment()
+            .let { findNavController().navigateSafely(it) }
+    }
+
+    private fun navigateToBillingAddressEditingView() {
+        OrderDetailFragmentDirections
+            .actionOrderDetailFragmentToBillingAddressEditingFragment()
+            .let { findNavController().navigateSafely(it) }
     }
 
     private fun showCallOrMessagePopup(order: Order) {

@@ -406,7 +406,9 @@ class MainActivity :
                 R.id.printShippingLabelInfoFragment,
                 R.id.shippingLabelFormatOptionsFragment,
                 R.id.printingInstructionsFragment,
-                R.id.editCustomerOrderNoteFragment -> {
+                R.id.editCustomerOrderNoteFragment,
+                R.id.shippingAddressEditingFragment,
+                R.id.billingAddressEditingFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
