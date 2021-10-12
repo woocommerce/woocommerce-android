@@ -333,6 +333,11 @@ class MyStoreStatsView @JvmOverloads constructor(
         if (visitorsLayout.visibility == View.GONE) {
             WooAnimUtils.fadeIn(visitorsLayout)
         }
+
+        // Make sure the empty view is hidden
+        binding.statsViewRow.emptyVisitorStatsGroup.isVisible = false
+        binding.statsViewRow.visitorsValue.isVisible = true
+
         fadeInLabelValue(visitorsValue, visitorStats.values.sum().toString())
     }
 
@@ -340,6 +345,12 @@ class MyStoreStatsView @JvmOverloads constructor(
         if (visitorsLayout.visibility == View.VISIBLE) {
             WooAnimUtils.fadeOut(visitorsLayout)
         }
+    }
+
+    fun showEmptyVisitorStatsForJetpackCP() {
+        visitorsLayout.isVisible = true
+        binding.statsViewRow.emptyVisitorStatsGroup.isVisible = true
+        binding.statsViewRow.visitorsValue.isVisible = false
     }
 
     fun clearLabelValues() {
