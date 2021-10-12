@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
+import android.text.Editable
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
@@ -62,5 +63,15 @@ abstract class BaseAddressEditingFragment :
         binding.address2.setText(address2)
         binding.city.setText(city)
         binding.postcode.setText(postcode)
+
+        binding.firstName.setOnTextChangedListener(::onAnyTextChanged)
+        binding.lastName.setOnTextChangedListener(::onAnyTextChanged)
+        binding.email.setOnTextChangedListener(::onAnyTextChanged)
+        binding.phone.setOnTextChangedListener(::onAnyTextChanged)
+        binding.company.setOnTextChangedListener(::onAnyTextChanged)
+        binding.address1.setOnTextChangedListener(::onAnyTextChanged)
+        binding.address2.setOnTextChangedListener(::onAnyTextChanged)
+        binding.city.setOnTextChangedListener(::onAnyTextChanged)
+        binding.postcode.setOnTextChangedListener(::onAnyTextChanged)
     }
 }
