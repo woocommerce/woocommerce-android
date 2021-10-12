@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.concurrent.TimeUnit
 
 class MyStorePresenterTest : BaseUnitTest() {
     private val myStoreView: MyStoreContract.View = mock()
@@ -266,7 +267,8 @@ class MyStorePresenterTest : BaseUnitTest() {
 
     @Test
     fun `given jetpack cp and the banner dismissed recently, when the screen loads, then don't show the banner`() {
-        whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(2L)
+        val nowPlus2Days = System.currentTimeMillis() + TimeUnit.DAYS.toMillis(2)
+        whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(nowPlus2Days)
         val site = SiteModel().apply {
             setIsJetpackCPConnected(true)
         }
@@ -279,7 +281,8 @@ class MyStorePresenterTest : BaseUnitTest() {
 
     @Test
     fun `given jetpack cp and the banner dismissed 5 days ago, when the screen loads, then show the banner`() {
-        whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(5L)
+        val nowPlus5Days = System.currentTimeMillis() + TimeUnit.DAYS.toMillis(5)
+        whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(nowPlus5Days)
         val site = SiteModel().apply {
             setIsJetpackCPConnected(true)
         }
