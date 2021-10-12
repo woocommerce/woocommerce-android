@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
+import android.text.Editable
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
+import org.wordpress.android.fluxc.network.utils.toMap
 import org.wordpress.android.util.ActivityUtils
 
 abstract class BaseAddressEditingFragment :
@@ -19,11 +21,6 @@ abstract class BaseAddressEditingFragment :
     private val binding get() = _binding!!
 
     abstract val storedAddress: Address
-
-    private val supportActionBar
-        get() = activity
-            ?.let { it as? AppCompatActivity }
-            ?.supportActionBar
 
     val addressDraft
         get() = binding.run {
