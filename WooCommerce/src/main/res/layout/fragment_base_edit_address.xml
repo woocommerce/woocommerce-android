@@ -20,7 +20,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/details" />
 
-            <View style="@style/Woo.Divider" />
+            <View
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_100" />
 
         </LinearLayout>
 
@@ -83,7 +85,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/order_detail_address_section" />
 
-            <View style="@style/Woo.Divider" />
+            <View
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_100" />
 
         </LinearLayout>
 
