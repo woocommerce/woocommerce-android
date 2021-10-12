@@ -285,7 +285,7 @@ class CardReaderPaymentViewModel
 
     private fun handleAdditionalInfo(type: AdditionalInfoType) {
         (viewState.value as? CollectPaymentState)?.let { collectPaymentState ->
-            collectPaymentState.copy(
+            viewState.value = collectPaymentState.copy(
                 hintLabel = when (type) {
                     RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
                     INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_payment_collect_payment_hint
