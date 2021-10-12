@@ -62,6 +62,7 @@ class MyStorePresenter @Inject constructor(
         statsRepository.init()
         dispatcher.register(this)
         ConnectionChangeReceiver.getEventBus().register(this)
+        showJetpackBenefitsIfNeeded()
     }
 
     override fun dropView() {
@@ -217,6 +218,19 @@ class MyStorePresenter @Inject constructor(
         }
 
     override fun getStatsCurrency() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+
+    private fun showJetpackBenefitsIfNeeded() {
+        if(selectedSite.getIfExists()?.isJetpackCPConnected == true) {
+            myStoreView?.showJetpackBenefitsBanner(true)
+        } else {
+            myStoreView?.showJetpackBenefitsBanner(false)
+        }
+    }
+
+    override fun dismissJetpackBenefitsBanner() {
+        myStoreView?.showJetpackBenefitsBanner(false)
+        // TODO persist the dismissal
+    }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

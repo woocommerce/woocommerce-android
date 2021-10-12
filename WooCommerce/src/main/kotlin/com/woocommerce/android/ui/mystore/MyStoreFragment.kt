@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -171,6 +172,10 @@ class MyStoreFragment :
             clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) }
         )
 
+        binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
+            presenter.dismissJetpackBenefitsBanner()
+        }
+
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
         refreshMyStoreStats(forced = this.isRefreshPending)
@@ -291,6 +296,10 @@ class MyStoreFragment :
             errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
             errorSnackbar?.show()
         }
+    }
+
+    override fun showJetpackBenefitsBanner(show: Boolean) {
+        binding.jetpackBenefitsBanner.root.isVisible = show
     }
 
     override fun getFragmentTitle() = getString(R.string.my_store)

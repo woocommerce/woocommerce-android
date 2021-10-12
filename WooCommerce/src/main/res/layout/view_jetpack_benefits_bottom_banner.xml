@@ -26,7 +26,7 @@
         android:textAppearance="?attr/textAppearanceSubtitle1"
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@id/subtitle_text"
-        app:layout_constraintEnd_toStartOf="@id/close_button"
+        app:layout_constraintEnd_toStartOf="@id/dismiss_button"
         app:layout_constraintStart_toEndOf="@id/jetpack_logo"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
@@ -42,12 +42,12 @@
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textColor="@color/woo_white_alpha_060"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/close_button"
+        app:layout_constraintEnd_toStartOf="@id/dismiss_button"
         app:layout_constraintStart_toEndOf="@id/jetpack_logo"
         app:layout_constraintTop_toBottomOf="@id/title_text" />
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/close_button"
+        android:id="@+id/dismiss_button"
         android:layout_width="@dimen/min_tap_target"
         android:layout_height="@dimen/min_tap_target"
         android:background="?attr/selectableItemBackground"
