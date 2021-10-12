@@ -46,7 +46,6 @@ abstract class BaseAddressEditingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBaseEditAddressBinding.bind(view)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
         storedAddress.bindToView()
     }
 
