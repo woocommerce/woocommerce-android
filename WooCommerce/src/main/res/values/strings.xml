@@ -373,6 +373,7 @@
     <string name="ordered_add_ons_loading_failed_dialog_title">Something went wrong</string>
     <string name="ordered_add_ons_loading_failed_dialog_message">Sorry, we couldn\'t load the Order Add-ons right now</string>
     <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="order_edit_add_customer_note">Add customer note</string>
 
     <!--
         Shipping label Refunds
