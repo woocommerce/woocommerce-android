@@ -146,7 +146,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         } else {
             ""
         }
-        binding.customerInfoCustomerNote.setText(text, R.string.order_edit_add_customer_note)
+        binding.customerInfoCustomerNote.setText(text, R.string.order_detail_add_customer_note)
 
         // TODO right now we only make the text selectable when the feature flag is NOT enabled to
         // mimic the existing behavior. We can remove this when the feature flag is removed
