@@ -214,14 +214,14 @@ class CardReaderConnectViewModel @Inject constructor(
 
         launch {
             if (cardReaderManager.readerStatus.value is CardReaderStatus.Connecting) {
-                handleConnectionInProgress(cardReaderManager)
+                listenToConnectionStatus(cardReaderManager)
             } else {
                 startScanning()
             }
         }
     }
 
-    private suspend fun handleConnectionInProgress(cardReaderManager: CardReaderManager) {
+    private suspend fun listenToConnectionStatus(cardReaderManager: CardReaderManager) {
         cardReaderManager.readerStatus.collect { status ->
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
@@ -334,14 +334,12 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
+            listenToConnectionStatus(cardReaderManager)
+        }
+        launch {
             // TODO cardreader handle error cases
             val locationId = (cardReader.locationId ?: locationRepository.getDefaultLocationId())!!
-            val success = cardReaderManager.connectToReader(cardReader, locationId)
-            if (success) {
-                onReaderConnected(cardReader)
-            } else {
-                onReaderConnectionFailed()
-            }
+            cardReaderManager.startConnectionToReader(cardReader, locationId)
         }
     }
 
