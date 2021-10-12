@@ -13,14 +13,14 @@ class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: Attr
     private val binding = WcActionableEmptyLabelBinding.inflate(LayoutInflater.from(context), this, true)
 
     fun setText(text: String, @StringRes emptyTextId: Int) {
-        if (text.isNotEmpty()) {
-            binding.notEmptyLabel.visibility = View.VISIBLE
-            binding.emptyLabel.visibility = View.GONE
-            binding.notEmptyLabel.text = text
-        } else {
+        if (text.isEmpty()) {
+            binding.emptyLabel.setText(emptyTextId)
             binding.emptyLabel.visibility = View.VISIBLE
             binding.notEmptyLabel.visibility = View.GONE
-            binding.emptyLabel.setText(emptyTextId)
+        } else {
+            binding.notEmptyLabel.text = text
+            binding.notEmptyLabel.visibility = View.VISIBLE
+            binding.emptyLabel.visibility = View.GONE
         }
     }
 

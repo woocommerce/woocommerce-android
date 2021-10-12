@@ -6,10 +6,11 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/emptyLabel"
-        style="@style/Woo.Card.Body"
-        android:layout_width="wrap_content"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/ic_add"
+        android:clickable="false"
         android:drawablePadding="@dimen/major_100"
         android:gravity="center_vertical"
         android:textColor="@color/color_icon_secondary"
@@ -22,6 +23,7 @@
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_edit_pencil"
         android:drawablePadding="@dimen/major_100"
-        android:gravity="center_vertical" />
+        android:gravity="center_vertical"
+        android:visibility="gone" />
 
 </FrameLayout>
