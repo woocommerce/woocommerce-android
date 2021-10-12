@@ -44,15 +44,6 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
         }
     }
 
-
-    /**
-     * Same purpose of the TextWatcher but with the objective of supporting [WCMaterialOutlinedEditTextView]
-     */
-    fun onAnyTextChanged(editable: Editable?) {
-        editable?.takeIf { it.isNotEmpty() }
-            ?.let { updateDoneMenuItem() }
-    }
-
     /**
      * Descendants should return true if the user made any changes
      */
