@@ -42,7 +42,7 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinati
  */
 fun <T> Fragment.navigateBackWithResultFromDestination(key: String, result: T, @IdRes destinationId: Int) {
     if (findNavController().currentDestination?.id != destinationId) {
-        findNavController().popBackStack(R.id.cardReaderConnectDialogFragment, false)
+        findNavController().popBackStack(destinationId, false)
     }
     navigateBackWithResult(key, result, null)
 }
