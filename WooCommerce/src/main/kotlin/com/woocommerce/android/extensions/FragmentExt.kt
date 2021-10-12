@@ -33,6 +33,8 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinati
 /**
  * A helper function that pops back stack to the [destinationId] and then invokes
  * [navigateBackWithResult]
+ * This is useful for scenarios when the fragment returning result doesn't know who their parent is since
+ * they can be added to the navigation graph from various places of the app
  *
  * @param [key] A unique string that is the same as the one used in [handleResult]
  * @param [result] A result value to be returned
