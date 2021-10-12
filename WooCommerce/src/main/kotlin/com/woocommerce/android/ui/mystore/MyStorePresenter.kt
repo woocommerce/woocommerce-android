@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.mystore
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -23,6 +24,7 @@ import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MyStorePresenter @Inject constructor(
@@ -30,10 +32,12 @@ class MyStorePresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!
     private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : Presenter {
     companion object {
         const val NUM_TOP_PERFORMERS = 3
+        const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
         private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
         private val topPerformersForceRefresh = BooleanArray(StatsGranularity.values().size)
 
@@ -220,8 +224,11 @@ class MyStorePresenter @Inject constructor(
     override fun getStatsCurrency() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
     private fun showJetpackBenefitsIfNeeded() {
-        if(selectedSite.getIfExists()?.isJetpackCPConnected == true) {
-            myStoreView?.showJetpackBenefitsBanner(true)
+        if (selectedSite.getIfExists()?.isJetpackCPConnected == true) {
+            val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
+                System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
+            )
+            myStoreView?.showJetpackBenefitsBanner(daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER)
         } else {
             myStoreView?.showJetpackBenefitsBanner(false)
         }
@@ -229,7 +236,7 @@ class MyStorePresenter @Inject constructor(
 
     override fun dismissJetpackBenefitsBanner() {
         myStoreView?.showJetpackBenefitsBanner(false)
-        // TODO persist the dismissal
+        appPrefsWrapper.recordJetpackBenefitsDismissal()
     }
 
     @Suppress("unused")

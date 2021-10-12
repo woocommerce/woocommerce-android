@@ -59,7 +59,8 @@ object AppPrefs {
      * Application related preferences. When the user changes a site, these preferences are erased.
      */
     private enum class DeletableSitePrefKey : PrefKey {
-        TRACKING_EXTENSION_AVAILABLE
+        TRACKING_EXTENSION_AVAILABLE,
+        JETPACK_BENEFITS_BANNER_DISMISSAL_DATE
     }
 
     /**
@@ -404,6 +405,14 @@ object AppPrefs {
             true
         )
 
+    fun getJetpackBenefitsDismissalDate(): Long {
+        return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)
+    }
+
+    fun recordJetpackBenefitsDismissal() {
+        return setLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, System.currentTimeMillis())
+    }
+
     private fun getCardReaderOnboardingCompletedKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
         "${DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
@@ -457,6 +466,12 @@ object AppPrefs {
 
     private fun setInt(key: PrefKey, value: Int) =
         PreferenceUtils.setInt(getPreferences(), key.toString(), value)
+
+    private fun getLong(key: PrefKey, default: Long = 0L) =
+        PreferenceUtils.getLong(getPreferences(), key.toString(), default)
+
+    private fun setLong(key: PrefKey, value: Long) =
+        PreferenceUtils.setLong(getPreferences(), key.toString(), value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
         return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue) ?: defaultValue
