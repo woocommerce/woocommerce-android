@@ -6,21 +6,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.StringRes
-import com.woocommerce.android.databinding.WcEditableEmptyLabelBinding
+import com.woocommerce.android.databinding.WcActionableEmptyLabelBinding
 
-class WCEditableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) :
+class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) :
     FrameLayout(ctx, attrs) {
-    private val binding = WcEditableEmptyLabelBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding = WcActionableEmptyLabelBinding.inflate(LayoutInflater.from(context), this, true)
 
     fun setText(text: String, @StringRes emptyTextId: Int) {
         if (text.isNotEmpty()) {
-            binding.editTextView.visibility = View.VISIBLE
+            binding.notEmptyLabel.visibility = View.VISIBLE
             binding.emptyLabel.visibility = View.GONE
-            binding.editTextView.setText(text)
+            binding.notEmptyLabel.text = text
         } else {
             binding.emptyLabel.visibility = View.VISIBLE
-            binding.editTextView.visibility = View.GONE
+            binding.notEmptyLabel.visibility = View.GONE
             binding.emptyLabel.setText(emptyTextId)
         }
+    }
+
+    fun setTextIsSelectable(value: Boolean) {
+        binding.notEmptyLabel.setTextIsSelectable(value)
     }
 }

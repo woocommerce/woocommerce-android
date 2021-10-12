@@ -48,14 +48,10 @@
                 android:layout_marginBottom="@dimen/minor_50"
                 android:text="@string/orderdetail_customer_provided_note" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <com.woocommerce.android.widgets.WCActionableEmptyLabel
                 android:id="@+id/customerInfo_customerNote"
-                style="@style/Woo.Card.Body"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableEnd="@drawable/ic_edit_pencil"
-                android:drawablePadding="@dimen/major_100"
-                tools:text="This is a nice note from the customer. Let's make it wrap to multiple lines." />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
