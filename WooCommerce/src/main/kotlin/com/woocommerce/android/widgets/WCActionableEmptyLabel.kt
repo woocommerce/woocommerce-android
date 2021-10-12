@@ -8,6 +8,11 @@ import android.widget.FrameLayout
 import androidx.annotation.StringRes
 import com.woocommerce.android.databinding.WcActionableEmptyLabelBinding
 
+/**
+ * Simple ViewGroup which contains two views:
+ * 1. emptyLabel - button-styled TextView which appears when the text is empty, used as a call to action to add text
+ * 2. notEmptyLabel - standard TextView which appears when the text is NOT empty
+ */
 class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) :
     FrameLayout(ctx, attrs) {
     private val binding = WcActionableEmptyLabelBinding.inflate(LayoutInflater.from(context), this, true)
