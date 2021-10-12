@@ -223,7 +223,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                     navigateToParentWithResult(
                         key = KEY_CONNECT_TO_READER_RESULT,
                         result = event.data as Boolean,
-                        destinationId = R.id.cardReaderConnectDialogFragment,
+                        childId = R.id.cardReaderConnectDialogFragment,
                     )
                 }
                 is CardReaderConnectViewModel.CardReaderConnectEvent.ShowToast ->
