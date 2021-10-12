@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
+import org.wordpress.android.util.ActivityUtils
 
 abstract class BaseAddressEditingFragment :
     BaseOrderEditingFragment(R.layout.fragment_base_edit_address) {
@@ -50,6 +51,13 @@ abstract class BaseAddressEditingFragment :
     }
 
     override fun hasChanges() = addressDraft != storedAddress
+
+    override fun onStop() {
+        super.onStop()
+        activity?.let {
+            ActivityUtils.hideKeyboard(it)
+        }
+    }
 
     private fun Address.bindToView() {
         binding.firstName.setText(firstName)
