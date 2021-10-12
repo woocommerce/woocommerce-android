@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.mystore
 import android.content.Context
 import android.content.SharedPreferences
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -36,6 +37,7 @@ class MyStorePresenterTest : BaseUnitTest() {
     }
 
     private val networkStatus: NetworkStatus = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private lateinit var presenter: MyStorePresenter
 
@@ -46,11 +48,12 @@ class MyStorePresenterTest : BaseUnitTest() {
     fun setup() {
         presenter = spy(
             MyStorePresenter(
-                dispatcher,
-                wooCommerceStore,
-                statsRepository,
-                selectedSite,
-                networkStatus
+                dispatcher = dispatcher,
+                wooCommerceStore = wooCommerceStore,
+                statsRepository = statsRepository,
+                selectedSite = selectedSite,
+                networkStatus = networkStatus,
+                appPrefsWrapper = appPrefsWrapper
             )
         )
 
@@ -246,5 +249,56 @@ class MyStorePresenterTest : BaseUnitTest() {
         presenter.takeView(myStoreView)
         presenter.loadTopPerformersStats(DAYS, forced = true)
         verify(myStoreView).showTopPerformersSkeleton(false)
+    }
+
+    @Test
+    fun `given jetpack cp and the banner not dismissed, when the screen loads, then show the banner`() {
+        whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(0L)
+        val site = SiteModel().apply {
+            setIsJetpackCPConnected(true)
+        }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
+
+        presenter.takeView(myStoreView)
+
+        verify(myStoreView).showJetpackBenefitsBanner(true)
+    }
+
+    @Test
+    fun `given jetpack cp and the banner dismissed recently, when the screen loads, then don't show the banner`() {
+        whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(2L)
+        val site = SiteModel().apply {
+            setIsJetpackCPConnected(true)
+        }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
+
+        presenter.takeView(myStoreView)
+
+        verify(myStoreView).showJetpackBenefitsBanner(false)
+    }
+
+    @Test
+    fun `given jetpack cp and the banner dismissed 5 days ago, when the screen loads, then show the banner`() {
+        whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(5L)
+        val site = SiteModel().apply {
+            setIsJetpackCPConnected(true)
+        }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
+
+        presenter.takeView(myStoreView)
+
+        verify(myStoreView).showJetpackBenefitsBanner(false)
+    }
+
+    @Test
+    fun `given the site is not using jetpack cp, when the screen loads, then don't show the benefits banner`() {
+        val site = SiteModel().apply {
+            setIsJetpackCPConnected(false)
+        }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
+
+        presenter.takeView(myStoreView)
+
+        verify(myStoreView).showJetpackBenefitsBanner(false)
     }
 }
