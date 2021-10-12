@@ -53,6 +53,12 @@ abstract class BaseAddressEditingFragment :
         }
     }
 
+    override fun onDestroyView() {
+        removeTextWatchers()
+        _binding = null
+        super.onDestroyView()
+    }
+
     private fun Address.bindToView() {
         binding.firstName.setText(firstName)
         binding.lastName.setText(lastName)
@@ -75,5 +81,17 @@ abstract class BaseAddressEditingFragment :
         binding.address2.textWatcher = textWatcher
         binding.city.textWatcher = textWatcher
         binding.postcode.textWatcher = textWatcher
+    }
+
+    private fun removeTextWatchers() {
+        binding.firstName.removeCurrentTextWatcher()
+        binding.lastName.removeCurrentTextWatcher()
+        binding.email.removeCurrentTextWatcher()
+        binding.phone.removeCurrentTextWatcher()
+        binding.company.removeCurrentTextWatcher()
+        binding.address1.removeCurrentTextWatcher()
+        binding.address2.removeCurrentTextWatcher()
+        binding.city.removeCurrentTextWatcher()
+        binding.postcode.removeCurrentTextWatcher()
     }
 }
