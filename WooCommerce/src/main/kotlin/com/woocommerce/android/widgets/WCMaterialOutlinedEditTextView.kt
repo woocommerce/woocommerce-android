@@ -50,6 +50,10 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
             value?.let { binding.editText.addTextChangedListener(it) }
         }
 
+    var text: String
+        get() = binding.editText.text.toString()
+        set(value) = binding.editText.setText(value)
+
     init {
         if (attrs != null) {
             val a = context.obtainStyledAttributes(
@@ -71,7 +75,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
 
                 // Set the startup text
                 a.getString(R.styleable.WCMaterialOutlinedSpinnerView_android_text)?.let {
-                    setText(it)
+                    text = it
                 }
 
                 isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
@@ -80,12 +84,6 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
             }
         }
     }
-
-    fun setText(selectedText: String) {
-        binding.editText.setText(selectedText)
-    }
-
-    fun getText() = binding.editText.text.toString()
 
     fun removeCurrentTextWatcher() {
         textWatcher?.let { binding.editText.removeTextChangedListener(it) }
@@ -98,8 +96,8 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
      * events.
      */
     fun setTextIfDifferent(newText: String) {
-        if (getText() != newText) {
-            setText(newText)
+        if (text != newText) {
+            text = newText
             binding.editText.setSelection(newText.length)
         }
     }

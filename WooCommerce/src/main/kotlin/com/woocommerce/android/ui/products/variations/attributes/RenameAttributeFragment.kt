@@ -30,7 +30,7 @@ class RenameAttributeFragment : Fragment(R.layout.fragment_rename_attribute), Ba
         requireActivity().title = getString(R.string.product_rename_attribute)
 
         if (savedInstanceState == null) {
-            binding.attributeName.setText(navArgs.attributeName)
+            binding.attributeName.text = navArgs.attributeName
         }
 
         binding.attributeName.setOnEditorActionListener { attributeName: String ->
@@ -58,7 +58,7 @@ class RenameAttributeFragment : Fragment(R.layout.fragment_rename_attribute), Ba
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        val attributeName = binding.attributeName.getText()
+        val attributeName = binding.attributeName.text
         navigateBack(attributeName)
         return false
     }

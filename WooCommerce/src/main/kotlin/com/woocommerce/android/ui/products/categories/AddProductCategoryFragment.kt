@@ -163,5 +163,5 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
         progressDialog = null
     }
 
-    private fun getCategoryName() = binding.productCategoryName.getText()
+    private fun getCategoryName() = binding.productCategoryName.text
 }
