@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
-import android.text.Editable
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
@@ -42,6 +41,7 @@ abstract class BaseAddressEditingFragment :
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBaseEditAddressBinding.bind(view)
         storedAddress.bindToView()
+        bindTextWatchers()
     }
 
     override fun hasChanges() = addressDraft != storedAddress
@@ -63,15 +63,17 @@ abstract class BaseAddressEditingFragment :
         binding.address2.setText(address2)
         binding.city.setText(city)
         binding.postcode.setText(postcode)
+    }
 
-        binding.firstName.setOnTextChangedListener(::onAnyTextChanged)
-        binding.lastName.setOnTextChangedListener(::onAnyTextChanged)
-        binding.email.setOnTextChangedListener(::onAnyTextChanged)
-        binding.phone.setOnTextChangedListener(::onAnyTextChanged)
-        binding.company.setOnTextChangedListener(::onAnyTextChanged)
-        binding.address1.setOnTextChangedListener(::onAnyTextChanged)
-        binding.address2.setOnTextChangedListener(::onAnyTextChanged)
-        binding.city.setOnTextChangedListener(::onAnyTextChanged)
-        binding.postcode.setOnTextChangedListener(::onAnyTextChanged)
+    private fun bindTextWatchers() {
+        binding.firstName.textWatcher = textWatcher
+        binding.lastName.textWatcher = textWatcher
+        binding.email.textWatcher = textWatcher
+        binding.phone.textWatcher = textWatcher
+        binding.company.textWatcher = textWatcher
+        binding.address1.textWatcher = textWatcher
+        binding.address2.textWatcher = textWatcher
+        binding.city.textWatcher = textWatcher
+        binding.postcode.textWatcher = textWatcher
     }
 }
