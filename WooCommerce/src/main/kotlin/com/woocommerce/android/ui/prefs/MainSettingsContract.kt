@@ -9,11 +9,11 @@ interface MainSettingsContract {
         fun getUserDisplayName(): String
         fun getStoreDomainName(): String
         fun hasMultipleStores(): Boolean
-        fun getOrFetchLatestAnnouncement()
+        fun setupAnnouncementOption()
     }
 
     interface View : BaseView<Presenter> {
         fun showDeviceAppNotificationSettings()
-        fun showLatestAnnouncementButton(announcement: FeatureAnnouncement)
+        fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
     }
 }

@@ -204,7 +204,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             showThemeChooser()
         }
 
-        presenter.getOrFetchLatestAnnouncement()
+        presenter.setupAnnouncementOption()
     }
 
     override fun onResume() {
@@ -244,7 +244,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
     }
 
-    override fun showLatestAnnouncementButton(announcement: FeatureAnnouncement) {
+    override fun showLatestAnnouncementOption(announcement: FeatureAnnouncement) {
         if (FeatureFlag.WHATS_NEW.isEnabled()) {
             binding.optionWhatsNew.show()
             binding.optionWhatsNew.setOnClickListener {

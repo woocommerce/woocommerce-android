@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
+import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
@@ -12,7 +13,8 @@ class MainSettingsPresenter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val featureAnnouncementRepository: FeatureAnnouncementRepository
+    private val featureAnnouncementRepository: FeatureAnnouncementRepository,
+    private val buildConfigWrapper: BuildConfigWrapper
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -34,12 +36,14 @@ class MainSettingsPresenter @Inject constructor(
 
     override fun hasMultipleStores() = wooCommerceStore.getWooCommerceSites().size > 1
 
-    override fun getOrFetchLatestAnnouncement() {
+    override fun setupAnnouncementOption() {
         coroutineScope.launch {
             val result = featureAnnouncementRepository.getLatestFeatureAnnouncement(true)
                 ?: featureAnnouncementRepository.getLatestFeatureAnnouncement(false)
             result?.let {
-                appSettingsFragmentView?.showLatestAnnouncementButton(it)
+                if (it.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)) {
+                    appSettingsFragmentView?.showLatestAnnouncementOption(it)
+                }
             }
         }
     }
