@@ -4,7 +4,6 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.R
 
 /**
  * A helper function that sets the submitted key-value pair in the Fragment's SavedStateHandle. The value can be
