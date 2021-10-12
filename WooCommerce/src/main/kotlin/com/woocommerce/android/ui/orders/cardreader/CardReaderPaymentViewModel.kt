@@ -285,20 +285,17 @@ class CardReaderPaymentViewModel
 
     private fun handleAdditionalInfo(type: AdditionalInfoType) {
         (viewState.value as? CollectPaymentState)?.let { collectPaymentState ->
-            when (type) {
-                RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
-                INSERT_CARD -> null // noop - collect payment screen is currently shown
-                INSERT_OR_SWIPE_CARD -> null // noop - collect payment screen is currently shown
-                SWIPE_CARD -> null // noop - collect payment screen is currently shown
-                REMOVE_CARD -> null // noop - processing payment screen always shows "remove card" message
-                MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
-                    R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
-                TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
-                TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
-                CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
-            }?.let { hint ->
-                viewState.value = collectPaymentState.copy(hintLabel = hint)
-            }
+            collectPaymentState.copy(
+                hintLabel = when (type) {
+                    RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
+                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_payment_collect_payment_hint
+                    REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
+                    MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
+                        R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
+                    TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
+                    TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
+                    CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
+                })
         } ?: run {
             WooLog.e(WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}")
         }
