@@ -93,7 +93,6 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.util.isSuccessful
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -109,6 +108,8 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -506,16 +507,23 @@ class CreateShippingLabelViewModel @Inject constructor(
         } else {
             if (fulfillOrder) {
                 val order = data.order.toDataModel()
-                val fulfillResult = orderDetailRepository.updateOrderStatus(
+                orderDetailRepository.updateOrderStatus(
                     orderModel = order,
                     newStatus = CoreOrderStatus.COMPLETED.value
-                )
-
-                if (fulfillResult.isSuccessful()) {
-                    AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
-                } else {
-                    AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
-                    triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+                ).collect { result ->
+                    when (result) {
+                        is OptimisticUpdateResult -> {
+                            // noop
+                        }
+                        is RemoteUpdateResult -> {
+                            if (result.event.isError) {
+                                AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
+                                triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+                            } else {
+                                AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
+                            }
+                        }
+                    }
                 }
             }
             AnalyticsTracker.track(

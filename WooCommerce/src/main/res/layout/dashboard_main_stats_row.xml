@@ -1,41 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/label_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:baselineAligned="false"
     android:layout_marginTop="@dimen/major_100"
+    android:baselineAligned="false"
     android:gravity="center_horizontal"
     android:orientation="horizontal">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/visitors_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_weight="1">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/visitors_label"
-            android:textAppearance="?attr/textAppearanceCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/dashboard_stats_visitors"
-            tools:text="Visitors"/>
+            android:textAppearance="?attr/textAppearanceCaption"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Visitors" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/visitors_value"
-            android:textAppearance="?attr/textAppearanceHeadline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            tools:text="400"/>
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/visitors_label"
+            tools:text="400" />
 
-    </LinearLayout>
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/empty_visitor_stats_group"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:constraint_referenced_ids="empty_visitor_stats_indicator, jetpack_icon" />
+
+        <View
+            android:id="@+id/empty_visitor_stats_indicator"
+            android:layout_width="@dimen/major_200"
+            android:layout_height="@dimen/minor_100"
+            android:layout_gravity="center"
+            android:background="@color/skeleton_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/jetpack_icon" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/jetpack_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_50"
+            android:src="@drawable/ic_jetpack_logo"
+            app:layout_constraintStart_toEndOf="@id/empty_visitor_stats_indicator"
+            app:layout_constraintTop_toBottomOf="@id/visitors_label" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/orders_layout"
@@ -47,20 +77,20 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orders_label"
-            android:textAppearance="?attr/textAppearanceCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/dashboard_stats_orders"
-            tools:text="Orders"/>
+            android:textAppearance="?attr/textAppearanceCaption"
+            tools:text="Orders" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orders_value"
-            android:textAppearance="?attr/textAppearanceHeadline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            tools:text="10"/>
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            tools:text="10" />
 
     </LinearLayout>
 

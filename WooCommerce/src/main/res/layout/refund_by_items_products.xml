@@ -34,7 +34,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_75"
         android:text="@string/subtotal"
-        android:textAlignment="viewStart"
         app:layout_constraintEnd_toStartOf="@+id/issueRefund_subtotal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowList" />
@@ -75,7 +74,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_50"
         android:text="@string/taxes"
-        android:textAlignment="viewStart"
         app:layout_constraintEnd_toStartOf="@+id/issueRefund_taxesTotal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_feesTotal" />
@@ -101,7 +99,6 @@
         android:drawablePadding="@dimen/major_100"
         tools:text="@string/order_refunds_shipping_refund_variable_notice"
         android:visibility="visible"
-        android:textAlignment="viewStart"
         app:layout_constraintEnd_toEndOf="@+id/issueRefund_taxesTotal"
         app:layout_constraintStart_toStartOf="@+id/issueRefund_lblTaxes"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_taxesTotal" />
@@ -125,7 +122,6 @@
         android:layout_marginTop="@dimen/major_75"
         android:layout_marginBottom="@dimen/major_75"
         android:text="@string/order_refunds_products_refund"
-        android:textAlignment="viewStart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/issueRefund_productsTotal"
         app:layout_constraintStart_toStartOf="parent"

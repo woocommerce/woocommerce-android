@@ -26,7 +26,6 @@
             style="@style/Woo.Card.Body.High"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
             tools:text="USPS" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -34,7 +33,6 @@
             style="@style/Woo.Card.Body.Bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
             tools:text="111222 3334 4444Z" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -42,7 +40,6 @@
             style="@style/Woo.Card.Body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
             tools:text="Shipped February 27, 2019" />
     </LinearLayout>
 

@@ -20,16 +20,20 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductVariations(
         val remoteId: Long
     ) : ProductNavigationTarget()
+
     data class ViewProductInventory(
         val inventoryData: InventoryData,
         val sku: String,
         val productType: ProductType
     ) : ProductNavigationTarget()
+
     object ViewProductAttributes : ProductNavigationTarget()
     data class ViewProductPricing(val pricingData: PricingData) : ProductNavigationTarget()
     data class ViewProductShipping(val shippingData: ShippingData) : ProductNavigationTarget()
     data class ViewProductExternalLink(val remoteId: Long) : ProductNavigationTarget()
-    data class ViewProductDescriptionEditor(val description: String, val title: String) : ProductNavigationTarget()
+    data class ViewProductDescriptionEditor(val description: String, val title: String, val productTitle: String) :
+        ProductNavigationTarget()
+
     data class ViewProductPurchaseNoteEditor(
         val purchaseNote: String,
         val title: String,
@@ -38,21 +42,25 @@ sealed class ProductNavigationTarget : Event() {
 
     data class ViewProductShortDescriptionEditor(val shortDescription: String, val title: String) :
         ProductNavigationTarget()
+
     data class ViewProductImageGallery(
         val remoteId: Long,
         val images: List<Image>,
         val showChooser: Boolean = false,
         val selectedImage: Image? = null
     ) : ProductNavigationTarget()
+
     data class ViewMediaUploadErrors(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductSettings(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductStatus(val status: ProductStatus?) : ProductNavigationTarget()
     data class ViewProductCatalogVisibility(val catalogVisibility: ProductCatalogVisibility?, val isFeatured: Boolean) :
         ProductNavigationTarget()
+
     data class ViewProductVisibility(
         val visibility: ProductVisibility?,
         val password: String?
     ) : ProductNavigationTarget()
+
     data class ViewProductSlug(val slug: String) : ProductNavigationTarget()
     data class ViewProductMenuOrder(val menuOrder: Int) : ProductNavigationTarget()
     object ExitProduct : ProductNavigationTarget()
@@ -70,23 +78,27 @@ sealed class ProductNavigationTarget : Event() {
         val groupedProductType: GroupedProductListType,
         val excludedProductIds: List<Long>
     ) : ProductNavigationTarget()
+
     object ViewProductDownloads : ProductNavigationTarget()
     object ViewProductDownloadsSettings : ProductNavigationTarget()
     data class ViewProductDownloadDetails(
         val isEditing: Boolean,
         val file: ProductFile
     ) : ProductNavigationTarget()
+
     object ViewProductAddonsDetails : ProductNavigationTarget()
     object AddProductDownloadableFile : ProductNavigationTarget()
     data class AddProductAttribute(
         val isVariationCreation: Boolean = false
     ) : ProductNavigationTarget()
+
     data class AddProductAttributeTerms(
         val attributeId: Long,
         val attributeName: String,
         val isNewAttribute: Boolean,
         val isVariationCreation: Boolean
     ) : ProductNavigationTarget()
+
     data class RenameProductAttribute(
         val attributeName: String
     ) : ProductNavigationTarget()

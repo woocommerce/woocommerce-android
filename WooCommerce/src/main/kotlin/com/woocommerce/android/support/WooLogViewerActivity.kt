@@ -1,7 +1,5 @@
 package com.woocommerce.android.support
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -24,6 +22,7 @@ import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import org.wordpress.android.util.ToastUtils
 import java.lang.String.format
@@ -81,8 +80,7 @@ class WooLogViewerActivity : AppCompatActivity() {
     private fun copyAppLogToClipboard() {
         try {
             WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.setPrimaryClip(ClipData.newPlainText("AppLog", WooLog.toString()))
+            copyToClipboard("AppLog", WooLog.toString())
             ToastUtils.showToast(this, R.string.logviewer_copied_to_clipboard)
         } catch (e: Exception) {
             WooLog.e(T.UTILS, e)
