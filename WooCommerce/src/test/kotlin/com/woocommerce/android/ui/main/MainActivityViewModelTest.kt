@@ -321,7 +321,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given existing announcement cache, when app is upgraded and announcement is valid, then show announcement`() =
-        runBlockingTest {
+        testBlocking {
             doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(true)
             doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
             doReturn("14.2").whenever(buildConfigWrapper).versionName
