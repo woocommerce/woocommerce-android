@@ -13,7 +13,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
-import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
@@ -206,42 +205,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 ),
                 updateAvailable = true
             )
-        }
-
-    @Test
-    fun `when view model init with connected state and check failed should emit connected state without update`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.CheckForUpdatesFailed)
-
-            // WHEN
-            val viewModel = createViewModel()
-
-            // THEN
-            verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
-                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
-                    R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION))
-                ),
-                updateAvailable = false
-            )
-            assertThat(viewModel.event.value)
-                .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
-        }
-
-    @Test
-    fun `when view model init with connected state and update available should send card reader update screen event`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
-
-            // WHEN
-            val viewModel = createViewModel()
-
-            assertThat(viewModel.event.value).isEqualTo(CardReaderUpdateScreen(startedByUser = false))
         }
 
     @Test
