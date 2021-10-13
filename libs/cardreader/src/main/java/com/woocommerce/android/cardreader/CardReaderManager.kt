@@ -31,7 +31,7 @@ interface CardReaderManager {
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
     ): Flow<CardReaderDiscoveryEvents>
 
-    fun startConnectionToReader(cardReader: CardReader, locationId: String)
+    suspend fun connectToReader(cardReader: CardReader, locationId: String): Boolean
     suspend fun disconnectReader(): Boolean
 
     suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus>
