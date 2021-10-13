@@ -1,9 +1,12 @@
 package com.woocommerce.android.media
 
+import com.woocommerce.android.media.MediaFilesRepository.MediaUploadException
+import com.woocommerce.android.media.MediaFilesRepository.UploadResult
+import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadProgress
+import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
 import com.woocommerce.android.media.ProductImagesUploadWorker.Companion.DURATION_BEFORE_STOPPING_SERVICE
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
-import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.FetchSucceeded
-import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.*
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateFailed
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUploadsCompleted
@@ -13,6 +16,7 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
@@ -21,6 +25,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import org.wordpress.android.util.DateTimeUtils
 import java.util.*
 
@@ -43,7 +48,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     private lateinit var worker: ProductImagesUploadWorker
     private val mediaFilesRepository: MediaFilesRepository = mock {
         onBlocking { fetchMedia(TEST_URI) } doReturn FETCHED_MEDIA
-        onBlocking { uploadMedia(any(), any()) } doReturn UPLOADED_MEDIA
+        onBlocking { uploadMedia(any(), any()) } doReturn flowOf(UploadResult.UploadSuccess(UPLOADED_MEDIA))
     }
     private val productDetailRepository: ProductDetailRepository = mock()
 
@@ -111,6 +116,37 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         advanceUntilIdle()
         verify(mediaFilesRepository).uploadMedia(any(), any())
         assertThat(eventsList[0]).isEqualTo(UploadSucceeded(REMOTE_PRODUCT_ID, TEST_URI, UPLOADED_MEDIA))
+        job.cancel()
+    }
+
+    @Test
+    fun `when media upload progress changes, then update notification`() = testBlocking {
+        whenever(mediaFilesRepository.uploadMedia(any(), any()))
+            .thenReturn(flowOf(UploadProgress(0.5f), UploadSuccess(MediaModel())))
+
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+        advanceUntilIdle()
+
+        verify(notificationHandler).setProgress(0.5f)
+    }
+
+    @Test
+    fun `when media upload fails for an image, then send an event`() = testBlocking {
+        val error = MediaUploadException(
+            MediaModel(),
+            GENERIC_ERROR,
+            ""
+        )
+        whenever(mediaFilesRepository.uploadMedia(any(), any())).thenReturn(flowOf(UploadResult.UploadFailure(error)))
+
+        val eventsList = mutableListOf<Event>()
+        val job = launch {
+            worker.events.toList(eventsList)
+        }
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+
+        advanceUntilIdle()
+        assertThat(eventsList).contains(UploadFailed(REMOTE_PRODUCT_ID, TEST_URI, error))
         job.cancel()
     }
 

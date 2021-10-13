@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState
@@ -27,6 +28,7 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialog
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -73,6 +75,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                             BaseTransientBottomBar.LENGTH_LONG
                         ).show()
                     }
+                    is CopyReadersNameToClipboard -> requireContext().copyToClipboard(
+                        event.readersName,
+                        event.readersName
+                    )
                     else -> event.isHandled = false
                 }
             }
@@ -89,7 +95,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         with(binding.readerConnectedState) {
                             UiHelpers.setTextOrHide(enforcedUpdateTv, state.enforceReaderUpdate)
                             enforcedUpdateDivider.visibility = enforcedUpdateTv.visibility
-                            UiHelpers.setTextOrHide(readerNameTv, state.readerName)
+                            with(readerNameTv) {
+                                UiHelpers.setTextOrHide(readerNameTv, state.readerName)
+                                setOnLongClickListener { state.onReaderNameLongClick(); true }
+                            }
                             UiHelpers.setTextOrHide(readerBatteryTv, state.readerBattery)
                             UiHelpers.setTextOrHide(readerFirmwareVersionTv, state.readerFirmwareVersion)
                             UiHelpers.setTextOrHide(primaryActionBtn, state.primaryButtonState?.text)

@@ -33,6 +33,7 @@ import com.woocommerce.android.databinding.FragmentSettingsMainBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
@@ -72,6 +73,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentSettingsMainBinding.bind(view)
+
+        presenter.takeView(this)
 
         if (activity is AppSettingsListener) {
             settingsListener = activity as AppSettingsListener
@@ -179,14 +182,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_aboutFragment)
         }
 
-        if (FeatureFlag.WHATS_NEW.isEnabled()) {
-            binding.optionWhatsNew.show()
-            binding.optionWhatsNew.setOnClickListener {
-                findNavController()
-                    .navigateSafely(R.id.action_mainSettingsFragment_to_featureAnnouncementDialogFragment)
-            }
-        }
-
         binding.optionLicenses.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_licensesFragment)
@@ -208,6 +203,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             // FIXME AMANDA tracks event
             showThemeChooser()
         }
+
+        presenter.setupAnnouncementOption()
     }
 
     override fun onResume() {
@@ -244,6 +241,20 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
             intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.packageName)
             activity?.startActivity(intent)
+        }
+    }
+
+    override fun showLatestAnnouncementOption(announcement: FeatureAnnouncement) {
+        if (FeatureFlag.WHATS_NEW.isEnabled()) {
+            binding.optionWhatsNew.show()
+            binding.optionWhatsNew.setOnClickListener {
+                findNavController()
+                    .navigateSafely(
+                        MainSettingsFragmentDirections.actionMainSettingsFragmentToFeatureAnnouncementDialogFragment(
+                            announcement
+                        )
+                    )
+            }
         }
     }
 

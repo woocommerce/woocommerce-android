@@ -2,7 +2,8 @@
 
 7.8
 -----
-
+- [*] In-Person Payments: Long click on the readers name copies it to the clipboard
+- [*] In-Person Payments: Firmware version fully visible
 
 7.7
 -----

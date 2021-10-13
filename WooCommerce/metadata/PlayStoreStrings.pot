@@ -11,20 +11,18 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_077"
+msgid ""
+"7.7:\n"
+"Merchants using WooCommerce Payments in the USA can accept in-person credit card payments for your customers’ payment upon delivery or pickup orders. Also included in this release are a few minor improvements based on your feedback. Thanks for helping us make a better app for everyone.\n"
+msgstr ""
+
 msgctxt "release_note_076"
 msgid ""
 "7.6:\n"
 "We know that adding images to your products is one of the features you love using in the app! We’ve improved the experience to upload in the background while you continue on other tasks.\n"
 "\n"
 "If you’re managing multiple stores in the app, you’ll be happy to hear this news. You’ll now receive push notifications for all of your stores, not just the current one! Surprise!\n"
-msgstr ""
-
-msgctxt "release_note_075"
-msgid ""
-"7.5:\n"
-"Viewing orders with products using WooCommerce’s Product Add-Ons Extension is a new feature! Head over to your store’s settings in the app on the My store tab and turn this on under Beta features. Be sure to send us feedback about the experience!\n"
-"\n"
-"You’ll also find that you can filter the product list by category. You asked, and we delivered!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
