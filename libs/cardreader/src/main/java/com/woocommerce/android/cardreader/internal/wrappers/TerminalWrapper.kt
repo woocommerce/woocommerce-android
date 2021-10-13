@@ -73,7 +73,7 @@ internal class TerminalWrapper {
 
     fun setupSimulator() {
         Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
-            update = SimulateReaderUpdate.REQUIRED
+            update = SimulateReaderUpdate.RANDOM
         )
     }
 }
