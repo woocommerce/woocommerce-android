@@ -75,7 +75,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given country not supported, when learn more clicked, then app shows learn more section`() =
+    fun `given store country not supported, when learn more clicked, then app shows learn more section`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
@@ -88,7 +88,33 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given country not supported, when contact support clicked, then app navigates to support screen`() =
+    fun `given store country not supported, when contact support clicked, then app navigates to support screen`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as UnsupportedCountryState).onContactSupportActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport::class.java)
+        }
+
+    @Test
+    fun `given account country not supported, when learn more clicked, then app shows learn more section`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(""))
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore::class.java)
+        }
+
+    @Test
+    fun `given account country not supported, when contact support clicked, then app navigates to support screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
