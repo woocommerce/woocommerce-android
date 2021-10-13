@@ -19,11 +19,10 @@ import java.util.*
 
 @Parcelize
 data class Order(
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use remote id to identify order in app.")
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
     val identifier: OrderIdentifier,
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use remote id to identify order in app.")
-    val localOrderId: Int,
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id alias instead.")
+    private val rawLocalOrderId: Int,
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
     val remoteId: Long,
     val number: String,
     val dateCreated: Date,
@@ -53,8 +52,8 @@ data class Order(
     val shippingLines: List<ShippingLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
-    val id
-        get() = LocalOrRemoteId.RemoteId(this.remoteId)
+    val localId
+        get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
 
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -243,7 +242,7 @@ data class Order(
 fun WCOrderModel.toAppModel(): Order {
     return Order(
         identifier = OrderIdentifier(this),
-        localOrderId = this.id,
+        rawLocalOrderId = this.id,
         remoteId = this.remoteOrderId,
         number = this.number,
         dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),

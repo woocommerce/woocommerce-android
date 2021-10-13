@@ -462,7 +462,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         } else {
             if (fulfillOrder) {
                 orderDetailRepository.updateOrderStatus(
-                    orderId = data.order.id,
+                    orderLocalId = data.order.localId,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 ).collect { result ->
                     when (result) {
