@@ -6,17 +6,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.WooPlugin
-import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
@@ -35,19 +26,15 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
-import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.WCOrderStore.*
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
-import org.wordpress.android.fluxc.store.WCRefundStore
-import org.wordpress.android.fluxc.store.WCShippingLabelStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 /*
@@ -138,11 +125,13 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun updateOrderStatus(
-        orderModel: WCOrderModel,
+        orderLocalId: LocalId,
         newStatus: String
     ): Flow<UpdateOrderResult> {
         return orderStore.updateOrderStatus(
-            UpdateOrderStatusPayload(orderModel, selectedSite.get(), newStatus)
+            orderLocalId,
+            selectedSite.get(),
+            newStatus
         )
     }
 
