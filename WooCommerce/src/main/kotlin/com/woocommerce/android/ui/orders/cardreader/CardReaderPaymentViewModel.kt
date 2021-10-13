@@ -295,7 +295,8 @@ class CardReaderPaymentViewModel
                     TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
                     TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
                     CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
-                })
+                }
+            )
         } ?: run {
             WooLog.e(WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}")
         }
