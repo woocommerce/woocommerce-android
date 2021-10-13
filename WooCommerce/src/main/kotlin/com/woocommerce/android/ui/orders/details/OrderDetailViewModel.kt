@@ -661,16 +661,6 @@ class OrderDetailViewModel @Inject constructor(
                     AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
                 }
             }
-            WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_TRACKING_ADD_FAILED,
-                        prepareTracksEventsDetails(event)
-                    )
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_TRACKING_ADD_SUCCESS)
-                }
-            }
             WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING -> {
                 if (event.isError) {
                     AnalyticsTracker.track(

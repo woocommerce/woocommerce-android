@@ -52,7 +52,6 @@ class OrderDetailRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) {
     private val continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
-    private val continuationAddShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationDeleteShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
 
     init {
@@ -159,22 +158,17 @@ class OrderDetailRepository @Inject constructor(
     suspend fun addOrderShipmentTracking(
         orderIdentifier: OrderIdentifier,
         shipmentTrackingModel: OrderShipmentTracking
-    ): Boolean {
+    ): OnOrderChanged {
         val orderIdSet = orderIdentifier.toIdSet()
-        val result = continuationAddShipmentTracking.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = AddOrderShipmentTrackingPayload(
+        return orderStore.addOrderShipmentTracking(
+            AddOrderShipmentTrackingPayload(
                 selectedSite.get(),
                 orderIdSet.id,
                 orderIdSet.remoteOrderId,
                 shipmentTrackingModel.toDataModel(),
                 shipmentTrackingModel.isCustomProvider
             )
-            dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        )
     }
 
     suspend fun deleteOrderShipmentTracking(
@@ -303,8 +297,6 @@ class OrderDetailRepository @Inject constructor(
         when (event.causeOfChange) {
             WCOrderAction.POST_ORDER_NOTE ->
                 continuationAddOrderNote.continueWith(event.isError.not())
-            WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING ->
-                continuationAddShipmentTracking.continueWith(event.isError.not())
             WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING ->
                 continuationDeleteShipmentTracking.continueWith(event.isError.not())
             else -> {
