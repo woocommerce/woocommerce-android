@@ -432,11 +432,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given last connected reader is matching, when reader found, then reader connecting state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
-            val readerStatusStateFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connecting)
-            whenever(cardReaderManager.readerStatus).thenReturn(readerStatusStateFlow)
 
             init(scanState = READER_FOUND)
-            readerStatusStateFlow.emit(CardReaderStatus.Connected(mock()))
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
         }
@@ -1063,15 +1060,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
         (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
-        whenever(cardReaderManager.readerStatus).thenReturn(
-            MutableStateFlow(
-                if (connectingSucceeds) {
-                    CardReaderStatus.Connected(reader)
-                } else {
-                    CardReaderStatus.NotConnected
-                }
-            )
-        )
     }
 
     private enum class ScanResult {
