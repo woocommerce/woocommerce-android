@@ -226,8 +226,6 @@ class MainActivity :
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
-
-        viewModel.updateFeatureAnnouncements()
     }
 
     override fun hideProgressDialog() {

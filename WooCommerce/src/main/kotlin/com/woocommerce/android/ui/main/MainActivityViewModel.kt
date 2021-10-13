@@ -26,6 +26,12 @@ class MainActivityViewModel @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper,
     private val prefs: AppPrefs
 ) : ScopedViewModel(savedState) {
+    init {
+        launch {
+            featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
+        }
+    }
+
     fun removeReviewNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
             NotificationChannelType.REVIEW, selectedSite.get().siteId
@@ -92,12 +98,6 @@ class MainActivityViewModel @Inject constructor(
                 // the site does not exist locally, open order list
                 triggerEvent(ViewOrderList)
             }
-        }
-    }
-
-    fun updateFeatureAnnouncements() {
-        launch {
-            featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
         }
     }
 
