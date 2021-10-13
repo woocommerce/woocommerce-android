@@ -172,12 +172,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 binding.customerInfoMorePanel.expand()
                 binding.customerInfoViewMore.setOnClickListener(null)
             }
-            shippingAddress.isEmpty() -> {
-                binding.customerInfoShippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
-                binding.customerInfoShippingMethodSection.hide()
-            }
             else -> {
-                binding.customerInfoShippingAddr.text = shippingAddress
+                binding.customerInfoShippingAddr.setText(shippingAddress, R.string.order_detail_add_shipping_address)
                 binding.customerInfoShippingMethodSection.isVisible = order.shippingMethods.firstOrNull()?.let {
                     binding.customerInfoShippingMethod.text = it.title
                     true
@@ -187,11 +183,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         if (FeatureFlag.ORDER_EDITING.isEnabled()) {
             binding.customerInfoShippingAddr.setTextIsSelectable(false)
-            binding.customerInfoShippingAddr.setOnClickListener { navigateToShippingAddressEditingView() }
+            binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
         } else {
             binding.customerInfoShippingAddr.setTextIsSelectable(true)
-            binding.customerInfoShippingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-            binding.customerInfoShippingAddr.setOnClickListener(null)
+            binding.customerInfoShippingAddressSection.setOnClickListener(null)
         }
         return shippingAddress
     }

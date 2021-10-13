@@ -315,7 +315,6 @@
     <string name="orderdetail_track_shipment">Track shipment</string>
     <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
     <string name="orderdetail_delete_tracking">Delete tracking</string>
-    <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="orderdetail_collect_payment_button">Collect Payment</string>
@@ -388,6 +387,7 @@
     <string name="order_detail_shipping_address_section">Shipping Address</string>
     <string name="order_detail_billing_address_section">Billing Address</string>
     <string name="order_detail_add_customer_note">Add customer note</string>
+    <string name="order_detail_add_shipping_address">Add shipping address</string>
 
     <!--
         Shipping label Refunds
