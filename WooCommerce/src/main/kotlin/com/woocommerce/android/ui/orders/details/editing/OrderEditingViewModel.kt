@@ -62,7 +62,7 @@ class OrderEditingViewModel @Inject constructor(
     fun updateCustomerOrderNote(updatedNote: String): Boolean {
         return if (checkConnectionAndResetState()) {
             launch(dispatchers.io) {
-                collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order.id, updatedNote))
+                collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order.localId, updatedNote))
             }
             true
         } else {
