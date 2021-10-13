@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/emptyLabel"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:drawableStart="@drawable/ic_add"
+        android:drawablePadding="@dimen/major_100"
+        android:gravity="center_vertical"
+        android:textColor="@color/color_icon_secondary"
+        tools:text="@string/order_detail_add_customer_note" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/notEmptyLabel"
+        style="@style/Woo.Card.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_edit_pencil"
+        android:drawablePadding="@dimen/major_100"
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/minor_100"
+        android:visibility="gone" />
+
+</FrameLayout>
