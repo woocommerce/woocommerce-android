@@ -1,7 +1,7 @@
 {
     "request": {
         "method": "GET",
-        "urlPath": "/rest/v1.1/sites/161477129",
+        "urlPathPattern": "/rest/v1.(1|2)/sites/161477129",
         "queryParameters": {
             "fields": {
                 "equalTo": "ID,URL,name,description,jetpack,visible,is_private,options,plan,capabilities,quota,icon,meta"
@@ -152,9 +152,9 @@
             },
             "meta": {
                 "links": {
-                    "self": "https:\/\/public-api.wordpress.com\/rest\/v1.1\/sites\/161477129",
-                    "help": "https:\/\/public-api.wordpress.com\/rest\/v1.1\/sites\/161477129\/help",
-                    "posts": "https:\/\/public-api.wordpress.com\/rest\/v1.1\/sites\/161477129\/posts\/",
+                    "self": "https:\/\/public-api.wordpress.com\/rest\/v1.2\/sites\/161477129",
+                    "help": "https:\/\/public-api.wordpress.com\/rest\/v1.2\/sites\/161477129\/help",
+                    "posts": "https:\/\/public-api.wordpress.com\/rest\/v1.2\/sites\/161477129\/posts\/",
                     "comments": "https:\/\/public-api.wordpress.com\/rest\/v1.1\/sites\/161477129\/comments\/",
                     "xmlrpc": "https:\/\/automatticwidgets.com\/xmlrpc.php"
                 }
