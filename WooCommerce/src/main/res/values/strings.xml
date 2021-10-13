@@ -268,6 +268,8 @@
     -->
     <string name="orderfilters_show_orders_button">Show Orders</string>
     <string name="orderfilters_default_filter_value">All</string>
+    <string name="orderfilters_order_status_filter">Order Status</string>
+    <string name="orderfilters_date_range_filter">Date Range</string>
     <!--
         Order Detail Views
     -->
