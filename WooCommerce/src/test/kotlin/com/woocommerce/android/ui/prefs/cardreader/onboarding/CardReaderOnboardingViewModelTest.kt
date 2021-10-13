@@ -117,7 +117,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given account country not supported, when contact support clicked, then app navigates to support screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(""))
             val viewModel = createVM()
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onContactSupportActionClicked.invoke()
