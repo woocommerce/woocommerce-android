@@ -109,7 +109,7 @@ class OrderNavigator @Inject constructor() {
                     R.string.shipping_label_more_information_heading,
                     R.string.shipping_label_more_information_message,
                     R.string.shipping_label_more_information_link,
-                    R.drawable.img_woo_desk_character,
+                    R.drawable.img_print_with_phone,
                     LearnMoreAboutShippingLabels
                 )
                 fragment.findNavController().navigateSafely(action)
