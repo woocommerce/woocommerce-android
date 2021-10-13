@@ -738,6 +738,7 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
+    <string name="card_reader_manual_card_reader">Card Reader Manual</string>
     <!--
         Card Reader Payments
     -->
