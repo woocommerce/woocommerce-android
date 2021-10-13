@@ -101,7 +101,7 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun maybeShowFeatureAnnouncements() {
+    fun showFeatureAnnouncementIfNeeded() {
         launch {
             val cachedAnnouncement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
 

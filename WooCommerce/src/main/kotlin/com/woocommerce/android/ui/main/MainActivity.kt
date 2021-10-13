@@ -249,7 +249,7 @@ class MainActivity :
         updateOrderBadge(false)
 
         checkConnection()
-        viewModel.maybeShowFeatureAnnouncements()
+        viewModel.showFeatureAnnouncementIfNeeded()
     }
 
     override fun onPause() {

@@ -326,7 +326,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
             doReturn("14.2").whenever(buildConfigWrapper).versionName
 
-            viewModel.maybeShowFeatureAnnouncements()
+            viewModel.showFeatureAnnouncementIfNeeded()
             assertThat(viewModel.event.value).isEqualTo(ShowFeatureAnnouncement(testAnnouncement))
         }
 }
