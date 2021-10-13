@@ -1,13 +1,5 @@
 package com.woocommerce.android.ui.orders.tracking
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
@@ -23,7 +15,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
@@ -52,7 +48,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Add order shipment tracking when network is available - success`() = runBlockingTest {
-        doReturn(true).whenever(repository).addOrderShipmentTracking(any(), any())
+        doReturn(OnOrderChanged(0)).whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -76,7 +72,8 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Add order shipment tracking fails`() = runBlockingTest {
-        doReturn(false).whenever(repository).addOrderShipmentTracking(any(), any())
+        doReturn(OnOrderChanged(0).also { it.error = OrderError(type = GENERIC_ERROR, message = "") })
+            .whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }
