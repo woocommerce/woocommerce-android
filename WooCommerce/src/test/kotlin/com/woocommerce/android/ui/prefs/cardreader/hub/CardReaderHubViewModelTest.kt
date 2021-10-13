@@ -41,6 +41,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when screen shown, then manual card reader row present at the last`() {
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .last().matches {
+                it.label == UiString.UiStringRes(R.string.card_reader_manual_card_reader)
+            }
+    }
+
+    @Test
     fun `when user clicks on manage card reader, then app navigates to card reader detail screen`() {
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
