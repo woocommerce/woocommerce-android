@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
 
 class BillingAddressEditingFragment : BaseAddressEditingFragment() {
@@ -11,4 +12,8 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
         sharedViewModel.updateBillingAddress(addressDraft)
 
     override fun getFragmentTitle() = getString(R.string.order_detail_billing_address_section)
+
+    override fun onViewBound(binding: FragmentBaseEditAddressBinding) {
+        // TODO("Not yet implemented")
+    }
 }
