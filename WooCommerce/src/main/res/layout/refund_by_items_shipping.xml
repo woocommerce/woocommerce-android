@@ -57,8 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginTop="@dimen/major_75"
-                    android:text="@string/subtotal"
-                    android:textAlignment="viewStart" />
+                    android:text="@string/subtotal" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/issueRefund_shippingSubtotal"
@@ -86,8 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginTop="@dimen/minor_50"
-                    android:text="@string/taxes"
-                    android:textAlignment="viewStart" />
+                    android:text="@string/taxes" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/issueRefund_shippingTax"
@@ -129,8 +127,7 @@
             android:layout_weight="1"
             android:layout_marginTop="@dimen/major_75"
             android:layout_marginBottom="@dimen/major_75"
-            android:text="@string/order_refunds_shipping_refund"
-            android:textAlignment="viewStart" />
+            android:text="@string/order_refunds_shipping_refund" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/issueRefund_shippingTotal"
