@@ -39,7 +39,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         refreshState()
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun refreshState() {
         launch {
             viewState.value = OnboardingViewState.LoadingState
@@ -48,7 +48,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             when (state) {
                 CardReaderOnboardingState.OnboardingCompleted ->
                     triggerEvent(OnboardingEvent.Continue)
-                is CardReaderOnboardingState.CountryNotSupported ->
+                is CardReaderOnboardingState.StoreCountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedCountryState(
                         convertCountryCodeToCountry(state.countryCode),
                         ::onContactSupportClicked,
@@ -106,6 +106,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value = OnboardingViewState.NoConnectionErrorState(
                         onRetryButtonActionClicked = ::refreshState
                     )
+                is CardReaderOnboardingState.StripeAccountCountryNotSupported ->
+                    viewState.value = OnboardingViewState.UnsupportedCountryState(
+                        convertCountryCodeToCountry(state.countryCode),
+                        ::onContactSupportClicked,
+                        ::onLearnMoreClicked
+                    )
             }.exhaustive
         }
     }
@@ -116,14 +122,16 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
     }
 
+    @Suppress("ComplexMethod")
     private fun getTrackingReason(state: CardReaderOnboardingState): String? =
         when (state) {
             CardReaderOnboardingState.OnboardingCompleted -> null
-            is CardReaderOnboardingState.CountryNotSupported -> "country_not_supported"
+            is CardReaderOnboardingState.StoreCountryNotSupported -> "country_not_supported"
             CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
             is CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
             CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
             CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
+            is CardReaderOnboardingState.StripeAccountCountryNotSupported -> "account_country_not_supported"
             CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
             CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
             CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"

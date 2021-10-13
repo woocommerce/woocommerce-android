@@ -168,5 +168,10 @@
     <dialog
         android:id="@+id/featureAnnouncementDialogFragment"
         android:name="com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment"
-        android:label="FeatureAnnouncementDialogFragment" />
+        android:label="FeatureAnnouncementDialogFragment">
+        <argument
+            android:name="announcement"
+            app:argType="com.woocommerce.android.model.FeatureAnnouncement"
+            app:nullable="false" />
+    </dialog>
 </navigation>

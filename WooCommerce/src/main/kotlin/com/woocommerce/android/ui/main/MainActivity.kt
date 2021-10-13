@@ -249,6 +249,7 @@ class MainActivity :
         updateOrderBadge(false)
 
         checkConnection()
+        viewModel.showFeatureAnnouncementIfNeeded()
     }
 
     override fun onPause() {
@@ -737,6 +738,10 @@ class MainActivity :
                         intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
                         intent.putExtra(FIELD_PUSH_ID, event.pushId)
                         restart()
+                    }
+                    is ShowFeatureAnnouncement -> {
+                        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+                        navController.navigateSafely(action)
                     }
                 }
             }
