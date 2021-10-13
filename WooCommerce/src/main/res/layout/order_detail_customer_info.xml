@@ -12,8 +12,7 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible">
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- Card Title -->
         <com.google.android.material.textview.MaterialTextView
@@ -59,9 +58,9 @@
             android:id="@+id/customerInfo_shippingSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/minor_100"
             android:focusable="true"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/minor_100">
 
             <LinearLayout
                 android:id="@+id/customerInfo_shippingAddressSection"
@@ -103,7 +102,6 @@
                 <View
                     style="@style/Woo.Divider"
                     android:layout_marginStart="@dimen/major_100"
-                    android:layout_marginTop="@dimen/major_100"
                     android:layout_marginEnd="@dimen/minor_00" />
 
                 <com.google.android.material.textview.MaterialTextView
