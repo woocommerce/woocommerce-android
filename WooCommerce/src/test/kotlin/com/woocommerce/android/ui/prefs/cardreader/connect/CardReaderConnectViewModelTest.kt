@@ -3,8 +3,7 @@ package com.woocommerce.android.ui.prefs.cardreader.connect
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_FAILURE
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -542,6 +541,20 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 null,
                 "selected site missing"
             )
+        }
+
+    @Test
+    fun `given location fetching fails address, when user clicks on update address, then track tapped event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress("")
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as MissingMerchantAddressError).onPrimaryActionClicked.invoke()
+
+            verify(tracker).track(CARD_READER_LOCATION_MISSING_TAPPED)
         }
 
     @Test

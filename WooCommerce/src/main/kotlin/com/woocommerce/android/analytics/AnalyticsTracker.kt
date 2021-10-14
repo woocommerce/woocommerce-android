@@ -267,6 +267,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Card Reader - Location
         CARD_READER_LOCATION_SUCCESS,
         CARD_READER_LOCATION_FAILURE,
+        CARD_READER_LOCATION_MISSING_TAPPED,
 
         // -- Receipts
         RECEIPT_PRINT_TAPPED,
