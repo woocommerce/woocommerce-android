@@ -8,7 +8,11 @@
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
         android:label="fragment_my_store"
-        tools:layout="@layout/fragment_my_store" />
+        tools:layout="@layout/fragment_my_store" >
+        <action
+            android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
+            app:destination="@id/jetpackBenefitsDialog" />
+    </fragment>
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -232,4 +236,8 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
+    <dialog
+        android:id="@+id/jetpackBenefitsDialog"
+        android:name="com.woocommerce.android.ui.mystore.JetpackBenefitsDialog"
+        android:label="JetpackBenefitsDialog" />
 </navigation>
