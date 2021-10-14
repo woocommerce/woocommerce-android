@@ -18,5 +18,11 @@ class JetpackBenefitsDialog : DialogFragment(R.layout.dialog_jetpack_benefits) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = DialogJetpackBenefitsBinding.bind(view)
+        binding.dismissButton.setOnClickListener {
+            dismiss()
+        }
+        binding.installJetpackButton.setOnClickListener {
+            // TODO navigate to the jetpack installation screen
+        }
     }
 }
