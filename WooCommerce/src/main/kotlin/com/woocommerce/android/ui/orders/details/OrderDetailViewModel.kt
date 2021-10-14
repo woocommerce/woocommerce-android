@@ -421,12 +421,17 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
-            val deletedShipment = orderDetailRepository.deleteOrderShipmentTracking(
+            val onOrderChanged = orderDetailRepository.deleteOrderShipmentTracking(
                 order.localId.value, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
             )
-            if (deletedShipment) {
+            if (!onOrderChanged.isError) {
+                AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
             } else {
+                AnalyticsTracker.track(
+                    Stat.ORDER_TRACKING_DELETE_FAILED,
+                    prepareTracksEventsDetails(onOrderChanged)
+                )
                 onDeleteShipmentTrackingReverted(shipmentTracking)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_error))
             }
@@ -659,16 +664,6 @@ class OrderDetailViewModel @Inject constructor(
                     )
                 } else {
                     AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
-                }
-            }
-            WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_TRACKING_DELETE_FAILED,
-                        prepareTracksEventsDetails(event)
-                    )
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
                 }
             }
             else -> {
