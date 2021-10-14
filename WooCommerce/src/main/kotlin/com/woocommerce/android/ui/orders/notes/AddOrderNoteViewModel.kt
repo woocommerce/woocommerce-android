@@ -135,7 +135,6 @@ class AddOrderNoteViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        orderDetailRepository.onCleanup()
     }
 
     @Parcelize

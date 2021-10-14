@@ -121,7 +121,6 @@ class OrderDetailViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        orderDetailRepository.onCleanup()
         dispatcher.unregister(this)
     }
 
