@@ -40,7 +40,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -245,16 +244,14 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     override fun showLatestAnnouncementOption(announcement: FeatureAnnouncement) {
-        if (FeatureFlag.WHATS_NEW.isEnabled()) {
-            binding.optionWhatsNew.show()
-            binding.optionWhatsNew.setOnClickListener {
-                findNavController()
-                    .navigateSafely(
-                        MainSettingsFragmentDirections.actionMainSettingsFragmentToFeatureAnnouncementDialogFragment(
-                            announcement
-                        )
+        binding.optionWhatsNew.show()
+        binding.optionWhatsNew.setOnClickListener {
+            findNavController()
+                .navigateSafely(
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToFeatureAnnouncementDialogFragment(
+                        announcement
                     )
-            }
+                )
         }
     }
 
