@@ -56,7 +56,9 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
             val result = repository.getDefaultLocationId()
 
             // THEN
-            assertThat(result).isEqualTo(CardReaderLocationRepository.LocationIdFetchingResult.Error.Other)
+            assertThat(result).isInstanceOf(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.Other::class.java
+            )
         }
 
     @Test

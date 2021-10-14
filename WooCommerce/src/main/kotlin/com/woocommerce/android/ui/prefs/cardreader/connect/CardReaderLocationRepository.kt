@@ -10,14 +10,16 @@ class CardReaderLocationRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     suspend fun getDefaultLocationId(): LocationIdFetchingResult {
-        val selectedSite = selectedSite.getIfExists() ?: return LocationIdFetchingResult.Error.Other
+        val selectedSite = selectedSite.getIfExists() ?: return LocationIdFetchingResult.Error.Other(
+            "Missing selected site"
+        )
         val result = wcPayStore.getStoreLocationForSite(selectedSite)
         return if (result.isError) {
             when (val type = result.error?.type) {
                 is WCTerminalStoreLocationErrorType.MissingAddress -> {
                     LocationIdFetchingResult.Error.MissingAddress(type.addressEditingUrl)
                 }
-                else -> LocationIdFetchingResult.Error.Other
+                else -> LocationIdFetchingResult.Error.Other(result.error?.message)
             }
         } else {
             LocationIdFetchingResult.Success(result.locationId!!)
@@ -27,7 +29,7 @@ class CardReaderLocationRepository @Inject constructor(
     sealed class LocationIdFetchingResult {
         sealed class Error : LocationIdFetchingResult() {
             data class MissingAddress(val url: String) : Error()
-            object Other : Error()
+            data class Other(val error: String?) : Error()
         }
 
         data class Success(val locationId: String) : LocationIdFetchingResult()

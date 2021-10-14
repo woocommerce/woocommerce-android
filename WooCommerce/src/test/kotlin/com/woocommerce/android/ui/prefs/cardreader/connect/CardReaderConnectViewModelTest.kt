@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.prefs.cardreader.connect
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_FAILURE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -514,11 +516,60 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given location fetching fails address, when user clicks on connect to reader button, then track failure`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress("")
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).track(
+                CARD_READER_LOCATION_FAILURE,
+                "CardReaderConnectViewModel",
+                null,
+                "Missing Address"
+            )
+        }
+
+    @Test
+    fun `given location fetching fails, when user clicks on connect to reader button, then track failure event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.Other("selected site missing")
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).track(
+                CARD_READER_LOCATION_FAILURE,
+                "CardReaderConnectViewModel",
+                null,
+                "selected site missing"
+            )
+        }
+
+    @Test
+    fun `given location fetching passes, when user clicks on connect to reader button, then track success event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Success("")
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).track(CARD_READER_LOCATION_SUCCESS)
+        }
+
+    @Test
     fun `given location fetching fails, when user clicks on connect to reader button, then show error state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
             whenever(locationRepository.getDefaultLocationId()).thenReturn(
-                CardReaderLocationRepository.LocationIdFetchingResult.Error.Other
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.Other("Error")
             )
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()

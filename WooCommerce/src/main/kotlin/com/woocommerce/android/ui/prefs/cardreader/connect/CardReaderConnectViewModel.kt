@@ -10,6 +10,8 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_FAILURE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -343,9 +345,16 @@ class CardReaderConnectViewModel @Inject constructor(
             } else {
                 when (val result = locationRepository.getDefaultLocationId()) {
                     is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
+                        tracker.track(CARD_READER_LOCATION_SUCCESS)
                         doConnectWithLocationId(cardReader, result.locationId)
                     }
                     is CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress -> {
+                        tracker.track(
+                            CARD_READER_LOCATION_FAILURE,
+                            this@CardReaderConnectViewModel.javaClass.simpleName,
+                            null,
+                            "Missing Address"
+                        )
                         viewState.value = MissingMerchantAddressError(
                             {
                                 triggerOpenUrlEventAndExitIfNeeded(result)
@@ -355,8 +364,13 @@ class CardReaderConnectViewModel @Inject constructor(
                             }
                         )
                     }
-                    CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
-                        // todo cardreader Tracking?
+                    is CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
+                        tracker.track(
+                            CARD_READER_LOCATION_FAILURE,
+                            this@CardReaderConnectViewModel.javaClass.simpleName,
+                            null,
+                            result.error
+                        )
                         onReaderConnectionFailed()
                     }
                 }
