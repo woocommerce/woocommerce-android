@@ -36,13 +36,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         isVirtualOrder: Boolean, // don't display shipping section for virtual products
         isReadOnly: Boolean
     ) {
-        showCustomerNote(order, isReadOnly)
-        showShippingAddress(order, isVirtualOrder, isReadOnly)
-        showBillingInfo(order, isReadOnly)
+        val isReallyReadOnly = isReadOnly || !FeatureFlag.ORDER_EDITING.isEnabled()
+        showCustomerNote(order, isReallyReadOnly)
+        showShippingAddress(order, isVirtualOrder, isReallyReadOnly)
+        showBillingInfo(order, isReallyReadOnly)
     }
 
     private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
-        if (isReadOnly || !FeatureFlag.ORDER_EDITING.isEnabled()) {
+        if (isReadOnly) {
             showReadOnlyBillingInfo(order)
             return
         }
@@ -159,9 +160,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     private fun showCustomerNote(order: Order, isReadOnly: Boolean) {
         val isEmpty = order.customerNote.isEmpty()
-        val isEditable = FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly
-
-        if (isEmpty && !isEditable) {
+        if (isEmpty && isReadOnly) {
             binding.customerInfoCustomerNoteSection.hide()
             return
         }
@@ -176,22 +175,18 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             ""
         }
         binding.customerInfoCustomerNote.setText(text, R.string.order_detail_add_customer_note)
+        binding.customerInfoCustomerNote.setIsReadOnly(isReadOnly)
 
-        // TODO right now we only make the text selectable when the feature flag is NOT enabled to
-        // mimic the existing behavior. We can remove this when the feature flag is removed
-        if (isEditable) {
-            binding.customerInfoCustomerNote.setIsReadOnly(false)
+        if (!isReadOnly) {
             binding.customerInfoCustomerNoteSection.setOnClickListener {
                 val action =
                     OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment()
                 findNavController().navigateSafely(action)
             }
-        } else {
-            binding.customerInfoCustomerNote.setIsReadOnly(true)
         }
     }
 
-    private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean): String {
+    private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean) {
         val shippingAddress = order.formatShippingInformationForDisplay()
         when {
             isVirtualOrder -> {
@@ -210,14 +205,12 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             }
         }
 
-        if (FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly) {
+        binding.customerInfoShippingAddr.setIsReadOnly(isReadOnly)
+
+        if (!isReadOnly) {
             binding.customerInfoShippingAddr.setIsReadOnly(false)
             binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
-        } else {
-            binding.customerInfoShippingAddr.setIsReadOnly(true)
-            binding.customerInfoShippingAddressSection.setOnClickListener(null)
         }
-        return shippingAddress
     }
 
     private fun navigateToShippingAddressEditingView() {
