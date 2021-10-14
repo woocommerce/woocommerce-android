@@ -61,7 +61,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
 
         binding.customerInfoBillingAddr.setTextIsSelectable(false)
-        binding.customerInfoBillingAddr.setOnClickListener { navigateToBillingAddressEditingView() }
+        binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
     }
 
     private fun showReadOnlyBillingInfo(order: Order) {
@@ -92,7 +92,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
 
         binding.customerInfoBillingAddr.setTextIsSelectable(true)
-        binding.customerInfoBillingAddr.setOnClickListener(null)
+        binding.customerInfoBillingAddressSection.setOnClickListener(null)
     }
 
     private fun onViewMoreCustomerInfoClick() {
