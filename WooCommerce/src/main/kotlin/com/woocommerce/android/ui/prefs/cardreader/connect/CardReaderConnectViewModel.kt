@@ -29,6 +29,7 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
@@ -75,6 +76,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val appPrefs: AppPrefs,
     private val onboardingChecker: CardReaderOnboardingChecker,
     private val locationRepository: CardReaderLocationRepository,
+    private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
 
@@ -357,7 +359,7 @@ class CardReaderConnectViewModel @Inject constructor(
                         viewState.value = MissingMerchantAddressError(
                             {
                                 tracker.track(CARD_READER_LOCATION_MISSING_TAPPED)
-                                triggerEvent(CardReaderConnectEvent.OpenWebView(result.url))
+                                triggerOpenUrlEventAndExitIfNeeded(result)
                             },
                             {
                                 onCancelClicked()
@@ -375,6 +377,17 @@ class CardReaderConnectViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun triggerOpenUrlEventAndExitIfNeeded(
+        result: CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress
+    ) {
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(CardReaderConnectEvent.OpenWPComWebView(result.url))
+        } else {
+            triggerEvent(CardReaderConnectEvent.OpenGenericWebView(result.url))
+            exitFlow(connected = false)
         }
     }
 
@@ -473,7 +486,9 @@ class CardReaderConnectViewModel @Inject constructor(
 
         data class ShowToast(@StringRes val message: Int) : CardReaderConnectEvent()
 
-        data class OpenWebView(val url: String) : CardReaderConnectEvent()
+        data class OpenWPComWebView(val url: String) : CardReaderConnectEvent()
+
+        data class OpenGenericWebView(val url: String) : CardReaderConnectEvent()
     }
 
     @Suppress("LongParameterList")

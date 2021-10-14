@@ -28,8 +28,8 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.CardReaderConnectDialogBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.navigateToParentWithResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.navigateToParentWithResult
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardR
 import com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.WooAnimUtils
@@ -229,10 +230,12 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                 }
                 is CardReaderConnectViewModel.CardReaderConnectEvent.ShowToast ->
                     ToastUtils.showToast(requireContext(), getString(event.message))
-                is CardReaderConnectViewModel.CardReaderConnectEvent.OpenWebView ->
+                is CardReaderConnectViewModel.CardReaderConnectEvent.OpenWPComWebView ->
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
                     )
+                is CardReaderConnectViewModel.CardReaderConnectEvent.OpenGenericWebView ->
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 else -> event.isHandled = false
             }
         }

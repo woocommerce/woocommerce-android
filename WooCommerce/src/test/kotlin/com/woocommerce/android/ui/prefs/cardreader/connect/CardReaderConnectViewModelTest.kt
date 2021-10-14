@@ -14,6 +14,7 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationPermissions
@@ -64,6 +65,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 @InternalCoroutinesApi
@@ -81,6 +83,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
     private val locationRepository: CardReaderLocationRepository = mock()
+    private val siteModel: SiteModel = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { getIfExists() }.thenReturn(siteModel)
+    }
+
     private val locationId = "location_id"
 
     @Before
@@ -599,8 +606,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given location fetching missing address, when user clicks enter address, then emits open web view event`() =
+    fun `given address empty on wp com, when user clicks enter address, then opens authenticated webview`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(siteModel.isWPCom).thenReturn(true)
             init()
             val url = "https://wordpress.com"
             whenever(locationRepository.getDefaultLocationId()).thenReturn(
@@ -611,10 +619,75 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as MissingMerchantAddressError).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
-                CardReaderConnectViewModel.CardReaderConnectEvent.OpenWebView::class.java
+                CardReaderConnectViewModel.CardReaderConnectEvent.OpenWPComWebView::class.java
             )
-            assertThat((viewModel.event.value as CardReaderConnectViewModel.CardReaderConnectEvent.OpenWebView).url)
-                .isEqualTo(url)
+            assertThat(
+                (viewModel.event.value as CardReaderConnectViewModel.CardReaderConnectEvent.OpenWPComWebView).url
+            ).isEqualTo(url)
+        }
+
+    @Test
+    fun `given address empty on atomic, when user clicks enter address, then opens authenticated webview`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(siteModel.isWPComAtomic).thenReturn(true)
+            init()
+            val url = "https://wordpress.com"
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
+            )
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            (viewModel.viewStateData.value as MissingMerchantAddressError).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(
+                CardReaderConnectViewModel.CardReaderConnectEvent.OpenWPComWebView::class.java
+            )
+            assertThat(
+                (viewModel.event.value as CardReaderConnectViewModel.CardReaderConnectEvent.OpenWPComWebView).url
+            ).isEqualTo(url)
+        }
+
+    @Test
+    fun `given address empty on selfhosted, when user clicks enter address, then opens unauthenticated webview`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
+
+            whenever(siteModel.isWPComAtomic).thenReturn(false)
+            whenever(siteModel.isWPCom).thenReturn(false)
+            init()
+            val url = "https://wordpress.com"
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
+            )
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            (viewModel.viewStateData.value as MissingMerchantAddressError).onPrimaryActionClicked.invoke()
+
+            assertThat(events[events.size - 2]).isInstanceOf(
+                CardReaderConnectViewModel.CardReaderConnectEvent.OpenGenericWebView::class.java
+            )
+            assertThat(
+                (events[events.size - 2] as CardReaderConnectViewModel.CardReaderConnectEvent.OpenGenericWebView).url
+            ).isEqualTo(url)
+        }
+
+    @Test
+    fun `given address empty on selfhosted, when user clicks enter address, then emits exit event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(siteModel.isWPComAtomic).thenReturn(false)
+            whenever(siteModel.isWPCom).thenReturn(false)
+            init()
+            val url = "https://wordpress.com"
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
+            )
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as MissingMerchantAddressError).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
 
     @Test
@@ -1118,7 +1191,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             tracker,
             appPrefs,
             onboardingChecker,
-            locationRepository
+            locationRepository,
+            selectedSite,
         )
     }
 
