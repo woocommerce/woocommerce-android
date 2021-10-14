@@ -43,61 +43,44 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     }
 
     private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
-        if (isReadOnly) {
-            showReadOnlyBillingInfo(order)
-            return
-        }
-
         val billingInfo = order.formatBillingInformationForDisplay()
-        binding.customerInfoBillingAddr.setText(billingInfo, R.string.order_detail_add_billing_address)
+        if (isReadOnly && billingInfo.isEmpty()) {
+            // hide the address if it's empty but we have details like email or phone
+            if (order.billingAddress.hasInfo()) {
+                binding.customerInfoBillingAddr.hide()
+            } else {
+                // hide this entire view if shipping address is also empty
+                val shippingAddress = order.formatShippingInformationForDisplay()
+                if (shippingAddress.isEmpty()) {
+                    hide()
+                    return
+                }
+
+                // hide the entire billing section since billing address is empty
+                binding.customerInfoMorePanel.hide()
+                binding.customerInfoViewMore.hide()
+            }
+        } else {
+            binding.customerInfoBillingAddr.setText(billingInfo, R.string.order_detail_add_billing_address)
+            // we want to expand the billing address section when the address is empty to expose
+            // the "Add billing address" view - note that the billing address is required when
+            // a customer makes an order, but it will be empty once we offer order creation
+            if (billingInfo.isEmpty() && !isReadOnly) {
+                expandCustomerInfoView()
+                binding.customerInfoViewMore.hide()
+            } else {
+                binding.customerInfoViewMore.show()
+            }
+        }
 
         showBillingAddressPhoneInfo(order)
         showBillingAddressEmailInfo(order)
 
-        // we want to expand the billing address section when the address is empty to expose
-        // the "Add billing address" view - note that the billing address is required when
-        // a customer makes an order, but it will be empty once we offer order creation
-        if (billingInfo.isEmpty()) {
-            expandCustomerInfoView()
-            binding.customerInfoViewMore.hide()
-        } else {
-            binding.customerInfoViewMore.show()
+        binding.customerInfoBillingAddr.setIsReadOnly(isReadOnly)
+        if (!isReadOnly) {
+            binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
         }
-
-        binding.customerInfoBillingAddr.setIsReadOnly(false)
-        binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
         binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
-    }
-
-    private fun showReadOnlyBillingInfo(order: Order) {
-        val billingInfo = order.formatBillingInformationForDisplay()
-
-        if (order.billingAddress.hasInfo()) {
-            if (billingInfo.isNotEmpty()) {
-                binding.customerInfoBillingAddr.visibility = VISIBLE
-                binding.customerInfoBillingAddr.setText(billingInfo, R.string.order_detail_add_billing_address)
-                binding.customerInfoDivider2.visibility = VISIBLE
-            } else {
-                binding.customerInfoBillingAddr.visibility = GONE
-                binding.customerInfoDivider2.visibility = GONE
-            }
-
-            showBillingAddressPhoneInfo(order)
-            showBillingAddressEmailInfo(order)
-            binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
-        } else {
-            binding.customerInfoViewMore.hide()
-            binding.customerInfoMorePanel.hide()
-            binding.customerInfoViewMore.setOnClickListener(null)
-        }
-
-        val shippingAddress = order.formatShippingInformationForDisplay()
-        if (shippingAddress.isEmpty() && billingInfo.isEmpty()) {
-            hide()
-        }
-
-        binding.customerInfoBillingAddr.setIsReadOnly(true)
-        binding.customerInfoBillingAddressSection.setOnClickListener(null)
     }
 
     private fun onViewMoreCustomerInfoClick() {
