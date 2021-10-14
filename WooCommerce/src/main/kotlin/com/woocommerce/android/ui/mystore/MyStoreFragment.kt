@@ -9,6 +9,7 @@ import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -21,6 +22,7 @@ import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
@@ -183,6 +185,9 @@ class MyStoreFragment :
     private fun prepareJetpackBenefitsBanner() {
         binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
             presenter.dismissJetpackBenefitsBanner()
+        }
+        binding.jetpackBenefitsBanner.root.setOnClickListener {
+            findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
         }
         val appBarLayout = appBarLayout ?: return
         // For the banner to be above the bottom navigation view when the toolbar is expanded
