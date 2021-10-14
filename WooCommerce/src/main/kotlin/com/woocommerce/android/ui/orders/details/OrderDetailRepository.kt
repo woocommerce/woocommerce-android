@@ -9,12 +9,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -23,9 +19,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
-import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -37,12 +31,9 @@ import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
+import javax.inject.Singleton
 
-/*
-ViewModelScope fixes a memory leak related to EventBus subscription. See PR-4780 for details.
-Can be safely removed as soon as we remove EventBus from here.
- */
-@ViewModelScoped
+@Singleton
 class OrderDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
@@ -55,10 +46,6 @@ class OrderDetailRepository @Inject constructor(
 
     init {
         dispatcher.register(this)
-    }
-
-    fun onCleanup() {
-        dispatcher.unregister(this)
     }
 
     suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
