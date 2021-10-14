@@ -188,6 +188,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean) {
         val shippingAddress = order.formatShippingInformationForDisplay()
+        if (shippingAddress.isEmpty() && isReadOnly) {
+            binding.customerInfoShippingSection.hide()
+            return
+        }
+
         when {
             isVirtualOrder -> {
                 binding.customerInfoShippingSection.hide()
