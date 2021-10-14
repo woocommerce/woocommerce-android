@@ -37,7 +37,7 @@ class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: Attr
         binding.notEmptyLabel.setTextIsSelectable(value)
     }
 
-    fun hidePencilDrawable() {
+    fun hidePencilIcon() {
         binding.notEmptyLabel.setCompoundDrawables(null, null, null, null)
     }
 }

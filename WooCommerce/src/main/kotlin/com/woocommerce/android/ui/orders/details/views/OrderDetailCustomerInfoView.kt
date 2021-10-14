@@ -97,7 +97,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
 
         binding.customerInfoBillingAddr.setTextIsSelectable(true)
-        binding.customerInfoBillingAddr.hidePencilDrawable()
+        binding.customerInfoBillingAddr.hidePencilIcon()
         binding.customerInfoBillingAddressSection.setOnClickListener(null)
     }
 
@@ -190,7 +190,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             }
         } else {
             binding.customerInfoCustomerNote.setTextIsSelectable(true)
-            binding.customerInfoCustomerNote.hidePencilDrawable()
+            binding.customerInfoCustomerNote.hidePencilIcon()
         }
     }
 
@@ -218,7 +218,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
         } else {
             binding.customerInfoShippingAddr.setTextIsSelectable(true)
-            binding.customerInfoShippingAddr.hidePencilDrawable()
+            binding.customerInfoShippingAddr.hidePencilIcon()
             binding.customerInfoShippingAddressSection.setOnClickListener(null)
         }
         return shippingAddress
