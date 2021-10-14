@@ -43,8 +43,8 @@ class SupportHelper {
         dialog.setOnShowListener {
             val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener {
-                val newEmail = emailEditText.getText()
-                val newName = nameEditText.getText()
+                val newEmail = emailEditText.text
+                val newName = nameEditText.text
                 if (StringUtils.isValidEmail(newEmail)) {
                     emailAndNameSelected(newEmail, newName)
                     dialog.dismiss()
@@ -106,7 +106,7 @@ private fun supportIdentityInputDialogLayout(
         R.id.support_identity_input_dialog_email_edit_text
     )
     emailSuggestion?.let {
-        emailEditText.setText(it)
+        emailEditText.text = it
         emailEditText.setSelection(0, it.length)
     }
 
@@ -114,7 +114,7 @@ private fun supportIdentityInputDialogLayout(
         R.id.support_identity_input_dialog_name_edit_text
     )
     nameSuggestion?.let {
-        nameEditText.setText(it)
+        nameEditText.text = it
     }
     nameEditText.visibility = if (isNameInputHidden) View.GONE else View.VISIBLE
 
