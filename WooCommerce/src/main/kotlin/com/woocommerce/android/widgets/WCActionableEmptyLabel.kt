@@ -33,11 +33,10 @@ class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: Attr
         }
     }
 
-    fun setTextIsSelectable(value: Boolean) {
-        binding.notEmptyLabel.setTextIsSelectable(value)
-    }
-
-    fun hidePencilIcon() {
-        binding.notEmptyLabel.setCompoundDrawables(null, null, null, null)
+    fun setIsReadOnly(readOnly: Boolean) {
+        binding.notEmptyLabel.setTextIsSelectable(readOnly)
+        if (readOnly) {
+            binding.notEmptyLabel.setCompoundDrawables(null, null, null, null)
+        }
     }
 }

@@ -64,7 +64,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoViewMore.show()
         }
 
-        binding.customerInfoBillingAddr.setTextIsSelectable(false)
+        binding.customerInfoBillingAddr.setIsReadOnly(false)
         binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
         binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
     }
@@ -96,8 +96,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             hide()
         }
 
-        binding.customerInfoBillingAddr.setTextIsSelectable(true)
-        binding.customerInfoBillingAddr.hidePencilIcon()
+        binding.customerInfoBillingAddr.setIsReadOnly(true)
         binding.customerInfoBillingAddressSection.setOnClickListener(null)
     }
 
@@ -182,15 +181,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         // TODO right now we only make the text selectable when the feature flag is NOT enabled to
         // mimic the existing behavior. We can remove this when the feature flag is removed
         if (isEditable) {
-            binding.customerInfoCustomerNote.setTextIsSelectable(false)
+            binding.customerInfoCustomerNote.setIsReadOnly(false)
             binding.customerInfoCustomerNoteSection.setOnClickListener {
                 val action =
                     OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment()
                 findNavController().navigateSafely(action)
             }
         } else {
-            binding.customerInfoCustomerNote.setTextIsSelectable(true)
-            binding.customerInfoCustomerNote.hidePencilIcon()
+            binding.customerInfoCustomerNote.setIsReadOnly(true)
         }
     }
 
@@ -214,11 +212,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
 
         if (FeatureFlag.ORDER_EDITING.isEnabled()) {
-            binding.customerInfoShippingAddr.setTextIsSelectable(false)
+            binding.customerInfoShippingAddr.setIsReadOnly(false)
             binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
         } else {
-            binding.customerInfoShippingAddr.setTextIsSelectable(true)
-            binding.customerInfoShippingAddr.hidePencilIcon()
+            binding.customerInfoShippingAddr.setIsReadOnly(true)
             binding.customerInfoShippingAddressSection.setOnClickListener(null)
         }
         return shippingAddress
