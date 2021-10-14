@@ -23,6 +23,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 
+@Suppress("TooManyFunctions")
 class OrderDetailCustomerInfoView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -50,18 +51,22 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         val billingInfo = order.formatBillingInformationForDisplay()
         binding.customerInfoBillingAddr.setText(billingInfo, R.string.order_detail_add_billing_address)
 
-        if (order.billingAddress.hasInfo()) {
-            showBillingAddressPhoneInfo(order)
-            showBillingAddressEmailInfo(order)
-            binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
-        } else {
+        showBillingAddressPhoneInfo(order)
+        showBillingAddressEmailInfo(order)
+
+        // we want to expand the billing address section when the address is empty to expose
+        // the "Add billing address" view - note that the billing address is required when
+        // a customer makes an order, but it will be empty once we offer order creation
+        if (order.billingAddress.isEmpty()) {
+            expandCustomerInfoView()
             binding.customerInfoViewMore.hide()
-            binding.customerInfoMorePanel.hide()
-            binding.customerInfoViewMore.setOnClickListener(null)
+        } else {
+            binding.customerInfoViewMore.show()
         }
 
         binding.customerInfoBillingAddr.setTextIsSelectable(false)
         binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
+        binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
     }
 
     private fun showReadOnlyBillingInfo(order: Order) {
@@ -99,15 +104,23 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         val isChecked = binding.customerInfoViewMoreButtonImage.rotation == 0F
         if (isChecked) {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED)
-            binding.customerInfoMorePanel.expand()
-            binding.customerInfoViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
-            binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
+            expandCustomerInfoView()
         } else {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED)
-            binding.customerInfoMorePanel.collapse()
-            binding.customerInfoViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
-            binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
+            collapseCustomerInfoView()
         }
+    }
+
+    private fun expandCustomerInfoView() {
+        binding.customerInfoMorePanel.expand()
+        binding.customerInfoViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
+        binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
+    }
+
+    private fun collapseCustomerInfoView() {
+        binding.customerInfoMorePanel.collapse()
+        binding.customerInfoViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
+        binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
     }
 
     private fun showBillingAddressEmailInfo(order: Order) {
