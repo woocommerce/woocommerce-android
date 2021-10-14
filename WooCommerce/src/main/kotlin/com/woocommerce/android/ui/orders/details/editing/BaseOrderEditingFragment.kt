@@ -11,6 +11,7 @@ import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -26,6 +27,14 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var doneMenuItem: MenuItem? = null
+
+    /**
+     * The value to pass to analytics for the specific screen
+     * AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE
+     * AnalyticsTracker.ORDER_EDIT_SHIPPING_ADDRESS
+     * AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS
+     */
+    abstract val analyticsValue: String
 
     /**
      * This TextWatcher can be used to detect EditText changes in any order editing fragment
@@ -60,6 +69,9 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        if (savedInstanceState == null) {
+            trackEventStarted()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -114,6 +126,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
             confirmDiscard()
             false
         } else {
+            trackEventCanceled()
             true
         }
     }
@@ -121,6 +134,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     private fun confirmDiscard() {
         MultiLiveEvent.Event.ShowDialog.buildDiscardDialogEvent(
             positiveBtnAction = { _, _ ->
+                trackEventCanceled()
                 navigateUp()
             }
         ).showDialog()
@@ -129,5 +143,23 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     private fun navigateUp() {
         ActivityUtils.hideKeyboard(activity)
         findNavController().navigateUp()
+    }
+
+    private fun trackEventStarted() {
+        AnalyticsTracker.track(
+            AnalyticsTracker.Stat.ORDER_DETAIL_EDIT_FLOW_STARTED,
+            mapOf(
+                AnalyticsTracker.KEY_SUBJECT to analyticsValue
+            )
+        )
+    }
+
+    private fun trackEventCanceled() {
+        AnalyticsTracker.track(
+            AnalyticsTracker.Stat.ORDER_DETAIL_EDIT_FLOW_CANCELED,
+            mapOf(
+                AnalyticsTracker.KEY_SUBJECT to analyticsValue
+            )
+        )
     }
 }

@@ -18,6 +18,8 @@ class CustomerOrderNoteEditingFragment :
     private var _binding: FragmentEditCustomerOrderNoteBinding? = null
     private val binding get() = _binding!!
 
+    override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
