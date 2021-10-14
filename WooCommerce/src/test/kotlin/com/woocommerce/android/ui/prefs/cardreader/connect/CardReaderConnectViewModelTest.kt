@@ -542,7 +542,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given location fetching missing address wpcom, when user clicks enter address, then emits open wv event`() =
+    fun `given address empty on wp com, when user clicks enter address, then opens authenticated webview`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(siteModel.isWPCom).thenReturn(true)
             init()
@@ -563,7 +563,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given location fetching missing address atomic, when user clicks enter address, then emits open wv event`() =
+    fun `given address empty on atomic, when user clicks enter address, then opens authenticated webview`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(siteModel.isWPComAtomic).thenReturn(true)
             init()
@@ -584,7 +584,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given location fetching missing address, when user clicks enter address, then emits open chrome event`() =
+    fun `given address empty on selfhosted, when user clicks enter address, then opens unauthenticated webview`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
@@ -611,7 +611,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given location fetching missing address, when user clicks enter address, then emits exit event`() =
+    fun `given address empty on selfhosted, when user clicks enter address, then emits exit event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(siteModel.isWPComAtomic).thenReturn(false)
             whenever(siteModel.isWPCom).thenReturn(false)
