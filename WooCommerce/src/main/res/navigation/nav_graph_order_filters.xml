@@ -7,5 +7,21 @@
     <fragment
         android:id="@+id/orderFilterListFragment"
         android:name="com.woocommerce.android.ui.orders.filters.OrderFilterListFragment"
+        tools:layout="@layout/fragment_order_filter_list">
+        <action
+            android:id="@+id/action_orderFilterListFragment_to_orderFilterOptionListFragment"
+            app:destination="@id/nav_graph_order_filters"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:popExitAnim="@anim/activity_slide_out_to_right">
+            <argument
+                android:name="selectedFilterItemPosition"
+                app:argType="integer"
+                app:nullable="false" />
+        </action>
+
+    </fragment>
+    <fragment
+        android:id="@+id/orderFilterOptionsListFragment"
+        android:name="com.woocommerce.android.ui.orders.filters.OrderFilterOptionListFragment"
         tools:layout="@layout/fragment_order_filter_list" />
 </navigation>
