@@ -57,7 +57,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         // we want to expand the billing address section when the address is empty to expose
         // the "Add billing address" view - note that the billing address is required when
         // a customer makes an order, but it will be empty once we offer order creation
-        if (order.billingAddress.isEmpty()) {
+        if (billingInfo.isEmpty()) {
             expandCustomerInfoView()
             binding.customerInfoViewMore.hide()
         } else {
