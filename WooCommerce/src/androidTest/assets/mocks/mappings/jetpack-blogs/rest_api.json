@@ -1,13 +1,16 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
     "queryParameters": {
       "json": {
         "equalTo": "true"
       },
-      "path": {
-        "equalTo": "/&_method=get&_fields=authentication%2Cnamespaces"
+      "query": {
+        "matches": "(.*)fields(.*)authentication,namespaces(.*)"
+      },
+      "locale": {
+        "matches": "(.*)"
       }
     }
   },

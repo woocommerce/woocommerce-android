@@ -324,7 +324,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun refreshShipmentTracking() {
-        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(order.localOrderId)
+        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(order.localId.value)
     }
 
     fun onShippingLabelRefunded() {
@@ -383,7 +383,7 @@ class OrderDetailViewModel @Inject constructor(
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
             orderDetailRepository.getOrderShipmentTrackingByTrackingNumber(
-                order.localOrderId, trackingNumber
+                order.localId.value, trackingNumber
             )?.let { deletedShipmentTracking ->
                 deletedOrderShipmentTrackingSet.add(trackingNumber)
 
@@ -422,7 +422,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val deletedShipment = orderDetailRepository.deleteOrderShipmentTracking(
-                order.localOrderId, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
+                order.localId.value, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
             )
             if (deletedShipment) {
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
@@ -436,7 +436,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
-                orderDetailRepository.updateOrderStatus(order.toDataModel(), newStatus)
+                orderDetailRepository.updateOrderStatus(order.localId, newStatus)
                     .collect { result ->
                         when (result) {
                             is OptimisticUpdateResult -> reloadOrderDetails()
@@ -502,16 +502,16 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun loadOrderNotes() {
-        _orderNotes.value = orderDetailRepository.getOrderNotes(order.localOrderId)
+        _orderNotes.value = orderDetailRepository.getOrderNotes(order.localId.value)
     }
 
     private fun fetchOrderNotes() {
         launch {
-            if (!orderDetailRepository.fetchOrderNotes(order.localOrderId, orderIdSet.remoteOrderId)) {
+            if (!orderDetailRepository.fetchOrderNotes(order.localId.value, orderIdSet.remoteOrderId)) {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
             }
             // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(order.localOrderId)
+            _orderNotes.value = orderDetailRepository.getOrderNotes(order.localId.value)
         }
     }
 
@@ -549,7 +549,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
-        val trackingList = orderDetailRepository.getOrderShipmentTrackings(order.localOrderId)
+        val trackingList = orderDetailRepository.getOrderShipmentTrackings(order.localId.value)
         return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {
@@ -562,7 +562,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        val result = orderDetailRepository.fetchOrderShipmentTrackingList(order.localOrderId, orderIdSet.remoteOrderId)
+        val result = orderDetailRepository.fetchOrderShipmentTrackingList(order.localId.value, orderIdSet.remoteOrderId)
         appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
     }
 
@@ -659,16 +659,6 @@ class OrderDetailViewModel @Inject constructor(
                     )
                 } else {
                     AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
-                }
-            }
-            WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_TRACKING_ADD_FAILED,
-                        prepareTracksEventsDetails(event)
-                    )
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_TRACKING_ADD_SUCCESS)
                 }
             }
             WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING -> {

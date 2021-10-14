@@ -11,7 +11,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.OrderDetailCustomerInfoBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
@@ -64,9 +68,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         if (FeatureFlag.ORDER_EDITING.isEnabled()) {
             binding.customerInfoBillingAddr.setTextIsSelectable(false)
+            binding.customerInfoBillingAddr.setOnClickListener { navigateToBillingAddressEditingView() }
         } else {
             binding.customerInfoBillingAddr.setTextIsSelectable(true)
             binding.customerInfoBillingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            binding.customerInfoBillingAddr.setOnClickListener(null)
         }
 
         return billingInfo
@@ -123,25 +129,36 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     }
 
     private fun showCustomerNote(order: Order, isReadOnly: Boolean) {
-        if (order.customerNote.isNotEmpty()) {
-            binding.customerInfoCustomerNoteSection.show()
-            binding.customerInfoCustomerNote.text = context.getString(
+        val isEmpty = order.customerNote.isEmpty()
+        val isEditable = FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly
+
+        if (isEmpty && !isEditable) {
+            binding.customerInfoCustomerNoteSection.hide()
+            return
+        }
+
+        binding.customerInfoCustomerNoteSection.show()
+        val text = if (!isEmpty) {
+            context.getString(
                 R.string.orderdetail_customer_note,
                 order.customerNote
             )
-            if (FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly) {
-                binding.customerInfoCustomerNote.setTextIsSelectable(false)
-                binding.customerInfoCustomerNoteSection.setOnClickListener {
-                    val action =
-                        OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment()
-                    findNavController().navigateSafely(action)
-                }
-            } else {
-                binding.customerInfoCustomerNote.setTextIsSelectable(true)
-                binding.customerInfoCustomerNote.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        } else {
+            ""
+        }
+        binding.customerInfoCustomerNote.setText(text, R.string.order_detail_add_customer_note)
+
+        // TODO right now we only make the text selectable when the feature flag is NOT enabled to
+        // mimic the existing behavior. We can remove this when the feature flag is removed
+        if (isEditable) {
+            binding.customerInfoCustomerNote.setTextIsSelectable(false)
+            binding.customerInfoCustomerNoteSection.setOnClickListener {
+                val action =
+                    OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment()
+                findNavController().navigateSafely(action)
             }
         } else {
-            binding.customerInfoCustomerNoteSection.hide()
+            binding.customerInfoCustomerNote.setTextIsSelectable(true)
         }
     }
 
@@ -170,11 +187,25 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         if (FeatureFlag.ORDER_EDITING.isEnabled()) {
             binding.customerInfoShippingAddr.setTextIsSelectable(false)
+            binding.customerInfoShippingAddr.setOnClickListener { navigateToShippingAddressEditingView() }
         } else {
             binding.customerInfoShippingAddr.setTextIsSelectable(true)
             binding.customerInfoShippingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            binding.customerInfoShippingAddr.setOnClickListener(null)
         }
         return shippingAddress
+    }
+
+    private fun navigateToShippingAddressEditingView() {
+        OrderDetailFragmentDirections
+            .actionOrderDetailFragmentToShippingAddressEditingFragment()
+            .let { findNavController().navigateSafely(it) }
+    }
+
+    private fun navigateToBillingAddressEditingView() {
+        OrderDetailFragmentDirections
+            .actionOrderDetailFragmentToBillingAddressEditingFragment()
+            .let { findNavController().navigateSafely(it) }
     }
 
     private fun showCallOrMessagePopup(order: Order) {

@@ -249,6 +249,7 @@ class MainActivity :
         updateOrderBadge(false)
 
         checkConnection()
+        viewModel.showFeatureAnnouncementIfNeeded()
     }
 
     override fun onPause() {
@@ -406,7 +407,9 @@ class MainActivity :
                 R.id.printShippingLabelInfoFragment,
                 R.id.shippingLabelFormatOptionsFragment,
                 R.id.printingInstructionsFragment,
-                R.id.editCustomerOrderNoteFragment -> {
+                R.id.editCustomerOrderNoteFragment,
+                R.id.shippingAddressEditingFragment,
+                R.id.billingAddressEditingFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -735,6 +738,10 @@ class MainActivity :
                         intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
                         intent.putExtra(FIELD_PUSH_ID, event.pushId)
                         restart()
+                    }
+                    is ShowFeatureAnnouncement -> {
+                        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+                        navController.navigateSafely(action)
                     }
                 }
             }
