@@ -15,11 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -29,13 +24,11 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelIte
 import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class OrderDetailRepository @Inject constructor(
-    private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
     private val refundStore: WCRefundStore,
@@ -43,11 +36,6 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-
-    init {
-        dispatcher.register(this)
-    }
-
     suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
             orderStore.fetchSingleOrder(
@@ -266,20 +254,6 @@ class OrderDetailRepository @Inject constructor(
             canCreatePaymentMethod = true,
             canCreateCustomsForm = true
         )?.isEligible ?: false
-    }
-
-    class OnProductImageChanged(val remoteProductId: Long)
-
-    /**
-     * This will be triggered if we fetched a product via ProduictImageMap so we could get its image.
-     * Here we fire an event that tells the fragment to update that product in the order product list.
-     */
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
-            EventBus.getDefault().post(OnProductImageChanged(event.remoteProductId))
-        }
     }
 
     companion object {
