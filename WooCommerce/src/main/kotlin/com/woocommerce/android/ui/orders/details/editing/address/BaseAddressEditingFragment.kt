@@ -65,5 +65,8 @@ abstract class BaseAddressEditingFragment :
         binding.address2.setText(address2)
         binding.city.setText(city)
         binding.postcode.setText(postcode)
+        binding.useAsAnotherAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
+            sharedViewModel.onUseAsOtherAddressSwitchChanged(isChecked)
+        }
     }
 }
