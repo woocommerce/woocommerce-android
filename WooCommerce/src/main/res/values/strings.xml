@@ -822,7 +822,7 @@
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
     <string name="card_reader_connect_missing_address">Please provide your store address in order to proceed</string>
-    <string name="card_reader_connect_missing_address_button">Proceed</string>
+    <string name="card_reader_connect_missing_address_button">Enter address</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
