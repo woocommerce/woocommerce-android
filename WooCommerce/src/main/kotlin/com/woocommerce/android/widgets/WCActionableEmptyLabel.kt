@@ -33,7 +33,13 @@ class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: Attr
         }
     }
 
-    fun setTextIsSelectable(value: Boolean) {
-        binding.notEmptyLabel.setTextIsSelectable(value)
+    /**
+     * When the view is read-only, we make the text selectable and hide the pencil icon
+     */
+    fun setIsReadOnly(readOnly: Boolean) {
+        binding.notEmptyLabel.setTextIsSelectable(readOnly)
+        if (readOnly) {
+            binding.notEmptyLabel.setCompoundDrawables(null, null, null, null)
+        }
     }
 }
