@@ -81,6 +81,10 @@ class OrderEditingViewModel @Inject constructor(
         return billingAddress.hasInfo()
     }
 
+    fun updateBillingAndShippingAddress(address: Address): Boolean {
+        return updateShippingAddress(address) and updateBillingAddress(address)
+    }
+
     private suspend fun collectUpdateFlow(flow: Flow<WCOrderStore.UpdateOrderResult>) {
         flow.collect { result ->
             when (result) {
