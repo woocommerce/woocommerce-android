@@ -19,32 +19,67 @@ class OrderFilterListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
 ) : ScopedViewModel(savedState) {
 
-    private val _filterListItems = MutableLiveData<List<FilterListItemUiModel>>()
-    val filterListItems: LiveData<List<FilterListItemUiModel>> = _filterListItems
+    private val _orderFilterCategories = MutableLiveData<List<FilterListCategoryUiModel>>()
+    val orderFilterCategories: LiveData<List<FilterListCategoryUiModel>> = _orderFilterCategories
+
+//    private val _orderFilterOptions = MutableLiveData<List<FilterListOptionUiModel>>()
+//    val orderFilterOptions: LiveData<List<FilterListOptionUiModel>> = _orderFilterOptions
 
     init {
-        _filterListItems.value = buildFilterListUiModel()
+        _orderFilterCategories.value = buildFilterListUiModel()
     }
 
-    private fun buildFilterListUiModel(): List<FilterListItemUiModel> =
-        listOf(
-            FilterListItemUiModel(
+    private fun buildFilterListUiModel(): List<FilterListCategoryUiModel> {
+        val currentOrderStatusFilterOptions = loadOrderStatusFilterOptions()
+        return listOf(
+            FilterListCategoryUiModel(
                 displayName = resourceProvider.getString(R.string.orderfilters_order_status_filter),
-                selectedValue = resourceProvider.getString(R.string.orderfilters_default_filter_value)
+                displayValue = getOrderStatusSelectedValue(currentOrderStatusFilterOptions),
+                currentOrderStatusFilterOptions
             ),
-            FilterListItemUiModel(
+            FilterListCategoryUiModel(
                 displayName = resourceProvider.getString(R.string.orderfilters_date_range_filter),
-                selectedValue = resourceProvider.getString(R.string.orderfilters_default_filter_value)
+                displayValue = getOrderStatusSelectedValue(currentOrderStatusFilterOptions),
+                emptyList()
             )
         )
+    }
+
+    private fun getOrderStatusSelectedValue(currentOrderStatusFilterOptions: List<FilterListOptionUiModel>): String {
+        return if (currentOrderStatusFilterOptions.any { it.isSelected }) {
+            currentOrderStatusFilterOptions
+                .filter { it.isSelected }
+                .count()
+                .toString()
+        } else {
+            resourceProvider.getString(R.string.orderfilters_default_filter_value)
+        }
+    }
+
+    private fun loadOrderStatusFilterOptions(): List<FilterListOptionUiModel> {
+        return listOf(
+            FilterListOptionUiModel("All"),
+            FilterListOptionUiModel("Cancelled"),
+            FilterListOptionUiModel("Completed"),
+            FilterListOptionUiModel("Failed"),
+            FilterListOptionUiModel("On hold"),
+        )
+    }
 
     fun onShowOrdersClicked() {
-        //TODO
+        TODO("Not yet implemented")
     }
 
     @Parcelize
-    data class FilterListItemUiModel(
+    data class FilterListCategoryUiModel(
         val displayName: String,
-        val selectedValue: String
+        val displayValue: String,
+        val filterOptions: List<FilterListOptionUiModel>
+    ) : Parcelable
+
+    @Parcelize
+    data class FilterListOptionUiModel(
+        val name: String,
+        val isSelected: Boolean = false,
     ) : Parcelable
 }

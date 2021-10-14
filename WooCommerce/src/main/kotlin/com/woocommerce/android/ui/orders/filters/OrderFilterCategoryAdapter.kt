@@ -1,0 +1,55 @@
+package com.woocommerce.android.ui.orders.filters
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.databinding.FilterListItemBinding
+import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.FilterListCategoryUiModel
+import javax.inject.Inject
+
+class OrderFilterCategoryAdapter constructor(
+    itemDiffCallBack: OrderFilterItemDiffCallBack,
+    private val onFilterCategoryClicked: (Int) -> Unit
+) : ListAdapter<FilterListCategoryUiModel, OrderFilterCategoryViewHolder>(itemDiffCallBack) {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderFilterCategoryViewHolder {
+        return OrderFilterCategoryViewHolder(
+            FilterListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
+    }
+
+    override fun onBindViewHolder(holderCategory: OrderFilterCategoryViewHolder, position: Int) {
+        holderCategory.bind(getItem(position))
+        holderCategory.itemView.setOnClickListener {
+            onFilterCategoryClicked(position)
+        }
+    }
+}
+
+class OrderFilterCategoryViewHolder(val viewBinding: FilterListItemBinding) :
+    RecyclerView.ViewHolder(viewBinding.root) {
+
+    fun bind(filter: FilterListCategoryUiModel) {
+        viewBinding.filterItemName.text = filter.displayName
+        viewBinding.filterItemSelection.text = filter.displayValue
+    }
+}
+
+class OrderFilterItemDiffCallBack @Inject constructor() : DiffUtil.ItemCallback<FilterListCategoryUiModel>() {
+
+    override fun areItemsTheSame(
+        oldUiItemCategory: FilterListCategoryUiModel,
+        newUiItemCategory: FilterListCategoryUiModel
+    ): Boolean = oldUiItemCategory == newUiItemCategory
+
+    override fun areContentsTheSame(
+        oldUiItemCategory: FilterListCategoryUiModel,
+        newUiItemCategory: FilterListCategoryUiModel
+    ): Boolean = oldUiItemCategory == newUiItemCategory
+}
