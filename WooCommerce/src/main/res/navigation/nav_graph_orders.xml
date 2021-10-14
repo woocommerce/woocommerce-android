@@ -289,6 +289,27 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_editCustomerOrderNoteFragment"
+            app:destination="@id/editCustomerOrderNoteFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_shippingAddressEditingFragment"
+            app:destination="@id/shippingAddressEditingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_billingAddressEditingFragment"
+            app:destination="@id/billingAddressEditingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -636,4 +657,19 @@
             app:argType="long"
             app:nullable="false" />
     </fragment>
+    <fragment
+        android:id="@+id/editCustomerOrderNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.details.editing.CustomerOrderNoteEditingFragment"
+        android:label="EditCustomerOrderNoteFragment"
+        tools:layout="@layout/fragment_edit_customer_order_note" />
+    <fragment
+        android:id="@+id/shippingAddressEditingFragment"
+        android:name="com.woocommerce.android.ui.orders.details.editing.address.ShippingAddressEditingFragment"
+        android:label="ShippingAddressEditingFragment"
+        tools:layout="@layout/fragment_base_edit_address"/>
+    <fragment
+        android:id="@+id/billingAddressEditingFragment"
+        android:name="com.woocommerce.android.ui.orders.details.editing.address.BillingAddressEditingFragment"
+        android:label="BillingAddressEditingFragment"
+        tools:layout="@layout/fragment_base_edit_address"/>
 </navigation>

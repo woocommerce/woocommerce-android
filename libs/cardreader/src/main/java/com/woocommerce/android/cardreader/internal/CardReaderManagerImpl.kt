@@ -85,9 +85,9 @@ internal class CardReaderManagerImpl(
         return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
     }
 
-    override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
+    override suspend fun connectToReader(cardReader: CardReader, locationId: String): Boolean {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        connectionManager.startConnectionToReader(cardReader, locationId)
+        return connectionManager.connectToReader(cardReader, locationId)
     }
 
     override suspend fun disconnectReader(): Boolean {

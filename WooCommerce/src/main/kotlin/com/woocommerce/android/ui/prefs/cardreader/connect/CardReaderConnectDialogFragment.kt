@@ -28,7 +28,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.CardReaderConnectDialogBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateToParentWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.CardReaderConnectEvent.CheckLocationEnabled
@@ -221,7 +221,11 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                         .navigateSafely(R.id.action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment)
                 }
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(KEY_CONNECT_TO_READER_RESULT, event.data as Boolean)
+                    navigateToParentWithResult(
+                        key = KEY_CONNECT_TO_READER_RESULT,
+                        result = event.data as Boolean,
+                        childId = R.id.cardReaderConnectDialogFragment,
+                    )
                 }
                 is CardReaderConnectViewModel.CardReaderConnectEvent.ShowToast ->
                     ToastUtils.showToast(requireContext(), getString(event.message))

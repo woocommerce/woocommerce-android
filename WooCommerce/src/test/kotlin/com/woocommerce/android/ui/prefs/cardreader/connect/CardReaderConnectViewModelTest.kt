@@ -29,9 +29,9 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.BluetoothDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingFailedState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingMerchantAddressError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.LocationDisabledError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingMerchantAddressError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MultipleReadersFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.ReaderFoundState
@@ -434,11 +434,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given last connected reader is matching, when reader found, then reader connecting state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
-            val readerStatusStateFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connecting)
-            whenever(cardReaderManager.readerStatus).thenReturn(readerStatusStateFlow)
 
             init(scanState = READER_FOUND)
-            readerStatusStateFlow.emit(CardReaderStatus.Connected(mock()))
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
         }
@@ -512,34 +509,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given location fetching fails, when user clicks on connect to reader button, then show error state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
-                CardReaderLocationRepository.LocationIdFetchingResult.Error.Other("Error")
-            )
-
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
-
-            verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
-        }
-
-    @Test
-    fun `given location fetching fails address, when user clicks on connect button, then show address error state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
-                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress("")
-            )
-
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
-
-            verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
-            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingMerchantAddressError::class.java)
-        }
-
-    @Test
     fun `given location fetching fails address, when user clicks on connect to reader button, then track failure`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
@@ -589,13 +558,60 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given location fetching fails, when user clicks on connect to reader button, then show error state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.Other("Error")
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(cardReaderManager, never()).connectToReader(reader, locationId)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
+        }
+
+    @Test
+    fun `given location fetching missing address, when user clicks on connect button, then show address error state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress("")
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(cardReaderManager, never()).connectToReader(reader, locationId)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingMerchantAddressError::class.java)
+        }
+
+    @Test
+    fun `given location fetching missing address, when user clicks enter address, then emits open web view event`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+            val url = "https://wordpress.com"
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
+            )
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            (viewModel.viewStateData.value as MissingMerchantAddressError).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(
+                CardReaderConnectViewModel.CardReaderConnectEvent.OpenWebView::class.java
+            )
+            assertThat((viewModel.event.value as CardReaderConnectViewModel.CardReaderConnectEvent.OpenWebView).url)
+                .isEqualTo(url)
+        }
+
+    @Test
     fun `when user clicks on connect to reader button, then app starts connecting to reader`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(cardReaderManager).startConnectionToReader(reader, locationId)
+            verify(cardReaderManager).connectToReader(reader, locationId)
         }
 
     @Test
@@ -606,7 +622,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
-            verify(cardReaderManager).startConnectionToReader(argThat { this.id == reader.readerId }, eq(locationId))
+            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, eq(locationId))
         }
 
     @Test
@@ -619,7 +635,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
-            verify(cardReaderManager).startConnectionToReader(argThat { this.id == reader.readerId }, eq(locationId))
+            verify(cardReaderManager).connectToReader(argThat { this.id == reader.readerId }, eq(locationId))
         }
 
     @Test
@@ -1108,19 +1124,12 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         whenever(locationRepository.getDefaultLocationId()).thenReturn(
             CardReaderLocationRepository.LocationIdFetchingResult.Success(locationId)
         )
+        whenever(cardReaderManager.connectToReader(reader, locationId)).thenReturn(connectingSucceeds)
+        whenever(cardReaderManager.connectToReader(reader2, locationId)).thenReturn(connectingSucceeds)
         (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
         (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
-        whenever(cardReaderManager.readerStatus).thenReturn(
-            MutableStateFlow(
-                if (connectingSucceeds) {
-                    CardReaderStatus.Connected(reader)
-                } else {
-                    CardReaderStatus.NotConnected
-                }
-            )
-        )
     }
 
     private enum class ScanResult {

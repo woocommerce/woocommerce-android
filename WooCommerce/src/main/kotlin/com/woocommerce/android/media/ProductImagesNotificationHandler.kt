@@ -21,6 +21,7 @@ import javax.inject.Singleton
  * Shows the standard uploading arrow animated notification icon to signify that images are being uploaded
  */
 @Singleton
+@Suppress("TooManyFunctions")
 class ProductImagesNotificationHandler @Inject constructor(
     val context: Context
 ) {
@@ -72,7 +73,14 @@ class ProductImagesNotificationHandler @Inject constructor(
 
         notificationBuilder.apply {
             setContentTitle(title)
-            setProgress(0, 0, true)
+            setProgress(100, 0, false)
+        }
+        notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
+    }
+
+    fun setProgress(progress: Float) {
+        notificationBuilder.apply {
+            setProgress(100, (progress * 100).toInt(), false)
         }
         notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
     }

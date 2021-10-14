@@ -1,8 +1,5 @@
 package com.woocommerce.android.support
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -17,6 +14,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -86,13 +84,7 @@ class SSRActivity : AppCompatActivity() {
 
     private fun copySSRToClipboard(text: String) {
         try {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.setPrimaryClip(
-                ClipData.newPlainText(
-                    getString(R.string.support_system_status_report_clipboard_label),
-                    text
-                )
-            )
+            copyToClipboard(getString(R.string.support_system_status_report_clipboard_label), text)
             ToastUtils.showToast(this, R.string.support_system_status_report_copied_to_clipboard)
         } catch (e: IllegalStateException) {
             WooLog.e(T.UTILS, e)

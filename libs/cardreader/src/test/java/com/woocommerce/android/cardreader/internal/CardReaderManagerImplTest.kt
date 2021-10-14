@@ -114,7 +114,7 @@ class CardReaderManagerImplTest {
         runBlockingTest {
             whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-            cardReaderManager.startConnectionToReader(mock(), locationId)
+            cardReaderManager.connectToReader(mock(), locationId)
         }
 
     @Test

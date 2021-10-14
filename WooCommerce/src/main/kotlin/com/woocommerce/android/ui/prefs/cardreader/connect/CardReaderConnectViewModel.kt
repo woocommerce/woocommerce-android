@@ -209,19 +209,22 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
+
+        updateStatusJob?.cancel()
         updateStatusJob = launch {
             listenToSoftwareUpdateStatus()
         }
+
         launch {
             if (cardReaderManager.readerStatus.value is CardReaderStatus.Connecting) {
-                listenToConnectionStatus(cardReaderManager)
+                handleConnectionInProgress(cardReaderManager)
             } else {
                 startScanning()
             }
         }
     }
 
-    private suspend fun listenToConnectionStatus(cardReaderManager: CardReaderManager) {
+    private suspend fun handleConnectionInProgress(cardReaderManager: CardReaderManager) {
         cardReaderManager.readerStatus.collect { status ->
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
@@ -334,17 +337,14 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
-            listenToConnectionStatus(cardReaderManager)
-        }
-        launch {
             val cardReaderLocationId = cardReader.locationId
             if (cardReaderLocationId != null) {
-                cardReaderManager.startConnectionToReader(cardReader, cardReaderLocationId)
+                doConnectWithLocationId(cardReader, cardReaderLocationId)
             } else {
                 when (val result = locationRepository.getDefaultLocationId()) {
                     is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
                         tracker.track(CARD_READER_LOCATION_SUCCESS)
-                        cardReaderManager.startConnectionToReader(cardReader, result.locationId)
+                        doConnectWithLocationId(cardReader, result.locationId)
                     }
                     is CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress -> {
                         tracker.track(
@@ -373,6 +373,15 @@ class CardReaderConnectViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun doConnectWithLocationId(cardReader: CardReader, locationId: String) {
+        val success = cardReaderManager.connectToReader(cardReader, locationId)
+        if (success) {
+            onReaderConnected(cardReader)
+        } else {
+            onReaderConnectionFailed()
         }
     }
 

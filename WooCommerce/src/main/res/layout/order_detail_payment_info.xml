@@ -42,8 +42,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/products_total"
-                    android:textAlignment="viewStart" />
+                    android:text="@string/products_total" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_productsTotal"
@@ -70,8 +69,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/minor_100"
-                    android:text="@string/discount"
-                    android:textAlignment="viewStart" />
+                    android:text="@string/discount" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_discountItems"
@@ -107,8 +105,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/orderdetail_payment_fees"
-                    android:textAlignment="viewStart" />
+                    android:text="@string/orderdetail_payment_fees" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_Fees"
@@ -132,8 +129,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/shipping"
-                    android:textAlignment="viewStart" />
+                    android:text="@string/shipping" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_shippingTotal"
@@ -157,8 +153,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/taxes"
-                    android:textAlignment="viewStart" />
+                    android:text="@string/taxes" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_taxesTotal"
@@ -183,8 +178,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/order_total"
-                    android:textAlignment="viewStart" />
+                    android:text="@string/order_total" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_total"
@@ -220,8 +214,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/orderdetail_payment_paid_by_customer"
-                        android:textAlignment="viewStart" />
+                        android:text="@string/orderdetail_payment_paid_by_customer" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/paymentInfo_paid"
@@ -290,8 +283,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="@string/orderdetail_refunded"
-                            android:textAlignment="viewStart" />
+                            android:text="@string/orderdetail_refunded" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/paymentInfo_refundTotal"
@@ -325,8 +317,7 @@
                         android:layout_marginTop="@dimen/major_75"
                         android:layout_marginBottom="@dimen/major_75"
                         android:layout_weight="1"
-                        android:text="@string/orderdetail_net"
-                        android:textAlignment="viewStart" />
+                        android:text="@string/orderdetail_net" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/paymentInfo_newTotal"

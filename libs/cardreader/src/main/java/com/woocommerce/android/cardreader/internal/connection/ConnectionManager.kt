@@ -60,28 +60,31 @@ internal class ConnectionManager(
             }
         }
 
-    fun startConnectionToReader(cardReader: CardReader, locationId: String) {
-        (cardReader as CardReaderImpl).let {
-            updateReaderStatus(CardReaderStatus.Connecting)
-            val configuration = ConnectionConfiguration.BluetoothConnectionConfiguration(locationId)
-            val readerCallback = object : ReaderCallback {
-                override fun onSuccess(reader: Reader) {
-                    updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
+    suspend fun connectToReader(cardReader: CardReader, locationId: String) =
+        suspendCoroutine<Boolean> { continuation ->
+            (cardReader as CardReaderImpl).let {
+                updateReaderStatus(CardReaderStatus.Connecting)
+                val configuration = ConnectionConfiguration.BluetoothConnectionConfiguration(locationId)
+                val readerCallback = object : ReaderCallback {
+                    override fun onSuccess(reader: Reader) {
+                        updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
+                        continuation.resume(true)
+                    }
+
+                    override fun onFailure(e: TerminalException) {
+                        updateReaderStatus(CardReaderStatus.NotConnected)
+                        continuation.resume(false)
+                    }
                 }
 
-                override fun onFailure(e: TerminalException) {
-                    updateReaderStatus(CardReaderStatus.NotConnected)
-                }
+                terminal.connectToReader(
+                    cardReader.cardReader,
+                    configuration,
+                    readerCallback,
+                    bluetoothReaderListener,
+                )
             }
-
-            terminal.connectToReader(
-                cardReader.cardReader,
-                configuration,
-                readerCallback,
-                bluetoothReaderListener,
-            )
         }
-    }
 
     suspend fun disconnectReader() = suspendCoroutine<Boolean> { continuation ->
         terminal.disconnectReader(object : Callback {

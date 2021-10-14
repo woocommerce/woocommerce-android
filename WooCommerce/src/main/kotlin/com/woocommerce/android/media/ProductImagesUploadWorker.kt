@@ -1,6 +1,7 @@
 package com.woocommerce.android.media
 
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
@@ -42,6 +43,7 @@ class ProductImagesUploadWorker @Inject constructor(
         const val DURATION_BEFORE_STOPPING_SERVICE = 1000L
         const val PRODUCT_UPDATE_RETRIES = 3
     }
+
     private val queue = MutableSharedFlow<Work>(extraBufferCapacity = Int.MAX_VALUE)
     private val pendingWorkList = MutableStateFlow<List<Work>>(emptyList())
 
@@ -198,26 +200,32 @@ class ProductImagesUploadWorker @Inject constructor(
 
             val doneUploads = uploadList.count { it.isDone }
             notificationHandler.update(doneUploads + 1, uploadList.size)
-            try {
-                work.fetchedMedia.postId = work.productId
-                val uploadedMedia = mediaFilesRepository.uploadMedia(work.fetchedMedia)
-                WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> upload succeeded for ${work.localUri}")
-                emitEvent(
-                    Event.MediaUploadEvent.UploadSucceeded(
-                        productId = work.productId,
-                        localUri = work.localUri,
-                        media = uploadedMedia
-                    )
-                )
-            } catch (e: MediaFilesRepository.MediaUploadException) {
-                WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> upload failed for ${work.localUri}")
-                emitEvent(
-                    Event.MediaUploadEvent.UploadFailed(
-                        productId = work.productId,
-                        localUri = work.localUri,
-                        error = e
-                    )
-                )
+            work.fetchedMedia.postId = work.productId
+            mediaFilesRepository.uploadMedia(work.fetchedMedia).collect {
+                when (it) {
+                    is UploadFailure -> {
+                        WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> upload failed for ${work.localUri}")
+                        emitEvent(
+                            MediaUploadEvent.UploadFailed(
+                                productId = work.productId,
+                                localUri = work.localUri,
+                                error = it.error
+                            )
+                        )
+                    }
+                    is UploadProgress -> notificationHandler.setProgress(it.progress)
+                    is UploadSuccess -> {
+                        WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> upload succeeded for ${work.localUri}")
+                        notificationHandler.setProgress(1f)
+                        emitEvent(
+                            MediaUploadEvent.UploadSucceeded(
+                                productId = work.productId,
+                                localUri = work.localUri,
+                                media = it.media
+                            )
+                        )
+                    }
+                }
             }
 
             val hasMoreUploads = pendingWorkList.value.any {
