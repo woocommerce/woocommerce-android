@@ -208,7 +208,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         binding.customerInfoShippingAddr.setIsReadOnly(isReadOnly)
 
         if (!isReadOnly) {
-            binding.customerInfoShippingAddr.setIsReadOnly(false)
             binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
         }
     }
