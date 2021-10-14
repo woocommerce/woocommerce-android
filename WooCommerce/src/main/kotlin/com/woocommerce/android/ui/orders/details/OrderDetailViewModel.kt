@@ -651,16 +651,6 @@ class OrderDetailViewModel @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
-            WCOrderAction.POST_ORDER_NOTE -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_NOTE_ADD_FAILED,
-                        prepareTracksEventsDetails(event)
-                    )
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
-                }
-            }
             WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING -> {
                 if (event.isError) {
                     AnalyticsTracker.track(

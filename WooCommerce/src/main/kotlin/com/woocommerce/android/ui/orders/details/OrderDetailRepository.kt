@@ -34,6 +34,7 @@ import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
 import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.WCOrderStore.*
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
@@ -51,7 +52,6 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    private val continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationDeleteShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
 
     init {
@@ -138,21 +138,17 @@ class OrderDetailRepository @Inject constructor(
         orderIdentifier: OrderIdentifier,
         remoteOrderId: Long,
         noteModel: OrderNote
-    ): Boolean {
+    ): OnOrderChanged {
         val order = orderStore.getOrderByIdentifier(orderIdentifier)
         if (order == null) {
             WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
-            return false
+            return OnOrderChanged(0).also {
+                it.error = OrderError(GENERIC_ERROR, "Can't find order with identifier $orderIdentifier")
+            }
         }
-        val result = continuationAddOrderNote.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val dataModel = noteModel.toDataModel()
-            val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
-            dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        val dataModel = noteModel.toDataModel()
+        val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
+        return orderStore.postOrderNote(payload)
     }
 
     suspend fun addOrderShipmentTracking(
@@ -295,8 +291,6 @@ class OrderDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
-            WCOrderAction.POST_ORDER_NOTE ->
-                continuationAddOrderNote.continueWith(event.isError.not())
             WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING ->
                 continuationDeleteShipmentTracking.continueWith(event.isError.not())
             else -> {
