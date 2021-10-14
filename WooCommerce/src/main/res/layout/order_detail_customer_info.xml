@@ -163,20 +163,14 @@
                     app:layout_constraintTop_toBottomOf="@+id/customerInfo_divider" />
 
                 <!-- Billing Address -->
-                <com.google.android.material.textview.MaterialTextView
+                <com.woocommerce.android.widgets.WCActionableEmptyLabel
                     android:id="@+id/customerInfo_billingAddr"
-                    style="@style/Woo.Card.Body"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/minor_50"
-                    android:drawableEnd="@drawable/ic_edit_pencil"
-                    android:drawablePadding="@dimen/major_100"
-                    android:textAlignment="viewStart"
-                    android:textIsSelectable="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel"
-                    tools:text="John Vilanzo\n123 Sesame Pl\nWarner, FL\nUnited States" />
+                    app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingLabel" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

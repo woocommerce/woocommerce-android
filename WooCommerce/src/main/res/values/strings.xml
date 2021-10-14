@@ -388,6 +388,7 @@
     <string name="order_detail_billing_address_section">Billing Address</string>
     <string name="order_detail_add_customer_note">Add customer note</string>
     <string name="order_detail_add_shipping_address">Add shipping address</string>
+    <string name="order_detail_add_billing_address">Add billing address</string>
 
     <!--
         Shipping label Refunds

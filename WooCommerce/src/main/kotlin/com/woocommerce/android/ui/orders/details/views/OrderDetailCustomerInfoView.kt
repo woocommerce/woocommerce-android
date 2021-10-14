@@ -40,12 +40,37 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         showBillingInfo(order)
     }
 
-    private fun showBillingInfo(order: Order): String {
+    private fun showBillingInfo(order: Order) {
+        // TODO once this feature flag is removed, we can remove this check along with showReadOnlyBillingInfo()
+        if (!FeatureFlag.ORDER_EDITING.isEnabled()) {
+            showReadOnlyBillingInfo(order)
+            return
+        }
+
         val billingInfo = order.formatBillingInformationForDisplay()
+        binding.customerInfoBillingAddr.setText(billingInfo, R.string.order_detail_add_billing_address)
+
+        if (order.billingAddress.hasInfo()) {
+            showBillingAddressPhoneInfo(order)
+            showBillingAddressEmailInfo(order)
+            binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
+        } else {
+            binding.customerInfoViewMore.hide()
+            binding.customerInfoMorePanel.hide()
+            binding.customerInfoViewMore.setOnClickListener(null)
+        }
+
+        binding.customerInfoBillingAddr.setTextIsSelectable(false)
+        binding.customerInfoBillingAddr.setOnClickListener { navigateToBillingAddressEditingView() }
+    }
+
+    private fun showReadOnlyBillingInfo(order: Order) {
+        val billingInfo = order.formatBillingInformationForDisplay()
+
         if (order.billingAddress.hasInfo()) {
             if (billingInfo.isNotEmpty()) {
                 binding.customerInfoBillingAddr.visibility = VISIBLE
-                binding.customerInfoBillingAddr.text = billingInfo
+                binding.customerInfoBillingAddr.setText(billingInfo, R.string.order_detail_add_billing_address)
                 binding.customerInfoDivider2.visibility = VISIBLE
             } else {
                 binding.customerInfoBillingAddr.visibility = GONE
@@ -66,16 +91,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             hide()
         }
 
-        if (FeatureFlag.ORDER_EDITING.isEnabled()) {
-            binding.customerInfoBillingAddr.setTextIsSelectable(false)
-            binding.customerInfoBillingAddr.setOnClickListener { navigateToBillingAddressEditingView() }
-        } else {
-            binding.customerInfoBillingAddr.setTextIsSelectable(true)
-            binding.customerInfoBillingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-            binding.customerInfoBillingAddr.setOnClickListener(null)
-        }
-
-        return billingInfo
+        binding.customerInfoBillingAddr.setTextIsSelectable(true)
+        binding.customerInfoBillingAddr.setOnClickListener(null)
     }
 
     private fun onViewMoreCustomerInfoClick() {
