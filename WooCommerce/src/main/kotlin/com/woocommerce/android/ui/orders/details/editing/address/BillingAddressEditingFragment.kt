@@ -8,8 +8,11 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override val storedAddress: Address
         get() = sharedViewModel.order.billingAddress
 
-    override fun saveChanges() =
+    override fun saveChanges() = if (isUseAsSwitchChecked) {
+        sharedViewModel.updateBillingAndShippingAddress(addressDraft)
+    } else {
         sharedViewModel.updateBillingAddress(addressDraft)
+    }
 
     override fun getFragmentTitle() = getString(R.string.order_detail_billing_address_section)
 
@@ -17,3 +20,4 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
         // TODO("Not yet implemented")
     }
 }
+
