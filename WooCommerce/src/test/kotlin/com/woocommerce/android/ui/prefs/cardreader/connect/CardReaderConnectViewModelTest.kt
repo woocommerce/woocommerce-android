@@ -589,20 +589,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given location fetch pass with cache id, when user clicks connect reader button, then track success event`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
-                CardReaderLocationRepository.LocationIdFetchingResult.Success("")
-            )
-            whenever(reader.locationId).thenReturn("Dummy")
-
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
-
-            verify(tracker).track(CARD_READER_LOCATION_SUCCESS)
-        }
-
-    @Test
     fun `when user clicks on connect to reader button, then app starts connecting to reader`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()

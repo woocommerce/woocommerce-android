@@ -339,7 +339,6 @@ class CardReaderConnectViewModel @Inject constructor(
         launch {
             val cardReaderLocationId = cardReader.locationId
             if (cardReaderLocationId != null) {
-                tracker.track(CARD_READER_LOCATION_SUCCESS)
                 cardReaderManager.startConnectionToReader(cardReader, cardReaderLocationId)
             } else {
                 when (val result = locationRepository.getDefaultLocationId()) {
