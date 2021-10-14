@@ -22,15 +22,15 @@ abstract class BaseAddressEditingFragment :
     val addressDraft
         get() = binding.run {
             Address(
-                firstName = firstName.getText(),
-                lastName = lastName.getText(),
-                email = email.getText(),
-                phone = phone.getText(),
-                company = company.getText(),
-                address1 = address1.getText(),
-                address2 = address2.getText(),
-                city = city.getText(),
-                postcode = postcode.getText(),
+                firstName = firstName.text,
+                lastName = lastName.text,
+                email = email.text,
+                phone = phone.text,
+                company = company.text,
+                address1 = address1.text,
+                address2 = address2.text,
+                city = city.text,
+                postcode = postcode.text,
                 // temporary field assignments, must be replaced with actual input
                 country = storedAddress.country,
                 state = storedAddress.state
@@ -41,6 +41,7 @@ abstract class BaseAddressEditingFragment :
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBaseEditAddressBinding.bind(view)
         storedAddress.bindToView()
+        bindTextWatchers()
     }
 
     override fun hasChanges() = addressDraft != storedAddress
@@ -52,15 +53,45 @@ abstract class BaseAddressEditingFragment :
         }
     }
 
+    override fun onDestroyView() {
+        removeTextWatchers()
+        _binding = null
+        super.onDestroyView()
+    }
+
     private fun Address.bindToView() {
-        binding.firstName.setText(firstName)
-        binding.lastName.setText(lastName)
-        binding.email.setText(email)
-        binding.phone.setText(phone)
-        binding.company.setText(company)
-        binding.address1.setText(address1)
-        binding.address2.setText(address2)
-        binding.city.setText(city)
-        binding.postcode.setText(postcode)
+        binding.firstName.text = firstName
+        binding.lastName.text = lastName
+        binding.email.text = email
+        binding.phone.text = phone
+        binding.company.text = company
+        binding.address1.text = address1
+        binding.address2.text = address2
+        binding.city.text = city
+        binding.postcode.text = postcode
+    }
+
+    private fun bindTextWatchers() {
+        binding.firstName.textWatcher = textWatcher
+        binding.lastName.textWatcher = textWatcher
+        binding.email.textWatcher = textWatcher
+        binding.phone.textWatcher = textWatcher
+        binding.company.textWatcher = textWatcher
+        binding.address1.textWatcher = textWatcher
+        binding.address2.textWatcher = textWatcher
+        binding.city.textWatcher = textWatcher
+        binding.postcode.textWatcher = textWatcher
+    }
+
+    private fun removeTextWatchers() {
+        binding.firstName.removeCurrentTextWatcher()
+        binding.lastName.removeCurrentTextWatcher()
+        binding.email.removeCurrentTextWatcher()
+        binding.phone.removeCurrentTextWatcher()
+        binding.company.removeCurrentTextWatcher()
+        binding.address1.removeCurrentTextWatcher()
+        binding.address2.removeCurrentTextWatcher()
+        binding.city.removeCurrentTextWatcher()
+        binding.postcode.removeCurrentTextWatcher()
     }
 }
