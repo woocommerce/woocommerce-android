@@ -37,13 +37,12 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         isReadOnly: Boolean
     ) {
         showCustomerNote(order, isReadOnly)
-        showShippingAddress(order, isVirtualOrder)
-        showBillingInfo(order)
+        showShippingAddress(order, isVirtualOrder, isReadOnly)
+        showBillingInfo(order, isReadOnly)
     }
 
-    private fun showBillingInfo(order: Order) {
-        // TODO once this feature flag is removed, we can remove this check along with showReadOnlyBillingInfo()
-        if (!FeatureFlag.ORDER_EDITING.isEnabled()) {
+    private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
+        if (isReadOnly || !FeatureFlag.ORDER_EDITING.isEnabled()) {
             showReadOnlyBillingInfo(order)
             return
         }
@@ -192,7 +191,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
     }
 
-    private fun showShippingAddress(order: Order, isVirtualOrder: Boolean): String {
+    private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean): String {
         val shippingAddress = order.formatShippingInformationForDisplay()
         when {
             isVirtualOrder -> {
@@ -211,7 +210,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             }
         }
 
-        if (FeatureFlag.ORDER_EDITING.isEnabled()) {
+        if (FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly) {
             binding.customerInfoShippingAddr.setIsReadOnly(false)
             binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
         } else {
