@@ -71,6 +71,10 @@ class OrderEditingViewModel @Inject constructor(
         }
     }
 
+    fun onUseAsOtherAddressSwitchChanged(enabled: Boolean) {
+        viewState = viewState.copy(useAsOtherAddressIsChecked = enabled)
+    }
+
     fun updateShippingAddress(shippingAddress: Address): Boolean {
         // Will be implemented in future PRs, making a unrelated call to avoid lint issues
         return shippingAddress.hasInfo()
@@ -79,10 +83,6 @@ class OrderEditingViewModel @Inject constructor(
     fun updateBillingAddress(billingAddress: Address): Boolean {
         // Will be implemented in future PRs, making a unrelated call to avoid lint issues
         return billingAddress.hasInfo()
-    }
-
-    fun updateBillingAndShippingAddress(address: Address): Boolean {
-        return updateShippingAddress(address) and updateBillingAddress(address)
     }
 
     private suspend fun collectUpdateFlow(flow: Flow<WCOrderStore.UpdateOrderResult>) {
@@ -107,6 +107,7 @@ class OrderEditingViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val orderEdited: Boolean? = null,
-        val orderEditingFailed: Boolean? = null
+        val orderEditingFailed: Boolean? = null,
+        val useAsOtherAddressIsChecked: Boolean? = null
     ) : Parcelable
 }

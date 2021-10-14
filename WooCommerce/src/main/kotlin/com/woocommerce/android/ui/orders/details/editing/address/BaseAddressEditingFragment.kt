@@ -19,9 +19,6 @@ abstract class BaseAddressEditingFragment :
 
     abstract val storedAddress: Address
 
-    val isUseAsSwitchChecked
-        get() = binding.useAsAnotherAddressSwitch.isChecked
-
     val addressDraft
         get() = binding.run {
             Address(
