@@ -56,11 +56,16 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 @HiltViewModel
@@ -95,7 +100,8 @@ class CardReaderConnectViewModel @Inject constructor(
     private val viewState = MutableLiveData<CardReaderConnectViewState>(ScanningState(::onCancelClicked))
     val viewStateData: LiveData<CardReaderConnectViewState> = viewState
 
-    private var updateStatusJob: Job? = null
+    private var connectionFlowScope = createConnectionFlowScope()
+    private var connectionFlowState = ConnectionFlowState()
 
     init {
         startFlow()
@@ -207,28 +213,48 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         this.cardReaderManager = cardReaderManager
-
-        updateStatusJob?.cancel()
-        updateStatusJob = launch {
-            listenToSoftwareUpdateStatus()
-        }
-
+        startStatusesListening()
         launch {
-            if (cardReaderManager.readerStatus.value is CardReaderStatus.Connecting) {
-                listenToConnectionStatus(cardReaderManager)
-            } else {
+            if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connecting) {
                 startScanning()
             }
         }
     }
 
-    private suspend fun listenToConnectionStatus(cardReaderManager: CardReaderManager) {
+    private fun startStatusesListening() {
+        connectionFlowScope.cancel()
+        connectionFlowScope = createConnectionFlowScope()
+        connectionFlowScope.launch {
+            updateConnectionFlowState(requiredUpdateStarted = false, connectionStarted = false)
+            connectionFlowScope.launch { listenToConnectionStatus() }
+            connectionFlowScope.launch { listenToSoftwareUpdateStatus() }
+        }
+    }
+
+    private suspend fun listenToConnectionStatus() {
         cardReaderManager.readerStatus.collect { status ->
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
-                CardReaderStatus.NotConnected -> onReaderConnectionFailed()
-                CardReaderStatus.Connecting -> viewState.value = ConnectingState(::onCancelClicked)
+                CardReaderStatus.NotConnected -> {
+                    if (connectionFlowState.connectionStarted) onReaderConnectionFailed()
+                    else Unit
+                }
+                CardReaderStatus.Connecting -> {
+                    updateConnectionFlowState(connectionStarted = true)
+                    viewState.value = ConnectingState(::onCancelClicked)
+                }
             }.exhaustive
+        }
+    }
+
+    private suspend fun listenToSoftwareUpdateStatus() {
+        cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
+            if (updateStatus is SoftwareUpdateInProgress) {
+                if (!connectionFlowState.requiredUpdateStarted) {
+                    updateConnectionFlowState(requiredUpdateStarted = true)
+                    triggerEvent(ShowUpdateInProgress)
+                }
+            }
         }
     }
 
@@ -333,10 +359,6 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun connectToReader(cardReader: CardReader) {
-        viewState.value = ConnectingState(::onCancelClicked)
-        launch {
-            listenToConnectionStatus(cardReaderManager)
-        }
         launch {
             val cardReaderLocationId = cardReader.locationId
             if (cardReaderLocationId != null) {
@@ -381,15 +403,6 @@ class CardReaderConnectViewModel @Inject constructor(
         tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
         viewState.value = ConnectingFailedState({ startFlow() }, ::onCancelClicked)
-    }
-
-    private suspend fun listenToSoftwareUpdateStatus() {
-        cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
-            if (updateStatus is SoftwareUpdateInProgress) {
-                triggerEvent(ShowUpdateInProgress)
-                updateStatusJob?.cancel()
-            }
-        }
     }
 
     private fun triggerOpenUrlEventAndExitIfNeeded(
@@ -446,6 +459,21 @@ class CardReaderConnectViewModel @Inject constructor(
         return readers.find { it.id == appPrefs.getLastConnectedCardReaderId() }
     }
 
+    private val connectionFlowStateMutex = Mutex()
+    private suspend fun updateConnectionFlowState(
+        requiredUpdateStarted: Boolean = connectionFlowState.requiredUpdateStarted,
+        connectionStarted: Boolean = connectionFlowState.connectionStarted,
+    ) {
+        connectionFlowStateMutex.withLock {
+            connectionFlowState = connectionFlowState.copy(
+                requiredUpdateStarted = requiredUpdateStarted,
+                connectionStarted = connectionStarted,
+            )
+        }
+    }
+
+    private fun createConnectionFlowScope() = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
     sealed class ListItemViewState {
         object ScanningInProgressListItem : ListItemViewState() {
             val label = UiStringRes(R.string.card_reader_connect_scanning_progress)
@@ -462,6 +490,11 @@ class CardReaderConnectViewModel @Inject constructor(
             val connectLabel: UiString = UiStringRes(R.string.card_reader_connect_connect_button)
         }
     }
+
+    private data class ConnectionFlowState(
+        val requiredUpdateStarted: Boolean = false,
+        val connectionStarted: Boolean = false,
+    )
 
     companion object {
         private val SUPPORTED_READERS = listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2)

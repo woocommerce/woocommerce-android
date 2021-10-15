@@ -74,8 +74,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected)
     private val cardReaderManager: CardReaderManager = mock {
-        on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+        on { readerStatus }.thenReturn(readerStatusFlow)
         on { softwareUpdateStatus }.thenReturn(flow { SoftwareUpdateStatus.Unknown })
     }
     private val appPrefs: AppPrefs = mock()
@@ -758,19 +759,19 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
 
-            pauseDispatcher()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
-            resumeDispatcher()
         }
 
     @Test
     fun `when app successfully connects to reader, then connection flow finishes`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(connectingSucceeds = true)
+            init()
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connected(reader))
 
             assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(true))
         }
@@ -778,9 +779,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when app successfully connects to reader, then reader id stored`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(connectingSucceeds = true)
+            init()
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connected(reader))
 
             verify(appPrefs).setLastConnectedCardReaderId("Dummy1")
         }
@@ -788,8 +790,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when connecting to reader succeeds, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(connectingSucceeds = true)
+            init()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connected(reader))
 
             verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
         }
@@ -798,8 +801,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `when connecting to reader for the first time, then the tutorial shows`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(appPrefs.getShowCardReaderConnectedTutorial()).thenReturn(true)
-            init(connectingSucceeds = true)
+            init()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connected(reader))
             assertThat(viewModel.event.value).isInstanceOf(ShowCardReaderTutorial::class.java)
         }
 
@@ -807,17 +811,20 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `when connecting to reader not for the first time, then the tutorial doesn't show`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(appPrefs.getShowCardReaderConnectedTutorial()).thenReturn(false)
-            init(connectingSucceeds = true)
+            init()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connected(reader))
             assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(true))
         }
 
     @Test
     fun `when connecting to reader fails, then connecting failed state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(connectingSucceeds = false)
+            init()
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
         }
@@ -825,8 +832,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when connecting to reader fails, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(connectingSucceeds = false)
+            init()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected)
 
             verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
         }
@@ -834,14 +843,14 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given connecting failed screen shown, when user clicks on retry, then flow restarted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(connectingSucceeds = false)
+            init()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected)
 
-            pauseDispatcher()
             (viewModel.viewStateData.value as ConnectingFailedState).onPrimaryActionClicked()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
-            resumeDispatcher()
         }
 
     @Test
@@ -869,12 +878,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = READER_FOUND)
 
-            pauseDispatcher()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
             (viewModel.viewStateData.value as ConnectingState).onSecondaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
-            resumeDispatcher()
         }
 
     @Test
@@ -889,8 +897,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given app in connecting failed state, when user clicks on cancel, then flow finishes`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(connectingSucceeds = false)
+            init()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected)
 
             (viewModel.viewStateData.value as ConnectingFailedState).onSecondaryActionClicked()
 
@@ -961,6 +971,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = READER_FOUND)
 
             viewModel.viewStateData.value!!.onPrimaryActionClicked!!.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
@@ -1009,9 +1020,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when app in connecting failed state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(scanState = READER_FOUND, connectingSucceeds = false)
+            init(scanState = READER_FOUND)
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
@@ -1034,7 +1047,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when app in missing address failed state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            init(scanState = READER_FOUND, connectingSucceeds = false)
+            init(scanState = READER_FOUND)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected)
             val url = "https://wordpress.com"
             whenever(locationRepository.getDefaultLocationId()).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
@@ -1193,7 +1207,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         )
     }
 
-    private suspend fun init(scanState: ScanResult = READER_FOUND, connectingSucceeds: Boolean = true) {
+    private suspend fun init(scanState: ScanResult = READER_FOUND) {
         whenever(cardReaderManager.discoverReaders(anyBoolean(), any())).thenAnswer {
             flow {
                 when (scanState) {
@@ -1212,15 +1226,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
         (viewModel.event.value as InitializeCardReaderManager).onCardManagerInitialized(cardReaderManager)
-        whenever(cardReaderManager.readerStatus).thenReturn(
-            MutableStateFlow(
-                if (connectingSucceeds) {
-                    CardReaderStatus.Connected(reader)
-                } else {
-                    CardReaderStatus.NotConnected
-                }
-            )
-        )
     }
 
     private enum class ScanResult {
