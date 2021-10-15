@@ -16,4 +16,3 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
         // TODO("Not yet implemented")
     }
 }
-
