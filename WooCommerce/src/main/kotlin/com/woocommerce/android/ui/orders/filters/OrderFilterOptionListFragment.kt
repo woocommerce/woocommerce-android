@@ -52,6 +52,9 @@ class OrderFilterOptionListFragment :
         viewModel.orderFilterOptions.observe(viewLifecycleOwner) { filterOptions ->
             showOrderFilterOptions(filterOptions)
         }
+        viewModel.orderFilterOptionTitle.observe(viewLifecycleOwner) { title ->
+            requireActivity().title = title
+        }
     }
 
     private fun showOrderFilterOptions(filterOptions: List<FilterListOptionUiModel>) {
