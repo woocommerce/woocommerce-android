@@ -43,7 +43,7 @@
             tools:visibility="visible" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/customerInfo_customerNote"
+            android:id="@+id/customerInfo_NoteForCustomer"
             style="@style/Woo.Card.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

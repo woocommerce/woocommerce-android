@@ -104,15 +104,15 @@ class ProductInventoryFragment :
                 }
             }
             new.inventoryData.sku?.takeIfNotEqualTo(old?.inventoryData?.sku) {
-                if (binding.productSku.getText() != it) {
-                    binding.productSku.setText(it)
+                if (binding.productSku.text != it) {
+                    binding.productSku.text = it
                 }
             }
             new.inventoryData.stockQuantity?.takeIfNotEqualTo(old?.inventoryData?.stockQuantity) {
                 val quantity = StringUtils.formatCountDecimal(it, forInput = true)
 
-                if (binding.productStockQuantity.getText() != quantity) {
-                    binding.productStockQuantity.setText(quantity)
+                if (binding.productStockQuantity.text != quantity) {
+                    binding.productStockQuantity.text = quantity
                 }
             }
             new.isStockQuantityEditable?.takeIfNotEqualTo(old?.isStockQuantityEditable) {

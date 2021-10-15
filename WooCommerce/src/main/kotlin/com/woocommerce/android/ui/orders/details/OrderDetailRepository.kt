@@ -6,17 +6,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.WooPlugin
-import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
@@ -35,19 +26,16 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.*
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
-import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.WCOrderStore.*
-import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
-import org.wordpress.android.fluxc.store.WCRefundStore
-import org.wordpress.android.fluxc.store.WCShippingLabelStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 /*
@@ -64,8 +52,6 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    private val continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
-    private val continuationAddShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
     private val continuationDeleteShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
 
     init {
@@ -138,11 +124,13 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun updateOrderStatus(
-        orderModel: WCOrderModel,
+        orderLocalId: LocalId,
         newStatus: String
     ): Flow<UpdateOrderResult> {
         return orderStore.updateOrderStatus(
-            UpdateOrderStatusPayload(orderModel, selectedSite.get(), newStatus)
+            orderLocalId,
+            selectedSite.get(),
+            newStatus
         )
     }
 
@@ -150,42 +138,33 @@ class OrderDetailRepository @Inject constructor(
         orderIdentifier: OrderIdentifier,
         remoteOrderId: Long,
         noteModel: OrderNote
-    ): Boolean {
+    ): OnOrderChanged {
         val order = orderStore.getOrderByIdentifier(orderIdentifier)
         if (order == null) {
             WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
-            return false
+            return OnOrderChanged(0).also {
+                it.error = OrderError(GENERIC_ERROR, "Can't find order with identifier $orderIdentifier")
+            }
         }
-        val result = continuationAddOrderNote.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val dataModel = noteModel.toDataModel()
-            val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
-            dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        val dataModel = noteModel.toDataModel()
+        val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
+        return orderStore.postOrderNote(payload)
     }
 
     suspend fun addOrderShipmentTracking(
         orderIdentifier: OrderIdentifier,
         shipmentTrackingModel: OrderShipmentTracking
-    ): Boolean {
+    ): OnOrderChanged {
         val orderIdSet = orderIdentifier.toIdSet()
-        val result = continuationAddShipmentTracking.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = AddOrderShipmentTrackingPayload(
+        return orderStore.addOrderShipmentTracking(
+            AddOrderShipmentTrackingPayload(
                 selectedSite.get(),
                 orderIdSet.id,
                 orderIdSet.remoteOrderId,
                 shipmentTrackingModel.toDataModel(),
                 shipmentTrackingModel.isCustomProvider
             )
-            dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        )
     }
 
     suspend fun deleteOrderShipmentTracking(
@@ -312,10 +291,6 @@ class OrderDetailRepository @Inject constructor(
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
-            WCOrderAction.POST_ORDER_NOTE ->
-                continuationAddOrderNote.continueWith(event.isError.not())
-            WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING ->
-                continuationAddShipmentTracking.continueWith(event.isError.not())
             WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING ->
                 continuationDeleteShipmentTracking.continueWith(event.isError.not())
             else -> {

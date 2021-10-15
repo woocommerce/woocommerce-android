@@ -38,10 +38,7 @@ class ScreenshotTest : TestBase() {
             .selectLogin()
             // Connect a WooCommerce store by URL
             .proceedWith(BuildConfig.SCREENSHOTS_URL)
-            // Enter email address
             .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
-            // No magic link, this is an automated test, enter password manually
-            .proceedWithPassword()
             .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
         // My Store

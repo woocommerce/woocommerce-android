@@ -1,38 +1,30 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import com.woocommerce.android.extensions.CASH_PAYMENTS
-import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.roundError
-import com.woocommerce.android.extensions.sumByBigDecimal
-import com.woocommerce.android.extensions.sumByFloat
-import com.woocommerce.android.model.Order.Item
-import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.Order.ShippingLine
-import com.woocommerce.android.model.Order.ShippingMethod
-import com.woocommerce.android.model.Order.Status
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.model.Order.*
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.StringUtils
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 @Parcelize
 data class Order(
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
     val identifier: OrderIdentifier,
-    val localOrderId: Int,
+    private val rawLocalOrderId: Int,
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
     val remoteId: Long,
     val number: String,
-    val localSiteId: Int,
     val dateCreated: Date,
     val dateModified: Date,
     val datePaid: Date?,
@@ -60,6 +52,9 @@ data class Order(
     val shippingLines: List<ShippingLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
+    val localId
+        get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
+
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
 
@@ -242,28 +237,14 @@ data class Order(
         @Parcelize
         data class Custom(private val customValue: String) : Status(customValue)
     }
-
-    /**
-     * This method converts the [Order] model to [WCOrderModel].
-     * Currently only includes the id, localSiteId and remoteOrderId
-     * since we only use these 3 fields when updating an order status
-     */
-    fun toDataModel(): WCOrderModel {
-        return WCOrderModel().also {
-            it.id = identifier.toIdSet().id
-            it.remoteOrderId = remoteId
-            it.localSiteId = localSiteId
-        }
-    }
 }
 
 fun WCOrderModel.toAppModel(): Order {
     return Order(
         identifier = OrderIdentifier(this),
-        localOrderId = this.id,
+        rawLocalOrderId = this.id,
         remoteId = this.remoteOrderId,
         number = this.number,
-        localSiteId = this.localSiteId,
         dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
         dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
         datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
