@@ -29,6 +29,12 @@ class OrderFilterListViewModel @Inject constructor(
     private val _orderFilterOptions = MutableLiveData<List<FilterListOptionUiModel>>()
     val orderFilterOptions: LiveData<List<FilterListOptionUiModel>> = _orderFilterOptions
 
+    private val _orderFilterCategoryViewState = MutableLiveData<OrderFilterCategoryListViewState>()
+    val orderFilterCategoryViewState: LiveData<OrderFilterCategoryListViewState> = _orderFilterCategoryViewState
+
+    private val _orderFilterOptionTitle = MutableLiveData<String>()
+    val orderFilterOptionTitle: LiveData<String> = _orderFilterOptionTitle
+
     private var selectedFilterCategory: FilterListCategoryUiModel? = null
 
     init {
@@ -83,7 +89,12 @@ class OrderFilterListViewModel @Inject constructor(
     fun onFilterCategoryClicked(filterCategory: FilterListCategoryUiModel) {
         selectedFilterCategory = filterCategory
         _orderFilterOptions.value = filterCategory.filterOptions
+        _orderFilterOptionTitle.value = getOrderFilterOptionsTitle(filterCategory)
         triggerEvent(ShowOrderStatusFilterOptions)
+    }
+
+    private fun getOrderFilterOptionsTitle(filterCategory: FilterListCategoryUiModel): String {
+        TODO("Not yet implemented")
     }
 
     fun onFilterOptionClicked(selectedFilterOption: FilterListOptionUiModel) {
@@ -157,6 +168,12 @@ class OrderFilterListViewModel @Inject constructor(
     sealed class OrderFilterListEvent : MultiLiveEvent.Event() {
         object ShowOrderStatusFilterOptions : OrderFilterListEvent()
     }
+
+    @Parcelize
+    data class OrderFilterCategoryListViewState(
+        val screenTitle: String,
+        val displayClearButton: Boolean? = null
+    ) : Parcelable
 
     @Parcelize
     data class FilterListCategoryUiModel(
