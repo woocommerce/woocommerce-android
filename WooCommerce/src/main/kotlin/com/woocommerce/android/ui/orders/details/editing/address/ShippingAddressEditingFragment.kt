@@ -24,6 +24,7 @@ class ShippingAddressEditingFragment : BaseAddressEditingFragment() {
         switch.visibility = View.VISIBLE
         sharedViewModel.order.billingAddress.copy(email = "")
             .let { it == storedAddress }
-            .let { switch.isChecked = it }
+            .apply { switch.isChecked = this }
+            .also { sharedViewModel.onUseAsOtherAddressSwitchChanged(it) }
     }
 }
