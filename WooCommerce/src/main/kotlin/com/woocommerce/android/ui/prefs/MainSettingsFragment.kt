@@ -37,14 +37,12 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.AppThemeUtils
-import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.*
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
-import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.woocommerce.android.util.WooLog.T
 
 @AndroidEntryPoint
 class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSettingsContract.View {
@@ -246,6 +244,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     override fun showLatestAnnouncementOption(announcement: FeatureAnnouncement) {
         binding.optionWhatsNew.show()
         binding.optionWhatsNew.setOnClickListener {
+            WooLog.e(T.DEVICE, "Displaying Feature Announcement from Settings menu.")
             findNavController()
                 .navigateSafely(
                     MainSettingsFragmentDirections.actionMainSettingsFragmentToFeatureAnnouncementDialogFragment(
