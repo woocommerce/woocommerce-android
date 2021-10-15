@@ -652,26 +652,6 @@ class OrderDetailViewModel @Inject constructor(
         viewState = viewState.copy(refreshedProductId = event.remoteProductId)
     }
 
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onOrderChanged(event: OnOrderChanged) {
-        when (event.causeOfChange) {
-            WCOrderAction.POST_ORDER_NOTE -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_NOTE_ADD_FAILED,
-                        prepareTracksEventsDetails(event)
-                    )
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
-                }
-            }
-            else -> {
-                // no-op
-            }
-        }
-    }
-
     private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(
         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
         AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),

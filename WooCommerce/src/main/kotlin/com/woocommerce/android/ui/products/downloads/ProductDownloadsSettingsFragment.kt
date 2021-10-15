@@ -53,8 +53,8 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
     private fun initFromProductDraft() {
         fun Number.formatLimitAndExpiry(): String = if (this.toLong() == -1L) "" else this.toString()
         val product = requireNotNull(viewModel.getProduct().productDraft)
-        binding.productDownloadLimit.setText(product.downloadLimit.formatLimitAndExpiry())
-        binding.productDownloadExpiry.setText(product.downloadExpiry.formatLimitAndExpiry())
+        binding.productDownloadLimit.text = product.downloadLimit.formatLimitAndExpiry()
+        binding.productDownloadExpiry.text = product.downloadExpiry.formatLimitAndExpiry()
     }
 
     private fun setupListeners() {

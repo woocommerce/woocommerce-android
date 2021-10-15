@@ -95,11 +95,11 @@ class ProductDownloadDetailsFragment :
         viewModel.productDownloadDetailsViewStateData.observe(
             owner = viewLifecycleOwner,
             observer = { old, new ->
-                new.fileDraft.url.takeIfNotEqualTo(binding.productDownloadUrl.getText()) {
-                    binding.productDownloadUrl.setText(it)
+                new.fileDraft.url.takeIfNotEqualTo(binding.productDownloadUrl.text) {
+                    binding.productDownloadUrl.text = it
                 }
-                new.fileDraft.name.takeIfNotEqualTo(binding.productDownloadName.getText()) {
-                    binding.productDownloadName.setText(it)
+                new.fileDraft.name.takeIfNotEqualTo(binding.productDownloadName.text) {
+                    binding.productDownloadName.text = it
                 }
                 new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
                     showDoneMenuItem(it)
