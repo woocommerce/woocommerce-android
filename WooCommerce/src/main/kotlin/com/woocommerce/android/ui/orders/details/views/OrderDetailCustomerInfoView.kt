@@ -43,13 +43,13 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     }
 
     private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
-        val billingInfo = order.formatBillingInformationForDisplay()
-        if (isReadOnly && billingInfo.isEmpty()) {
-            // hide the address if it's empty but we have details like email or phone
+        val billingAddress = order.formatBillingInformationForDisplay()
+        if (isReadOnly && billingAddress.isEmpty()) {
+            // if the address is empty but we have details like email or phone, show "No address specified"
             if (order.billingAddress.hasInfo()) {
-                binding.customerInfoBillingAddr.hide()
+                binding.customerInfoBillingAddr.setText(resources.getString(R.string.orderdetail_empty_address), 0)
             } else {
-                // hide this entire view if shipping address is also empty
+                // hide this entire view if there are no extra details and the shipping address is also empty
                 val shippingAddress = order.formatShippingInformationForDisplay()
                 if (shippingAddress.isEmpty()) {
                     hide()
@@ -61,11 +61,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 binding.customerInfoViewMore.hide()
             }
         } else {
-            binding.customerInfoBillingAddr.setText(billingInfo, R.string.order_detail_add_billing_address)
+            binding.customerInfoBillingAddr.setText(billingAddress, R.string.order_detail_add_billing_address)
             // we want to expand the billing address section when the address is empty to expose
             // the "Add billing address" view - note that the billing address is required when
             // a customer makes an order, but it will be empty once we offer order creation
-            if (billingInfo.isEmpty() && !isReadOnly) {
+            if (billingAddress.isEmpty() && !isReadOnly) {
                 expandCustomerInfoView()
                 binding.customerInfoViewMore.hide()
             } else {
