@@ -9,9 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import dagger.hilt.android.scopes.ViewModelScoped
@@ -23,10 +20,8 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
-import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.*
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
