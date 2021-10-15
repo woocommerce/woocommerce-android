@@ -93,9 +93,11 @@ class OrderFilterListViewModel @Inject constructor(
         triggerEvent(ShowOrderStatusFilterOptions)
     }
 
-    private fun getOrderFilterOptionsTitle(filterCategory: FilterListCategoryUiModel): String {
-        TODO("Not yet implemented")
-    }
+    private fun getOrderFilterOptionsTitle(filterCategory: FilterListCategoryUiModel) =
+        when (filterCategory) {
+            is OrderStatusFilterCategoryUiModel -> resourceProvider.getString(R.string.orderfilters_filter_order_status_options_title)
+            is DateRangeFilterCategoryUiModel -> resourceProvider.getString(R.string.orderfilters_filter_date_range_options_title)
+        }
 
     fun onFilterOptionClicked(selectedFilterOption: FilterListOptionUiModel) {
         when (selectedFilterCategory) {
