@@ -14,10 +14,11 @@ abstract class BaseAddressEditingFragment :
         const val TAG = "BaseEditAddressFragment"
     }
 
+    abstract val storedAddress: Address
+    abstract fun onViewBound(binding: FragmentBaseEditAddressBinding)
+
     private var _binding: FragmentBaseEditAddressBinding? = null
     private val binding get() = _binding!!
-
-    abstract val storedAddress: Address
 
     val addressDraft
         get() = binding.run {
@@ -36,8 +37,6 @@ abstract class BaseAddressEditingFragment :
                 state = storedAddress.state
             )
         }
-
-    abstract fun onViewBound(binding: FragmentBaseEditAddressBinding)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
