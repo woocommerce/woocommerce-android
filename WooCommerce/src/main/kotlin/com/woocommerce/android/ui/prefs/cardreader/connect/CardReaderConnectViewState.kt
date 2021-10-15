@@ -112,4 +112,15 @@ sealed class CardReaderConnectViewState(
         secondaryActionLabel = R.string.cancel,
         illustrationTopMargin = R.dimen.major_150
     )
+
+    data class MissingMerchantAddressError(
+        override val onPrimaryActionClicked: () -> Unit,
+        override val onSecondaryActionClicked: () -> Unit
+    ) : CardReaderConnectViewState(
+        headerLabel = UiString.UiStringRes(R.string.card_reader_connect_missing_address),
+        illustration = R.drawable.img_products_error,
+        primaryActionLabel = R.string.card_reader_connect_missing_address_button,
+        secondaryActionLabel = R.string.cancel,
+        illustrationTopMargin = R.dimen.major_150
+    )
 }

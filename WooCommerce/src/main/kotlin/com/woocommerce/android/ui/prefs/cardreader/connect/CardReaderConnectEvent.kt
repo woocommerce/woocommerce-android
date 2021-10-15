@@ -31,4 +31,8 @@ sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
     object NavigateToOnboardingFlow : CardReaderConnectEvent()
 
     data class ShowToast(@StringRes val message: Int) : CardReaderConnectEvent()
+
+    data class OpenWPComWebView(val url: String) : CardReaderConnectEvent()
+
+    data class OpenGenericWebView(val url: String) : CardReaderConnectEvent()
 }

@@ -229,11 +229,11 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                 }
                 is CardReaderConnectEvent.ShowToast ->
                     ToastUtils.showToast(requireContext(), getString(event.message))
-                is CardReaderConnectViewModel.CardReaderConnectEvent.OpenWPComWebView ->
+                is CardReaderConnectEvent.OpenWPComWebView ->
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
                     )
-                is CardReaderConnectViewModel.CardReaderConnectEvent.OpenGenericWebView ->
+                is CardReaderConnectEvent.OpenGenericWebView ->
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 else -> event.isHandled = false
             }
