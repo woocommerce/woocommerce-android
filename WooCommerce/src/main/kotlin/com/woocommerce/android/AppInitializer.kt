@@ -209,29 +209,32 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         val versionCode = PackageUtils.getVersionCode(application)
         val oldVersionCode = prefs.getLastAppVersionCode()
 
-        if (oldVersionCode == 0) {
-            AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
-
-            // Store the current app version code to SharedPrefs, even if the value is -1
-            // to prevent duplicate install events being called
-            prefs.setLastAppVersionCode(versionCode)
-        } else if (oldVersionCode < versionCode) {
-            // Track upgrade event only if oldVersionCode is not -1, to prevent
-            // duplicate upgrade events being called
-            if (oldVersionCode > PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
-                AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
+        when {
+            oldVersionCode == 0 -> {
+                AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
+                // Store the current app version code to SharedPrefs, even if the value is -1
+                // to prevent duplicate install events being called
+                prefs.setLastAppVersionCode(versionCode)
             }
+            oldVersionCode < versionCode -> {
+                // Track upgrade event only if oldVersionCode is not -1, to prevent
+                // duplicate upgrade events being called
+                if (oldVersionCode > PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
+                    AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
+                }
 
-            // store the latest version code to SharedPrefs, only if the value
-            // is greater than the stored version code
-            prefs.setLastAppVersionCode(versionCode)
-        } else if (versionCode == PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
-            // we are not able to read the current app version code
-            // track this event along with the last stored version code
-            AnalyticsTracker.track(
-                Stat.APPLICATION_VERSION_CHECK_FAILED,
-                mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
-            )
+                // store the latest version code to SharedPrefs, only if the value
+                // is greater than the stored version code
+                prefs.setLastAppVersionCode(versionCode)
+            }
+            versionCode == PackageUtils.PACKAGE_VERSION_CODE_DEFAULT -> {
+                // we are not able to read the current app version code
+                // track this event along with the last stored version code
+                AnalyticsTracker.track(
+                    Stat.APPLICATION_VERSION_CHECK_FAILED,
+                    mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
+                )
+            }
         }
     }
 

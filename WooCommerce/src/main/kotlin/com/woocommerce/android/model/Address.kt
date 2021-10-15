@@ -81,6 +81,20 @@ data class Address(
             state.isNotEmpty() || city.isNotEmpty()
     }
 
+    fun isEmpty(): Boolean {
+        return company.isEmpty() &&
+            firstName.isEmpty() &&
+            lastName.isEmpty() &&
+            phone.isEmpty() &&
+            country.isEmpty() &&
+            state.isEmpty() &&
+            address1.isEmpty() &&
+            address2.isEmpty() &&
+            city.isEmpty() &&
+            postcode.isEmpty() &&
+            email.isEmpty()
+    }
+
     fun toShippingLabelModel(): ShippingLabelAddress {
         return ShippingLabelAddress(
             company = company,

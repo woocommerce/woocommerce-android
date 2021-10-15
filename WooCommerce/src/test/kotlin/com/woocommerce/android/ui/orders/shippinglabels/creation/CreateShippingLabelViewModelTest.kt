@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -48,6 +47,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -57,6 +57,8 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -361,14 +363,18 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
-        whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-            .thenReturn(ContinuationWrapper.ContinuationResult.Success(true))
+        whenever(orderDetailRepository.updateOrderStatus(any(), any())).thenReturn(
+            flow {
+                UpdateOrderResult.OptimisticUpdateResult(mock())
+                UpdateOrderResult.RemoteUpdateResult(mock())
+            }
+        )
 
         viewModel.onPurchaseButtonClicked(fulfillOrder = true)
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
         verify(orderDetailRepository).updateOrderStatus(
-            doneData.order.toDataModel(), CoreOrderStatus.COMPLETED.value
+            doneData.order.localId, CoreOrderStatus.COMPLETED.value
         )
     }
 
@@ -382,18 +388,21 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             )
             whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
                 .thenReturn(WooResult(purchasedLabels))
-            whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-                .thenReturn(ContinuationWrapper.ContinuationResult.Success(false))
-
-            var event: MultiLiveEvent.Event? = null
-            viewModel.event.observeForever {
-                event = it
-            }
+            whenever(orderDetailRepository.updateOrderStatus(any(), any())).thenReturn(
+                flow {
+                    emit(UpdateOrderResult.OptimisticUpdateResult(mock()))
+                    val onOrderChangedWithError = mock<OnOrderChanged>()
+                        .apply { whenever(this.isError).thenReturn(true) }
+                    emit(UpdateOrderResult.RemoteUpdateResult(onOrderChangedWithError))
+                }
+            )
 
             viewModel.onPurchaseButtonClicked(fulfillOrder = true)
             stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
+            advanceUntilIdle()
 
-            assertThat(event).isEqualTo(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
         }
 
     @Test

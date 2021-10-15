@@ -8,6 +8,8 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_FAILURE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -23,6 +25,7 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgr
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
@@ -37,6 +40,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ViewState.MissingMerchantAddressError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
@@ -68,6 +72,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val appPrefs: AppPrefs,
     private val onboardingChecker: CardReaderOnboardingChecker,
     private val locationRepository: CardReaderLocationRepository,
+    private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
 
@@ -211,14 +216,14 @@ class CardReaderConnectViewModel @Inject constructor(
 
         launch {
             if (cardReaderManager.readerStatus.value is CardReaderStatus.Connecting) {
-                listenToConnectionStatus(cardReaderManager)
+                handleConnectionInProgress(cardReaderManager)
             } else {
                 startScanning()
             }
         }
     }
 
-    private suspend fun listenToConnectionStatus(cardReaderManager: CardReaderManager) {
+    private suspend fun handleConnectionInProgress(cardReaderManager: CardReaderManager) {
         cardReaderManager.readerStatus.collect { status ->
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
@@ -331,12 +336,62 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun connectToReader(cardReader: CardReader) {
         viewState.value = ConnectingState(::onCancelClicked)
         launch {
-            listenToConnectionStatus(cardReaderManager)
+            val cardReaderLocationId = cardReader.locationId
+            if (cardReaderLocationId != null) {
+                doConnectWithLocationId(cardReader, cardReaderLocationId)
+            } else {
+                when (val result = locationRepository.getDefaultLocationId()) {
+                    is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
+                        tracker.track(CARD_READER_LOCATION_SUCCESS)
+                        doConnectWithLocationId(cardReader, result.locationId)
+                    }
+                    is CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress -> {
+                        tracker.track(
+                            CARD_READER_LOCATION_FAILURE,
+                            this@CardReaderConnectViewModel.javaClass.simpleName,
+                            null,
+                            "Missing Address"
+                        )
+                        viewState.value = MissingMerchantAddressError(
+                            {
+                                triggerOpenUrlEventAndExitIfNeeded(result)
+                            },
+                            {
+                                onCancelClicked()
+                            }
+                        )
+                    }
+                    is CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
+                        tracker.track(
+                            CARD_READER_LOCATION_FAILURE,
+                            this@CardReaderConnectViewModel.javaClass.simpleName,
+                            null,
+                            result.error
+                        )
+                        onReaderConnectionFailed()
+                    }
+                }
+            }
         }
-        launch {
-            // TODO cardreader handle error cases
-            val locationId = (cardReader.locationId ?: locationRepository.getDefaultLocationId())!!
-            cardReaderManager.startConnectionToReader(cardReader, locationId)
+    }
+
+    private fun triggerOpenUrlEventAndExitIfNeeded(
+        result: CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress
+    ) {
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(CardReaderConnectEvent.OpenWPComWebView(result.url))
+        } else {
+            triggerEvent(CardReaderConnectEvent.OpenGenericWebView(result.url))
+            exitFlow(connected = false)
+        }
+    }
+
+    private suspend fun doConnectWithLocationId(cardReader: CardReader, locationId: String) {
+        val success = cardReaderManager.connectToReader(cardReader, locationId)
+        if (success) {
+            onReaderConnected(cardReader)
+        } else {
+            onReaderConnectionFailed()
         }
     }
 

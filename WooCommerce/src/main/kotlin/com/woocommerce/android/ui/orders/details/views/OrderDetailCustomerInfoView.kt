@@ -11,7 +11,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.OrderDetailCustomerInfoBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
@@ -19,6 +23,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 
+@Suppress("TooManyFunctions")
 class OrderDetailCustomerInfoView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -31,17 +36,46 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         isVirtualOrder: Boolean, // don't display shipping section for virtual products
         isReadOnly: Boolean
     ) {
-        showCustomerNote(order, isReadOnly)
-        showShippingAddress(order, isVirtualOrder)
-        showBillingInfo(order)
+        val isReallyReadOnly = isReadOnly || !FeatureFlag.ORDER_EDITING.isEnabled()
+        showCustomerNote(order, isReallyReadOnly)
+        showShippingAddress(order, isVirtualOrder, isReallyReadOnly)
+        showBillingInfo(order, isReallyReadOnly)
     }
 
-    private fun showBillingInfo(order: Order): String {
+    private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
+        if (isReadOnly) {
+            showReadOnlyBillingInfo(order)
+            return
+        }
+
         val billingInfo = order.formatBillingInformationForDisplay()
+        binding.customerInfoBillingAddr.setText(billingInfo, R.string.order_detail_add_billing_address)
+
+        showBillingAddressPhoneInfo(order)
+        showBillingAddressEmailInfo(order)
+
+        // we want to expand the billing address section when the address is empty to expose
+        // the "Add billing address" view - note that the billing address is required when
+        // a customer makes an order, but it will be empty once we offer order creation
+        if (billingInfo.isEmpty()) {
+            expandCustomerInfoView()
+            binding.customerInfoViewMore.hide()
+        } else {
+            binding.customerInfoViewMore.show()
+        }
+
+        binding.customerInfoBillingAddr.setIsReadOnly(false)
+        binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
+        binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
+    }
+
+    private fun showReadOnlyBillingInfo(order: Order) {
+        val billingInfo = order.formatBillingInformationForDisplay()
+
         if (order.billingAddress.hasInfo()) {
             if (billingInfo.isNotEmpty()) {
                 binding.customerInfoBillingAddr.visibility = VISIBLE
-                binding.customerInfoBillingAddr.text = billingInfo
+                binding.customerInfoBillingAddr.setText(billingInfo, R.string.order_detail_add_billing_address)
                 binding.customerInfoDivider2.visibility = VISIBLE
             } else {
                 binding.customerInfoBillingAddr.visibility = GONE
@@ -62,29 +96,31 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             hide()
         }
 
-        if (FeatureFlag.ORDER_EDITING.isEnabled()) {
-            binding.customerInfoBillingAddr.setTextIsSelectable(false)
-        } else {
-            binding.customerInfoBillingAddr.setTextIsSelectable(true)
-            binding.customerInfoBillingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-        }
-
-        return billingInfo
+        binding.customerInfoBillingAddr.setIsReadOnly(true)
+        binding.customerInfoBillingAddressSection.setOnClickListener(null)
     }
 
     private fun onViewMoreCustomerInfoClick() {
         val isChecked = binding.customerInfoViewMoreButtonImage.rotation == 0F
         if (isChecked) {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED)
-            binding.customerInfoMorePanel.expand()
-            binding.customerInfoViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
-            binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
+            expandCustomerInfoView()
         } else {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED)
-            binding.customerInfoMorePanel.collapse()
-            binding.customerInfoViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
-            binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
+            collapseCustomerInfoView()
         }
+    }
+
+    private fun expandCustomerInfoView() {
+        binding.customerInfoMorePanel.expand()
+        binding.customerInfoViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
+        binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
+    }
+
+    private fun collapseCustomerInfoView() {
+        binding.customerInfoMorePanel.collapse()
+        binding.customerInfoViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
+        binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
     }
 
     private fun showBillingAddressEmailInfo(order: Order) {
@@ -123,29 +159,34 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     }
 
     private fun showCustomerNote(order: Order, isReadOnly: Boolean) {
-        if (order.customerNote.isNotEmpty()) {
-            binding.customerInfoCustomerNoteSection.show()
-            binding.customerInfoCustomerNote.text = context.getString(
+        val isEmpty = order.customerNote.isEmpty()
+        if (isEmpty && isReadOnly) {
+            binding.customerInfoCustomerNoteSection.hide()
+            return
+        }
+
+        binding.customerInfoCustomerNoteSection.show()
+        val text = if (!isEmpty) {
+            context.getString(
                 R.string.orderdetail_customer_note,
                 order.customerNote
             )
-            if (FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly) {
-                binding.customerInfoCustomerNote.setTextIsSelectable(false)
-                binding.customerInfoCustomerNoteSection.setOnClickListener {
-                    val action =
-                        OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment()
-                    findNavController().navigateSafely(action)
-                }
-            } else {
-                binding.customerInfoCustomerNote.setTextIsSelectable(true)
-                binding.customerInfoCustomerNote.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-            }
         } else {
-            binding.customerInfoCustomerNoteSection.hide()
+            ""
+        }
+        binding.customerInfoCustomerNote.setText(text, R.string.order_detail_add_customer_note)
+        binding.customerInfoCustomerNote.setIsReadOnly(isReadOnly)
+
+        if (!isReadOnly) {
+            binding.customerInfoCustomerNoteSection.setOnClickListener {
+                val action =
+                    OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment()
+                findNavController().navigateSafely(action)
+            }
         }
     }
 
-    private fun showShippingAddress(order: Order, isVirtualOrder: Boolean): String {
+    private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean) {
         val shippingAddress = order.formatShippingInformationForDisplay()
         when {
             isVirtualOrder -> {
@@ -155,12 +196,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 binding.customerInfoMorePanel.expand()
                 binding.customerInfoViewMore.setOnClickListener(null)
             }
-            shippingAddress.isEmpty() -> {
-                binding.customerInfoShippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
-                binding.customerInfoShippingMethodSection.hide()
-            }
             else -> {
-                binding.customerInfoShippingAddr.text = shippingAddress
+                binding.customerInfoShippingAddr.setText(shippingAddress, R.string.order_detail_add_shipping_address)
                 binding.customerInfoShippingMethodSection.isVisible = order.shippingMethods.firstOrNull()?.let {
                     binding.customerInfoShippingMethod.text = it.title
                     true
@@ -168,13 +205,23 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             }
         }
 
-        if (FeatureFlag.ORDER_EDITING.isEnabled()) {
-            binding.customerInfoShippingAddr.setTextIsSelectable(false)
-        } else {
-            binding.customerInfoShippingAddr.setTextIsSelectable(true)
-            binding.customerInfoShippingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        binding.customerInfoShippingAddr.setIsReadOnly(isReadOnly)
+
+        if (!isReadOnly) {
+            binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
         }
-        return shippingAddress
+    }
+
+    private fun navigateToShippingAddressEditingView() {
+        OrderDetailFragmentDirections
+            .actionOrderDetailFragmentToShippingAddressEditingFragment()
+            .let { findNavController().navigateSafely(it) }
+    }
+
+    private fun navigateToBillingAddressEditingView() {
+        OrderDetailFragmentDirections
+            .actionOrderDetailFragmentToBillingAddressEditingFragment()
+            .let { findNavController().navigateSafely(it) }
     }
 
     private fun showCallOrMessagePopup(order: Order) {

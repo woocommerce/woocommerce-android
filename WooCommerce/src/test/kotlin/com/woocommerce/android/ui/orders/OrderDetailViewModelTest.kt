@@ -50,6 +50,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -61,6 +62,7 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
@@ -714,7 +716,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         snackbar?.undoAction?.onClick(mock())
         assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
-        verify(repository, times(2)).updateOrderStatus(eq(order.toDataModel()), statusChangeCaptor.capture())
+        verify(repository, times(2)).updateOrderStatus(eq(order.localId), statusChangeCaptor.capture())
 
         assertThat(listOf(initialStatus) + statusChangeCaptor.allValues).containsExactly(
             initialStatus, newStatus, initialStatus
@@ -1016,8 +1018,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            doReturn(ContinuationWrapper.ContinuationResult.Success(false)).whenever(repository)
-                .updateOrderStatus(any(), any())
+            whenever(repository.updateOrderStatus(any(), any()))
+                .thenReturn(
+                    flow {
+                        val event = OnOrderChanged(0).apply { this.error = OrderError() }
+                        emit(UpdateOrderResult.RemoteUpdateResult(event))
+                    }
+                )
             var snackbar: ShowSnackbar? = null
             viewModel.event.observeForever {
                 if (it is ShowSnackbar) snackbar = it

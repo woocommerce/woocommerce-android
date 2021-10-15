@@ -54,9 +54,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "7.7-rc-1"
+            versionName "7.7-rc-2"
         }
-        versionCode 250
+        versionCode 251
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -145,7 +145,7 @@ dependencies {
     }
 
     implementation 'com.google.firebase:firebase-messaging:21.0.0'
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.google.android.gms:play-services-auth:19.2.0'
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
@@ -258,7 +258,7 @@ dependencies {
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
-    androidTestImplementation('com.github.tomakehurst:wiremock:2.27.2') {
+    androidTestImplementation('com.github.tomakehurst:wiremock:2.26.3') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.apache.commons', module: 'commons-lang3'
         exclude group: 'asm', module: 'asm'

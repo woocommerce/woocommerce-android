@@ -6,26 +6,29 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.wordpress.android.util.ActivityUtils
+import javax.inject.Inject
 
-abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
+abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     protected val sharedViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var doneMenuItem: MenuItem? = null
 
     /**
-     * This TextWatcher can be used to detect EditText changes in any descendant
+     * This TextWatcher can be used to detect EditText changes in any order editing fragment
      */
     protected val textWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
@@ -47,13 +50,21 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     abstract fun hasChanges(): Boolean
 
     /**
-     * Descendants should override this to tell the shared view model to save specific changes
+     * Descendants should override this to tell the shared view model to save specific changes. Note that
+     * since we're using optimistic updating, a True result doesn't necessarily mean the update succeeded,
+     * just that it was sent. A False result means the request couldn't be sent, either due to connection
+     * problems or validation issues.
      */
-    abstract fun saveChanges()
+    abstract fun saveChanges(): Boolean
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -67,12 +78,27 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
         updateDoneMenuItem()
     }
 
+    private fun setupObservers() {
+        sharedViewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is MultiLiveEvent.Event.ShowSnackbar -> {
+                        uiMessageResolver.showSnack(event.message)
+                    }
+                }
+            }
+        )
+
+        sharedViewModel.start()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                saveChanges()
-                navigateBackWithNotice(KEY_ORDER_EDITED, R.id.orderDetailFragment)
+                if (saveChanges()) {
+                    navigateUp()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -95,12 +121,13 @@ abstract class BaseOrderEditFragment : BaseFragment, BackPressListener {
     private fun confirmDiscard() {
         MultiLiveEvent.Event.ShowDialog.buildDiscardDialogEvent(
             positiveBtnAction = { _, _ ->
-                findNavController().navigateUp()
+                navigateUp()
             }
         ).showDialog()
     }
 
-    companion object {
-        const val KEY_ORDER_EDITED = "key_order_edited"
+    private fun navigateUp() {
+        ActivityUtils.hideKeyboard(activity)
+        findNavController().navigateUp()
     }
 }
