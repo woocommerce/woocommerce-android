@@ -39,18 +39,20 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         val isReallyReadOnly = isReadOnly || !FeatureFlag.ORDER_EDITING.isEnabled()
         showCustomerNote(order, isReallyReadOnly)
         showShippingAddress(order, isVirtualOrder, isReallyReadOnly)
+        // note that showing billing info must come last because we expand it if the other sections are hidden
         showBillingInfo(order, isReallyReadOnly)
     }
 
     private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
         val billingAddress = order.formatBillingInformationForDisplay()
+        val shippingAddress = order.formatShippingInformationForDisplay()
+
         if (isReadOnly && billingAddress.isEmpty()) {
             // if the address is empty but we have details like email or phone, show "No address specified"
             if (order.billingAddress.hasInfo()) {
                 binding.customerInfoBillingAddr.setText(resources.getString(R.string.orderdetail_empty_address), 0)
             } else {
                 // hide this entire view if there are no extra details and the shipping address is also empty
-                val shippingAddress = order.formatShippingInformationForDisplay()
                 if (shippingAddress.isEmpty()) {
                     hide()
                     return
@@ -81,6 +83,19 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
         }
         binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
+
+        // in read-only mode, if billing info is the only thing available automatically expand it and hide
+        // the "Show billing" button
+        if (isReadOnly) {
+            val hasBilling = billingAddress.isNotEmpty() || order.billingAddress.hasInfo()
+            if (hasBilling &&
+                shippingAddress.isEmpty() &&
+                order.customerNote.isEmpty()
+            ) {
+                expandCustomerInfoView()
+                binding.customerInfoViewMore.hide()
+            }
+        }
     }
 
     private fun onViewMoreCustomerInfoClick() {
