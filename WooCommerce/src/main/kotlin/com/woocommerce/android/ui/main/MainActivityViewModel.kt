@@ -114,7 +114,7 @@ class MainActivityViewModel @Inject constructor(
                 if (prefs.getLastVersionWithAnnouncement() != buildConfigWrapper.versionName &&
                     cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
                 ) {
-                    WooLog.e(T.DEVICE, "Displaying Feature Announcement on main activity")
+                    WooLog.i(T.DEVICE, "Displaying Feature Announcement on main activity")
                     triggerEvent(ShowFeatureAnnouncement(it))
                 }
             }

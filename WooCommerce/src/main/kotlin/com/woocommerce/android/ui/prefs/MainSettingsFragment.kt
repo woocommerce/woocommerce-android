@@ -244,7 +244,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     override fun showLatestAnnouncementOption(announcement: FeatureAnnouncement) {
         binding.optionWhatsNew.show()
         binding.optionWhatsNew.setOnClickListener {
-            WooLog.e(T.DEVICE, "Displaying Feature Announcement from Settings menu.")
+            WooLog.i(T.DEVICE, "Displaying Feature Announcement from Settings menu.")
             findNavController()
                 .navigateSafely(
                     MainSettingsFragmentDirections.actionMainSettingsFragmentToFeatureAnnouncementDialogFragment(
