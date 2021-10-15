@@ -39,7 +39,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         val isReallyReadOnly = isReadOnly || !FeatureFlag.ORDER_EDITING.isEnabled()
         showCustomerNote(order, isReallyReadOnly)
         showShippingAddress(order, isVirtualOrder, isReallyReadOnly)
-        // note that showing billing info must come last because we expand it if the other sections are hidden
         showBillingInfo(order, isReallyReadOnly)
     }
 
