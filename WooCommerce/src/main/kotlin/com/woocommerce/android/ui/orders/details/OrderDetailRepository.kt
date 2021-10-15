@@ -25,9 +25,7 @@ import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class OrderDetailRepository @Inject constructor(
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
