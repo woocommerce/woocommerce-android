@@ -1,0 +1,2 @@
+7.7:
+Comerciantes que usam o WooCommerce Payments nos EUA podem aceitar pagamentos com cartão de crédito presenciais na entrega ou retirada de pedidos. Esta versão também inclui algumas pequenas melhorias com base no seu feedback. Obrigado por nos ajudar a criar um aplicativo melhor para todos.
