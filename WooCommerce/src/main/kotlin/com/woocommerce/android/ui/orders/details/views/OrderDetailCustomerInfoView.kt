@@ -23,6 +23,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 
+@Suppress("TooManyFunctions")
 class OrderDetailCustomerInfoView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -35,62 +36,88 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         isVirtualOrder: Boolean, // don't display shipping section for virtual products
         isReadOnly: Boolean
     ) {
-        showCustomerNote(order, isReadOnly)
-        showShippingAddress(order, isVirtualOrder)
-        showBillingInfo(order)
+        val isReallyReadOnly = isReadOnly || !FeatureFlag.ORDER_EDITING.isEnabled()
+        showCustomerNote(order, isReallyReadOnly)
+        showShippingAddress(order, isVirtualOrder, isReallyReadOnly)
+        showBillingInfo(order, isReallyReadOnly)
     }
 
-    private fun showBillingInfo(order: Order): String {
-        val billingInfo = order.formatBillingInformationForDisplay()
-        if (order.billingAddress.hasInfo()) {
-            if (billingInfo.isNotEmpty()) {
-                binding.customerInfoBillingAddr.visibility = VISIBLE
-                binding.customerInfoBillingAddr.text = billingInfo
-                binding.customerInfoDivider2.visibility = VISIBLE
-            } else {
-                binding.customerInfoBillingAddr.visibility = GONE
-                binding.customerInfoDivider2.visibility = GONE
-            }
-
-            showBillingAddressPhoneInfo(order)
-            showBillingAddressEmailInfo(order)
-            binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
-        } else {
-            binding.customerInfoViewMore.hide()
-            binding.customerInfoMorePanel.hide()
-            binding.customerInfoViewMore.setOnClickListener(null)
-        }
-
+    private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
+        val billingAddress = order.formatBillingInformationForDisplay()
         val shippingAddress = order.formatShippingInformationForDisplay()
-        if (shippingAddress.isEmpty() && billingInfo.isEmpty()) {
-            hide()
-        }
 
-        if (FeatureFlag.ORDER_EDITING.isEnabled()) {
-            binding.customerInfoBillingAddr.setTextIsSelectable(false)
-            binding.customerInfoBillingAddr.setOnClickListener { navigateToBillingAddressEditingView() }
+        if (isReadOnly && billingAddress.isEmpty()) {
+            // if the address is empty but we have details like email or phone, show "No address specified"
+            if (order.billingAddress.hasInfo()) {
+                binding.customerInfoBillingAddr.setText(resources.getString(R.string.orderdetail_empty_address), 0)
+            } else {
+                // hide this entire view if there are no extra details and the shipping address is also empty
+                if (shippingAddress.isEmpty()) {
+                    hide()
+                    return
+                }
+
+                // hide the entire billing section since billing address is empty
+                binding.customerInfoMorePanel.hide()
+                binding.customerInfoViewMore.hide()
+            }
         } else {
-            binding.customerInfoBillingAddr.setTextIsSelectable(true)
-            binding.customerInfoBillingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-            binding.customerInfoBillingAddr.setOnClickListener(null)
+            binding.customerInfoBillingAddr.setText(billingAddress, R.string.order_detail_add_billing_address)
+            // we want to expand the billing address section when the address is empty to expose
+            // the "Add billing address" view - note that the billing address is required when
+            // a customer makes an order, but it will be empty once we offer order creation
+            if (billingAddress.isEmpty() && !isReadOnly) {
+                expandCustomerInfoView()
+                binding.customerInfoViewMore.hide()
+            } else {
+                binding.customerInfoViewMore.show()
+            }
         }
 
-        return billingInfo
+        showBillingAddressPhoneInfo(order)
+        showBillingAddressEmailInfo(order)
+
+        binding.customerInfoBillingAddr.setIsReadOnly(isReadOnly)
+        if (!isReadOnly) {
+            binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
+        }
+        binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
+
+        // in read-only mode, if billing info is the only thing available automatically expand it and hide
+        // the "Show billing" button
+        if (isReadOnly) {
+            val hasBilling = billingAddress.isNotEmpty() || order.billingAddress.hasInfo()
+            if (hasBilling &&
+                shippingAddress.isEmpty() &&
+                order.customerNote.isEmpty()
+            ) {
+                expandCustomerInfoView()
+                binding.customerInfoViewMore.hide()
+            }
+        }
     }
 
     private fun onViewMoreCustomerInfoClick() {
         val isChecked = binding.customerInfoViewMoreButtonImage.rotation == 0F
         if (isChecked) {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED)
-            binding.customerInfoMorePanel.expand()
-            binding.customerInfoViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
-            binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
+            expandCustomerInfoView()
         } else {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED)
-            binding.customerInfoMorePanel.collapse()
-            binding.customerInfoViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
-            binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
+            collapseCustomerInfoView()
         }
+    }
+
+    private fun expandCustomerInfoView() {
+        binding.customerInfoMorePanel.expand()
+        binding.customerInfoViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
+        binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
+    }
+
+    private fun collapseCustomerInfoView() {
+        binding.customerInfoMorePanel.collapse()
+        binding.customerInfoViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
+        binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
     }
 
     private fun showBillingAddressEmailInfo(order: Order) {
@@ -130,9 +157,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     private fun showCustomerNote(order: Order, isReadOnly: Boolean) {
         val isEmpty = order.customerNote.isEmpty()
-        val isEditable = FeatureFlag.ORDER_EDITING.isEnabled() && !isReadOnly
-
-        if (isEmpty && !isEditable) {
+        if (isEmpty && isReadOnly) {
             binding.customerInfoCustomerNoteSection.hide()
             return
         }
@@ -147,23 +172,24 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             ""
         }
         binding.customerInfoCustomerNote.setText(text, R.string.order_detail_add_customer_note)
+        binding.customerInfoCustomerNote.setIsReadOnly(isReadOnly)
 
-        // TODO right now we only make the text selectable when the feature flag is NOT enabled to
-        // mimic the existing behavior. We can remove this when the feature flag is removed
-        if (isEditable) {
-            binding.customerInfoCustomerNote.setTextIsSelectable(false)
+        if (!isReadOnly) {
             binding.customerInfoCustomerNoteSection.setOnClickListener {
                 val action =
                     OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment()
                 findNavController().navigateSafely(action)
             }
-        } else {
-            binding.customerInfoCustomerNote.setTextIsSelectable(true)
         }
     }
 
-    private fun showShippingAddress(order: Order, isVirtualOrder: Boolean): String {
+    private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean) {
         val shippingAddress = order.formatShippingInformationForDisplay()
+        if (shippingAddress.isEmpty() && isReadOnly) {
+            binding.customerInfoShippingSection.hide()
+            return
+        }
+
         when {
             isVirtualOrder -> {
                 binding.customerInfoShippingSection.hide()
@@ -172,12 +198,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 binding.customerInfoMorePanel.expand()
                 binding.customerInfoViewMore.setOnClickListener(null)
             }
-            shippingAddress.isEmpty() -> {
-                binding.customerInfoShippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
-                binding.customerInfoShippingMethodSection.hide()
-            }
             else -> {
-                binding.customerInfoShippingAddr.text = shippingAddress
+                binding.customerInfoShippingAddr.setText(shippingAddress, R.string.order_detail_add_shipping_address)
                 binding.customerInfoShippingMethodSection.isVisible = order.shippingMethods.firstOrNull()?.let {
                     binding.customerInfoShippingMethod.text = it.title
                     true
@@ -185,15 +207,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             }
         }
 
-        if (FeatureFlag.ORDER_EDITING.isEnabled()) {
-            binding.customerInfoShippingAddr.setTextIsSelectable(false)
-            binding.customerInfoShippingAddr.setOnClickListener { navigateToShippingAddressEditingView() }
-        } else {
-            binding.customerInfoShippingAddr.setTextIsSelectable(true)
-            binding.customerInfoShippingAddr.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-            binding.customerInfoShippingAddr.setOnClickListener(null)
+        binding.customerInfoShippingAddr.setIsReadOnly(isReadOnly)
+
+        if (!isReadOnly) {
+            binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
         }
-        return shippingAddress
     }
 
     private fun navigateToShippingAddressEditingView() {

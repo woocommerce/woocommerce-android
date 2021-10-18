@@ -315,7 +315,6 @@
     <string name="orderdetail_track_shipment">Track shipment</string>
     <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
     <string name="orderdetail_delete_tracking">Delete tracking</string>
-    <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="orderdetail_collect_payment_button">Collect Payment</string>
@@ -388,6 +387,9 @@
     <string name="order_detail_shipping_address_section">Shipping Address</string>
     <string name="order_detail_billing_address_section">Billing Address</string>
     <string name="order_detail_add_customer_note">Add customer note</string>
+    <string name="order_detail_add_shipping_address">Add shipping address</string>
+    <string name="order_detail_add_billing_address">Add billing address</string>
+    <string name="orderdetail_empty_address">No address specified</string>
 
     <!--
         Shipping label Refunds
@@ -754,6 +756,7 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
+    <string name="card_reader_manual_card_reader">Card Reader Manual</string>
     <!--
         Card Reader Payments
     -->
@@ -1585,6 +1588,10 @@
     <string name="permissions_denied_message">It looks like you turned off permissions required for this feature.&lt;br/&gt;&lt;br/&gt;To change this, edit your permissions and make sure &lt;strong&gt;%s&lt;/strong&gt; is enabled.</string>
     <string name="permission_camera">Camera</string>
     <string name="button_edit_permissions">Edit permissions</string>
+
+    <!-- Jetpack Connection Package -->
+    <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">See the benefits</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

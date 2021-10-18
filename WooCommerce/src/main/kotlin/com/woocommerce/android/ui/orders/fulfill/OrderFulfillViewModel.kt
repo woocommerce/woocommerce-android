@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -91,7 +93,6 @@ class OrderFulfillViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        repository.onCleanup()
     }
 
     private fun displayOrderDetails(order: Order) {
@@ -200,13 +201,18 @@ class OrderFulfillViewModel @Inject constructor(
 
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
-            val deletedShipment = repository.deleteOrderShipmentTracking(
+            val onOrderChanged = repository.deleteOrderShipmentTracking(
                 orderIdSet.id, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
             )
-            if (deletedShipment) {
+            if (!onOrderChanged.isError) {
+                AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
                 viewState = viewState.copy(shouldRefreshShipmentTracking = true)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
             } else {
+                AnalyticsTracker.track(
+                    Stat.ORDER_TRACKING_DELETE_FAILED,
+                    prepareTracksEventsDetails(onOrderChanged)
+                )
                 onDeleteShipmentTrackingReverted(shipmentTracking)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_error))
             }
@@ -218,6 +224,12 @@ class OrderFulfillViewModel @Inject constructor(
             triggerEvent(ExitWithResult(true, key = KEY_REFRESH_SHIPMENT_TRACKING_RESULT))
         } else triggerEvent(Exit)
     }
+
+    private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(
+        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+        AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+    )
 
     @Parcelize
     data class ViewState(

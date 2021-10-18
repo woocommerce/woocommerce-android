@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-28 11:54:04+0000
+Translation-Revision-Date: 2021-10-11 19:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">Error saat mengambil LSS. Harap periksa WooCommerce -&gt; Status di wp-admin.</string>
+    <string name="support_system_status_report_share_error">Tidak dapat membagikan Laporan Status Sistem</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Error saat menyalin LSS ke clipboard</string>
+    <string name="support_system_status_report_copied_to_clipboard">Laporan status sistem disalin ke clipboard</string>
+    <string name="support_system_status_report_detail">Berbagai informasi sistem terkait situs Anda</string>
+    <string name="support_system_status_report_clipboard_label">LSS WooCommerce</string>
+    <string name="support_system_status_report">Laporan status sistem</string>
+    <string name="card_reader_welcome_dialog_text">Selamat, Anda sekarang dapat menerima pembayaran kartu debit dan kredit menggunakan WooCommerce Payments!</string>
+    <string name="card_reader_welcome_dialog_header">Kumpulkan pembayaran dengan pembaca kartu</string>
+    <string name="card_reader_payment_failed_amount_too_small">Jumlah minimal $0,50 dolar AS</string>
+    <string name="card_reader_payment_payment_failed_ok">Oke</string>
     <string name="settings_whats_new_icon_description">Gambar ikon fitur baru</string>
     <string name="settings_switch_store">Beralih toko</string>
     <string name="product_update_failure_notification">Gagal memperbarui produk %1$s</string>
