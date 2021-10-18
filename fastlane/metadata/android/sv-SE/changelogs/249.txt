@@ -1,4 +1,0 @@
-7.6:
-Vi vet att möjligheten att lägga till bilder till era produkter är en av de funktioner som ni älskar att använda i appen! Vi har förbättrat uppladdningsupplevelsen som sker i bakgrunden medan du utför andra uppgifter.
-
-Om du hanterar flera butiker i appen kommer du att gilla den här nyheten. Du kommer nu att få push-notiser för alla dina butiker och inte bara för den aktuella butiken! Överraskning!

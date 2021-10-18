@@ -67,8 +67,8 @@ class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_produc
         if (!isAdded) return
 
         val product = requireNotNull(productData.productDraft)
-        binding.productUrl.setText(product.externalUrl)
-        binding.productButtonText.setText(product.buttonText)
+        binding.productUrl.text = product.externalUrl
+        binding.productButtonText.text = product.buttonText
     }
 
     override fun onRequestAllowBackPress(): Boolean {

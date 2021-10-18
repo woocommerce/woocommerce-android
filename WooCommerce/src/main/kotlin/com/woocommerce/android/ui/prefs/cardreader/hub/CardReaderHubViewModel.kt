@@ -26,7 +26,11 @@ class CardReaderHubViewModel @Inject constructor(
             CardReaderHubListItemViewState(
                 UiString.UiStringRes(R.string.card_reader_manage_card_reader),
                 ::onManageCardReaderClicked
-            )
+            ),
+            CardReaderHubListItemViewState(
+                UiString.UiStringRes(R.string.card_reader_manual_card_reader),
+                ::onManualCardReaderClicked
+            ),
         )
     )
 
@@ -40,10 +44,17 @@ class CardReaderHubViewModel @Inject constructor(
         triggerEvent(CardReaderHubEvents.NavigateToPurchaseCardReaderFlow)
     }
 
+    private fun onManualCardReaderClicked() {
+        triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow)
+    }
+
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         object NavigateToCardReaderDetail : CardReaderHubEvents()
         object NavigateToPurchaseCardReaderFlow : CardReaderHubEvents() {
             const val url = AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER
+        }
+        object NavigateToManualCardReaderFlow : CardReaderHubEvents() {
+            const val url = AppUrls.WOOCOMMERCE_MANUAL_CARD_READER
         }
     }
 

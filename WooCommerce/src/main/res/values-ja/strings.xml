@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 09:54:04+0000
+Translation-Revision-Date: 2021-10-13 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">SSR を取得する際にエラーが発生しました。 wp-admin で「WooCommerce」-&gt;「ステータス」を確認してください。</string>
+    <string name="support_system_status_report_share_error">システムステータスレポートを共有できません</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">SSR をクリップボードにコピーする際にエラーが発生しました</string>
+    <string name="support_system_status_report_copied_to_clipboard">システムステータスレポートをクリップボードにコピーしました</string>
+    <string name="support_system_status_report_detail">自分のサイトに関するさまざまなシステム情報</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">システムステータスレポート</string>
+    <string name="card_reader_welcome_dialog_text">WooCommerce Payments を使用してデビットカードやクレジットカードでの支払いを受け取ることができるようになりました。</string>
+    <string name="card_reader_welcome_dialog_header">カードリーダーで支払いを受け取る</string>
+    <string name="card_reader_payment_failed_amount_too_small">金額は $0.50以上にしてください</string>
+    <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">新機能アイコンの画像</string>
     <string name="settings_switch_store">ストアを切り替える</string>
     <string name="product_update_failure_notification">商品 %1$s の更新に失敗しました。</string>

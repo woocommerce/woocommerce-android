@@ -131,7 +131,7 @@ class ProductPricingFragment :
                 prefixText = currency
             } else suffixText = currency
 
-            pricingData.regularPrice?.let { setText(it.toString()) }
+            pricingData.regularPrice?.let { text = it.toString() }
             setOnTextChangedListener {
                 val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
                 viewModel.onRegularPriceEntered(price)
@@ -143,7 +143,7 @@ class ProductPricingFragment :
                 prefixText = currency
             } else suffixText = currency
 
-            pricingData.salePrice?.let { setText(it.toString()) }
+            pricingData.salePrice?.let { text = it.toString() }
             setOnTextChangedListener {
                 val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
                 viewModel.onSalePriceEntered(price)
