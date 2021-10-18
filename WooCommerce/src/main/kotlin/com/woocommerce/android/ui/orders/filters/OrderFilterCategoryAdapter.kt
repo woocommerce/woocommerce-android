@@ -14,6 +14,10 @@ class OrderFilterCategoryAdapter(
     OrderFilterCategoryDiffCallBack
 ) {
 
+    init {
+        setHasStableIds(true)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderFilterCategoryViewHolder {
         return OrderFilterCategoryViewHolder(
             FilterListItemBinding.inflate(
@@ -30,6 +34,8 @@ class OrderFilterCategoryAdapter(
             onFilterCategoryClicked(getItem(position))
         }
     }
+
+    override fun getItemId(position: Int) = position.toLong()
 
     class OrderFilterCategoryViewHolder(val viewBinding: FilterListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
