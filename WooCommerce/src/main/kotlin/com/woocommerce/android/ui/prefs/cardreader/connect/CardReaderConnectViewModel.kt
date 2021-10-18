@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_FAILURE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_MISSING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -378,6 +379,7 @@ class CardReaderConnectViewModel @Inject constructor(
                         )
                         viewState.value = CardReaderConnectViewState.MissingMerchantAddressError(
                             {
+                                tracker.track(CARD_READER_LOCATION_MISSING_TAPPED)
                                 triggerOpenUrlEventAndExitIfNeeded(result)
                             },
                             {

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 15:54:03+0000
+Translation-Revision-Date: 2021-10-12 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">Fout bij ophalen SSR. Controleer WooCommerce -&gt; Status bij wp-admin.</string>
+    <string name="support_system_status_report_share_error">Kan systeemstatusrapport niet delen</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Fout bij kopiëren SSR naar klembord</string>
+    <string name="support_system_status_report_copied_to_clipboard">Systeemstatusrapport gekopieerd naar klembord</string>
+    <string name="support_system_status_report_detail">Verschillende systeemgegevens over je site</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">Systeemstatusrapport</string>
+    <string name="card_reader_welcome_dialog_text">Gefeliciteerd, je kunt nu betalingen van creditcards en betaalpassen aannemen met WooCommerce Payments!</string>
+    <string name="card_reader_welcome_dialog_header">Ontvang betalingen met een kaartlezer</string>
+    <string name="card_reader_payment_failed_amount_too_small">Bedrag moet minstens 0,50 Amerikaanse dollar bedragen.</string>
+    <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Nieuwe afbeelding van functiepictogram</string>
     <string name="settings_switch_store">Winkel wijzigen</string>
     <string name="product_update_failure_notification">Het is niet gelukt om product %1$s bij te werken</string>
