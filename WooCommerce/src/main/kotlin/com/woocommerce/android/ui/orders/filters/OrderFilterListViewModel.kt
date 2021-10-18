@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.FilterListCategoryUiModel.DateRangeFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.FilterListCategoryUiModel.OrderStatusFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.OrderFilterListEvent.ShowOrderStatusFilterOptions
@@ -20,7 +19,6 @@ import javax.inject.Inject
 class OrderFilterListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
-    private val networkStatus: NetworkStatus,
 ) : ScopedViewModel(savedState) {
 
     private val _orderFilterCategories = MutableLiveData<List<FilterListCategoryUiModel>>()
@@ -32,13 +30,30 @@ class OrderFilterListViewModel @Inject constructor(
     private val _orderFilterCategoryViewState = MutableLiveData<OrderFilterCategoryListViewState>()
     val orderFilterCategoryViewState: LiveData<OrderFilterCategoryListViewState> = _orderFilterCategoryViewState
 
-    private val _orderFilterOptionTitle = MutableLiveData<String>()
-    val orderFilterOptionTitle: LiveData<String> = _orderFilterOptionTitle
+    private val _orderFilterOptionScreenTitle = MutableLiveData<String>()
+    val orderFilterOptionScreenTitle: LiveData<String> = _orderFilterOptionScreenTitle
 
     private var selectedFilterCategory: FilterListCategoryUiModel? = null
 
     init {
         _orderFilterCategories.value = buildFilterListUiModel()
+        _orderFilterCategoryViewState.value = getFilterCategoryScreenState()
+    }
+
+    private fun getFilterCategoryScreenState(): OrderFilterCategoryListViewState {
+        val selectedOrderStatusFilters = orderFilterCategories.value
+            ?.first { it is OrderStatusFilterCategoryUiModel }
+            ?.filterOptions?.getNumberOfOrderStatusSelected() ?: 0
+
+        val title = if (selectedOrderStatusFilters > 0) {
+            resourceProvider.getString(R.string.orderfilters_filters_count_title, selectedOrderStatusFilters)
+        } else {
+            resourceProvider.getString(R.string.orderfilters_filters_default_title)
+        }
+        return OrderFilterCategoryListViewState(
+            screenTitle = title,
+            displayClearButton = selectedOrderStatusFilters > 0
+        )
     }
 
     private fun buildFilterListUiModel(): List<FilterListCategoryUiModel> {
@@ -51,30 +66,25 @@ class OrderFilterListViewModel @Inject constructor(
             ),
             DateRangeFilterCategoryUiModel(
                 displayName = resourceProvider.getString(R.string.orderfilters_date_range_filter),
-                displayValue = getDisplayValueForOrderStatusSelectedFilters(currentOrderStatusFilterOptions),
+                displayValue = resourceProvider.getString(R.string.orderfilters_default_filter_value),
                 emptyList()
             )
         )
     }
 
     private fun getDisplayValueForOrderStatusSelectedFilters(orderStatusFilters: List<FilterListOptionUiModel>): String =
-        if (isAnyOrderStatusSelected(orderStatusFilters)) {
-            getNumberOfOrderStatusSelected(orderStatusFilters)
+        if (orderStatusFilters.isAnyOrderStatusSelected()) {
+            orderStatusFilters.getNumberOfOrderStatusSelected().toString()
         } else {
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
         }
 
-    private fun getNumberOfOrderStatusSelected(orderStatusFilters: List<FilterListOptionUiModel>) =
-        orderStatusFilters
-            .drop(1)
+    private fun List<FilterListOptionUiModel>.getNumberOfOrderStatusSelected() =
+        this.drop(1)
             .filter { it.isSelected }
             .count()
-            .toString()
 
-    private fun isAnyOrderStatusSelected(orderStatusFilters: List<FilterListOptionUiModel>) =
-        orderStatusFilters
-            .drop(1)
-            .any { it.isSelected }
+    private fun List<FilterListOptionUiModel>.isAnyOrderStatusSelected() = drop(1).any { it.isSelected }
 
     private fun loadOrderStatusFilterOptions(): List<FilterListOptionUiModel> {
         return listOf(
@@ -89,7 +99,7 @@ class OrderFilterListViewModel @Inject constructor(
     fun onFilterCategoryClicked(filterCategory: FilterListCategoryUiModel) {
         selectedFilterCategory = filterCategory
         _orderFilterOptions.value = filterCategory.filterOptions
-        _orderFilterOptionTitle.value = getOrderFilterOptionsTitle(filterCategory)
+        _orderFilterOptionScreenTitle.value = getOrderFilterOptionsTitle(filterCategory)
         triggerEvent(ShowOrderStatusFilterOptions)
     }
 
@@ -102,12 +112,9 @@ class OrderFilterListViewModel @Inject constructor(
     fun onFilterOptionClicked(selectedFilterOption: FilterListOptionUiModel) {
         when (selectedFilterCategory) {
             is OrderStatusFilterCategoryUiModel -> updateOrderStatusSelectedFilters(selectedFilterOption)
-            is DateRangeFilterCategoryUiModel -> updateDateRangeSelectedFilters(selectedFilterOption)
+            is DateRangeFilterCategoryUiModel -> {
+            }
         }
-    }
-
-    private fun updateDateRangeSelectedFilters(selectedFilterOption: FilterListOptionUiModel) {
-        TODO("Not yet implemented")
     }
 
     private fun updateOrderStatusSelectedFilters(selectedOrderStatus: FilterListOptionUiModel) {
@@ -135,6 +142,7 @@ class OrderFilterListViewModel @Inject constructor(
                 _orderFilterCategories.value = updatedFilters
             }
         }
+        _orderFilterCategoryViewState.value = getFilterCategoryScreenState()
     }
 
     private fun unselectAllOption() {
@@ -172,7 +180,7 @@ class OrderFilterListViewModel @Inject constructor(
     @Parcelize
     data class OrderFilterCategoryListViewState(
         val screenTitle: String,
-        val displayClearButton: Boolean? = null
+        val displayClearButton: Boolean = false
     ) : Parcelable
 
     sealed class FilterListCategoryUiModel : Parcelable {
