@@ -29,7 +29,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     private var doneMenuItem: MenuItem? = null
 
     /**
-     * The value to pass to analytics for the specific screen
+     * The value to pass to analytics for the specific screen, used to record when the user enters or exits the screen
      * AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE
      * AnalyticsTracker.ORDER_EDIT_SHIPPING_ADDRESS
      * AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS
