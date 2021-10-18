@@ -80,7 +80,7 @@ class ProductImagesViewModel @Inject constructor(
         observeImageUploadEvents()
     }
 
-    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
+    fun uploadProductImages(remoteProductId: Long, localUriList: List<Uri>) {
         if (!networkStatus.isConnected()) {
             triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
             return

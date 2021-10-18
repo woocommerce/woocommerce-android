@@ -10,7 +10,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -28,7 +31,6 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductImagesViewModel.*
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
@@ -43,6 +45,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
@@ -290,31 +293,50 @@ class ProductImagesFragment :
     private fun chooseProductImage() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            DeviceMediaPickerSetup.build(
-                isImagePicker = true,
-                isVideoPicker = false,
-                canMultiSelect = true
+            DeviceMediaPickerSetup.buildMediaPicker(
+                mediaTypes = DeviceMediaPickerSetup.MediaTypes.IMAGES,
+                canMultiSelect = viewModel.isMultiSelectionAllowed
             )
         )
 
-//        val intent = Intent(Intent.ACTION_GET_CONTENT).also {
-//            it.type = "image/*"
-//            it.addCategory(Intent.CATEGORY_OPENABLE)
-//            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, viewModel.isMultiSelectionAllowed)
-//        }
-//        val chooser = Intent.createChooser(intent, null)
-        activity?.startActivityFromFragment(this, intent, RequestCodes.CHOOSE_PHOTO)
+        resultLauncher.launch(intent)
     }
 
     private fun captureProductImage() {
-        if (requestCameraPermission()) {
-            val intent = ProductImagesUtils.createCaptureImageIntent(requireActivity())
-            if (intent == null) {
-                uiMessageResolver.showSnack(R.string.product_images_camera_error)
-                return
+        val intent = MediaPickerActivity.buildIntent(
+            requireContext(),
+            DeviceMediaPickerSetup.buildCameraPicker()
+        )
+
+        resultLauncher.launch(intent)
+    }
+
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        handleMediaPickerResult(it)
+    }
+
+    private fun handleMediaPickerResult(result: ActivityResult) {
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            val mediaUris = (result.data?.extras?.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)
+                ?.mapNotNull { it as? String }
+                ?.map { Uri.parse(it) }
+                ?: emptyList()
+
+            if (mediaUris.isEmpty()) {
+                WooLog.w(T.MEDIA, "Photo chooser returned empty list")
+            } else {
+                val source = if (result.data?.getStringExtra("media_source") == "APP_PICKER") {
+                    AnalyticsTracker.IMAGE_SOURCE_DEVICE
+                } else {
+                    AnalyticsTracker.IMAGE_SOURCE_CAMERA
+                }
+                AnalyticsTracker.track(
+                    Stat.PRODUCT_IMAGE_ADDED,
+                    mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
+                )
+
+                viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
             }
-            capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
-            requireActivity().startActivityFromFragment(this, intent, RequestCodes.CAPTURE_PHOTO)
         }
     }
 
