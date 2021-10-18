@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.Manifest.permission
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -23,7 +20,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImagesBinding
@@ -39,7 +35,6 @@ import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
@@ -336,83 +331,6 @@ class ProductImagesFragment :
                 )
 
                 viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                RequestCodes.CHOOSE_PHOTO -> data?.let {
-                    val uriList = ArrayList<Uri>()
-                    val clipData = it.clipData
-                    if (clipData != null) {
-                        // handle multiple images
-                        for (i in 0 until clipData.itemCount) {
-                            val uri = clipData.getItemAt(i).uri
-                            uriList.add(uri)
-                        }
-                    } else {
-                        // handle single image
-                        it.data?.let { uri ->
-                            uriList.add(uri)
-                        }
-                    }
-                    if (uriList.isEmpty()) {
-                        WooLog.w(T.MEDIA, "Photo chooser returned empty list")
-                        return
-                    }
-                    AnalyticsTracker.track(
-                        Stat.PRODUCT_IMAGE_ADDED,
-                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
-                    )
-                    viewModel.uploadProductImages(navArgs.remoteId, uriList)
-                }
-                RequestCodes.CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
-                    AnalyticsTracker.track(
-                        Stat.PRODUCT_IMAGE_ADDED,
-                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
-                    )
-                    val uriList = ArrayList<Uri>().also { it.add(imageUri) }
-                    viewModel.uploadProductImages(navArgs.remoteId, uriList)
-                }
-            }
-        }
-    }
-
-    /**
-     * Requests camera permissions, returns true only if camera permission is already available
-     */
-    private fun requestCameraPermission(): Boolean {
-        if (isAdded) {
-            if (WooPermissionUtils.hasCameraPermission(requireActivity())) {
-                return true
-            }
-            requestPermissions(arrayOf(permission.CAMERA), RequestCodes.CAMERA_PERMISSION)
-        }
-        return false
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (!isAdded) {
-            return
-        }
-
-        val allGranted = WooPermissionUtils.setPermissionListAsked(
-            requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied = true
-        )
-
-        if (allGranted) {
-            when (requestCode) {
-                RequestCodes.CAMERA_PERMISSION -> {
-                    captureProductImage()
-                }
             }
         }
     }

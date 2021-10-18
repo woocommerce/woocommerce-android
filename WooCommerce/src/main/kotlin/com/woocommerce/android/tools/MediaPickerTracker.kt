@@ -26,6 +26,8 @@ class MediaPickerTracker @Inject constructor() : Tracker {
             Event.MEDIA_PICKER_SELECTION_CLEARED -> AnalyticsTracker.Stat.MEDIA_PICKER_SELECTION_CLEARED
             Event.MEDIA_PICKER_OPENED -> AnalyticsTracker.Stat.MEDIA_PICKER_OPENED
             Event.MEDIA_PICKER_OPEN_SYSTEM_PICKER -> AnalyticsTracker.Stat.MEDIA_PICKER_OPEN_SYSTEM_PICKER
+            Event.MEDIA_PERMISSION_GRANTED -> AnalyticsTracker.Stat.APP_PERMISSION_GRANTED
+            Event.MEDIA_PERMISSION_DENIED -> AnalyticsTracker.Stat.APP_PERMISSION_DENIED
         }
     }
 }
