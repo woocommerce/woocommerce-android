@@ -23,7 +23,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
@@ -45,13 +44,14 @@ import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 
@@ -121,7 +121,6 @@ class OrderDetailViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        orderDetailRepository.onCleanup()
         dispatcher.unregister(this)
     }
 
@@ -421,12 +420,17 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
-            val deletedShipment = orderDetailRepository.deleteOrderShipmentTracking(
+            val onOrderChanged = orderDetailRepository.deleteOrderShipmentTracking(
                 order.localId.value, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
             )
-            if (deletedShipment) {
+            if (!onOrderChanged.isError) {
+                AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
             } else {
+                AnalyticsTracker.track(
+                    Stat.ORDER_TRACKING_DELETE_FAILED,
+                    prepareTracksEventsDetails(onOrderChanged)
+                )
                 onDeleteShipmentTrackingReverted(shipmentTracking)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_error))
             }
@@ -643,27 +647,12 @@ class OrderDetailViewModel @Inject constructor(
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
-    fun onProductImageChanged(event: OnProductImageChanged) {
-        viewState = viewState.copy(refreshedProductId = event.remoteProductId)
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onOrderChanged(event: OnOrderChanged) {
-        when (event.causeOfChange) {
-            WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_TRACKING_DELETE_FAILED,
-                        prepareTracksEventsDetails(event)
-                    )
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
-                }
-            }
-            else -> {
-                // no-op
-            }
+    fun onProductChanged(event: OnProductChanged) {
+        /**
+         * This will be triggered if we fetched a product via ProduictImageMap so we could get its image.
+         */
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
+            viewState = viewState.copy(refreshedProductId = event.remoteProductId)
         }
     }
 

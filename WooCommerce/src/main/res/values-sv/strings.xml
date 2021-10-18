@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-30 09:54:04+0000
+Translation-Revision-Date: 2021-10-12 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">Det gick inte att hämta SSR. Kontrollera WooCommerce -&gt; Status i WP-admin.</string>
+    <string name="support_system_status_report_share_error">Det gick inte att dela systemstatusrapporten</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Det gick inte att kopiera SSR till urklipp</string>
+    <string name="support_system_status_report_copied_to_clipboard">Systemstatusrapport kopierad till urklipp</string>
+    <string name="support_system_status_report_detail">Diverse systeminformation om din webbplats</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">Systemstatusrapport</string>
+    <string name="card_reader_welcome_dialog_text">Grattis, du kan nu ta emot kredit- och betalkortsbetalningar med WooCommerce Payments!</string>
+    <string name="card_reader_welcome_dialog_header">Ta emot betalningar med en kortläsare</string>
+    <string name="card_reader_payment_failed_amount_too_small">Beloppet måste vara minst 0,50 USD</string>
+    <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Bild på ny funktionsikon</string>
     <string name="settings_switch_store">Växla butik</string>
     <string name="product_update_failure_notification">Uppdatering av produkt %1$s misslyckades</string>

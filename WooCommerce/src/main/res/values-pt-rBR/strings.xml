@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-27 15:54:09+0000
+Translation-Revision-Date: 2021-10-11 17:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">Erro ao buscar SSR. Verifique WooCommerce -&gt; Status no wp-admin.</string>
+    <string name="support_system_status_report_share_error">Não é possível compartilhar o relatório de status do sistema</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Erro ao copiar SSR para a área de transferência</string>
+    <string name="support_system_status_report_copied_to_clipboard">Relatório de status do sistema copiado para a área de transferência</string>
+    <string name="support_system_status_report_detail">Várias informações do sistema sobre o seu site</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">Relatório de status do sistema</string>
+    <string name="card_reader_welcome_dialog_text">Parabéns! Agora você pode aceitar pagamentos com cartão de débito e crédito usando o WooCommerce Payments.</string>
+    <string name="card_reader_welcome_dialog_header">Receber pagamentos com um leitor de cartão</string>
+    <string name="card_reader_payment_failed_amount_too_small">O valor deve ser no mínimo US$ 0,50</string>
+    <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Imagem do ícone de nova funcionalidade</string>
     <string name="settings_switch_store">Alterar loja</string>
     <string name="product_update_failure_notification">Falha na atualização do produto %1$s</string>

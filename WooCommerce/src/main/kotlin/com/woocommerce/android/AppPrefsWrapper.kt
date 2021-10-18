@@ -1,6 +1,7 @@
 package com.woocommerce.android
 
 import javax.inject.Inject
+
 @Suppress("TooManyFunctions")
 class AppPrefsWrapper @Inject constructor() {
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
@@ -39,5 +40,13 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun setHasUnseenReviews(hasUnseen: Boolean) {
         AppPrefs.setHasUnseenReviews(hasUnseen)
+    }
+
+    fun getJetpackBenefitsDismissalDate(): Long {
+        return AppPrefs.getJetpackBenefitsDismissalDate()
+    }
+
+    fun recordJetpackBenefitsDismissal() {
+        AppPrefs.recordJetpackBenefitsDismissal()
     }
 }

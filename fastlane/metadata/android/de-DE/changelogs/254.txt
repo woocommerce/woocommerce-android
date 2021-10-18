@@ -1,0 +1,2 @@
+7.7:
+Händler, die WooCommerce Payments in den USA nutzen, können persönliche Kreditkartenzahlungen für die Zahlungen deiner Kunden bei Zustellung oder Abholung von Bestellungen akzeptieren. Außerdem sind einige kleine, auf deinem Feedback basierenden Verbesserungen in dieser neuen Version enthalten. Vielen Dank, dass du uns dabei hilfst, eine bessere App für alle zu entwickeln.

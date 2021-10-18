@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 09:54:04+0000
+Translation-Revision-Date: 2021-10-12 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">获取 SSR 时出错。 请检查 wp-admin 中的“WooCommerce -&gt; 状态”。</string>
+    <string name="support_system_status_report_share_error">无法共享系统状态报告</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">将 SSR 复制到剪贴板时出错</string>
+    <string name="support_system_status_report_copied_to_clipboard">已将系统状态报告复制到剪切板</string>
+    <string name="support_system_status_report_detail">有关您站点的各种系统信息</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">系统状态报告</string>
+    <string name="card_reader_welcome_dialog_text">恭喜，您现在可以使用 WooCommerce Payments 接受借记卡和信用卡付款了！</string>
+    <string name="card_reader_welcome_dialog_header">使用读卡器收款</string>
+    <string name="card_reader_payment_failed_amount_too_small">金额不得少于 0.50 美元</string>
+    <string name="card_reader_payment_payment_failed_ok">确定</string>
     <string name="settings_whats_new_icon_description">新功能图标图像</string>
     <string name="settings_switch_store">切换商店</string>
     <string name="product_update_failure_notification">产品 %1$s 更新失败</string>

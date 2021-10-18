@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 11:54:48+0000
+Translation-Revision-Date: 2021-10-14 11:54:55+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">خطأ في أثناء إحضار تقرير حالة النظام. يرجى التحقُّق من WooCommerce -&gt; الحالة في مسؤول ووردبريس.</string>
+    <string name="support_system_status_report_share_error">تتعذر مشاركة تقرير حالة النظام</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">خطأ في أثناء نسخ  تقرير حالة النظام إلى الحافظة</string>
+    <string name="support_system_status_report_copied_to_clipboard">تم نسخ تقرير حالة النظام إلى الحافظة</string>
+    <string name="support_system_status_report_detail">معلومات النظام المتنوعة حول موقعك</string>
+    <string name="support_system_status_report_clipboard_label">تقرير حالة النظام الخاص بـ WooCommerce</string>
+    <string name="support_system_status_report">تقرير حالة النظام</string>
+    <string name="card_reader_welcome_dialog_text">تهانينا، أصبحتَ الآن قادرًا على قبول مدفوعات بطاقات السحب والائتمان باستخدام مدفوعات WooCommerce!</string>
+    <string name="card_reader_welcome_dialog_header">جمع المدفوعات باستخدام قارئ البطاقة</string>
+    <string name="card_reader_payment_failed_amount_too_small">يجب أن يكون المبلغ 0.50 دولار أمريكي على الأقل</string>
+    <string name="card_reader_payment_payment_failed_ok">موافق</string>
     <string name="settings_whats_new_icon_description">صورة أيقونة الميزة الجديدة</string>
     <string name="settings_switch_store">تبديل المخزن</string>
     <string name="product_update_failure_notification">فشل تحديث المنتج ⁦%1$s⁩</string>
