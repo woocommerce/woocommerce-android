@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details.editing
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
@@ -62,12 +63,22 @@ class OrderEditingViewModel @Inject constructor(
     fun updateCustomerOrderNote(updatedNote: String): Boolean {
         return if (checkConnectionAndResetState()) {
             launch(dispatchers.io) {
-                collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order, updatedNote))
+                collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order.localId, updatedNote))
             }
             true
         } else {
             false
         }
+    }
+
+    fun updateShippingAddress(shippingAddress: Address): Boolean {
+        // Will be implemented in future PRs, making a unrelated call to avoid lint issues
+        return shippingAddress.hasInfo()
+    }
+
+    fun updateBillingAddress(billingAddress: Address): Boolean {
+        // Will be implemented in future PRs, making a unrelated call to avoid lint issues
+        return billingAddress.hasInfo()
     }
 
     private suspend fun collectUpdateFlow(flow: Flow<WCOrderStore.UpdateOrderResult>) {

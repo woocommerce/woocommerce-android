@@ -5,6 +5,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
 import com.woocommerce.android.model.OrderNote
@@ -23,6 +24,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
 @HiltViewModel
@@ -94,16 +96,28 @@ class AddOrderNoteViewModel @Inject constructor(
 
         val note = addOrderNoteViewState.draftNote
         launch {
-            if (orderDetailRepository.addOrderNote(order.identifier, order.remoteId, note)) {
+            val onOrderChanged = orderDetailRepository.addOrderNote(order.identifier, order.remoteId, note)
+            if (!onOrderChanged.isError) {
+                AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
                 addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
                 triggerEvent(ShowSnackbar(R.string.add_order_note_added))
                 triggerEvent(ExitWithResult(note))
             } else {
+                AnalyticsTracker.track(
+                    Stat.ORDER_NOTE_ADD_FAILED,
+                    prepareTracksEventsDetails(onOrderChanged)
+                )
                 addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
                 triggerEvent(ShowSnackbar(R.string.add_order_note_error))
             }
         }
     }
+
+    private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(
+        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+        AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+    )
 
     fun onBackPressed() {
         if (addOrderNoteViewState.draftNote.note.trim().isNotEmpty()) {
@@ -121,7 +135,6 @@ class AddOrderNoteViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        orderDetailRepository.onCleanup()
     }
 
     @Parcelize

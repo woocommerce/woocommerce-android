@@ -1,4 +1,0 @@
-7.6 :
-Nous savons que l’ajout d’images à vos produits est l’une de vos fonctionnalités préférées sur l’application ! Nous avons amélioré l’expérience de téléchargement en arrière-plan pour que vous puissiez continuer vos autres tâches.
-
-Si vous gérez plusieurs boutiques sur l’application, la suite va vous ravir. Vous recevez désormais des notifications pour toutes vos boutiques, pas uniquement celle qui est active. Surprise !

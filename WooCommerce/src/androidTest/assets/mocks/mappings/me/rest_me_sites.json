@@ -1,6 +1,6 @@
 {
     "request": {
-        "urlPath": "/rest/v1.1/me/sites/",
+        "urlPathPattern": "/rest/v1.(1|2)/me/sites/",
         "method": "GET"
     },
     "response": {
@@ -32,11 +32,13 @@
               "remove_users": true,
               "own_site": false,
               "view_hosting": true,
-              "view_stats": true
+              "view_stats": true,
+              "activate_plugins": true
             },
             "jetpack": true,
             "visible": true,
             "is_private": true,
+            "organization_id": 0,
             "options": {
               "timezone": "",
               "gmt_offset": 0,
@@ -64,18 +66,18 @@
               "post_formats": [],
               "default_post_format": "standard",
               "default_category": 1,
-              "allowed_file_types": ["jpg", "jpeg", "png", "gif", "pdf", "doc", "ppt", "odt", "pptx", "docx", "pps", "ppsx", "xls", "xlsx", "key", "asc", "ogv", "mp4", "m4v", "mov", "wmv", "avi", "mpg", "3gp", "3g2"],
+              "allowed_file_types": ["jpg", "jpeg", "png", "gif", "pdf", "doc", "ppt", "odt", "pptx", "docx", "pps", "ppsx", "xls", "xlsx", "key", "webp", "asc", "ogv", "mp4", "m4v", "mov", "wmv", "avi", "mpg", "3gp", "3g2"],
               "show_on_front": "page",
               "default_likes_enabled": false,
               "default_sharing_status": true,
               "default_comment_status": false,
               "default_ping_status": true,
-              "software_version": "5.4.2",
+              "software_version": "5.8.1",
               "created_at": "2019-04-25T21:13:15+00:00",
               "wordads": false,
               "publicize_permanently_disabled": false,
-              "frame_nonce": "7d35c89a86",
-              "jetpack_frame_nonce": "1596810048:742099:f2c15165b153a0b8d79abe0e5aaf9b90",
+              "frame_nonce": "991e76378b",
+              "jetpack_frame_nonce": "1633522076:742099:553ebc0d8bb810b0ee3d51f78624b704",
               "page_on_front": 2,
               "page_for_posts": 3,
               "headstart": false,
@@ -90,27 +92,32 @@
               "is_wpcom_atomic": true,
               "is_wpcom_store": true,
               "woocommerce_is_active": true,
+              "editing_toolkit_is_active": false,
               "design_type": null,
               "site_goals": null,
               "site_segment": false,
               "import_engine": null,
               "is_pending_plan": false,
               "is_wpforteams_site": false,
+              "p2_hub_blog_id": null,
               "is_cloud_eligible": false,
-              "jetpack_version": "8.8",
+              "anchor_podcast": false,
+              "was_created_with_blank_canvas_design": false,
+              "videopress_storage_used": 0,
+              "jetpack_version": "10.1",
               "main_network_site": "https:\/\/automatticwidgets.com",
               "active_modules": ["carousel", "comment-likes", "comments", "contact-form", "copy-post", "custom-content-types", "custom-css", "gravatar-hovercards", "infinite-scroll", "latex", "lazy-images", "likes", "masterbar", "notes", "post-by-email", "protect", "shortcodes", "shortlinks", "sso", "stats", "subscriptions", "tiled-gallery", "widget-visibility", "widgets", "woocommerce-analytics"],
               "max_upload_size": false,
-              "wp_memory_limit": "268435456",
-              "wp_max_memory_limit": "268435456",
+              "wp_memory_limit": "536870912",
+              "wp_max_memory_limit": "536870912",
               "is_multi_network": false,
               "is_multi_site": false,
-              "file_mod_disabled": ["wp_auto_update_core_disabled"]
+              "file_mod_disabled": ["wp_auto_update_core_disabled"],
+              "jetpack_connection_active_plugins": ["jetpack"]
             },
             "plan": {
               "product_id": 1011,
               "product_slug": "ecommerce-bundle",
-              "product_name": "WordPress.com eCommerce",
               "product_name_short": "eCommerce",
               "expired": false,
               "user_is_owner": false,
@@ -140,9 +147,9 @@
             },
             "meta": {
               "links": {
-                "self": "https:\/\/public-api.wordpress.com\/rest\/v1.1\/sites\/161477129",
-                "help": "https:\/\/public-api.wordpress.com\/rest\/v1.1\/sites\/161477129\/help",
-                "posts": "https:\/\/public-api.wordpress.com\/rest\/v1.1\/sites\/161477129\/posts\/",
+                "self": "https:\/\/public-api.wordpress.com\/rest\/v1.2\/sites\/161477129",
+                "help": "https:\/\/public-api.wordpress.com\/rest\/v1.2\/sites\/161477129\/help",
+                "posts": "https:\/\/public-api.wordpress.com\/rest\/v1.2\/sites\/161477129\/posts\/",
                 "comments": "https:\/\/public-api.wordpress.com\/rest\/v1.1\/sites\/161477129\/comments\/",
                 "xmlrpc": "https:\/\/automatticwidgets.com\/xmlrpc.php"
               }
@@ -155,10 +162,10 @@
             },
             "updates": {
               "wordpress": 0,
-              "plugins": 2,
+              "plugins": 1,
               "themes": 0,
               "translations": 0,
-              "total": 2
+              "total": 1
             }
           }]
         },

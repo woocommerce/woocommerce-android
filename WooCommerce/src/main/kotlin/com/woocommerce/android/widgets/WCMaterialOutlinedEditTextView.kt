@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.text.Editable
 import android.text.InputFilter
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.LayoutInflater
@@ -37,11 +38,22 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = R.attr.wcMaterialOutlinedEditTextViewStyle
 ) : TextInputLayout(ctx, attrs, defStyleAttr) {
-    private val binding = ViewMaterialOutlinedEdittextBinding.inflate(LayoutInflater.from(context), this)
-
     companion object {
         private const val KEY_SUPER_STATE = "WC-OUTLINED-EDITTEXT-VIEW-SUPER-STATE"
     }
+
+    private val binding = ViewMaterialOutlinedEdittextBinding.inflate(LayoutInflater.from(context), this)
+
+    var textWatcher: TextWatcher? = null
+        set(value) {
+            field = value
+            value?.let { binding.editText.addTextChangedListener(it) }
+        }
+
+    var text: String
+        get() = binding.editText.text.toString()
+        set(value) = binding.editText.setText(value)
+
     init {
         if (attrs != null) {
             val a = context.obtainStyledAttributes(
@@ -63,7 +75,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
 
                 // Set the startup text
                 a.getString(R.styleable.WCMaterialOutlinedSpinnerView_android_text)?.let {
-                    setText(it)
+                    text = it
                 }
 
                 isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
@@ -73,11 +85,10 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         }
     }
 
-    fun setText(selectedText: String) {
-        binding.editText.setText(selectedText)
+    fun removeCurrentTextWatcher() {
+        textWatcher?.let { binding.editText.removeTextChangedListener(it) }
+        textWatcher = null
     }
-
-    fun getText() = binding.editText.text.toString()
 
     /**
      * Updates the text only if the current content is different from the supplied one.
@@ -85,8 +96,8 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
      * events.
      */
     fun setTextIfDifferent(newText: String) {
-        if (getText() != newText) {
-            setText(newText)
+        if (text != newText) {
+            text = newText
             binding.editText.setSelection(newText.length)
         }
     }

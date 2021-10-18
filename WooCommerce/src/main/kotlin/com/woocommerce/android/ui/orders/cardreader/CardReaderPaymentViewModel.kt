@@ -349,7 +349,6 @@ class CardReaderPaymentViewModel
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun onCleared() {
         super.onCleared()
-        orderRepository.onCleanup()
         paymentDataForRetry?.let {
             cardReaderManager.cancelPayment(it)
         }

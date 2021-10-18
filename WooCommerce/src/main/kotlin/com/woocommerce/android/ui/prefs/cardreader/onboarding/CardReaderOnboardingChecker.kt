@@ -33,8 +33,8 @@ class CardReaderOnboardingChecker @Inject constructor(
     @Suppress("ReturnCount", "ComplexMethod")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
-        val countryCode = getCountryCode()
-        if (!isCountrySupported(countryCode)) return CountryNotSupported(countryCode)
+        val countryCode = getStoreCountryCode()
+        if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
@@ -46,6 +46,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GenericError
 
+        if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
         if (!isWCPaySetupCompleted(paymentAccount)) return WcpaySetupNotCompleted
         if (isWCPayInTestModeWithLiveStripeAccount(paymentAccount)) return WcpayInTestModeWithLiveStripeAccount
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
@@ -63,7 +64,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         return OnboardingCompleted
     }
 
-    private suspend fun getCountryCode(): String? {
+    private suspend fun getStoreCountryCode(): String? {
         return withContext(dispatchers.io) {
             wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
                 WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
@@ -119,7 +120,7 @@ sealed class CardReaderOnboardingState {
     /**
      * Store is not located in one of the supported countries.
      */
-    data class CountryNotSupported(val countryCode: String?) : CardReaderOnboardingState()
+    data class StoreCountryNotSupported(val countryCode: String?) : CardReaderOnboardingState()
 
     /**
      * WCPay plugin is not installed on the store.
@@ -171,6 +172,11 @@ sealed class CardReaderOnboardingState {
      * or the merchant violates the terms of service
      */
     object StripeAccountRejected : CardReaderOnboardingState()
+
+    /**
+     * The Stripe account is attached to an address in one of the unsupported countries.
+     */
+    data class StripeAccountCountryNotSupported(val countryCode: String?) : CardReaderOnboardingState()
 
     /**
      * Generic error - for example, one of the requests failed.

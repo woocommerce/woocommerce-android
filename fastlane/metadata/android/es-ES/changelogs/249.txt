@@ -1,4 +1,0 @@
-7.6:
-Sabemos que añadir imágenes a tus productos es una de las funciones que más te gusta de la aplicación. Hemos mejorado la experiencia para que se suban los archivos en segundo plano, mientras continúas con otras tareas.
-
-Si gestionas varias tiendas en la aplicación, esta noticia te alegrará. Ahora recibirás notificaciones de todas tus tiendas, no solo de la actual. ¡Sorpresa!

@@ -1,13 +1,20 @@
 package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
+import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
@@ -16,8 +23,17 @@ class MainActivityViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
-    private val notificationHandler: NotificationMessageHandler
+    private val notificationHandler: NotificationMessageHandler,
+    private val featureAnnouncementRepository: FeatureAnnouncementRepository,
+    private val buildConfigWrapper: BuildConfigWrapper,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState) {
+    init {
+        launch {
+            featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
+        }
+    }
+
     fun removeReviewNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
             NotificationChannelType.REVIEW, selectedSite.get().siteId
@@ -87,11 +103,30 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun showFeatureAnnouncementIfNeeded() {
+        launch {
+            val cachedAnnouncement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
+
+            // Feature Announcement dialog can be shown on app resume, if these criteria are filled:
+            // 1. Current version is different from the last version where announcement was shown
+            // 2. Announcement content is valid and can be displayed
+            cachedAnnouncement?.let {
+                if (prefs.getLastVersionWithAnnouncement() != buildConfigWrapper.versionName &&
+                    cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
+                ) {
+                    WooLog.i(T.DEVICE, "Displaying Feature Announcement on main activity")
+                    triggerEvent(ShowFeatureAnnouncement(it))
+                }
+            }
+        }
+    }
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
+    data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val localSiteId: Int, val remoteNoteId: Long) : Event()
 }
