@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 15:54:03+0000
+Translation-Revision-Date: 2021-10-12 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">Erreur lors de l’extraction du RES Consultez WooCommerce -&gt; État dans wp-admin.</string>
+    <string name="support_system_status_report_share_error">Impossible de partager le rapport sur l’état du système</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Erreur lors de la copie du RES dans le presse-papiers</string>
+    <string name="support_system_status_report_copied_to_clipboard">Le rapport sur l’état du système a été copié dans le presse-papiers.</string>
+    <string name="support_system_status_report_detail">Informations système diverses à propos de votre site</string>
+    <string name="support_system_status_report_clipboard_label">RES WooCommerce</string>
+    <string name="support_system_status_report">Rapport sur l’état du système</string>
+    <string name="card_reader_welcome_dialog_text">Félicitations, vous pouvez désormais accepter les paiements par carte de débit et de crédit avec WooCommerce Payments.</string>
+    <string name="card_reader_welcome_dialog_header">Percevez des paiements à l’aide d’un lecteur de carte</string>
+    <string name="card_reader_payment_failed_amount_too_small">Le montant doit s’élever à au moins 0,50 USD.</string>
+    <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Image de l’icône Nouvelle fonctionnalité</string>
     <string name="settings_switch_store">Changer de boutique</string>
     <string name="product_update_failure_notification">La mise à jour du produit %1$s a échoué</string>

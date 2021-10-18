@@ -1,4 +1,0 @@
-7.6:
-Wir wissen, dass das Hinzufügen von Bildern zu Produkten eine der beliebtesten Funktionen in der App ist. Deshalb haben wir sie verbessert, damit du Bilder im Hintergrund hochladen und gleichzeitig noch etwas anderes tun kannst.
-
-Wenn du mehrere Shops in der App verwaltest, haben wir gute Neuigkeiten für dich. Jetzt erhältst du nämlich Push-Benachrichtigungen für alle Shops, nicht nur für den aktuellen. Klasse, oder?
