@@ -9,7 +9,7 @@ import javax.inject.Inject
 class WooMediaLoaderFactory @Inject constructor(
     private val deviceMediaSourceFactory: DeviceMediaSource.Factory
 ) : MediaLoaderFactory {
-    override fun build(siteId: Long, mediaPickerSetup: MediaPickerSetup): MediaLoader {
-        return deviceMediaSourceFactory.build(siteId, mediaPickerSetup.allowedTypes).toMediaLoader()
+    override fun build(mediaPickerSetup: MediaPickerSetup): MediaLoader {
+        return deviceMediaSourceFactory.build(mediaPickerSetup.allowedTypes).toMediaLoader()
     }
 }

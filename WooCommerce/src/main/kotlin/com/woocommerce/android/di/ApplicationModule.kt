@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.wordpress.android.login.di.LoginServiceModule
 import org.wordpress.android.mediapicker.api.MediaInsertHandlerFactory
-import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
+import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
 import org.wordpress.android.mediapicker.util.Log
 import org.wordpress.android.mediapicker.util.Tracker
@@ -38,7 +38,7 @@ abstract class ApplicationModule {
     internal abstract fun provideMediaPickerLogger(logger: MediaPickerLogger): Log
 
     @Binds
-    internal abstract fun provideMimeTypeSupportProvider(provider: MimeTypeProvider): MimeTypeSupportProvider
+    internal abstract fun provideMimeTypeSupportProvider(provider: WooMimeTypeProvider): MimeTypeProvider
 
     @Binds
     abstract fun bindMediaLoaderFactory(

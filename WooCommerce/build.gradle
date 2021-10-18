@@ -296,8 +296,8 @@ dependencies {
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 
 
-    implementation 'com.github.wordpress-mobile.WordPress-MediaPicker-Android:mediapicker:687099d'
-    implementation 'com.github.wordpress-mobile.WordPress-MediaPicker-Android:source-device:687099d'
+    implementation 'com.github.wordpress-mobile.WordPress-MediaPicker-Android:mediapicker:4eade35b18'
+    implementation 'com.github.wordpress-mobile.WordPress-MediaPicker-Android:source-device:4eade35b18'
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
