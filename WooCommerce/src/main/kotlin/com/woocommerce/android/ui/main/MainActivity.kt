@@ -409,7 +409,8 @@ class MainActivity :
                 R.id.printingInstructionsFragment,
                 R.id.editCustomerOrderNoteFragment,
                 R.id.shippingAddressEditingFragment,
-                R.id.billingAddressEditingFragment -> {
+                R.id.billingAddressEditingFragment,
+                R.id.orderFilterCategoryListFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
