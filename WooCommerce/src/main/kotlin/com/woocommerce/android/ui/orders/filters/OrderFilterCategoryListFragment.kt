@@ -1,12 +1,16 @@
 package com.woocommerce.android.ui.orders.filters
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -21,6 +25,8 @@ class OrderFilterCategoryListFragment : BaseFragment(R.layout.fragment_order_fil
 
     lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter
 
+    private var clearAllMenuItem: MenuItem? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -30,6 +36,24 @@ class OrderFilterCategoryListFragment : BaseFragment(R.layout.fragment_order_fil
         setUpFiltersRecyclerView(binding)
         binding.filterListBtnShowOrders.setOnClickListener {
             viewModel.onShowOrdersClicked()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_clear, menu)
+        clearAllMenuItem = menu.findItem(R.id.menu_clear)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_clear -> {
+                AnalyticsTracker.track(AnalyticsTracker.Stat.PRODUCT_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED)
+                viewModel.onClearFilterSelected()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -69,7 +93,12 @@ class OrderFilterCategoryListFragment : BaseFragment(R.layout.fragment_order_fil
         }
         viewModel.orderFilterCategoryViewState.observe(viewLifecycleOwner) { viewState ->
             requireActivity().title = viewState.screenTitle
+            showClearAllAction(viewState.displayClearButton)
         }
+    }
+
+    private fun showClearAllAction(show: Boolean) {
+        view?.post { clearAllMenuItem?.isVisible = show }
     }
 
     private fun showOrderFilters(orderFilters: List<FilterListCategoryUiModel>) {
