@@ -67,6 +67,9 @@ class OrderFilterCategoryListFragment : BaseFragment(R.layout.fragment_order_fil
                 else -> event.isHandled = false
             }
         }
+        viewModel.orderFilterCategoryViewState.observe(viewLifecycleOwner) { viewState ->
+            requireActivity().title = viewState.screenTitle
+        }
     }
 
     private fun showOrderFilters(orderFilters: List<FilterListCategoryUiModel>) {
