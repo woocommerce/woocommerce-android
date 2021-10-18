@@ -56,12 +56,12 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the product list view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val mutableProductList = productList.toMutableList().apply {
+        val expectedProductList = productList.toMutableList().apply {
             excludedProductIds.forEach { excludedIds ->
                 this.removeIf { it.remoteId == excludedIds }
             }
         }
-        doReturn(mutableProductList).whenever(productRepository).fetchProductList(
+        doReturn(expectedProductList).whenever(productRepository).fetchProductList(
             excludedProductIds = excludedProductIds
         )
 
@@ -72,7 +72,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
             it?.let { products.addAll(it) }
         }
 
-        assertThat(products).isEqualTo(mutableProductList)
+        assertThat(products).isEqualTo(expectedProductList)
 
         val remoteProductIds = products.map { it.remoteId }
         assertFalse(remoteProductIds.contains(EXCLUDED_PRODUCT_REMOTE_ID))
@@ -150,13 +150,13 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     @Test
     fun `Should exclude the current product from product selection list`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val mutableProductList = productList.toMutableList().apply {
+            val expectedProductList = productList.toMutableList().apply {
                 excludedProductIds.forEach { excludedIds ->
                     this.removeIf { it.remoteId == excludedIds }
                 }
             }
 
-            doReturn(mutableProductList).whenever(productRepository).fetchProductList(
+            doReturn(expectedProductList).whenever(productRepository).fetchProductList(
                 excludedProductIds = excludedProductIds
             )
 
@@ -167,7 +167,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
                 it?.let { products.addAll(it) }
             }
 
-            assertThat(products).isEqualTo(mutableProductList)
+            assertThat(products).isEqualTo(expectedProductList)
 
             val remoteProductIds = products.map { it.remoteId }
             assertFalse(remoteProductIds.contains(PRODUCT_REMOTE_ID))
