@@ -4,7 +4,7 @@
         "urlPath": "/rest/v1.1/notifications/",
         "queryParameters": {
             "fields": {
-                "equalTo": "id,type,read,body,subject,timestamp,meta,note_hash"
+                "matches": "(.*)id(.*)note_hash(.*)"
             },
             "locale": {
                 "matches": "(.*)"
