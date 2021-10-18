@@ -562,7 +562,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             )
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
-            (viewModel.viewStateData.value as MissingMerchantAddressError).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as CardReaderConnectViewState.MissingMerchantAddressError)
+                .onPrimaryActionClicked.invoke()
 
             verify(tracker).track(CARD_READER_LOCATION_MISSING_TAPPED)
         }
