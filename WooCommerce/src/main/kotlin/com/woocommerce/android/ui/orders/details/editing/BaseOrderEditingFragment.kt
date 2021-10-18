@@ -134,13 +134,13 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     private fun confirmDiscard() {
         MultiLiveEvent.Event.ShowDialog.buildDiscardDialogEvent(
             positiveBtnAction = { _, _ ->
-                trackEventCanceled()
                 navigateUp()
             }
         ).showDialog()
     }
 
     private fun navigateUp() {
+        trackEventCanceled()
         ActivityUtils.hideKeyboard(activity)
         findNavController().navigateUp()
     }
