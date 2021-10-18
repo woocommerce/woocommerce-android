@@ -8,7 +8,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.FilterListCategoryUiModel.DateRangeFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.FilterListCategoryUiModel.OrderStatusFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.OrderFilterListEvent.ShowOrderStatusFilterOptions
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,7 +61,7 @@ class OrderFilterListViewModel @Inject constructor(
     private fun getFilterCategoryViewState(): OrderFilterCategoryListViewState {
         val selectedOrderStatusFilters = orderFilterCategories.value
             ?.first { it is OrderStatusFilterCategoryUiModel }
-            ?.filterOptions?.getNumberOfOrderStatusSelected() ?: 0
+            ?.filterOptions?.getNumberOfSelectedFilterOptions() ?: 0
 
         val title = if (selectedOrderStatusFilters > 0) {
             resourceProvider.getString(R.string.orderfilters_filters_count_title, selectedOrderStatusFilters)
@@ -74,7 +76,7 @@ class OrderFilterListViewModel @Inject constructor(
 
     private fun getDisplayValueForSelectedOrderStatus(orderStatusFilters: List<FilterListOptionUiModel>): String =
         if (orderStatusFilters.isAnyOrderStatusSelected()) {
-            orderStatusFilters.getNumberOfOrderStatusSelected().toString()
+            orderStatusFilters.getNumberOfSelectedFilterOptions().toString()
         } else {
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
         }
@@ -188,19 +190,35 @@ class OrderFilterListViewModel @Inject constructor(
         )
     }
 
-    private fun List<FilterListOptionUiModel>.getNumberOfOrderStatusSelected() =
-        drop(1)
-            .filter { it.isSelected }
-            .count()
+    private fun List<FilterListOptionUiModel>.getNumberOfSelectedFilterOptions() =
+        filter { it.isSelected && it.key != ALL_KEY }.count()
 
     private fun List<FilterListOptionUiModel>.isAnyOrderStatusSelected() =
-        drop(1)
-            .any { it.isSelected }
+        any { it.isSelected && it.key != ALL_KEY }
 
     private fun List<FilterListOptionUiModel>.clearAllFilterSelections() =
         map { it.copy(isSelected = false) }
 
-    sealed class OrderFilterListEvent : MultiLiveEvent.Event() {
+    fun onBackPressed(): Boolean {
+        val selectedFiltersCount = _orderFilterCategories.value
+            ?.map { it.filterOptions.getNumberOfSelectedFilterOptions() }
+            ?.sum() ?: 0
+        return if (selectedFiltersCount > 0) {
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    positiveBtnAction = { _, _ ->
+                        triggerEvent(Exit)
+                    },
+                    negativeButtonId = R.string.keep_changes
+                )
+            )
+            false
+        } else {
+            true
+        }
+    }
+
+    sealed class OrderFilterListEvent : Event() {
         object ShowOrderStatusFilterOptions : OrderFilterListEvent()
     }
 

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_order_filters"
-    app:startDestination="@id/orderFilterListFragment">
+    app:startDestination="@id/orderFilterCategoryListFragment">
     <fragment
-        android:id="@+id/orderFilterListFragment"
+        android:id="@+id/orderFilterCategoryListFragment"
         android:name="com.woocommerce.android.ui.orders.filters.OrderFilterCategoryListFragment"
         tools:layout="@layout/fragment_order_filter_list">
         <action
