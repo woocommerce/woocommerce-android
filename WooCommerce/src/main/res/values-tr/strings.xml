@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 21:54:04+0000
+Translation-Revision-Date: 2021-10-12 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">SSR alınırken hata oluştu. Lütfen wp-admin\'de WooCommerce -&gt; Durum bölümünü kontrol edin.</string>
+    <string name="support_system_status_report_share_error">Sistem Durum Raporu paylaşılamıyor</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">SSR panoya kopyalanırken hata oluştu</string>
+    <string name="support_system_status_report_copied_to_clipboard">Sistem durum raporu panoya kopyalandı</string>
+    <string name="support_system_status_report_detail">Sitenizle ilgili çeşitli sistem bilgileri</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">Sistem durum raporu</string>
+    <string name="card_reader_welcome_dialog_text">Tebrikler, artık WooCommerce Payments ile banka ve kredi kartı ödemelerini kabul edebilirsiniz!</string>
+    <string name="card_reader_welcome_dialog_header">Ödeme bir kart okuyucu ile alın</string>
+    <string name="card_reader_payment_failed_amount_too_small">Tutar en az 0,50 ABD doları olmalıdır</string>
+    <string name="card_reader_payment_payment_failed_ok">Tamam</string>
     <string name="settings_whats_new_icon_description">Yeni özellik simgesinin görseli</string>
     <string name="settings_switch_store">Mağaza değiştir</string>
     <string name="product_update_failure_notification">%1$s ürünü güncellenemedi</string>

@@ -1,4 +1,0 @@
-7.6:
-Sabemos que uma das funcionalidades que você mais gosta no aplicativo é poder adicionar imagens aos produtos. Aprimoramos a experiência de upload em segundo plano para você continuar fazendo suas tarefas.
-
-Se você gerencia várias lojas no aplicativo, ficará feliz em saber que agora receberá notificações por push para todas as lojas, não apenas a atual. Surpresa!

@@ -175,11 +175,6 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
         AnalyticsTracker.KEY_ERROR_DESC to event.error.message
     )
 
-    override fun onCleared() {
-        super.onCleared()
-        orderDetailRepository.onCleanup()
-    }
-
     @Parcelize
     data class ViewState(
         val isSelectedProviderCustom: Boolean,
