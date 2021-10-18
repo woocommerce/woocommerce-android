@@ -22,7 +22,8 @@
         <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
             android:id="@+id/my_store_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.core.widget.NestedScrollView
@@ -81,6 +82,9 @@
 
         </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
 
+        <include
+            android:id="@+id/jetpack_benefits_banner"
+            layout="@layout/view_jetpack_benefits_bottom_banner" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <ScrollView
