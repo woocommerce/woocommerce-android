@@ -114,7 +114,7 @@ ext {
     robolectricVersion = '4.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = "develop-eebc5d8e91a1d90190919f900f924b39c861a528"
-    mediapickerVersion = "f83c3d19d09f5ef695290f1c814c82042406b3cc"
+    mediapickerVersion = "20cbca4e0a563fcf4ebba82587398a5776741548"
 }
 
 // Onboarding and dev env setup tasks
