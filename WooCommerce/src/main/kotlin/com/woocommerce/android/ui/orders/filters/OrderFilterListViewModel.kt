@@ -81,11 +81,14 @@ class OrderFilterListViewModel @Inject constructor(
 
     private fun loadOrderStatusFilterOptions(): List<FilterListOptionUiModel> {
         return listOf(
-            FilterListOptionUiModel("All", isSelected = true),
-            FilterListOptionUiModel("Cancelled"),
-            FilterListOptionUiModel("Completed"),
-            FilterListOptionUiModel("Failed"),
-            FilterListOptionUiModel("On hold"),
+            FilterListOptionUiModel(ALL_KEY, "All", isSelected = true),
+            FilterListOptionUiModel(CANCELLED_KEY, "Cancelled"),
+            FilterListOptionUiModel(COMPLETED_KEY, "Completed"),
+            FilterListOptionUiModel(FAILED_KEY, "Failed"),
+            FilterListOptionUiModel(ON_HOLD_KEY, "On hold"),
+            FilterListOptionUiModel(PENDING_PAYMENT_KEY, "Pending payment"),
+            FilterListOptionUiModel(PROCESSING_KEY, "Processing"),
+            FilterListOptionUiModel(REFUNDED_KEY, "Refunded"),
         )
     }
 
@@ -113,10 +116,9 @@ class OrderFilterListViewModel @Inject constructor(
     }
 
     private fun updateOrderStatusSelectedFilters(orderStatusClicked: FilterListOptionUiModel) {
-        if (isOptionAllClicked(orderStatusClicked)) {
-            _orderFilterOptions.value = orderFilterOptions.value?.clearAllFilterSelections()
-        } else {
-            uncheckOptionAll()
+        when (orderStatusClicked.key) {
+            ALL_KEY -> _orderFilterOptions.value = orderFilterOptions.value?.clearAllFilterSelections()
+            else -> uncheckFilterOptionAll()
         }
 
         _orderFilterOptions.value?.let { filterOptions ->
@@ -145,21 +147,20 @@ class OrderFilterListViewModel @Inject constructor(
     }
 
     private fun updateOrderStatusSelectedValue(orderStatusClicked: FilterListOptionUiModel) =
-        when {
-            isOptionAllClicked(orderStatusClicked) -> orderStatusClicked.copy(isSelected = true)
+        when (orderStatusClicked.key) {
+            ALL_KEY -> orderStatusClicked.copy(isSelected = true)
             else -> orderStatusClicked.copy(isSelected = !orderStatusClicked.isSelected)
         }
 
-    private fun uncheckOptionAll() {
+    private fun uncheckFilterOptionAll() {
         _orderFilterOptions.value = _orderFilterOptions.value
-            ?.mapIndexed { index, orderStatus ->
-                if (index == 0) orderStatus.copy(isSelected = false)
-                else orderStatus
+            ?.map {
+                when (it.key) {
+                    ALL_KEY -> it.copy(isSelected = false)
+                    else -> it
+                }
             }
     }
-
-    private fun isOptionAllClicked(selectedOrderStatusFilter: FilterListOptionUiModel) =
-        selectedOrderStatusFilter.displayName == resourceProvider.getString(R.string.orderfilters_default_filter_value)
 
     private fun updateFilterSelectedCategory(
         filterCategory: OrderStatusFilterCategoryUiModel,
@@ -180,6 +181,7 @@ class OrderFilterListViewModel @Inject constructor(
     private fun selectOptionAllForOrderStatusFilter() {
         updateOrderStatusSelectedFilters(
             FilterListOptionUiModel(
+                key = ALL_KEY,
                 displayName = resourceProvider.getString(R.string.orderfilters_default_filter_value),
                 isSelected = true
             )
@@ -230,7 +232,19 @@ class OrderFilterListViewModel @Inject constructor(
 
     @Parcelize
     data class FilterListOptionUiModel(
+        val key: String,
         val displayName: String,
         val isSelected: Boolean = false
     ) : Parcelable
+
+    private companion object {
+        const val ALL_KEY = "All"
+        const val CANCELLED_KEY = "Cancelled"
+        const val COMPLETED_KEY = "Completed"
+        const val FAILED_KEY = "Failed"
+        const val ON_HOLD_KEY = "On_hold"
+        const val PENDING_PAYMENT_KEY = "Pending"
+        const val PROCESSING_KEY = "Processing"
+        const val REFUNDED_KEY = "Refunded"
+    }
 }
