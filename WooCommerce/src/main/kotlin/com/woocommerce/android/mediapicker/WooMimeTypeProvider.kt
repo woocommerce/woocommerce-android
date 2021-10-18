@@ -1,4 +1,4 @@
-package com.woocommerce.android.tools
+package com.woocommerce.android.mediapicker
 
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package com.woocommerce.android.tools
+package com.woocommerce.android.mediapicker
 
 import org.wordpress.android.mediapicker.api.MediaInsertHandler
 import org.wordpress.android.mediapicker.api.MediaInsertHandlerFactory

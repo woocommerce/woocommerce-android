@@ -1,4 +1,4 @@
-package com.woocommerce.android.tools
+package com.woocommerce.android.mediapicker
 
 import org.wordpress.android.mediapicker.util.Log
 import org.wordpress.android.util.AppLog
