@@ -93,7 +93,6 @@ class OrderFulfillViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        repository.onCleanup()
     }
 
     private fun displayOrderDetails(order: Order) {

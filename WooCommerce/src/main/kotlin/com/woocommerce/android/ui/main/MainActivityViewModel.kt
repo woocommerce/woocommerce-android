@@ -9,6 +9,8 @@ import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -112,6 +114,7 @@ class MainActivityViewModel @Inject constructor(
                 if (prefs.getLastVersionWithAnnouncement() != buildConfigWrapper.versionName &&
                     cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
                 ) {
+                    WooLog.i(T.DEVICE, "Displaying Feature Announcement on main activity")
                     triggerEvent(ShowFeatureAnnouncement(it))
                 }
             }
