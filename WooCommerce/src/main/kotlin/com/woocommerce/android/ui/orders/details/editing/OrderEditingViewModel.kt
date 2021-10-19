@@ -14,6 +14,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -62,19 +63,17 @@ class OrderEditingViewModel @Inject constructor(
     }
 
     fun updateCustomerOrderNote(updatedNote: String) = takeWhenUpdateIsPossible {
-        launch(dispatchers.io) {
-            collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order.localId, updatedNote))
-        }
+        collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order.localId, updatedNote))
     }
 
     fun updateShippingAddress(shippingAddress: Address) = takeWhenUpdateIsPossible {
         // Will be implemented in future PRs, making a unrelated call to avoid lint issues
-        return shippingAddress.hasInfo()
+        shippingAddress.hasInfo()
     }
 
     fun updateBillingAddress(billingAddress: Address) = takeWhenUpdateIsPossible {
         // Will be implemented in future PRs, making a unrelated call to avoid lint issues
-        return billingAddress.hasInfo()
+        billingAddress.hasInfo()
     }
 
     fun onUseAsOtherAddressSwitchChanged(enabled: Boolean) {
@@ -111,8 +110,11 @@ class OrderEditingViewModel @Inject constructor(
         }
     }
 
-    private inline fun takeWhenUpdateIsPossible(action: () -> Unit) =
-        checkConnectionAndResetState().also { if(it) action() }
+    private inline fun takeWhenUpdateIsPossible(
+        crossinline action: suspend () -> Unit
+    ) = checkConnectionAndResetState().also {
+        if(it) launch(dispatchers.io) { action() }
+    }
 
     @Parcelize
     data class ViewState(
