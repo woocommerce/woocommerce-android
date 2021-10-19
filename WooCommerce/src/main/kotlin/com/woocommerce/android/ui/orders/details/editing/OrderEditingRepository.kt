@@ -5,6 +5,7 @@ import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -25,4 +26,13 @@ class OrderEditingRepository @Inject constructor(
     ): Flow<WCOrderStore.UpdateOrderResult> {
         return orderUpdateStore.updateCustomerOrderNote(orderLocalId, selectedSite.get(), customerOrderNote)
     }
+
+    suspend fun updateOrderAddress(
+        orderLocalId: LocalId,
+        orderAddress: OrderAddress
+    ): Flow<WCOrderStore.UpdateOrderResult> {
+        return orderUpdateStore.updateOrderAddress(orderLocalId, orderAddress)
+    }
+
+
 }
