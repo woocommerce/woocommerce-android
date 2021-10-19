@@ -268,7 +268,11 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onBluetoothStateVerified() {
-        triggerEvent(InitializeCardReaderManager(::onCardReaderManagerInitialized))
+        if (!cardReaderManager.isInitialized) {
+            triggerEvent(InitializeCardReaderManager(::onCardReaderManagerInitialized))
+        } else {
+            onCardReaderManagerInitialized(cardReaderManager)
+        }
     }
 
     private suspend fun startScanning() {
