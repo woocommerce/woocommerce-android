@@ -60,7 +60,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
@@ -101,7 +100,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private val viewState = MutableLiveData<CardReaderConnectViewState>(ScanningState(::onCancelClicked))
     val viewStateData: LiveData<CardReaderConnectViewState> = viewState
 
-    private var connectionFlowScope = createConnectionFlowScope()
     private var connectionFlowState = ConnectionFlowState()
 
     init {
@@ -213,22 +211,12 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
-        this.cardReaderManager = cardReaderManager
-        startStatusesListening()
         launch {
-            if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connecting) {
-                startScanning()
-            }
-        }
-    }
-
-    private fun startStatusesListening() {
-        connectionFlowScope.cancel()
-        connectionFlowScope = createConnectionFlowScope()
-        connectionFlowScope.launch {
+            this@CardReaderConnectViewModel.cardReaderManager = cardReaderManager
             updateConnectionFlowState(requiredUpdateStarted = false, connectionStarted = false)
-            connectionFlowScope.launch { listenToConnectionStatus() }
-            connectionFlowScope.launch { listenToSoftwareUpdateStatus() }
+            launch { listenToConnectionStatus() }
+            launch { listenToSoftwareUpdateStatus() }
+            startScanningIfNotStarted()
         }
     }
 
@@ -271,20 +259,24 @@ class CardReaderConnectViewModel @Inject constructor(
         if (!cardReaderManager.isInitialized) {
             triggerEvent(InitializeCardReaderManager(::onCardReaderManagerInitialized))
         } else {
-            onCardReaderManagerInitialized(cardReaderManager)
+            launch {
+                startScanningIfNotStarted()
+            }
         }
     }
 
-    private suspend fun startScanning() {
-        cardReaderManager
-            .discoverReaders(
-                isSimulated = BuildConfig.USE_SIMULATED_READER,
-                cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(SUPPORTED_READERS)
-            )
-            .flowOn(dispatchers.io)
-            .collect { discoveryEvent ->
-                handleScanEvent(discoveryEvent)
-            }
+    private suspend fun startScanningIfNotStarted() {
+        if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connecting) {
+            cardReaderManager
+                .discoverReaders(
+                    isSimulated = BuildConfig.USE_SIMULATED_READER,
+                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(SUPPORTED_READERS)
+                )
+                .flowOn(dispatchers.io)
+                .collect { discoveryEvent ->
+                    handleScanEvent(discoveryEvent)
+                }
+        }
     }
 
     private fun handleScanEvent(discoveryEvent: CardReaderDiscoveryEvents) {
@@ -470,6 +462,7 @@ class CardReaderConnectViewModel @Inject constructor(
         requiredUpdateStarted: Boolean = connectionFlowState.requiredUpdateStarted,
         connectionStarted: Boolean = connectionFlowState.connectionStarted,
     ) {
+        // TODO cardreader Try to remove the mutex - split it to two states
         connectionFlowStateMutex.withLock {
             connectionFlowState = connectionFlowState.copy(
                 requiredUpdateStarted = requiredUpdateStarted,
