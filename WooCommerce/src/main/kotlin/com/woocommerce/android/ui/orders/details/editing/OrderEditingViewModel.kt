@@ -67,8 +67,10 @@ class OrderEditingViewModel @Inject constructor(
     }
 
     fun updateShippingAddress(shippingAddress: Address) = takeWhenUpdateIsPossible {
-        // Will be implemented in future PRs, making a unrelated call to avoid lint issues
-        shippingAddress.hasInfo()
+        orderEditingRepository.updateOrderAddress(
+            order.localId,
+            shippingAddress.toShippingAddressModel()
+        ).let { collectUpdateFlow(it) }
     }
 
     fun updateBillingAddress(billingAddress: Address) = takeWhenUpdateIsPossible {
