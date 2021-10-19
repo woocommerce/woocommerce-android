@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
 import java.util.*
 
@@ -106,6 +107,21 @@ data class Address(
             postcode = postcode,
             state = state,
             country = country
+        )
+    }
+
+    fun toShippingAddressModel(): OrderAddress.Shipping {
+        return OrderAddress.Shipping(
+            firstName = firstName,
+            lastName = lastName,
+            company = company,
+            address1 = address1,
+            address2 = address2,
+            city = city,
+            state = state,
+            postcode = postcode,
+            country = country,
+            phone = phone
         )
     }
 
