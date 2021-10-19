@@ -24,7 +24,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class OrderFilterCategoryListFragment :
     BaseFragment(R.layout.fragment_order_filter_list),
     BackPressListener {
-
     private val viewModel: OrderFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_filters)
 
     lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter

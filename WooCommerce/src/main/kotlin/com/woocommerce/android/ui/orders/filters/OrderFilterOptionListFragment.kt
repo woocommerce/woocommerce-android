@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.Filter
 
 class OrderFilterOptionListFragment :
     BaseFragment(R.layout.fragment_order_filter_list) {
-
     private val viewModel: OrderFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_filters)
 
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter

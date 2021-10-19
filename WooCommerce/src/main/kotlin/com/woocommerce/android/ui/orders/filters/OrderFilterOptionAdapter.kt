@@ -14,7 +14,6 @@ class OrderFilterOptionAdapter(
 ) : ListAdapter<FilterListOptionUiModel, OrderFilterOptionAdapter.OrderFilterOptionViewHolder>(
     OrderFilterOptionDiffCallBack
 ) {
-
     init {
         setHasStableIds(true)
     }
@@ -40,7 +39,6 @@ class OrderFilterOptionAdapter(
 
     class OrderFilterOptionViewHolder(val viewBinding: OrderFilterOptionItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-
         fun bind(filterOption: FilterListOptionUiModel) {
             viewBinding.filterOptionItemName.text = filterOption.displayName
             viewBinding.filterOptionItemTick.isVisible = filterOption.isSelected
@@ -48,7 +46,6 @@ class OrderFilterOptionAdapter(
     }
 
     object OrderFilterOptionDiffCallBack : DiffUtil.ItemCallback<FilterListOptionUiModel>() {
-
         override fun areItemsTheSame(
             oldUiItemCategory: FilterListOptionUiModel,
             newUiItemCategory: FilterListOptionUiModel

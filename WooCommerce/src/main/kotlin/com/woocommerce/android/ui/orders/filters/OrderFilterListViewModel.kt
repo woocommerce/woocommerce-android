@@ -22,6 +22,16 @@ class OrderFilterListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState) {
+    private companion object {
+        const val ALL_KEY = "All"
+        const val CANCELLED_KEY = "Cancelled"
+        const val COMPLETED_KEY = "Completed"
+        const val FAILED_KEY = "Failed"
+        const val ON_HOLD_KEY = "On_hold"
+        const val PENDING_PAYMENT_KEY = "Pending"
+        const val PROCESSING_KEY = "Processing"
+        const val REFUNDED_KEY = "Refunded"
+    }
 
     private val _orderFilterCategories = MutableLiveData<List<FilterListCategoryUiModel>>()
     val orderFilterCategories: LiveData<List<FilterListCategoryUiModel>> = _orderFilterCategories
@@ -254,15 +264,4 @@ class OrderFilterListViewModel @Inject constructor(
         val displayName: String,
         val isSelected: Boolean = false
     ) : Parcelable
-
-    private companion object {
-        const val ALL_KEY = "All"
-        const val CANCELLED_KEY = "Cancelled"
-        const val COMPLETED_KEY = "Completed"
-        const val FAILED_KEY = "Failed"
-        const val ON_HOLD_KEY = "On_hold"
-        const val PENDING_PAYMENT_KEY = "Pending"
-        const val PROCESSING_KEY = "Processing"
-        const val REFUNDED_KEY = "Refunded"
-    }
 }
