@@ -14,7 +14,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -115,7 +114,7 @@ class OrderEditingViewModel @Inject constructor(
     private inline fun takeWhenUpdateIsPossible(
         crossinline action: suspend () -> Unit
     ) = checkConnectionAndResetState().also {
-        if(it) launch(dispatchers.io) { action() }
+        if (it) launch(dispatchers.io) { action() }
     }
 
     @Parcelize

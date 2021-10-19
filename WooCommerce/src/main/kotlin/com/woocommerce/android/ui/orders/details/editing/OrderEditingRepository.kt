@@ -33,6 +33,4 @@ class OrderEditingRepository @Inject constructor(
     ): Flow<WCOrderStore.UpdateOrderResult> {
         return orderUpdateStore.updateOrderAddress(orderLocalId, orderAddress)
     }
-
-
 }
