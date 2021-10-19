@@ -183,7 +183,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         launch {
             this@CardReaderConnectViewModel.cardReaderManager = cardReaderManager
-            updateConnectionFlowState(requiredUpdateStarted = false, connectionStarted = false)
             launch { listenToConnectionStatus() }
             launch { listenToSoftwareUpdateStatus() }
             startScanningIfNotStarted()
