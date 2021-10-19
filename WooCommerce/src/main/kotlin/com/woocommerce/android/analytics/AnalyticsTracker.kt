@@ -182,6 +182,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED,
         ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED,
 
+        // - Order detail editing
+        ORDER_DETAIL_EDIT_FLOW_STARTED,
+        ORDER_DETAIL_EDIT_FLOW_COMPLETED,
+        ORDER_DETAIL_EDIT_FLOW_FAILED,
+        ORDER_DETAIL_EDIT_FLOW_CANCELED,
+
         // -- Refunds
         CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
         CREATE_ORDER_REFUND_TAB_CHANGED,
@@ -692,6 +698,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FULFILL_ORDER = "fulfill_order"
         const val KEY_STEP = "step"
         const val KEY_ADDONS = "addons"
+        const val KEY_SUBJECT = "subject"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -723,6 +730,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PURCHASE_FAILED = "purchase_failed"
         const val VALUE_PURCHASE_SUCCEEDED = "purchase_succeeded"
         const val VALUE_PURCHASE_READY = "purchase_ready"
+
+        const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
+        const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
+        const val ORDER_EDIT_BILLING_ADDRESS = "billing_address"
 
         const val KEY_FEEDBACK_ACTION = "action"
         const val KEY_FEEDBACK_CONTEXT = "context"
