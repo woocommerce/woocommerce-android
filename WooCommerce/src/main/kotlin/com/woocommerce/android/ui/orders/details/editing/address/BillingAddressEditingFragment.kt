@@ -2,9 +2,12 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Address
 
 class BillingAddressEditingFragment : BaseAddressEditingFragment() {
+    override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS
+
     override val storedAddress: Address
         get() = sharedViewModel.order.billingAddress
 

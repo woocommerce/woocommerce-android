@@ -6,15 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_TAB_CHANGED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
@@ -62,6 +54,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -433,8 +426,7 @@ class IssueRefundViewModel @Inject constructor(
 
                         refundSummaryState.refundReason?.let { reason ->
                             if (reason.isNotBlank()) {
-                                val note = OrderNote(note = reason, isCustomerNote = false)
-                                orderDetailRepository.addOrderNote(order.identifier, order.remoteId, note)
+                                addOrderNote(reason)
                             }
                         }
 
@@ -447,6 +439,20 @@ class IssueRefundViewModel @Inject constructor(
             } else {
                 triggerEvent(ShowSnackbar(R.string.offline_error))
             }
+        }
+    }
+
+    private suspend fun addOrderNote(reason: String) {
+        val note = OrderNote(note = reason, isCustomerNote = false)
+        val onOrderChanged = orderDetailRepository
+            .addOrderNote(order.identifier, order.remoteId, note)
+        if (!onOrderChanged.isError) {
+            AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
+        } else {
+            AnalyticsTracker.track(
+                ORDER_NOTE_ADD_FAILED,
+                prepareTracksEventsDetails(onOrderChanged)
+            )
         }
     }
 
@@ -683,11 +689,6 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        orderDetailRepository.onCleanup()
-    }
-
     private fun getRefundableShippingLineIds(): List<Long> {
         val availableShippingLines = allShippingLineIds.toMutableList()
         refunds.forEach {
@@ -716,6 +717,12 @@ class IssueRefundViewModel @Inject constructor(
         return calculatePartialShippingSubtotal(selectedShippingLinesId)
             .add(calculatePartialShippingTaxes(selectedShippingLinesId))
     }
+
+    private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(
+        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+        AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+    )
 
     private enum class InputValidationState {
         TOO_HIGH,

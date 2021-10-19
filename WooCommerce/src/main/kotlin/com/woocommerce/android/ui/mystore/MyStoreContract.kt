@@ -12,6 +12,7 @@ interface MyStoreContract {
         fun getStatsCurrency(): String?
         fun getSelectedSiteName(): String?
         suspend fun loadTopPerformersStats(granularity: StatsGranularity, forced: Boolean = false)
+        fun dismissJetpackBenefitsBanner()
     }
 
     interface View : BaseView<Presenter> {
@@ -28,6 +29,7 @@ interface MyStoreContract {
         fun showEmptyVisitorStatsForJetpackCP()
         fun showErrorSnack()
         fun showEmptyView(show: Boolean)
+        fun showJetpackBenefitsBanner(show: Boolean)
 
         fun showChartSkeleton(show: Boolean)
         fun showTopPerformersSkeleton(show: Boolean)

@@ -684,7 +684,6 @@ class CreateShippingLabelViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         shippingLabelRepository.clearCache()
-        orderDetailRepository.onCleanup()
     }
 
     private fun BigDecimal.format(): String {
