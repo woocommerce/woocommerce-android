@@ -65,8 +65,6 @@
               "avg_items_per_order": 0,
               "avg_order_value": 0,
               "total_customers": 0,
-              "test_var" : "{{#assign 'currentDay'}}{{now}}{{/assign}}",
-              "random_text": "{{currentDay}}",
               "segments": []
             }
           }, {
