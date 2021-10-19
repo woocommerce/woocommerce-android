@@ -62,14 +62,16 @@ class OrderEditingViewModel @Inject constructor(
     }
 
     fun updateCustomerOrderNote(updatedNote: String) = takeWhenUpdateIsPossible {
-        collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order.localId, updatedNote))
+        orderEditingRepository.updateCustomerOrderNote(
+            order.localId, updatedNote
+        ).collect()
     }
 
     fun updateShippingAddress(shippingAddress: Address) = takeWhenUpdateIsPossible {
         orderEditingRepository.updateOrderAddress(
             order.localId,
             shippingAddress.toShippingAddressModel()
-        ).let { collectUpdateFlow(it) }
+        ).collect()
     }
 
     fun updateBillingAddress(billingAddress: Address) = takeWhenUpdateIsPossible {
@@ -81,8 +83,8 @@ class OrderEditingViewModel @Inject constructor(
         viewState = viewState.copy(useAsOtherAddressIsChecked = enabled)
     }
 
-    private suspend fun collectUpdateFlow(flow: Flow<WCOrderStore.UpdateOrderResult>) {
-        flow.collect { result ->
+    private suspend fun Flow<WCOrderStore.UpdateOrderResult>.collect() {
+        collect { result ->
             when (result) {
                 is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {
                     withContext(Dispatchers.Main) {
