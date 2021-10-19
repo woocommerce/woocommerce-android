@@ -34,8 +34,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,9 +66,10 @@ class CardReaderConnectViewModel @Inject constructor(
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
     private val viewState = MutableLiveData<CardReaderConnectViewState>(ScanningState(::onCancelClicked))
-    val viewStateData: LiveData<CardReaderConnectViewState> = viewState
+    var requiredUpdateStarted: Boolean = false
+    var connectionStarted: Boolean = false
 
-    private var connectionFlowState = ConnectionFlowState()
+    val viewStateData: LiveData<CardReaderConnectViewState> = viewState
 
     init {
         startFlow()
@@ -194,11 +193,11 @@ class CardReaderConnectViewModel @Inject constructor(
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
                 CardReaderStatus.NotConnected -> {
-                    if (connectionFlowState.connectionStarted) onReaderConnectionFailed()
+                    if (connectionStarted) onReaderConnectionFailed()
                     else Unit
                 }
                 CardReaderStatus.Connecting -> {
-                    updateConnectionFlowState(connectionStarted = true)
+                    connectionStarted = true
                     viewState.value = ConnectingState(::onCancelClicked)
                 }
             }.exhaustive
@@ -208,12 +207,12 @@ class CardReaderConnectViewModel @Inject constructor(
     private suspend fun listenToSoftwareUpdateStatus() {
         cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
             if (updateStatus is SoftwareUpdateInProgress) {
-                if (!connectionFlowState.requiredUpdateStarted) {
-                    updateConnectionFlowState(requiredUpdateStarted = true)
+                if (!requiredUpdateStarted) {
+                    requiredUpdateStarted = true
                     triggerEvent(ShowUpdateInProgress)
                 }
             } else {
-                updateConnectionFlowState(requiredUpdateStarted = false)
+                requiredUpdateStarted = false
             }
         }
     }
@@ -227,7 +226,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onBluetoothStateVerified() {
-        if (!cardReaderManager.isInitialized) {
+        if (!::cardReaderManager.isInitialized) {
             triggerEvent(InitializeCardReaderManager(::onCardReaderManagerInitialized))
         } else {
             launch {
@@ -428,24 +427,10 @@ class CardReaderConnectViewModel @Inject constructor(
         return readers.find { it.id == appPrefs.getLastConnectedCardReaderId() }
     }
 
-    private val connectionFlowStateMutex = Mutex()
-    private suspend fun updateConnectionFlowState(
-        requiredUpdateStarted: Boolean = connectionFlowState.requiredUpdateStarted,
-        connectionStarted: Boolean = connectionFlowState.connectionStarted,
-    ) {
-        // TODO cardreader Try to remove the mutex - split it to two states
-        connectionFlowStateMutex.withLock {
-            connectionFlowState = connectionFlowState.copy(
-                requiredUpdateStarted = requiredUpdateStarted,
-                connectionStarted = connectionStarted,
-            )
-        }
-    }
-
-    private fun createConnectionFlowScope() = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-
     sealed class ListItemViewState {
+
         object ScanningInProgressListItem : ListItemViewState() {
+
             val label = UiStringRes(R.string.card_reader_connect_scanning_progress)
 
             @DrawableRes
@@ -460,11 +445,6 @@ class CardReaderConnectViewModel @Inject constructor(
             val connectLabel: UiString = UiStringRes(R.string.card_reader_connect_connect_button)
         }
     }
-
-    private data class ConnectionFlowState(
-        val requiredUpdateStarted: Boolean = false,
-        val connectionStarted: Boolean = false,
-    )
 
     companion object {
         private val SUPPORTED_READERS = listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2)
