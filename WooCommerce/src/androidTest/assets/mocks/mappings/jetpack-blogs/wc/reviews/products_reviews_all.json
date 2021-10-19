@@ -1,20 +1,26 @@
 {
     "request": {
         "method": "GET",
-        "urlPath": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+        "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
         "queryParameters": {
             "json": {
                 "equalTo": "true"
             },
             "path": {
                 "matches": "/wc/v3/products/reviews/(.*)"
-            }
+            },
+            "query": {
+                "matches": "(.*)status\":\"all(.*)"
+            },             
+            "locale": {
+                "matches": "(.*)"
+            }            
         }
     },
     "response": {
         "status": 200,
         "jsonBody": {
-            "data": [{
+             "data": [{
                 "id": 6163,
                 "date_created": "{{#assign 'customformat'}}yyyy-MM-dd'T'HH:mm:ss{{/assign}}{{fnow format=customformat}}",
                 "date_created_gmt": "{{fnow format=customformat}}",

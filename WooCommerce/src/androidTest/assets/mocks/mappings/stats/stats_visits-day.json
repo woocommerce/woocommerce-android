@@ -13,7 +13,10 @@
                 "matches": "(.*)"
             },
             "stat_fields": {
-                "matches": "visitors"
+                "equalTo": "visitors"
+            },
+            "locale": {
+                "matches": "(.*)"
             }
         }
     },
@@ -23,7 +26,7 @@
             "date": "{{fnow format='yyyy-MM-dd'}}",
             "unit": "day",
             "fields": [
-                "period", 
+                "period",
                 "visitors"
             ],
             "data": [
@@ -58,6 +61,10 @@
                 ["{{fnow offset='-1 days' format='yyyy-MM-dd'}}", 205],
                 ["{{fnow format='yyyy-MM-dd'}}", 55]
             ]
+        },
+        "headers": {
+            "Content-Type": "application/json",
+            "Connection": "keep-alive"
         }
     }
 }

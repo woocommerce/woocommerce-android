@@ -10,7 +10,7 @@
         "matches": "/wc-analytics/leaderboards(.*)"
       },
       "query": {
-        "matches": "(.*)interval\":\"day(.*)"
+        "matches": "(.*)interval\":\"month(.*)"
       },   
       "locale": {
         "matches": "(.*)"
@@ -99,28 +99,28 @@
             "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/products&filter=single_product&products=2130'>Black Coral shades<\/a>",
             "value": "Black Coral shades"
           }, {
-            "display": "1",
-            "value": 1
+            "display": "17",
+            "value": 17
           }, {
             "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>2,550.00<\/bdi><\/span>",
-            "value": 250
+            "value": 2550
           }],
           [{
             "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/products&filter=single_product&products=2123'>Malaya shades<\/a>",
             "value": "Malaya shades"
           }, {
-            "display": "2",
-            "value": 2
+            "display": "11",
+            "value": 11
           }, {
             "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>1,540.00<\/bdi><\/span>",
-            "value": 540
+            "value": 1540
           }],
           [{
             "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/products&filter=single_product&products=2131'>Colorado shades<\/a>",
             "value": "Colorado shades"
           }, {
-            "display": "1",
-            "value": 1
+            "display": "5",
+            "value": 5
           }, {
             "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>500.00<\/bdi><\/span>",
             "value": 500
