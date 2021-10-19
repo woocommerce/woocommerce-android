@@ -34,6 +34,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
@@ -198,11 +199,15 @@ class ProductListFragment :
     private fun disableSearchListeners() {
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
+
+        (activity as? MainActivity)?.showBottomNav()
     }
 
     private fun enableSearchListeners() {
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
+
+        (activity as? MainActivity)?.hideBottomNav()
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
