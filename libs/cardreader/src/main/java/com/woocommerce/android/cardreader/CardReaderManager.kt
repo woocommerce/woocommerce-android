@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
  */
 @Suppress("TooManyFunctions")
 interface CardReaderManager {
-    val isInitialized: Boolean
+    val initialized: Boolean
     val readerStatus: StateFlow<CardReaderStatus>
     val softwareUpdateStatus: Flow<SoftwareUpdateStatus>
     val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability>
