@@ -61,29 +61,24 @@ class OrderEditingViewModel @Inject constructor(
         }
     }
 
-    fun updateCustomerOrderNote(updatedNote: String): Boolean {
-        return if (checkConnectionAndResetState()) {
-            launch(dispatchers.io) {
-                collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order.localId, updatedNote))
-            }
-            true
-        } else {
-            false
+    fun updateCustomerOrderNote(updatedNote: String) = takeWhenUpdateIsPossible {
+        launch(dispatchers.io) {
+            collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order.localId, updatedNote))
         }
     }
 
-    fun onUseAsOtherAddressSwitchChanged(enabled: Boolean) {
-        viewState = viewState.copy(useAsOtherAddressIsChecked = enabled)
-    }
-
-    fun updateShippingAddress(shippingAddress: Address): Boolean {
+    fun updateShippingAddress(shippingAddress: Address) = takeWhenUpdateIsPossible {
         // Will be implemented in future PRs, making a unrelated call to avoid lint issues
         return shippingAddress.hasInfo()
     }
 
-    fun updateBillingAddress(billingAddress: Address): Boolean {
+    fun updateBillingAddress(billingAddress: Address) = takeWhenUpdateIsPossible {
         // Will be implemented in future PRs, making a unrelated call to avoid lint issues
         return billingAddress.hasInfo()
+    }
+
+    fun onUseAsOtherAddressSwitchChanged(enabled: Boolean) {
+        viewState = viewState.copy(useAsOtherAddressIsChecked = enabled)
     }
 
     private suspend fun collectUpdateFlow(flow: Flow<WCOrderStore.UpdateOrderResult>) {
@@ -115,6 +110,9 @@ class OrderEditingViewModel @Inject constructor(
             }
         }
     }
+
+    private inline fun takeWhenUpdateIsPossible(action: () -> Unit) =
+        checkConnectionAndResetState().also { if(it) action() }
 
     @Parcelize
     data class ViewState(
