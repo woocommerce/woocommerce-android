@@ -11,6 +11,7 @@ import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
@@ -32,6 +33,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -171,7 +173,7 @@ class OrderListFragment :
             loadListForActiveTab()
         }
 
-        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
+        setupOrderFilters()
     }
 
     private fun initializeTabs() {
@@ -352,7 +354,8 @@ class OrderListFragment :
                         uiMessageResolver.showSnack(event.messageRes)
                         binding.orderRefreshLayout.isRefreshing = false
                     }
-                    is ShowOrderFilters -> (activity as? MainNavigationRouter)?.showOrderFilters()else -> event.isHandled = false
+                    is ShowOrderFilters -> (activity as? MainNavigationRouter)?.showOrderFilters()
+                    else -> event.isHandled = false
                 }
             }
         )
@@ -745,5 +748,10 @@ class OrderListFragment :
 
     override fun shouldExpandToolbar(): Boolean {
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
+    }
+
+    private fun setupOrderFilters() {
+        binding.orderFiltersCard.isVisible = FeatureFlag.ORDER_FILTERS.isEnabled()
+        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
     }
 }
