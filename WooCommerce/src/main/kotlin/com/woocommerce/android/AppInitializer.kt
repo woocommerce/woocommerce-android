@@ -48,7 +48,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
+class AppInitializer @Inject constructor() : ApplicationLifecycleListener
+
+
+{
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
     }
@@ -69,7 +72,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
     @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
 
-    // Listens for changes in device connectivity
+    //Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
 
     @Inject lateinit var prefs: AppPrefs

@@ -17,7 +17,7 @@ open class WooCommerce : Application(), HasAndroidInjector {
     override fun onCreate() {
         super.onCreate()
 
-        // Disables Volley debug logging on release build and prevents the "Marker added to finished log" crash
+        //Disables Volley debug logging on release build and prevents the "Marker added to finished log" crash
         // https://github.com/woocommerce/woocommerce-android/issues/817
         if (!BuildConfig.DEBUG) {
             VolleyLog.DEBUG = false
