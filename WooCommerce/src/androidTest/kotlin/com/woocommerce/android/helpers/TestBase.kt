@@ -44,10 +44,10 @@ open class TestBase {
 internal class UnlocalizedDateHelper : HandlebarsHelper<Any?>() {
     @Throws(IOException::class)
     override fun apply(context: Any?, options: Options): Any {
-        val format: String = options.hash("format", null)
-        val offset: String = options.hash("offset", null)
-        val timezone: String = options.hash("timezone", null)
-        val localeCode: String = options.hash("locale", "en_US_POSIX")
+        val format: String? = options.hash("format", null)
+        val offset: String? = options.hash("offset", null)
+        val timezone: String? = options.hash("timezone", null)
+        val localeCode: String? = options.hash("locale", "en_US_POSIX")
         var date = Date()
         if (offset != null) {
             date = DateOffset(offset).shift(date)
