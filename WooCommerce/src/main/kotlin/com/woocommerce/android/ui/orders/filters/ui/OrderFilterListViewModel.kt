@@ -99,7 +99,7 @@ class OrderFilterListViewModel @Inject constructor(
             }
         }
         val orderStatusUiFilters = orderStatus.values
-            .map { it.toFilterListOptionUiModel() }
+            .map { it.toFilterListOptionUiModel(resourceProvider) }
         return addDefaultFilterOption(orderStatusUiFilters)
     }
 

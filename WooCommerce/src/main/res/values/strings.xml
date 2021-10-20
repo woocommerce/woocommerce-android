@@ -276,6 +276,7 @@
     <string name="orderfilters_filters_default_title">Filters</string>
     <string name="orderfilters_filters_count_title">Filters (%d)</string>
     <string name="orderfilters_default_filter_option">All</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
 
     <!--
         Order Detail Views
