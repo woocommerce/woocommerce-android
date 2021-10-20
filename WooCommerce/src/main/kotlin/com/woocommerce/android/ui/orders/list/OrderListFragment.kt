@@ -752,6 +752,9 @@ class OrderListFragment :
 
     private fun setupOrderFilters() {
         binding.orderFiltersCard.isVisible = FeatureFlag.ORDER_FILTERS.isEnabled()
-        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
+        if (FeatureFlag.ORDER_FILTERS.isEnabled()) {
+            binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
+            removeTabLayoutFromAppBar()
+        }
     }
 }

@@ -98,16 +98,11 @@ class OrderFilterListViewModel @Inject constructor(
                 }
             }
         }
-        val orderStatusUiFilters = orderStatus.values
+        return orderStatus.values
             .map { it.toFilterListOptionUiModel(resourceProvider) }
-        return addDefaultFilterOption(orderStatusUiFilters)
+            .toMutableList()
+            .apply { add(index = 0, buildFilterOptionAll()) }
     }
-
-    private fun addDefaultFilterOption(filterOptions: List<OrderListFilterOptionUiModel>)
-        : List<OrderListFilterOptionUiModel> =
-        filterOptions.toMutableList().apply {
-            add(index = 0, buildFilterOptionAll())
-        }
 
     fun onFilterCategoryClicked(filterCategory: FilterListCategoryUiModel) {
         selectedFilterCategory = filterCategory
