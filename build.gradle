@@ -65,7 +65,7 @@ tasks.register("detektAll", Detekt) {
 
     reports {
         html.enabled = true
-        xml.enabled = false
+        xml.enabled = true
         txt.enabled = false
     }
 }
