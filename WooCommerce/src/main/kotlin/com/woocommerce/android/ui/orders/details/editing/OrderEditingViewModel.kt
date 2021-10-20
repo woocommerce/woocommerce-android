@@ -67,17 +67,28 @@ class OrderEditingViewModel @Inject constructor(
         ).collect()
     }
 
-    fun updateShippingAddress(shippingAddress: Address) = takeWhenUpdateIsPossible {
-        orderEditingRepository.updateOrderAddress(
-            order.localId,
-            shippingAddress.toShippingAddressModel()
-        ).collect()
+    fun updateShippingAddress(updatedShippingAddress: Address) = takeWhenUpdateIsPossible {
+        if(viewState.useAsOtherAddressIsChecked == true) {
+            replicateShippingAndBillingAddressesWith(updatedShippingAddress)
+        } else {
+            orderEditingRepository.updateOrderAddress(
+                order.localId,
+                updatedShippingAddress.toShippingAddressModel()
+            )
+        }.collect()
     }
 
     fun updateBillingAddress(billingAddress: Address) = takeWhenUpdateIsPossible {
         // Will be implemented in future PRs, making a unrelated call to avoid lint issues
         billingAddress.hasInfo()
     }
+
+    private suspend fun replicateShippingAndBillingAddressesWith(orderAddress: Address) =
+        orderEditingRepository.updateBothOrderAddresses(
+            order.localId,
+            orderAddress.toShippingAddressModel(),
+            orderAddress.toBillingAddressModel()
+        )
 
     fun onUseAsOtherAddressSwitchChanged(enabled: Boolean) {
         viewState = viewState.copy(useAsOtherAddressIsChecked = enabled)
