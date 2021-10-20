@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.filters
+package com.woocommerce.android.ui.orders.filters.ui
 
 import android.os.Bundle
 import android.view.View
@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.FilterListOptionUiModel
+import com.woocommerce.android.ui.orders.filters.ui.adapter.OrderFilterOptionAdapter
+import com.woocommerce.android.ui.orders.filters.ui.model.FilterListOptionUiModel
 
 class OrderFilterOptionListFragment :
     BaseFragment(R.layout.fragment_order_filter_list) {

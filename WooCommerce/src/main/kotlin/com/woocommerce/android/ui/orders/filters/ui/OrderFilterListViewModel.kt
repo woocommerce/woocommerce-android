@@ -1,20 +1,20 @@
-package com.woocommerce.android.ui.orders.filters
+package com.woocommerce.android.ui.orders.filters.ui
 
-import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.FilterListCategoryUiModel.DateRangeFilterCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.FilterListCategoryUiModel.OrderStatusFilterCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.OrderFilterListEvent.ShowOrderStatusFilterOptions
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.ui.orders.filters.ui.model.FilterListCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.ui.model.FilterListCategoryUiModel.DateRangeFilterCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.ui.model.FilterListCategoryUiModel.OrderStatusFilterCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.ui.model.FilterListOptionUiModel
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryListViewState
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -109,7 +109,7 @@ class OrderFilterListViewModel @Inject constructor(
         selectedFilterCategory = filterCategory
         _orderFilterOptions.value = filterCategory.filterOptions
         _orderFilterOptionScreenTitle.value = getOrderFilterOptionsTitle(filterCategory)
-        triggerEvent(ShowOrderStatusFilterOptions)
+        triggerEvent(OrderFilterListEvent.ShowOrderStatusFilterOptions)
     }
 
     private fun getOrderFilterOptionsTitle(filterCategory: FilterListCategoryUiModel) =
@@ -228,41 +228,4 @@ class OrderFilterListViewModel @Inject constructor(
             true
         }
     }
-
-    sealed class OrderFilterListEvent : Event() {
-        object ShowOrderStatusFilterOptions : OrderFilterListEvent()
-    }
-
-    @Parcelize
-    data class OrderFilterCategoryListViewState(
-        val screenTitle: String,
-        val displayClearButton: Boolean = false
-    ) : Parcelable
-
-    sealed class FilterListCategoryUiModel : Parcelable {
-        abstract val displayName: String
-        abstract val displayValue: String
-        abstract val filterOptions: List<FilterListOptionUiModel>
-
-        @Parcelize
-        data class OrderStatusFilterCategoryUiModel(
-            override val displayName: String,
-            override val displayValue: String,
-            override val filterOptions: List<FilterListOptionUiModel>
-        ) : Parcelable, FilterListCategoryUiModel()
-
-        @Parcelize
-        data class DateRangeFilterCategoryUiModel(
-            override val displayName: String,
-            override val displayValue: String,
-            override val filterOptions: List<FilterListOptionUiModel>
-        ) : Parcelable, FilterListCategoryUiModel()
-    }
-
-    @Parcelize
-    data class FilterListOptionUiModel(
-        val key: String,
-        val displayName: String,
-        val isSelected: Boolean = false
-    ) : Parcelable
 }

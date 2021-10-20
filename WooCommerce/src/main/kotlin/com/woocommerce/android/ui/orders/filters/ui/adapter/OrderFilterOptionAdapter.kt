@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.filters
+package com.woocommerce.android.ui.orders.filters.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.OrderFilterOptionItemBinding
-import com.woocommerce.android.ui.orders.filters.OrderFilterListViewModel.FilterListOptionUiModel
+import com.woocommerce.android.ui.orders.filters.ui.model.FilterListOptionUiModel
 
 class OrderFilterOptionAdapter(
     private val onFilterOptionClicked: (FilterListOptionUiModel) -> Unit

@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.woocommerce.android.ui.orders.filters.OrderFiltersCard
+        <com.woocommerce.android.ui.orders.filters.ui.OrderFiltersCard
             android:id="@+id/order_filters_card"
             style="@style/Woo.Card"
             android:layout_width="match_parent"
