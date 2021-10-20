@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.details.editing
 
-import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.scopes.ViewModelScoped
@@ -37,12 +36,13 @@ class OrderEditingRepository @Inject constructor(
 
     suspend fun updateBothOrderAddresses(
         orderLocalId: LocalId,
-        orderAddress: Address
+        shippingAddress: OrderAddress.Shipping,
+        billingAddress: OrderAddress.Billing
     ): Flow<WCOrderStore.UpdateOrderResult> {
         return orderUpdateStore.updateBothOrderAddresses(
             orderLocalId,
-            orderAddress.toShippingAddressModel(),
-            orderAddress.toBillingAddressModel()
+            shippingAddress,
+            billingAddress
         )
     }
 }
