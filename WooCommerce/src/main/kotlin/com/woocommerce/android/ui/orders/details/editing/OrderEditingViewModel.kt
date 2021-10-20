@@ -68,7 +68,7 @@ class OrderEditingViewModel @Inject constructor(
     }
 
     fun updateShippingAddress(updatedShippingAddress: Address) = takeWhenUpdateIsPossible {
-        if(viewState.useAsOtherAddressIsChecked == true) {
+        if (viewState.useAsOtherAddressIsChecked == true) {
             replicateShippingAndBillingAddressesWith(updatedShippingAddress)
         } else {
             orderEditingRepository.updateOrderAddress(

@@ -12,6 +12,7 @@ import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
 import java.util.*
 
+@Suppress("TooManyFunctions")
 @Parcelize
 data class Address(
     val company: String,
