@@ -113,7 +113,7 @@ ext {
     jUnitExtVersion = '1.1.2'
     robolectricVersion = '4.6.1'
     hiltJetpackVersion = '1.0.0'
-    wordPressUtilsVersion = "develop-eebc5d8e91a1d90190919f900f924b39c861a528"
+    wordPressUtilsVersion = "95-82b12dbbe7d9b369f68eb0ff52c2dd66ffa34693"
 }
 
 // Onboarding and dev env setup tasks
