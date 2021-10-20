@@ -125,6 +125,22 @@ data class Address(
         )
     }
 
+    fun toBillingAddressModel(): OrderAddress.Billing {
+        return OrderAddress.Billing(
+            email = email,
+            firstName = firstName,
+            lastName = lastName,
+            company = company,
+            address1 = address1,
+            address2 = address2,
+            city = city,
+            state = state,
+            postcode = postcode,
+            country = country,
+            phone = phone
+        )
+    }
+
     /**
      * Compares this address's physical location to the other one
      */
