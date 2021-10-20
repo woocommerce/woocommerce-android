@@ -9,7 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.filters.ui.adapter.OrderFilterOptionAdapter
-import com.woocommerce.android.ui.orders.filters.ui.model.FilterListOptionUiModel
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel
 
 class OrderFilterOptionListFragment :
     BaseFragment(R.layout.fragment_order_filter_list) {
@@ -49,7 +49,7 @@ class OrderFilterOptionListFragment :
     }
 
     private fun setUpObservers(viewModel: OrderFilterListViewModel) {
-        viewModel.orderFilterOptions.observe(viewLifecycleOwner) { filterOptions ->
+        viewModel.orderOrderOptionsFilter.observe(viewLifecycleOwner) { filterOptions ->
             showOrderFilterOptions(filterOptions)
         }
         viewModel.orderFilterOptionScreenTitle.observe(viewLifecycleOwner) { title ->
@@ -57,7 +57,7 @@ class OrderFilterOptionListFragment :
         }
     }
 
-    private fun showOrderFilterOptions(filterOptions: List<FilterListOptionUiModel>) {
-        orderFilterOptionAdapter.submitList(filterOptions)
+    private fun showOrderFilterOptions(orderFilterOptions: List<OrderListFilterOptionUiModel>) {
+        orderFilterOptionAdapter.submitList(orderFilterOptions)
     }
 }

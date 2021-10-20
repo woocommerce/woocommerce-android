@@ -17,26 +17,30 @@ data class OrderFilterCategoryListViewState(
 sealed class FilterListCategoryUiModel : Parcelable {
     abstract val displayName: String
     abstract val displayValue: String
-    abstract val filterOptions: List<FilterListOptionUiModel>
+    abstract val orderFilterOptions: List<OrderListFilterOptionUiModel>
 
     @Parcelize
     data class OrderStatusFilterCategoryUiModel(
         override val displayName: String,
         override val displayValue: String,
-        override val filterOptions: List<FilterListOptionUiModel>
+        override val orderFilterOptions: List<OrderListFilterOptionUiModel>
     ) : Parcelable, FilterListCategoryUiModel()
 
     @Parcelize
     data class DateRangeFilterCategoryUiModel(
         override val displayName: String,
         override val displayValue: String,
-        override val filterOptions: List<FilterListOptionUiModel>
+        override val orderFilterOptions: List<OrderListFilterOptionUiModel>
     ) : Parcelable, FilterListCategoryUiModel()
 }
 
 @Parcelize
-data class FilterListOptionUiModel(
+data class OrderListFilterOptionUiModel(
     val key: String,
     val displayName: String,
     val isSelected: Boolean = false
-) : Parcelable
+) : Parcelable {
+    companion object {
+        const val DEFAULT_ALL_KEY = "All"
+    }
+}
