@@ -54,8 +54,7 @@ class VariationListFragment :
         private const val LIST_STATE_KEY = "list_state"
     }
 
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: VariationListViewModel by viewModels()
 
