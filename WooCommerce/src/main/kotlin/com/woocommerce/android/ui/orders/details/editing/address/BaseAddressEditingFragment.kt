@@ -6,10 +6,14 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment
 import org.wordpress.android.util.ActivityUtils
 
 abstract class BaseAddressEditingFragment :
@@ -50,6 +54,9 @@ abstract class BaseAddressEditingFragment :
         _binding = FragmentBaseEditAddressBinding.bind(view)
         storedAddress.bindToView()
         bindTextWatchers()
+
+        setupObservers()
+        setupResultHandlers()
     }
 
     override fun hasChanges() = addressDraft != storedAddress
@@ -123,5 +130,25 @@ abstract class BaseAddressEditingFragment :
             getString(R.string.shipping_label_edit_address_state)
         )
         findNavController().navigateSafely(action)
+    }
+
+    private fun setupObservers() {
+        addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            if (new.country != old?.country) {
+                // TODO update displayed country
+            }
+            if (new.state != old?.state) {
+                // TODO update displayed state
+            }
+        }
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<String>(SELECT_COUNTRY_REQUEST) {
+            addressViewModel.onCountrySelected(it)
+        }
+        handleResult<String>(SELECT_STATE_REQUEST) {
+            addressViewModel.onStateSelected(it)
+        }
     }
 }
