@@ -59,9 +59,13 @@ class ReviewsUITest : TestBase() {
 
     @Test
     fun reviewListShowsAllReviews() {
-        val reviewsWireMockString = readAssetsFile("mocks/mappings/jetpack-blogs/wc/reviews/products_reviews_all.json")
+        val reviewsWireMockFileName = "mocks/mappings/jetpack-blogs/wc/reviews/products_reviews_all.json"
+        val reviewsWireMockString = readAssetsFile(reviewsWireMockFileName)
         val reviewsWireMockJSON = JSONObject(reviewsWireMockString)
-        val reviewsJSONResponse = reviewsWireMockJSON.getJSONObject("response").getJSONObject("jsonBody").getJSONArray("data")
+        val reviewsJSONResponse = reviewsWireMockJSON
+            .getJSONObject("response")
+            .getJSONObject("jsonBody")
+            .getJSONArray("data")
 
         for (i in 0 until reviewsJSONResponse.length()) {
             val reviewContainer: JSONObject = reviewsJSONResponse.getJSONObject(i)
