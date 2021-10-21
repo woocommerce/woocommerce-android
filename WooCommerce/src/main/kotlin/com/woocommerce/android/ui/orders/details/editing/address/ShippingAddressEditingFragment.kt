@@ -25,6 +25,7 @@ class ShippingAddressEditingFragment : BaseAddressEditingFragment() {
 
     private fun bindReplicateAddressSwitchView(switch: SwitchMaterial) {
         switch.visibility = View.VISIBLE
+        switch.text = getString(R.string.order_detail_use_as_billing_address)
         sharedViewModel.order.billingAddress.copy(email = "")
             .bindAsAddressReplicationToggleState()
     }
