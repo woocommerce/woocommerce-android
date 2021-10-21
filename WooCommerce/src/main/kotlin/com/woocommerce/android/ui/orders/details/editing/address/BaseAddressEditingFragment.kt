@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
 import android.view.View
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
@@ -13,6 +14,8 @@ abstract class BaseAddressEditingFragment :
     companion object {
         const val TAG = "BaseEditAddressFragment"
     }
+
+    private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_orders)
 
     private var _binding: FragmentBaseEditAddressBinding? = null
     private val binding get() = _binding!!
