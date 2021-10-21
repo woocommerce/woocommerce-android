@@ -53,7 +53,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has empty payment method then it is not collectable`() =
+    fun `when order has empty payment method then it is collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val order = getOrder(paymentMethod = "")
@@ -249,6 +249,19 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
 
             // THEN
             assertThat(isCollectable).isFalse()
+        }
+
+    @Test
+    fun `when order has "woocommerce_payments" payment method then it is collectable`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val order = getOrder(paymentMethod = "woocommerce_payments")
+
+            // WHEN
+            val isCollectable = checker.isCollectable(order)
+
+            // THEN
+            assertThat(isCollectable).isTrue()
         }
 
     private fun getOrder(
