@@ -22,10 +22,10 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-
 
 @HiltAndroidTest
 class ReviewsUITest : TestBase() {
@@ -40,11 +40,6 @@ class ReviewsUITest : TestBase() {
 
     @Before
     fun setUp() {
-
-        //val str = readFileText("mocks/mappings/jetpack-blogs/wc/reviews/products_reviews_all.json")
-        //println(str)
-        //Thread.sleep(1000000)
-
         WelcomeScreen
             .logoutIfNeeded()
             .selectLogin()
@@ -57,34 +52,32 @@ class ReviewsUITest : TestBase() {
 
     @Test
     fun reviewListShowsAllReviews() {
+        val productsMap = mapOf(
+            2132 to "Rose Gold shades",
+            2131 to "Colorado shades",
+            2130 to "Black Coral shades"
+        )
 
-        val statuses = arrayOf("hold", "approved")
-        val reviewers = arrayOf("Paytin Lubin", "Marcus Curtis")
-        val products = arrayOf("Rose Gold shades", "Black Coral shades")
-        val reviews = arrayOf("Travel in style!", "Don't really like them! Thought they are waterproof!")
-        val ratings = arrayOf(5, 2)
+        val str = readAssetsFile("mocks/mappings/jetpack-blogs/wc/reviews/products_reviews_all.json")
+        val json = JSONObject(str)
+        val reviews = json.getJSONObject("response").getJSONObject("jsonBody").getJSONArray("data")
 
-        /*
-        val status = "approved"
-        val reviewer = "Marcus Curtis"
-        val product = "Black Coral shades"
-        val review = "Don't really like them! Thought they are waterproof!"
-        val rating = 2
-        */
-
-        for (i in 0..statuses.size-1) {
-
-            val status = statuses[i]
-            val reviewer = reviewers[i]
-            val product = products[i]
-            val review = reviews[i]
-            val rating = ratings[i]
+        for (i in 0 until reviews.length()) {
+            val reviewContainer: JSONObject = reviews.getJSONObject(i)
+            val status = reviewContainer.getString("status")
+            val reviewer = reviewContainer.getString("reviewer")
+            val productID = reviewContainer.getInt("product_id")
+            val product = productsMap[productID]
+            val review = reviewContainer.getString("review")
+            val rating = reviewContainer.getInt("rating")
 
             val reviewTitle = "$reviewer left a review on $product"
             val reviewContent = if (status == "hold") "Pending Review • $review" else review
             val reviewApproveButtonTitle = if (status == "hold") "Approve" else "Approved"
 
             Thread.sleep(3000)
+
+            ReviewsListScreen().scrollToReview(reviewTitle)
 
             // Assert a review card by its hierarchy and content
             val reviewCard: ViewInteraction = onView(

@@ -39,4 +39,18 @@ class ReviewsListScreen : Screen {
 
         return SingleReviewScreen()
     }
+
+    fun scrollToReview(reviewTitle: String): ReviewsListScreen {
+        Espresso.onView(ViewMatchers.withId(LIST_VIEW)).perform(
+            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
+                ViewMatchers.hasDescendant(
+                    ViewMatchers.withText(
+                        reviewTitle
+                    )
+                ), ViewActions.scrollTo()
+            )
+        )
+
+        return ReviewsListScreen()
+    }
 }
