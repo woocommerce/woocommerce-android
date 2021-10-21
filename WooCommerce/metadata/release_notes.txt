@@ -1,3 +1,1 @@
-Product reviews requiring your approval have a new label to make it easier for you to distinguish them from already approved reviews.
-
-This update also includes several enhancements to the shipping label feature using the WooCommerce Shipping & Tax Extension. We value all of your feedback on this newer feature!
+Merchants using WooCommerce Payments in the USA can accept in-person credit card payments for your customers’ payment upon delivery or pickup orders. Also included in this release are a few minor improvements based on your feedback. Thanks for helping us make a better app for everyone.

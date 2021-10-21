@@ -1,11 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:49:52+0000
+Translation-Revision-Date: 2021-10-12 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">Fout bij ophalen SSR. Controleer WooCommerce -&gt; Status bij wp-admin.</string>
+    <string name="support_system_status_report_share_error">Kan systeemstatusrapport niet delen</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Fout bij kopiëren SSR naar klembord</string>
+    <string name="support_system_status_report_copied_to_clipboard">Systeemstatusrapport gekopieerd naar klembord</string>
+    <string name="support_system_status_report_detail">Verschillende systeemgegevens over je site</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">Systeemstatusrapport</string>
+    <string name="card_reader_welcome_dialog_text">Gefeliciteerd, je kunt nu betalingen van creditcards en betaalpassen aannemen met WooCommerce Payments!</string>
+    <string name="card_reader_welcome_dialog_header">Ontvang betalingen met een kaartlezer</string>
+    <string name="card_reader_payment_failed_amount_too_small">Bedrag moet minstens 0,50 Amerikaanse dollar bedragen.</string>
+    <string name="card_reader_payment_payment_failed_ok">OK</string>
+    <string name="settings_whats_new_icon_description">Nieuwe afbeelding van functiepictogram</string>
+    <string name="settings_switch_store">Winkel wijzigen</string>
+    <string name="product_update_failure_notification">Het is niet gelukt om product %1$s bij te werken</string>
+    <string name="product_update_success_notification_content">%1$d afbeeldingen zijn toegevoegd aan het product %2$s</string>
+    <string name="product_update_success_notification_title">Product bijgewerkt</string>
+    <string name="product_update_notification">Product wordt bijgewerkt %1$s</string>
+    <string name="product_detail_background_image_upload">Afbeeldingen worden op de achtergrond geüpload</string>
+    <string name="card_reader_payment_save_for_later">Sla kwitantie op en ga verder</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">We konden helaas de bestelling met add-ons nu niet laden</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Er is iets fout gegaan</string>
+    <string name="settings_whats_new">Nieuw in WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Add-ons bekijken</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">We kunnen deze functie-instelling momenteel niet wijzigen</string>
+    <string name="product_category">Categorie</string>
+    <string name="notification_review_title">Je hebt 1 nieuwe beoordeling! 🌟</string>
+    <string name="notification_order_title">Je hebt 1 nieuwe bestelling! 🎉</string>
+    <string name="shipping_label_package_details_items_count_one">%d artikel</string>
+    <string name="upsell_product_count_many">%d upsell-producten</string>
+    <string name="upsell_product_count_one">%d upsell-product</string>
+    <string name="cross_sell_product_count_many">%d cross-sellproducten</string>
+    <string name="cross_sell_product_count_one">%d cross-sellproduct</string>
+    <string name="product_count_many">%d producten</string>
+    <string name="product_count_one">%d product</string>
+    <string name="product_add_ons_title">Productadd-ons</string>
+    <string name="product_save_dialog_title">Je product wordt opgeslagen</string>
+    <string name="pending_review_label">Wachtend op review</string>
+    <string name="card_reader_payment_reader_not_connected">Zorg ervoor dat de kaartlezer is aangesloten.</string>
+    <string name="card_reader_payment_try_another_card_prompt">Opnieuw proberen met een andere kaart</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Probeer uw kaart opnieuw te tikken, in te voeren of erlangs te halen</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Meerdere kaarten gedetecteerd. Opnieuw proberen met één kaart</string>
+    <string name="card_reader_payment_remove_card_prompt">De kaart verwijderen</string>
+    <string name="card_reader_payment_retry_card_prompt">Opnieuw proberen met dezelfde kaart</string>
+    <string name="order_refunds_refund_info_description_many">%d artikelen</string>
+    <string name="order_refunds_refund_info_description_one">%d artikel</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d werkdagen</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d werkdag</string>
+    <string name="shipping_label_validation_error_template">We konden het verzendadres niet automatisch verifiëren: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">We kunnen het oorspronkelijke verzendadres niet automatisch verifiëren. Bekijken op Google Maps om te controleren of het adres klopt.</string>
+    <string name="ordered_add_ons_wip_message">We zijn bezig om het eenvoudiger voor je te maken om extra opties voor je product vanaf je apparaat te bekijken! Voor nu kun je de extra opties voor je bestellingen weergeven. Je kunt deze extra opties maken en bewerken vanaf je webdashboard.</string>
+    <string name="ordered_add_ons_wip_title">Bekijk extra opties vanaf je apparaat!</string>
+    <string name="ordered_add_ons_details_info_notice">Als je de naam van een extra optie wijzigt in je webdashboard, onthoud dan dat eerdere bestellingen deze extra optie niet langer zullen weergeven in de app.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">Add-ons bekijken</string>
+    <string name="save">Opslaan</string>
     <string name="support_contact_payments_detail">Neem contact op met onze Happiness Engineers, die alle lastige vragen met betrekking tot betalingen kunnen beantwoorden</string>
     <string name="support_contact_payments">Contact opnemen met de ondersteuning van Payments</string>
     <string name="product_images_error_detail_title">Details uploaden (%d)</string>
@@ -13,12 +68,10 @@ Language: nl
     <string name="product_image_service_error_uploading_single">%d bestand kon niet worden geüpload</string>
     <string name="product_image_service_error_media_null">Kan media niet vinden</string>
     <string name="product_add_ons_details_info_notice">Je kunt productadd-ons bewerken vanaf je webdashboard.</string>
-    <string name="product_add_ons_card_button_title">Productadd-ons</string>
     <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over afbeeldingen uploaden</string>
     <string name="card_reader_onboarding_generic_error_hint">We kunnen fysieke betalingen helaas niet verifiëren voor deze winkel</string>
     <string name="card_reader_onboarding_generic_error_header">Fysieke betalingen kunnen niet worden geverifieerd voor deze winkel</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Opslaan voor later</string>
     <string name="card_reader_purchase_card_reader">Kaartlezer bestellen</string>
     <string name="card_reader_manage_card_reader">Kaartlezer beheren</string>
     <string name="shipping_label_multiple_customs_form_print_button">Afdrukken</string>
@@ -80,6 +133,7 @@ Language: nl
     <string name="product_attributes_created_generate_action_text">Variatie genereren</string>
     <string name="product_attributes_created_description">Nu je eigenschappen hebt toegevoegd, kun je je eerste variatie aanmaken!</string>
     <string name="product_attributes_created_title">Eigenschappen aangemaakt</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">We raden af een software-update in uitvoering te annuleren</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Deze betaling kon niet worden verwerkt</string>
     <string name="card_reader_payment_failed_server_error_state">Geen verbinding met de server</string>
@@ -355,6 +409,7 @@ Language: nl
     <string name="shipping_label_packages_loading_message">Een moment geduld…</string>
     <string name="shipping_label_packages_loading_title">Pakketten worden geladen!</string>
     <string name="shipping_label_package_details_title_template">Pakket %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d artikelen</string>
     <string name="shipping_label_packages_loading_error">Kan pakket-afmetingen niet laden</string>
     <string name="shipping_label_package_details_weight_info">Pakketgewicht inbegrepen</string>
     <string name="shipping_label_package_details_weight_hint">Totaal pakketgewicht (%1$s)</string>
@@ -369,9 +424,8 @@ Language: nl
     <string name="shipping_label_address_suggestion_use_selected_address">Het geselecteerde adres gebruiken</string>
     <string name="shipping_label_edit_address_loading_progress_title">Adresgegevens worden geladen</string>
     <string name="product_wip_title_m5">Nieuwe functies beschikbaar!</string>
-    <string name="shipping_label_validation_view_map">Kaart openen</string>
+    <string name="shipping_label_validation_view_map">Zoeken op de kaart</string>
     <string name="shipping_label_validation_contact_customer">Contact opnemen met klant</string>
-    <string name="shipping_label_validation_error_template">Validatie mislukt: %s</string>
     <string name="shipping_label_error_address_invalid_street">Ongeldige straat</string>
     <string name="shipping_label_error_address_house_number_missing">Huisnummer ontbreekt</string>
     <string name="shipping_label_error_address_not_found">Adres is niet gevonden</string>
@@ -402,11 +456,11 @@ Language: nl
     <string name="shipping_label_create_packaging_details">Verpakkingsgegevens</string>
     <string name="shipping_label_create_title">Verzendlabel aanmaken</string>
     <string name="shipping_label_more_information_link">Meer informatie</string>
-    <string name="shipping_label_more_information_message">Vermijd wachttijden bij het postkantoor door verzendlabels thuis af te drukken, tegen afgeprijsde tarieven!</string>
+    <string name="shipping_label_more_information_message">Vermijd wachttijden bij het postkantoor door verzendlabels thuis te printen vanaf je mobiele apparaat, tegen lagere tarieven!</string>
     <string name="shipping_label_more_information_heading">Bespaar tijd en geld door gebruik te maken van WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Bestelling markeren als voltooid</string>
-    <string name="orderdetail_shipping_label_notice">Meer informatie over labels met je telefoon aanmaken</string>
+    <string name="orderdetail_shipping_label_notice">Meer informatie over labels met je mobiele apparaat aanmaken</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Verzendlabel aanmaken</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Je kunt nu verzendlabels rechtstreeks vanaf je apparaat aanmaken voor alle fysieke bestellingen met de gratis WooCommerce Shipping-plugin. Tik op \"Verzendlabel aanmaken\" om onze bètafunctie te proberen!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Maak verzendlabels vanaf je apparaat!!</string>
@@ -467,6 +521,7 @@ Language: nl
     <string name="my_store_stats_availability_title">We kunnen de statistieken van je\n winkel niet weergeven</string>
     <string name="login_get_link_by_email">Krijg een inloglink via e-mail</string>
     <string name="email_not_registered_wpcom">We kunnen geen WordPress.com-account vinden dat is gekoppeld aan dit e-mailadres.</string>
+    <string name="settings_enable_product_addons_teaser_message">Test onze Add-ons bestelling bekijken terwijl we ons voorbereiden op de lancering</string>
     <string name="settings_enable_product_adding_teaser_title">Producten aanmaken</string>
     <string name="settings_preferences">Voorkeuren</string>
     <string name="product_trash_error">Fout bij weggooien van product</string>
@@ -489,7 +544,7 @@ Language: nl
     <string name="shipping_label_paper_size_letter">Brief (8,5 x 11 inch)</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 inch)</string>
     <string name="shipping_label_preview_error">Fout bij voorbeeldweergave verzendlabel</string>
-    <string name="shipping_label_print_info">Weet je niet hoe je kan afdrukken met je telefoon?</string>
+    <string name="shipping_label_print_info">Weet je niet hoe je moet printen vanaf je mobiele apparaat?</string>
     <string name="shipping_label_paper_size_options_info">Zie opties voor labellay-out en papierformaat</string>
     <string name="shipping_label_print_button">Verzendlabel afdrukken</string>
     <string name="shipping_label_paper_size_options_title">Papierformaat kiezen</string>
@@ -770,10 +825,9 @@ Language: nl
     <string name="orderlist_loading">Je bestellingen worden opgezocht …</string>
     <string name="product_detail_editable_text_hint">Voer tekst in</string>
     <string name="product_detail_title_hint">Voer producttitel</string>
-    <string name="product_detail_save_product_success">Product bijgewerkt</string>
+    <string name="product_detail_save_product_success">Product opgeslagen</string>
     <string name="product_detail_update_product_error">Bijwerken product mislukt</string>
     <string name="product_update_dialog_message">Een moment geduld…</string>
-    <string name="product_save_dialog_title">Product wordt bijgewerkt</string>
     <string name="product_description_empty">Beschrijf je product</string>
     <string name="product_description">Beschrijving</string>
     <string name="product_edit_description">Beschrijving bewerken</string>
@@ -1252,8 +1306,6 @@ Language: nl
     <string name="error_copy_to_clipboard">Fout bij kopiëren naar klembord</string>
     <string name="settings_switch_site_notifs_msg">Omgezet naar %s Je ontvangt alleen meldingen voor deze winkel</string>
     <string name="login_update_required_desc">Deze winkel maakt gebruik van een oudere versie van WooCommerce. Upgrade je winkel naar WooCommerce 3.5 of hoger om deze app te kunnen gebruiken.</string>
-    <string name="promo_message_site_picker">Je kunt nu omschakelen tussen winkels door in Instellingen op de geselecteerde winkel te tikken</string>
-    <string name="promo_title_site_picker">Heb je meerdere winkels onder je beheer?</string>
     <string name="promo_btn_try_it">Probeer het nu</string>
     <string name="promo_btn_got_it">Duidelijk</string>
     <string name="tooltip_site_switcher">Tik om tussen winkels te schakelen</string>

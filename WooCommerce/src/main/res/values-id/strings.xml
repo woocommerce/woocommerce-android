@@ -1,11 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:52:24+0000
+Translation-Revision-Date: 2021-10-11 19:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">Error saat mengambil LSS. Harap periksa WooCommerce -&gt; Status di wp-admin.</string>
+    <string name="support_system_status_report_share_error">Tidak dapat membagikan Laporan Status Sistem</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Error saat menyalin LSS ke clipboard</string>
+    <string name="support_system_status_report_copied_to_clipboard">Laporan status sistem disalin ke clipboard</string>
+    <string name="support_system_status_report_detail">Berbagai informasi sistem terkait situs Anda</string>
+    <string name="support_system_status_report_clipboard_label">LSS WooCommerce</string>
+    <string name="support_system_status_report">Laporan status sistem</string>
+    <string name="card_reader_welcome_dialog_text">Selamat, Anda sekarang dapat menerima pembayaran kartu debit dan kredit menggunakan WooCommerce Payments!</string>
+    <string name="card_reader_welcome_dialog_header">Kumpulkan pembayaran dengan pembaca kartu</string>
+    <string name="card_reader_payment_failed_amount_too_small">Jumlah minimal $0,50 dolar AS</string>
+    <string name="card_reader_payment_payment_failed_ok">Oke</string>
+    <string name="settings_whats_new_icon_description">Gambar ikon fitur baru</string>
+    <string name="settings_switch_store">Beralih toko</string>
+    <string name="product_update_failure_notification">Gagal memperbarui produk %1$s</string>
+    <string name="product_update_success_notification_content">Gambar %1$d telah ditambahkan ke produk %2$s</string>
+    <string name="product_update_success_notification_title">Produk Diperbarui</string>
+    <string name="product_update_notification">Memperbarui produk %1$s</string>
+    <string name="product_detail_background_image_upload">Pengunggahan gambar akan dilanjutkan di latar belakang</string>
+    <string name="card_reader_payment_save_for_later">Simpan tanda terima dan lanjutkan</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">Oke</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Maaf, kami tidak dapat memuat Add-on Pesanan sekarang</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Terjadi kesalahan</string>
+    <string name="settings_whats_new">Apa yang Baru di WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Lihat Add-on</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">Maaf, saat ini kami tidak dapat mengubah pengaturan fitur ini</string>
+    <string name="product_category">Kategori</string>
+    <string name="notification_review_title">Anda mendapat 1 ulasan baru! 🌟</string>
+    <string name="notification_order_title">Anda mendapat 1 pesanan baru! 🎉</string>
+    <string name="shipping_label_package_details_items_count_one">%d Item</string>
+    <string name="upsell_product_count_many">%d produk upsell</string>
+    <string name="upsell_product_count_one">%d produk upsell</string>
+    <string name="cross_sell_product_count_many">%d produk cross-sell</string>
+    <string name="cross_sell_product_count_one">%d produk cross-sell</string>
+    <string name="product_count_many">%d produk</string>
+    <string name="product_count_one">%d produk</string>
+    <string name="product_add_ons_title">Add-on Produk</string>
+    <string name="product_save_dialog_title">Menyimpan produk Anda</string>
+    <string name="pending_review_label">Menunggu Peninjauan</string>
+    <string name="card_reader_payment_reader_not_connected">Mohon pastikan pembaca kartu sudah terhubung.</string>
+    <string name="card_reader_payment_try_another_card_prompt">Coba lagi dengan kartu lainnya</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Coba ketuk, masukkan, atau gesek kartu Anda lagi</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Beberapa kartu terdeteksi. Coba lagi dengan satu kartu</string>
+    <string name="card_reader_payment_remove_card_prompt">Ambil kartu</string>
+    <string name="card_reader_payment_retry_card_prompt">Coba lagi dengan kartu yang sama</string>
+    <string name="order_refunds_refund_info_description_many">%d objek</string>
+    <string name="order_refunds_refund_info_description_one">%d item</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d hari kerja</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d hari kerja</string>
+    <string name="shipping_label_validation_error_template">Kami tidak dapat secara otomatis memverifikasi alamat pengiriman: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">Kami tidak dapat memverifikasi alamat pengirim secara otomatis. Lihat di Google Maps untuk memastikan alamat sudah benar.</string>
+    <string name="ordered_add_ons_wip_message">Kami berupaya untuk lebih memudahkan Anda melihat add-on produk dari perangkat! Untuk sekarang, Anda akan dapat melihat add-on untuk pesanan Anda. Anda dapat membuat dan menyunting add-on ini pada dasbor web Anda.</string>
+    <string name="ordered_add_ons_wip_title">Lihat add-on dari perangkat Anda!</string>
+    <string name="ordered_add_ons_details_info_notice">Jika ingin mengubah nama add-on pada dasbor web, harap perhatikan bahwa pesanan sebelumnya tidak akan menampilkan add-on tersebut dalam aplikasi.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">Lihat Add-on</string>
+    <string name="save">Simpan</string>
     <string name="support_contact_payments_detail">Hubungi happiness engineers kami yang dapat membantu menjawab pertanyaan terkait pembayaran</string>
     <string name="support_contact_payments">Hubungi Dukungan Pembayaran</string>
     <string name="product_images_error_detail_title">Unggah detail (%d)</string>
@@ -13,12 +68,10 @@ Language: id
     <string name="product_image_service_error_uploading_single">File %d tidak dapat diunggah</string>
     <string name="product_image_service_error_media_null">Media tidak ditemukan</string>
     <string name="product_add_ons_details_info_notice">Anda dapat menyunting add-on produk di dasbor web.</string>
-    <string name="product_add_ons_card_button_title">Add-on Produk</string>
     <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;Baca Selengkapnya&lt;/a&gt; tentang mengunggah gambar</string>
     <string name="card_reader_onboarding_generic_error_hint">Maaf, kami tidak dapat memverifikasi Pembayaran Langsung untuk toko ini</string>
     <string name="card_reader_onboarding_generic_error_header">Tidak dapat memverifikasi Pembayaran Langsung untuk toko ini</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Simpan untuk nanti</string>
     <string name="card_reader_purchase_card_reader">Pesan Pembaca Kartu</string>
     <string name="card_reader_manage_card_reader">Kelola Pembaca Kartu</string>
     <string name="shipping_label_multiple_customs_form_print_button">Cetak</string>
@@ -80,6 +133,7 @@ Language: id
     <string name="product_attributes_created_generate_action_text">Buat Variasi</string>
     <string name="product_attributes_created_description">Karena atribut sudah ditambahkan, Anda sekarang bisa membuat variasi pertama Anda!</string>
     <string name="product_attributes_created_title">Atribut dibuat</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">Membatalkan pembaruan perangkat lunak yang sedang berlangsung tidak dianjurkan</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Maaf, pembayaran ini tidak dapat diproses</string>
     <string name="card_reader_payment_failed_server_error_state">Tidak ada koneksi ke server</string>
@@ -355,6 +409,7 @@ Language: id
     <string name="shipping_label_packages_loading_message">Harap tunggu…</string>
     <string name="shipping_label_packages_loading_title">Memuat Paket!</string>
     <string name="shipping_label_package_details_title_template">Paket %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d objek</string>
     <string name="shipping_label_packages_loading_error">Tidak dapat memuat definisi paket</string>
     <string name="shipping_label_package_details_weight_info">Mencakup berat paket</string>
     <string name="shipping_label_package_details_weight_hint">Total berat paket (%1$s)</string>
@@ -369,9 +424,8 @@ Language: id
     <string name="shipping_label_address_suggestion_use_selected_address">Gunakan alamat yang dipilih</string>
     <string name="shipping_label_edit_address_loading_progress_title">Memuat data alamat</string>
     <string name="product_wip_title_m5">Tersedia fitur baru!</string>
-    <string name="shipping_label_validation_view_map">Buka Peta</string>
+    <string name="shipping_label_validation_view_map">Temukan di Peta</string>
     <string name="shipping_label_validation_contact_customer">Hubungi Pelanggan</string>
-    <string name="shipping_label_validation_error_template">Validasi gagal: %s</string>
     <string name="shipping_label_error_address_invalid_street">Nama jalan tidak valid</string>
     <string name="shipping_label_error_address_house_number_missing">Nomor rumah tidak ada</string>
     <string name="shipping_label_error_address_not_found">Alamat tidak ditemukan</string>
@@ -402,11 +456,11 @@ Language: id
     <string name="shipping_label_create_packaging_details">Informasi kemasan</string>
     <string name="shipping_label_create_title">Buat label pengiriman</string>
     <string name="shipping_label_more_information_link">Pelajari lebih lanjut</string>
-    <string name="shipping_label_more_information_message">Tak perlu antre saat di kantor pos dengan mencetak label pengiriman di rumah dari ponsel dengan harga diskon!</string>
+    <string name="shipping_label_more_information_message">Tak perlu antre saat di kantor pos dengan mencetak label pengiriman di rumah dari perangkat seluler dengan harga diskon!</string>
     <string name="shipping_label_more_information_heading">Hemat waktu dan biaya dengan memproses pesanan menggunakan WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">Pengiriman WooCommerce</string>
     <string name="order_mark_complete">Tandai pesanan selesai</string>
-    <string name="orderdetail_shipping_label_notice">Pelajari selengkapnya tentang membuat label menggunakan ponsel</string>
+    <string name="orderdetail_shipping_label_notice">Pelajari selengkapnya tentang membuat label menggunakan perangkat seluler</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Buat label pengiriman</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Sekarang Anda dapat membuat label pengiriman untuk semua pesanan fisik langsung dari perangkat Anda dengan plugin WooCommerce Shipping gratis. Ketuk \"Buat label pengiriman\" untuk mencoba fitur beta kami!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">Buat label pengiriman dari perangkat Anda!</string>
@@ -467,6 +521,7 @@ Language: id
     <string name="my_store_stats_availability_title">Kami tidak dapat menampilkan\n analisis toko Anda</string>
     <string name="login_get_link_by_email">Dapatkan tautan masuk lewat email</string>
     <string name="email_not_registered_wpcom">Hmm, kami tidak dapat menemukan akun WordPress.com yang terhubung dengan alamat email ini.</string>
+    <string name="settings_enable_product_addons_teaser_message">Uji coba fitur melihat Add-on Pesanan menjelang peluncuran</string>
     <string name="settings_enable_product_adding_teaser_title">Membuat produk</string>
     <string name="settings_preferences">Preferensi</string>
     <string name="product_trash_error">Kesalahan saat membuang produk</string>
@@ -489,7 +544,7 @@ Language: id
     <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 inci)</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 inci)</string>
     <string name="shipping_label_preview_error">Kesalahan saat menampilkan pratinjau label pengiriman</string>
-    <string name="shipping_label_print_info">Tidak tahu cara mencetak dari telepon Anda?</string>
+    <string name="shipping_label_print_info">Tidak tahu cara mencetak dari perangkat seluler Anda?</string>
     <string name="shipping_label_paper_size_options_info">Lihat tata letak label dan opsi ukuran kertas</string>
     <string name="shipping_label_print_button">Cetak label pengiriman</string>
     <string name="shipping_label_paper_size_options_title">Pilih ukuran kertas</string>
@@ -770,10 +825,9 @@ Language: id
     <string name="orderlist_loading">Mencari pesanan Anda…</string>
     <string name="product_detail_editable_text_hint">Masukkan teks</string>
     <string name="product_detail_title_hint">Masukkan Nama Produk</string>
-    <string name="product_detail_save_product_success">Produk diperbarui</string>
+    <string name="product_detail_save_product_success">Produk disimpan</string>
     <string name="product_detail_update_product_error">Error saat memperbarui produk</string>
     <string name="product_update_dialog_message">Harap tunggu…</string>
-    <string name="product_save_dialog_title">Memperbarui produk</string>
     <string name="product_description_empty">Deskripsikan produk Anda</string>
     <string name="product_description">Deskripsi</string>
     <string name="product_edit_description">Sunting deskripsi</string>
@@ -1252,8 +1306,6 @@ Language: id
     <string name="error_copy_to_clipboard">Terjadi error saat menyalin ke clipboard</string>
     <string name="settings_switch_site_notifs_msg">Beralih ke %s. Anda hanya akan menerima pemberitahuan untuk toko ini</string>
     <string name="login_update_required_desc">Toko ini menggunakan WooCommerce versi lama. Upgrade toko Anda ke WooCommerce 3.5 atau yang lebih baru agar dapat menggunakannya dengan aplikasi ini.</string>
-    <string name="promo_message_site_picker">Sekarang Anda dapat beralih antartoko dengan mengetuk toko yang dipilih di Pengaturan</string>
-    <string name="promo_title_site_picker">Mengelola beberapa toko?</string>
     <string name="promo_btn_try_it">Coba sekarang</string>
     <string name="promo_btn_got_it">Saya mengerti</string>
     <string name="tooltip_site_switcher">Ketuk untuk beralih toko</string>

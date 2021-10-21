@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.variations
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -12,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
-import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -145,7 +146,7 @@ class VariationDetailViewModel @Inject constructor(
 
     fun onExit() {
         when {
-            isUploadingImages(navArgs.remoteVariationId) -> {
+            isUploadingImages() -> {
                 // images can't be assigned to the product until they finish uploading so ask whether to discard images.
                 triggerEvent(
                     ShowDialog.buildDiscardDialogEvent(
@@ -183,7 +184,7 @@ class VariationDetailViewModel @Inject constructor(
         triggerEvent(ViewImageGallery(navArgs.remoteVariationId, images, showChooser = true))
     }
 
-    fun isUploadingImages(remoteId: Long) = ProductImagesService.isUploadingForProduct(remoteId)
+    fun isUploadingImages() = viewState.uploadingImageUri != null
 
     fun onVariationVisibilitySwitchChanged(isVisible: Boolean) {
         AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED)
@@ -347,6 +348,7 @@ class VariationDetailViewModel @Inject constructor(
         super.onCleared()
         productRepository.onCleanup()
         variationRepository.onCleanup()
+        mediaFileUploadHandler.cancelUpload(navArgs.remoteVariationId)
     }
 
     private fun updateCards(variation: ProductVariation) {
@@ -377,7 +379,10 @@ class VariationDetailViewModel @Inject constructor(
     private fun observeImageUploadEvents() {
         mediaFileUploadHandler.observeCurrentUploads(navArgs.remoteVariationId)
             .onEach {
-                viewState = viewState.copy(uploadingImageUri = it.firstOrNull(), isDoneButtonEnabled = it.isEmpty())
+                viewState = viewState.copy(
+                    uploadingImageUri = it.firstOrNull()?.toUri(),
+                    isDoneButtonEnabled = it.isEmpty()
+                )
             }
             .launchIn(this)
 
@@ -391,14 +396,20 @@ class VariationDetailViewModel @Inject constructor(
             .launchIn(this)
 
         mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteVariationId)
-            .onEach {
-                val errorMsg = resources.getMediaUploadErrorMessage(it.size)
-                triggerEvent(
-                    ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId)) }
-                )
+            .onEach { errorList ->
+                if (errorList.isEmpty()) {
+                    triggerEvent(HideImageUploadErrorSnackbar)
+                } else {
+                    val errorMsg = resources.getMediaUploadErrorMessage(errorList.size)
+                    triggerEvent(
+                        ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId)) }
+                    )
+                }
             }
             .launchIn(this)
     }
+
+    object HideImageUploadErrorSnackbar : Event()
 
     @Parcelize
     data class VariationViewState(

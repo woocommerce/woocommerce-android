@@ -1,11 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:49:03+0000
+Translation-Revision-Date: 2021-10-12 09:54:50+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">SSR를 가져오는 중 오류가 발생했습니다. wp-admin에서 우커머스 -&gt; 상태를 확인하세요.</string>
+    <string name="support_system_status_report_share_error">시스템 상태 보고서를 공유할 수 없음</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">클립보드에 SSR 복사 중 오류 발생</string>
+    <string name="support_system_status_report_copied_to_clipboard">클립보드에 시스템 상태 보고서 복사됨</string>
+    <string name="support_system_status_report_detail">사이트에 대한 다양한 시스템 정보</string>
+    <string name="support_system_status_report_clipboard_label">우커머스 SSR</string>
+    <string name="support_system_status_report">시스템 상태 보고서</string>
+    <string name="card_reader_welcome_dialog_text">축하합니다! 이제 우커머스 결제를 통해 직불카드 또는 신용카드 결제를 수락할 수 있습니다.</string>
+    <string name="card_reader_welcome_dialog_header">카드 리더로 결제받기</string>
+    <string name="card_reader_payment_failed_amount_too_small">금액이 $0.50 USD 이상이어야 함</string>
+    <string name="card_reader_payment_payment_failed_ok">확인</string>
+    <string name="settings_whats_new_icon_description">새 기능 아이콘 이미지</string>
+    <string name="settings_switch_store">스토어 전환</string>
+    <string name="product_update_failure_notification">상품 %1$s 업데이트 실패</string>
+    <string name="product_update_success_notification_content">%1$d개 이미지에 상품 %2$s에 추가되었음</string>
+    <string name="product_update_success_notification_title">상품 업데이트됨</string>
+    <string name="product_update_notification">상품 %1$s 업데이트 중</string>
+    <string name="product_detail_background_image_upload">백그라운드에서 계속 이미지 업로드 중</string>
+    <string name="card_reader_payment_save_for_later">영수증 저장 및 계속</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">확인</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">죄송합니다. 지금은 주문 애드온을 로드할 수 없습니다.</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">문제가 발생했습니다.</string>
+    <string name="settings_whats_new">WooCommerce의 새로운 기능</string>
+    <string name="settings_enable_product_addons_teaser_title">애드온 보기</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">죄송합니다. 지금은 이 기능 설정을 변경할 수 없습니다.</string>
+    <string name="product_category">카테고리</string>
+    <string name="notification_review_title">새 리뷰 1개가 있습니다! 🌟</string>
+    <string name="notification_order_title">새 주문 1개가 있습니다! 🎉</string>
+    <string name="shipping_label_package_details_items_count_one">%d개 아이템</string>
+    <string name="upsell_product_count_many">상향 판매 상품 %d개</string>
+    <string name="upsell_product_count_one">상향 판매 상품 %d개</string>
+    <string name="cross_sell_product_count_many">교차 판매 상품 %d개</string>
+    <string name="cross_sell_product_count_one">교차 판매 상품 %d개</string>
+    <string name="product_count_many">%d개 상품</string>
+    <string name="product_count_one">%d개 상품</string>
+    <string name="product_add_ons_title">상품 애드온</string>
+    <string name="product_save_dialog_title">상품 저장 중…</string>
+    <string name="pending_review_label">검토 대기 중</string>
+    <string name="card_reader_payment_reader_not_connected">카드 리더가 연결되었는지 확인하세요.</string>
+    <string name="card_reader_payment_try_another_card_prompt">다른 카드로 다시 시도</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">카드 누르기, 삽입하기 또는 긋기 다시 시도</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">여러 카드가 감지되었습니다. 카드 하나로 다시 시도</string>
+    <string name="card_reader_payment_remove_card_prompt">카드 제거</string>
+    <string name="card_reader_payment_retry_card_prompt">같은 카드로 다시 시도</string>
+    <string name="order_refunds_refund_info_description_many">%d개 아이템</string>
+    <string name="order_refunds_refund_info_description_one">%d개 아이템</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d영업일</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d영업일</string>
+    <string name="shipping_label_validation_error_template">배송 주소(%s)를 자동으로 확인할 수 없었습니다. </string>
+    <string name="shipping_label_edit_origin_address_error_warning">발송 주소를 자동으로 확인할 수 없었습니다. Google Maps에서 보며 주소가 올바른지 확인하세요.</string>
+    <string name="ordered_add_ons_wip_message">기기에 상품 애드온을 더 쉽게 표시할 수 있도록 작업하는 중입니다. 지금 당장은 주문에 대한 애드온을 보실 수 있습니다. 웹 대시보드에서 이러한 애드온을 생성하고 편집하실 수 있습니다.</string>
+    <string name="ordered_add_ons_wip_title">기기에서 애드온을 보세요!</string>
+    <string name="ordered_add_ons_details_info_notice">웹 대시보드에서 애드온의 이름을 변경하는 경우 이전 주문에서는 앱 내에 해당 주문이 더는 표시되지 않습니다.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">애드온 보기</string>
+    <string name="save">저장</string>
     <string name="support_contact_payments_detail">결제 관련 질문에 대한 답변을 도와드릴 수 있는 해피니스 엔지니어에게 연락하기</string>
     <string name="support_contact_payments">결제 지원 문의</string>
     <string name="product_images_error_detail_title">상세 정보 업로드(%d)</string>
@@ -13,12 +68,10 @@ Language: ko_KR
     <string name="product_image_service_error_uploading_single">%d개 파일을 업로드할 수 없음</string>
     <string name="product_image_service_error_media_null">미디어를 찾을 수 없음</string>
     <string name="product_add_ons_details_info_notice">웹 대시보드에서 상품 애드온을 편집하실 수 있습니다.</string>
-    <string name="product_add_ons_card_button_title">상품 애드온</string>
     <string name="product_images_learn_more_button">이미지 업로드에 대해 &lt;a href=\'\'&gt;더 알아보기&lt;/a&gt;</string>
     <string name="card_reader_onboarding_generic_error_hint">죄송합니다. 이 스토어의 대면 결제를 확인할 수 없었습니다.</string>
     <string name="card_reader_onboarding_generic_error_header">이 스토어의 대면 결제를 확인할 수 없음</string>
     <string name="card_reader_detail_connected_firmware_version">펌웨어: %s</string>
-    <string name="card_reader_payment_save_for_later">나중에 사용할 수 있게 저장</string>
     <string name="card_reader_purchase_card_reader">카드 리더 주문</string>
     <string name="card_reader_manage_card_reader">카드 리더 관리</string>
     <string name="shipping_label_multiple_customs_form_print_button">인쇄</string>
@@ -80,6 +133,7 @@ Language: ko_KR
     <string name="product_attributes_created_generate_action_text">변형 생성</string>
     <string name="product_attributes_created_description">이제 속성을 추가했으니 첫 번째 변형을 만드실 수 있습니다!</string>
     <string name="product_attributes_created_title">속성 생성됨</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">진행 중인 소프트웨어 업데이트는 취소하지 않는 것이 좋습니다.</string>
     <string name="card_reader_payment_failed_unexpected_error_state">죄송합니다. 이 결제는 처리할 수 없습니다.</string>
     <string name="card_reader_payment_failed_server_error_state">서버에 연결되지 않음</string>
@@ -355,6 +409,7 @@ Language: ko_KR
     <string name="shipping_label_packages_loading_message">기다려주세요…</string>
     <string name="shipping_label_packages_loading_title">패키지 로드 중!</string>
     <string name="shipping_label_package_details_title_template">패키지 %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d개 아이템</string>
     <string name="shipping_label_packages_loading_error">패키지 정의를 로드할 수 없음</string>
     <string name="shipping_label_package_details_weight_info">패키지 무게 포함</string>
     <string name="shipping_label_package_details_weight_hint">총 패키지 무게(%1$s)</string>
@@ -369,9 +424,8 @@ Language: ko_KR
     <string name="shipping_label_address_suggestion_use_selected_address">선택한 주소 사용</string>
     <string name="shipping_label_edit_address_loading_progress_title">주소 데이터 로드 중</string>
     <string name="product_wip_title_m5">새 기능을 사용할 수 있습니다!</string>
-    <string name="shipping_label_validation_view_map">지도 열기</string>
+    <string name="shipping_label_validation_view_map">지도에서 찾기</string>
     <string name="shipping_label_validation_contact_customer">고객에게 문의</string>
-    <string name="shipping_label_validation_error_template">유효성 검사 실패: %s</string>
     <string name="shipping_label_error_address_invalid_street">유효하지 않은 도로명</string>
     <string name="shipping_label_error_address_house_number_missing">번지 누락</string>
     <string name="shipping_label_error_address_not_found">주소를 찾을 수 없음</string>
@@ -402,11 +456,11 @@ Language: ko_KR
     <string name="shipping_label_create_packaging_details">포장 상세 정보</string>
     <string name="shipping_label_create_title">배송 레이블 만들기</string>
     <string name="shipping_label_more_information_link">추가 정보</string>
-    <string name="shipping_label_more_information_message">집에서 휴대폰으로 배송 레이블을 할인된 요금으로 인쇄하여 우체국에 가는 시간을 줄이세요!</string>
+    <string name="shipping_label_more_information_message">집에서 모바일 장치로 배송 레이블을 할인된 요금으로 인쇄하여 우체국에 가는 시간을 줄이세요!</string>
     <string name="shipping_label_more_information_heading">WooCommerce 배송으로 처리하여 시간과 비용 절약</string>
     <string name="shipping_label_more_information_title">WooCommerce 배송</string>
     <string name="order_mark_complete">주문을 완료로 표시</string>
-    <string name="orderdetail_shipping_label_notice">휴대폰으로 레이블 만들기에 대해 자세히 알아보기</string>
+    <string name="orderdetail_shipping_label_notice">모바일 장치로 레이블 만들기에 대해 자세히 알아보기</string>
     <string name="orderdetail_shipping_label_create_shipping_label">배송 레이블 만들기</string>
     <string name="orderdetail_shipping_label_m3_wip_message">이제 무료 WooCommerce 배송 플러그인으로 장치에서 직접 모든 실물 주문에 대한 배송 레이블을 만들 수 있습니다. \"배송 레이블 만들기\"를 눌러 베타 기능을 사용해 보세요!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">장치에서 배송 레이블을 만드세요!</string>
@@ -467,6 +521,7 @@ Language: ko_KR
     <string name="my_store_stats_availability_title">스토어의 분석을\n 표시할 수 없음</string>
     <string name="login_get_link_by_email">이메일로 로그인 링크 받기</string>
     <string name="email_not_registered_wpcom">이 이메일 주소와 연결된 워드프레스닷컴 계정을 찾을 수 없습니다.</string>
+    <string name="settings_enable_product_addons_teaser_message">출시 준비가 끝나면 주문 애드온 테스트해 보기</string>
     <string name="settings_enable_product_adding_teaser_title">제품 만들기</string>
     <string name="settings_preferences">기본 설정</string>
     <string name="product_trash_error">제품을 삭제하는 중 오류 발생</string>
@@ -489,7 +544,7 @@ Language: ko_KR
     <string name="shipping_label_paper_size_letter">편지지(8.5 x 11in)</string>
     <string name="shipping_label_paper_size_legal">법률 문서(8.5 x 14in)</string>
     <string name="shipping_label_preview_error">배송 레이블을 미리 보는 중 오류 발생</string>
-    <string name="shipping_label_print_info">휴대폰으로 인쇄하는 방법을 모르시나요?</string>
+    <string name="shipping_label_print_info">모바일 장치에서 인쇄하는 방법을 모르시나요?</string>
     <string name="shipping_label_paper_size_options_info">레이블 레이아웃 및 용지 크기 옵션 보기</string>
     <string name="shipping_label_print_button">배송 레이블 인쇄</string>
     <string name="shipping_label_paper_size_options_title">용지 크기 선택</string>
@@ -770,10 +825,9 @@ Language: ko_KR
     <string name="orderlist_loading">주문 검색 중…</string>
     <string name="product_detail_editable_text_hint">텍스트 입력</string>
     <string name="product_detail_title_hint">제품 제목 입력</string>
-    <string name="product_detail_save_product_success">제품 업데이트됨</string>
+    <string name="product_detail_save_product_success">상품 저장됨</string>
     <string name="product_detail_update_product_error">제품을 업데이트하는 중 오류 발생</string>
     <string name="product_update_dialog_message">기다려주세요…</string>
-    <string name="product_save_dialog_title">제품을 업데이트하는 중</string>
     <string name="product_description_empty">제품 설명</string>
     <string name="product_description">설명</string>
     <string name="product_edit_description">설명 수정</string>
@@ -1252,8 +1306,6 @@ Language: ko_KR
     <string name="error_copy_to_clipboard">클립보드에 복사하는 중 오류 발생</string>
     <string name="settings_switch_site_notifs_msg">%s(으)로 전환되었습니다. 이 저장소에 해당하는 알림만 받게 됩니다.</string>
     <string name="login_update_required_desc">이 저장소는 이전 버전의 WooCommerce를 사용합니다. 이 앱과 함께 사용하려면 저장소를 WooCommerce 3.5 이상으로 업그레이드하세요.</string>
-    <string name="promo_message_site_picker">이제 설정에서 선택한 스토어를 탭하여 스토어 간에 전환할 수도 있습니다.</string>
-    <string name="promo_title_site_picker">여러 스토어를 운영 중인가요?</string>
     <string name="promo_btn_try_it">지금 사용해 보기</string>
     <string name="promo_btn_got_it">이해함</string>
     <string name="tooltip_site_switcher">탭하여 스토어 전환</string>

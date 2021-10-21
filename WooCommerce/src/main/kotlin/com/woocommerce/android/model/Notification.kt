@@ -2,9 +2,7 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.R
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.WooNotificationType
-import com.woocommerce.android.push.getWooType
+import com.woocommerce.android.push.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -27,6 +25,22 @@ data class Notification(
 
     @IgnoredOnParcel
     val isReviewNotification = noteType == WooNotificationType.PRODUCT_REVIEW
+
+    /**
+     * Notifications are grouped based on the notification type and the store the notification belongs to.
+     * @param channelId - string resource of [getChannelId]
+     * remoteSiteId - remoteSiteId for the store the notification is from
+     *
+     * For instance: a new order notification from Store 1 with remoteSiteId = 12345, would return:
+     * wooandroid_notification_channel_order_id 12345
+     */
+    fun getGroup(channelId: String): String = "$channelId $remoteSiteId"
+
+    /**
+     * This method returns a group notification id based on the notification type
+     * and the store the notification belongs to
+     */
+    fun getGroupPushId(): Int = channelType.getGroupId() + remoteSiteId.toInt()
 }
 
 fun NotificationModel.toAppModel(resourceProvider: ResourceProvider): Notification {

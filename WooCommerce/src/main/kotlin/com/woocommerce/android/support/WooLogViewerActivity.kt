@@ -1,7 +1,5 @@
 package com.woocommerce.android.support
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -14,6 +12,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
@@ -22,6 +22,7 @@ import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import org.wordpress.android.util.ToastUtils
 import java.lang.String.format
@@ -43,20 +44,28 @@ class WooLogViewerActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        setupRecyclerView(binding, setupRecyclerDivider())
+    }
+
+    private fun setupRecyclerDivider(): AlignedDividerDecoration {
         val divider = AlignedDividerDecoration(
             this,
-            androidx.recyclerview.widget.DividerItemDecoration.VERTICAL, 0, clipToMargin = false
+            DividerItemDecoration.VERTICAL, 0, clipToMargin = false
         )
         ContextCompat.getDrawable(this, R.drawable.list_divider)?.let { drawable ->
             divider.setDrawable(drawable)
         }
+        return divider
+    }
 
-        binding.recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+    private fun setupRecyclerView(binding: ActivityLogviewerBinding, divider: AlignedDividerDecoration) {
+        binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.addItemDecoration(divider)
         binding.recycler.adapter = LogAdapter(this)
     }
 
     private fun shareAppLog() {
+        WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_TEXT, WooLog.toString())
@@ -70,8 +79,8 @@ class WooLogViewerActivity : AppCompatActivity() {
 
     private fun copyAppLogToClipboard() {
         try {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.setPrimaryClip(ClipData.newPlainText("AppLog", WooLog.toString()))
+            WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
+            copyToClipboard("AppLog", WooLog.toString())
             ToastUtils.showToast(this, R.string.logviewer_copied_to_clipboard)
         } catch (e: Exception) {
             WooLog.e(T.UTILS, e)

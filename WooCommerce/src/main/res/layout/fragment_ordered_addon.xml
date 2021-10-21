@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
+        android:id="@+id/main_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -29,17 +30,19 @@
                 tools:listitem="@layout/product_addon_card" />
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/addons_edit_notice"
                 style="@style/Woo.TextView.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/minor_10"
-                android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
-                android:text="@string/ordered_add_ons_details_info_notice"
-                android:drawableStart="@drawable/ic_info_outline_24dp"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_10"
                 android:drawablePadding="@dimen/minor_100"
+                android:drawableStart="@drawable/ic_info_outline_24dp"
                 android:gravity="center_vertical"
-                android:visibility="visible"
+                android:text="@string/ordered_add_ons_details_info_notice"
+                android:visibility="gone"
+                tools:visibility="visible"
                 tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
         </LinearLayout>
     </LinearLayout>

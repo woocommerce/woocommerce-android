@@ -1,11 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:51:18+0000
+Translation-Revision-Date: 2021-10-14 11:54:55+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">خطأ في أثناء إحضار تقرير حالة النظام. يرجى التحقُّق من WooCommerce -&gt; الحالة في مسؤول ووردبريس.</string>
+    <string name="support_system_status_report_share_error">تتعذر مشاركة تقرير حالة النظام</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">خطأ في أثناء نسخ  تقرير حالة النظام إلى الحافظة</string>
+    <string name="support_system_status_report_copied_to_clipboard">تم نسخ تقرير حالة النظام إلى الحافظة</string>
+    <string name="support_system_status_report_detail">معلومات النظام المتنوعة حول موقعك</string>
+    <string name="support_system_status_report_clipboard_label">تقرير حالة النظام الخاص بـ WooCommerce</string>
+    <string name="support_system_status_report">تقرير حالة النظام</string>
+    <string name="card_reader_welcome_dialog_text">تهانينا، أصبحتَ الآن قادرًا على قبول مدفوعات بطاقات السحب والائتمان باستخدام مدفوعات WooCommerce!</string>
+    <string name="card_reader_welcome_dialog_header">جمع المدفوعات باستخدام قارئ البطاقة</string>
+    <string name="card_reader_payment_failed_amount_too_small">يجب أن يكون المبلغ 0.50 دولار أمريكي على الأقل</string>
+    <string name="card_reader_payment_payment_failed_ok">موافق</string>
+    <string name="settings_whats_new_icon_description">صورة أيقونة الميزة الجديدة</string>
+    <string name="settings_switch_store">تبديل المخزن</string>
+    <string name="product_update_failure_notification">فشل تحديث المنتج ⁦%1$s⁩</string>
+    <string name="product_update_success_notification_content">تمت إضافة ⁦%1$d⁩ من الصور إلى المنتج ⁦%2$s⁩</string>
+    <string name="product_update_success_notification_title">تم تحديث المنتج</string>
+    <string name="product_update_notification">تحديث المنتج ⁦%1$s⁩</string>
+    <string name="product_detail_background_image_upload">سيستمر رفع الصورة في الخلفية</string>
+    <string name="card_reader_payment_save_for_later">حفظ الإيصال والمتابعة</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">موافق</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">عذرًا، يتعذر علينا تحميل الوظائف الإضافية للطلب الآن</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">حدث خطأ ما</string>
+    <string name="settings_whats_new">ما الجديد في WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">عرض الوظائف الإضافية</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">عذرًا، تعذر علينا تغيير إعداد هذه الميزة الآن</string>
+    <string name="product_category">التصنيف</string>
+    <string name="notification_review_title">لديك مراجعة واحدة جديدة! 🌟</string>
+    <string name="notification_order_title">لديك طلب جديد واحد! 🎉</string>
+    <string name="shipping_label_package_details_items_count_one">%d العنصر</string>
+    <string name="upsell_product_count_many">%d من المنتجات الموصى بها</string>
+    <string name="upsell_product_count_one">%d منتج موصى به</string>
+    <string name="cross_sell_product_count_many">%d من المنتجات التسويقية</string>
+    <string name="cross_sell_product_count_one">%d منتج تسويقي</string>
+    <string name="product_count_many">%d المنتجات</string>
+    <string name="product_count_one">%d المنتج</string>
+    <string name="product_add_ons_title">الوظائف الإضافية للمنتجات</string>
+    <string name="product_save_dialog_title">حفظ منتجك</string>
+    <string name="pending_review_label">في انتظار المراجعة</string>
+    <string name="card_reader_payment_reader_not_connected">يرجى التأكُّد من اتصال قارئ البطاقة.</string>
+    <string name="card_reader_payment_try_another_card_prompt">إعادة المحاولة باستخدام بطاقة أخرى</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">إعادة محاولة الضغط على بطاقتك أو إدخالها أو تمريرها</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">تم اكتشاف عدة بطاقات. المحاولة مجددًا باستخدام بطاقة واحدة</string>
+    <string name="card_reader_payment_remove_card_prompt">إزالة البطاقة</string>
+    <string name="card_reader_payment_retry_card_prompt">إعادة المحاولة باستخدام البطاقة نفسها</string>
+    <string name="order_refunds_refund_info_description_many">%d العناصر</string>
+    <string name="order_refunds_refund_info_description_one">%d العنصر</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d من أيام العمل</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d يوم عمل</string>
+    <string name="shipping_label_validation_error_template">تعذر علينا التحقُّق من عنوان الشحن تلقائيًا: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">تعذر علينا التحقُّق من العنوان الأصلي تلقائيًا. اعرضه على خرائط غوغل للتأكُّد من صحة العنوان.</string>
+    <string name="ordered_add_ons_wip_message">نعمل على تسهيل اطلاعك على الوظائف الإضافية للمنتج مباشرةً من جهازك! في الوقت الحالي، ستتمكن من الاطلاع على الوظائف الإضافية لطلباتك. يمكنك إنشاء هذه الوظائف الإضافية وتحريرها في لوحة تحكم الويب الخاصة بك.</string>
+    <string name="ordered_add_ons_wip_title">اعرض الوظائف الإضافية من جهازك!</string>
+    <string name="ordered_add_ons_details_info_notice">إذا كنت تقوم بإعادة تسمية وظيفة إضافية في لوحة تحكم الويب الخاصة بك، فيرجى ملاحظة أنه لن تعرض الطلبات السابقة تلك الوظيفة الإضافية داخل التطبيق.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">عرض الوظائف الإضافية</string>
+    <string name="save">حفظ</string>
     <string name="support_contact_payments_detail">تواصل مع أعضاء فريق الدعم لدينا الذين يمكنهم مساعدتك على الإجابة عن الأسئلة المتعلقة بالمدفوعات</string>
     <string name="support_contact_payments">الاتصال بدعم المدفوعات</string>
     <string name="product_images_error_detail_title">رفع التفاصيل (%d)</string>
@@ -13,12 +68,10 @@ Language: ar
     <string name="product_image_service_error_uploading_single">يتعذر رفع %d ملف</string>
     <string name="product_image_service_error_media_null">يتعذر العثور على الوسائط</string>
     <string name="product_add_ons_details_info_notice">يمكنك تحرير وظائف المنتج الإضافية في لوحة تحكم الويب.</string>
-    <string name="product_add_ons_card_button_title">الوظائف الإضافية للمنتجات</string>
     <string name="product_images_learn_more_button">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول رفع الصور</string>
     <string name="card_reader_onboarding_generic_error_hint">عذرًا، يتعذر علينا التحقُّق من المدفوعات الشخصية لهذا المخزن</string>
     <string name="card_reader_onboarding_generic_error_header">يتعذر التحقُّق من المدفوعات الشخصية لهذا المخزن</string>
     <string name="card_reader_detail_connected_firmware_version">البرنامج الثابت: %s</string>
-    <string name="card_reader_payment_save_for_later">حفظ لوقت لاحق</string>
     <string name="card_reader_purchase_card_reader">طلب قارئ البطاقة</string>
     <string name="card_reader_manage_card_reader">إدارة قارئ البطاقة</string>
     <string name="shipping_label_multiple_customs_form_print_button">اطبع</string>
@@ -80,6 +133,7 @@ Language: ar
     <string name="product_attributes_created_generate_action_text">إنشاء مجموعة</string>
     <string name="product_attributes_created_description">لقد قمت الآن بإضافة السمات، يمكنك إنشاء مجموعتك الأولى!</string>
     <string name="product_attributes_created_title">تم إنشاء سمات</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">لا يوصى بإلغاء أي تحديث برنامج جارٍ</string>
     <string name="card_reader_payment_failed_unexpected_error_state">عذرًا، تتعذر معالجة عملية الدفع هذه</string>
     <string name="card_reader_payment_failed_server_error_state">لا اتصال بالخادم</string>
@@ -355,6 +409,7 @@ Language: ar
     <string name="shipping_label_packages_loading_message">يُرجى الانتظار…</string>
     <string name="shipping_label_packages_loading_title">تحميل الحزم!</string>
     <string name="shipping_label_package_details_title_template">الحزمة ⁦%1$d⁩</string>
+    <string name="shipping_label_package_details_items_count_many">%d العناصر</string>
     <string name="shipping_label_packages_loading_error">يتعذر تحميل تعريفات الحزمة</string>
     <string name="shipping_label_package_details_weight_info">يتضمن وزن الحزمة</string>
     <string name="shipping_label_package_details_weight_hint">إجمالي وزن الحزمة (⁦%1$s⁩)</string>
@@ -369,9 +424,8 @@ Language: ar
     <string name="shipping_label_address_suggestion_use_selected_address">استخدام العنوان المحدَّد</string>
     <string name="shipping_label_edit_address_loading_progress_title">تحميل بيانات العنوان</string>
     <string name="product_wip_title_m5">تتوافر ميزات جديدة!</string>
-    <string name="shipping_label_validation_view_map">فتح الخريطة</string>
+    <string name="shipping_label_validation_view_map">بحث على الخريطة</string>
     <string name="shipping_label_validation_contact_customer">الاتصال بالعميل</string>
-    <string name="shipping_label_validation_error_template">فشل التحقُّق: %s</string>
     <string name="shipping_label_error_address_invalid_street">شارع غير صالح</string>
     <string name="shipping_label_error_address_house_number_missing">رقم المنزل مفقود</string>
     <string name="shipping_label_error_address_not_found">لم يتم العثور على العنوان</string>
@@ -402,11 +456,11 @@ Language: ar
     <string name="shipping_label_create_packaging_details">تفاصيل التعبئة</string>
     <string name="shipping_label_create_title">إنشاء ملصق الشحن</string>
     <string name="shipping_label_more_information_link">تعلم المزيد</string>
-    <string name="shipping_label_more_information_message">توقف عن الذهاب إلى مكتب البريد عن طريق طباعة ملصقات الشحن في المنزل باستخدام هاتفك بأسعار مخفضة!</string>
+    <string name="shipping_label_more_information_message">توقف عن الذهاب إلى مكتب البريد عن طريق طباعة ملصقات الشحن في المنزل باستخدام جهازك المحمول بأسعار مخفضة!</string>
     <string name="shipping_label_more_information_heading">ادخر الوقت والمال عن طريق الالتزام بالشحن عبر WooCommerce</string>
     <string name="shipping_label_more_information_title">الشحن عبر WooCommerce</string>
     <string name="order_mark_complete">وسم الطلب بأنه مكتمل</string>
-    <string name="orderdetail_shipping_label_notice">معرفة المزيد عن إنشاء ملصقات باستخدام هاتفك</string>
+    <string name="orderdetail_shipping_label_notice">معرفة المزيد حول إنشاء ملصقات باستخدام جهازك المحمول</string>
     <string name="orderdetail_shipping_label_create_shipping_label">إنشاء ملصق الشحن</string>
     <string name="orderdetail_shipping_label_m3_wip_message">يمكنك الآن إنشاء ملصقات شحن لجميع الطلبات المادية مباشرةً من جهازك باستخدام إضافة الشحن المجانية عبر WooCommerce. اضغط على \"إنشاء ملصق شحن\" لتجربة ميزة بيتا الخاصة بنا!</string>
     <string name="orderdetail_shipping_label_m2_wip_title">قم بإنشاء ملصقات الشحن من جهازك!!</string>
@@ -467,6 +521,7 @@ Language: ar
     <string name="my_store_stats_availability_title">يتعذر علينا عرض\n تحليلات مخزنك</string>
     <string name="login_get_link_by_email">الحصول على رابط تسجيل الدخول عن طريق البريد الإلكتروني</string>
     <string name="email_not_registered_wpcom">حسناً، لا يمكننا العثور على حساب WordPress.com متصلاً بعنوان البريد الإلكتروني هذا.</string>
+    <string name="settings_enable_product_addons_teaser_message">اختبر عرض الوظائف الإضافية للطلبات بينما نستعد للإطلاق</string>
     <string name="settings_enable_product_adding_teaser_title">إنشاء المنتجات</string>
     <string name="settings_preferences">التفضيلات</string>
     <string name="product_trash_error">حدث خطأ في أثناء نقل المنتج في سلة المهملات</string>
@@ -489,7 +544,7 @@ Language: ar
     <string name="shipping_label_paper_size_letter">خطاب (8.5 × 11 بوصة)</string>
     <string name="shipping_label_paper_size_legal">قانوني (8.5 × 14 بوصة)</string>
     <string name="shipping_label_preview_error">حدث خطأ في أثناء معاينة ملصق الشحن</string>
-    <string name="shipping_label_print_info">ألا تعرف كيفية الطباعة باستخدام هاتفك؟ </string>
+    <string name="shipping_label_print_info">ألا تعرف كيفية الطباعة باستخدام جهازك المحمول؟</string>
     <string name="shipping_label_paper_size_options_info">الرجوع إلى خيارات تخطيط الملصق ومقاس الورقة</string>
     <string name="shipping_label_print_button">طباعة ملصق الشحن</string>
     <string name="shipping_label_paper_size_options_title">اختيار مقاس الورقة</string>
@@ -770,10 +825,9 @@ Language: ar
     <string name="orderlist_loading">جارٍ البحث عن طلباتك…</string>
     <string name="product_detail_editable_text_hint">إدخال نص</string>
     <string name="product_detail_title_hint">إدخال عنوان الموقع</string>
-    <string name="product_detail_save_product_success">تم تحديث المنتج</string>
+    <string name="product_detail_save_product_success">تم حفظ المنتج.</string>
     <string name="product_detail_update_product_error">خطأ في أثناء تحرير المنتج</string>
     <string name="product_update_dialog_message">يُرجى الانتظار…</string>
-    <string name="product_save_dialog_title">تحديث المنتج</string>
     <string name="product_description_empty">وصف منتجك</string>
     <string name="product_description">الوصف</string>
     <string name="product_edit_description">تحرير الوصف</string>
@@ -1252,8 +1306,6 @@ Language: ar
     <string name="error_copy_to_clipboard">حدث خطأ أثناء النسخ إلى الحافظة</string>
     <string name="settings_switch_site_notifs_msg">تم التبديل إلى %s. لن تتلقى إلا تنبيهات لهذا المتجر</string>
     <string name="login_update_required_desc">يستخدم هذا المتجر إصدارًا أقدم من WooCommerce. يرجى ترقية متجرك إلى WooCommerce 3.5 أو الإصدار الأعلى لاستخدامه مع هذا التطبيق.</string>
-    <string name="promo_message_site_picker">يمكنك التبديل بين المتاجر بالنقر على المتجر المحدد في \"الإعدادات\"</string>
-    <string name="promo_title_site_picker">هل تريد تشغيل متاجر متعددة؟</string>
     <string name="promo_btn_try_it">جرّبه الآن</string>
     <string name="promo_btn_got_it">فهمت</string>
     <string name="tooltip_site_switcher">انقر للتبديل بين المتاجر</string>

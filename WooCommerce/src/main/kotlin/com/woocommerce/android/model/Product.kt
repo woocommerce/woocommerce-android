@@ -74,7 +74,6 @@ data class Product(
     val groupedProductIds: List<Long>,
     val crossSellProductIds: List<Long>,
     val upsellProductIds: List<Long>,
-    val addons: List<ProductAddon>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -137,8 +136,7 @@ data class Product(
             downloadLimit == product.downloadLimit &&
             downloadExpiry == product.downloadExpiry &&
             isDownloadable == product.isDownloadable &&
-            attributes == product.attributes &&
-            addons == product.addons
+            attributes == product.attributes
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -324,7 +322,6 @@ data class Product(
                 downloads = updatedProduct.downloads,
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
-                addons = updatedProduct.addons
             )
         } ?: this.copy()
     }
@@ -545,14 +542,13 @@ fun WCProductModel.toAppModel(): Product {
         groupedProductIds = this.getGroupedProductIdList(),
         crossSellProductIds = this.getCrossSellProductIdList(),
         upsellProductIds = this.getUpsellProductIdList(),
-        addons = this.addons?.map { it.toAppModel() }.orEmpty()
     )
 }
 
 fun MediaModel.toAppModel(): Product.Image {
     return Product.Image(
         id = this.mediaId,
-        name = this.fileName,
+        name = this.fileName.orEmpty(),
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
     )

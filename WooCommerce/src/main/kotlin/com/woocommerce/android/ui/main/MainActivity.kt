@@ -49,31 +49,26 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
-import com.woocommerce.android.widgets.WCPromoDialog
-import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
-import com.woocommerce.android.widgets.WCPromoTooltip
-import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
-// TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("LargeClass")
-@Suppress("LargeClass")
+// TODO Extract logic out of MainActivity to reduce size and remove this @Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions")
 @AndroidEntryPoint
 class MainActivity :
     AppUpgradeActivity(),
     MainContract.View,
     MainNavigationRouter,
     MainBottomNavigationView.MainNavigationListener,
-    NavController.OnDestinationChangedListener,
-    WCPromoDialog.PromoDialogListener {
+    NavController.OnDestinationChangedListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
-        private const val TOKEN_PARAMETER = "token"
 
         private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
@@ -254,6 +249,7 @@ class MainActivity :
         updateOrderBadge(false)
 
         checkConnection()
+        viewModel.showFeatureAnnouncementIfNeeded()
     }
 
     override fun onPause() {
@@ -410,7 +406,10 @@ class MainActivity :
                 R.id.addOrderNoteFragment,
                 R.id.printShippingLabelInfoFragment,
                 R.id.shippingLabelFormatOptionsFragment,
-                R.id.printingInstructionsFragment -> {
+                R.id.printingInstructionsFragment,
+                R.id.editCustomerOrderNoteFragment,
+                R.id.shippingAddressEditingFragment,
+                R.id.billingAddressEditingFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -613,11 +612,6 @@ class MainActivity :
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
-    private fun getAuthTokenFromIntent(): String? {
-        val uri = intent.data
-        return uri?.getQueryParameter(TOKEN_PARAMETER)
-    }
-
     // region Bottom Navigation
     override fun updateReviewsBadge() {
         if (AppPrefs.getHasUnseenReviews()) {
@@ -695,15 +689,13 @@ class MainActivity :
     private fun initFragment(savedInstanceState: Bundle?) {
         setupObservers()
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
+        // Reset this flag now that it's being processed
+        intent.removeExtra(FIELD_OPENED_FROM_PUSH)
 
         if (savedInstanceState != null) {
             restoreSavedInstanceState(savedInstanceState)
         } else if (openedFromPush) {
             // Opened from a push notification
-            //
-            // Reset this flag now that it's being processed
-            intent.removeExtra(FIELD_OPENED_FROM_PUSH)
-
             menu?.close()
 
             val localPushId = intent.getIntExtra(FIELD_PUSH_ID, 0)
@@ -739,6 +731,17 @@ class MainActivity :
                     }
                     is ViewReviewDetail -> {
                         showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
+                    }
+                    is RestartActivityForNotification -> {
+                        // Add flags for handling the push notification after restart
+                        intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
+                        intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
+                        intent.putExtra(FIELD_PUSH_ID, event.pushId)
+                        restart()
+                    }
+                    is ShowFeatureAnnouncement -> {
+                        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+                        navController.navigateSafely(action)
                     }
                 }
             }
@@ -852,20 +855,6 @@ class MainActivity :
         if (!isBottomNavShowing) {
             isBottomNavShowing = true
             WooAnimUtils.animateBottomBar(binding.bottomNav, true, Duration.SHORT)
-        }
-    }
-
-    /**
-     * User tapped a button in WCPromoDialogFragment
-     */
-    override fun onPromoButtonClicked(promoButton: PromoButton) {
-        when (promoButton) {
-            PromoButton.SITE_PICKER_TRY_IT -> {
-                WCPromoTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
-                showSettingsScreen()
-            }
-            else -> {
-            }
         }
     }
 

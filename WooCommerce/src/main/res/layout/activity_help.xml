@@ -78,6 +78,15 @@
                 android:layout_height="wrap_content"
                 app:optionTitle="@string/support_application_log"
                 app:optionValue="@string/support_application_log_detail"/>
+
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/ssrContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/support_system_status_report"
+                app:optionValue="@string/support_system_status_report_detail"
+                android:visibility="gone" />
+
         </LinearLayout>
     </ScrollView>
 

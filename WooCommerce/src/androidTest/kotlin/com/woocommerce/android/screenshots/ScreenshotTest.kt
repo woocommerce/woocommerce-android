@@ -38,15 +38,25 @@ class ScreenshotTest : TestBase() {
             .selectLogin()
             // Connect a WooCommerce store by URL
             .proceedWith(BuildConfig.SCREENSHOTS_URL)
-            // Enter email address
             .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
-            // No magic link, this is an automated test, enter password manually
-            .proceedWithPassword()
             .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
         // My Store
         // When debugging these tests, you might want to save time and avoid the logout - login flow above.
         MyStoreScreen()
             .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
+    }
+
+    @Test
+    fun mocksDemo() {
+        WelcomeScreen
+            .logoutIfNeeded()
+            .selectLogin()
+            // Connect a WooCommerce store by URL
+            .proceedWith(BuildConfig.SCREENSHOTS_URL)
+            .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
+            .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
+
+        Thread.sleep(1000000)
     }
 }

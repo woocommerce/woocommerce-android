@@ -6,11 +6,7 @@ import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.TerminalException
 import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorCode
 import com.stripe.stripeterminal.model.external.TerminalException.TerminalErrorCode.PAYMENT_DECLINED_BY_READER
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.CARD_READ_TIMED_OUT
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.NO_NETWORK
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.PAYMENT_DECLINED
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.SERVER_ERROR
+import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.*
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -84,6 +80,30 @@ class PaymentErrorMapperTest {
     @Test
     fun `when other Terminal exception thrown, then GENERIC_ERROR type returned`() {
         whenever(terminalException.errorCode).thenReturn(mock())
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(GENERIC_ERROR)
+    }
+
+    @Test
+    fun `when STRIPE_API_ERROR with amount_too_small code is thrown, then AMOUNT_TOO_SMALL type returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.STRIPE_API_ERROR)
+        whenever(terminalException.apiError).thenReturn(mock())
+        whenever(terminalException.apiError?.code).thenReturn(
+            PaymentErrorMapper.StripeApiError.AMOUNT_TOO_SMALL.message
+        )
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(AMOUNT_TOO_SMALL)
+    }
+
+    @Test
+    fun `when STRIPE_API_ERROR with code other than amount_too_small is thrown, then GENERIC_ERROR type returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.STRIPE_API_ERROR)
+        whenever(terminalException.apiError).thenReturn(mock())
+        whenever(terminalException.apiError?.code).thenReturn("error")
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 

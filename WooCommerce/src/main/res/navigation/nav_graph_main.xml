@@ -8,7 +8,11 @@
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
         android:label="fragment_my_store"
-        tools:layout="@layout/fragment_my_store" />
+        tools:layout="@layout/fragment_my_store" >
+        <action
+            android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
+            app:destination="@id/jetpackBenefitsDialog" />
+    </fragment>
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -232,4 +236,22 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
+    <dialog
+        android:id="@+id/featureAnnouncementDialogFragmentOnMain"
+        android:name="com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment"
+        android:label="FeatureAnnouncementDialogFragment" >
+        <argument
+            android:name="announcement"
+            app:argType="com.woocommerce.android.model.FeatureAnnouncement"
+            app:nullable="false" />
+    </dialog>
+    <action
+        android:id="@+id/action_open_Whatsnew_from_Main"
+        app:destination="@id/featureAnnouncementDialogFragmentOnMain"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out" />
+    <dialog
+        android:id="@+id/jetpackBenefitsDialog"
+        android:name="com.woocommerce.android.ui.mystore.JetpackBenefitsDialog"
+        android:label="JetpackBenefitsDialog" />
 </navigation>

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
+import com.woocommerce.android.AppPrefsWrapper
 import org.mockito.kotlin.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -8,6 +9,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyLong
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -23,6 +26,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val wooStore: WooCommerceStore = mock()
     private val wcPayStore: WCPayStore = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private val site = SiteModel()
 
@@ -30,6 +34,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     fun setUp() = testBlocking {
         checker = CardReaderOnboardingChecker(
             selectedSite,
+            appPrefsWrapper,
             wooStore,
             wcPayStore,
             coroutinesTestRule.testDispatchers,
@@ -63,41 +68,41 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when store country not supported, then COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
+    fun `when store country not supported, then STORE_COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("unsupported country abc")
 
         val result = checker.getOnboardingState()
 
-        assertThat(result).isInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.StoreCountryNotSupported::class.java)
     }
 
     @Test
-    fun `when store country supported, then COUNTRY_NOT_SUPPORTED not returned`() = testBlocking {
+    fun `when store country supported, then STORE_COUNTRY_NOT_SUPPORTED not returned`() = testBlocking {
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
 
         val result = checker.getOnboardingState()
 
-        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
+        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.StoreCountryNotSupported::class.java)
     }
 
     @Test
-    fun `given country code in lower case, when store country supported, then COUNTRY_NOT_SUPPORTED not returned`() =
+    fun `given country in lower case, when store country supported, then STORE_COUNTRY_NOT_SUPPORTED not returned`() =
         testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("us")
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
+            assertThat(result).isNotInstanceOf(CardReaderOnboardingState.StoreCountryNotSupported::class.java)
         }
 
     @Test
-    fun `when country code is not found, then COUNTRY_NOT_SUPPORTED returned`() =
+    fun `when country code is not found, then STORE_COUNTRY_NOT_SUPPORTED returned`() =
         testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn(null)
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isInstanceOf(CardReaderOnboardingState.CountryNotSupported::class.java)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.StoreCountryNotSupported::class.java)
         }
 
     @Test
@@ -108,6 +113,46 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             checker.getOnboardingState()
 
             verify(wcPayStore, never()).loadAccount(anyOrNull())
+        }
+
+    @Test
+    fun `when account country not supported, then STRIPE_COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
+        whenever(wcPayStore.loadAccount(site)).thenReturn(
+            buildPaymentAccountResult(
+                countryCode = "unsupported country abc"
+            )
+        )
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountCountryNotSupported::class.java)
+    }
+
+    @Test
+    fun `when account country supported, then ACCOUNT_COUNTRY_NOT_SUPPORTED not returned`() = testBlocking {
+        whenever(wcPayStore.loadAccount(site)).thenReturn(
+            buildPaymentAccountResult(
+                countryCode = "US"
+            )
+        )
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.StripeAccountCountryNotSupported::class.java)
+    }
+
+    @Test
+    fun `given country in lower case, when country supported, then ACCOUNT_COUNTRY_NOT_SUPPORTED not returned`() =
+        testBlocking {
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(
+                    countryCode = "us"
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isNotInstanceOf(CardReaderOnboardingState.StripeAccountCountryNotSupported::class.java)
         }
 
     @Test
@@ -355,12 +400,32 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
         }
 
+    @Test
+    fun `when onboarding completed, then onboarding completed flag saved`() = testBlocking {
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())
+    }
+
+    @Test
+    fun `when onboarding NOT completed, then onboarding completed NOT saved`() = testBlocking {
+        whenever(wcPayStore.loadAccount(site)).thenReturn(
+            buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE,
+            )
+        )
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper, never()).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())
+    }
+
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPayAccountStatusEnum = WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE,
         hasPendingRequirements: Boolean = false,
         hadOverdueRequirements: Boolean = false,
         liveAccount: Boolean = true,
         testModeEnabled: Boolean? = false,
+        countryCode: String = "US",
     ) = WooResult(
         WCPaymentAccountResult(
             status,
@@ -369,7 +434,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             currentDeadline = null,
             statementDescriptor = "",
             storeCurrencies = WCPaymentAccountResult.WCPayAccountStatusEnum.StoreCurrencies("", listOf()),
-            country = "US",
+            country = countryCode,
             isCardPresentEligible = true,
             isLive = liveAccount,
             testMode = testModeEnabled

@@ -10,12 +10,9 @@ interface MyStoreContract {
     interface Presenter : BasePresenter<View> {
         fun loadStats(granularity: StatsGranularity, forced: Boolean = false)
         fun getStatsCurrency(): String?
-        fun fetchHasOrders()
-        fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean)
-        fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean)
         fun getSelectedSiteName(): String?
-        suspend fun fetchTopPerformersStats(granularity: StatsGranularity, forced: Boolean)
         suspend fun loadTopPerformersStats(granularity: StatsGranularity, forced: Boolean = false)
+        fun dismissJetpackBenefitsBanner()
     }
 
     interface View : BaseView<Presenter> {
@@ -29,8 +26,10 @@ interface MyStoreContract {
         fun showTopPerformersError(granularity: StatsGranularity)
         fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity)
         fun showVisitorStatsError(granularity: StatsGranularity)
+        fun showEmptyVisitorStatsForJetpackCP()
         fun showErrorSnack()
         fun showEmptyView(show: Boolean)
+        fun showJetpackBenefitsBanner(show: Boolean)
 
         fun showChartSkeleton(show: Boolean)
         fun showTopPerformersSkeleton(show: Boolean)

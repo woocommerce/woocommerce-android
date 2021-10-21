@@ -52,14 +52,15 @@ object AppPrefs {
         IS_USER_ELIGIBLE,
         USER_EMAIL,
         RECEIPT_PREFIX,
-        IS_CARD_PRESENT_ELIGIBLE
+        CARD_READER_ONBOARDING_COMPLETED
     }
 
     /**
      * Application related preferences. When the user changes a site, these preferences are erased.
      */
     private enum class DeletableSitePrefKey : PrefKey {
-        TRACKING_EXTENSION_AVAILABLE
+        TRACKING_EXTENSION_AVAILABLE,
+        JETPACK_BENEFITS_BANNER_DISMISSAL_DATE
     }
 
     /**
@@ -99,6 +100,9 @@ object AppPrefs {
 
         // show card reader tutorial after a reader is connected
         SHOW_CARD_READER_CONNECTED_TUTORIAL,
+
+        // The last version of the app where an announcement was shown,
+        LAST_VERSION_WITH_ANNOUNCEMENT,
     }
 
     fun init(context: Context) {
@@ -225,6 +229,12 @@ object AppPrefs {
 
     fun setShowCardReaderConnectedTutorial(show: Boolean) =
         setBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, show)
+
+    fun getLastVersionWithAnnouncement() =
+        getString(UndeletablePrefKey.LAST_VERSION_WITH_ANNOUNCEMENT, "0")
+
+    fun setLastVersionWithAnnouncement(version: String) =
+        setString(UndeletablePrefKey.LAST_VERSION_WITH_ANNOUNCEMENT, version)
 
     /**
      * Flag to check products features are enabled
@@ -390,20 +400,37 @@ object AppPrefs {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
     }
 
+    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        PreferenceUtils.getBoolean(
+            getPreferences(),
+            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            false
+        )
+
+    fun setCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        PreferenceUtils.setBoolean(
+            getPreferences(),
+            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            true
+        )
+
+    fun getJetpackBenefitsDismissalDate(): Long {
+        return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)
+    }
+
+    fun recordJetpackBenefitsDismissal() {
+        return setLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, System.currentTimeMillis())
+    }
+
+    private fun getCardReaderOnboardingCompletedKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        "${DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+
     fun isTrackingExtensionAvailable(): Boolean {
         return getBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, false)
     }
 
     fun setTrackingExtensionAvailable(isAvailable: Boolean) {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
-    }
-
-    fun setIsCardPresentEligible(isEligible: Boolean) {
-        setBoolean(DeletablePrefKey.IS_CARD_PRESENT_ELIGIBLE, isEligible)
-    }
-
-    fun isCardPresentEligible(): Boolean {
-        return getBoolean(DeletablePrefKey.IS_CARD_PRESENT_ELIGIBLE, false)
     }
 
     /**
@@ -448,6 +475,12 @@ object AppPrefs {
 
     private fun setInt(key: PrefKey, value: Int) =
         PreferenceUtils.setInt(getPreferences(), key.toString(), value)
+
+    private fun getLong(key: PrefKey, default: Long = 0L) =
+        PreferenceUtils.getLong(getPreferences(), key.toString(), default)
+
+    private fun setLong(key: PrefKey, value: Long) =
+        PreferenceUtils.setLong(getPreferences(), key.toString(), value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
         return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue) ?: defaultValue

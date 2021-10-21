@@ -141,7 +141,8 @@ class OrderFulfillFragment :
     private fun showOrderDetail(order: Order, binding: FragmentOrderFulfillBinding) {
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
-            isVirtualOrder = viewModel.hasVirtualProductsOnly()
+            isVirtualOrder = viewModel.hasVirtualProductsOnly(),
+            isReadOnly = true
         )
         binding.buttonMarkOrderCompete.setOnClickListener {
             viewModel.onMarkOrderCompleteButtonClicked()

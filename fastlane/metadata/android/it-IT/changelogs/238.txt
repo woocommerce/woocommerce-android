@@ -1,4 +1,0 @@
-7,3:
-I venditori che usano l'estensione WooCommerce Shipping & Tax saranno felici dei miglioramenti che abbiamo apportato. Puoi creare pacchetti personalizzati durante la creazione di un'etichetta. Puoi anche creare più etichette di spedizione per un unico ordine.
-
-Questi miglioramenti sono stati pensati per semplificare ancora di più la tua esperienza Speriamo si noti l'amore che mettiamo nel nostro software.

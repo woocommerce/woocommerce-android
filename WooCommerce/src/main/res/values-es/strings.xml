@@ -1,11 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-08-19 20:49:22+0000
+Translation-Revision-Date: 2021-10-14 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="support_system_status_report_fetch_error">Se ha producido un error al recuperar SSR. Consulta WooCommerce -&gt; Estado en wp-admin.</string>
+    <string name="support_system_status_report_share_error">No se puede compartir el informe de estado del sistema</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Se ha producido un error al copiar SSR en el portapapeles.</string>
+    <string name="support_system_status_report_copied_to_clipboard">Se ha copiado el informe de estado del sistema en el portapapeles.</string>
+    <string name="support_system_status_report_detail">Información diversa sobre el sistema de tu sitio</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">Informe de estado del sistema</string>
+    <string name="card_reader_welcome_dialog_text">¡Enhorabuena! Ya puedes aceptar pagos con tarjetas de débito y crédito con WooCommerce Payments.</string>
+    <string name="card_reader_welcome_dialog_header">Recibe pagos con un lector de tarjetas</string>
+    <string name="card_reader_payment_failed_amount_too_small">El importe mínimo es de 0,50 $</string>
+    <string name="card_reader_payment_payment_failed_ok">Aceptar</string>
+    <string name="settings_whats_new_icon_description">Imagen del icono de la nueva función</string>
+    <string name="settings_switch_store">Cambiar de tienda</string>
+    <string name="product_update_failure_notification">Se ha producido un error al actualizar el producto %1$s</string>
+    <string name="product_update_success_notification_content">Se han añadido %1$d imágenes al producto %2$s</string>
+    <string name="product_update_success_notification_title">Producto actualizado</string>
+    <string name="product_update_notification">Actualizando el producto %1$s</string>
+    <string name="product_detail_background_image_upload">La subida de imágenes continuará en segundo plano</string>
+    <string name="card_reader_payment_save_for_later">Guarda el recibo y continua</string>
+    <string name="ordered_add_ons_loading_failed_dialog_ok_action">Aceptar</string>
+    <string name="ordered_add_ons_loading_failed_dialog_message">Lo sentimos, no hemos podido cargar los complementos del pedido en este momento</string>
+    <string name="ordered_add_ons_loading_failed_dialog_title">Algo ha salido mal</string>
+    <string name="settings_whats_new">Novedades de WooCommerce</string>
+    <string name="settings_enable_product_addons_teaser_title">Ver complementos</string>
+    <string name="settings_enable_beta_feature_failed_snackbar_text">No hemos podido cambiar la configuración de esta función</string>
+    <string name="product_category">Categoría</string>
+    <string name="notification_review_title">¡Tienes 1 reseña nueva! 🌟</string>
+    <string name="notification_order_title">¡Tienes 1 pedido nuevo! 🎉</string>
+    <string name="shipping_label_package_details_items_count_one">%d elemento</string>
+    <string name="upsell_product_count_many">%d ventas dirigidas de productos</string>
+    <string name="upsell_product_count_one">%d venta dirigida de producto</string>
+    <string name="cross_sell_product_count_many">%d ventas cruzadas de productos</string>
+    <string name="cross_sell_product_count_one">%d venta cruzada de producto</string>
+    <string name="product_count_many">%d productos</string>
+    <string name="product_count_one">%d producto</string>
+    <string name="product_add_ons_title">Complementos de producto</string>
+    <string name="product_save_dialog_title">Guardando tu producto</string>
+    <string name="pending_review_label">Pendiente de revisión</string>
+    <string name="card_reader_payment_reader_not_connected">Asegúrate de que el lector de tarjetas está conectado.</string>
+    <string name="card_reader_payment_try_another_card_prompt">Inténtalo de nuevo con otra tarjeta</string>
+    <string name="card_reader_payment_try_another_read_method_prompt">Vuelve a tocar, insertar o pasar la tarjeta</string>
+    <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Se han detectado varias tarjetas. Inténtalo de nuevo con una sola tarjeta</string>
+    <string name="card_reader_payment_remove_card_prompt">Quita la tarjeta</string>
+    <string name="card_reader_payment_retry_card_prompt">Inténtalo de nuevo con la misma tarjeta</string>
+    <string name="order_refunds_refund_info_description_many">%d elementos</string>
+    <string name="order_refunds_refund_info_description_one">%d elemento</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_many">%d días laborables</string>
+    <string name="shipping_label_shipping_carrier_rates_delivery_estimate_one">%d día laborable</string>
+    <string name="shipping_label_validation_error_template">No hemos podido verificar automáticamente la dirección de envío: %s</string>
+    <string name="shipping_label_edit_origin_address_error_warning">No hemos podido verificar la dirección de origen automáticamente. Visualízala en Google Maps para comprobar que la dirección es correcta.</string>
+    <string name="ordered_add_ons_wip_message">Estamos trabajando para que sea más sencillo ver complementos de producto directamente con tu dispositivo. A partir de ahora, podrás ver los complementos de tus pedidos. Puedes crear y editar estos complementos en el escritorio web.</string>
+    <string name="ordered_add_ons_wip_title">Puedes ver los complementos con tu dispositivo.</string>
+    <string name="ordered_add_ons_details_info_notice">Si cambias el nombre de un complemento en el escritorio web, recuerda que los pedidos anteriores no mostrarán el complemento en la aplicación.</string>
+    <string name="orderdetail_product_lineitem_view_addons_action">Ver complementos</string>
+    <string name="save">Guardar</string>
     <string name="support_contact_payments_detail">Ponte en contacto con nuestros Happiness Engineers para que te ayuden a resolver tus dudas sobre los pagos</string>
     <string name="support_contact_payments">Contactar con el equipo de soporte de pagos</string>
     <string name="product_images_error_detail_title">Subir datos (%d)</string>
@@ -13,12 +68,10 @@ Language: es
     <string name="product_image_service_error_uploading_single">No se ha podido subir %d archivo</string>
     <string name="product_image_service_error_media_null">No se ha podido encontrar el archivo multimedia</string>
     <string name="product_add_ons_details_info_notice">Puedes editar los complementos para los productos en el escritorio del sitio web.</string>
-    <string name="product_add_ons_card_button_title">Complementos de producto</string>
     <string name="product_images_learn_more_button">Consulta &lt;a href=\'\'&gt;más información&lt;/a&gt; sobre subir imágenes</string>
     <string name="card_reader_onboarding_generic_error_hint">No hemos podido verificar Pagos en Persona para esta tienda</string>
     <string name="card_reader_onboarding_generic_error_header">No se ha podido verificar Pagos en Persona para esta tienda</string>
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
-    <string name="card_reader_payment_save_for_later">Guardar para más adelante</string>
     <string name="card_reader_purchase_card_reader">Pedir el lector de tarjetas</string>
     <string name="card_reader_manage_card_reader">Gestionar el lector de tarjetas</string>
     <string name="shipping_label_multiple_customs_form_print_button">Imprimir</string>
@@ -80,6 +133,7 @@ Language: es
     <string name="product_attributes_created_generate_action_text">Generar variación</string>
     <string name="product_attributes_created_description">Ahora que has añadido atributos, puedes crear tu primera variación.</string>
     <string name="product_attributes_created_title">Atributos creados</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
     <string name="card_reader_software_update_progress_cancel_warning">No se recomienda cancelar una actualización de software en curso</string>
     <string name="card_reader_payment_failed_unexpected_error_state">No se ha podido procesar este pago</string>
     <string name="card_reader_payment_failed_server_error_state">Sin conexión con el servidor</string>
@@ -355,6 +409,7 @@ Language: es
     <string name="shipping_label_packages_loading_message">Por favor, espera…</string>
     <string name="shipping_label_packages_loading_title">Cargando paquetes</string>
     <string name="shipping_label_package_details_title_template">Paquete %1$d</string>
+    <string name="shipping_label_package_details_items_count_many">%d elementos</string>
     <string name="shipping_label_packages_loading_error">No se han podido cargar las definiciones de paquete</string>
     <string name="shipping_label_package_details_weight_info">Incluye el peso del paquete</string>
     <string name="shipping_label_package_details_weight_hint">Peso total del paquete (%1$s)</string>
@@ -369,9 +424,8 @@ Language: es
     <string name="shipping_label_address_suggestion_use_selected_address">Usar la dirección seleccionada</string>
     <string name="shipping_label_edit_address_loading_progress_title">cargando los datos de la dirección</string>
     <string name="product_wip_title_m5">¡Hay nuevas funciones disponibles!</string>
-    <string name="shipping_label_validation_view_map">Abrir mapa</string>
+    <string name="shipping_label_validation_view_map">Buscar en el mapa</string>
     <string name="shipping_label_validation_contact_customer">Contactar con el cliente</string>
-    <string name="shipping_label_validation_error_template">Error de validación: %s</string>
     <string name="shipping_label_error_address_invalid_street">Calle no válida</string>
     <string name="shipping_label_error_address_house_number_missing">Falta el número de la casa</string>
     <string name="shipping_label_error_address_not_found">No se encuentra la dirección</string>
@@ -402,11 +456,11 @@ Language: es
     <string name="shipping_label_create_packaging_details">Detalles del paquete</string>
     <string name="shipping_label_create_title">Crear etiqueta de envío</string>
     <string name="shipping_label_more_information_link">Más información</string>
-    <string name="shipping_label_more_information_message">Acorta la espera en la oficina de correos imprimiendo las etiquetas de envío en casa con tu teléfono por un precio más bajo.</string>
+    <string name="shipping_label_more_information_message">Acorta la espera en la oficina de correos imprimiendo las etiquetas de envío en casa con tu dispositivo móvil por un precio más bajo.</string>
     <string name="shipping_label_more_information_heading">Ahorra tiempo y dinero con los envíos de WooCommerce Shipping</string>
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Marcar el pedido como completado</string>
-    <string name="orderdetail_shipping_label_notice">Obtén más información sobre la creación de etiquetas con tu teléfono</string>
+    <string name="orderdetail_shipping_label_notice">Obtén más información sobre la creación de etiquetas con tu dispositivo móvil</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Crear etiqueta de envío</string>
     <string name="orderdetail_shipping_label_m3_wip_message">Ahora, puedes crear etiquetas de envío para todos los pedidos físicos directamente desde tu dispositivo con el plugin gratuito de WooCommerce Shipping. Toca en \"Crear etiqueta de envío\" para probar nuestra función beta.</string>
     <string name="orderdetail_shipping_label_m2_wip_title">¡Crea etiquetas de envío desde tu dispositivo!</string>
@@ -467,6 +521,7 @@ Language: es
     <string name="my_store_stats_availability_title">No podemos mostrar los análisis de tu tienda </string>
     <string name="login_get_link_by_email">Obtener un enlace de acceso por correo electrónico</string>
     <string name="email_not_registered_wpcom">Vaya, no encontramos una cuenta de WordPress.com conectada a esta dirección de correo electrónico.</string>
+    <string name="settings_enable_product_addons_teaser_message">Prueba la visualización de Complementos del pedido mientras preparamos la publicación</string>
     <string name="settings_enable_product_adding_teaser_title">Creación de productos</string>
     <string name="settings_preferences">Preferencias</string>
     <string name="product_trash_error">Error al enviar el producto a la papelera</string>
@@ -489,7 +544,7 @@ Language: es
     <string name="shipping_label_paper_size_letter">Carta (8,5\" x 11\")</string>
     <string name="shipping_label_paper_size_legal">Legal (8,5\" x 14\")</string>
     <string name="shipping_label_preview_error">Error al obtener la vista previa de la etiqueta de envío</string>
-    <string name="shipping_label_print_info">¿No sabes cómo imprimir con tu teléfono?</string>
+    <string name="shipping_label_print_info">¿No sabes cómo imprimir con tu dispositivo móvil?</string>
     <string name="shipping_label_paper_size_options_info">Consulta las opciones de tamaño de papel y diseño de etiqueta</string>
     <string name="shipping_label_print_button">Imprimir etiqueta de envío</string>
     <string name="shipping_label_paper_size_options_title">Elegir tamaño de papel</string>
@@ -770,10 +825,9 @@ Language: es
     <string name="orderlist_loading">Buscando tus pedidos…</string>
     <string name="product_detail_editable_text_hint">Introduce texto</string>
     <string name="product_detail_title_hint">Introduce el título del producto</string>
-    <string name="product_detail_save_product_success">Se ha actualizado el producto</string>
+    <string name="product_detail_save_product_success">Producto guardado</string>
     <string name="product_detail_update_product_error">Se ha producido un error al actualizar el producto</string>
     <string name="product_update_dialog_message">Por favor, espera…</string>
-    <string name="product_save_dialog_title">Actualizando el producto</string>
     <string name="product_description_empty">Describe tu producto</string>
     <string name="product_description">Descripción</string>
     <string name="product_edit_description">Editar descripción</string>
@@ -1252,8 +1306,6 @@ Language: es
     <string name="error_copy_to_clipboard">Se ha producido un error al copiar en el portapapeles</string>
     <string name="settings_switch_site_notifs_msg">Se ha cambiado a %s. Solo recibirás notificaciones de esta tienda</string>
     <string name="login_update_required_desc">Esta tienda usa una versión antigua de WooCommerce. Actualiza tu tienda a WooCommerce 3.5 o a una versión posterior para usarla con esta aplicación.</string>
-    <string name="promo_message_site_picker">Ahora puedes cambiar de tienda con tan solo tocar la tienda seleccionada en Configuración</string>
-    <string name="promo_title_site_picker">¿Gestionas más de una tienda?</string>
     <string name="promo_btn_try_it">Probar ahora</string>
     <string name="promo_btn_got_it">De acuerdo</string>
     <string name="tooltip_site_switcher">Toca para cambiar de tienda</string>

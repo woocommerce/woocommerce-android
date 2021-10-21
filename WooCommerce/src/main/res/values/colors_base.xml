@@ -10,6 +10,7 @@
     <color name="color_secondary_variant">@color/woo_pink_70</color>
     <color name="color_surface">@color/woo_white</color>
     <color name="color_surface_variant">@color/woo_gray_40</color>
+    <color name="color_surface_elevated">@color/woo_white</color>
     <color name="color_error">@color/woo_red_50</color>
     <color name="color_alert">@color/woo_yellow_50</color>
 
@@ -79,6 +80,7 @@
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
     <color name="splash_background">@color/woo_purple_60</color>
+    <color name="color_toolbar">@color/woo_white</color>
 
     <!--
         Elevation colors

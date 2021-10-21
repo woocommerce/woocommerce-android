@@ -1,11 +1,31 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+7.8
+-----
+- [*] In-Person Payments: Long click on the readers name copies it to the clipboard
+- [*] In-Person Payments: Firmware version fully visible
+- [*] App is now able to display new feature announcement after app upgrade. [https://github.com/woocommerce/woocommerce-android/pull/5019]
+
+7.7
+-----
+- [***] In-Person Payments: Added support for accepting In-Person Card Payments in the US
+- [*] Help & Support: A site's System Status Report can now be found, copied, and shared from Settings > Help & Support > System Status Report [https://github.com/woocommerce/woocommerce-android/pull/4890]
+
+7.6.1
+-----
+- [*] Reverted the support for multi store notifications due to a bug with new order notifications not being received.
+
+7.6
+-----
+- [***] Product Images: uploading will continue now in background to allow merchants to continue their other tasks without getting blocked [https://github.com/woocommerce/woocommerce-android/pull/4720]
+- [*] Fixed a bug that resulted in a failure when purchasing DHL shipping labels under some circumstances.
+- [*] Due to popular demand, we have added support to receive push notifications for all the stores that you are logged into from the app. [https://github.com/woocommerce/woocommerce-android/pull/4673]
+
 7.5
 -----
 - [***] Merchants using WooCommerce Product Add-ons in their store can view Add-on information at Orders and Products views [https://github.com/woocommerce/woocommerce-android/pull/4689]
 - [*] Products: Filtering by category is now available. [https://github.com/woocommerce/woocommerce-android/pull/4715]
 - [*] Fixed a bug where a new order notification opened incorrect order detail info. [https://github.com/woocommerce/woocommerce-android/pull/4635]
-
 
 7.4
 -----

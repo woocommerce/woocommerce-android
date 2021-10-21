@@ -2,15 +2,12 @@ package com.woocommerce.android.util
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
-import android.view.WindowManager
-import androidx.annotation.ColorRes
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
@@ -108,13 +105,10 @@ object ActivityUtils {
         val title = context.resources.getText(R.string.share_store_dialog_title)
         context.startActivity(Intent.createChooser(sendIntent, title))
     }
+}
 
-    fun setStatusBarColor(activity: Activity, @ColorRes colorRes: Int) {
-        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-            val window = activity.window
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.statusBarColor = ContextCompat.getColor(activity, colorRes)
-        }
+fun Context.copyToClipboard(label: String, text: String) {
+    with(getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
+        setPrimaryClip(ClipData.newPlainText(label, text))
     }
 }

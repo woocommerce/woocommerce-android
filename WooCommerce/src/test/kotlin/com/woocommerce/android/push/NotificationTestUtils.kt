@@ -22,6 +22,15 @@ object NotificationTestUtils {
         "91HvOLIb9WP8tpFFzI2cdOhjrHDu0AauUDMPCYpD9loZotMh/CsD9V4hElZF91gXwgfeDbPit79FAeP5+Kk9qfmDIJwoJKgP8Ab5LNezAp" +
         "/3682Y0YuTCbnXdlAg0Yr80JrcYB2kB+AZw6chPhz8YyRdRrPNkZIRsM+JebU8jvSBbNGKtwa9w9jEbB2zxQ3bZGyB90fGMsZosINGHDs7" +
         "qTMM6P9Nuzcljm5sDoMZp4/9vEfhT3cMjlMxn69oKLXhDu6cEOouFI1nyTJdJ7PVch0KVP0fARHa/wW+R7Nm"
+    const val TEST_ORDER_NOTE_FULL_DATA_SITE_2 = "eNqVU1tr2zAU/iuaGHuZL7LjJI6hlNE9bm0HZTDmUhRLidXZktClWSj57ztynNQt" +
+        "e+mLrcu56LucZyyV4xZXv5+xYLiaL4plVi7KfB5ht9ccV9g6ZfiDMowbHGEvDacQKH3XRdhKoTV3p+1asf1QyvG/cIghvudM0OPZsZzo6" +
+        "ZbDhZBMNENnEpH7CLdcbNuQVJRwuxPMtaeNNx0sW+e0req0Tm2y00mj+jrd6bhR0nHp6rT3se78VkhbpwOoOh16wX+AEDfUuFhAfKLlFh" +
+        "/uD9H5oTcBHbr2/ZqbCmV5Vsuv1PEKffFbbx3KswjlJBzfKUe7Cn3MSUJILW/pvofu6Dt3rWIVujKA1yFoxVCdIsbX4w5Put0axXzjAIy" +
+        "ECob3wvfoh6edcHtUe0LYEkGraUrt82y2qv2Gkw36KfgO3YyCGCq3o4BveQKKdCcaAMLiTnEjePLoDbVWNIkU8pEOBFLWC1mnWlmX6FZf" +
+        "hsUFUPCJNk4oeREAvdErm4FgwS44hxtNDVBw8sAocyfkn8DxfbCAAwcEf9nws8JBQLZaLOerZbmM8NFaFbQ8REPeJGyCRvs1gImpFskOU" +
+        "rTh1h5dACvQ/ykDocWg+7k4Pld/Z6EhK1TKM3yAZ1lHnbdn2/v1I2/c1Oq/lEctfeKIIgnqDPkfQExWzhr4bsrVVM7rUwjaKDOaCSmJrl" +
+        "4UQ98GxV4rfBrJwM1UkryIinzUZMLsa2XebY9RPyd64IX2OugNQxCTMs6zOzKrikWVF58JqQjBIc51fAR3cmcYt1dN/2PA8wR73SnKgPW" +
+        "cZGWdkvlL+BAdO6DCHkGFGb7cXawW0ASmfewDA1IUSxxe3VHrHizn8iG8H+6yRb6aZ8uyDJ6Vw6gDWYd/EqSmUg=="
     const val TEST_REVIEW_NOTE_FULL_DATA_1 = "eNrdVtuK2zAQ/ZVUZfelTiz5lsQQli1l97WUvtUhyLaSqLVlIclJw5J/78h2nNu27JZ9" +
         "aSEQeaSZM3PmjOwnJCrDNIq/PSGeoziMcDCd+pPId5DZSYZilFVlyYRBDqqFYhQOibooHKQFl5KZw2Na5bsmjGE/wYjuBTeUgpeiYtUhdB" +
         "FrzRRscJHzrNnBTjTfzx1UspzT05O8pCt2cRTDwTXjq7VF8cIItrc8N+v+qVYFrNfGSB0nbuKS0UrRDTVUjaCWxG3XiTsOApbiHE8mXhYE" +
@@ -44,6 +53,18 @@ object NotificationTestUtils {
         "4wvZYT7dqqeRLYvndJ+Awr6LreeWdhpwj5dwPRx4ed56uspdSeRtpusO5AzgJZnYzkxP5YqKnfj7PddS9uNPlW7/5XYfa76R0m0Arr3nLW" +
         "ttEVpSAwkrlui7AYT8Y9wPyLZjE0SgOhu+DIA6cwK2whcvscwvaa4eDSzCr5L/z4fXcH5/uyUm9iCA3x0LBgBbDuZw7PpwaKR6H0YiOXe6" +
         "yLlM3HsL9LxNBBjo="
+    const val TEST_REVIEW_NOTE_FULL_DATA_SITE_2 = "eNrNVm2L4zYQ/ivGZe9L7ViybMcOhOOgXOmHQmlLodQhyJa80daWhSxnG5b89478" +
+        "ksS53nHLXUshBHkkPZp59MyMXlzZGt65mz9eXMHcTZxEKVpHKMWea06Kuxu3bJuGS+N6bi81p7BI9nXtuZ0USnEzfxYtOw0whv8FRvedFI" +
+        "ZS58dem8MJNmsqH28OwiRFWZbG68s5fcc1rBOSiXJYiDxMdued5zacCTpij0tFQx/53VoECw9cPB7s4WGcwPSzYOZw+ep1DeODMarb5EEe" +
+        "4NWjpkdqqF5BiHkwjvMgCrMkLbKIAxFxTOKsKqoyzpK4YCGnCX7bbQHwDdsOUA/k3UP4Hn4dL3vNF5hgHT/sgMU4iRGhGJcsLmlEYlqWWV" +
+        "EkcUhikjyQ94D1nUXW2+/dMWwDUb+4tZB/QowvZwiY2cFI1ZXC83lJ4tm73MJvVAta1NxRumV9aRzRORI4c/KepYTBP0fsdry8qQlV3XEd" +
+        "ZjtvuEUXpzClqLYCGYRgHaelEa0cPO0UbfxZQZuK1h0HXzXtDh9YqQIfj/xqN7oHM9y9ubdpruqTaZfm85WxiabLdJh695yB120HUxECJQ" +
+        "sDUeIsWcfZOl0D0Ez5FeJGOKovalH6VInVc6uZ0rzrRgnByOTBEefBtK/Lg9AyNB7+Sgy7CQAuLruzz6/EsZsAJ0LuHOorAewm68hMkHsj" +
+        "uGt1kLB+X/MjhzRD473tp9m95XNxLEwoOJcazvy65Vrw1VMPsuhEuZJCPtE8eFY+ZY2QFzJX6qDejtraWvTJ/KbcAsc3mv+ZHwV/dqpWO7" +
+        "8chHJ+b3vt/MA4XWr7vh58hktTEgEjgOufANcXgOuTPFhkCMZeGM8pEuK7FLlwN7By3t3m+iLBgcWFhD9LsV8iNauQr6T4/5FSO0NN313a" +
+        "Vl888dJ8tFU5Na+MQx09qqiVnxTRJ3vXXCPJfY30rpXV0nS7kWAvmqVjb3opnK+uWUvYfujHFy3tvqR95PIf+blWiVuKCJoCHcT9Lwb6zX" +
+        "S+P0jzw5hHue5HzseENKIBVdFG2QxGIfZR6of4V0Q2JIYu8i1CG2RlaoSpbYQ/TQSNxccGWrZyEQL6yHsjQYRkSRjyijN4DZB1saYERzhG" +
+        "CKdVWf0n7w3PvgMnl/O+IhCbZaGmQEvHudxbPqyWkzCLkiwlthvJvimGpnr+G+PBX8Q="
 
     fun generateTestNewOrderNotificationPayload(
         userId: Long = 12345,

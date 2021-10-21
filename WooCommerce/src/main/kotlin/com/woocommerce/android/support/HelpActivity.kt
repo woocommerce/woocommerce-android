@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityHelpBinding
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -57,6 +58,10 @@ class HelpActivity : AppCompatActivity() {
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener { showZendeskFaq() }
         binding.appLogContainer.setOnClickListener { showApplicationLog() }
+        if (userIsLoggedIn() && selectedSite.exists()) {
+            binding.ssrContainer.show()
+            binding.ssrContainer.setOnClickListener { showSSR() }
+        }
 
         with(binding.contactPaymentsContainer) {
             visibility = if (FeatureFlag.CARD_READER.isEnabled()) View.VISIBLE else View.GONE
@@ -99,6 +104,8 @@ class HelpActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    private fun userIsLoggedIn() = accountStore.hasAccessToken()
 
     private fun createNewZendeskTicket(ticketType: TicketType) {
         if (!AppPrefs.hasSupportEmail()) {
@@ -169,6 +176,10 @@ class HelpActivity : AppCompatActivity() {
     private fun showApplicationLog() {
         AnalyticsTracker.track(Stat.SUPPORT_APPLICATION_LOG_VIEWED)
         startActivity(Intent(this, WooLogViewerActivity::class.java))
+    }
+
+    private fun showSSR() {
+        startActivity(Intent(this, SSRActivity::class.java))
     }
 
     enum class Origin(private val stringValue: String) {
