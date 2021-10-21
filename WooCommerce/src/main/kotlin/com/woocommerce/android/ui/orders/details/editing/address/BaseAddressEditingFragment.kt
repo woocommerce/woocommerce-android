@@ -123,10 +123,11 @@ abstract class BaseAddressEditingFragment :
 
     @Suppress("UnusedPrivateMember")
     private fun showCountrySelectorDialog() {
+        val countries = addressViewModel.countries
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
             addressDraft.country,
-            addressViewModel.countries.map { it.name }.toTypedArray(),
-            addressViewModel.countries.map { it.code }.toTypedArray(),
+            countries.map { it.name }.toTypedArray(),
+            countries.map { it.code }.toTypedArray(),
             SELECT_COUNTRY_REQUEST,
             getString(R.string.shipping_label_edit_address_country)
         )
@@ -135,10 +136,11 @@ abstract class BaseAddressEditingFragment :
 
     @Suppress("UnusedPrivateMember")
     private fun showStateSelectorDialog() {
+        val states = addressViewModel.states
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
             addressDraft.state,
-            addressViewModel.states.map { it.name }.toTypedArray(),
-            addressViewModel.states.map { it.code }.toTypedArray(),
+            states.map { it.name }.toTypedArray(),
+            states.map { it.code }.toTypedArray(),
             SELECT_STATE_REQUEST,
             getString(R.string.shipping_label_edit_address_state)
         )
