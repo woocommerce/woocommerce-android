@@ -26,6 +26,25 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+val productsMap = mapOf(
+    2132 to "Rose Gold shades",
+    2131 to "Colorado shades",
+    2130 to "Black Coral shades"
+)
+
+data class Review(
+    val productID: Int,
+    val status: String,
+    val reviewer: String,
+    val review: String,
+    val rating: Int
+) {
+    val product = productsMap[productID]
+    val title = "$reviewer left a review on $product"
+    val content = if (status == "hold") "Pending Review • $review" else review
+    val approveButtonTitle = if (status == "hold") "Approve" else "Approved"
+}
+
 @HiltAndroidTest
 class ReviewsUITest : TestBase() {
     @get:Rule(order = 0)
@@ -51,86 +70,79 @@ class ReviewsUITest : TestBase() {
 
     @Test
     fun reviewListShowsAllReviews() {
-        val productsMap = mapOf(
-            2132 to "Rose Gold shades",
-            2131 to "Colorado shades",
-            2130 to "Black Coral shades"
-        )
-
         val str = readAssetsFile("mocks/mappings/jetpack-blogs/wc/reviews/products_reviews_all.json")
         val json = JSONObject(str)
         val reviews = json.getJSONObject("response").getJSONObject("jsonBody").getJSONArray("data")
 
         for (i in 0 until reviews.length()) {
             val reviewContainer: JSONObject = reviews.getJSONObject(i)
-            val status = reviewContainer.getString("status")
-            val reviewer = reviewContainer.getString("reviewer")
-            val productID = reviewContainer.getInt("product_id")
-            val product = productsMap[productID]
-            val review = reviewContainer.getString("review")
-            val rating = reviewContainer.getInt("rating")
-
-            val reviewTitle = "$reviewer left a review on $product"
-            val reviewContent = if (status == "hold") "Pending Review • $review" else review
-            val reviewApproveButtonTitle = if (status == "hold") "Approve" else "Approved"
+            val currentReview = Review(
+                reviewContainer.getInt("product_id"),
+                reviewContainer.getString("status"),
+                reviewContainer.getString("reviewer"),
+                reviewContainer.getString("review"),
+                reviewContainer.getInt("rating")
+            )
 
             Thread.sleep(3000)
+            ReviewsListScreen().scrollToReview(currentReview.title)
+            assertReviewCard(currentReview)
 
-            ReviewsListScreen().scrollToReview(reviewTitle)
-
-            // Assert a review card by its hierarchy and content
-            onView(
-                allOf(
-                    withChild(withId(R.id.notif_icon)),
-                    withChild(allOf(withId(R.id.notif_title), withText(reviewTitle))),
-                    withChild(allOf(withId(R.id.notif_desc), withText(reviewContent))),
-                    withChild(withId(R.id.notif_rating))
-                )
-            )
-                .check(matches(isDisplayed()))
-
-            // Assert that a specific review has an expected rating
-            onView(
-                allOf(
-                    withId(R.id.notif_rating),
-                    hasSibling(withText(reviewTitle))
-                )
-            )
-                .check(matches(withStarsNumber(rating)))
-
-            ReviewsListScreen().selectReviewByTitle(reviewTitle)
-
-            // Assert separate review screen:
-            // Navigation bar
-            onView(
-                allOf(
-                    withId(R.id.toolbar),
-                    withChild(withContentDescription("Navigate up")),
-                    withChild(withText("Review"))
-                )
-            )
-                .check(matches(isDisplayed()))
-
-            onView(withContentDescription("Navigate up")).check(matches(isDisplayed()))
-            // Review top bar
-            onView(withId(R.id.review_product_icon)).check(matches(isDisplayed()))
-            onView(withId(R.id.review_product_name)).check(matches(withText(product)))
-            onView(withContentDescription("View the product")).check(matches(isDisplayed()))
-            // Review 'core'
-            onView(withId(R.id.review_gravatar)).check(matches(isDisplayed()))
-            onView(withId(R.id.review_user_name)).check(matches(withText(reviewer)))
-            onView(withId(R.id.review_time)).check(matches(isDisplayed()))
-            onView(withId(R.id.review_rating_bar)).check(matches(withStarsNumber(rating)))
-            onView(withId(R.id.review_description)).check(matches(withText(review)))
-            // Flow buttons
-            onView(withId(R.id.review_trash)).check(matches(withText("Trash")))
-            onView(withId(R.id.review_spam)).check(matches(withText("Spam")))
-            onView(withId(R.id.review_approve)).check(matches(withText(reviewApproveButtonTitle)))
-
+            ReviewsListScreen().selectReviewByTitle(currentReview.title)
+            assertSingleReviewScreen(currentReview)
             SingleReviewScreen().goBackToReviewsScreen()
         }
 
         Thread.sleep(10000000)
+    }
+
+    private fun assertReviewCard(review: Review) {
+        onView(
+            allOf(
+                withChild(withId(R.id.notif_icon)),
+                withChild(allOf(withId(R.id.notif_title), withText(review.title))),
+                withChild(allOf(withId(R.id.notif_desc), withText(review.content))),
+                withChild(withId(R.id.notif_rating))
+            )
+        )
+            .check(matches(isDisplayed()))
+
+        // Assert that a specific review has an expected rating
+        onView(
+            allOf(
+                withId(R.id.notif_rating),
+                hasSibling(withText(review.title))
+            )
+        )
+            .check(matches(withStarsNumber(review.rating)))
+    }
+
+    private fun assertSingleReviewScreen(review: Review) {
+        // Navigation bar
+        onView(
+            allOf(
+                withId(R.id.toolbar),
+                withChild(withContentDescription("Navigate up")),
+                withChild(withText("Review"))
+            )
+        )
+            .check(matches(isDisplayed()))
+
+        onView(withContentDescription("Navigate up")).check(matches(isDisplayed()))
+        // Review top bar
+        onView(withId(R.id.review_product_icon)).check(matches(isDisplayed()))
+        onView(withId(R.id.review_product_name)).check(matches(withText(review.product)))
+        onView(withContentDescription("View the product")).check(matches(isDisplayed()))
+        // Review 'core'
+        onView(withId(R.id.review_gravatar)).check(matches(isDisplayed()))
+        onView(withId(R.id.review_user_name)).check(matches(withText(review.reviewer)))
+        onView(withId(R.id.review_time)).check(matches(isDisplayed()))
+        onView(withId(R.id.review_rating_bar)).check(matches(withStarsNumber(review.rating)))
+        onView(withId(R.id.review_description)).check(matches(withText(review.review)))
+        // Flow buttons
+        onView(withId(R.id.review_trash)).check(matches(withText("Trash")))
+        onView(withId(R.id.review_spam)).check(matches(withText("Spam")))
+        onView(withId(R.id.review_approve)).check(matches(withText(review.approveButtonTitle)))
     }
 
     private fun withStarsNumber(expectedStars: Int): Matcher<View?> {
