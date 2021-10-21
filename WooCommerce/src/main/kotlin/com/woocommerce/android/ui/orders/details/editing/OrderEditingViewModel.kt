@@ -61,15 +61,15 @@ class OrderEditingViewModel @Inject constructor(
         }
     }
 
-    fun updateCustomerOrderNote(updatedNote: String) = takeWhenUpdateIsPossible {
+    fun updateCustomerOrderNote(updatedNote: String) = runWhenUpdateIsPossible {
         orderEditingRepository.updateCustomerOrderNote(
             order.localId, updatedNote
         ).collect()
     }
 
-    fun updateShippingAddress(updatedShippingAddress: Address) = takeWhenUpdateIsPossible {
+    fun updateShippingAddress(updatedShippingAddress: Address) = runWhenUpdateIsPossible {
         if (viewState.useAsOtherAddressIsChecked == true) {
-            replicateShippingAndBillingAddressesWith(updatedShippingAddress)
+            sendReplicateShippingAndBillingAddressesWith(updatedShippingAddress)
         } else {
             orderEditingRepository.updateOrderAddress(
                 order.localId,
@@ -78,12 +78,12 @@ class OrderEditingViewModel @Inject constructor(
         }.collect()
     }
 
-    fun updateBillingAddress(billingAddress: Address) = takeWhenUpdateIsPossible {
+    fun updateBillingAddress(billingAddress: Address) = runWhenUpdateIsPossible {
         // Will be implemented in future PRs, making a unrelated call to avoid lint issues
         billingAddress.hasInfo()
     }
 
-    private suspend fun replicateShippingAndBillingAddressesWith(orderAddress: Address) =
+    private suspend fun sendReplicateShippingAndBillingAddressesWith(orderAddress: Address) =
         orderEditingRepository.updateBothOrderAddresses(
             order.localId,
             orderAddress.toShippingAddressModel(),
@@ -124,7 +124,7 @@ class OrderEditingViewModel @Inject constructor(
         }
     }
 
-    private inline fun takeWhenUpdateIsPossible(
+    private inline fun runWhenUpdateIsPossible(
         crossinline action: suspend () -> Unit
     ) = checkConnectionAndResetState().also {
         if (it) launch(dispatchers.io) { action() }
