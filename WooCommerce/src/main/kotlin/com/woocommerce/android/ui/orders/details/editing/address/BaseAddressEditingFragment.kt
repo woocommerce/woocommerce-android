@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -12,7 +13,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
-import com.woocommerce.android.widgets.CustomProgressDialog
 import org.wordpress.android.util.ActivityUtils
 
 abstract class BaseAddressEditingFragment :
@@ -24,8 +24,6 @@ abstract class BaseAddressEditingFragment :
     }
 
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_orders)
-
-    private var progressDialog: CustomProgressDialog? = null
 
     private var _binding: FragmentBaseEditAddressBinding? = null
     private val binding get() = _binding!!
@@ -63,11 +61,6 @@ abstract class BaseAddressEditingFragment :
 
         setupObservers()
         setupResultHandlers()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        progressDialog?.dismiss()
     }
 
     override fun hasChanges() = addressDraft != storedAddress
@@ -136,6 +129,7 @@ abstract class BaseAddressEditingFragment :
 
     @Suppress("UnusedPrivateMember")
     private fun showStateSelectorDialog() {
+        // TODO nbradbury check we have a country first
         val states = addressViewModel.states
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
             addressDraft.state,
@@ -150,20 +144,13 @@ abstract class BaseAddressEditingFragment :
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.country.takeIfNotEqualTo(old?.country) {
-                // TODO update displayed country
+                // TODO nbradbury update displayed country
             }
             new.state.takeIfNotEqualTo(old?.state) {
-                // TODO update displayed state
+                // TODO nbradbury update displayed state
             }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
-                if (isLoading) {
-                    showProgressDialog(
-                        getString(R.string.shipping_label_edit_address_loading_progress_title),
-                        getString(R.string.shipping_label_edit_address_progress_message)
-                    )
-                } else {
-                    hideProgressDialog()
-                }
+                binding.progressBar.isVisible = new.isLoading
             }
         }
     }
@@ -175,19 +162,5 @@ abstract class BaseAddressEditingFragment :
         handleResult<String>(SELECT_STATE_REQUEST) {
             addressViewModel.onStateSelected(it)
         }
-    }
-
-    private fun showProgressDialog(title: String, message: String) {
-        hideProgressDialog()
-        progressDialog = CustomProgressDialog.show(
-            title = title,
-            message = message
-        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
-        progressDialog?.isCancelable = false
-    }
-
-    private fun hideProgressDialog() {
-        progressDialog?.dismiss()
-        progressDialog = null
     }
 }
