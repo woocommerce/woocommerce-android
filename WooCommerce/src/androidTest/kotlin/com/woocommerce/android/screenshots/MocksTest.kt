@@ -13,7 +13,7 @@ import org.junit.Test
 import tools.fastlane.screengrab.locale.LocaleTestRule
 
 @HiltAndroidTest
-class MocksTest: TestBase() {
+class MocksTest : TestBase() {
     @get:Rule(order = 0)
     val rule = HiltAndroidRule(this)
 
