@@ -3,11 +3,15 @@ package com.woocommerce.android.screenshots.reviews
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.TabNavComponent
+import com.woocommerce.android.screenshots.util.CustomMatchers
 import com.woocommerce.android.screenshots.util.Screen
+import com.woocommerce.android.ui.main.Review
+import org.hamcrest.Matchers
 
 class ReviewsListScreen : Screen {
     companion object {
@@ -52,6 +56,40 @@ class ReviewsListScreen : Screen {
                 ViewActions.scrollTo()
             )
         )
+
+        return ReviewsListScreen()
+    }
+
+    fun assertReviewCard(review: Review): ReviewsListScreen {
+        // Assert that review has an expected hierarchy and content
+        Espresso.onView(
+            Matchers.allOf(
+                ViewMatchers.withChild(ViewMatchers.withId(R.id.notif_icon)),
+                ViewMatchers.withChild(
+                    Matchers.allOf(
+                        ViewMatchers.withId(R.id.notif_title),
+                        ViewMatchers.withText(review.title)
+                    )
+                ),
+                ViewMatchers.withChild(
+                    Matchers.allOf(
+                        ViewMatchers.withId(R.id.notif_desc),
+                        ViewMatchers.withText(review.content)
+                    )
+                ),
+                ViewMatchers.withChild(ViewMatchers.withId(R.id.notif_rating))
+            )
+        )
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+        // Assert that review has an expected rating
+        Espresso.onView(
+            Matchers.allOf(
+                ViewMatchers.withId(R.id.notif_rating),
+                ViewMatchers.hasSibling(ViewMatchers.withText(review.title))
+            )
+        )
+            .check(ViewAssertions.matches(CustomMatchers().withStarsNumber((review.rating))))
 
         return ReviewsListScreen()
     }
