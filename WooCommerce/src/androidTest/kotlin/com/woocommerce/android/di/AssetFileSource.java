@@ -30,7 +30,12 @@ public class AssetFileSource implements FileSource {
         this(assetManager, MOCKS_PATH);
     }
 
-    public AssetFileSource(AssetManager assetManager, String path) {
+    public AssetFileSource(
+            AssetManager
+                    assetManager
+            ,String path){
+
+
         mAssetManager = assetManager;
         mPath = path;
     }

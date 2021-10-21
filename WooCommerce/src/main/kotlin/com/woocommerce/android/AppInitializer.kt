@@ -50,10 +50,16 @@ import javax.inject.Singleton
 @Singleton
 class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     companion object {
+
+
+
+
+
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
     }
 
-    @Inject lateinit var crashLogging: CrashLogging
+    @Inject
+    lateinit var crashLogging: CrashLogging
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var dispatcher: Dispatcher

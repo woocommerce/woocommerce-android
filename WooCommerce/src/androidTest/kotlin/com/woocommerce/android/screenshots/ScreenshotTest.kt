@@ -17,6 +17,9 @@ import tools.fastlane.screengrab.locale.LocaleTestRule
 
 @HiltAndroidTest
 class ScreenshotTest : TestBase() {
+
+
+
     @get:Rule(order = 0)
     val rule = HiltAndroidRule(this)
 
@@ -31,7 +34,11 @@ class ScreenshotTest : TestBase() {
 
     @Test
     fun screenshots() {
-        Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
+        Screengrab.setDefaultScreenshotStrategy(
+
+            UiAutomatorScreenshotStrategy()
+
+        )
 
         WelcomeScreen
             .logoutIfNeeded()
