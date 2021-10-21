@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +28,8 @@ class AddressViewModel @Inject constructor(
     val states: List<Location>
         get() = dataStore.getStates(viewState.country).map { it.toAppModel() }
 
-    init {
+    fun start(country: String, state: String) {
+        viewState = viewState.copy(country = country, state = state)
         loadCountriesAndStates()
     }
 
@@ -37,8 +37,9 @@ class AddressViewModel @Inject constructor(
         launch {
             // we only fetch the countries and states if they've never been fetched
             if (countries.isEmpty()) {
-                // TODO trigger loading dialog
+                viewState = viewState.copy(isLoading = true)
                 dataStore.fetchCountriesAndStates(selectedSite.get())
+                viewState = viewState.copy(isLoading = false)
             }
         }
     }
@@ -58,6 +59,7 @@ class AddressViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val country: String = "",
-        val state: String = ""
+        val state: String = "",
+        val isLoading: Boolean = false
     ) : Parcelable
 }

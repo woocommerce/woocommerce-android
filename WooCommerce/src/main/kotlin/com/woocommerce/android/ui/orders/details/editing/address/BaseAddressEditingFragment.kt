@@ -8,12 +8,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
-import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment
-import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment
+import com.woocommerce.android.widgets.CustomProgressDialog
 import org.wordpress.android.util.ActivityUtils
 
 abstract class BaseAddressEditingFragment :
@@ -25,6 +24,8 @@ abstract class BaseAddressEditingFragment :
     }
 
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_orders)
+
+    private var progressDialog: CustomProgressDialog? = null
 
     private var _binding: FragmentBaseEditAddressBinding? = null
     private val binding get() = _binding!!
@@ -55,8 +56,18 @@ abstract class BaseAddressEditingFragment :
         storedAddress.bindToView()
         bindTextWatchers()
 
+        addressViewModel.start(
+            country = storedAddress.country,
+            state = storedAddress.state
+        )
+
         setupObservers()
         setupResultHandlers()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        progressDialog?.dismiss()
     }
 
     override fun hasChanges() = addressDraft != storedAddress
@@ -110,6 +121,7 @@ abstract class BaseAddressEditingFragment :
         binding.postcode.removeCurrentTextWatcher()
     }
 
+    @Suppress("UnusedPrivateMember")
     private fun showCountrySelectorDialog() {
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
             addressDraft.country,
@@ -121,11 +133,12 @@ abstract class BaseAddressEditingFragment :
         findNavController().navigateSafely(action)
     }
 
+    @Suppress("UnusedPrivateMember")
     private fun showStateSelectorDialog() {
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
             addressDraft.state,
-            addressViewModel.countries.map { it.name }.toTypedArray(),
-            addressViewModel.countries.map { it.code }.toTypedArray(),
+            addressViewModel.states.map { it.name }.toTypedArray(),
+            addressViewModel.states.map { it.code }.toTypedArray(),
             SELECT_STATE_REQUEST,
             getString(R.string.shipping_label_edit_address_state)
         )
@@ -134,11 +147,21 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            if (new.country != old?.country) {
+            new.country.takeIfNotEqualTo(old?.country) {
                 // TODO update displayed country
             }
-            if (new.state != old?.state) {
+            new.state.takeIfNotEqualTo(old?.state) {
                 // TODO update displayed state
+            }
+            new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
+                if (isLoading) {
+                    showProgressDialog(
+                        getString(R.string.shipping_label_edit_address_loading_progress_title),
+                        getString(R.string.shipping_label_edit_address_progress_message)
+                    )
+                } else {
+                    hideProgressDialog()
+                }
             }
         }
     }
@@ -150,5 +173,19 @@ abstract class BaseAddressEditingFragment :
         handleResult<String>(SELECT_STATE_REQUEST) {
             addressViewModel.onStateSelected(it)
         }
+    }
+
+    private fun showProgressDialog(title: String, message: String) {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            title = title,
+            message = message
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 }
