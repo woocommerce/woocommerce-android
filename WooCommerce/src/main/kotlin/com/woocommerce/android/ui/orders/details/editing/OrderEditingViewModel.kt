@@ -87,7 +87,9 @@ class OrderEditingViewModel @Inject constructor(
         orderEditingRepository.updateBothOrderAddresses(
             order.localId,
             orderAddress.toShippingAddressModel(),
-            orderAddress.toBillingAddressModel()
+            orderAddress.toBillingAddressModel(
+                customEmail = order.billingAddress.email
+            )
         )
 
     fun onReplicateAddressSwitchChanged(enabled: Boolean) {
