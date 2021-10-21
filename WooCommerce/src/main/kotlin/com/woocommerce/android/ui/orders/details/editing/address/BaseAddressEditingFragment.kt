@@ -3,9 +3,12 @@ package com.woocommerce.android.ui.orders.details.editing.address
 import android.os.Bundle
 import android.view.View
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
 import org.wordpress.android.util.ActivityUtils
 
@@ -13,6 +16,8 @@ abstract class BaseAddressEditingFragment :
     BaseOrderEditingFragment(R.layout.fragment_base_edit_address) {
     companion object {
         const val TAG = "BaseEditAddressFragment"
+        const val SELECT_COUNTRY_REQUEST = "select_country_request"
+        const val SELECT_STATE_REQUEST = "select_state_request"
     }
 
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_orders)
@@ -96,5 +101,27 @@ abstract class BaseAddressEditingFragment :
         binding.address2.removeCurrentTextWatcher()
         binding.city.removeCurrentTextWatcher()
         binding.postcode.removeCurrentTextWatcher()
+    }
+
+    private fun showCountrySelectorDialog() {
+        val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
+            addressDraft.country,
+            addressViewModel.countries.map { it.name }.toTypedArray(),
+            addressViewModel.countries.map { it.code }.toTypedArray(),
+            SELECT_COUNTRY_REQUEST,
+            getString(R.string.shipping_label_edit_address_country)
+        )
+        findNavController().navigateSafely(action)
+    }
+
+    private fun showStateSelectorDialog() {
+        val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
+            addressDraft.state,
+            addressViewModel.countries.map { it.name }.toTypedArray(),
+            addressViewModel.countries.map { it.code }.toTypedArray(),
+            SELECT_STATE_REQUEST,
+            getString(R.string.shipping_label_edit_address_state)
+        )
+        findNavController().navigateSafely(action)
     }
 }

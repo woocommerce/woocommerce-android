@@ -4,9 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCDataStore
@@ -18,8 +16,6 @@ class AddressViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dataStore: WCDataStore,
 ) : ScopedViewModel(savedState) {
-    private val navArgs by savedState.navArgs<OrderDetailFragmentArgs>()
-
     val countries: List<Location>
         get() {
             return dataStore.getCountries().map { it.toAppModel() }

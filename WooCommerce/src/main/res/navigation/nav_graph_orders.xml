@@ -658,4 +658,8 @@
         android:name="com.woocommerce.android.ui.orders.details.editing.address.BillingAddressEditingFragment"
         android:label="BillingAddressEditingFragment"
         tools:layout="@layout/fragment_base_edit_address"/>
+
+    <action android:id="@+id/action_global_item_selector_dialog"
+        app:destination="@id/itemSelectorDialog"/>
+
 </navigation>
