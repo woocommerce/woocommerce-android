@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.main
 import android.view.View
 import androidx.appcompat.widget.AppCompatRatingBar
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -80,7 +79,7 @@ class ReviewsUITest : TestBase() {
             ReviewsListScreen().scrollToReview(reviewTitle)
 
             // Assert a review card by its hierarchy and content
-            val reviewCard: ViewInteraction = onView(
+            onView(
                 allOf(
                     withChild(withId(R.id.notif_icon)),
                     withChild(allOf(withId(R.id.notif_title), withText(reviewTitle))),
@@ -134,7 +133,7 @@ class ReviewsUITest : TestBase() {
         Thread.sleep(10000000)
     }
 
-    private fun withStarsNumber(expectedStars: Int): Matcher<View?>? {
+    private fun withStarsNumber(expectedStars: Int): Matcher<View?> {
         return object : BoundedMatcher<View?, AppCompatRatingBar>(AppCompatRatingBar::class.java) {
             override fun describeTo(description: Description) {
                 description.appendText("Expected review rating: $expectedStars")
@@ -146,7 +145,7 @@ class ReviewsUITest : TestBase() {
         }
     }
 
-    fun readAssetsFile(fileName: String): String {
+    private fun readAssetsFile(fileName: String): String {
         val appContext = InstrumentationRegistry.getInstrumentation().context
         return appContext.assets.open(fileName).bufferedReader().use { it.readText() }
     }

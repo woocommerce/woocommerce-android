@@ -33,7 +33,8 @@ class ReviewsListScreen : Screen {
                     ViewMatchers.withText(
                         reviewTitle
                     )
-                ), ViewActions.click()
+                ),
+                ViewActions.click()
             )
         )
 
@@ -47,7 +48,8 @@ class ReviewsListScreen : Screen {
                     ViewMatchers.withText(
                         reviewTitle
                     )
-                ), ViewActions.scrollTo()
+                ),
+                ViewActions.scrollTo()
             )
         )
 
