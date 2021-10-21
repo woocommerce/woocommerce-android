@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.filters.ui.model
 
 import android.os.Parcelable
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderFilterCategory
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.parcelize.Parcelize
 
@@ -14,25 +15,13 @@ data class OrderFilterCategoryListViewState(
     val displayClearButton: Boolean = false
 ) : Parcelable
 
-sealed class FilterListCategoryUiModel : Parcelable {
-    abstract val displayName: String
-    abstract val displayValue: String
-    abstract val orderFilterOptions: List<OrderListFilterOptionUiModel>
-
-    @Parcelize
-    data class OrderStatusFilterCategoryUiModel(
-        override val displayName: String,
-        override val displayValue: String,
-        override val orderFilterOptions: List<OrderListFilterOptionUiModel>
-    ) : Parcelable, FilterListCategoryUiModel()
-
-    @Parcelize
-    data class DateRangeFilterCategoryUiModel(
-        override val displayName: String,
-        override val displayValue: String,
-        override val orderFilterOptions: List<OrderListFilterOptionUiModel>
-    ) : Parcelable, FilterListCategoryUiModel()
-}
+@Parcelize
+data class FilterListCategoryUiModel(
+    val categoryKey: OrderFilterCategory,
+    val displayName: String,
+    val displayValue: String,
+    val orderFilterOptions: List<OrderListFilterOptionUiModel>
+) : Parcelable
 
 @Parcelize
 data class OrderListFilterOptionUiModel(

@@ -18,13 +18,15 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.*
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
@@ -72,7 +74,8 @@ class OrderListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val orderFiltersRepository: OrderFiltersRepository
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -460,6 +463,12 @@ class OrderListViewModel @Inject constructor(
 
     fun onFiltersButtonTapped() {
         triggerEvent(ShowOrderFilters)
+    }
+
+    fun onFiltersChanged(changed: Boolean) {
+        if (changed) {
+
+        }
     }
 
     sealed class OrderListEvent : Event() {
