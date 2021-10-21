@@ -16,18 +16,16 @@ class ShippingAddressEditingFragment : BaseAddressEditingFragment() {
     override fun saveChanges() = sharedViewModel.updateShippingAddress(addressDraft)
 
     override fun onViewBound(binding: FragmentBaseEditAddressBinding) {
-        handleUseAsAnotherAddressSwitch(binding.useAsAnotherAddressSwitch)
+        bindReplicateAddressSwitchView(binding.replicateAddressSwitch)
         binding.email.visibility = View.GONE
         binding.addressSectionHeader.text = getString(R.string.order_detail_shipping_address_section)
     }
 
     override fun getFragmentTitle() = getString(R.string.order_detail_shipping_address_section)
 
-    private fun handleUseAsAnotherAddressSwitch(switch: SwitchMaterial) {
+    private fun bindReplicateAddressSwitchView(switch: SwitchMaterial) {
         switch.visibility = View.VISIBLE
         sharedViewModel.order.billingAddress.copy(email = "")
-            .let { it == storedAddress }
-            .apply { switch.isChecked = this }
-            .also { sharedViewModel.onUseAsOtherAddressSwitchChanged(it) }
+            .bindAsAddressReplicationToggleState()
     }
 }

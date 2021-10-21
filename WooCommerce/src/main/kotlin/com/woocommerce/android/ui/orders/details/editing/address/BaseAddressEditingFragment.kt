@@ -65,8 +65,8 @@ abstract class BaseAddressEditingFragment :
         binding.address2.text = address2
         binding.city.text = city
         binding.postcode.text = postcode
-        binding.useAsAnotherAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
-            sharedViewModel.onUseAsOtherAddressSwitchChanged(isChecked)
+        binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
+            sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
         }
     }
 
@@ -80,5 +80,11 @@ abstract class BaseAddressEditingFragment :
         binding.address2.textWatcher = textWatcher
         binding.city.textWatcher = textWatcher
         binding.postcode.textWatcher = textWatcher
+    }
+
+    internal fun Address.bindAsAddressReplicationToggleState() {
+        (this == storedAddress)
+            .apply { binding.replicateAddressSwitch.isChecked = this }
+            .also { sharedViewModel.onReplicateAddressSwitchChanged(it) }
     }
 }

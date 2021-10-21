@@ -90,7 +90,7 @@ class OrderEditingViewModel @Inject constructor(
             orderAddress.toBillingAddressModel()
         )
 
-    fun onUseAsOtherAddressSwitchChanged(enabled: Boolean) {
+    fun onReplicateAddressSwitchChanged(enabled: Boolean) {
         viewState = viewState.copy(useAsOtherAddressIsChecked = enabled)
     }
 

@@ -149,7 +149,7 @@
                 app:errorEnabled="true" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/use_as_another_address_switch"
+                android:id="@+id/replicate_address_switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
