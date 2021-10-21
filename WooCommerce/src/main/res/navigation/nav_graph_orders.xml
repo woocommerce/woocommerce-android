@@ -101,11 +101,6 @@
             android:name="requiresPhoneNumber"
             app:argType="boolean" />
         <action
-            android:id="@+id/action_editShippingLabelAddressFragment_to_itemSelectorDialog"
-            app:destination="@id/itemSelectorDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
             android:id="@+id/action_editShippingLabelAddressFragment_to_shippingLabelAddressSuggestionFragment"
             app:destination="@id/shippingLabelAddressSuggestionFragment"
             app:enterAnim="@anim/activity_fade_in"
@@ -658,8 +653,6 @@
         android:name="com.woocommerce.android.ui.orders.details.editing.address.BillingAddressEditingFragment"
         android:label="BillingAddressEditingFragment"
         tools:layout="@layout/fragment_base_edit_address"/>
-
     <action android:id="@+id/action_global_item_selector_dialog"
         app:destination="@id/itemSelectorDialog"/>
-
 </navigation>
