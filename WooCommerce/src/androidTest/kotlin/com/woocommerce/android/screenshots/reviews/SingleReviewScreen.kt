@@ -21,7 +21,7 @@ class SingleReviewScreen : Screen {
         return ReviewsListScreen()
     }
 
-     fun assertSingleReviewScreen(review: Review): SingleReviewScreen{
+    fun assertSingleReviewScreen(review: Review): SingleReviewScreen {
         // Navigation bar
         Espresso.onView(
             Matchers.allOf(
