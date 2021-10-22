@@ -23,7 +23,6 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 
-@Suppress("TooManyFunctions")
 class OrderDetailCustomerInfoView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
