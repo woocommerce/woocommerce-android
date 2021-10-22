@@ -77,7 +77,6 @@ class ReviewsUITest : TestBase() {
                 reviewContainer.getInt("rating")
             )
 
-            Thread.sleep(3000)
             ReviewsListScreen()
                 .scrollToReview(currentReview.title)
                 .assertReviewCard(currentReview)
@@ -85,8 +84,6 @@ class ReviewsUITest : TestBase() {
                 .assertSingleReviewScreen(currentReview)
                 .goBackToReviewsScreen()
         }
-
-        Thread.sleep(10000000)
     }
 
     private fun readAssetsFile(fileName: String): String {
