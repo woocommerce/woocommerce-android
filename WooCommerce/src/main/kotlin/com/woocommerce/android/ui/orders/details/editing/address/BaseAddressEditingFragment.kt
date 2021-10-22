@@ -2,9 +2,16 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
 import org.wordpress.android.util.ActivityUtils
 
@@ -12,7 +19,11 @@ abstract class BaseAddressEditingFragment :
     BaseOrderEditingFragment(R.layout.fragment_base_edit_address) {
     companion object {
         const val TAG = "BaseEditAddressFragment"
+        const val SELECT_COUNTRY_REQUEST = "select_country_request"
+        const val SELECT_STATE_REQUEST = "select_state_request"
     }
+
+    private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_orders)
 
     private var _binding: FragmentBaseEditAddressBinding? = null
     private val binding get() = _binding!!
@@ -42,6 +53,14 @@ abstract class BaseAddressEditingFragment :
         _binding = FragmentBaseEditAddressBinding.bind(view)
         storedAddress.bindToView()
         bindTextWatchers()
+
+        addressViewModel.start(
+            country = storedAddress.country,
+            state = storedAddress.state
+        )
+
+        setupObservers()
+        setupResultHandlers()
     }
 
     override fun hasChanges() = addressDraft != storedAddress
@@ -93,5 +112,55 @@ abstract class BaseAddressEditingFragment :
         binding.address2.removeCurrentTextWatcher()
         binding.city.removeCurrentTextWatcher()
         binding.postcode.removeCurrentTextWatcher()
+    }
+
+    @Suppress("UnusedPrivateMember")
+    private fun showCountrySelectorDialog() {
+        val countries = addressViewModel.countries
+        val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
+            addressDraft.country,
+            countries.map { it.name }.toTypedArray(),
+            countries.map { it.code }.toTypedArray(),
+            SELECT_COUNTRY_REQUEST,
+            getString(R.string.shipping_label_edit_address_country)
+        )
+        findNavController().navigateSafely(action)
+    }
+
+    @Suppress("UnusedPrivateMember")
+    private fun showStateSelectorDialog() {
+        // TODO nbradbury check we have a country first
+        val states = addressViewModel.states
+        val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
+            addressDraft.state,
+            states.map { it.name }.toTypedArray(),
+            states.map { it.code }.toTypedArray(),
+            SELECT_STATE_REQUEST,
+            getString(R.string.shipping_label_edit_address_state)
+        )
+        findNavController().navigateSafely(action)
+    }
+
+    private fun setupObservers() {
+        addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.country.takeIfNotEqualTo(old?.country) {
+                // TODO nbradbury update displayed country
+            }
+            new.state.takeIfNotEqualTo(old?.state) {
+                // TODO nbradbury update displayed state
+            }
+            new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
+                binding.progressBar.isVisible = new.isLoading
+            }
+        }
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<String>(SELECT_COUNTRY_REQUEST) {
+            addressViewModel.onCountrySelected(it)
+        }
+        handleResult<String>(SELECT_STATE_REQUEST) {
+            addressViewModel.onStateSelected(it)
+        }
     }
 }
