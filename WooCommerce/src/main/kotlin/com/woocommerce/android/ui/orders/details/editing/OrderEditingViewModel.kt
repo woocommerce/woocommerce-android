@@ -78,8 +78,15 @@ class OrderEditingViewModel @Inject constructor(
         }.collect()
     }
 
-    fun updateBillingAddress(billingAddress: Address) = runWhenUpdateIsPossible {
-
+    fun updateBillingAddress(updatedBillingAddress: Address) = runWhenUpdateIsPossible {
+        if (viewState.replicateBothAddressesToggleActivated == true) {
+            sendReplicateShippingAndBillingAddressesWith(updatedBillingAddress)
+        } else {
+            orderEditingRepository.updateOrderAddress(
+                order.localId,
+                updatedBillingAddress.toBillingAddressModel()
+            )
+        }.collect()
     }
 
     private suspend fun sendReplicateShippingAndBillingAddressesWith(orderAddress: Address) =
