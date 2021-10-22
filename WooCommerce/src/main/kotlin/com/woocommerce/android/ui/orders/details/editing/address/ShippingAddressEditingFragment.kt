@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.view.View
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
