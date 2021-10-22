@@ -27,7 +27,9 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCSavedState
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
-import java.util.*
+import java.util.ArrayList
+import java.util.HashSet
+import java.util.Locale
 
 /**
  * Custom recycler which displays images from the WP media library
@@ -131,7 +133,6 @@ class WPMediaGalleryView @JvmOverloads constructor(
             areItemsTheSame(oldItemPosition, newItemPosition)
     }
 
-    @Suppress("TooManyFunctions")
     private inner class WPMediaLibraryGalleryAdapter : RecyclerView.Adapter<WPMediaViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
 

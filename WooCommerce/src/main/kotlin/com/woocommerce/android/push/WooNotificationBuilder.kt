@@ -28,7 +28,6 @@ import java.util.concurrent.ExecutionException
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Suppress("TooManyFunctions")
 @Singleton
 class WooNotificationBuilder @Inject constructor(private val context: Context) {
     fun isNotificationsEnabled(): Boolean {

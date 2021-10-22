@@ -31,7 +31,6 @@ import javax.inject.Inject
 import kotlin.math.ceil
 
 @HiltViewModel
-@Suppress("TooManyFunctions")
 class EditShippingLabelPackagesViewModel @Inject constructor(
     savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
