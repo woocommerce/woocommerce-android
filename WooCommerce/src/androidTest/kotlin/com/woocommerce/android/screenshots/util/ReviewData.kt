@@ -1,5 +1,14 @@
 package com.woocommerce.android.screenshots.util
 
+// While the test data for reviews is obtained from
+// "mappings/jetpack-blogs/wc/reviews/products_reviews_all.json",
+// this file does not contain human-readable product descriptions,
+// but only products ID. The perfect solution would be to
+// retrieve the human readable descriptions by product IDs from
+// "mappings/jetpack-blogs/wc/products/products.json",
+// I honestly had no time to finish this before project ETA.
+// This is something TODO in case of project extension.
+// Instead, I'm using this map.
 val productsMap = mapOf(
     2132 to "Rose Gold shades",
     2131 to "Colorado shades",
