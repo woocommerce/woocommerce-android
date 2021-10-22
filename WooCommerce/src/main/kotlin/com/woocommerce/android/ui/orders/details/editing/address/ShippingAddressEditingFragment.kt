@@ -15,17 +15,13 @@ class ShippingAddressEditingFragment : BaseAddressEditingFragment() {
 
     override fun saveChanges() = sharedViewModel.updateShippingAddress(addressDraft)
 
-    override fun onViewBound(binding: FragmentBaseEditAddressBinding) {
-        bindReplicateAddressSwitchView(binding.replicateAddressSwitch)
-        binding.email.visibility = View.GONE
-        binding.addressSectionHeader.text = getString(R.string.order_detail_shipping_address_section)
-    }
-
     override fun getFragmentTitle() = getString(R.string.order_detail_shipping_address_section)
 
-    private fun bindReplicateAddressSwitchView(switch: SwitchMaterial) {
-        switch.visibility = View.VISIBLE
-        switch.text = getString(R.string.order_detail_use_as_billing_address)
+    override fun onViewBound(binding: FragmentBaseEditAddressBinding) {
+        binding.email.visibility = View.GONE
+        binding.addressSectionHeader.text = getString(R.string.order_detail_shipping_address_section)
+        binding.replicateAddressSwitch.text = getString(R.string.order_detail_use_as_billing_address)
+        binding.replicateAddressSwitch.visibility = View.VISIBLE
         sharedViewModel.order.billingAddress.copy(email = "")
             .bindAsAddressReplicationToggleState()
     }
