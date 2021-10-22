@@ -29,7 +29,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
 
-@Suppress("TooManyFunctions")
 @Singleton
 class NotificationMessageHandler @Inject constructor(
     private val accountStore: AccountStore,

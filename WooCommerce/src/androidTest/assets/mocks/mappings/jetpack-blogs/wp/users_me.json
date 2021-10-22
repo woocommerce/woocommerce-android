@@ -9,11 +9,11 @@
       "path": {
         "matches": "wp/v2/users/me(.*)"
       },
+      "query": {
+        "matches": "(.*)context\":\"edit(.*)"
+      },
       "locale": {
         "matches": "(.*)"
-      },
-      "query": {
-        "matches": "(.*)context(.*)edit(.*)"
       }
     }
   },
@@ -29,7 +29,7 @@
         "email": "woocommercescreenshotuser@example.com",
         "url": "",
         "description": "",
-        "link": "https:\/\/automatticwidgets.com\/author\/woocommercescreenshotuser\/",
+        "link": "https:\/\/automatticwidgets.wpcomstaging.com\/author\/woocommercescreenshotuser\/",
         "locale": "en_US",
         "nickname": "woocommercescreenshotuser",
         "slug": "woocommercescreenshotuser",
@@ -156,9 +156,9 @@
           "administrator": true
         },
         "avatar_urls": {
-          "24": "https:\/\/secure.gravatar.com\/avatar\/f0da01bf70eddcf67eec004551180f5b?s=24&d=identicon&r=g",
-          "48": "https:\/\/secure.gravatar.com\/avatar\/f0da01bf70eddcf67eec004551180f5b?s=48&d=identicon&r=g",
-          "96": "https:\/\/secure.gravatar.com\/avatar\/f0da01bf70eddcf67eec004551180f5b?s=96&d=identicon&r=g"
+          "24": "https:\/\/secure.gravatar.com\/avatar\/7a4015c11be6a342f65e0e169092d402?s=24&d=identicon&r=g",
+          "48": "https:\/\/secure.gravatar.com\/avatar\/7a4015c11be6a342f65e0e169092d402?s=48&d=identicon&r=g",
+          "96": "https:\/\/secure.gravatar.com\/avatar\/7a4015c11be6a342f65e0e169092d402?s=96&d=identicon&r=g"
         },
         "meta": {
           "admin_color": "fresh"
@@ -188,10 +188,10 @@
         },
         "_links": {
           "self": [{
-            "href": "https:\/\/automatticwidgets.com\/wp-json\/wp\/v2\/users\/742099"
+            "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wp\/v2\/users\/742099"
           }],
           "collection": [{
-            "href": "https:\/\/automatticwidgets.com\/wp-json\/wp\/v2\/users"
+            "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wp\/v2\/users"
           }]
         }
       }

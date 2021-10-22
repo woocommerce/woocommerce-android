@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPattern": "/rest/v1.1/users/.*/auth-options.*"
+    "urlPathPattern": "/rest/v1.1/users/(.*)/auth-options(.*)"
   },
   "response": {
     "status": 200,

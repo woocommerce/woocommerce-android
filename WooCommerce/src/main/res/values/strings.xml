@@ -390,6 +390,7 @@
     <string name="order_detail_add_shipping_address">Add shipping address</string>
     <string name="order_detail_add_billing_address">Add billing address</string>
     <string name="orderdetail_empty_address">No address specified</string>
+    <string name="order_detail_use_as_billing_address">Use as Billing Address</string>
 
     <!--
         Shipping label Refunds
@@ -1592,6 +1593,16 @@
     <!-- Jetpack Connection Package -->
     <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">See the benefits</string>
+    <string name="jetpack_benefits_modal_title">Get the most out of your store</string>
+    <string name="jetpack_benefits_modal_subtitle">Install the free Jetpack plugin to experience the best mobile experience.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Push Notifications</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Get push notifications for new orders, reviews, etc. delivered to your device.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analytics</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">New analytics views, let you see visitors, reports and more.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">User Profiles</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Allow multiple users to access WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Install Jetpack</string>
+    <string name="jetpack_benefits_modal_dismiss">Not Now</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
