@@ -25,10 +25,11 @@ abstract class BaseAddressEditingFragment :
 
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_orders)
 
+    abstract val storedAddress: Address
+    abstract fun onViewBound(binding: FragmentBaseEditAddressBinding)
+
     private var _binding: FragmentBaseEditAddressBinding? = null
     private val binding get() = _binding!!
-
-    abstract val storedAddress: Address
 
     val addressDraft
         get() = binding.run {
@@ -61,6 +62,7 @@ abstract class BaseAddressEditingFragment :
 
         setupObservers()
         setupResultHandlers()
+        onViewBound(binding)
     }
 
     override fun hasChanges() = addressDraft != storedAddress
@@ -70,12 +72,6 @@ abstract class BaseAddressEditingFragment :
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
-    }
-
-    override fun onDestroyView() {
-        removeTextWatchers()
-        _binding = null
-        super.onDestroyView()
     }
 
     private fun Address.bindToView() {
@@ -88,6 +84,9 @@ abstract class BaseAddressEditingFragment :
         binding.address2.text = address2
         binding.city.text = city
         binding.postcode.text = postcode
+        binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
+            sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
+        }
     }
 
     private fun bindTextWatchers() {
@@ -102,16 +101,10 @@ abstract class BaseAddressEditingFragment :
         binding.postcode.textWatcher = textWatcher
     }
 
-    private fun removeTextWatchers() {
-        binding.firstName.removeCurrentTextWatcher()
-        binding.lastName.removeCurrentTextWatcher()
-        binding.email.removeCurrentTextWatcher()
-        binding.phone.removeCurrentTextWatcher()
-        binding.company.removeCurrentTextWatcher()
-        binding.address1.removeCurrentTextWatcher()
-        binding.address2.removeCurrentTextWatcher()
-        binding.city.removeCurrentTextWatcher()
-        binding.postcode.removeCurrentTextWatcher()
+    internal fun Address.bindAsAddressReplicationToggleState() {
+        (this == storedAddress)
+            .apply { binding.replicateAddressSwitch.isChecked = this }
+            .also { sharedViewModel.onReplicateAddressSwitchChanged(it) }
     }
 
     @Suppress("UnusedPrivateMember")

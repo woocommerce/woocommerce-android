@@ -85,6 +85,7 @@
                 android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/address_section_header"
                     style="@style/Woo.Card.Header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -151,6 +152,17 @@
                     android:hint="@string/order_detail_edit_address_zip"
                     android:inputType="text"
                     app:errorEnabled="true" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/replicate_address_switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@+id/product_sku" />
 
             </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
