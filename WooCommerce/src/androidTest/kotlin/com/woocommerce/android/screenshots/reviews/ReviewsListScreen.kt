@@ -9,8 +9,8 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.util.CustomMatchers
+import com.woocommerce.android.screenshots.util.ReviewData
 import com.woocommerce.android.screenshots.util.Screen
-import com.woocommerce.android.ui.main.Review
 import org.hamcrest.Matchers
 
 class ReviewsListScreen : Screen {
@@ -60,7 +60,7 @@ class ReviewsListScreen : Screen {
         return ReviewsListScreen()
     }
 
-    fun assertReviewCard(review: Review): ReviewsListScreen {
+    fun assertReviewCard(review: ReviewData): ReviewsListScreen {
         // Assert that review has an expected hierarchy and content
         Espresso.onView(
             Matchers.allOf(

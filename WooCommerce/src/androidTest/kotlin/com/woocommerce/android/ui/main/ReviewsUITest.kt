@@ -8,31 +8,13 @@ import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
+import com.woocommerce.android.screenshots.util.ReviewData
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-
-val productsMap = mapOf(
-    2132 to "Rose Gold shades",
-    2131 to "Colorado shades",
-    2130 to "Black Coral shades"
-)
-
-data class Review(
-    val productID: Int,
-    val status: String,
-    val reviewer: String,
-    val review: String,
-    val rating: Int
-) {
-    val product = productsMap[productID]
-    val title = "$reviewer left a review on $product"
-    val content = if (status == "hold") "Pending Review • $review" else review
-    val approveButtonTitle = if (status == "hold") "Approve" else "Approved"
-}
 
 @HiltAndroidTest
 class ReviewsUITest : TestBase() {
@@ -69,7 +51,7 @@ class ReviewsUITest : TestBase() {
 
         for (i in 0 until reviewsJSONResponse.length()) {
             val reviewContainer: JSONObject = reviewsJSONResponse.getJSONObject(i)
-            val currentReview = Review(
+            val currentReview = ReviewData(
                 reviewContainer.getInt("product_id"),
                 reviewContainer.getString("status"),
                 reviewContainer.getString("reviewer"),

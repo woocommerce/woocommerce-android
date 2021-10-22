@@ -5,8 +5,8 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.CustomMatchers
+import com.woocommerce.android.screenshots.util.ReviewData
 import com.woocommerce.android.screenshots.util.Screen
-import com.woocommerce.android.ui.main.Review
 import org.hamcrest.Matchers
 
 class SingleReviewScreen : Screen {
@@ -21,7 +21,7 @@ class SingleReviewScreen : Screen {
         return ReviewsListScreen()
     }
 
-    fun assertSingleReviewScreen(review: Review): SingleReviewScreen {
+    fun assertSingleReviewScreen(review: ReviewData): SingleReviewScreen {
         // Navigation bar
         Espresso.onView(
             Matchers.allOf(
