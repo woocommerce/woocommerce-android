@@ -87,6 +87,7 @@ abstract class BaseAddressEditingFragment :
         binding.address2.text = address2
         binding.city.text = city
         binding.postcode.text = postcode
+        // TODO nbradbury show country name instead of country code
         binding.countrySpinner.setText(country)
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
@@ -111,7 +112,6 @@ abstract class BaseAddressEditingFragment :
             .also { sharedViewModel.onReplicateAddressSwitchChanged(it) }
     }
 
-    @Suppress("UnusedPrivateMember")
     private fun showCountrySelectorDialog() {
         val countries = addressViewModel.countries
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
@@ -142,6 +142,7 @@ abstract class BaseAddressEditingFragment :
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.country.takeIfNotEqualTo(old?.country) {
                 binding.countrySpinner.setText(new.country)
+                updateDoneMenuItem()
             }
             new.state.takeIfNotEqualTo(old?.state) {
                 // TODO nbradbury update displayed state
