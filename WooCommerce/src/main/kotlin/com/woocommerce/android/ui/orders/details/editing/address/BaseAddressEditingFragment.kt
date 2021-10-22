@@ -43,9 +43,8 @@ abstract class BaseAddressEditingFragment :
                 address2 = address2.text,
                 city = city.text,
                 postcode = postcode.text,
-                // temporary field assignments, must be replaced with actual input
-                country = storedAddress.country,
-                state = storedAddress.state
+                country = countrySpinner.getText(),
+                state = storedAddress.state // TODO nbradbury add state spinner
             )
         }
 
@@ -59,6 +58,10 @@ abstract class BaseAddressEditingFragment :
             country = storedAddress.country,
             state = storedAddress.state
         )
+
+        binding.countrySpinner.setClickListener {
+            showCountrySelectorDialog()
+        }
 
         setupObservers()
         setupResultHandlers()
@@ -84,6 +87,7 @@ abstract class BaseAddressEditingFragment :
         binding.address2.text = address2
         binding.city.text = city
         binding.postcode.text = postcode
+        binding.countrySpinner.setText(country)
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
         }
@@ -137,7 +141,7 @@ abstract class BaseAddressEditingFragment :
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.country.takeIfNotEqualTo(old?.country) {
-                // TODO nbradbury update displayed country
+                binding.countrySpinner.setText(new.country)
             }
             new.state.takeIfNotEqualTo(old?.state) {
                 // TODO nbradbury update displayed state
