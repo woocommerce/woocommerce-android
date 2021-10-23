@@ -1,4 +1,1 @@
-- [*] In-Person Payments: Long click on the readers name copies it to the clipboard
-- [*] In-Person Payments: Firmware version fully visible
-- [*] App is now able to display new feature announcement after app upgrade. [https://github.com/woocommerce/woocommerce-android/pull/5019]
-
+This release has a handful of minor improvements for several features based on feedback from merchants like you. We appreciate it!
