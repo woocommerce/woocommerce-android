@@ -88,7 +88,7 @@ class OrderFilterListViewModel @Inject constructor(
     }
 
     private fun getDisplayValueForSelectedOrderStatus(orderStatusOrderFilters: List<OrderListFilterOptionUiModel>): String =
-        if (orderStatusOrderFilters.isAnyOrderStatusSelected()) {
+        if (orderStatusOrderFilters.isAnyFilterOptionSelected()) {
             orderStatusOrderFilters.getNumberOfSelectedFilterOptions().toString()
         } else {
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
@@ -103,7 +103,7 @@ class OrderFilterListViewModel @Inject constructor(
                 }
             }
         }
-        val selectedOrderStatusFilters = orderFilterRepository.getCachedSelectedFilters()[ORDER_STATUS]
+        val selectedOrderStatusFilters = orderFilterRepository.getCachedFiltersSelection()[ORDER_STATUS]
         return orderStatus.values
             .map { it.toFilterListOptionUiModel(resourceProvider) }
             .map { markAsSelectedIfPreviouslySelected(it, selectedOrderStatusFilters) }
@@ -113,7 +113,7 @@ class OrderFilterListViewModel @Inject constructor(
                     index = 0, OrderListFilterOptionUiModel(
                         key = DEFAULT_ALL_KEY,
                         displayName = resourceProvider.getString(R.string.orderfilters_default_filter_value),
-                        isSelected = selectedOrderStatusFilters?.isEmpty() ?: true
+                        isSelected = !isAnyFilterOptionSelected()
                     )
                 )
             }
@@ -149,26 +149,24 @@ class OrderFilterListViewModel @Inject constructor(
 
     private fun updateOrderStatusSelectedFilters(orderStatusClicked: OrderListFilterOptionUiModel) {
         when (orderStatusClicked.key) {
-            DEFAULT_ALL_KEY -> _orderFilterOptions.value = orderOrderOptionsFilter.value?.clearAllFilterSelections()
+            DEFAULT_ALL_KEY -> _orderFilterOptions.value = _orderFilterOptions.value?.clearAllFilterSelections()
             else -> uncheckFilterOptionAll()
         }
 
         _orderFilterOptions.value?.let { filterOptions ->
-            val updatedOptionList = filterOptions.map {
+            var updatedOptionList = filterOptions.map {
                 when (orderStatusClicked.displayName) {
                     it.displayName -> updateOrderStatusSelectedValue(orderStatusClicked)
                     else -> it
                 }
             }
+            updatedOptionList = updatedOptionList.markDefaultOptionAll()
             _orderFilterOptions.value = updatedOptionList
 
             _orderFilterCategories.value?.let { filterCategories ->
                 val updatedFilters = filterCategories.map { category ->
                     when (category.categoryKey) {
-                        ORDER_STATUS -> updateFilterSelectedCategory(
-                            category,
-                            updatedOptionList
-                        )
+                        ORDER_STATUS -> updateFilterSelectedCategory(category, updatedOptionList)
                         DATE_RANGE -> category
                     }
                 }
@@ -177,6 +175,16 @@ class OrderFilterListViewModel @Inject constructor(
         }
         _orderFilterCategoryViewState.value = getFilterCategoryViewState()
     }
+
+    private fun List<OrderListFilterOptionUiModel>.markDefaultOptionAll() =
+        if (!isAnyFilterOptionSelected()) {
+            map {
+                when (it.key) {
+                    DEFAULT_ALL_KEY -> it.copy(isSelected = true)
+                    else -> it
+                }
+            }
+        } else this
 
     private fun updateOrderStatusSelectedValue(orderStatusClicked: OrderListFilterOptionUiModel) =
         when (orderStatusClicked.key) {
@@ -203,32 +211,36 @@ class OrderFilterListViewModel @Inject constructor(
     )
 
     fun onShowOrdersClicked() {
-        val selectedFiltersMap = orderFilterCategories.value
-            ?.map { it.categoryKey to selectedFilterOptionKeys(it.orderFilterOptions) }
+        val filtersSelectionMap = orderFilterCategories.value
+            ?.filter { it.orderFilterOptions.isAnyFilterOptionSelected() }
+            ?.map { it.categoryKey to it.orderFilterOptions.selectedFilterOptionKeys() }
             ?.toMap()
             ?.toMutableMap() ?: mutableMapOf()
-        val filtersChanged = selectedFiltersMap != orderFilterRepository.getCachedSelectedFilters()
-        orderFilterRepository.updateSelectedFilters(selectedFiltersMap)
+        val filtersChanged = filtersSelectionMap != orderFilterRepository.getCachedFiltersSelection()
+        orderFilterRepository.updateSelectedFilters(filtersSelectionMap)
         triggerEvent(ExitWithResult(filtersChanged))
     }
 
-    private fun selectedFilterOptionKeys(filterOptions: List<OrderListFilterOptionUiModel>) =
-        filterOptions.filter { it.isSelected }.map { it.key }
+    private fun List<OrderListFilterOptionUiModel>.selectedFilterOptionKeys() =
+        filter { it.isSelected }.map { it.key }
 
-    fun onClearFilterSelected() {
-        updateOrderStatusSelectedFilters(
-            OrderListFilterOptionUiModel(
-                key = DEFAULT_ALL_KEY,
-                displayName = resourceProvider.getString(R.string.orderfilters_default_filter_value),
-                isSelected = true
-            )
-        )
+    fun onClearFilters() {
+        _orderFilterCategories.value = _orderFilterCategories.value
+            ?.map {
+                it.copy(
+                    orderFilterOptions = it.orderFilterOptions
+                        .clearAllFilterSelections()
+                        .markDefaultOptionAll(),
+                    displayValue = resourceProvider.getString(R.string.orderfilters_default_filter_value)
+                )
+            }
+        _orderFilterCategoryViewState.value = getFilterCategoryViewState()
     }
 
     private fun List<OrderListFilterOptionUiModel>.getNumberOfSelectedFilterOptions() =
         filter { it.isSelected && it.key != DEFAULT_ALL_KEY }.count()
 
-    private fun List<OrderListFilterOptionUiModel>.isAnyOrderStatusSelected() =
+    private fun List<OrderListFilterOptionUiModel>.isAnyFilterOptionSelected() =
         any { it.isSelected && it.key != DEFAULT_ALL_KEY }
 
     private fun List<OrderListFilterOptionUiModel>.clearAllFilterSelections() =

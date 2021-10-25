@@ -24,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -391,6 +392,12 @@ class OrderListFragment :
                 } ?: hideEmptyView()
             }
         )
+
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
+                binding.orderFiltersCard.updateFilterSelection(filterCount)
+            }
+        }
     }
 
     private fun hideEmptyView() {

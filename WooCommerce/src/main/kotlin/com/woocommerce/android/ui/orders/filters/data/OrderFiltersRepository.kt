@@ -7,7 +7,7 @@ import javax.inject.Singleton
 class OrderFiltersRepository @Inject constructor() {
     private var selectedOrderFilters: MutableMap<OrderFilterCategory, List<String>> = mutableMapOf()
 
-    fun getCachedSelectedFilters() = selectedOrderFilters
+    fun getCachedFiltersSelection() = selectedOrderFilters
 
     fun updateSelectedFilters(updatedFilters: MutableMap<OrderFilterCategory, List<String>>) {
         selectedOrderFilters.clear()

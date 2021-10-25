@@ -57,7 +57,7 @@ class OrderFilterCategoryListFragment :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_clear -> {
-                viewModel.onClearFilterSelected()
+                viewModel.onClearFilters()
                 true
             }
             else -> super.onOptionsItemSelected(item)

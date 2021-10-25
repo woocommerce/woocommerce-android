@@ -96,7 +96,7 @@ class OrderListViewModel @Inject constructor(
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
 
-    protected val _pagedListData = MediatorLiveData<PagedOrdersList>()
+    private val _pagedListData = MediatorLiveData<PagedOrdersList>()
     val pagedListData: LiveData<PagedOrdersList> = _pagedListData
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()
@@ -105,7 +105,7 @@ class OrderListViewModel @Inject constructor(
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
     val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
-    protected val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
+    private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
 
     private val _isEmpty = MediatorLiveData<Boolean>()
@@ -473,7 +473,12 @@ class OrderListViewModel @Inject constructor(
     fun onFiltersChanged(refreshOrders: Boolean) {
         if (refreshOrders) {
             if (networkStatus.isConnected()) {
-                refreshOrders(orderFiltersRepository.getCachedSelectedFilters())
+                val selectedFilters = orderFiltersRepository.getCachedFiltersSelection()
+                refreshOrders(selectedFilters)
+                val selectedFilterCount = selectedFilters.values
+                    .map { it.count() }
+                    .sum()
+                viewState = viewState.copy(filterCount = selectedFilterCount)
             } else {
                 viewState = viewState.copy(isRefreshPending = true)
                 showOfflineSnack()
@@ -496,6 +501,7 @@ class OrderListViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isRefreshPending: Boolean = false,
-        val arePaymentGatewaysFetched: Boolean = false
+        val arePaymentGatewaysFetched: Boolean = false,
+        val filterCount: Int = 0
     ) : Parcelable
 }
