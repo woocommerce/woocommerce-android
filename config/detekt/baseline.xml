@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <ManuallySuppressedIssues />
   <CurrentIssues>
     <ID>ComplexCondition:ProductImageViewerFragment.kt$ProductImageViewerFragment$(show &amp;&amp; binding.fakeToolbar.visibility == View.VISIBLE) || (!show &amp;&amp; binding.fakeToolbar.visibility != View.VISIBLE)</ID>
     <ID>ComplexCondition:ReviewListAdapter.kt$ReviewListAdapter$it.remoteId == review.remoteId &amp;&amp; it.review == review.review &amp;&amp; it.read == (review.read != false) &amp;&amp; it.status == review.status</ID>
@@ -281,59 +281,6 @@
     <ID>TooGenericExceptionCaught:TokenProvider.kt$TokenProvider$e: RuntimeException</ID>
     <ID>TooGenericExceptionCaught:WooLogViewerActivity.kt$WooLogViewerActivity$e: Exception</ID>
     <ID>TooGenericExceptionThrown:ActionableEmptyView.kt$ActionableEmptyView$throw RuntimeException("$context: ActionableEmptyView must have a title (aevTitle)")</ID>
-    <ID>TooManyFunctions:AddAttributeTermsFragment.kt$AddAttributeTermsFragment : BaseProductFragment</ID>
-    <ID>TooManyFunctions:AddProductCategoryViewModel.kt$AddProductCategoryViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:AppPrefs.kt$AppPrefs$AppPrefs</ID>
-    <ID>TooManyFunctions:CardReaderConnectViewModel.kt$CardReaderConnectViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:CardReaderPaymentViewModel.kt$CardReaderPaymentViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:DateExt.kt$com.woocommerce.android.extensions.DateExt.kt</ID>
-    <ID>TooManyFunctions:DateUtils.kt$DateUtils</ID>
-    <ID>TooManyFunctions:EditShippingLabelAddressFragment.kt$EditShippingLabelAddressFragment : BaseFragmentBackPressListener</ID>
-    <ID>TooManyFunctions:EditShippingLabelAddressViewModel.kt$EditShippingLabelAddressViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:IssueRefundViewModel.kt$IssueRefundViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:LoginActivity.kt$LoginActivity : AppCompatActivityLoginListenerGoogleListenerPrologueFinishedListenerHasAndroidInjectorLoginNoJetpackListenerListener</ID>
-    <ID>TooManyFunctions:MagicLinkInterceptRepository.kt$MagicLinkInterceptRepository</ID>
-    <ID>TooManyFunctions:MainActivity.kt$MainActivity : AppUpgradeActivityViewMainNavigationRouterMainNavigationListenerOnDestinationChangedListenerPromoDialogListener</ID>
-    <ID>TooManyFunctions:MainNavigationRouter.kt$MainNavigationRouter</ID>
-    <ID>TooManyFunctions:MyStoreContract.kt$MyStoreContract$View : BaseView</ID>
-    <ID>TooManyFunctions:MyStoreStatsView.kt$MyStoreStatsView : MaterialCardViewOnChartValueSelectedListenerBarChartGestureListener</ID>
-    <ID>TooManyFunctions:OrderDetailFragment.kt$OrderDetailFragment : BaseFragmentOrderProductActionListener</ID>
-    <ID>TooManyFunctions:OrderDetailRepository.kt$OrderDetailRepository</ID>
-    <ID>TooManyFunctions:OrderDetailViewModel.kt$OrderDetailViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:OrderFulfillViewModel.kt$OrderFulfillViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:OrderListFragment.kt$OrderListFragment : TopLevelFragmentOrderStatusListListenerOnQueryTextListenerOnActionExpandListenerOrderListListener</ID>
-    <ID>TooManyFunctions:OrderListViewModel.kt$OrderListViewModel : ScopedViewModelLifecycleOwner</ID>
-    <ID>TooManyFunctions:Product.kt$Product : ParcelableIProduct</ID>
-    <ID>TooManyFunctions:ProductDetailCardBuilder.kt$ProductDetailCardBuilder</ID>
-    <ID>TooManyFunctions:ProductDetailFragment.kt$ProductDetailFragment : BaseProductFragmentOnGalleryImageInteractionListener</ID>
-    <ID>TooManyFunctions:ProductDetailRepository.kt$ProductDetailRepository</ID>
-    <ID>TooManyFunctions:ProductDetailViewModel.kt$ProductDetailViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:ProductFilterListViewModel.kt$ProductFilterListViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:ProductImagesFragment.kt$ProductImagesFragment : BaseProductEditorFragmentOnGalleryImageInteractionListener</ID>
-    <ID>TooManyFunctions:ProductImagesViewModel.kt$ProductImagesViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:ProductListFragment.kt$ProductListFragment : TopLevelFragmentOnProductClickListenerProductSortAndFilterListenerOnLoadMoreListenerOnQueryTextListenerOnActionExpandListener</ID>
-    <ID>TooManyFunctions:ProductListViewModel.kt$ProductListViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:ReviewDetailRepository.kt$ReviewDetailRepository</ID>
-    <ID>TooManyFunctions:ReviewListAdapter.kt$ReviewListAdapter : SectionedRecyclerViewAdapter</ID>
-    <ID>TooManyFunctions:ReviewListFragment.kt$ReviewListFragment : TopLevelFragmentItemDecorationListenerOnReviewClickListener</ID>
-    <ID>TooManyFunctions:ReviewListRepository.kt$ReviewListRepository</ID>
-    <ID>TooManyFunctions:ReviewListViewModel.kt$ReviewListViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:Section.kt$Section</ID>
-    <ID>TooManyFunctions:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter : Adapter</ID>
-    <ID>TooManyFunctions:ShippingCustomsAdapter.kt$ShippingCustomsFormListener</ID>
-    <ID>TooManyFunctions:SitePickerContract.kt$SitePickerContract$Presenter : BasePresenter</ID>
-    <ID>TooManyFunctions:SitePickerContract.kt$SitePickerContract$View : BaseView</ID>
-    <ID>TooManyFunctions:StringUtils.kt$StringUtils$StringUtils</ID>
-    <ID>TooManyFunctions:StyleAttrUtils.kt$StyleAttrUtils$StyleAttrUtils</ID>
-    <ID>TooManyFunctions:TerminalWrapper.kt$TerminalWrapper</ID>
-    <ID>TooManyFunctions:UnifiedLoginTracker.kt$UnifiedLoginTracker</ID>
-    <ID>TooManyFunctions:VariationDetailCardBuilder.kt$VariationDetailCardBuilder</ID>
-    <ID>TooManyFunctions:VariationDetailViewModel.kt$VariationDetailViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:VariationListFragment.kt$VariationListFragment : BaseFragmentBackPressListenerOnLoadMoreListener</ID>
-    <ID>TooManyFunctions:VariationListViewModel.kt$VariationListViewModel : ScopedViewModel</ID>
-    <ID>TooManyFunctions:WooLog.kt$WooLog$WooLog</ID>
-    <ID>TooManyFunctions:ZendeskHelper.kt$ZendeskHelper</ID>
     <ID>TopLevelPropertyNaming:ZendeskHelper.kt$private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500</ID>
     <ID>TopLevelPropertyNaming:ZendeskHelper.kt$private const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field</ID>
     <ID>TopLevelPropertyNaming:ZendeskHelper.kt$private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"</ID>

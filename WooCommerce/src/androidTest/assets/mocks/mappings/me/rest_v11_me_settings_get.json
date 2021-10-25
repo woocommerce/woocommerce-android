@@ -21,7 +21,7 @@
             "new_user_email": "",
             "user_URL": "",
             "language": "en",
-            "avatar_URL": "https:\/\/0.gravatar.com\/avatar\/f0da01bf70eddcf67eec004551180f5b?s=200&amp;d=mm",
+            "avatar_URL": "https://1.gravatar.com/avatar/7a4015c11be6a342f65e0e169092d402?s=96&d=identicon",
             "primary_site_ID": 161477129,
             "comment_like_notification": true,
             "mentions_notification": true,
@@ -38,17 +38,25 @@
             "two_step_sms_phone_number": "",
             "user_login_can_be_changed": true,
             "calypso_preferences": {
-                "is_new_reader": true,
-                "recentSites": [
-                    1
-                ]
+                "is_new_reader": false,
+                "recentSites": [161477129],
+                "guided-tours-history": [{
+                    "timestamp": 1556228348232,
+                    "tourName": "pluginsBasicTour",
+                    "finished": true
+                }, {
+                    "timestamp": 1556228417610,
+                    "tourName": "activityLogJetpackIntroTour",
+                    "finished": true
+                }]
             },
             "jetpack_connect": [],
             "is_desktop_app_user": false,
             "locale_variant": false,
             "tracks_opt_out": false,
             "i18n_empathy_mode": false,
-            "use_fallback_for_incomplete_languages": false
+            "use_fallback_for_incomplete_languages": false,
+            "gravatar_profile_hidden": false
         },
         "headers": {
             "Content-Type": "application/json",

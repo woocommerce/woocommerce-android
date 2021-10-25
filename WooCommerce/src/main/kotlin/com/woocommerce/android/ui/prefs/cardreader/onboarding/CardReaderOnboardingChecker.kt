@@ -21,7 +21,6 @@ private val SUPPORTED_COUNTRIES = listOf("US")
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 const val SUPPORTED_WCPAY_VERSION = "2.8.2"
 
-@Suppress("TooManyFunctions")
 class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
