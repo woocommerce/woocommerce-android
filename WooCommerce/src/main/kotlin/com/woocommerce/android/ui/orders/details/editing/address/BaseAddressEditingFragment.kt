@@ -167,24 +167,21 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            // skip when the viewState is first initialized
-            if (old != null) {
-                new.countryCode.takeIfNotEqualTo(old.countryCode) {
-                    binding.countrySpinner.setText(addressViewModel.getCountryNameFromCountryCode(it))
-                    // clear the state when the country is changed
-                    binding.stateSpinner.setText("")
-                    binding.stateEditText.text = ""
-                    updateDoneMenuItem()
-                    updateStateViews()
-                }
-                new.stateCode.takeIfNotEqualTo(old.stateCode) {
-                    binding.stateSpinner.setText(it)
-                    binding.stateEditText.text = it
-                    updateDoneMenuItem()
-                }
-                new.isLoading.takeIfNotEqualTo(old.isLoading) {
-                    binding.progressBar.isVisible = it
-                }
+            new.countryCode.takeIfNotEqualTo(old?.countryCode) {
+                binding.countrySpinner.setText(addressViewModel.getCountryNameFromCountryCode(it))
+                // clear the state when the country is changed
+                binding.stateSpinner.setText("")
+                binding.stateEditText.text = ""
+                updateDoneMenuItem()
+                updateStateViews()
+            }
+            new.stateCode.takeIfNotEqualTo(old?.stateCode) {
+                binding.stateSpinner.setText(it)
+                binding.stateEditText.text = it
+                updateDoneMenuItem()
+            }
+            new.isLoading.takeIfNotEqualTo(old?.isLoading) {
+                binding.progressBar.isVisible = it
             }
         }
     }
