@@ -68,7 +68,7 @@ class OrderEditingViewModel @Inject constructor(
     }
 
     fun updateShippingAddress(updatedShippingAddress: Address) = runWhenUpdateIsPossible {
-        if (viewState.useAsOtherAddressIsChecked == true) {
+        if (viewState.replicateBothAddressesToggleActivated == true) {
             sendReplicateShippingAndBillingAddressesWith(updatedShippingAddress)
         } else {
             orderEditingRepository.updateOrderAddress(
@@ -78,9 +78,15 @@ class OrderEditingViewModel @Inject constructor(
         }.collect()
     }
 
-    fun updateBillingAddress(billingAddress: Address) = runWhenUpdateIsPossible {
-        // Will be implemented in future PRs, making a unrelated call to avoid lint issues
-        billingAddress.hasInfo()
+    fun updateBillingAddress(updatedBillingAddress: Address) = runWhenUpdateIsPossible {
+        if (viewState.replicateBothAddressesToggleActivated == true) {
+            sendReplicateShippingAndBillingAddressesWith(updatedBillingAddress)
+        } else {
+            orderEditingRepository.updateOrderAddress(
+                order.localId,
+                updatedBillingAddress.toBillingAddressModel()
+            )
+        }.collect()
     }
 
     private suspend fun sendReplicateShippingAndBillingAddressesWith(orderAddress: Address) =
@@ -93,7 +99,7 @@ class OrderEditingViewModel @Inject constructor(
         )
 
     fun onReplicateAddressSwitchChanged(enabled: Boolean) {
-        viewState = viewState.copy(useAsOtherAddressIsChecked = enabled)
+        viewState = viewState.copy(replicateBothAddressesToggleActivated = enabled)
     }
 
     private suspend fun Flow<WCOrderStore.UpdateOrderResult>.collect() {
@@ -136,6 +142,6 @@ class OrderEditingViewModel @Inject constructor(
     data class ViewState(
         val orderEdited: Boolean? = null,
         val orderEditingFailed: Boolean? = null,
-        val useAsOtherAddressIsChecked: Boolean? = null
+        val replicateBothAddressesToggleActivated: Boolean? = null
     ) : Parcelable
 }
