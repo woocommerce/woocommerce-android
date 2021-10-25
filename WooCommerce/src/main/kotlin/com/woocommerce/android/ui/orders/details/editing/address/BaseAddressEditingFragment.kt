@@ -171,6 +171,7 @@ abstract class BaseAddressEditingFragment :
             if (old != null) {
                 new.countryCode.takeIfNotEqualTo(old.countryCode) {
                     binding.countrySpinner.setText(addressViewModel.getCountryNameFromCountryCode(it))
+                    // clear the state when the country is changed
                     binding.stateSpinner.setText("")
                     binding.stateEditText.text = ""
                     updateDoneMenuItem()
