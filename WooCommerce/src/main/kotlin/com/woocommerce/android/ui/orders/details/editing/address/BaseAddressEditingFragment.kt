@@ -169,16 +169,20 @@ abstract class BaseAddressEditingFragment :
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.countryCode.takeIfNotEqualTo(old?.countryCode) {
-                binding.countrySpinner.setText(addressViewModel.getCountryNameFromCountryCode(it))
-                binding.stateSpinner.setText("")
-                binding.stateEditText.text = ""
-                updateDoneMenuItem()
-                updateStateViews()
+                if (old?.countryCode != null) {
+                    binding.countrySpinner.setText(addressViewModel.getCountryNameFromCountryCode(it))
+                    binding.stateSpinner.setText("")
+                    binding.stateEditText.text = ""
+                    updateDoneMenuItem()
+                    updateStateViews()
+                }
             }
             new.stateCode.takeIfNotEqualTo(old?.stateCode) {
-                binding.stateSpinner.setText(it)
-                binding.stateEditText.text = it
-                updateDoneMenuItem()
+                if (old?.stateCode != null) {
+                    binding.stateSpinner.setText(it)
+                    binding.stateEditText.text = it
+                    updateDoneMenuItem()
+                }
             }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
                 binding.progressBar.isVisible = it
