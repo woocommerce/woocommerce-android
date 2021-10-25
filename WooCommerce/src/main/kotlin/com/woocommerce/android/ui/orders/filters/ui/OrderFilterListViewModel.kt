@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderFilterCategory.ORDER_STATUS
@@ -98,16 +98,31 @@ class OrderFilterListViewModel @Inject constructor(
         var orderStatus = orderListRepository.getCachedOrderStatusOptions()
         if (orderStatus.isEmpty()) {
             when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
-                RequestResult.SUCCESS -> orderStatus = orderListRepository.getCachedOrderStatusOptions()
+                SUCCESS -> orderStatus = orderListRepository.getCachedOrderStatusOptions()
                 else -> { /* do nothing */
                 }
             }
         }
+        val selectedOrderStatusFilters = orderFilterRepository.getCachedSelectedFilters()[ORDER_STATUS]
         return orderStatus.values
             .map { it.toFilterListOptionUiModel(resourceProvider) }
+            .map { markAsSelectedIfPreviouslySelected(it, selectedOrderStatusFilters) }
             .toMutableList()
-            .apply { add(index = 0, buildFilterOptionAll()) }
+            .apply {
+                add(
+                    index = 0, OrderListFilterOptionUiModel(
+                        key = DEFAULT_ALL_KEY,
+                        displayName = resourceProvider.getString(R.string.orderfilters_default_filter_value),
+                        isSelected = selectedOrderStatusFilters?.isEmpty() ?: true
+                    )
+                )
+            }
     }
+
+    private fun markAsSelectedIfPreviouslySelected(
+        it: OrderListFilterOptionUiModel,
+        selectedOrderStatusFilters: List<String>?
+    ) = it.copy(isSelected = selectedOrderStatusFilters?.contains(it.key) ?: false)
 
     fun onFilterCategoryClicked(filterCategory: FilterListCategoryUiModel) {
         selectedFilterCategory = filterCategory
@@ -201,14 +216,14 @@ class OrderFilterListViewModel @Inject constructor(
         filterOptions.filter { it.isSelected }.map { it.key }
 
     fun onClearFilterSelected() {
-        updateOrderStatusSelectedFilters(buildFilterOptionAll())
+        updateOrderStatusSelectedFilters(
+            OrderListFilterOptionUiModel(
+                key = DEFAULT_ALL_KEY,
+                displayName = resourceProvider.getString(R.string.orderfilters_default_filter_value),
+                isSelected = true
+            )
+        )
     }
-
-    private fun buildFilterOptionAll() = OrderListFilterOptionUiModel(
-        key = DEFAULT_ALL_KEY,
-        displayName = resourceProvider.getString(R.string.orderfilters_default_filter_value),
-        isSelected = true
-    )
 
     private fun List<OrderListFilterOptionUiModel>.getNumberOfSelectedFilterOptions() =
         filter { it.isSelected && it.key != DEFAULT_ALL_KEY }.count()
