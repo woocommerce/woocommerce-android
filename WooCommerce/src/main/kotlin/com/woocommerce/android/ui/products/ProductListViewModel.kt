@@ -185,13 +185,13 @@ class ProductListViewModel @Inject constructor(
 
     fun onSearchOpened() {
         _productList.value = emptyList()
-        viewState = viewState.copy(isSearchActive = true, isAddProductButtonVisible = false)
+        viewState = viewState.copy(isSearchActive = true, displaySortAndFilterCard = false, isAddProductButtonVisible = false)
     }
 
     fun onSearchClosed() {
         launch {
             searchJob?.cancelAndJoin()
-            viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false)
+            viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false, displaySortAndFilterCard = true, isAddProductButtonVisible = true)
             loadProducts()
         }
     }
@@ -431,7 +431,7 @@ class ProductListViewModel @Inject constructor(
         val isEmptyViewVisible: Boolean? = null,
         val sortingTitleResource: Int? = null,
         val displaySortAndFilterCard: Boolean? = null,
-        val isAddProductButtonVisible: Boolean? = null
+        val isAddProductButtonVisible: Boolean? = null,
     ) : Parcelable
 
     sealed class ProductListEvent : Event() {
