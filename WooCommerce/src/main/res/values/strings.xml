@@ -935,8 +935,8 @@
     -->
     <string name="new_notifications">%d new notifications</string>
     <string name="more_notifications">and %d more.</string>
-    <string name="notification_order_title">You have 1 new order! 🎉</string>
-    <string name="notification_review_title">You have 1 new review! 🌟</string>
+    <string name="notification_order_title">You have a new order! 🎉</string>
+    <string name="notification_review_title">You have a new review! 🌟</string>
     <!--
         Product Review Detail
     -->
