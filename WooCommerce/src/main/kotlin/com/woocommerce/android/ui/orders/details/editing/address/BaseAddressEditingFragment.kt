@@ -170,6 +170,8 @@ abstract class BaseAddressEditingFragment :
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.countryCode.takeIfNotEqualTo(old?.countryCode) {
                 binding.countrySpinner.setText(addressViewModel.getCountryNameFromCountryCode(it))
+                binding.stateSpinner.setText("")
+                binding.stateEditText.text = ""
                 updateDoneMenuItem()
                 updateStateViews()
             }
