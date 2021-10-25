@@ -10,6 +10,7 @@ class MediaPickerTracker @Inject constructor() : Tracker {
         AnalyticsTracker.track(event.toStat(), properties)
     }
 
+    @Suppress("ComplexMethod")
     private fun Event.toStat(): AnalyticsTracker.Stat = when (this) {
         Event.MEDIA_PICKER_PREVIEW_OPENED -> AnalyticsTracker.Stat.MEDIA_PICKER_PREVIEW_OPENED
         Event.MEDIA_PICKER_RECENT_MEDIA_SELECTED -> AnalyticsTracker.Stat.MEDIA_PICKER_RECENT_MEDIA_SELECTED

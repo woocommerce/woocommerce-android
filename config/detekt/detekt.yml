@@ -9,9 +9,6 @@ complexity:
     ignoreAnnotated: ['Inject']
   TooManyFunctions:
     active: false
-  ComplexMethod:
-    ignoreSingleWhenExpression: true
-    ignoreSimpleWhenEntries: true
 
 formatting:
   active: true
