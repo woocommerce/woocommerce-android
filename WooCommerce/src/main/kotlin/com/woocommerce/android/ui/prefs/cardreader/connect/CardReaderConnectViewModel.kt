@@ -456,7 +456,6 @@ class CardReaderConnectViewModel @Inject constructor(
 
     sealed class ListItemViewState {
         object ScanningInProgressListItem : ListItemViewState() {
-
             val label = UiStringRes(R.string.card_reader_connect_scanning_progress)
 
             @DrawableRes
