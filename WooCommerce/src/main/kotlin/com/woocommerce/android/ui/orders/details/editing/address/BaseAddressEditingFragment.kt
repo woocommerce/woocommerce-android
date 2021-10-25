@@ -8,7 +8,9 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
@@ -72,6 +74,7 @@ abstract class BaseAddressEditingFragment :
         setupObservers()
         setupResultHandlers()
         onViewBound(binding)
+        updateStateViews()
     }
 
     override fun hasChanges() = addressDraft != storedAddress
@@ -95,6 +98,7 @@ abstract class BaseAddressEditingFragment :
         binding.postcode.text = postcode
         binding.countrySpinner.setText(getCountryLabelByCountryCode())
         binding.stateSpinner.setText(state)
+        binding.stateEditText.text = state
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
         }
@@ -110,6 +114,24 @@ abstract class BaseAddressEditingFragment :
         binding.address2.textWatcher = textWatcher
         binding.city.textWatcher = textWatcher
         binding.postcode.textWatcher = textWatcher
+        binding.stateEditText.textWatcher = textWatcher
+    }
+
+    /**
+     * When the country is empty, or we don't have country or state data, we show an editText
+     * for the state rather than a spinner
+     */
+    private fun updateStateViews() {
+        if (addressDraft.country.isEmpty() ||
+            !addressViewModel.hasCountries() ||
+            !addressViewModel.hasStates()
+        ) {
+            binding.stateEditText.show()
+            binding.stateSpinner.hide()
+        } else {
+            binding.stateEditText.hide()
+            binding.stateSpinner.show()
+        }
     }
 
     internal fun Address.bindAsAddressReplicationToggleState() {
@@ -149,9 +171,11 @@ abstract class BaseAddressEditingFragment :
             new.countryCode.takeIfNotEqualTo(old?.countryCode) {
                 binding.countrySpinner.setText(addressViewModel.getCountryNameFromCountryCode(it))
                 updateDoneMenuItem()
+                updateStateViews()
             }
             new.stateCode.takeIfNotEqualTo(old?.stateCode) {
                 binding.stateSpinner.setText(it)
+                binding.stateEditText.text = it
             }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
                 binding.progressBar.isVisible = it
