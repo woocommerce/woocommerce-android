@@ -29,7 +29,6 @@ import org.junit.runner.RunWith
 import org.mockito.internal.verification.AtLeast
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
-import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
