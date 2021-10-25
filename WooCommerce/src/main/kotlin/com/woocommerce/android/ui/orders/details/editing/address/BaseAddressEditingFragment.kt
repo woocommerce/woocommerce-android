@@ -46,7 +46,7 @@ abstract class BaseAddressEditingFragment :
                 city = city.text,
                 postcode = postcode.text,
                 country = addressViewModel.getCountryCodeFromCountryName(countrySpinner.getText()),
-                state = storedAddress.state // TODO nbradbury add state spinner
+                state = stateSpinner.getText()
             )
         }
 
@@ -63,6 +63,10 @@ abstract class BaseAddressEditingFragment :
 
         binding.countrySpinner.setClickListener {
             showCountrySelectorDialog()
+        }
+
+        binding.stateSpinner.setClickListener {
+            showStateSelectorDialog()
         }
 
         setupObservers()
@@ -90,6 +94,7 @@ abstract class BaseAddressEditingFragment :
         binding.city.text = city
         binding.postcode.text = postcode
         binding.countrySpinner.setText(getCountryLabelByCountryCode())
+        binding.stateSpinner.setText(state)
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
         }
@@ -146,10 +151,10 @@ abstract class BaseAddressEditingFragment :
                 updateDoneMenuItem()
             }
             new.stateCode.takeIfNotEqualTo(old?.stateCode) {
-                // TODO nbradbury update displayed state
+                binding.stateSpinner.setText(it)
             }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
-                binding.progressBar.isVisible = new.isLoading
+                binding.progressBar.isVisible = it
             }
         }
     }
