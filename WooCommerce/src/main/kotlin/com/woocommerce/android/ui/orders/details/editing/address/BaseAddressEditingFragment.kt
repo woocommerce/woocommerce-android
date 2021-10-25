@@ -182,6 +182,9 @@ abstract class BaseAddressEditingFragment :
             }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
                 binding.progressBar.isVisible = it
+                if (old?.isLoading == true) {
+                    updateStateViews()
+                }
             }
         }
     }
