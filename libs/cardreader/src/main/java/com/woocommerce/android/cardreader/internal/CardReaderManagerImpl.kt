@@ -39,7 +39,7 @@ internal class CardReaderManagerImpl(
 
     private lateinit var application: Application
 
-    override val isInitialized: Boolean
+    override val initialized: Boolean
         get() {
             return terminal.isInitialized()
         }

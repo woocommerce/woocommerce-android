@@ -76,7 +76,7 @@ class AppSettingsPresenterTest {
     fun `cleanPaymentsData with initialized manager should disconnect reader`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            whenever(cardReaderManager.isInitialized).thenReturn(true)
+            whenever(cardReaderManager.initialized).thenReturn(true)
 
             // WHEN
             appSettingsPresenter.clearCardReaderData()
@@ -91,7 +91,7 @@ class AppSettingsPresenterTest {
     fun `cleanPaymentsData with not initialized manager should not disconnect reader`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            whenever(cardReaderManager.isInitialized).thenReturn(false)
+            whenever(cardReaderManager.initialized).thenReturn(false)
 
             // WHEN
             appSettingsPresenter.clearCardReaderData()

@@ -9,8 +9,8 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_FAILURE
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_MISSING_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -27,6 +27,7 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
@@ -35,17 +36,16 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowUpdateInProgress
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingPermissionsError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
@@ -57,17 +57,11 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import javax.inject.Inject
 
 @HiltViewModel
 class CardReaderConnectViewModel @Inject constructor(
@@ -99,40 +93,13 @@ class CardReaderConnectViewModel @Inject constructor(
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
     private val viewState = MutableLiveData<CardReaderConnectViewState>(ScanningState(::onCancelClicked))
-    val viewStateData: LiveData<CardReaderConnectViewState> = viewState
+    var requiredUpdateStarted: Boolean = false
+    var connectionStarted: Boolean = false
 
-    private var connectionFlowScope = createConnectionFlowScope()
-    private var connectionFlowState = ConnectionFlowState()
+    val viewStateData: LiveData<CardReaderConnectViewState> = viewState
 
     init {
         startFlow()
-    }
-
-    fun onTutorialClosed() {
-        launch {
-            // this workaround needs to be here since the navigation component hasn't finished the previous
-            // transaction when a result is received
-            delay(1)
-            exitFlow(connected = true)
-        }
-    }
-
-    fun onUpdateReaderResult(updateResult: CardReaderUpdateViewModel.UpdateResult) {
-        when (updateResult) {
-            CardReaderUpdateViewModel.UpdateResult.FAILED -> {
-                triggerEvent(CardReaderConnectEvent.ShowToast(R.string.card_reader_detail_connected_update_failed))
-                exitFlow(connected = false)
-            }
-            CardReaderUpdateViewModel.UpdateResult.SUCCESS -> {
-                // noop
-            }
-        }.exhaustive
-    }
-
-    fun onScreenResumed() {
-        if (viewState.value is MissingPermissionsError) {
-            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
-        }
     }
 
     private fun startFlow() {
@@ -144,18 +111,9 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun checkOnboardingState() {
-        launch {
-            when (onboardingChecker.getOnboardingState()) {
-                is CardReaderOnboardingState.GenericError,
-                is CardReaderOnboardingState.NoConnectionError -> {
-                    viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
-                }
-                is CardReaderOnboardingState.OnboardingCompleted -> {
-                    triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
-                }
-                else -> triggerEvent(CardReaderConnectEvent.NavigateToOnboardingFlow)
-            }
+    fun onScreenResumed() {
+        if (viewState.value is MissingPermissionsError) {
+            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
         }
     }
 
@@ -178,6 +136,10 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
+    private fun onLocationPermissionsVerified() {
+        triggerEvent(CheckLocationEnabled(::onCheckLocationEnabledResult))
+    }
+
     private fun onCheckLocationEnabledResult(enabled: Boolean) {
         if (enabled) {
             onLocationStateVerified()
@@ -189,16 +151,20 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
+    private fun onOpenPermissionsSettingsClicked() {
+        triggerEvent(OpenPermissionsSettings)
+    }
+
+    private fun onOpenLocationProviderSettingsClicked() {
+        triggerEvent(OpenLocationSettings(::onLocationSettingsClosed))
+    }
+
     private fun onLocationSettingsClosed() {
         triggerEvent(CheckLocationEnabled(::onCheckLocationEnabledResult))
     }
 
-    private fun onCheckBluetoothResult(enabled: Boolean) {
-        if (enabled) {
-            onBluetoothStateVerified()
-        } else {
-            triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
-        }
+    private fun onLocationStateVerified() {
+        triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
     }
 
     private fun onRequestEnableBluetoothResult(enabled: Boolean) {
@@ -212,23 +178,49 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
-        this.cardReaderManager = cardReaderManager
-        startStatusesListening()
-        launch {
-            if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connecting) {
-                startScanning()
+    private fun onCheckBluetoothResult(enabled: Boolean) {
+        if (enabled) {
+            onBluetoothStateVerified()
+        } else {
+            triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
+        }
+    }
+
+    private fun onOpenBluetoothSettingsClicked() {
+        triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
+    }
+
+    private fun onBluetoothStateVerified() {
+        if (!::cardReaderManager.isInitialized) {
+            triggerEvent(InitializeCardReaderManager(::onCardReaderManagerInitialized))
+        } else {
+            launch {
+                startScanningIfNotStarted()
             }
         }
     }
 
-    private fun startStatusesListening() {
-        connectionFlowScope.cancel()
-        connectionFlowScope = createConnectionFlowScope()
-        connectionFlowScope.launch {
-            updateConnectionFlowState(requiredUpdateStarted = false, connectionStarted = false)
-            connectionFlowScope.launch { listenToConnectionStatus() }
-            connectionFlowScope.launch { listenToSoftwareUpdateStatus() }
+    private fun checkOnboardingState() {
+        launch {
+            when (onboardingChecker.getOnboardingState()) {
+                is CardReaderOnboardingState.GenericError,
+                is CardReaderOnboardingState.NoConnectionError -> {
+                    viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
+                }
+                is CardReaderOnboardingState.OnboardingCompleted -> {
+                    triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+                }
+                else -> triggerEvent(CardReaderConnectEvent.NavigateToOnboardingFlow)
+            }
+        }
+    }
+
+    private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
+        launch {
+            this@CardReaderConnectViewModel.cardReaderManager = cardReaderManager
+            launch { listenToConnectionStatus() }
+            launch { listenToSoftwareUpdateStatus() }
+            startScanningIfNotStarted()
         }
     }
 
@@ -237,11 +229,11 @@ class CardReaderConnectViewModel @Inject constructor(
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
                 CardReaderStatus.NotConnected -> {
-                    if (connectionFlowState.connectionStarted) onReaderConnectionFailed()
+                    if (connectionStarted) onReaderConnectionFailed()
                     else Unit
                 }
                 CardReaderStatus.Connecting -> {
-                    updateConnectionFlowState(connectionStarted = true)
+                    connectionStarted = true
                     viewState.value = ConnectingState(::onCancelClicked)
                 }
             }.exhaustive
@@ -251,36 +243,28 @@ class CardReaderConnectViewModel @Inject constructor(
     private suspend fun listenToSoftwareUpdateStatus() {
         cardReaderManager.softwareUpdateStatus.collect { updateStatus ->
             if (updateStatus is SoftwareUpdateInProgress) {
-                if (!connectionFlowState.requiredUpdateStarted) {
-                    updateConnectionFlowState(requiredUpdateStarted = true)
+                if (!requiredUpdateStarted) {
+                    requiredUpdateStarted = true
                     triggerEvent(ShowUpdateInProgress)
                 }
+            } else {
+                requiredUpdateStarted = false
             }
         }
     }
 
-    private fun onLocationPermissionsVerified() {
-        triggerEvent(CheckLocationEnabled(::onCheckLocationEnabledResult))
-    }
-
-    private fun onLocationStateVerified() {
-        triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
-    }
-
-    private fun onBluetoothStateVerified() {
-        triggerEvent(InitializeCardReaderManager(::onCardReaderManagerInitialized))
-    }
-
-    private suspend fun startScanning() {
-        cardReaderManager
-            .discoverReaders(
-                isSimulated = BuildConfig.USE_SIMULATED_READER,
-                cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(SUPPORTED_READERS)
-            )
-            .flowOn(dispatchers.io)
-            .collect { discoveryEvent ->
-                handleScanEvent(discoveryEvent)
-            }
+    private suspend fun startScanningIfNotStarted() {
+        if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connecting) {
+            cardReaderManager
+                .discoverReaders(
+                    isSimulated = BuildConfig.USE_SIMULATED_READER,
+                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(SUPPORTED_READERS)
+                )
+                .flowOn(dispatchers.io)
+                .collect { discoveryEvent ->
+                    handleScanEvent(discoveryEvent)
+                }
+        }
     }
 
     private fun handleScanEvent(discoveryEvent: CardReaderDiscoveryEvents) {
@@ -313,6 +297,18 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
+    fun onUpdateReaderResult(updateResult: CardReaderUpdateViewModel.UpdateResult) {
+        when (updateResult) {
+            CardReaderUpdateViewModel.UpdateResult.FAILED -> {
+                triggerEvent(CardReaderConnectEvent.ShowToast(R.string.card_reader_detail_connected_update_failed))
+                exitFlow(connected = false)
+            }
+            CardReaderUpdateViewModel.UpdateResult.SUCCESS -> {
+                // noop
+            }
+        }.exhaustive
+    }
+
     private fun onReadersFound(discoveryEvent: ReadersFound) {
         if (viewState.value is ConnectingState) return
         val availableReaders = discoveryEvent.list.filter { it.id != null }
@@ -322,7 +318,7 @@ class CardReaderConnectViewModel @Inject constructor(
             connectToReader(lastKnownReader)
         } else {
             viewState.value = when {
-                availableReaders.isEmpty() -> ScanningState(::onCancelClicked)
+                availableReaders.isEmpty() -> CardReaderConnectViewState.ScanningState(::onCancelClicked)
                 availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
                 availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
                 else -> throw IllegalStateException("Unreachable code")
@@ -418,18 +414,6 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun onOpenPermissionsSettingsClicked() {
-        triggerEvent(OpenPermissionsSettings)
-    }
-
-    private fun onOpenLocationProviderSettingsClicked() {
-        triggerEvent(OpenLocationSettings(::onLocationSettingsClosed))
-    }
-
-    private fun onOpenBluetoothSettingsClicked() {
-        triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
-    }
-
     private fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Connection flow interrupted by the user.")
         exitFlow(connected = false)
@@ -449,6 +433,15 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
+    fun onTutorialClosed() {
+        launch {
+            // this workaround needs to be here since the navigation component hasn't finished the previous
+            // transaction when a result is received
+            delay(1)
+            exitFlow(connected = true)
+        }
+    }
+
     private fun exitFlow(connected: Boolean) {
         triggerEvent(ExitWithResult(connected))
     }
@@ -460,21 +453,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun findLastKnowReader(readers: List<CardReader>): CardReader? {
         return readers.find { it.id == appPrefs.getLastConnectedCardReaderId() }
     }
-
-    private val connectionFlowStateMutex = Mutex()
-    private suspend fun updateConnectionFlowState(
-        requiredUpdateStarted: Boolean = connectionFlowState.requiredUpdateStarted,
-        connectionStarted: Boolean = connectionFlowState.connectionStarted,
-    ) {
-        connectionFlowStateMutex.withLock {
-            connectionFlowState = connectionFlowState.copy(
-                requiredUpdateStarted = requiredUpdateStarted,
-                connectionStarted = connectionStarted,
-            )
-        }
-    }
-
-    private fun createConnectionFlowScope() = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     sealed class ListItemViewState {
         object ScanningInProgressListItem : ListItemViewState() {
@@ -492,11 +470,6 @@ class CardReaderConnectViewModel @Inject constructor(
             val connectLabel: UiString = UiStringRes(R.string.card_reader_connect_connect_button)
         }
     }
-
-    private data class ConnectionFlowState(
-        val requiredUpdateStarted: Boolean = false,
-        val connectionStarted: Boolean = false,
-    )
 
     companion object {
         private val SUPPORTED_READERS = listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2)
