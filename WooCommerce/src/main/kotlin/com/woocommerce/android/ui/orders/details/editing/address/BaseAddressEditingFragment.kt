@@ -13,8 +13,10 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
+@AndroidEntryPoint
 abstract class BaseAddressEditingFragment :
     BaseOrderEditingFragment(R.layout.fragment_base_edit_address) {
     companion object {
