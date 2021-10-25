@@ -26,10 +26,10 @@ class AddressViewModel @Inject constructor(
         get() = dataStore.getCountries().map { it.toAppModel() }
 
     val states: List<Location>
-        get() = dataStore.getStates(viewState.country).map { it.toAppModel() }
+        get() = dataStore.getStates(viewState.countryCode).map { it.toAppModel() }
 
     fun start(country: String, state: String) {
-        viewState = viewState.copy(country = country, state = state)
+        viewState = viewState.copy(countryCode = country, stateCode = state)
         loadCountriesAndStates()
     }
 
@@ -44,22 +44,30 @@ class AddressViewModel @Inject constructor(
         }
     }
 
+    fun getCountryCodeFromCountryName(countryName: String): String {
+        return countries.find { it.name == countryName }?.code ?: countryName
+    }
+
+    fun getCountryNameFromCountryCode(countryCode: String): String {
+        return countries.find { it.code == countryCode }?.name ?: countryCode
+    }
+
     fun onCountrySelected(countryCode: String) {
-        if (countryCode != viewState.country) {
-            viewState = viewState.copy(country = countryCode)
+        if (countryCode != viewState.countryCode) {
+            viewState = viewState.copy(countryCode = countryCode)
         }
     }
 
     fun onStateSelected(stateCode: String) {
-        if (stateCode != viewState.country) {
-            viewState = viewState.copy(state = stateCode)
+        if (stateCode != viewState.stateCode) {
+            viewState = viewState.copy(stateCode = stateCode)
         }
     }
 
     @Parcelize
     data class ViewState(
-        val country: String = "",
-        val state: String = "",
+        val countryCode: String = "",
+        val stateCode: String = "",
         val isLoading: Boolean = false
     ) : Parcelable
 }

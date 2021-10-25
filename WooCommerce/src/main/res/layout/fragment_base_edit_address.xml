@@ -153,6 +153,14 @@
                     android:inputType="text"
                     app:errorEnabled="true" />
 
+                <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                    android:id="@+id/countrySpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:hint="@string/shipping_label_edit_address_country"
+                    android:inputType="text" />
+
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/replicate_address_switch"
                     android:layout_width="match_parent"
