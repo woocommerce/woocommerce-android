@@ -172,6 +172,4 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
             val remoteProductIds = products.map { it.remoteId }
             assertFalse(remoteProductIds.contains(PRODUCT_REMOTE_ID))
         }
-
-
 }
