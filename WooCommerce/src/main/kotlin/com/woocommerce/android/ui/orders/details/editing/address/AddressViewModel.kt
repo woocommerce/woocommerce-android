@@ -49,7 +49,7 @@ class AddressViewModel @Inject constructor(
     }
 
     fun getCountryNameFromCountryCode(countryCode: String): String {
-        return countries.find { it.code == countryCode }?.code ?: countryCode
+        return countries.find { it.code == countryCode }?.name ?: countryCode
     }
 
     fun onCountrySelected(countryCode: String) {
