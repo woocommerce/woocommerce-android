@@ -154,7 +154,6 @@ abstract class BaseAddressEditingFragment :
 
     @Suppress("UnusedPrivateMember")
     private fun showStateSelectorDialog() {
-        // TODO nbradbury check we have a country first
         val states = addressViewModel.states
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
             addressDraft.state,
@@ -168,24 +167,23 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.countryCode.takeIfNotEqualTo(old?.countryCode) {
-                if (old?.countryCode != null) {
+            // skip when the viewState is first initialized
+            if (old != null) {
+                new.countryCode.takeIfNotEqualTo(old.countryCode) {
                     binding.countrySpinner.setText(addressViewModel.getCountryNameFromCountryCode(it))
                     binding.stateSpinner.setText("")
                     binding.stateEditText.text = ""
                     updateDoneMenuItem()
                     updateStateViews()
                 }
-            }
-            new.stateCode.takeIfNotEqualTo(old?.stateCode) {
-                if (old?.stateCode != null) {
+                new.stateCode.takeIfNotEqualTo(old.stateCode) {
                     binding.stateSpinner.setText(it)
                     binding.stateEditText.text = it
                     updateDoneMenuItem()
                 }
-            }
-            new.isLoading.takeIfNotEqualTo(old?.isLoading) {
-                binding.progressBar.isVisible = it
+                new.isLoading.takeIfNotEqualTo(old.isLoading) {
+                    binding.progressBar.isVisible = it
+                }
             }
         }
     }
