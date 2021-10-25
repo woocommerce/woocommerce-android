@@ -179,19 +179,34 @@ class ProductListViewModel @Inject constructor(
 
     private suspend fun cancelSearch() {
         searchJob?.cancelAndJoin()
-        viewState = viewState.copy(query = null, isSearchActive = false, isAddProductButtonVisible = false, isEmptyViewVisible = false)
+        viewState = viewState.copy(
+            query = null,
+            isSearchActive = false,
+            isAddProductButtonVisible = false,
+            isEmptyViewVisible = false
+        )
         _productList.value = productRepository.getProductList()
     }
 
     fun onSearchOpened() {
         _productList.value = emptyList()
-        viewState = viewState.copy(isSearchActive = true, displaySortAndFilterCard = false, isAddProductButtonVisible = false)
+        viewState = viewState.copy(
+            isSearchActive = true,
+            displaySortAndFilterCard = false,
+            isAddProductButtonVisible = false
+        )
     }
 
     fun onSearchClosed() {
         launch {
             searchJob?.cancelAndJoin()
-            viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false, displaySortAndFilterCard = true, isAddProductButtonVisible = true)
+            viewState = viewState.copy(
+                query = null,
+                isSearchActive = false,
+                isEmptyViewVisible = false,
+                displaySortAndFilterCard = true,
+                isAddProductButtonVisible = true
+            )
             loadProducts()
         }
     }
@@ -305,7 +320,7 @@ class ProductListViewModel @Inject constructor(
             if (_productList.value?.isEmpty() == true) {
                 when {
                     viewState.query != null -> true
-                    productFilterOptions.isNotEmpty()  -> true
+                    productFilterOptions.isNotEmpty() -> true
                     else -> false
                 }
             } else {
@@ -320,7 +335,8 @@ class ProductListViewModel @Inject constructor(
             canLoadMore = productRepository.canLoadMoreProducts,
             isEmptyViewVisible = _productList.value?.isEmpty() == true,
             isAddProductButtonVisible = shouldShowAddProductButton,
-            displaySortAndFilterCard = !isSearching() && (productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true)
+            displaySortAndFilterCard = !isSearching() &&
+                (productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true)
         )
     }
 
