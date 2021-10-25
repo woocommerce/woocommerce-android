@@ -178,6 +178,7 @@ abstract class BaseAddressEditingFragment :
             new.stateCode.takeIfNotEqualTo(old?.stateCode) {
                 binding.stateSpinner.setText(it)
                 binding.stateEditText.text = it
+                updateDoneMenuItem()
             }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
                 binding.progressBar.isVisible = it
