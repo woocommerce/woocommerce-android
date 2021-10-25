@@ -168,7 +168,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-        /* We hide the Add Product FAB and use the empty view's button instead. */
+        /* We hide the Add Product FAB when searching. */
     fun `Hides add product button when searching`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // when
@@ -191,7 +191,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-        /* We hide the Add Product FAB and use the empty view's button instead. */
+    /* We show the Add Product FAB after searching is completed. */
     fun `Shows add product button after searching`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // when
@@ -216,7 +216,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-        /* We hide the Add Product FAB and use the empty view's button instead. */
+    /* We hide the filters when searching. */
     fun `Hides filters buttons when searching`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // when
@@ -239,7 +239,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-        /* We hide the Add Product FAB and use the empty view's button instead. */
+        /* We show the filters when search is completed. */
     fun `Shows filters buttons after searching`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // when
