@@ -204,10 +204,13 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(statusFilter: String? = null, searchQuery: String? = null) {
-//        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
-//        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
-//
-//        activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+        val statusFilterList = statusFilter?.let {
+            listOf(it)
+        }
+        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilterList, searchQuery)
+        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+
+        activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
 
     /**
@@ -470,8 +473,8 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun onFiltersChanged(refreshOrders: Boolean) {
-        if (refreshOrders) {
+    fun onFiltersChanged(filtersChanged: Boolean) {
+        if (filtersChanged) {
             if (networkStatus.isConnected()) {
                 val selectedFilters = orderFiltersRepository.getCachedFiltersSelection()
                 refreshOrders(selectedFilters)
@@ -490,7 +493,7 @@ class OrderListViewModel @Inject constructor(
         val listDescriptor = WCOrderListDescriptor(selectedSite.get(), orderFilters[ORDER_STATUS] ?: emptyList())
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
 
-        activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+        activatePagedListWrapper(pagedListWrapper)
     }
 
     sealed class OrderListEvent : Event() {
