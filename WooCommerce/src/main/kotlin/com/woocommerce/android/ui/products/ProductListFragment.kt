@@ -199,15 +199,11 @@ class ProductListFragment :
     private fun disableSearchListeners() {
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
-
-        (activity as? MainActivity)?.showBottomNav()
     }
 
     private fun enableSearchListeners() {
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
-
-        (activity as? MainActivity)?.hideBottomNav()
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
@@ -276,6 +272,9 @@ class ProductListFragment :
             }
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
                 showAddProductButton(show = isVisible)
+            }
+            new.isSearchActive?.takeIfNotEqualTo(old?.isSearchActive) { isSearchActive ->
+                showBottomNavBar(isSearchActive = isSearchActive)
             }
         }
 
@@ -408,6 +407,14 @@ class ProductListFragment :
             binding.productsSortFilterCard.initView(this)
         } else {
             binding.productsSortFilterCard.visibility = View.GONE
+        }
+    }
+
+    private fun showBottomNavBar(isSearchActive: Boolean) {
+        if (isSearchActive) {
+            (activity as? MainActivity)?.hideBottomNav()
+        } else {
+            (activity as? MainActivity)?.showBottomNav()
         }
     }
 
