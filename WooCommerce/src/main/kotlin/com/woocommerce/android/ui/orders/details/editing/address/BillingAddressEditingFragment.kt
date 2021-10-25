@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.view.View
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
 
 class BillingAddressEditingFragment : BaseAddressEditingFragment() {
