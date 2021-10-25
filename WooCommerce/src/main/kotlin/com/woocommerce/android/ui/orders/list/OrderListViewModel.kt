@@ -25,6 +25,8 @@ import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -80,6 +82,7 @@ class OrderListViewModel @Inject constructor(
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
+
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
     internal var allPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
@@ -162,7 +165,7 @@ class OrderListViewModel @Inject constructor(
         if (processingPagedListWrapper == null) {
             val processingDescriptor = WCOrderListDescriptor(
                 site = selectedSite.get(),
-                statusFilter = CoreOrderStatus.PROCESSING.value,
+                statusFilter = listOf(CoreOrderStatus.PROCESSING.value),
                 excludeFutureOrders = false
             )
             processingPagedListWrapper = listStore.getList(processingDescriptor, dataSource, lifecycle)
@@ -201,10 +204,10 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(statusFilter: String? = null, searchQuery: String? = null) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
-        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
-
-        activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+//        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
+//        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+//
+//        activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
 
     /**
@@ -232,7 +235,8 @@ class OrderListViewModel @Inject constructor(
             // Fetch and load order status options
             when (repository.fetchOrderStatusOptionsFromApi()) {
                 SUCCESS -> _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
-                else -> { /* do nothing */ }
+                else -> { /* do nothing */
+                }
             }
         }
     }
@@ -407,7 +411,8 @@ class OrderListViewModel @Inject constructor(
         when (event.causeOfChange) {
             // A child fragment made a change that requires a data refresh.
             UPDATE_ORDER_STATUS -> activePagedListWrapper?.fetchFirstPage()
-            else -> {}
+            else -> {
+            }
         }
     }
 
@@ -465,10 +470,22 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun onFiltersChanged(changed: Boolean) {
-        if (changed) {
-
+    fun onFiltersChanged(refreshOrders: Boolean) {
+        if (refreshOrders) {
+            if (networkStatus.isConnected()) {
+                refreshOrders(orderFiltersRepository.getCachedSelectedFilters())
+            } else {
+                viewState = viewState.copy(isRefreshPending = true)
+                showOfflineSnack()
+            }
         }
+    }
+
+    private fun refreshOrders(orderFilters: Map<OrderFilterCategory, List<String>>) {
+        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), orderFilters[ORDER_STATUS] ?: emptyList())
+        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+
+        activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
 
     sealed class OrderListEvent : Event() {

@@ -18,7 +18,7 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.ui.adapter.OrderFilterCategoryAdapter
 import com.woocommerce.android.ui.orders.filters.ui.model.FilterListCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
-import com.woocommerce.android.ui.products.ProductListFragment
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -97,7 +97,7 @@ class OrderFilterCategoryListFragment :
                 is ShowOrderStatusFilterOptions -> navigateToFilterOptions()
                 is ShowDialog -> event.showDialog()
                 is ExitWithResult<*> -> navigateBackWithResult(
-                    ProductListFragment.PRODUCT_FILTER_RESULT_KEY,
+                    OrderListFragment.ORDER_FILTER_RESULT_KEY,
                     event.data
                 )
                 is Exit -> findNavController().navigateUp()

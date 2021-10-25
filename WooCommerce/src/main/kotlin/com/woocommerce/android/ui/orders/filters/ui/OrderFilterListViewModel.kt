@@ -10,7 +10,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.Ord
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.ui.model.FilterListCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryListViewState
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel.Companion.DEFAULT_ALL_KEY
 import com.woocommerce.android.ui.orders.filters.ui.model.toFilterListOptionUiModel
@@ -113,7 +113,7 @@ class OrderFilterListViewModel @Inject constructor(
         selectedFilterCategory = filterCategory
         _orderFilterOptions.value = filterCategory.orderFilterOptions
         _orderFilterOptionScreenTitle.value = getOrderFilterOptionsTitle(filterCategory)
-        triggerEvent(OrderFilterListEvent.ShowOrderStatusFilterOptions)
+        triggerEvent(ShowOrderStatusFilterOptions)
     }
 
     private fun getOrderFilterOptionsTitle(filterCategory: FilterListCategoryUiModel) =

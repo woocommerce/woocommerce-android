@@ -132,7 +132,7 @@ class NotificationMessageHandler @Inject constructor(
                             offset = 0,
                             listDescriptor = WCOrderListDescriptor(
                                 site = site,
-                                statusFilter = CoreOrderStatus.PROCESSING.value
+                                statusFilter = listOf(CoreOrderStatus.PROCESSING.value)
                             )
                         )
                     )
