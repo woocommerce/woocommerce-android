@@ -67,7 +67,7 @@ class OrderFilterCategoryListFragment :
     private fun setUpFiltersRecyclerView(binding: FragmentOrderFilterListBinding) {
         orderFilterCategoryAdapter = OrderFilterCategoryAdapter(
             onFilterCategoryClicked = { selectedFilterCategory ->
-                viewModel.onFilterCategoryClicked(selectedFilterCategory)
+                viewModel.onFilterCategorySelected(selectedFilterCategory)
             }
         )
         binding.filterList.apply {

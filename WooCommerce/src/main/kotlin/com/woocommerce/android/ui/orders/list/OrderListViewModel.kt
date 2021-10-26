@@ -25,7 +25,7 @@ import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -485,10 +485,10 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    private fun refreshOrders(orderFilters: Map<OrderFilterCategory, List<String>>) {
+    private fun refreshOrders(orderListFilters: Map<OrderListFilterCategory, List<String>>) {
         val listDescriptor = WCOrderListDescriptor(
             selectedSite.get(),
-            orderFilters[OrderFilterCategory.ORDER_STATUS]?.joinToString(separator = ",")
+            orderListFilters[OrderListFilterCategory.ORDER_STATUS]?.joinToString(separator = ",")
         )
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
 

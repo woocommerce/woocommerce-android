@@ -36,7 +36,7 @@ class OrderFilterOptionListFragment :
     private fun setUpFilterOptionsRecyclerView(binding: FragmentOrderFilterListBinding) {
         orderFilterOptionAdapter = OrderFilterOptionAdapter(
             onFilterOptionClicked = { selectedFilterOption ->
-                viewModel.onFilterOptionClicked(selectedFilterOption)
+                viewModel.onFilterOptionSelected(selectedFilterOption)
             }
         )
         binding.filterList.apply {
@@ -52,7 +52,7 @@ class OrderFilterOptionListFragment :
     }
 
     private fun setUpObservers(viewModel: OrderFilterListViewModel) {
-        viewModel.orderOrderOptionsFilter.observe(viewLifecycleOwner) { filterOptions ->
+        viewModel.orderOptionsFilter.observe(viewLifecycleOwner) { filterOptions ->
             showOrderFilterOptions(filterOptions)
         }
         viewModel.orderFilterOptionScreenTitle.observe(viewLifecycleOwner) { title ->

@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.filters.ui.model
 
 import android.os.Parcelable
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.parcelize.Parcelize
 
@@ -17,7 +17,7 @@ data class OrderFilterCategoryListViewState(
 
 @Parcelize
 data class FilterListCategoryUiModel(
-    val categoryKey: OrderFilterCategory,
+    val categoryKey: OrderListFilterCategory,
     val displayName: String,
     val displayValue: String,
     val orderFilterOptions: List<OrderListFilterOptionUiModel>

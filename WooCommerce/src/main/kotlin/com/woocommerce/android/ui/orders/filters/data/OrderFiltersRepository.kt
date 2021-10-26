@@ -5,16 +5,16 @@ import javax.inject.Singleton
 
 @Singleton
 class OrderFiltersRepository @Inject constructor() {
-    private var selectedOrderFilters: MutableMap<OrderFilterCategory, List<String>> = mutableMapOf()
+    private var selectedOrderListFilters: MutableMap<OrderListFilterCategory, List<String>> = mutableMapOf()
 
-    fun getCachedFiltersSelection() = selectedOrderFilters
+    fun getCachedFiltersSelection(): Map<OrderListFilterCategory, List<String>> = selectedOrderListFilters
 
-    fun updateSelectedFilters(updatedFilters: MutableMap<OrderFilterCategory, List<String>>) {
-        selectedOrderFilters.clear()
-        selectedOrderFilters = updatedFilters
+    fun updateSelectedFilters(updatedFilters: Map<OrderListFilterCategory, List<String>>) {
+        selectedOrderListFilters.clear()
+        selectedOrderListFilters = updatedFilters.toMutableMap()
     }
 
-    enum class OrderFilterCategory {
+    enum class OrderListFilterCategory {
         ORDER_STATUS,
         DATE_RANGE
     }

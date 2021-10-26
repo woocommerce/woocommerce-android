@@ -6,6 +6,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
@@ -175,6 +176,10 @@ object OrderTestUtils {
         }
     }
 
+    fun generateSelectedFiltersFor(filterCategory: OrderListFilterCategory, categoryOptionKey: List<String>)
+        : Map<OrderListFilterCategory, List<String>> =
+        mapOf(filterCategory to categoryOptionKey)
+
     fun generateOrderStatusOptionsMappedByStatus(): Map<String, WCOrderStatusModel> =
         generateOrderStatusOptions().map { it.statusKey to it }.toMap()
 
@@ -312,14 +317,14 @@ object OrderTestUtils {
 //                "  }]"
             shippingLines =
                 "[{" +
-                "\"id\":119,\n" +
-                "   \"method_title\":\"Shipping\",\n" +
-                "   \"method_id\":\"free_shipping\",\n" +
-                "   \"instance_id\":\"0\",\n" +
-                "   \"total\":\"30.00\",\n" +
-                "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
-                "   \"meta_data\":[]}]"
+                    "\"id\":119,\n" +
+                    "   \"method_title\":\"Shipping\",\n" +
+                    "   \"method_id\":\"free_shipping\",\n" +
+                    "   \"instance_id\":\"0\",\n" +
+                    "   \"total\":\"30.00\",\n" +
+                    "   \"total_tax\":\"0.00\",\n" +
+                    "   \"taxes\":[],\n" +
+                    "   \"meta_data\":[]}]"
         }
     }
 
@@ -356,24 +361,24 @@ object OrderTestUtils {
             refundTotal = -10.0
             shippingLines =
                 "[{" +
-                "\"id\":119,\n" +
-                "   \"method_title\":\"Shipping\",\n" +
-                "   \"method_id\":\"free_shipping\",\n" +
-                "   \"instance_id\":\"0\",\n" +
-                "   \"total\":\"30.00\",\n" +
-                "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
-                "   \"meta_data\":[]},\n" +
-                "{  " +
-                "\"id\":120,\n" +
-                "   \"method_title\":\"Shipping Two\",\n" +
-                "   \"method_id\":\"\",\n" +
-                "   \"instance_id\":\"0\",\n" +
-                "   \"total\":\"20.00\",\n" +
-                "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
-                "   \"meta_data\":[]\n" +
-                "}]"
+                    "\"id\":119,\n" +
+                    "   \"method_title\":\"Shipping\",\n" +
+                    "   \"method_id\":\"free_shipping\",\n" +
+                    "   \"instance_id\":\"0\",\n" +
+                    "   \"total\":\"30.00\",\n" +
+                    "   \"total_tax\":\"0.00\",\n" +
+                    "   \"taxes\":[],\n" +
+                    "   \"meta_data\":[]},\n" +
+                    "{  " +
+                    "\"id\":120,\n" +
+                    "   \"method_title\":\"Shipping Two\",\n" +
+                    "   \"method_id\":\"\",\n" +
+                    "   \"instance_id\":\"0\",\n" +
+                    "   \"total\":\"20.00\",\n" +
+                    "   \"total_tax\":\"0.00\",\n" +
+                    "   \"taxes\":[],\n" +
+                    "   \"meta_data\":[]\n" +
+                    "}]"
         }
     }
 
