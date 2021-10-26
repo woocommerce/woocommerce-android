@@ -44,6 +44,10 @@ class AddressViewModel @Inject constructor(
         }
     }
 
+    fun hasCountries() = countries.isNotEmpty()
+
+    fun hasStates() = states.isNotEmpty()
+
     fun getCountryCodeFromCountryName(countryName: String): String {
         return countries.find { it.name == countryName }?.code ?: countryName
     }

@@ -8,7 +8,9 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
@@ -46,7 +48,7 @@ abstract class BaseAddressEditingFragment :
                 city = city.text,
                 postcode = postcode.text,
                 country = addressViewModel.getCountryCodeFromCountryName(countrySpinner.getText()),
-                state = storedAddress.state // TODO nbradbury add state spinner
+                state = stateEditText.text
             )
         }
 
@@ -65,9 +67,14 @@ abstract class BaseAddressEditingFragment :
             showCountrySelectorDialog()
         }
 
+        binding.stateSpinner.setClickListener {
+            showStateSelectorDialog()
+        }
+
         setupObservers()
         setupResultHandlers()
         onViewBound(binding)
+        updateStateViews()
     }
 
     override fun hasChanges() = addressDraft != storedAddress
@@ -90,6 +97,8 @@ abstract class BaseAddressEditingFragment :
         binding.city.text = city
         binding.postcode.text = postcode
         binding.countrySpinner.setText(getCountryLabelByCountryCode())
+        binding.stateSpinner.setText(state)
+        binding.stateEditText.text = state
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
         }
@@ -105,6 +114,24 @@ abstract class BaseAddressEditingFragment :
         binding.address2.textWatcher = textWatcher
         binding.city.textWatcher = textWatcher
         binding.postcode.textWatcher = textWatcher
+        binding.stateEditText.textWatcher = textWatcher
+    }
+
+    /**
+     * When the country is empty, or we don't have country or state data, we show an editText
+     * for the state rather than a spinner
+     */
+    private fun updateStateViews() {
+        if (addressDraft.country.isEmpty() ||
+            !addressViewModel.hasCountries() ||
+            !addressViewModel.hasStates()
+        ) {
+            binding.stateEditText.show()
+            binding.stateSpinner.hide()
+        } else {
+            binding.stateEditText.hide()
+            binding.stateSpinner.show()
+        }
     }
 
     internal fun Address.bindAsAddressReplicationToggleState() {
@@ -127,7 +154,6 @@ abstract class BaseAddressEditingFragment :
 
     @Suppress("UnusedPrivateMember")
     private fun showStateSelectorDialog() {
-        // TODO nbradbury check we have a country first
         val states = addressViewModel.states
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
             addressDraft.state,
@@ -143,13 +169,22 @@ abstract class BaseAddressEditingFragment :
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.countryCode.takeIfNotEqualTo(old?.countryCode) {
                 binding.countrySpinner.setText(addressViewModel.getCountryNameFromCountryCode(it))
+                // clear the state when the country is changed
+                binding.stateSpinner.setText("")
+                binding.stateEditText.text = ""
                 updateDoneMenuItem()
+                updateStateViews()
             }
             new.stateCode.takeIfNotEqualTo(old?.stateCode) {
-                // TODO nbradbury update displayed state
+                binding.stateSpinner.setText(it)
+                binding.stateEditText.text = it
+                updateDoneMenuItem()
             }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
-                binding.progressBar.isVisible = new.isLoading
+                binding.progressBar.isVisible = it
+                if (old?.isLoading == true) {
+                    updateStateViews()
+                }
             }
         }
     }

@@ -161,6 +161,26 @@
                     android:hint="@string/shipping_label_edit_address_country"
                     android:inputType="text" />
 
+                <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                    android:id="@+id/stateEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:hint="@string/shipping_label_edit_address_state"
+                    android:inputType="text"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                    android:id="@+id/stateSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:hint="@string/shipping_label_edit_address_state"
+                    android:inputType="text" />
+
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/replicate_address_switch"
                     android:layout_width="match_parent"
