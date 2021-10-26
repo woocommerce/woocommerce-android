@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
  */
 @Suppress("TooManyFunctions")
 interface CardReaderManager {
-    val isInitialized: Boolean
+    val initialized: Boolean
     val readerStatus: StateFlow<CardReaderStatus>
     val softwareUpdateStatus: Flow<SoftwareUpdateStatus>
     val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability>
@@ -31,7 +31,7 @@ interface CardReaderManager {
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
     ): Flow<CardReaderDiscoveryEvents>
 
-    suspend fun connectToReader(cardReader: CardReader, locationId: String): Boolean
+    fun startConnectionToReader(cardReader: CardReader, locationId: String)
     suspend fun disconnectReader(): Boolean
 
     suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus>

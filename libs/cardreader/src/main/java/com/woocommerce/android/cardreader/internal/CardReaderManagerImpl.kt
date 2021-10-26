@@ -39,7 +39,7 @@ internal class CardReaderManagerImpl(
 
     private lateinit var application: Application
 
-    override val isInitialized: Boolean
+    override val initialized: Boolean
         get() {
             return terminal.isInitialized()
         }
@@ -85,9 +85,9 @@ internal class CardReaderManagerImpl(
         return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
     }
 
-    override suspend fun connectToReader(cardReader: CardReader, locationId: String): Boolean {
+    override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        return connectionManager.connectToReader(cardReader, locationId)
+        connectionManager.startConnectionToReader(cardReader, locationId)
     }
 
     override suspend fun disconnectReader(): Boolean {
