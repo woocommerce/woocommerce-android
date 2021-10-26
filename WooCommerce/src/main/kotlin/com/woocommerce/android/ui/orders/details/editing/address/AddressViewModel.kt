@@ -35,7 +35,7 @@ class AddressViewModel @Inject constructor(
         get() = viewState.stateLocation
 
     fun start(countryCode: String, stateCode: String) {
-        loadCountriesAndStates()
+        loadCountriesAndStates(countryCode, stateCode)
 
         viewState = viewState.copy(
             countryLocation = getCountryLocationFromCode(countryCode),
@@ -43,13 +43,17 @@ class AddressViewModel @Inject constructor(
         )
     }
 
-    private fun loadCountriesAndStates() {
+    private fun loadCountriesAndStates(countryCode: String, stateCode: String) {
         launch {
             // we only fetch the countries and states if they've never been fetched
             if (countries.isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
                 dataStore.fetchCountriesAndStates(selectedSite.get())
-                viewState = viewState.copy(isLoading = false)
+                viewState = viewState.copy(
+                    isLoading = false,
+                    countryLocation = getCountryLocationFromCode(countryCode),
+                    stateLocation = getStateLocationFromCode(stateCode)
+                )
             }
         }
     }
