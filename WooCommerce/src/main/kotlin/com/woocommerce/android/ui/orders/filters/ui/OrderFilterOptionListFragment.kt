@@ -7,9 +7,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.filters.ui.adapter.OrderFilterOptionAdapter
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel
+import com.woocommerce.android.ui.orders.list.OrderListFragment
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 class OrderFilterOptionListFragment :
     BaseFragment(R.layout.fragment_order_filter_list) {
@@ -54,6 +57,16 @@ class OrderFilterOptionListFragment :
         }
         viewModel.orderFilterOptionScreenTitle.observe(viewLifecycleOwner) { title ->
             requireActivity().title = title
+        }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(
+                    OrderListFragment.ORDER_FILTER_RESULT_KEY,
+                    event.data,
+                    R.id.orders
+                )
+                else -> event.isHandled = false
+            }
         }
     }
 
