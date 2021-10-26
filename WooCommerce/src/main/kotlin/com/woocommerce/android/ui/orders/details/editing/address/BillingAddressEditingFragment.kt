@@ -19,7 +19,6 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override fun onViewBound(binding: FragmentBaseEditAddressBinding) {
         binding.addressSectionHeader.text = getString(R.string.order_detail_billing_address_section)
         binding.replicateAddressSwitch.text = getString(R.string.order_detail_use_as_shipping_address)
-        binding.replicateAddressSwitch.visibility = View.VISIBLE
         sharedViewModel.order.shippingAddress
             .copy(email = storedAddress.email)
             .bindAsAddressReplicationToggleState()
