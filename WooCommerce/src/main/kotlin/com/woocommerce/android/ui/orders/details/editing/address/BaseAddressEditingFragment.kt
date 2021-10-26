@@ -119,11 +119,7 @@ abstract class BaseAddressEditingFragment :
         binding.stateEditText.textWatcher = textWatcher
     }
 
-    private fun shouldShowStateSpinner(): Boolean {
-        return addressViewModel.countryLocation.code.isNotEmpty() &&
-            addressViewModel.hasCountries() &&
-            addressViewModel.hasStates()
-    }
+    private fun shouldShowStateSpinner() = addressViewModel.hasStates()
 
     /**
      * When the country is empty, or we don't have country or state data, we show an editText
