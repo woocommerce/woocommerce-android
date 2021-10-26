@@ -37,6 +37,13 @@ abstract class BaseAddressEditingFragment :
 
     val addressDraft
         get() = binding.run {
+            val country = addressViewModel.getCountryCodeFromCountryName(countrySpinner.getText())
+            val state = if (stateEditText.isVisible) {
+                stateEditText.text
+            } else {
+                addressViewModel.getStateCodeFromStateName(stateSpinner.getText())
+            }
+
             Address(
                 firstName = firstName.text,
                 lastName = lastName.text,
@@ -47,8 +54,8 @@ abstract class BaseAddressEditingFragment :
                 address2 = address2.text,
                 city = city.text,
                 postcode = postcode.text,
-                country = addressViewModel.getCountryCodeFromCountryName(countrySpinner.getText()),
-                state = stateEditText.text
+                country = country,
+                state = state
             )
         }
 
@@ -97,7 +104,7 @@ abstract class BaseAddressEditingFragment :
         binding.city.text = city
         binding.postcode.text = postcode
         binding.countrySpinner.setText(getCountryLabelByCountryCode())
-        binding.stateSpinner.setText(state)
+        binding.stateSpinner.setText(addressViewModel.getStateNameFromStateCode(state))
         binding.stateEditText.text = state
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
@@ -176,7 +183,7 @@ abstract class BaseAddressEditingFragment :
                 updateStateViews()
             }
             new.stateCode.takeIfNotEqualTo(old?.stateCode) {
-                binding.stateSpinner.setText(it)
+                binding.stateSpinner.setText(addressViewModel.getStateNameFromStateCode(it))
                 binding.stateEditText.text = it
                 updateDoneMenuItem()
             }

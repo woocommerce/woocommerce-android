@@ -56,6 +56,14 @@ class AddressViewModel @Inject constructor(
         return countries.find { it.code == countryCode }?.name ?: countryCode
     }
 
+    fun getStateCodeFromStateName(stateName: String): String {
+        return states.find { it.name == stateName }?.code ?: stateName
+    }
+
+    fun getStateNameFromStateCode(stateCode: String): String {
+        return states.find { it.code == stateCode }?.name ?: stateCode
+    }
+
     fun onCountrySelected(countryCode: String) {
         if (countryCode != viewState.countryCode) {
             viewState = viewState.copy(countryCode = countryCode)
