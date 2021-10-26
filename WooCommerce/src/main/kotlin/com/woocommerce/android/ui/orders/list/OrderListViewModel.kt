@@ -26,7 +26,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderFilterCategory
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -165,7 +164,7 @@ class OrderListViewModel @Inject constructor(
         if (processingPagedListWrapper == null) {
             val processingDescriptor = WCOrderListDescriptor(
                 site = selectedSite.get(),
-                statusFilter = listOf(CoreOrderStatus.PROCESSING.value),
+                statusFilter = CoreOrderStatus.PROCESSING.value,
                 excludeFutureOrders = false
             )
             processingPagedListWrapper = listStore.getList(processingDescriptor, dataSource, lifecycle)
@@ -204,10 +203,7 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(statusFilter: String? = null, searchQuery: String? = null) {
-        val statusFilterList = statusFilter?.let {
-            listOf(it)
-        }
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilterList, searchQuery)
+        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
 
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
@@ -490,7 +486,10 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun refreshOrders(orderFilters: Map<OrderFilterCategory, List<String>>) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), orderFilters[ORDER_STATUS] ?: emptyList())
+        val listDescriptor = WCOrderListDescriptor(
+            selectedSite.get(),
+            orderFilters[OrderFilterCategory.ORDER_STATUS]?.joinToString(separator = ",")
+        )
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
 
         activatePagedListWrapper(pagedListWrapper)
