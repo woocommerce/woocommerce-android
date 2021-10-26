@@ -48,7 +48,7 @@ abstract class BaseAddressEditingFragment :
                 city = city.text,
                 postcode = postcode.text,
                 country = addressViewModel.getCountryCodeFromCountryName(countrySpinner.getText()),
-                state = stateSpinner.getText()
+                state = stateEditText.text
             )
         }
 
