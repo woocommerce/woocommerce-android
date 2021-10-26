@@ -107,12 +107,6 @@ abstract class BaseAddressEditingFragment :
         binding.postcode.textWatcher = textWatcher
     }
 
-    internal fun Address.bindAsAddressReplicationToggleState() {
-        (this == storedAddress)
-            .apply { binding.replicateAddressSwitch.isChecked = this }
-            .also { sharedViewModel.onReplicateAddressSwitchChanged(it) }
-    }
-
     private fun showCountrySelectorDialog() {
         val countries = addressViewModel.countries
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
