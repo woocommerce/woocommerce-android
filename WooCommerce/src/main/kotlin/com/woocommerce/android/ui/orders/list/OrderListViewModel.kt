@@ -67,7 +67,7 @@ typealias PagedOrdersList = PagedList<OrderListItemUIType>
 class OrderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    protected val repository: OrderListRepository,
+    protected val orderListRepository: OrderListRepository,
     private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
@@ -134,7 +134,7 @@ class OrderListViewModel @Inject constructor(
         launch {
             // Populate any cached order status options immediately since we use this
             // value in many different places in the order list view.
-            _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
+            _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
 
             // refresh plugin information
             if (selectedSite.exists()) {
@@ -232,8 +232,8 @@ class OrderListViewModel @Inject constructor(
     fun fetchOrderStatusOptions() {
         launch(dispatchers.main) {
             // Fetch and load order status options
-            when (repository.fetchOrderStatusOptionsFromApi()) {
-                SUCCESS -> _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
+            when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
+                SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
                 else -> { /* do nothing */
                 }
             }
@@ -245,7 +245,7 @@ class OrderListViewModel @Inject constructor(
      */
     suspend fun fetchPaymentGateways() {
         if (networkStatus.isConnected() && !viewState.arePaymentGatewaysFetched) {
-            when (repository.fetchPaymentGateways()) {
+            when (orderListRepository.fetchPaymentGateways()) {
                 SUCCESS -> {
                     viewState = viewState.copy(arePaymentGatewaysFetched = true)
                 }
@@ -343,7 +343,7 @@ class OrderListViewModel @Inject constructor(
         val isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
             wrapper.data.value == null
         val isListEmpty = wrapper.isEmpty.value ?: true
-        val hasOrders = repository.hasCachedOrdersForSite()
+        val hasOrders = orderListRepository.hasCachedOrdersForSite()
         val isError = wrapper.listError.value != null
 
         val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
@@ -400,7 +400,7 @@ class OrderListViewModel @Inject constructor(
         clearLiveDataSources(activePagedListWrapper)
         EventBus.getDefault().unregister(this)
         dispatcher.unregister(this)
-        repository.onCleanup()
+        orderListRepository.onCleanup()
         super.onCleared()
     }
 
