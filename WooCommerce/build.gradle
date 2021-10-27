@@ -269,7 +269,7 @@ dependencies {
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
 
-    implementation "com.zendesk:support:5.0.2"
+    implementation "com.zendesk:support:5.0.3"
 
     // ViewModel and LiveData
     // TODO Try to re-enable NullSafeMutableLiveData lint check when we move to fragment-ktx v1.4.0+
