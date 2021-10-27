@@ -45,9 +45,7 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Updates screen title when filter category is selected`() {
-        whenever(resourceProvider.getString(R.string.orderfilters_filter_order_status_options_title))
-            .thenReturn(ORDER_STATUS_FILTERS_TITLE)
+    fun `When filter category is selected, then update screen title`() {
 
         viewModel.onFilterCategorySelected(AN_ORDER_STATUS_FILTER_CATEGORY)
 
@@ -55,7 +53,7 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Updates order filter options when filter category is selected`() {
+    fun `When filter category is selected, then update order filter options`() {
         viewModel.onFilterCategorySelected(AN_ORDER_STATUS_FILTER_CATEGORY)
 
         assertThat(viewModel.event.value).isEqualTo(ShowOrderStatusFilterOptions)
@@ -63,7 +61,7 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When show orders is clicked, selected filters are updated and exit with result`() {
+    fun `When show orders is clicked, then selected filters are updated and exit with result`() {
         givenFilterCategoryHasBeenSelected(AN_ORDER_STATUS_FILTER_CATEGORY)
         givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_OPTION)
 
@@ -76,15 +74,21 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When show orders is clicked, and no filters are selected, an empty map is saved and exit with result`() {
+    fun `Given no filters are selected, when show orders is clicked, then an empty map is saved`() {
         viewModel.onShowOrdersClicked()
 
-        assertThat(viewModel.event.value).isEqualTo(ExitWithResult(false))
         verify(orderFilterRepository).updateSelectedFilters(emptyMap())
     }
 
     @Test
-    fun `All filter option should be unselected when onClearFilters`() {
+    fun `Given no filters are selected, when show orders is clicked, then exit with result`() {
+        viewModel.onShowOrdersClicked()
+
+        assertThat(viewModel.event.value).isEqualTo(ExitWithResult(false))
+    }
+
+    @Test
+    fun `Given some selected filters, when onClearFilters, then all filter options should be unselected`() {
         whenever(resourceProvider.getString(R.string.orderfilters_filters_default_title))
             .thenReturn(DEFAULT_FILTER_TITLE)
         givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_OPTION)
@@ -95,7 +99,7 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Clear button should be hidden and toolbar title updated when clear button click`() {
+    fun `When clear button clicked, then clear button should be hidden and toolbar title updated`() {
         whenever(resourceProvider.getString(R.string.orderfilters_filters_default_title))
             .thenReturn(DEFAULT_FILTER_TITLE)
 
@@ -145,6 +149,8 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
         whenever(resourceProvider.getString(any())).thenReturn("AnyString")
         whenever(resourceProvider.getString(any(), any())).thenReturn("AnyString")
         whenever(resourceProvider.getString(any(), any(), any())).thenReturn("AnyString")
+        whenever(resourceProvider.getString(R.string.orderfilters_filter_order_status_options_title))
+            .thenReturn(ORDER_STATUS_FILTERS_TITLE)
     }
 
     private companion object {
