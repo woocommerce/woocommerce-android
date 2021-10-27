@@ -46,7 +46,6 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `When filter category is selected, then update screen title`() {
-
         viewModel.onFilterCategorySelected(AN_ORDER_STATUS_FILTER_CATEGORY)
 
         assertThat(viewModel.orderFilterOptionScreenTitle.value).isEqualTo(ORDER_STATUS_FILTERS_TITLE)
