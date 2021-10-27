@@ -77,7 +77,8 @@ abstract class BaseAddressEditingFragment :
         updateStateViews()
     }
 
-    override fun hasChanges() = addressDraft != storedAddress
+    override fun hasChanges() =
+        (addressDraft != storedAddress) || binding.replicateAddressSwitch.isChecked
 
     override fun onStop() {
         super.onStop()
