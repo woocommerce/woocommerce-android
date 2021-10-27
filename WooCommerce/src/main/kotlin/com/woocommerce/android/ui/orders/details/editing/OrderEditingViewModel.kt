@@ -94,7 +94,9 @@ class OrderEditingViewModel @Inject constructor(
             order.localId,
             orderAddress.toShippingAddressModel(),
             orderAddress.toBillingAddressModel(
-                customEmail = order.billingAddress.email
+                customEmail = orderAddress.email
+                    .takeIf { it.isNotEmpty() }
+                    ?: order.billingAddress.email
             )
         )
 

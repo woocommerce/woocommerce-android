@@ -79,7 +79,8 @@ abstract class BaseAddressEditingFragment :
         updateStateViews()
     }
 
-    override fun hasChanges() = addressDraft != storedAddress
+    override fun hasChanges() =
+        (addressDraft != storedAddress) || binding.replicateAddressSwitch.isChecked
 
     override fun onStop() {
         super.onStop()
@@ -103,6 +104,7 @@ abstract class BaseAddressEditingFragment :
         binding.stateEditText.text = state
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
+            updateDoneMenuItem()
         }
     }
 
@@ -128,12 +130,6 @@ abstract class BaseAddressEditingFragment :
     private fun updateStateViews() {
         binding.stateSpinner.isVisible = shouldShowStateSpinner()
         binding.stateEditText.isVisible = !shouldShowStateSpinner()
-    }
-
-    internal fun Address.bindAsAddressReplicationToggleState() {
-        (this == storedAddress)
-            .apply { binding.replicateAddressSwitch.isChecked = this }
-            .also { sharedViewModel.onReplicateAddressSwitchChanged(it) }
     }
 
     private fun showCountrySelectorDialog() {
