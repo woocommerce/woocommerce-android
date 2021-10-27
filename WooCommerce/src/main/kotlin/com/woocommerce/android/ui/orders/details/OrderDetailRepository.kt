@@ -114,9 +114,9 @@ class OrderDetailRepository @Inject constructor(
         val order = orderStore.getOrderByIdentifier(orderIdentifier)
         if (order == null) {
             WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
-            return OnOrderChanged(0).also {
-                it.error = OrderError(GENERIC_ERROR, "Can't find order with identifier $orderIdentifier")
-            }
+            return OnOrderChanged(
+                orderError = OrderError(GENERIC_ERROR, "Can't find order with identifier $orderIdentifier")
+            )
         }
         val dataModel = noteModel.toDataModel()
         val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)

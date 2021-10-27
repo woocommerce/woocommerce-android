@@ -159,7 +159,7 @@ class StatsRepository @Inject constructor(
                 )
                 continuationHasOrders.continueWith(Result.failure(Exception(event.error.message)))
             } else {
-                val hasNoOrders = event.rowsAffected == 0
+                val hasNoOrders = wcOrderStore.hasCachedOrdersForSite(selectedSite.get()).not()
                 continuationHasOrders.continueWith(Result.success(hasNoOrders))
             }
         }
