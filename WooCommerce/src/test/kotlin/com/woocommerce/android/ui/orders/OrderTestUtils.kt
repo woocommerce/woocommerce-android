@@ -6,7 +6,6 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
@@ -175,10 +174,6 @@ object OrderTestUtils {
             }
         }
     }
-
-    fun generateSelectedFiltersFor(filterCategory: OrderListFilterCategory, categoryOptionKey: List<String>)
-        : Map<OrderListFilterCategory, List<String>> =
-        mapOf(filterCategory to categoryOptionKey)
 
     fun generateOrderStatusOptionsMappedByStatus(): Map<String, WCOrderStatusModel> =
         generateOrderStatusOptions().map { it.statusKey to it }.toMap()

@@ -30,7 +30,6 @@ import kotlin.test.assertTrue
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class OrderFilterListViewModelTest : BaseUnitTest() {
-
     private val resourceProvider: ResourceProvider = mock()
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val orderListRepository: OrderListRepository = mock()

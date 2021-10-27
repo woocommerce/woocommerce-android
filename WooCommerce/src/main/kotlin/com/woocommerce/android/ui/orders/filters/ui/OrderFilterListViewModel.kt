@@ -59,7 +59,7 @@ class OrderFilterListViewModel @Inject constructor(
             FilterListCategoryUiModel(
                 categoryKey = ORDER_STATUS,
                 displayName = resourceProvider.getString(R.string.orderfilters_order_status_filter),
-                displayValue = getDisplayValueForSelectedOrderStatus(currentOrderStatusFilterOptions),
+                displayValue = getDisplayValueForSelectedFilters(currentOrderStatusFilterOptions),
                 currentOrderStatusFilterOptions
             ),
             FilterListCategoryUiModel(
@@ -87,7 +87,7 @@ class OrderFilterListViewModel @Inject constructor(
         )
     }
 
-    private fun getDisplayValueForSelectedOrderStatus(orderStatusOrderFilters: List<OrderListFilterOptionUiModel>): String =
+    private fun getDisplayValueForSelectedFilters(orderStatusOrderFilters: List<OrderListFilterOptionUiModel>): String =
         if (orderStatusOrderFilters.isAnyFilterOptionSelected()) {
             orderStatusOrderFilters.getNumberOfSelectedFilterOptions().toString()
         } else {
@@ -110,7 +110,8 @@ class OrderFilterListViewModel @Inject constructor(
             .toMutableList()
             .apply {
                 add(
-                    index = 0, OrderListFilterOptionUiModel(
+                    index = 0,
+                    OrderListFilterOptionUiModel(
                         key = DEFAULT_ALL_KEY,
                         displayName = resourceProvider.getString(R.string.orderfilters_default_filter_value),
                         isSelected = !isAnyFilterOptionSelected()
@@ -206,7 +207,7 @@ class OrderFilterListViewModel @Inject constructor(
         filterCategory: FilterListCategoryUiModel,
         updatedOptionListFilter: List<OrderListFilterOptionUiModel>
     ) = filterCategory.copy(
-        displayValue = getDisplayValueForSelectedOrderStatus(updatedOptionListFilter),
+        displayValue = getDisplayValueForSelectedFilters(updatedOptionListFilter),
         orderFilterOptions = updatedOptionListFilter
     )
 
