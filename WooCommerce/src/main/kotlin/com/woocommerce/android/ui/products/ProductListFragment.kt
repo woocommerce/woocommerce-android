@@ -273,8 +273,8 @@ class ProductListFragment :
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
                 showAddProductButton(show = isVisible)
             }
-            new.isSearchActive?.takeIfNotEqualTo(old?.isSearchActive) { isSearchActive ->
-                showBottomNavBar(isSearchActive = isSearchActive)
+            new.isBottomNavBarVisible?.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
+                showBottomNavBar(isVisible = isBottomNavBarVisible)
             }
         }
 
@@ -410,8 +410,8 @@ class ProductListFragment :
         }
     }
 
-    private fun showBottomNavBar(isSearchActive: Boolean) {
-        if (isSearchActive) {
+    private fun showBottomNavBar(isVisible: Boolean) {
+        if (!isVisible) {
             (activity as? MainActivity)?.hideBottomNav()
         } else {
             (activity as? MainActivity)?.showBottomNav()

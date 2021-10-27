@@ -448,7 +448,9 @@ class ProductListViewModel @Inject constructor(
         val sortingTitleResource: Int? = null,
         val displaySortAndFilterCard: Boolean? = null,
         val isAddProductButtonVisible: Boolean? = null,
-    ) : Parcelable
+    ) : Parcelable {
+        val isBottomNavBarVisible = isSearchActive != true
+    }
 
     sealed class ProductListEvent : Event() {
         object ScrollToTop : ProductListEvent()
