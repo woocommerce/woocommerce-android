@@ -102,6 +102,7 @@ abstract class BaseAddressEditingFragment :
         binding.stateEditText.text = state
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
+            updateDoneMenuItem()
         }
     }
 
