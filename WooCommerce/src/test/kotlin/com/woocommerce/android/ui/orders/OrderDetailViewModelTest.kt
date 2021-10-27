@@ -1021,7 +1021,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             whenever(repository.updateOrderStatus(any(), any()))
                 .thenReturn(
                     flow {
-                        val event = OnOrderChanged(0).apply { this.error = OrderError() }
+                        val event = OnOrderChanged(orderError = OrderError())
                         emit(UpdateOrderResult.RemoteUpdateResult(event))
                     }
                 )

@@ -48,7 +48,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Add order shipment tracking when network is available - success`() = runBlockingTest {
-        doReturn(OnOrderChanged(0)).whenever(repository).addOrderShipmentTracking(any(), any())
+        doReturn(OnOrderChanged()).whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -72,7 +72,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Add order shipment tracking fails`() = runBlockingTest {
-        doReturn(OnOrderChanged(0).also { it.error = OrderError(type = GENERIC_ERROR, message = "") })
+        doReturn(OnOrderChanged().also { it.error = OrderError(type = GENERIC_ERROR, message = "") })
             .whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()

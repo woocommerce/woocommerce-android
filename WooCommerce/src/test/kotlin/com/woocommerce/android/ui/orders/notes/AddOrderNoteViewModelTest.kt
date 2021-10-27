@@ -146,7 +146,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             doReturn(true).whenever(networkStatus).isConnected()
             doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
             doReturn(
-                OnOrderChanged(0)
+                OnOrderChanged()
             ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), any())
 
             initViewModel()
@@ -201,7 +201,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             doReturn(true).whenever(networkStatus).isConnected()
             doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
             doReturn(
-                OnOrderChanged(0).apply { this.error = OrderError(GENERIC_ERROR) }
+                OnOrderChanged().apply { this.error = OrderError(GENERIC_ERROR) }
             ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), any())
 
             initViewModel()

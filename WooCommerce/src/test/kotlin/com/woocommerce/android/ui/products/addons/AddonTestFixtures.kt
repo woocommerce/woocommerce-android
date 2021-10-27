@@ -13,7 +13,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteAd
 object AddonTestFixtures {
     val defaultWCOrderModel: WCOrderModel by lazy {
         WCOrderModel()
-            .apply { lineItems = "mocks/order_items.json".jsonFileToString() ?: "" }
+            .copy(lineItems = "mocks/order_items.json".jsonFileToString() ?: "")
     }
 
     val defaultWCOrderItemList: List<LineItem> by lazy {
