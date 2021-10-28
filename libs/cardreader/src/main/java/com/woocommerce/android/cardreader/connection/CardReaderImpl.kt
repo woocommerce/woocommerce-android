@@ -2,7 +2,7 @@ package com.woocommerce.android.cardreader.connection
 
 import com.stripe.stripeterminal.external.models.Reader
 
-class CardReaderImpl(val cardReader: Reader) : CardReader {
+internal class CardReaderImpl(val cardReader: Reader) : CardReader {
     override val id: String?
         get() = cardReader.serialNumber
     override val type: String
