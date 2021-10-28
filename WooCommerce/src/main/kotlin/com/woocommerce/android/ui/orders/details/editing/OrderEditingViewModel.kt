@@ -66,7 +66,8 @@ class OrderEditingViewModel @Inject constructor(
         orderEditingRepository.updateCustomerOrderNote(
             order.localId, updatedNote
         ).collectTracking {
-            AnalyticsTracker.track(it,
+            AnalyticsTracker.track(
+                it,
                 mapOf(
                     AnalyticsTracker.KEY_SUBJECT to AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE
                 )
@@ -83,7 +84,8 @@ class OrderEditingViewModel @Inject constructor(
                 updatedShippingAddress.toShippingAddressModel()
             )
         }.collectTracking {
-            AnalyticsTracker.track(it,
+            AnalyticsTracker.track(
+                it,
                 mapOf(
                     AnalyticsTracker.KEY_SUBJECT to AnalyticsTracker.ORDER_EDIT_SHIPPING_ADDRESS
                 )
@@ -100,7 +102,8 @@ class OrderEditingViewModel @Inject constructor(
                 updatedBillingAddress.toBillingAddressModel()
             )
         }.collectTracking {
-            AnalyticsTracker.track(it,
+            AnalyticsTracker.track(
+                it,
                 mapOf(
                     AnalyticsTracker.KEY_SUBJECT to AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS
                 )
