@@ -9,7 +9,7 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailab
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.LogWrapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any

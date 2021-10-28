@@ -2,7 +2,7 @@ package com.woocommerce.android.cardreader.internal.firmware
 
 import com.stripe.stripeterminal.external.callable.Cancelable
 import com.woocommerce.android.cardreader.internal.connection.BluetoothReaderListenerImpl
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import org.junit.Test
 import org.mockito.kotlin.any

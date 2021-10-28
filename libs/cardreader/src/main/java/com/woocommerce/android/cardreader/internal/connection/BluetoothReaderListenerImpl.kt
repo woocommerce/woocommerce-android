@@ -13,7 +13,7 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages.CardReaderNoMessage
 import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.LogWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 

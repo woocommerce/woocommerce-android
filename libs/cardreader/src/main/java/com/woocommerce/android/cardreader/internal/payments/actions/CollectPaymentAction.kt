@@ -7,7 +7,7 @@ import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking

@@ -10,7 +10,7 @@ import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.channels.awaitClose

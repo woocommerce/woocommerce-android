@@ -13,7 +13,7 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Started
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
