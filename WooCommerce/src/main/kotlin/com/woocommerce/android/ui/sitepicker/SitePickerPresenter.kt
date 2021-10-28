@@ -46,7 +46,10 @@ class SitePickerPresenter
 
     override fun getWooCommerceSites(): List<SiteModel> {
         val currentWooSites = wooCommerceStore.getWooCommerceSites()
-        return if (wooSitesHasBeenFetched || currentWooSites.none { it.isJetpackCPConnected }) {
+        return if (!FeatureFlag.JETPACK_CP.isEnabled() ||
+            wooSitesHasBeenFetched ||
+            currentWooSites.none { it.isJetpackCPConnected }
+        ) {
             currentWooSites
         } else {
             emptyList()
