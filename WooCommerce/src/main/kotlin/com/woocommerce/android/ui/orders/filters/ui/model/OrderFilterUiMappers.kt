@@ -16,3 +16,9 @@ private fun WCOrderStatusModel.getDisplayNameForOrderStatus(resourceProvider: Re
     } else {
         label
     }
+
+fun OrderFilterDateRange.toFilterListOptionUiModel(resourceProvider: ResourceProvider) =
+    OrderListFilterOptionUiModel(
+        key = filterKey,
+        displayName = resourceProvider.getString(stringResource),
+    )

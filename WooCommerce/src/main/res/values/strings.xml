@@ -277,6 +277,10 @@
     <string name="orderfilters_filters_count_title">Filters (%d)</string>
     <string name="orderfilters_default_filter_option">All</string>
     <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
+    <string name="orderfilters_date_range_filter_today">Today</string>
+    <string name="orderfilters_date_range_filter_last_two_days">Last 2 Days</string>
+    <string name="orderfilters_date_range_filter_this_week">This Week</string>
+    <string name="orderfilters_date_range_filter_this_month">This Month</string>
 
     <!--
         Order Detail Views

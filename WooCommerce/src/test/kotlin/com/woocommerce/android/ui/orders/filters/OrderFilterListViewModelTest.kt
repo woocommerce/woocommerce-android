@@ -6,8 +6,8 @@ import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptio
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.ui.OrderFilterListViewModel
-import com.woocommerce.android.ui.orders.filters.ui.model.FilterListCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryListViewState
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -119,7 +119,7 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
             }
         }?.all { true } ?: false
 
-    private fun givenFilterCategoryHasBeenSelected(anOrderStatusFilterCategory: FilterListCategoryUiModel) {
+    private fun givenFilterCategoryHasBeenSelected(anOrderStatusFilterCategory: OrderFilterCategoryUiModel) {
         viewModel.onFilterCategorySelected(anOrderStatusFilterCategory)
     }
 
@@ -167,7 +167,7 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
             isSelected = false
         )
         val A_LIST_OF_ORDER_STATUS_FILTER_OPTIONS = listOf(AN_ORDER_STATUS_FILTER_OPTION)
-        val AN_ORDER_STATUS_FILTER_CATEGORY = FilterListCategoryUiModel(
+        val AN_ORDER_STATUS_FILTER_CATEGORY = OrderFilterCategoryUiModel(
             categoryKey = ORDER_STATUS,
             displayName = "",
             displayValue = "",

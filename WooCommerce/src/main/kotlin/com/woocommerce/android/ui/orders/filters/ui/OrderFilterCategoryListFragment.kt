@@ -16,7 +16,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.ui.adapter.OrderFilterCategoryAdapter
-import com.woocommerce.android.ui.orders.filters.ui.model.FilterListCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -114,7 +114,7 @@ class OrderFilterCategoryListFragment :
         view?.post { clearAllMenuItem?.isVisible = show }
     }
 
-    private fun showOrderFilters(orderFilters: List<FilterListCategoryUiModel>) {
+    private fun showOrderFilters(orderFilters: List<OrderFilterCategoryUiModel>) {
         orderFilterCategoryAdapter.submitList(orderFilters)
     }
 
