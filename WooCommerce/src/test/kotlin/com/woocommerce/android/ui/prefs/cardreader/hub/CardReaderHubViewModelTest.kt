@@ -33,6 +33,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when screen shown, then purchase card reader row icon is present`() {
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.icon == R.drawable.ic_shopping_cart
+            }
+    }
+
+    @Test
     fun `when screen shown, then manual card reader row present`() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {

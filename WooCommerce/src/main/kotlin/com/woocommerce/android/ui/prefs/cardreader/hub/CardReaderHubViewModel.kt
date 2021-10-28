@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.hub
 
+import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -20,16 +21,19 @@ class CardReaderHubViewModel @Inject constructor(
     private fun createInitialState() = CardReaderHubViewState.Content(
         listOf(
             CardReaderHubListItemViewState(
-                UiString.UiStringRes(R.string.card_reader_purchase_card_reader),
-                ::onPurchaseCardReaderClicked
+                icon = R.drawable.ic_shopping_cart,
+                label = UiString.UiStringRes(R.string.card_reader_purchase_card_reader),
+                onItemClicked = ::onPurchaseCardReaderClicked
             ),
             CardReaderHubListItemViewState(
-                UiString.UiStringRes(R.string.card_reader_manage_card_reader),
-                ::onManageCardReaderClicked
+                icon = 0,
+                label = UiString.UiStringRes(R.string.card_reader_manage_card_reader),
+                onItemClicked = ::onManageCardReaderClicked
             ),
             CardReaderHubListItemViewState(
-                UiString.UiStringRes(R.string.card_reader_manual_card_reader),
-                ::onManualCardReaderClicked
+                icon = 0,
+                label = UiString.UiStringRes(R.string.card_reader_manual_card_reader),
+                onItemClicked = ::onManualCardReaderClicked
             ),
         )
     )
@@ -64,5 +68,8 @@ class CardReaderHubViewModel @Inject constructor(
         data class Content(override val rows: List<CardReaderHubListItemViewState>) : CardReaderHubViewState()
     }
 
-    data class CardReaderHubListItemViewState(val label: UiString, val onItemClicked: () -> Unit)
+    data class CardReaderHubListItemViewState(
+        @DrawableRes val icon: Int,
+        val label: UiString,
+        val onItemClicked: () -> Unit)
 }
