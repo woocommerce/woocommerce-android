@@ -1,4 +1,4 @@
-package com.woocommerce.android.cardreader.internal.connection
+package com.woocommerce.android.cardreader.connection.event
 
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType
 
