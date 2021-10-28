@@ -71,5 +71,6 @@ class CardReaderHubViewModel @Inject constructor(
     data class CardReaderHubListItemViewState(
         @DrawableRes val icon: Int,
         val label: UiString,
-        val onItemClicked: () -> Unit)
+        val onItemClicked: () -> Unit
+    )
 }
