@@ -82,7 +82,13 @@ class OrderEditingViewModel @Inject constructor(
                 order.localId,
                 updatedShippingAddress.toShippingAddressModel()
             )
-        }.collect()
+        }.collectTracking {
+            AnalyticsTracker.track(it,
+                mapOf(
+                    AnalyticsTracker.KEY_SUBJECT to AnalyticsTracker.ORDER_EDIT_SHIPPING_ADDRESS
+                )
+            )
+        }
     }
 
     fun updateBillingAddress(updatedBillingAddress: Address) = runWhenUpdateIsPossible {
@@ -93,7 +99,13 @@ class OrderEditingViewModel @Inject constructor(
                 order.localId,
                 updatedBillingAddress.toBillingAddressModel()
             )
-        }.collect()
+        }.collectTracking {
+            AnalyticsTracker.track(it,
+                mapOf(
+                    AnalyticsTracker.KEY_SUBJECT to AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS
+                )
+            )
+        }
     }
 
     private suspend fun sendReplicateShippingAndBillingAddressesWith(orderAddress: Address) =
