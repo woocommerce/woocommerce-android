@@ -163,6 +163,8 @@ class SitePickerActivity :
             bundle.getString(KEY_LOGIN_SITE_URL)?.let { url ->
                 deferLoadingSitesIntoView = true
                 loginSiteUrl = url
+                // hide the sites list
+                binding.siteListContainer.isVisible = false
             }
 
             val ids = bundle.getIntArray(STATE_KEY_SITE_ID_LIST) ?: IntArray(0)
@@ -192,6 +194,8 @@ class SitePickerActivity :
             AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }?.let { url ->
                 deferLoadingSitesIntoView = true
                 loginSiteUrl = url
+                // hide the sites list
+                binding.siteListContainer.isVisible = false
             }
 
             presenter.loadAndFetchSites()
@@ -317,9 +321,6 @@ class SitePickerActivity :
             }
 
             loginSiteUrl?.let {
-                // hide the site list and validate the url if we already know the connected store, which will happen
-                // if the user logged in by entering their store address
-                binding.siteListContainer.visibility = View.GONE
                 processLoginSite(it)
             }
             return
@@ -535,14 +536,19 @@ class SitePickerActivity :
         }
     }
 
-    override fun showSkeleton(show: Boolean) {
-        if (deferLoadingSitesIntoView) {
-            return
-        }
-
+    override fun showLoadingView(show: Boolean) {
         when (show) {
-            true -> skeletonView.show(binding.sitesRecycler, R.layout.skeleton_site_picker, delayed = true)
-            false -> skeletonView.hide()
+            true -> {
+                if (loginSiteUrl.isNullOrEmpty()) {
+                    skeletonView.show(binding.sitesRecycler, R.layout.skeleton_site_picker, delayed = true)
+                } else {
+                    binding.progressBar.isVisible = true
+                }
+            }
+            false -> {
+                skeletonView.hide()
+                binding.progressBar.isVisible = false
+            }
         }
     }
 

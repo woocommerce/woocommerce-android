@@ -75,7 +75,7 @@ class SitePickerPresenter
         if (wcSites.isNotEmpty()) {
             view?.showStoreList(wcSites)
         } else {
-            view?.showSkeleton(true)
+            view?.showLoadingView(true)
         }
         fetchSitesFromAPI()
     }
@@ -83,7 +83,7 @@ class SitePickerPresenter
     override fun fetchSitesFromAPI() {
         coroutineScope.launch {
             val result = wooCommerceStore.fetchWooCommerceSites()
-            view?.showSkeleton(false)
+            view?.showLoadingView(false)
             if (result.isError) {
                 WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
             } else {
@@ -95,9 +95,9 @@ class SitePickerPresenter
 
     override fun fetchUpdatedSiteFromAPI(site: SiteModel) {
         coroutineScope.launch {
-            view?.showSkeleton(true)
+            view?.showLoadingView(true)
             val result = wooCommerceStore.fetchWooCommerceSite(site)
-            view?.showSkeleton(false)
+            view?.showLoadingView(false)
             if (result.isError) {
                 WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
             }
