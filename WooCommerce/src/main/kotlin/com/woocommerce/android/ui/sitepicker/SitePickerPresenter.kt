@@ -32,7 +32,7 @@ class SitePickerPresenter
 ) : SitePickerContract.Presenter {
     private var view: SitePickerContract.View? = null
 
-    private var wooSitesHasBeenFetched = false
+    private var hasFetchedWooSites = false
 
     override fun takeView(view: SitePickerContract.View) {
         dispatcher.register(this)
@@ -47,7 +47,7 @@ class SitePickerPresenter
     override fun getWooCommerceSites(): List<SiteModel> {
         val currentWooSites = wooCommerceStore.getWooCommerceSites()
         return if (!FeatureFlag.JETPACK_CP.isEnabled() ||
-            wooSitesHasBeenFetched ||
+            hasFetchedWooSites ||
             currentWooSites.none { it.isJetpackCPConnected }
         ) {
             currentWooSites
@@ -90,7 +90,7 @@ class SitePickerPresenter
             if (result.isError) {
                 WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
             } else {
-                wooSitesHasBeenFetched = true
+                hasFetchedWooSites = true
                 view?.showStoreList(result.model!!)
             }
         }
