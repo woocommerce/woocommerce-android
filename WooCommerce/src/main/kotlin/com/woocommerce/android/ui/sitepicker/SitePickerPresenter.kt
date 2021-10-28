@@ -32,6 +32,8 @@ class SitePickerPresenter
 ) : SitePickerContract.Presenter {
     private var view: SitePickerContract.View? = null
 
+    private var wooSitesHasBeenFetched = false
+
     override fun takeView(view: SitePickerContract.View) {
         dispatcher.register(this)
         this.view = view
@@ -42,7 +44,14 @@ class SitePickerPresenter
         view = null
     }
 
-    override fun getWooCommerceSites() = wooCommerceStore.getWooCommerceSites()
+    override fun getWooCommerceSites(): List<SiteModel> {
+        val currentWooSites = wooCommerceStore.getWooCommerceSites()
+        return if (wooSitesHasBeenFetched || currentWooSites.none { it.isJetpackCPConnected }) {
+            currentWooSites
+        } else {
+            emptyList()
+        }
+    }
 
     override fun getSiteBySiteId(siteId: Long): SiteModel? = siteStore.getSiteBySiteId(siteId)
 
@@ -62,8 +71,8 @@ class SitePickerPresenter
     }
 
     override fun loadAndFetchSites() {
-        val wcSites = wooCommerceStore.getWooCommerceSites()
-        if (wcSites.size > 0) {
+        val wcSites = getWooCommerceSites()
+        if (wcSites.isNotEmpty()) {
             view?.showStoreList(wcSites)
         } else {
             view?.showSkeleton(true)
@@ -78,6 +87,7 @@ class SitePickerPresenter
             if (result.isError) {
                 WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
             } else {
+                wooSitesHasBeenFetched = true
                 view?.showStoreList(result.model!!)
             }
         }
@@ -110,7 +120,7 @@ class SitePickerPresenter
     }
 
     override fun loadSites() {
-        val wcSites = wooCommerceStore.getWooCommerceSites()
+        val wcSites = getWooCommerceSites()
         view?.showStoreList(wcSites)
     }
 
