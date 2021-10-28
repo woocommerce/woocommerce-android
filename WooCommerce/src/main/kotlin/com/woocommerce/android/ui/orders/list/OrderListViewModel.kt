@@ -26,9 +26,12 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel
+import com.woocommerce.android.ui.orders.filters.ui.model.toAfterIso8061DateString
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -76,7 +79,8 @@ class OrderListViewModel @Inject constructor(
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore,
-    private val orderFiltersRepository: OrderFiltersRepository
+    private val orderFiltersRepository: OrderFiltersRepository,
+    private val dateUtils: DateUtils
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -486,9 +490,16 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun refreshOrders(orderListFilters: Map<OrderListFilterCategory, List<String>>) {
+
+        val dateRangeFilters = orderListFilters[OrderListFilterCategory.DATE_RANGE]
+            ?.map { OrderFilterDateRangeUiModel.fromValue(it) }
+            ?.first()
+            ?.toAfterIso8061DateString(dateUtils)
+
         val listDescriptor = WCOrderListDescriptor(
-            selectedSite.get(),
-            orderListFilters[OrderListFilterCategory.ORDER_STATUS]?.joinToString(separator = ",")
+            site = selectedSite.get(),
+            statusFilter = orderListFilters[OrderListFilterCategory.ORDER_STATUS]?.joinToString(separator = ","),
+            afterFilter = dateRangeFilters
         )
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
 

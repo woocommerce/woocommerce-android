@@ -11,10 +11,10 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.Ord
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRange.LAST_2_DAYS
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRange.THIS_MONTH
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRange.THIS_WEEK
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRange.TODAY
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.LAST_2_DAYS
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.THIS_MONTH
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.THIS_WEEK
+import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.TODAY
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel.Companion.DEFAULT_ALL_KEY

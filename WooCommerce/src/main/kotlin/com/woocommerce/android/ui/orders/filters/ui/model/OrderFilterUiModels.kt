@@ -36,14 +36,14 @@ data class OrderListFilterOptionUiModel(
     }
 }
 
-enum class OrderFilterDateRange(@StringRes val stringResource: Int, val filterKey: String) {
+enum class OrderFilterDateRangeUiModel(@StringRes val stringResource: Int, val filterKey: String) {
     TODAY(R.string.orderfilters_date_range_filter_today, "Today"),
     LAST_2_DAYS(R.string.orderfilters_date_range_filter_last_two_days, "Last2Days"),
     THIS_WEEK(R.string.orderfilters_date_range_filter_this_week, "ThisWeek"),
     THIS_MONTH(R.string.orderfilters_date_range_filter_this_month, "ThisMonth");
 
     companion object {
-        private val valueMap = values().associateBy(OrderFilterDateRange::filterKey)
+        private val valueMap = values().associateBy(OrderFilterDateRangeUiModel::filterKey)
         fun fromValue(filterKey: String) = valueMap[filterKey]
     }
 }
