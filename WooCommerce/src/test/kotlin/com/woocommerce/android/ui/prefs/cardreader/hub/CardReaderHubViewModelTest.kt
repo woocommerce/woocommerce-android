@@ -25,6 +25,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when screen shown, then manage card reader row icon is present`() {
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.icon == R.drawable.ic_manage_card_reader
+            }
+    }
+
+    @Test
     fun `when screen shown, then purchase card reader row present`() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
@@ -45,6 +53,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
                 it.label == UiString.UiStringRes(R.string.card_reader_manual_card_reader)
+            }
+    }
+
+    @Test
+    fun `when screen shown, then manual card reader row icon is present`() {
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.icon == R.drawable.ic_card_reader_manual
             }
     }
 

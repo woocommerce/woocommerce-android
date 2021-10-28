@@ -26,12 +26,12 @@ class CardReaderHubViewModel @Inject constructor(
                 onItemClicked = ::onPurchaseCardReaderClicked
             ),
             CardReaderHubListItemViewState(
-                icon = 0,
+                icon = R.drawable.ic_manage_card_reader,
                 label = UiString.UiStringRes(R.string.card_reader_manage_card_reader),
                 onItemClicked = ::onManageCardReaderClicked
             ),
             CardReaderHubListItemViewState(
-                icon = 0,
+                icon = R.drawable.ic_card_reader_manual,
                 label = UiString.UiStringRes(R.string.card_reader_manual_card_reader),
                 onItemClicked = ::onManualCardReaderClicked
             ),
