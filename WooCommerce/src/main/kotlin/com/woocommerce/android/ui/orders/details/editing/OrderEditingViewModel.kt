@@ -65,14 +65,7 @@ class OrderEditingViewModel @Inject constructor(
     fun updateCustomerOrderNote(updatedNote: String) = runWhenUpdateIsPossible {
         orderEditingRepository.updateCustomerOrderNote(
             order.localId, updatedNote
-        ).collectTracking {
-            AnalyticsTracker.track(
-                it,
-                mapOf(
-                    AnalyticsTracker.KEY_SUBJECT to AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE
-                )
-            )
-        }
+        ).collectTracking(AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE)
     }
 
     fun updateShippingAddress(updatedShippingAddress: Address) = runWhenUpdateIsPossible {
@@ -83,14 +76,7 @@ class OrderEditingViewModel @Inject constructor(
                 order.localId,
                 updatedShippingAddress.toShippingAddressModel()
             )
-        }.collectTracking {
-            AnalyticsTracker.track(
-                it,
-                mapOf(
-                    AnalyticsTracker.KEY_SUBJECT to AnalyticsTracker.ORDER_EDIT_SHIPPING_ADDRESS
-                )
-            )
-        }
+        }.collectTracking(AnalyticsTracker.ORDER_EDIT_SHIPPING_ADDRESS)
     }
 
     fun updateBillingAddress(updatedBillingAddress: Address) = runWhenUpdateIsPossible {
@@ -101,14 +87,7 @@ class OrderEditingViewModel @Inject constructor(
                 order.localId,
                 updatedBillingAddress.toBillingAddressModel()
             )
-        }.collectTracking {
-            AnalyticsTracker.track(
-                it,
-                mapOf(
-                    AnalyticsTracker.KEY_SUBJECT to AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS
-                )
-            )
-        }
+        }.collectTracking(AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS)
     }
 
     private suspend fun sendReplicateShippingAndBillingAddressesWith(orderAddress: Address) =
@@ -127,7 +106,7 @@ class OrderEditingViewModel @Inject constructor(
     }
 
     private suspend fun Flow<WCOrderStore.UpdateOrderResult>.collectTracking(
-        trackAction: (Stat) -> Unit
+        editingSubject: String
     ) {
         collect { result ->
             when (result) {
@@ -137,14 +116,19 @@ class OrderEditingViewModel @Inject constructor(
                     }
                 }
                 is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
-                    if (result.event.isError) {
+                    val stat = if (result.event.isError) {
                         withContext(Dispatchers.Main) {
                             viewState = viewState.copy(orderEditingFailed = true)
                         }
                         Stat.ORDER_DETAIL_EDIT_FLOW_FAILED
                     } else {
                         Stat.ORDER_DETAIL_EDIT_FLOW_COMPLETED
-                    }.let(trackAction)
+                    }
+
+                    AnalyticsTracker.track(
+                        stat,
+                        mapOf(AnalyticsTracker.KEY_SUBJECT to editingSubject)
+                    )
                 }
             }
         }
