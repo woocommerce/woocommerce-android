@@ -1,18 +1,19 @@
-@file:Suppress("TooManyFunctions", "ComplexMethod")
+@file:Suppress("ComplexMethod")
 
 package com.woocommerce.android.extensions
 
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
+import org.apache.commons.io.FileUtils.byteCountToDisplaySize
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.WCSSRModel
-import java.text.SimpleDateFormat
-import java.util.*
-import org.apache.commons.io.FileUtils.byteCountToDisplaySize
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 const val MISSING_VALUE = "Info not found"
 const val HEADING_SSR = "### System Status Report generated via the WooCommerce Android app ### \n"

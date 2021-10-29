@@ -34,6 +34,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
@@ -272,6 +273,9 @@ class ProductListFragment :
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
                 showAddProductButton(show = isVisible)
             }
+            new.isBottomNavBarVisible?.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
+                showBottomNavBar(isVisible = isBottomNavBarVisible)
+            }
         }
 
         viewModel.productList.observe(
@@ -403,6 +407,14 @@ class ProductListFragment :
             binding.productsSortFilterCard.initView(this)
         } else {
             binding.productsSortFilterCard.visibility = View.GONE
+        }
+    }
+
+    private fun showBottomNavBar(isVisible: Boolean) {
+        if (!isVisible) {
+            (activity as? MainActivity)?.hideBottomNav()
+        } else {
+            (activity as? MainActivity)?.showBottomNav()
         }
     }
 

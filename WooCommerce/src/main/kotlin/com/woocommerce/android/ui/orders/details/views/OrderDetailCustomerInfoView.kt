@@ -23,7 +23,6 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 
-@Suppress("TooManyFunctions")
 class OrderDetailCustomerInfoView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -36,10 +35,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         isVirtualOrder: Boolean, // don't display shipping section for virtual products
         isReadOnly: Boolean
     ) {
-        val isReallyReadOnly = isReadOnly || !FeatureFlag.ORDER_EDITING.isEnabled()
-        showCustomerNote(order, isReallyReadOnly)
-        showShippingAddress(order, isVirtualOrder, isReallyReadOnly)
-        showBillingInfo(order, isReallyReadOnly)
+        showCustomerNote(order, isReadOnly)
+        // customer note editing is available but address editing is still behind a feature flag
+        val isReadOnlyOrDisabled = isReadOnly || !FeatureFlag.ORDER_EDITING.isEnabled()
+        showShippingAddress(order, isVirtualOrder, isReadOnlyOrDisabled)
+        showBillingInfo(order, isReadOnlyOrDisabled)
     }
 
     private fun showBillingInfo(order: Order, isReadOnly: Boolean) {

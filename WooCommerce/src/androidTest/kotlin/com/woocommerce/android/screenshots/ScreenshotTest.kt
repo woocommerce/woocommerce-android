@@ -46,17 +46,4 @@ class ScreenshotTest : TestBase() {
         MyStoreScreen()
             .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
     }
-
-    @Test
-    fun mocksDemo() {
-        WelcomeScreen
-            .logoutIfNeeded()
-            .selectLogin()
-            // Connect a WooCommerce store by URL
-            .proceedWith(BuildConfig.SCREENSHOTS_URL)
-            .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
-            .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
-
-        Thread.sleep(1000000)
-    }
 }

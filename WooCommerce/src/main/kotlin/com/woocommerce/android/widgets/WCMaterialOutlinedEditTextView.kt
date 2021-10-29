@@ -85,11 +85,6 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         }
     }
 
-    fun removeCurrentTextWatcher() {
-        textWatcher?.let { binding.editText.removeTextChangedListener(it) }
-        textWatcher = null
-    }
-
     /**
      * Updates the text only if the current content is different from the supplied one.
      * Helpful when this view is inside a RecyclerView to avoid resetting the cursor position and recursive listener

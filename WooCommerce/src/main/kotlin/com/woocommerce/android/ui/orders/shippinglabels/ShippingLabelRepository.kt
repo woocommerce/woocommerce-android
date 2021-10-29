@@ -21,7 +21,6 @@ import javax.inject.Singleton
 
 @OpenClassOnDebug
 @Singleton
-@Suppress("TooManyFunctions")
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite

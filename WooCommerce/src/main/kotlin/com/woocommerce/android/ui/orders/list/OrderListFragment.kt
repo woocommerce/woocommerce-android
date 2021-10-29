@@ -14,6 +14,7 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
@@ -357,7 +358,7 @@ class OrderListFragment :
                         uiMessageResolver.showSnack(event.messageRes)
                         binding.orderRefreshLayout.isRefreshing = false
                     }
-                    is ShowOrderFilters -> (activity as? MainNavigationRouter)?.showOrderFilters()
+                    is ShowOrderFilters -> showOrderFilters()
                     else -> event.isHandled = false
                 }
             }
@@ -398,6 +399,10 @@ class OrderListFragment :
                 binding.orderFiltersCard.updateFilterSelection(filterCount)
             }
         }
+    }
+
+    private fun showOrderFilters() {
+        findNavController().navigate(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
     private fun hideEmptyView() {

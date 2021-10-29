@@ -42,16 +42,16 @@ class OrderFilterCategoryListFragment :
         setUpObservers(viewModel)
 
         setUpFiltersRecyclerView(binding)
-        binding.filterListBtnShowOrders.setOnClickListener {
+        binding.showOrdersButton.setOnClickListener {
             viewModel.onShowOrdersClicked()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.menu_clear, menu)
         clearAllMenuItem = menu.findItem(R.id.menu_clear)
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -407,6 +407,8 @@
     <string name="order_detail_add_shipping_address">Add shipping address</string>
     <string name="order_detail_add_billing_address">Add billing address</string>
     <string name="orderdetail_empty_address">No address specified</string>
+    <string name="order_detail_use_as_billing_address">Use as Billing Address</string>
+    <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
 
     <!--
         Shipping label Refunds
@@ -951,8 +953,8 @@
     -->
     <string name="new_notifications">%d new notifications</string>
     <string name="more_notifications">and %d more.</string>
-    <string name="notification_order_title">You have 1 new order! 🎉</string>
-    <string name="notification_review_title">You have 1 new review! 🌟</string>
+    <string name="notification_order_title">You have a new order! 🎉</string>
+    <string name="notification_review_title">You have a new review! 🌟</string>
     <!--
         Product Review Detail
     -->
