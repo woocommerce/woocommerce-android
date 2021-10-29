@@ -261,6 +261,21 @@
     <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_loading">Looking up your orders…</string>
+    <string name="orderlist_no_filters_title">All Orders</string>
+    <string name="orderlist_filters_title">Filtered Orders</string>
+    <!--
+        Order Filters
+    -->
+    <string name="orderfilters_show_orders_button">Show Orders</string>
+    <string name="orderfilters_default_filter_value">All</string>
+    <string name="orderfilters_order_status_filter">Order Status</string>
+    <string name="orderfilters_date_range_filter">Date Range</string>
+    <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
+    <string name="orderfilters_filter_order_status_options_title">Order Status</string>
+    <string name="orderfilters_filter_date_range_options_title">Date Range</string>
+    <string name="orderfilters_filters_default_title">Filters</string>
+    <string name="orderfilters_filters_count_title">Filters (%d)</string>
+
     <!--
         Order Detail Views
     -->
