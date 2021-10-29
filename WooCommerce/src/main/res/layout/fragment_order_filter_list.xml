@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface"
         app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toTopOf="@+id/bottomDivider"
+        app:layout_constraintBottom_toTopOf="@+id/bottomDividerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,7 +20,7 @@
         tools:listitem="@layout/filter_list_item" />
 
     <View
-        android:id="@+id/bottomDivider"
+        android:id="@+id/bottomDividerView"
         style="@style/Woo.Divider"
         app:layout_constraintBottom_toTopOf="@+id/showOrdersButtonFrameLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
