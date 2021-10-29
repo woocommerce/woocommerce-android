@@ -36,11 +36,7 @@ class AddressViewModel @Inject constructor(
 
     fun start(countryCode: String, stateCode: String) {
         loadCountriesAndStates(countryCode, stateCode)
-
-        viewState = viewState.copy(
-            countryLocation = getCountryLocationFromCode(countryCode),
-            stateLocation = getStateLocationFromCode(stateCode)
-        )
+        viewState.applyCountryStateChangesSafely(countryCode, stateCode)
     }
 
     private fun loadCountriesAndStates(countryCode: String, stateCode: String) {
@@ -49,11 +45,9 @@ class AddressViewModel @Inject constructor(
             if (countries.isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
                 dataStore.fetchCountriesAndStates(selectedSite.get())
-                viewState = viewState.copy(
-                    isLoading = false,
-                    countryLocation = getCountryLocationFromCode(countryCode),
-                    stateLocation = getStateLocationFromCode(stateCode)
-                )
+                viewState.copy(
+                    isLoading = false
+                ).applyCountryStateChangesSafely(countryCode, stateCode)
             }
         }
     }
@@ -93,6 +87,24 @@ class AddressViewModel @Inject constructor(
                 stateLocation = getStateLocationFromCode(stateCode)
             )
         }
+    }
+
+    /**
+     * State data acquisition depends on the Country configuration, so when updating the ViewState
+     * we need to make sure that we updated the Country code before applying everything else to avoid
+     * looking into a outdated state information
+     */
+    private fun ViewState.applyCountryStateChangesSafely(countryCode: String, stateCode: String) {
+        val countryLocation = getCountryLocationFromCode(countryCode)
+
+        viewState = viewState.copy(
+            countryLocation = countryLocation
+        )
+
+        viewState = this.copy(
+            countryLocation = countryLocation,
+            stateLocation = getStateLocationFromCode(stateCode)
+        )
     }
 
     @Parcelize
