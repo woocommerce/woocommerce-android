@@ -16,6 +16,7 @@ sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
         var binding: CardReaderHubListItemBinding = CardReaderHubListItemBinding.bind(itemView)
         override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubListItemViewState) {
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
+            binding.cardReaderMenuIcon.setImageResource(uiState.icon)
             binding.root.setOnClickListener {
                 uiState.onItemClicked.invoke()
             }
