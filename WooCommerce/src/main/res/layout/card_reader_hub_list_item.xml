@@ -20,7 +20,6 @@
         android:textColor="@color/color_on_surface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
         android:paddingStart="@dimen/major_100"
         android:paddingEnd="@dimen/major_100"
         tools:text="Manage card reader" />
