@@ -2,7 +2,7 @@
 
 7.9
 -----
-
+[**] Merchants can now edit Customer Notes, shipping, and billing addresses from orders. [https://github.com/woocommerce/woocommerce-android/pull/5106]
 
 7.8
 -----
