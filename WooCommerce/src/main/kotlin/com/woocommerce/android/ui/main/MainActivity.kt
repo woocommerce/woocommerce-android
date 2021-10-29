@@ -831,12 +831,6 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
-    override fun showOrderFilters() {
-        OrderListFragmentDirections.actionOrderListFragmentToOrderFilterListFragment().apply {
-            navController.navigateSafely(this)
-        }
-    }
-
     override fun showFeedbackSurvey() {
         NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.MAIN).apply {
             navController.navigateSafely(this)
