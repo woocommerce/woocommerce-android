@@ -36,11 +36,7 @@ class AddressViewModel @Inject constructor(
 
     fun start(countryCode: String, stateCode: String) {
         loadCountriesAndStates(countryCode, stateCode)
-
-        viewState.copy(
-            countryLocation = getCountryLocationFromCode(countryCode),
-            stateLocation = getStateLocationFromCode(stateCode)
-        ).applyChangesSafely()
+        viewState.applyCountryStateChangesSafely(countryCode, stateCode)
     }
 
     private fun loadCountriesAndStates(countryCode: String, stateCode: String) {
@@ -50,10 +46,8 @@ class AddressViewModel @Inject constructor(
                 viewState = viewState.copy(isLoading = true)
                 dataStore.fetchCountriesAndStates(selectedSite.get())
                 viewState.copy(
-                    isLoading = false,
-                    countryLocation = getCountryLocationFromCode(countryCode),
-                    stateLocation = getStateLocationFromCode(stateCode)
-                ).applyChangesSafely()
+                    isLoading = false
+                ).applyCountryStateChangesSafely(countryCode, stateCode)
             }
         }
     }
@@ -100,12 +94,17 @@ class AddressViewModel @Inject constructor(
      * we need to make sure that we updated the Country code before applying everything else to avoid
      * looking into a outdated state information
      */
-    private fun ViewState.applyChangesSafely() = apply {
+    private fun ViewState.applyCountryStateChangesSafely(countryCode: String, stateCode: String) {
+        val countryLocation = getCountryLocationFromCode(countryCode)
+
         viewState = viewState.copy(
-            countryLocation = this.countryLocation
+            countryLocation = countryLocation
         )
 
-        viewState = this
+        viewState = this.copy(
+            countryLocation = countryLocation,
+            stateLocation = getStateLocationFromCode(stateCode)
+        )
     }
 
     @Parcelize
