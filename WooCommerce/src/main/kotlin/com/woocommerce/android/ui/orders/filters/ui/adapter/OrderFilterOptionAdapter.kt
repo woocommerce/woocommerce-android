@@ -40,8 +40,8 @@ class OrderFilterOptionAdapter(
     class OrderFilterOptionViewHolder(val viewBinding: OrderFilterOptionItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(filterOption: FilterListOptionUiModel) {
-            viewBinding.filterOptionItemName.text = filterOption.displayName
-            viewBinding.filterOptionItemTick.isVisible = filterOption.isSelected
+            viewBinding.filterOptionNameTextView.text = filterOption.displayName
+            viewBinding.tickImageView.isVisible = filterOption.isSelected
         }
     }
 

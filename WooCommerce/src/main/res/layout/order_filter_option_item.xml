@@ -10,21 +10,20 @@
     android:background="?attr/selectableItemBackground">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/filterOptionItem_name"
+        android:id="@+id/filterOptionNameTextView"
         style="@style/Woo.ListItem.Title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/filterOptionItem_tick"
+        app:layout_constraintRight_toLeftOf="@+id/tickImageView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Canada Post" />
 
     <ImageView
-        android:id="@+id/filterOptionItem_tick"
+        android:id="@+id/tickImageView"
         android:layout_width="@dimen/image_minor_60"
         android:layout_height="@dimen/image_minor_60"
-        android:button="@null"
         android:contentDescription="@string/orderfilters_filter_option_item_selected"
         android:src="@drawable/ic_done_secondary"
         android:visibility="gone"

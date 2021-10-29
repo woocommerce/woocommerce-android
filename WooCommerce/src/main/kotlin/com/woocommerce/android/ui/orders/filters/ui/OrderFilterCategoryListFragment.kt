@@ -39,7 +39,7 @@ class OrderFilterCategoryListFragment :
         setUpObservers(viewModel)
 
         setUpFiltersRecyclerView(binding)
-        binding.filterListBtnShowOrders.setOnClickListener {
+        binding.showOrdersButton.setOnClickListener {
             viewModel.onShowOrdersClicked()
         }
     }
