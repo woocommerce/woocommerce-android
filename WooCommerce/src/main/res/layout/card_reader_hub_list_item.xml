@@ -7,10 +7,12 @@
     android:background="?attr/selectableItemBackground">
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/card_reader_menu_icon"
+        android:id="@+id/cardReaderMenuIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/major_100"/>
+        app:srcCompat="@drawable/ic_manage_card_reader"
+        android:layout_marginTop="0.5dp"
+        android:padding="@dimen/major_85"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/cardReaderHubListItemLabelTv"
@@ -18,6 +20,7 @@
         android:textColor="@color/color_on_surface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:paddingStart="@dimen/major_100"
         android:paddingEnd="@dimen/major_100"
         tools:text="Manage card reader" />

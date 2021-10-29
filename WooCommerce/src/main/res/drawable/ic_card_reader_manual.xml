@@ -8,7 +8,7 @@
   <path
       android:name="path"
       android:pathData="M 18 2 L 6 2 C 4.9 2 4 2.9 4 4 L 4 20 C 4 21.1 4.9 22 6 22 L 18 22 C 19.1 22 20 21.1 20 20 L 20 4 C 20 2.9 19.1 2 18 2 Z M 9 4 L 11 4 L 11 9 L 10 8.25 L 9 9 L 9 4 Z M 6 20 L 18 20 L 18 4 L 13 4 L 13 13 L 10 10.75 L 7 13 L 7 4 L 6 4 L 6 20 Z"
-      android:fillColor="#000000"
+      android:fillColor="@color/color_on_surface"
       android:strokeWidth="1"
       android:fillType="evenOdd"/>
   <path
