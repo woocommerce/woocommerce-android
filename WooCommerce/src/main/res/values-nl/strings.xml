@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-12 15:54:03+0000
+Translation-Revision-Date: 2021-10-27 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Bekijk de voordelen</string>
+    <string name="jetpack_benefits_bottom_banner_title">Profiteer van de volledige ervaring met Jetpack</string>
+    <string name="product_description_hint_with_title">Vertel ons meer over %s…</string>
+    <string name="product_description_hint_no_title">Beschrijf je product voor je toekomstige klanten…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Serienummer lezer gekopieerd naar klembord</string>
+    <string name="card_reader_manual_card_reader">Handleiding kaartlezer</string>
+    <string name="order_detail_add_billing_address">Factuuradres toevoegen</string>
+    <string name="order_detail_add_shipping_address">Verzendadres toevoegen</string>
+    <string name="order_detail_add_customer_note">Notitie voor klant toevoegen</string>
+    <string name="order_detail_billing_address_section">Factuuradres</string>
+    <string name="order_detail_shipping_address_section">Verzendadres</string>
+    <string name="order_detail_address_section">Adres</string>
+    <string name="order_detail_edit_address_country">Land</string>
+    <string name="order_detail_edit_address_state">Staat/county</string>
+    <string name="order_detail_edit_address_zip">Postcode</string>
+    <string name="order_detail_edit_address_city">Plaats</string>
+    <string name="order_detail_edit_address_line2">Adres 2</string>
+    <string name="order_detail_edit_address_line1">Adres 1</string>
+    <string name="order_detail_edit_address_company">Onderneming</string>
+    <string name="order_detail_edit_address_details_phone">Telefoon</string>
+    <string name="order_detail_edit_address_details_email">E-mailadres</string>
+    <string name="order_detail_edit_address_details_last_name">Achternaam</string>
+    <string name="order_detail_edit_address_details_first_name">Voornaam</string>
+    <string name="orderdetail_customer_note_hint">Notitie voor klantbestelling bewerken</string>
     <string name="support_system_status_report_fetch_error">Fout bij ophalen SSR. Controleer WooCommerce -&gt; Status bij wp-admin.</string>
     <string name="support_system_status_report_share_error">Kan systeemstatusrapport niet delen</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Fout bij kopiëren SSR naar klembord</string>
@@ -831,7 +855,6 @@ Language: nl
     <string name="product_description_empty">Beschrijf je product</string>
     <string name="product_description">Beschrijving</string>
     <string name="product_edit_description">Beschrijving bewerken</string>
-    <string name="product_description_hint">Begin met schrijven …</string>
     <string name="discard_message">Wil je de wijzigingen ongedaan maken?</string>
     <string name="update">Bijwerken</string>
     <string name="done">Klaar</string>
@@ -968,7 +991,7 @@ Language: nl
     <string name="login_refresh_app_progress">Controleert op WooCommerce…</string>
     <string name="login_refresh_app">de app vernieuwen</string>
     <string name="login_not_woo_store">Het lijkt erop dat %1$s geen WooCommerce-site is. Installeer de WooCommerce-plug-in op je site en %2$s</string>
-    <string name="orderdetail_empty_shipping_address">Geen adres opgegeven.</string>
+    <string name="orderdetail_empty_address">Geen adres opgegeven.</string>
     <string name="login_need_help_finding_connected_email">Heb je hulp nodig bij het vinden van de e-mail waarmee je hebt ingelogd?</string>
     <string name="enter_wordpress_site">De website op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>
     <string name="enter_email_for_site">Log in met WordPress.com om verbinding te maken met &lt;b&gt;%1$s&lt;/b&gt;</string>

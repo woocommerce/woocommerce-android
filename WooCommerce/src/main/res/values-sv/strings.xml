@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-12 11:54:04+0000
+Translation-Revision-Date: 2021-10-27 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Se fördelarna</string>
+    <string name="jetpack_benefits_bottom_banner_title">Få hela upplevelsen med Jetpack</string>
+    <string name="product_description_hint_with_title">Berätta mer om %s …</string>
+    <string name="product_description_hint_no_title">Beskriv din produkt för dina framtida kunder…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Läsarens serienummer kopierad till urklipp</string>
+    <string name="card_reader_manual_card_reader">Kortläsarmanual</string>
+    <string name="order_detail_add_billing_address">Lägg till faktureringsadress</string>
+    <string name="order_detail_add_shipping_address">Lägg till leveransadress</string>
+    <string name="order_detail_add_customer_note">Lägg till kundanteckning</string>
+    <string name="order_detail_billing_address_section">Faktureringsadress</string>
+    <string name="order_detail_shipping_address_section">Leveransadress</string>
+    <string name="order_detail_address_section">Adress</string>
+    <string name="order_detail_edit_address_country">Land</string>
+    <string name="order_detail_edit_address_state">Delstat/län</string>
+    <string name="order_detail_edit_address_zip">Postnummer</string>
+    <string name="order_detail_edit_address_city">Ort</string>
+    <string name="order_detail_edit_address_line2">Adress 2</string>
+    <string name="order_detail_edit_address_line1">Adress 1</string>
+    <string name="order_detail_edit_address_company">Företag</string>
+    <string name="order_detail_edit_address_details_phone">Telefon</string>
+    <string name="order_detail_edit_address_details_email">E-post</string>
+    <string name="order_detail_edit_address_details_last_name">Efternamn</string>
+    <string name="order_detail_edit_address_details_first_name">Förnamn</string>
+    <string name="orderdetail_customer_note_hint">Redigera en kundbeställningsanteckning</string>
     <string name="support_system_status_report_fetch_error">Det gick inte att hämta SSR. Kontrollera WooCommerce -&gt; Status i WP-admin.</string>
     <string name="support_system_status_report_share_error">Det gick inte att dela systemstatusrapporten</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Det gick inte att kopiera SSR till urklipp</string>
@@ -831,7 +855,6 @@ Language: sv_SE
     <string name="product_description_empty">Beskriv din produkt</string>
     <string name="product_description">Beskrivning</string>
     <string name="product_edit_description">Redigera beskrivning</string>
-    <string name="product_description_hint">Börja skriva…</string>
     <string name="discard_message">Vill du ignorera dina ändringar?</string>
     <string name="update">Uppdatera</string>
     <string name="done">Klart</string>
@@ -968,7 +991,7 @@ Language: sv_SE
     <string name="login_refresh_app_progress">Kollar efter WooCommerce …</string>
     <string name="login_refresh_app">uppdatera appen</string>
     <string name="login_not_woo_store">Det ser ut som att %1$s inte är en WooCommerce-webbplats. Installera WooCommerce-pluginet på din webbplats och därefter %2$s</string>
-    <string name="orderdetail_empty_shipping_address">Ingen adress angiven.</string>
+    <string name="orderdetail_empty_address">Ingen adress specificerad</string>
     <string name="login_need_help_finding_connected_email">Behöver du hjälp med att hitta e-postadressen som du använde för att ansluta?</string>
     <string name="enter_wordpress_site">Webbplatsen på den här adressen är inte en WordPress-webbplats. Webbplatsen måste använda WordPress för att vi ska kunna ansluta till den.</string>
     <string name="enter_email_for_site"> Logga in med WordPress.com för att ansluta till &lt;b&gt;%1$s&lt;/b&gt;</string>
