@@ -3,7 +3,7 @@ package com.woocommerce.android.cardreader.internal.connection
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 
-class UpdateErrorMapper(private val batteryLevelProvider: () -> Float?) {
+internal class UpdateErrorMapper(private val batteryLevelProvider: () -> Float?) {
     fun map(error: TerminalException.TerminalErrorCode): SoftwareUpdateStatusErrorType =
         when (error) {
             TerminalException.TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_BATTERY_LOW ->

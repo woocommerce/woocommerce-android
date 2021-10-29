@@ -16,7 +16,6 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 

@@ -167,4 +167,4 @@ internal class PaymentManager(
     }
 }
 
-data class PaymentDataImpl(val paymentIntent: PaymentIntent) : PaymentData
+internal data class PaymentDataImpl(val paymentIntent: PaymentIntent) : PaymentData

@@ -39,7 +39,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForI
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.internal.connection.BluetoothCardReaderMessages
+import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order

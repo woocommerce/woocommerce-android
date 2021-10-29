@@ -3,17 +3,16 @@ package com.woocommerce.android.ui.orders.cardreader
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.*
-import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.payments.PaymentData
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.internal.connection.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
@@ -293,7 +292,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             verify(tracker).track(
-                eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), anyOrNull(), anyOrNull(), anyOrNull()
+                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), anyOrNull(), anyOrNull(), anyOrNull()
             )
         }
 
@@ -436,7 +435,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+            verify(tracker).track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
         }
 
     @Test
@@ -498,7 +497,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), any())
+            verify(tracker).track(eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), any())
         }
 
     @Test

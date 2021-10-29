@@ -12,7 +12,7 @@ import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.TRY_ANOTHE
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.TRY_ANOTHER_READ_METHOD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType
 
-class AdditionalInfoMapper {
+internal class AdditionalInfoMapper {
     fun map(displayMsg: ReaderDisplayMessage): AdditionalInfoType =
         when (displayMsg) {
             RETRY_CARD -> AdditionalInfoType.RETRY_CARD

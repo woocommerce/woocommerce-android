@@ -5,7 +5,7 @@ import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.connection.BluetoothReaderListenerImpl
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.TimeoutCancellationException
