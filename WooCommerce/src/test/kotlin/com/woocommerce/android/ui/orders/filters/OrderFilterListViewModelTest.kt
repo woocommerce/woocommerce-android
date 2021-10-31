@@ -5,11 +5,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptions
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory.ORDER_STATUS
-import com.woocommerce.android.ui.orders.filters.ui.OrderFilterListViewModel
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryListViewState
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
+import com.woocommerce.android.ui.orders.filters.model.OrderListFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult

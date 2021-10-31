@@ -26,8 +26,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel
-import com.woocommerce.android.ui.orders.filters.ui.model.toAfterIso8061DateString
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel
+import com.woocommerce.android.ui.orders.filters.model.toAfterIso8061DateString
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers

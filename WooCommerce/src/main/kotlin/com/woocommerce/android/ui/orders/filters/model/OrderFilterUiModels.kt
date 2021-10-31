@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.filters.ui.model
+package com.woocommerce.android.ui.orders.filters.model
 
 import android.os.Parcelable
 import androidx.annotation.StringRes

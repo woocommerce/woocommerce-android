@@ -1,10 +1,10 @@
-package com.woocommerce.android.ui.orders.filters.ui.model
+package com.woocommerce.android.ui.orders.filters.model
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.LAST_2_DAYS
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.THIS_MONTH
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.THIS_WEEK
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.TODAY
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.LAST_2_DAYS
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.THIS_MONTH
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.THIS_WEEK
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.TODAY
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.WCOrderStatusModel

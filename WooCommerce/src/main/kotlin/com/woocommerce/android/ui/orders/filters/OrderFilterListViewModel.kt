@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.filters.ui
+package com.woocommerce.android.ui.orders.filters
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,16 +9,16 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory.ORDER_STATUS
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryListViewState
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.LAST_2_DAYS
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.THIS_MONTH
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.THIS_WEEK
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterDateRangeUiModel.TODAY
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel.Companion.DEFAULT_ALL_KEY
-import com.woocommerce.android.ui.orders.filters.ui.model.toFilterListOptionUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.LAST_2_DAYS
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.THIS_MONTH
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.THIS_WEEK
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.TODAY
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
+import com.woocommerce.android.ui.orders.filters.model.OrderListFilterOptionUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderListFilterOptionUiModel.Companion.DEFAULT_ALL_KEY
+import com.woocommerce.android.ui.orders.filters.model.toFilterListOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -114,7 +114,8 @@ class OrderFilterListViewModel @Inject constructor(
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
         }
 
-    private suspend fun loadOrderStatusFilterOptions(selectedOrderStatusFilters: List<String>?): List<OrderListFilterOptionUiModel> {
+    private suspend fun loadOrderStatusFilterOptions(selectedOrderStatusFilters: List<String>?):
+        List<OrderListFilterOptionUiModel> {
         var orderStatus = orderListRepository.getCachedOrderStatusOptions()
         if (orderStatus.isEmpty()) {
             when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
