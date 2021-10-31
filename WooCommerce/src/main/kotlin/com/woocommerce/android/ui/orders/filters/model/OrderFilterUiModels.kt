@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.filters.model
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.parcelize.Parcelize
 
