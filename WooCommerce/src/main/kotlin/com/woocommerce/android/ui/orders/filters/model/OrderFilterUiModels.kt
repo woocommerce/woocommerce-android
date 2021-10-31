@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.orders.filters.model
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.parcelize.Parcelize
@@ -22,28 +20,16 @@ data class OrderFilterCategoryUiModel(
     val categoryKey: OrderListFilterCategory,
     val displayName: String,
     val displayValue: String,
-    val orderFilterOptions: List<OrderListFilterOptionUiModel>
+    val orderFilterOptions: List<OrderFilterOptionUiModel>
 ) : Parcelable
 
 @Parcelize
-data class OrderListFilterOptionUiModel(
+data class OrderFilterOptionUiModel(
     val key: String,
     val displayName: String,
     val isSelected: Boolean = false
 ) : Parcelable {
     companion object {
         const val DEFAULT_ALL_KEY = "All"
-    }
-}
-
-enum class OrderFilterDateRangeUiModel(@StringRes val stringResource: Int, val filterKey: String) {
-    TODAY(R.string.orderfilters_date_range_filter_today, "Today"),
-    LAST_2_DAYS(R.string.orderfilters_date_range_filter_last_two_days, "Last2Days"),
-    THIS_WEEK(R.string.orderfilters_date_range_filter_this_week, "ThisWeek"),
-    THIS_MONTH(R.string.orderfilters_date_range_filter_this_month, "ThisMonth");
-
-    companion object {
-        private val valueMap = values().associateBy(OrderFilterDateRangeUiModel::filterKey)
-        fun fromValue(filterKey: String) = valueMap[filterKey]
     }
 }

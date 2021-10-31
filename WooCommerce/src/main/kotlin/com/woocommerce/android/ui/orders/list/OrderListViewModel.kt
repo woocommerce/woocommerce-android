@@ -24,9 +24,9 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.model.toAfterIso8061DateString
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
@@ -492,7 +492,7 @@ class OrderListViewModel @Inject constructor(
     private fun refreshOrders(orderListFilters: Map<OrderListFilterCategory, List<String>>) {
 
         val dateRangeFilters = orderListFilters[OrderListFilterCategory.DATE_RANGE]
-            ?.map { OrderFilterDateRangeUiModel.fromValue(it) }
+            ?.map { DateRange.fromValue(it) }
             ?.first()
             ?.toAfterIso8061DateString(dateUtils)
 

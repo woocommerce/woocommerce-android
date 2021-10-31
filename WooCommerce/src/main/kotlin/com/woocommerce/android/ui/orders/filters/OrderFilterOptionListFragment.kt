@@ -10,7 +10,7 @@ import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterOptionAdapter
-import com.woocommerce.android.ui.orders.filters.model.OrderListFilterOptionUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
@@ -70,7 +70,7 @@ class OrderFilterOptionListFragment :
         }
     }
 
-    private fun showOrderFilterOptions(orderFilterOptions: List<OrderListFilterOptionUiModel>) {
+    private fun showOrderFilterOptions(orderFilterOptions: List<OrderFilterOptionUiModel>) {
         orderFilterOptionAdapter.submitList(orderFilterOptions)
     }
 }

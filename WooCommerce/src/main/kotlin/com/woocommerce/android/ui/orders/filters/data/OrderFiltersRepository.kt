@@ -9,13 +9,7 @@ class OrderFiltersRepository @Inject constructor() {
 
     fun getCachedFiltersSelection(): Map<OrderListFilterCategory, List<String>> = selectedOrderListFilters
 
-    fun updateSelectedFilters(updatedFilters: Map<OrderListFilterCategory, List<String>>) {
-        selectedOrderListFilters.clear()
-        selectedOrderListFilters = updatedFilters.toMutableMap()
-    }
-
-    enum class OrderListFilterCategory {
-        ORDER_STATUS,
-        DATE_RANGE
+    fun updateSelectedFilters(filterCategory: OrderListFilterCategory, selectedFilters: List<String>) {
+        selectedOrderListFilters[filterCategory] = selectedFilters
     }
 }

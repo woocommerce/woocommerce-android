@@ -5,10 +5,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptions
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory.ORDER_STATUS
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
-import com.woocommerce.android.ui.orders.filters.model.OrderListFilterOptionUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -114,7 +115,7 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
     private fun allFilterOptionsAreUnselected() = viewModel.orderFilterCategories.value
         ?.map {
             it.orderFilterOptions.any { filterOption ->
-                filterOption.isSelected && filterOption.key != OrderListFilterOptionUiModel.DEFAULT_ALL_KEY
+                filterOption.isSelected && filterOption.key != OrderFilterOptionUiModel.DEFAULT_ALL_KEY
             }
         }?.all { true } ?: false
 
@@ -122,7 +123,7 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
         viewModel.onFilterCategorySelected(anOrderStatusFilterCategory)
     }
 
-    private fun givenAFilterOptionHasBeenSelected(selectedFilterOption: OrderListFilterOptionUiModel) {
+    private fun givenAFilterOptionHasBeenSelected(selectedFilterOption: OrderFilterOptionUiModel) {
         viewModel.onFilterOptionSelected(selectedFilterOption)
     }
 
@@ -160,14 +161,14 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
             CoreOrderStatus.PENDING.value,
         )
         const val ANY_ORDER_STATUS_KEY = "OrderStatusOptionKey"
-        val AN_ORDER_STATUS_FILTER_OPTION = OrderListFilterOptionUiModel(
+        val AN_ORDER_STATUS_FILTER_OPTION = OrderFilterOptionUiModel(
             key = ANY_ORDER_STATUS_KEY,
             displayName = "OrderStatus",
             isSelected = false
         )
         val A_LIST_OF_ORDER_STATUS_FILTER_OPTIONS = listOf(AN_ORDER_STATUS_FILTER_OPTION)
         val AN_ORDER_STATUS_FILTER_CATEGORY = OrderFilterCategoryUiModel(
-            categoryKey = ORDER_STATUS,
+            categoryKey = OrderListFilterCategory.ORDER_STATUS,
             displayName = "",
             displayValue = "",
             orderFilterOptions = A_LIST_OF_ORDER_STATUS_FILTER_OPTIONS

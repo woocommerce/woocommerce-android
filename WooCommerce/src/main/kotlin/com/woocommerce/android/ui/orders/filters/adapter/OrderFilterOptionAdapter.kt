@@ -7,11 +7,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.OrderFilterOptionItemBinding
-import com.woocommerce.android.ui.orders.filters.model.OrderListFilterOptionUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 
 class OrderFilterOptionAdapter(
-    private val onFilterOptionClicked: (OrderListFilterOptionUiModel) -> Unit
-) : ListAdapter<OrderListFilterOptionUiModel, OrderFilterOptionAdapter.OrderFilterOptionViewHolder>(
+    private val onFilterOptionClicked: (OrderFilterOptionUiModel) -> Unit
+) : ListAdapter<OrderFilterOptionUiModel, OrderFilterOptionAdapter.OrderFilterOptionViewHolder>(
     OrderFilterOptionDiffCallBack
 ) {
     init {
@@ -39,21 +39,21 @@ class OrderFilterOptionAdapter(
 
     class OrderFilterOptionViewHolder(val viewBinding: OrderFilterOptionItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(orderFilterOption: OrderListFilterOptionUiModel) {
+        fun bind(orderFilterOption: OrderFilterOptionUiModel) {
             viewBinding.filterOptionItemName.text = orderFilterOption.displayName
             viewBinding.filterOptionItemTick.isVisible = orderFilterOption.isSelected
         }
     }
 
-    object OrderFilterOptionDiffCallBack : DiffUtil.ItemCallback<OrderListFilterOptionUiModel>() {
+    object OrderFilterOptionDiffCallBack : DiffUtil.ItemCallback<OrderFilterOptionUiModel>() {
         override fun areItemsTheSame(
-            oldUiItemCategoryFilter: OrderListFilterOptionUiModel,
-            newUiItemCategoryFilter: OrderListFilterOptionUiModel
+            oldUiItemCategoryFilter: OrderFilterOptionUiModel,
+            newUiItemCategoryFilter: OrderFilterOptionUiModel
         ): Boolean = oldUiItemCategoryFilter == newUiItemCategoryFilter
 
         override fun areContentsTheSame(
-            oldUiItemCategoryFilter: OrderListFilterOptionUiModel,
-            newUiItemCategoryFilter: OrderListFilterOptionUiModel
+            oldUiItemCategoryFilter: OrderFilterOptionUiModel,
+            newUiItemCategoryFilter: OrderFilterOptionUiModel
         ): Boolean = oldUiItemCategoryFilter == newUiItemCategoryFilter
     }
 }
