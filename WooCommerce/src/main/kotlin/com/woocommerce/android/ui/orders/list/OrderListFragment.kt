@@ -20,13 +20,18 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
@@ -42,7 +47,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
@@ -116,6 +121,9 @@ class OrderListFragment :
     private val emptyView
         get() = binding.orderListView.emptyView
 
+    private val feedbackState
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -161,6 +169,11 @@ class OrderListFragment :
                 AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
                 refreshOrders()
             }
+        }
+
+        // TODO hide when site isn't IPP eligible
+        if (FeatureFlag.QUICK_ORDER.isEnabled()) {
+            displayQuickOrderWIPCard(true)
         }
 
         initializeViewModel()
@@ -758,5 +771,49 @@ class OrderListFragment :
     private fun setupOrderFilters() {
         binding.orderFiltersCard.isVisible = FeatureFlag.ORDER_FILTERS.isEnabled()
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
+    }
+
+    private fun displayQuickOrderWIPCard(show: Boolean) {
+        if (show && feedbackState != FeatureFeedbackSettings.FeedbackState.DISMISSED) {
+            binding.quickOrderWIPcard.isVisible = true
+
+            binding.quickOrderWIPcard.initView(
+                getString(R.string.orderlist_quickorder_wip_title),
+                getString(R.string.orderlist_quickorder_wip_message),
+                onGiveFeedbackClick = { onGiveFeedbackClicked() },
+                onDismissClick = { onDismissWIPCardClicked() }
+            )
+        } else binding.quickOrderWIPcard.isVisible = false
+    }
+
+    private fun onGiveFeedbackClicked() {
+        AnalyticsTracker.track(
+            Stat.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_QUICK_ORDER_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
+        )
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.QUICK_ORDER)
+            .apply { findNavController().navigateSafely(this) }
+    }
+
+    private fun onDismissWIPCardClicked() {
+        AnalyticsTracker.track(
+            Stat.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_QUICK_ORDER_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
+        displayQuickOrderWIPCard(false)
+    }
+
+    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
+        FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.QUICK_ORDER.name, state)
+            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 }
