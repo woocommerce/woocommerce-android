@@ -9,7 +9,9 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -31,6 +33,7 @@ import javax.inject.Inject
 class OrderEditingViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
+    private val orderDetailRepository: OrderDetailRepository,
     private val orderEditingRepository: OrderEditingRepository,
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
@@ -42,22 +45,18 @@ class OrderEditingViewModel @Inject constructor(
     private val orderIdentifier: String
         get() = navArgs.orderId
 
-    internal lateinit var order: Order
+    lateinit var order: Order
 
     fun start() {
-        order = orderEditingRepository.getOrder(orderIdentifier)
-    }
-
-    private fun resetViewState() {
-        viewState = viewState.copy(
-            orderEdited = false,
-            orderEditingFailed = false
-        )
+        launch {
+            orderDetailRepository.getOrder(orderIdentifier)?.let {
+                order = it
+            } ?: WooLog.w(WooLog.T.ORDERS, "Order ${navArgs.orderId} not found in the database.")
+        }
     }
 
     private fun checkConnectionAndResetState(): Boolean {
         return if (networkStatus.isConnected()) {
-            resetViewState()
             true
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
