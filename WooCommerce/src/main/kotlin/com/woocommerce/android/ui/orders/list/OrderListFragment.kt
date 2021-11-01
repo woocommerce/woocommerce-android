@@ -172,7 +172,7 @@ class OrderListFragment :
             }
         }
 
-        // TODO hide when site isn't IPP eligible
+        // TODO nbradbury hide when site isn't IPP eligible
         if (FeatureFlag.QUICK_ORDER.isEnabled()) {
             displayQuickOrderWIPCard(true)
         }
