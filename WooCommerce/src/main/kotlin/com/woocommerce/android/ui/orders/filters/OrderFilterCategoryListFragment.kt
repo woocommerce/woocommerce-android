@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class OrderFilterCategoryListFragment :
     BaseFragment(R.layout.fragment_order_filter_list),
     BackPressListener {
-    private val viewModel: OrderFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_filters)
+    private val viewModel: OrderFilterListViewModel by viewModels()
 
     lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter
 
@@ -82,9 +82,9 @@ class OrderFilterCategoryListFragment :
         }
     }
 
-    private fun navigateToFilterOptions() {
+    private fun navigateToFilterOptions(category: OrderFilterCategoryUiModel) {
         val action = OrderFilterCategoryListFragmentDirections
-            .actionOrderFilterListFragmentToOrderFilterOptionListFragment()
+            .actionOrderFilterListFragmentToOrderFilterOptionListFragment(category)
         findNavController().navigateSafely(action)
     }
 
@@ -94,7 +94,7 @@ class OrderFilterCategoryListFragment :
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowOrderStatusFilterOptions -> navigateToFilterOptions()
+                is ShowOrderStatusFilterOptions -> navigateToFilterOptions(event.category)
                 is ShowDialog -> event.showDialog()
                 is ExitWithResult<*> -> navigateBackWithResult(
                     OrderListFragment.ORDER_FILTER_RESULT_KEY,

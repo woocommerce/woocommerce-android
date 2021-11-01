@@ -11,19 +11,20 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiMode
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.clearAllFilterSelections
 import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
-import com.woocommerce.android.ui.products.ProductFilterListFragmentArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+@HiltViewModel
 class OrderFilterOptionListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val orderFilterRepository: OrderFiltersRepository
 ) : ScopedViewModel(savedState) {
-    private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
+    private val arguments: OrderFilterOptionListFragmentArgs by savedState.navArgs()
 
     private val _orderFilterOptionScreenTitle = MutableLiveData<String>()
     val orderFilterOptionScreenTitle: LiveData<String> = _orderFilterOptionScreenTitle
@@ -31,20 +32,17 @@ class OrderFilterOptionListViewModel @Inject constructor(
     private val _orderFilterOptions = MutableLiveData<List<OrderFilterOptionUiModel>>()
     val orderFilterOptions: LiveData<List<OrderFilterOptionUiModel>> = _orderFilterOptions
 
-    private lateinit var selectedFilterCategory: OrderFilterCategoryUiModel
+    private val selectedFilterCategory: OrderFilterCategoryUiModel = arguments.filterCategory
 
     init {
-
+        _orderFilterOptions.value = selectedFilterCategory.orderFilterOptions
+        _orderFilterOptionScreenTitle.value = getOrderFilterOptionsTitle(selectedFilterCategory)
     }
 
     fun onFilterOptionSelected(selectedOrderFilterOption: OrderFilterOptionUiModel) {
         when (selectedFilterCategory.categoryKey) {
-            ORDER_STATUS -> updateOrderStatusSelectedFilters(
-                selectedOrderFilterOption
-            )
-            DATE_RANGE -> updateDateRangeFilters(
-                selectedOrderFilterOption
-            )
+            ORDER_STATUS -> updateOrderStatusSelectedFilters(selectedOrderFilterOption)
+            DATE_RANGE -> updateDateRangeFilters(selectedOrderFilterOption)
         }
     }
 
@@ -97,14 +95,6 @@ class OrderFilterOptionListViewModel @Inject constructor(
                 }
             }
     }
-
-//    private fun updateFilterOptionsForCategory(
-//        filterCategory: OrderFilterCategoryUiModel,
-//        updatedOptionFilter: List<OrderFilterOptionUiModel>
-//    ) = filterCategory.copy(
-//        displayValue = updatedOptionFilter.getDisplayValue(filterCategory.categoryKey, resourceProvider),
-//        orderFilterOptions = updatedOptionFilter
-//    )
 
     private fun getOrderFilterOptionsTitle(filterCategory: OrderFilterCategoryUiModel) =
         when (filterCategory.categoryKey) {

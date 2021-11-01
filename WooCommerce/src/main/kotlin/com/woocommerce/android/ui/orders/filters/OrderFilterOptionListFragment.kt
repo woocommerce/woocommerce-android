@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.orders.filters
 
 import android.os.Bundle
 import android.view.View
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -13,16 +13,17 @@ import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterOptionAdapte
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class OrderFilterOptionListFragment :
     BaseFragment(R.layout.fragment_order_filter_list) {
-    private val viewModel: OrderFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_filters)
+    private val viewModel: OrderFilterOptionListViewModel by viewModels()
 
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setHasOptionsMenu(true)
 
         val binding = FragmentOrderFilterListBinding.bind(view)
@@ -51,8 +52,8 @@ class OrderFilterOptionListFragment :
         }
     }
 
-    private fun setUpObservers(viewModel: OrderFilterListViewModel) {
-        viewModel.orderOptionsFilter.observe(viewLifecycleOwner) { filterOptions ->
+    private fun setUpObservers(viewModel: OrderFilterOptionListViewModel) {
+        viewModel.orderFilterOptions.observe(viewLifecycleOwner) { filterOptions ->
             showOrderFilterOptions(filterOptions)
         }
         viewModel.orderFilterOptionScreenTitle.observe(viewLifecycleOwner) { title ->

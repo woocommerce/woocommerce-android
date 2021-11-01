@@ -6,7 +6,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.parcelize.Parcelize
 
 sealed class OrderFilterListEvent : MultiLiveEvent.Event() {
-    object ShowOrderStatusFilterOptions : OrderFilterListEvent()
+    data class ShowOrderStatusFilterOptions(
+        val category: OrderFilterCategoryUiModel
+    ) : OrderFilterListEvent()
 }
 
 @Parcelize
