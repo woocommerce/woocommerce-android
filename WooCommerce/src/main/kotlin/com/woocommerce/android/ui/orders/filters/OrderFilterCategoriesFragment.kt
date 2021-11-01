@@ -11,13 +11,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -28,6 +29,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class OrderFilterCategoriesFragment :
     BaseFragment(R.layout.fragment_order_filter_list),
     BackPressListener {
+    companion object {
+        const val KEY_UPDATED_FILTER_OPTIONS = "key_updated_filter_options"
+    }
+
     private val viewModel: OrderFilterCategoriesViewModel by viewModels()
 
     lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter
@@ -44,6 +49,9 @@ class OrderFilterCategoriesFragment :
         setUpFiltersRecyclerView(binding)
         binding.filterListBtnShowOrders.setOnClickListener {
             viewModel.onShowOrdersClicked()
+        }
+        handleResult<OrderFilterCategoryUiModel>(KEY_UPDATED_FILTER_OPTIONS) {
+            viewModel.onFilterOptionsUpdated(it)
         }
     }
 
@@ -94,7 +102,7 @@ class OrderFilterCategoriesFragment :
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowOrderStatusFilterOptions -> navigateToFilterOptions(event.category)
+                is ShowFilterOptionsForCategory -> navigateToFilterOptions(event.category)
                 is ShowDialog -> event.showDialog()
                 is ExitWithResult<*> -> navigateBackWithResult(
                     OrderListFragment.ORDER_FILTER_RESULT_KEY,

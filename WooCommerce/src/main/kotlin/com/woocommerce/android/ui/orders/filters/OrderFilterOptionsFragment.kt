@@ -9,7 +9,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.filters.OrderFilterCategoriesFragment.Companion.KEY_UPDATED_FILTER_OPTIONS
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterOptionAdapter
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -17,7 +20,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OrderFilterOptionsFragment :
-    BaseFragment(R.layout.fragment_order_filter_list) {
+    BaseFragment(R.layout.fragment_order_filter_list),
+    BackPressListener {
     private val viewModel: OrderFilterOptionsViewModel by viewModels()
 
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
@@ -61,11 +65,17 @@ class OrderFilterOptionsFragment :
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(
-                    OrderListFragment.ORDER_FILTER_RESULT_KEY,
-                    event.data,
-                    R.id.orders
-                )
+                is MultiLiveEvent.Event.ExitWithResult<*> ->
+                    navigateBackWithResult(
+                        OrderListFragment.ORDER_FILTER_RESULT_KEY,
+                        event.data,
+                        R.id.orders
+                    )
+                is OrderFilterEvent.OnFilterOptionsSelectionUpdated ->
+                    navigateBackWithResult(
+                        KEY_UPDATED_FILTER_OPTIONS,
+                        event.category
+                    )
                 else -> event.isHandled = false
             }
         }
@@ -74,4 +84,7 @@ class OrderFilterOptionsFragment :
     private fun showOrderFilterOptions(orderFilterOptions: List<OrderFilterOptionUiModel>) {
         orderFilterOptionAdapter.submitList(orderFilterOptions)
     }
+
+    override fun onRequestAllowBackPress() = viewModel.onBackPressed()
+
 }

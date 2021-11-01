@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -54,7 +54,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     fun `When filter category is selected, then update order filter options`() {
         viewModel.onFilterCategorySelected(AN_ORDER_STATUS_FILTER_CATEGORY)
 
-        assertThat(viewModel.event.value).isEqualTo(ShowOrderStatusFilterOptions)
+        assertThat(viewModel.event.value).isEqualTo(ShowFilterOptionsForCategory)
         assertThat(viewModel.orderOptionsFilter.value).isEqualTo(A_LIST_OF_ORDER_STATUS_FILTER_OPTIONS)
     }
 

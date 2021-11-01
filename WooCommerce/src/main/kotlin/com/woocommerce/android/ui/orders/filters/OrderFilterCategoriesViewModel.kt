@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DA
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.addFilterOptionAll
 import com.woocommerce.android.ui.orders.filters.model.clearAllFilterSelections
@@ -49,11 +49,10 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     fun onFilterCategorySelected(filterCategory: OrderFilterCategoryUiModel) {
-        triggerEvent(ShowOrderStatusFilterOptions(filterCategory))
+        triggerEvent(ShowFilterOptionsForCategory(filterCategory))
     }
 
     fun onShowOrdersClicked() {
-
         triggerEvent(ExitWithResult(true))
     }
 
@@ -70,9 +69,32 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         _orderFilterCategoryViewState.value = getFilterCategoryViewState()
     }
 
+    fun onFilterOptionsUpdated(updatedCategory: OrderFilterCategoryUiModel) {
+        _orderFilterCategories.value = _orderFilterCategories.value
+            ?.map {
+                if (it.categoryKey == updatedCategory.categoryKey) {
+                    it.copy(
+                        orderFilterOptions = updatedCategory.orderFilterOptions,
+                        displayValue = updatedCategory.orderFilterOptions.getDisplayValue(
+                            updatedCategory.categoryKey,
+                            resourceProvider
+                        )
+                    )
+                } else it
+            }
+        _orderFilterCategoryViewState.value = getFilterCategoryViewState()
+    }
+
     private suspend fun buildFilterListUiModel(): List<OrderFilterCategoryUiModel> {
         val orderStatusFilterUiOptions = loadOrderStatusFilterOptions()
         val dateRangeFilterOptions = loadDateRangeFilterOptions()
+//
+//        savedState.get<OrderFilterCategoryUiModel>(KEY_UPDATED_FILTER_OPTIONS)?.let { updatedCategory ->
+//            when (updatedCategory.categoryKey) {
+//                ORDER_STATUS -> orderStatusFilterUiOptions = updatedCategory.orderFilterOptions
+//                DATE_RANGE -> dateRangeFilterOptions = updatedCategory.orderFilterOptions
+//            }
+//        }
 
         return listOf(
             OrderFilterCategoryUiModel(

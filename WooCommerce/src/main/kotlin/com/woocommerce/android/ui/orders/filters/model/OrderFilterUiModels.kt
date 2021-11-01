@@ -5,10 +5,14 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.parcelize.Parcelize
 
-sealed class OrderFilterListEvent : MultiLiveEvent.Event() {
-    data class ShowOrderStatusFilterOptions(
+sealed class OrderFilterEvent : MultiLiveEvent.Event() {
+    data class ShowFilterOptionsForCategory(
         val category: OrderFilterCategoryUiModel
-    ) : OrderFilterListEvent()
+    ) : OrderFilterEvent()
+
+    data class OnFilterOptionsSelectionUpdated(
+        val category: OrderFilterCategoryUiModel
+    ) : OrderFilterEvent()
 }
 
 @Parcelize

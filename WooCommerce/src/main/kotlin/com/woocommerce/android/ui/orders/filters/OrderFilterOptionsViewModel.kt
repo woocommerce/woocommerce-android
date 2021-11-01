@@ -8,10 +8,11 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.clearAllFilterSelections
 import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -44,6 +45,24 @@ class OrderFilterOptionsViewModel @Inject constructor(
             ORDER_STATUS -> updateOrderStatusSelectedFilters(selectedOrderFilterOption)
             DATE_RANGE -> updateDateRangeFilters(selectedOrderFilterOption)
         }
+    }
+
+    fun onShowOrdersClicked() {
+        val newSelectedFilters = orderFilterOptions.value
+            ?.filter { it.isSelected }
+            ?.map { it.key } ?: emptyList()
+        val filtersChanged = newSelectedFilters !=
+            orderFilterRepository.getCachedFiltersSelection()[selectedFilterCategory.categoryKey]
+        orderFilterRepository.updateSelectedFilters(selectedFilterCategory.categoryKey, newSelectedFilters)
+        triggerEvent(ExitWithResult(filtersChanged))
+    }
+
+    fun onBackPressed(): Boolean {
+        val updatedCategory = selectedFilterCategory.copy(
+            orderFilterOptions = orderFilterOptions.value ?: emptyList()
+        )
+        triggerEvent(OnFilterOptionsSelectionUpdated(updatedCategory))
+        return false
     }
 
     private fun updateOrderStatusSelectedFilters(orderStatusClicked: OrderFilterOptionUiModel) {
@@ -103,14 +122,4 @@ class OrderFilterOptionsViewModel @Inject constructor(
             DATE_RANGE ->
                 resourceProvider.getString(R.string.orderfilters_filter_date_range_options_title)
         }
-
-    fun onShowOrdersClicked() {
-        val newSelectedFilters = orderFilterOptions.value
-            ?.filter { it.isSelected }
-            ?.map { it.key } ?: emptyList()
-//        val filtersChanged = newSelectedFilters !=
-//            orderFilterRepository.getCachedFiltersSelection()[selectedFilterCategory]
-        orderFilterRepository.updateSelectedFilters(selectedFilterCategory.categoryKey, newSelectedFilters)
-        triggerEvent(MultiLiveEvent.Event.ExitWithResult(true))
-    }
 }
