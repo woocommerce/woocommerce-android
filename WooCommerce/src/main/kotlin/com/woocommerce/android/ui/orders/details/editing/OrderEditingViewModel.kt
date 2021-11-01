@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details.editing
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -21,6 +22,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import javax.inject.Inject
 
 @HiltViewModel
@@ -64,7 +68,7 @@ class OrderEditingViewModel @Inject constructor(
     fun updateCustomerOrderNote(updatedNote: String) = runWhenUpdateIsPossible {
         orderEditingRepository.updateCustomerOrderNote(
             order.localId, updatedNote
-        ).collect()
+        ).collectOrderUpdate()
     }
 
     fun updateShippingAddress(updatedShippingAddress: Address) = runWhenUpdateIsPossible {
@@ -75,7 +79,7 @@ class OrderEditingViewModel @Inject constructor(
                 order.localId,
                 updatedShippingAddress.toShippingAddressModel()
             )
-        }.collect()
+        }.collectOrderUpdate()
     }
 
     fun updateBillingAddress(updatedBillingAddress: Address) = runWhenUpdateIsPossible {
@@ -86,7 +90,7 @@ class OrderEditingViewModel @Inject constructor(
                 order.localId,
                 updatedBillingAddress.toBillingAddressModel()
             )
-        }.collect()
+        }.collectOrderUpdate()
     }
 
     private suspend fun sendReplicateShippingAndBillingAddressesWith(orderAddress: Address) =
@@ -104,15 +108,15 @@ class OrderEditingViewModel @Inject constructor(
         viewState = viewState.copy(replicateBothAddressesToggleActivated = enabled)
     }
 
-    private suspend fun Flow<WCOrderStore.UpdateOrderResult>.collect() {
+    private suspend fun Flow<UpdateOrderResult>.collectOrderUpdate() {
         collect { result ->
             when (result) {
-                is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {
+                is OptimisticUpdateResult -> {
                     withContext(Dispatchers.Main) {
-                        viewState = viewState.copy(orderEdited = true)
+                        triggerEvent(OrderEdited)
                     }
                 }
-                is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
+                is RemoteUpdateResult -> {
                     val stat = if (result.event.isError) {
                         AnalyticsTracker.Stat.ORDER_DETAIL_EDIT_FLOW_FAILED
                     } else {
@@ -126,7 +130,15 @@ class OrderEditingViewModel @Inject constructor(
                     )
                     if (result.event.isError) {
                         withContext(Dispatchers.Main) {
-                            viewState = viewState.copy(orderEditingFailed = true)
+                            triggerEvent(
+                                OrderEditFailed(
+                                    if (result.event.error.type == WCOrderStore.OrderErrorType.EMPTY_BILLING_EMAIL) {
+                                        R.string.order_error_update_empty_mail
+                                    } else {
+                                        R.string.order_error_update_general
+                                    }
+                                )
+                            )
                         }
                     }
                 }
@@ -142,8 +154,9 @@ class OrderEditingViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val orderEdited: Boolean? = null,
-        val orderEditingFailed: Boolean? = null,
         val replicateBothAddressesToggleActivated: Boolean? = null
     ) : Parcelable
+
+    object OrderEdited : MultiLiveEvent.Event()
+    data class OrderEditFailed(@StringRes val message: Int) : MultiLiveEvent.Event()
 }
