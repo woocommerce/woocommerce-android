@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-12 13:54:04+0000
+Translation-Revision-Date: 2021-10-26 13:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">לצפייה בהטבות</string>
+    <string name="jetpack_benefits_bottom_banner_title">אפשר ליהנות מהחוויה המלאה עם Jetpack</string>
+    <string name="product_description_hint_with_title">נשמח לשמוע פרטים נוספים על %s…</string>
+    <string name="product_description_hint_no_title">לתאר את המוצר שלך ללקוחות עתידיים…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">המספר הסידורי של הקורא הועתק ללקוח</string>
+    <string name="card_reader_manual_card_reader">מדריך לקורא הכרטיסים</string>
+    <string name="order_detail_add_billing_address">להוסיף כתובת לחיוב</string>
+    <string name="order_detail_add_shipping_address">להוסיף כתובת למשלוח</string>
+    <string name="order_detail_add_customer_note">להוסיף הערת לקוח</string>
+    <string name="order_detail_billing_address_section">כתובת לחיוב</string>
+    <string name="order_detail_shipping_address_section">כתובת משלוח</string>
+    <string name="order_detail_address_section">כתובת</string>
+    <string name="order_detail_edit_address_country">ארץ</string>
+    <string name="order_detail_edit_address_state">מדינה / מחוז</string>
+    <string name="order_detail_edit_address_zip">מיקוד</string>
+    <string name="order_detail_edit_address_city">עיר</string>
+    <string name="order_detail_edit_address_line2">שורת כתובת 2</string>
+    <string name="order_detail_edit_address_line1">שורת כתובת 1</string>
+    <string name="order_detail_edit_address_company">חברה</string>
+    <string name="order_detail_edit_address_details_phone">טלפון</string>
+    <string name="order_detail_edit_address_details_email">אימייל</string>
+    <string name="order_detail_edit_address_details_last_name">שם משפחה</string>
+    <string name="order_detail_edit_address_details_first_name">שם פרטי</string>
+    <string name="orderdetail_customer_note_hint">לערוך את הפתק בהזמנת הלקוח</string>
     <string name="support_system_status_report_fetch_error">שגיאה בהבאת SSR. יש לבדוק את המקטע \'WooCommerce\' -&gt; \'סטטוס\' באזור wp-admin.</string>
     <string name="support_system_status_report_share_error">אין אפשרות לשתף את \'דוח מצב המערכת\'.</string>
     <string name="support_system_status_report_error_copy_to_clipboard">שגיאה בעת העתקה של SSR ללוח</string>
@@ -831,7 +855,6 @@ Language: he_IL
     <string name="product_description_empty">יש לתאר את המוצר שלך</string>
     <string name="product_description">תיאור</string>
     <string name="product_edit_description">לערוך את התיאור</string>
-    <string name="product_description_hint">להתחיל לכתוב…</string>
     <string name="discard_message">האם למחוק את השינויים שביצעת?</string>
     <string name="update">לעדכן</string>
     <string name="done">בוצע</string>
@@ -968,7 +991,7 @@ Language: he_IL
     <string name="login_refresh_app_progress">מנסה לאתר את WooCommerce…</string>
     <string name="login_refresh_app">יש לרענן את האפליקציה</string>
     <string name="login_not_woo_store">נראה שהאתר %1$s אינו אתר של WooCommerce. יש להתקין את התוסף של Woocommerce באתר שלך ולאחר מכן %2$s</string>
-    <string name="orderdetail_empty_shipping_address">לא צוינה כתובת.</string>
+    <string name="orderdetail_empty_address">לא צוינה כתובת</string>
     <string name="login_need_help_finding_connected_email">נדרשת לך עזרה במציאת האימייל שבעזרתו התחברת?</string>
     <string name="enter_wordpress_site">האתר בכתובת זו אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>
     <string name="enter_email_for_site">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
