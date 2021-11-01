@@ -775,24 +775,26 @@ class OrderListFragment :
     }
 
     private fun displayQuickOrderWIPCard(show: Boolean) {
-        if (show && feedbackState != FeatureFeedbackSettings.FeedbackState.DISMISSED) {
-            binding.quickOrderWIPcard.isVisible = true
+        if (!show || feedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED) {
+            binding.quickOrderWIPcard.isVisible = false
+            return
+        }
 
-            val isEnabled = AppPrefs.isQuickOrderEnabled
-            @StringRes val messageId = if (isEnabled) {
-                R.string.orderlist_quickorder_wip_message_enabled
-            } else {
-                R.string.orderlist_quickorder_wip_message_disabled
-            }
+        val isEnabled = AppPrefs.isQuickOrderEnabled
+        @StringRes val messageId = if (isEnabled) {
+            R.string.orderlist_quickorder_wip_message_enabled
+        } else {
+            R.string.orderlist_quickorder_wip_message_disabled
+        }
 
-            binding.quickOrderWIPcard.initView(
-                getString(R.string.orderlist_quickorder_wip_title),
-                getString(messageId),
-                onGiveFeedbackClick = { onGiveFeedbackClicked() },
-                onDismissClick = { onDismissWIPCardClicked() },
-                showFeedbackButton = isEnabled
-            )
-        } else binding.quickOrderWIPcard.isVisible = false
+        binding.quickOrderWIPcard.isVisible = true
+        binding.quickOrderWIPcard.initView(
+            getString(R.string.orderlist_quickorder_wip_title),
+            getString(messageId),
+            onGiveFeedbackClick = { onGiveFeedbackClicked() },
+            onDismissClick = { onDismissWIPCardClicked() },
+            showFeedbackButton = isEnabled
+        )
     }
 
     private fun onGiveFeedbackClicked() {
