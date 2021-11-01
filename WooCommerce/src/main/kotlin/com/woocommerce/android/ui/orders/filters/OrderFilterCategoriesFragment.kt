@@ -25,10 +25,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderFilterCategoryListFragment :
+class OrderFilterCategoriesFragment :
     BaseFragment(R.layout.fragment_order_filter_list),
     BackPressListener {
-    private val viewModel: OrderFilterListViewModel by viewModels()
+    private val viewModel: OrderFilterCategoriesViewModel by viewModels()
 
     lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter
 
@@ -83,12 +83,12 @@ class OrderFilterCategoryListFragment :
     }
 
     private fun navigateToFilterOptions(category: OrderFilterCategoryUiModel) {
-        val action = OrderFilterCategoryListFragmentDirections
+        val action = OrderFilterCategoriesFragmentDirections
             .actionOrderFilterListFragmentToOrderFilterOptionListFragment(category)
         findNavController().navigateSafely(action)
     }
 
-    private fun setUpObservers(viewModel: OrderFilterListViewModel) {
+    private fun setUpObservers(viewModel: OrderFilterCategoriesViewModel) {
         viewModel.orderFilterCategories.observe(viewLifecycleOwner) {
             showOrderFilters(it)
         }

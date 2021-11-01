@@ -16,9 +16,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderFilterOptionListFragment :
+class OrderFilterOptionsFragment :
     BaseFragment(R.layout.fragment_order_filter_list) {
-    private val viewModel: OrderFilterOptionListViewModel by viewModels()
+    private val viewModel: OrderFilterOptionsViewModel by viewModels()
 
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
 
@@ -52,7 +52,7 @@ class OrderFilterOptionListFragment :
         }
     }
 
-    private fun setUpObservers(viewModel: OrderFilterOptionListViewModel) {
+    private fun setUpObservers(viewModel: OrderFilterOptionsViewModel) {
         viewModel.orderFilterOptions.observe(viewLifecycleOwner) { filterOptions ->
             showOrderFilterOptions(filterOptions)
         }

@@ -19,12 +19,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderFilterOptionListViewModel @Inject constructor(
+class OrderFilterOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val orderFilterRepository: OrderFiltersRepository
 ) : ScopedViewModel(savedState) {
-    private val arguments: OrderFilterOptionListFragmentArgs by savedState.navArgs()
+    private val arguments: OrderFilterOptionsFragmentArgs by savedState.navArgs()
 
     private val _orderFilterOptionScreenTitle = MutableLiveData<String>()
     val orderFilterOptionScreenTitle: LiveData<String> = _orderFilterOptionScreenTitle

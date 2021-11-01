@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderFilterListViewModel @Inject constructor(
+class OrderFilterCategoriesViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions,

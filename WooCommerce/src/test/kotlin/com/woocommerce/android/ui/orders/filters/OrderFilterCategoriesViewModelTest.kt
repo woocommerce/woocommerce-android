@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptions
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
@@ -29,13 +28,13 @@ import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-class OrderFilterListViewModelTest : BaseUnitTest() {
+class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val orderListRepository: OrderListRepository = mock()
     private val orderFilterRepository: OrderFiltersRepository = mock()
 
-    private lateinit var viewModel: OrderFilterListViewModel
+    private lateinit var viewModel: OrderFilterCategoriesViewModel
 
     @Before
     fun setup() = testBlocking {
@@ -128,7 +127,7 @@ class OrderFilterListViewModelTest : BaseUnitTest() {
     }
 
     private fun initViewModel() {
-        viewModel = OrderFilterListViewModel(
+        viewModel = OrderFilterCategoriesViewModel(
             savedStateHandle,
             resourceProvider,
             orderListRepository,
