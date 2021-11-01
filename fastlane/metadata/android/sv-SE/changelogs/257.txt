@@ -1,0 +1,2 @@
+7.8:
+Den här versionen innehåller en handfull mindre förbättringar av flertalet olika funktioner, baserade på feedback från dig och andra handlare. Vi uppskattar det!

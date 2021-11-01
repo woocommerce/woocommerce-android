@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_order_filters"
+    app:startDestination="@id/orderFilterCategoryListFragment">
+    <fragment
+        android:id="@+id/orderFilterCategoryListFragment"
+        android:name="com.woocommerce.android.ui.orders.filters.ui.OrderFilterCategoryListFragment"
+        tools:layout="@layout/fragment_order_filter_list">
+        <action
+            android:id="@+id/action_orderFilterListFragment_to_orderFilterOptionListFragment"
+            app:destination="@id/orderFilterOptionsListFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderFilterOptionsListFragment"
+        android:name="com.woocommerce.android.ui.orders.filters.ui.OrderFilterOptionListFragment"
+        tools:layout="@layout/fragment_order_filter_list" />
+</navigation>

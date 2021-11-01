@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-12 11:54:03+0000
+Translation-Revision-Date: 2021-10-26 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">了解优势</string>
+    <string name="jetpack_benefits_bottom_banner_title">通过 Jetpack 获取完整体验 </string>
+    <string name="product_description_hint_with_title">告知我们更多关于 %s 的信息…</string>
+    <string name="product_description_hint_no_title">向您的潜在客户描述您的产品…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">将读卡器的序列号复制到剪贴板</string>
+    <string name="card_reader_manual_card_reader">读卡器手册</string>
+    <string name="order_detail_add_billing_address">添加账单地址</string>
+    <string name="order_detail_add_shipping_address">添加配送地址</string>
+    <string name="order_detail_add_customer_note">添加客户备注</string>
+    <string name="order_detail_billing_address_section">账单地址</string>
+    <string name="order_detail_shipping_address_section">配送地址</string>
+    <string name="order_detail_address_section">地址</string>
+    <string name="order_detail_edit_address_country">国家/地区</string>
+    <string name="order_detail_edit_address_state">地区/县</string>
+    <string name="order_detail_edit_address_zip">邮政编码</string>
+    <string name="order_detail_edit_address_city">都市</string>
+    <string name="order_detail_edit_address_line2">地址 2</string>
+    <string name="order_detail_edit_address_line1">地址 1</string>
+    <string name="order_detail_edit_address_company">公司</string>
+    <string name="order_detail_edit_address_details_phone">电话</string>
+    <string name="order_detail_edit_address_details_email">电子邮件</string>
+    <string name="order_detail_edit_address_details_last_name">姓氏</string>
+    <string name="order_detail_edit_address_details_first_name">名字</string>
+    <string name="orderdetail_customer_note_hint">编辑客户订单备注</string>
     <string name="support_system_status_report_fetch_error">获取 SSR 时出错。 请检查 wp-admin 中的“WooCommerce -&gt; 状态”。</string>
     <string name="support_system_status_report_share_error">无法共享系统状态报告</string>
     <string name="support_system_status_report_error_copy_to_clipboard">将 SSR 复制到剪贴板时出错</string>
@@ -831,7 +855,6 @@ Language: zh_CN
     <string name="product_description_empty">描述您的产品</string>
     <string name="product_description">描述</string>
     <string name="product_edit_description">编辑描述</string>
-    <string name="product_description_hint">开始撰写…</string>
     <string name="discard_message">要放弃您所做的更改吗？</string>
     <string name="update">更新</string>
     <string name="done">完成</string>
@@ -968,7 +991,7 @@ Language: zh_CN
     <string name="login_refresh_app_progress">正在检查 WooCommerce…</string>
     <string name="login_refresh_app">刷新应用程序</string>
     <string name="login_not_woo_store">%1$s似乎不是 WooCommerce 站点。请在您的站点上安装 WooCommerce 插件，然后 %2$s</string>
-    <string name="orderdetail_empty_shipping_address">未指定地址。</string>
+    <string name="orderdetail_empty_address">未指定地址</string>
     <string name="login_need_help_finding_connected_email">需要帮助查找您连接的电子邮件？</string>
     <string name="enter_wordpress_site">此地址下的网站不是 WordPress 站点。站点必须安装 WordPress，我们才能建立连接。</string>
     <string name="enter_email_for_site">登录 WordPress.com 来连接 &lt;b&gt;%1$s&lt;/b&gt;</string>

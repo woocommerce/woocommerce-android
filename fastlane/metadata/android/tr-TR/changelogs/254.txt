@@ -1,2 +1,0 @@
-7.7:
-WooCommerce Payments'ı ABD'de kullanan satıcılar, müşterilerinin teslimatta veya siparişleri alırken şahsen kredi kartıyla yapacakları ödemeleri kabul edebilirler. Ayrıca bu sürümde, sizden gelen geri bildirimlere göre gerçekleştirilmiş birkaç küçük iyileştirme de yer almaktadır. Herkes için daha iyi bir uygulama oluşturmamıza yardımcı olduğunuz için teşekkür ederiz.

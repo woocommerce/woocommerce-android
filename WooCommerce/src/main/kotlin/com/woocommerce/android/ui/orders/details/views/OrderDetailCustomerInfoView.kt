@@ -19,7 +19,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 
@@ -36,10 +35,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         isReadOnly: Boolean
     ) {
         showCustomerNote(order, isReadOnly)
-        // customer note editing is available but address editing is still behind a feature flag
-        val isReadOnlyOrDisabled = isReadOnly || !FeatureFlag.ORDER_EDITING.isEnabled()
-        showShippingAddress(order, isVirtualOrder, isReadOnlyOrDisabled)
-        showBillingInfo(order, isReadOnlyOrDisabled)
+        showShippingAddress(order, isVirtualOrder, isReadOnly)
+        showBillingInfo(order, isReadOnly)
     }
 
     private fun showBillingInfo(order: Order, isReadOnly: Boolean) {

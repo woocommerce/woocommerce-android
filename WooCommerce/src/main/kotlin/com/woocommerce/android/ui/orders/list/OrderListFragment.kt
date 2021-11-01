@@ -11,8 +11,10 @@ import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
@@ -29,8 +31,10 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -169,6 +173,8 @@ class OrderListFragment :
         } else {
             loadListForActiveTab()
         }
+
+        setupOrderFilters()
     }
 
     private fun initializeTabs() {
@@ -349,6 +355,7 @@ class OrderListFragment :
                         uiMessageResolver.showSnack(event.messageRes)
                         binding.orderRefreshLayout.isRefreshing = false
                     }
+                    is ShowOrderFilters -> showOrderFilters()
                     else -> event.isHandled = false
                 }
             }
@@ -383,6 +390,10 @@ class OrderListFragment :
                 } ?: hideEmptyView()
             }
         )
+    }
+
+    private fun showOrderFilters() {
+        findNavController().navigate(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
     private fun hideEmptyView() {
@@ -742,5 +753,10 @@ class OrderListFragment :
 
     override fun shouldExpandToolbar(): Boolean {
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
+    }
+
+    private fun setupOrderFilters() {
+        binding.orderFiltersCard.isVisible = FeatureFlag.ORDER_FILTERS.isEnabled()
+        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
     }
 }

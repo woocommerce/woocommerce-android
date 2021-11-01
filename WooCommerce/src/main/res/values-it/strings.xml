@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-12 09:54:49+0000
+Translation-Revision-Date: 2021-10-26 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Scopri i vantaggi</string>
+    <string name="jetpack_benefits_bottom_banner_title">Vivi l\'esperienza completa con Jetpack</string>
+    <string name="product_description_hint_with_title">Raccontaci di più su %s…</string>
+    <string name="product_description_hint_no_title">Descrivi il prodotto ai futuri clienti…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Numero di serie del lettore copiato negli appunti</string>
+    <string name="card_reader_manual_card_reader">Lettore di schede manuale</string>
+    <string name="order_detail_add_billing_address">Aggiungi l\'indirizzo di fatturazione</string>
+    <string name="order_detail_add_shipping_address">Aggiungi l\'indirizzo di spedizione</string>
+    <string name="order_detail_add_customer_note">Aggiungi la nota del cliente</string>
+    <string name="order_detail_billing_address_section">Indirizzo di fatturazione</string>
+    <string name="order_detail_shipping_address_section">Indirizzo di spedizione</string>
+    <string name="order_detail_address_section">Indirizzo</string>
+    <string name="order_detail_edit_address_country">Paese</string>
+    <string name="order_detail_edit_address_state">Stato/Contea</string>
+    <string name="order_detail_edit_address_zip">Codice postale</string>
+    <string name="order_detail_edit_address_city">Città</string>
+    <string name="order_detail_edit_address_line2">Indirizzo 2</string>
+    <string name="order_detail_edit_address_line1">Indirizzo 1</string>
+    <string name="order_detail_edit_address_company">Società</string>
+    <string name="order_detail_edit_address_details_phone">Telefono</string>
+    <string name="order_detail_edit_address_details_email">E-mail</string>
+    <string name="order_detail_edit_address_details_last_name">Cognome</string>
+    <string name="order_detail_edit_address_details_first_name">Nome</string>
+    <string name="orderdetail_customer_note_hint">Modifica una nota dell\'ordine del cliente</string>
     <string name="support_system_status_report_fetch_error">Errore durante il recupero di SSR. Verifica in WooCommerce -&gt; Stato in wp-admin.</string>
     <string name="support_system_status_report_share_error">Impossibile condividere il rapporto dello stato del sistema</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Errore durante la copia di SSR negli appunti</string>
@@ -831,7 +855,6 @@ Language: it
     <string name="product_description_empty">Descrivi il tuo prodotto</string>
     <string name="product_description">Descrizione</string>
     <string name="product_edit_description">Modifica descrizione</string>
-    <string name="product_description_hint">Inizia a scrivere…</string>
     <string name="discard_message">Desideri eliminare queste modifiche?</string>
     <string name="update">Aggiorna</string>
     <string name="done">Fatto</string>
@@ -968,7 +991,7 @@ Language: it
     <string name="login_refresh_app_progress">Verifica per WooCommerce…</string>
     <string name="login_refresh_app">aggiorna l\'app</string>
     <string name="login_not_woo_store">%1$s non è un sito WooCommerce. Installa il plugin WooCommerce sul sito, quindi %2$s.</string>
-    <string name="orderdetail_empty_shipping_address">Nessun indirizzo specificato</string>
+    <string name="orderdetail_empty_address">Nessun indirizzo specificato</string>
     <string name="login_need_help_finding_connected_email">Ti serve aiuto per trovare l\'e-mail con cui ti sei collegato?</string>
     <string name="enter_wordpress_site">Il sito web su questo indirizzo non è un sito WordPress. Per poterci collegare a esso, il sito deve avere WordPress installato.</string>
     <string name="enter_email_for_site">Accedi con WordPress.com per collegarti a &lt;b&gt;%1$s&lt;/b&gt;</string>
