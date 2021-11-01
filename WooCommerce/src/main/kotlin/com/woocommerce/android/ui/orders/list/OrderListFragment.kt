@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.widget.EditText
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.children
@@ -777,11 +778,19 @@ class OrderListFragment :
         if (show && feedbackState != FeatureFeedbackSettings.FeedbackState.DISMISSED) {
             binding.quickOrderWIPcard.isVisible = true
 
+            val isEnabled = AppPrefs.isQuickOrderEnabled
+            @StringRes val messageId = if (isEnabled) {
+                R.string.orderlist_quickorder_wip_message_enabled
+            } else {
+                R.string.orderlist_quickorder_wip_message_disabled
+            }
+
             binding.quickOrderWIPcard.initView(
                 getString(R.string.orderlist_quickorder_wip_title),
-                getString(R.string.orderlist_quickorder_wip_message),
+                getString(messageId),
                 onGiveFeedbackClick = { onGiveFeedbackClicked() },
-                onDismissClick = { onDismissWIPCardClicked() }
+                onDismissClick = { onDismissWIPCardClicked() },
+                showFeedbackButton = isEnabled
             )
         } else binding.quickOrderWIPcard.isVisible = false
     }
