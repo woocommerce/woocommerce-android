@@ -25,6 +25,10 @@ class OrderFilterOptionsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val orderFilterRepository: OrderFiltersRepository
 ) : ScopedViewModel(savedState) {
+    companion object {
+        private const val KEY_SELECTED_CATEGORY = "key_selected_category"
+    }
+
     private val arguments: OrderFilterOptionsFragmentArgs by savedState.navArgs()
 
     private val _orderFilterOptionScreenTitle = MutableLiveData<String>()
@@ -33,7 +37,8 @@ class OrderFilterOptionsViewModel @Inject constructor(
     private val _orderFilterOptions = MutableLiveData<List<OrderFilterOptionUiModel>>()
     val orderFilterOptions: LiveData<List<OrderFilterOptionUiModel>> = _orderFilterOptions
 
-    private val selectedFilterCategory: OrderFilterCategoryUiModel = arguments.filterCategory
+    private var selectedFilterCategory: OrderFilterCategoryUiModel =
+        savedState.get<OrderFilterCategoryUiModel>(KEY_SELECTED_CATEGORY) ?: arguments.filterCategory
 
     init {
         _orderFilterOptions.value = selectedFilterCategory.orderFilterOptions
@@ -89,7 +94,9 @@ class OrderFilterOptionsViewModel @Inject constructor(
             }
             updatedOptionList = updatedOptionList.markOptionAllIfNothingSelected()
             _orderFilterOptions.value = updatedOptionList
-
+            savedState[KEY_SELECTED_CATEGORY] = selectedFilterCategory.copy(
+                orderFilterOptions = updatedOptionList
+            )
         }
     }
 
@@ -99,9 +106,8 @@ class OrderFilterOptionsViewModel @Inject constructor(
     ) =
         when {
             filterOptionClicked.key == OrderFilterOptionUiModel.DEFAULT_ALL_KEY ||
-                selectedFilterCategory?.categoryKey == DATE_RANGE -> filterOptionClicked.copy(
-                isSelected = true
-            )
+                selectedFilterCategory?.categoryKey == DATE_RANGE ->
+                filterOptionClicked.copy(isSelected = true)
             else -> filterOptionClicked.copy(isSelected = !filterOptionClicked.isSelected)
         }
 

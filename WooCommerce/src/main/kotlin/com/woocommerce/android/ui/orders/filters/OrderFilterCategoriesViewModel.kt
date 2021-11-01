@@ -35,6 +35,11 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions,
     private val getDateRangeFilterOptions: GetDateRangeFilterOptions
 ) : ScopedViewModel(savedState) {
+    companion object {
+        const val KEY_SAVED_ORDER_STATUS_SELECTION = "key_current_order_status_selection"
+        const val KEY_SAVED_DATE_RANGE_SELECTION = "key_current_date_range_selection"
+    }
+
     private val _orderFilterCategories = MutableLiveData<List<OrderFilterCategoryUiModel>>()
     val orderFilterCategories: LiveData<List<OrderFilterCategoryUiModel>> = _orderFilterCategories
 
@@ -45,6 +50,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         launch {
             _orderFilterCategories.value = buildFilterListUiModel()
             _orderFilterCategoryViewState.value = getFilterCategoryViewState()
+            saveState()
         }
     }
 
@@ -70,31 +76,33 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     fun onFilterOptionsUpdated(updatedCategory: OrderFilterCategoryUiModel) {
-        _orderFilterCategories.value = _orderFilterCategories.value
-            ?.map {
+        _orderFilterCategories.value?.let { filterOptions ->
+            _orderFilterCategories.value = filterOptions.map {
                 if (it.categoryKey == updatedCategory.categoryKey) {
-                    it.copy(
-                        orderFilterOptions = updatedCategory.orderFilterOptions,
-                        displayValue = updatedCategory.orderFilterOptions.getDisplayValue(
-                            updatedCategory.categoryKey,
-                            resourceProvider
-                        )
-                    )
+                    updateFilterOptionsForCategory(it, updatedCategory)
                 } else it
             }
-        _orderFilterCategoryViewState.value = getFilterCategoryViewState()
+            _orderFilterCategoryViewState.value = getFilterCategoryViewState()
+            saveState()
+        }
     }
 
+    private fun updateFilterOptionsForCategory(old: OrderFilterCategoryUiModel, new: OrderFilterCategoryUiModel) =
+        old.copy(
+            orderFilterOptions = new.orderFilterOptions,
+            displayValue = new.orderFilterOptions.getDisplayValue(
+                new.categoryKey,
+                resourceProvider
+            )
+        )
+
     private suspend fun buildFilterListUiModel(): List<OrderFilterCategoryUiModel> {
-        val orderStatusFilterUiOptions = loadOrderStatusFilterOptions()
-        val dateRangeFilterOptions = loadDateRangeFilterOptions()
-//
-//        savedState.get<OrderFilterCategoryUiModel>(KEY_UPDATED_FILTER_OPTIONS)?.let { updatedCategory ->
-//            when (updatedCategory.categoryKey) {
-//                ORDER_STATUS -> orderStatusFilterUiOptions = updatedCategory.orderFilterOptions
-//                DATE_RANGE -> dateRangeFilterOptions = updatedCategory.orderFilterOptions
-//            }
-//        }
+        val orderStatusFilterUiOptions =
+            savedState.get<OrderFilterCategoryUiModel>(KEY_SAVED_ORDER_STATUS_SELECTION)?.orderFilterOptions
+                ?: loadOrderStatusFilterOptions()
+        val dateRangeFilterOptions =
+            savedState.get<OrderFilterCategoryUiModel>(KEY_SAVED_DATE_RANGE_SELECTION)?.orderFilterOptions
+                ?: loadDateRangeFilterOptions()
 
         return listOf(
             OrderFilterCategoryUiModel(
@@ -118,11 +126,10 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         )
     }
 
-    private fun loadDateRangeFilterOptions(): List<OrderFilterOptionUiModel> =
-        getDateRangeFilterOptions()
-            .map { it.toOrderFilterOptionUiModel(resourceProvider) }
-            .toMutableList()
-            .apply { addFilterOptionAll(resourceProvider) }
+    private fun loadDateRangeFilterOptions(): List<OrderFilterOptionUiModel> = getDateRangeFilterOptions()
+        .map { it.toOrderFilterOptionUiModel(resourceProvider) }
+        .toMutableList()
+        .apply { addFilterOptionAll(resourceProvider) }
 
     private fun getFilterCategoryViewState(): OrderFilterCategoryListViewState {
         val selectedFiltersCount = orderFilterCategories.value
@@ -140,8 +147,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadOrderStatusFilterOptions():
-        List<OrderFilterOptionUiModel> = getOrderStatusFilterOptions()
+    private suspend fun loadOrderStatusFilterOptions(): List<OrderFilterOptionUiModel> = getOrderStatusFilterOptions()
         .map { it.toOrderFilterOptionUiModel(resourceProvider) }
         .toMutableList()
         .apply { addFilterOptionAll(resourceProvider) }
@@ -179,11 +185,9 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         }
     }
 
-//    private fun updateFilterOptionsForCategory(
-//        filterCategory: OrderFilterCategoryUiModel,
-//        updatedOptionFilter: List<OrderFilterOptionUiModel>
-//    ) = filterCategory.copy(
-//        displayValue = updatedOptionFilter.getDisplayValue(filterCategory.categoryKey, resourceProvider),
-//        orderFilterOptions = updatedOptionFilter
-//    )
+    private fun saveState() {
+        savedState[KEY_SAVED_ORDER_STATUS_SELECTION] = _orderFilterCategories.value?.first()
+        savedState[KEY_SAVED_DATE_RANGE_SELECTION] = _orderFilterCategories.value?.last()
+    }
+
 }
