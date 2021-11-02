@@ -72,7 +72,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When show orders is clicked, then exit with result`() {
+    fun `When show orders is clicked, then trigger OnShowOrders event`() {
         givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER)
 
         viewModel.onShowOrdersClicked()
