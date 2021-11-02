@@ -838,7 +838,9 @@ class OrderListFragment :
     }
 
     private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
-        FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.QUICK_ORDER.name, state)
-            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
+        FeatureFeedbackSettings(
+            FeatureFeedbackSettings.Feature.QUICK_ORDER.name,
+            state
+        ).registerItselfWith(TAG)
     }
 }
