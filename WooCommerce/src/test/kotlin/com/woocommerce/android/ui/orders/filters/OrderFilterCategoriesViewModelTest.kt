@@ -3,15 +3,19 @@ package com.woocommerce.android.ui.orders.filters
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptions
+import com.woocommerce.android.ui.orders.filters.data.DateRange
+import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
+import com.woocommerce.android.ui.orders.filters.data.GetDateRangeFilterOptions
+import com.woocommerce.android.ui.orders.filters.data.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
-import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -23,15 +27,15 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
-    private val resourceProvider: ResourceProvider = mock()
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
-    private val orderListRepository: OrderListRepository = mock()
+    private val resourceProvider: ResourceProvider = mock()
+    private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions = mock()
+    private val getDateRangeFilterOptions: GetDateRangeFilterOptions = mock()
     private val orderFilterRepository: OrderFiltersRepository = mock()
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
@@ -40,56 +44,56 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     fun setup() = testBlocking {
         givenResourceProviderReturnsNonEmptyStrings()
         givenOrderStatusOptionsAvailable()
+        givenDateRangeFiltersAvailable()
         initViewModel()
     }
 
     @Test
     fun `When filter category is selected, then update screen title`() {
-        viewModel.onFilterCategorySelected(AN_ORDER_STATUS_FILTER_CATEGORY)
+        viewModel.onFilterCategorySelected(AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER)
 
-        assertThat(viewModel.orderFilterOptionScreenTitle.value).isEqualTo(ORDER_STATUS_FILTERS_TITLE)
-    }
-
-    @Test
-    fun `When filter category is selected, then update order filter options`() {
-        viewModel.onFilterCategorySelected(AN_ORDER_STATUS_FILTER_CATEGORY)
-
-        assertThat(viewModel.event.value).isEqualTo(ShowFilterOptionsForCategory)
-        assertThat(viewModel.orderOptionsFilter.value).isEqualTo(A_LIST_OF_ORDER_STATUS_FILTER_OPTIONS)
-    }
-
-    @Test
-    fun `When show orders is clicked, then selected filters are updated and exit with result`() {
-        givenFilterCategoryHasBeenSelected(AN_ORDER_STATUS_FILTER_CATEGORY)
-        givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_OPTION)
-
-        viewModel.onShowOrdersClicked()
-
-        assertThat(viewModel.event.value).isEqualTo(ExitWithResult(true))
-        verify(orderFilterRepository).updateSelectedFilters(
-            mapOf(AN_ORDER_STATUS_FILTER_CATEGORY.categoryKey to listOf(AN_ORDER_STATUS_FILTER_OPTION.key))
+        assertThat(viewModel.event.value).isEqualTo(
+            ShowFilterOptionsForCategory(
+                AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER
+            )
         )
     }
 
     @Test
-    fun `Given no filters are selected, when show orders is clicked, then an empty map is saved`() {
+    fun `When show orders is clicked, then selected filters are saved`() {
+        givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER)
+
         viewModel.onShowOrdersClicked()
 
-        verify(orderFilterRepository).updateSelectedFilters(emptyMap())
+        verify(orderFilterRepository).updateSelectedFilters(
+            AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER.categoryKey,
+            listOf(SELECTED_ORDER_STATUS_FILTER_OPTION.key)
+        )
     }
 
     @Test
-    fun `Given no filters are selected, when show orders is clicked, then exit with result`() {
+    fun `When show orders is clicked, then exit with result`() {
+        givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER)
+
         viewModel.onShowOrdersClicked()
 
-        assertThat(viewModel.event.value).isEqualTo(ExitWithResult(false))
+        assertThat(viewModel.event.value).isEqualTo(OnShowOrders)
     }
+
+    @Test
+    fun `Given no filters are selected, when show orders is clicked, then an empty list is saved`() {
+        viewModel.onShowOrdersClicked()
+
+        verify(orderFilterRepository).updateSelectedFilters(
+            AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER.categoryKey,
+            emptyList()
+        )
+    }
+
 
     @Test
     fun `Given some selected filters, when onClearFilters, then all filter options should be unselected`() {
-        whenever(resourceProvider.getString(R.string.orderfilters_filters_default_title))
-            .thenReturn(DEFAULT_FILTER_TITLE)
-        givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_OPTION)
+        givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER)
 
         viewModel.onClearFilters()
 
@@ -118,28 +122,43 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
             }
         }?.all { true } ?: false
 
-    private fun givenFilterCategoryHasBeenSelected(anOrderStatusFilterCategory: OrderFilterCategoryUiModel) {
-        viewModel.onFilterCategorySelected(anOrderStatusFilterCategory)
-    }
-
-    private fun givenAFilterOptionHasBeenSelected(selectedFilterOption: OrderFilterOptionUiModel) {
-        viewModel.onFilterOptionSelected(selectedFilterOption)
+    private fun givenAFilterOptionHasBeenSelected(updatedFilters: OrderFilterCategoryUiModel) {
+        viewModel.onFilterOptionsUpdated(updatedFilters)
     }
 
     private fun initViewModel() {
         viewModel = OrderFilterCategoriesViewModel(
             savedStateHandle,
             resourceProvider,
-            orderListRepository,
+            getOrderStatusFilterOptions,
+            getDateRangeFilterOptions,
             orderFilterRepository
         )
     }
 
     private suspend fun givenOrderStatusOptionsAvailable() {
-        whenever(orderListRepository.getCachedOrderStatusOptions()).thenReturn(
+        whenever(getOrderStatusFilterOptions.invoke()).thenReturn(
             generateOrderStatusOptions()
-                .map { it.statusKey to it }
-                .toMap()
+                .map {
+                    OrderStatusOption(
+                        key = it.statusKey,
+                        label = it.label,
+                        statusCount = it.statusCount,
+                        isSelected = false
+                    )
+                }
+        )
+    }
+
+    private fun givenDateRangeFiltersAvailable() {
+        whenever(getDateRangeFilterOptions.invoke()).thenReturn(
+            listOf(DateRange.TODAY, DateRange.LAST_2_DAYS, DateRange.THIS_WEEK, DateRange.THIS_MONTH)
+                .map {
+                    DateRangeFilterOption(
+                        dateRange = it,
+                        isSelected = false
+                    )
+                }
         )
     }
 
@@ -147,26 +166,18 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
         whenever(resourceProvider.getString(any())).thenReturn("AnyString")
         whenever(resourceProvider.getString(any(), any())).thenReturn("AnyString")
         whenever(resourceProvider.getString(any(), any(), any())).thenReturn("AnyString")
-        whenever(resourceProvider.getString(R.string.orderfilters_filter_order_status_options_title))
-            .thenReturn(ORDER_STATUS_FILTERS_TITLE)
     }
 
     private companion object {
         const val DEFAULT_FILTER_TITLE = "Title"
-        const val ORDER_STATUS_FILTERS_TITLE = "Order status"
-        val A_LIST_OF_ORDER_STATUS_SELECTED_FILTERS = listOf(
-            CoreOrderStatus.PENDING.value,
-            CoreOrderStatus.PENDING.value,
-            CoreOrderStatus.PENDING.value,
-        )
         const val ANY_ORDER_STATUS_KEY = "OrderStatusOptionKey"
-        val AN_ORDER_STATUS_FILTER_OPTION = OrderFilterOptionUiModel(
+        val SELECTED_ORDER_STATUS_FILTER_OPTION = OrderFilterOptionUiModel(
             key = ANY_ORDER_STATUS_KEY,
             displayName = "OrderStatus",
-            isSelected = false
+            isSelected = true
         )
-        val A_LIST_OF_ORDER_STATUS_FILTER_OPTIONS = listOf(AN_ORDER_STATUS_FILTER_OPTION)
-        val AN_ORDER_STATUS_FILTER_CATEGORY = OrderFilterCategoryUiModel(
+        val A_LIST_OF_ORDER_STATUS_FILTER_OPTIONS = listOf(SELECTED_ORDER_STATUS_FILTER_OPTION)
+        val AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER = OrderFilterCategoryUiModel(
             categoryKey = OrderListFilterCategory.ORDER_STATUS,
             displayName = "",
             displayValue = "",

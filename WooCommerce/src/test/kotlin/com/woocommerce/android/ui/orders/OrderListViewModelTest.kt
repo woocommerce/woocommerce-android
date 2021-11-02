@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
@@ -74,6 +75,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val orderFetcher: WCOrderFetcher = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val orderFiltersRepository: OrderFiltersRepository = mock()
+    private val dateUtils: DateUtils = mock()
 
     @Before
     fun setup() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -105,7 +107,8 @@ class OrderListViewModelTest : BaseUnitTest() {
             fetcher = orderFetcher,
             resourceProvider = resourceProvider,
             wooCommerceStore = wooCommerceStore,
-            orderFiltersRepository = orderFiltersRepository
+            orderFiltersRepository = orderFiltersRepository,
+            dateUtils = dateUtils
         )
     }
 
