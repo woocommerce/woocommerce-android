@@ -35,17 +35,18 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         _binding = FragmentSearchFilterBinding.bind(view)
-
-        setHasOptionsMenu(true)
-        activity?.title = searchTitle
+        setupTitle()
         setupSearch()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun setupTitle() {
+        activity?.title = searchTitle
     }
 
     private fun setupSearch() {
