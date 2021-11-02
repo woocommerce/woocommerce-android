@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.searchfilter
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,7 +15,7 @@ import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQueryTextListener {
+class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
     companion object {
         val TAG: String = SearchFilterFragment::class.java.simpleName
     }
@@ -53,22 +53,6 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
         _binding = null
     }
 
-    override fun onQueryTextSubmit(query: String): Boolean {
-        return true
-    }
-
-    override fun onQueryTextChange(newText: String): Boolean {
-        val searchedItems = searchFilterItems.filter { it.name.contains(other = newText, ignoreCase = true) }
-        searchFilterAdapter.setItems(searchedItems)
-        //TODO move to VM
-        if (searchedItems.isEmpty()) {
-            showEmptyView(newText)
-        } else {
-            hideEmptyView()
-        }
-        return true
-    }
-
     private fun showEmptyView(searchQuery: String) {
         binding.emptyView.show(
             WCEmptyView.EmptyViewType.SEARCH_RESULTS,
@@ -85,9 +69,19 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
     }
 
     private fun setupSearch() {
-        binding.searchView.apply {
-            queryHint = searchHint
-            setOnQueryTextListener(this@SearchFilterFragment)
+        binding.searchEditText.apply {
+            hint = searchHint
+            doAfterTextChanged {
+                val text = it.toString()
+                val searchedItems = searchFilterItems.filter { it.name.contains(other = text, ignoreCase = true) }
+                searchFilterAdapter.setItems(searchedItems)
+                //TODO move to VM
+                if (searchedItems.isEmpty()) {
+                    showEmptyView(text)
+                } else {
+                    hideEmptyView()
+                }
+            }
         }
     }
 

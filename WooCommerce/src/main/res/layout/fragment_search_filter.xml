@@ -10,18 +10,23 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/color_surface"
-        android:paddingBottom="@dimen/major_75"
+        app:layout_constraintBottom_toTopOf="@+id/searchItemsList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/searchEditText"
+            style="@style/Woo.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/major_250"
-            app:iconifiedByDefault="false"
-            app:searchIcon="@drawable/ic_search_24dp" />
+            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:drawableStart="@drawable/ic_search_24dp"
+            android:drawablePadding="@dimen/major_100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </FrameLayout>
 
