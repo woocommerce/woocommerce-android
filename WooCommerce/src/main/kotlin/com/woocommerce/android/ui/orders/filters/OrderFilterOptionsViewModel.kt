@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.OR
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel.Companion.DEFAULT_ALL_KEY
 import com.woocommerce.android.ui.orders.filters.model.clearAllFilterSelections
 import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -53,16 +54,19 @@ class OrderFilterOptionsViewModel @Inject constructor(
     }
 
     fun onShowOrdersClicked() {
+        saveFiltersSelection()
+        triggerEvent(ExitWithResult(true))
+    }
+
+    private fun saveFiltersSelection() {
         val newSelectedFilters = orderFilterOptions.value
-            ?.filter { it.isSelected }
+            ?.filter { it.isSelected && it.key != DEFAULT_ALL_KEY }
             ?.map { it.key } ?: emptyList()
-        val filtersChanged = newSelectedFilters !=
-            orderFilterRepository.getCachedFiltersSelection()[selectedFilterCategory.categoryKey]
         orderFilterRepository.updateSelectedFilters(selectedFilterCategory.categoryKey, newSelectedFilters)
-        triggerEvent(ExitWithResult(filtersChanged))
     }
 
     fun onBackPressed(): Boolean {
+        saveFiltersSelection()
         val updatedCategory = selectedFilterCategory.copy(
             orderFilterOptions = orderFilterOptions.value ?: emptyList()
         )
@@ -72,7 +76,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
 
     private fun updateOrderStatusSelectedFilters(orderStatusClicked: OrderFilterOptionUiModel) {
         when (orderStatusClicked.key) {
-            OrderFilterOptionUiModel.DEFAULT_ALL_KEY -> _orderFilterOptions.value =
+            DEFAULT_ALL_KEY -> _orderFilterOptions.value =
                 _orderFilterOptions.value?.clearAllFilterSelections()
             else -> uncheckFilterOptionAll()
         }
@@ -105,7 +109,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
         filterOptionClicked: OrderFilterOptionUiModel
     ) =
         when {
-            filterOptionClicked.key == OrderFilterOptionUiModel.DEFAULT_ALL_KEY ||
+            filterOptionClicked.key == DEFAULT_ALL_KEY ||
                 selectedFilterCategory?.categoryKey == DATE_RANGE ->
                 filterOptionClicked.copy(isSelected = true)
             else -> filterOptionClicked.copy(isSelected = !filterOptionClicked.isSelected)
@@ -115,7 +119,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
         _orderFilterOptions.value = _orderFilterOptions.value
             ?.map {
                 when (it.key) {
-                    OrderFilterOptionUiModel.DEFAULT_ALL_KEY -> it.copy(isSelected = false)
+                    DEFAULT_ALL_KEY -> it.copy(isSelected = false)
                     else -> it
                 }
             }

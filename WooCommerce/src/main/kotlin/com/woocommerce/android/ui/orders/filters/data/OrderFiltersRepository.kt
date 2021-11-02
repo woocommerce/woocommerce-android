@@ -10,6 +10,10 @@ class OrderFiltersRepository @Inject constructor() {
     fun getCachedFiltersSelection(): Map<OrderListFilterCategory, List<String>> = selectedOrderListFilters
 
     fun updateSelectedFilters(filterCategory: OrderListFilterCategory, selectedFilters: List<String>) {
-        selectedOrderListFilters[filterCategory] = selectedFilters
+        if (selectedFilters.isEmpty()) {
+            selectedOrderListFilters.remove(filterCategory)
+        } else {
+            selectedOrderListFilters[filterCategory] = selectedFilters
+        }
     }
 }

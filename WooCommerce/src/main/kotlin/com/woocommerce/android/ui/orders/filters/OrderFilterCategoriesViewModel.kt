@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.filters.data.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.data.GetOrderStatusFilterOptions
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
@@ -33,7 +34,9 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions,
-    private val getDateRangeFilterOptions: GetDateRangeFilterOptions
+    private val getDateRangeFilterOptions: GetDateRangeFilterOptions,
+    private val orderFilterRepository: OrderFiltersRepository
+
 ) : ScopedViewModel(savedState) {
     companion object {
         const val KEY_SAVED_ORDER_STATUS_SELECTION = "key_current_order_status_selection"
@@ -59,6 +62,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     fun onShowOrdersClicked() {
+        saveFiltersSelection()
         triggerEvent(ExitWithResult(true))
     }
 
@@ -84,6 +88,25 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             }
             _orderFilterCategoryViewState.value = getFilterCategoryViewState()
             saveState()
+        }
+    }
+
+    fun onBackPressed(): Boolean {
+        val selectedFiltersCount = _orderFilterCategories.value
+            ?.map { it.orderFilterOptions.getNumberOfSelectedFilterOptions() }
+            ?.sum() ?: 0
+        return if (selectedFiltersCount > 0) {
+            triggerEvent(
+                ShowDialog.buildDiscardDialogEvent(
+                    positiveBtnAction = { _, _ ->
+                        triggerEvent(Exit)
+                    },
+                    negativeButtonId = R.string.keep_changes
+                )
+            )
+            false
+        } else {
+            true
         }
     }
 
@@ -166,22 +189,12 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
         }
 
-    fun onBackPressed(): Boolean {
-        val selectedFiltersCount = _orderFilterCategories.value
-            ?.map { it.orderFilterOptions.getNumberOfSelectedFilterOptions() }
-            ?.sum() ?: 0
-        return if (selectedFiltersCount > 0) {
-            triggerEvent(
-                ShowDialog.buildDiscardDialogEvent(
-                    positiveBtnAction = { _, _ ->
-                        triggerEvent(Exit)
-                    },
-                    negativeButtonId = R.string.keep_changes
-                )
-            )
-            false
-        } else {
-            true
+    private fun saveFiltersSelection() {
+        _orderFilterCategories.value?.forEach { category ->
+            val newSelectedFilters = category.orderFilterOptions
+                .filter { it.isSelected && it.key != OrderFilterOptionUiModel.DEFAULT_ALL_KEY }
+                .map { it.key }
+            orderFilterRepository.updateSelectedFilters(category.categoryKey, newSelectedFilters)
         }
     }
 
@@ -189,5 +202,4 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         savedState[KEY_SAVED_ORDER_STATUS_SELECTION] = _orderFilterCategories.value?.first()
         savedState[KEY_SAVED_DATE_RANGE_SELECTION] = _orderFilterCategories.value?.last()
     }
-
 }
