@@ -199,7 +199,9 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     private fun saveUiState() {
-        savedState[KEY_SAVED_ORDER_STATUS_SELECTION] = _orderFilterCategories.value?.first()
-        savedState[KEY_SAVED_DATE_RANGE_SELECTION] = _orderFilterCategories.value?.last()
+        savedState[KEY_SAVED_ORDER_STATUS_SELECTION] = _orderFilterCategories.value
+            ?.first { it.categoryKey == ORDER_STATUS }
+        savedState[KEY_SAVED_DATE_RANGE_SELECTION] = _orderFilterCategories.value
+            ?.first { it.categoryKey == DATE_RANGE }
     }
 }
