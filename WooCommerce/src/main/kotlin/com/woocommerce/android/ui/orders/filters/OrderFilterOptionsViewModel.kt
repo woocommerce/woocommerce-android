@@ -76,8 +76,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
 
     private fun updateOrderStatusSelectedFilters(orderStatusClicked: OrderFilterOptionUiModel) {
         when (orderStatusClicked.key) {
-            DEFAULT_ALL_KEY -> _orderFilterOptions.value =
-                _orderFilterOptions.value?.clearAllFilterSelections()
+            DEFAULT_ALL_KEY -> _orderFilterOptions.value = _orderFilterOptions.value?.clearAllFilterSelections()
             else -> uncheckFilterOptionAll()
         }
         updateSelectedFilterValues(orderStatusClicked)

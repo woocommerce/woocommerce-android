@@ -32,4 +32,3 @@ data class DateRangeFilterOption(
     val dateRange: DateRange,
     override val isSelected: Boolean
 ) : OrderFilterOption()
-

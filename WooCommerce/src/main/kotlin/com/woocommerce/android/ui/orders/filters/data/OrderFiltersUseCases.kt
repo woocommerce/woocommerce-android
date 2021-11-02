@@ -40,7 +40,6 @@ class GetOrderStatusFilterOptions @Inject constructor(
             ?.contains(filterKey) ?: false
 }
 
-
 class GetDateRangeFilterOptions @Inject constructor(
     private val orderFiltersRepository: OrderFiltersRepository
 ) {

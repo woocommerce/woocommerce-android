@@ -32,4 +32,3 @@ fun MutableList<OrderFilterOptionUiModel>.addFilterOptionAll(resourceProvider: R
         )
     )
 }
-

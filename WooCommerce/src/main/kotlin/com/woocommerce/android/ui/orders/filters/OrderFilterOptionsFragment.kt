@@ -84,5 +84,4 @@ class OrderFilterOptionsFragment :
     }
 
     override fun onRequestAllowBackPress() = viewModel.onBackPressed()
-
 }

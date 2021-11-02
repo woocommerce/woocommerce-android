@@ -90,7 +90,6 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
         )
     }
 
-
     @Test
     fun `Given some selected filters, when onClearFilters, then all filter options should be unselected`() {
         givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER)
