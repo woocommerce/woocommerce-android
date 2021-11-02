@@ -136,7 +136,6 @@ abstract class BaseAddressEditingFragment :
     private fun showCountrySelectorDialog() {
         val countries = addressViewModel.countries
         val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
-            selectedItem = addressDraft.country,
             items = countries.map {
                 SearchFilterItem(
                     name = it.name,
@@ -153,7 +152,6 @@ abstract class BaseAddressEditingFragment :
     private fun showStateSelectorDialog() {
         val states = addressViewModel.states
         val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
-            selectedItem = addressDraft.state,
             items = states.map {
                 SearchFilterItem(
                     name = it.name,

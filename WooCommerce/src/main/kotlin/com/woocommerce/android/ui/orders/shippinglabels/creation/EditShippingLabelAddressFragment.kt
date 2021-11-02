@@ -241,7 +241,6 @@ class EditShippingLabelAddressFragment :
                 }
                 is ShowCountrySelector -> {
                     val action = EditShippingLabelAddressFragmentDirections.actionSearchFilterFragment(
-                        selectedItem = event.currentCountryCode,
                         items = event.locations.map {
                             SearchFilterItem(
                                 name = it.name,
@@ -256,7 +255,6 @@ class EditShippingLabelAddressFragment :
                 }
                 is ShowStateSelector -> {
                     val action = EditShippingLabelAddressFragmentDirections.actionSearchFilterFragment(
-                        selectedItem = event.currentStateCode,
                         items = event.locations.map {
                             SearchFilterItem(
                                 name = it.name,
