@@ -19,7 +19,7 @@ import javax.inject.Inject
 private val SUPPORTED_COUNTRIES = listOf("US")
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-const val SUPPORTED_WCPAY_VERSION = "2.8.2"
+const val SUPPORTED_WCPAY_VERSION = "3.2.0"
 
 class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
