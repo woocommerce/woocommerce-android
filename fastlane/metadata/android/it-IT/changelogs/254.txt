@@ -1,2 +1,0 @@
-7.7:
-I venditori che usano WooCommerce Payments negli Stati Uniti possono accettare pagamenti con carta di credito di persona per il pagamento alla consegna dei clienti o per gli ordini di ritiro. In questo rilascio sono inclusi anche alcuni miglioramenti minori basati sul tuo feedback. Grazie per averci aiutato a creare un'app migliore per tutti.

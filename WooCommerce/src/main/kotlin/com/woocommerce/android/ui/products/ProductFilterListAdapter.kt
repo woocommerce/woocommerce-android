@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.products
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.databinding.ProductFilterListItemBinding
+import com.woocommerce.android.databinding.FilterListItemBinding
 import com.woocommerce.android.extensions.areSameAs
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.ProductFilterViewHolder
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
@@ -29,7 +29,7 @@ class ProductFilterListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductFilterViewHolder {
         return ProductFilterViewHolder(
-            ProductFilterListItemBinding.inflate(
+            FilterListItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -51,7 +51,7 @@ class ProductFilterListAdapter(
     private fun isSameList(newList: List<FilterListItemUiModel>) =
         filterList.areSameAs(newList) { this.isSameFilter(it) }
 
-    class ProductFilterViewHolder(val viewBinding: ProductFilterListItemBinding) :
+    class ProductFilterViewHolder(val viewBinding: FilterListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(filter: FilterListItemUiModel) {
             viewBinding.filterItemName.text = filter.filterItemName

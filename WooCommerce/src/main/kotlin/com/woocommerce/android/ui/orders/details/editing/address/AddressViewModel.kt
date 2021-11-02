@@ -26,40 +26,91 @@ class AddressViewModel @Inject constructor(
         get() = dataStore.getCountries().map { it.toAppModel() }
 
     val states: List<Location>
-        get() = dataStore.getStates(viewState.country).map { it.toAppModel() }
+        get() = dataStore.getStates(viewState.countryLocation.code).map { it.toAppModel() }
 
-    fun start(country: String, state: String) {
-        viewState = viewState.copy(country = country, state = state)
-        loadCountriesAndStates()
+    val countryLocation: Location
+        get() = viewState.countryLocation
+
+    val stateLocation: Location
+        get() = viewState.stateLocation
+
+    fun start(countryCode: String, stateCode: String) {
+        loadCountriesAndStates(countryCode, stateCode)
+        viewState.applyCountryStateChangesSafely(countryCode, stateCode)
     }
 
-    fun loadCountriesAndStates() {
+    private fun loadCountriesAndStates(countryCode: String, stateCode: String) {
         launch {
             // we only fetch the countries and states if they've never been fetched
             if (countries.isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
                 dataStore.fetchCountriesAndStates(selectedSite.get())
-                viewState = viewState.copy(isLoading = false)
+                viewState.copy(
+                    isLoading = false
+                ).applyCountryStateChangesSafely(countryCode, stateCode)
             }
         }
     }
 
+    fun hasCountries() = countries.isNotEmpty()
+
+    fun hasStates() = states.isNotEmpty()
+
+    private fun getCountryNameFromCode(countryCode: String): String {
+        return countries.find { it.code == countryCode }?.name ?: countryCode
+    }
+
+    private fun getCountryLocationFromCode(countryCode: String): Location {
+        return Location(countryCode, getCountryNameFromCode(countryCode))
+    }
+
+    private fun getStateNameFromCode(stateCode: String): String {
+        return states.find { it.code == stateCode }?.name ?: stateCode
+    }
+
+    private fun getStateLocationFromCode(stateCode: String): Location {
+        return Location(stateCode, getStateNameFromCode(stateCode))
+    }
+
     fun onCountrySelected(countryCode: String) {
-        if (countryCode != viewState.country) {
-            viewState = viewState.copy(country = countryCode)
+        if (countryCode != viewState.countryLocation.code) {
+            viewState = viewState.copy(
+                countryLocation = getCountryLocationFromCode(countryCode),
+                stateLocation = Location("", "")
+            )
         }
     }
 
     fun onStateSelected(stateCode: String) {
-        if (stateCode != viewState.country) {
-            viewState = viewState.copy(state = stateCode)
+        if (stateCode != viewState.stateLocation.code) {
+            viewState = viewState.copy(
+                stateLocation = getStateLocationFromCode(stateCode)
+            )
         }
+    }
+
+    /**
+     * State data acquisition depends on the Country configuration, so when updating the ViewState
+     * we need to make sure that we updated the Country code before applying everything else to avoid
+     * looking into a outdated state information
+     */
+    private fun ViewState.applyCountryStateChangesSafely(countryCode: String, stateCode: String) {
+        val countryLocation = getCountryLocationFromCode(countryCode)
+
+        viewState = viewState.copy(
+            countryLocation = countryLocation
+        )
+
+        viewState = this.copy(
+            countryLocation = countryLocation,
+            stateLocation = getStateLocationFromCode(stateCode)
+        )
     }
 
     @Parcelize
     data class ViewState(
-        val country: String = "",
-        val state: String = "",
+        val countryLocation: Location = Location("", ""),
+        val stateLocation: Location = Location("", ""),
         val isLoading: Boolean = false
     ) : Parcelable
 }

@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-13 11:54:04+0000
+Translation-Revision-Date: 2021-10-27 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">メリットを見る</string>
+    <string name="jetpack_benefits_bottom_banner_title">Jetpack でフル機能を利用</string>
+    <string name="product_description_hint_with_title">%s の詳しい情報を教えてください…</string>
+    <string name="product_description_hint_no_title">将来の顧客に商品を説明してください…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">クリップボードにコピーされたリーダーのシリアル番号</string>
+    <string name="card_reader_manual_card_reader">カードリーダーマニュアル</string>
+    <string name="order_detail_add_billing_address">請求先住所を追加</string>
+    <string name="order_detail_add_shipping_address">配送先住所を追加</string>
+    <string name="order_detail_add_customer_note">注文メモを追加</string>
+    <string name="order_detail_billing_address_section">請求先住所</string>
+    <string name="order_detail_shipping_address_section">配送先住所</string>
+    <string name="order_detail_address_section">住所</string>
+    <string name="order_detail_edit_address_country">国</string>
+    <string name="order_detail_edit_address_state">都道府県 / 州 / 郡</string>
+    <string name="order_detail_edit_address_zip">郵便番号</string>
+    <string name="order_detail_edit_address_city">市</string>
+    <string name="order_detail_edit_address_line2">住所2</string>
+    <string name="order_detail_edit_address_line1">住所1</string>
+    <string name="order_detail_edit_address_company">会社</string>
+    <string name="order_detail_edit_address_details_phone">電話</string>
+    <string name="order_detail_edit_address_details_email">メール</string>
+    <string name="order_detail_edit_address_details_last_name">姓</string>
+    <string name="order_detail_edit_address_details_first_name">名</string>
+    <string name="orderdetail_customer_note_hint">注文に関する顧客メモを編集</string>
     <string name="support_system_status_report_fetch_error">SSR を取得する際にエラーが発生しました。 wp-admin で「WooCommerce」-&gt;「ステータス」を確認してください。</string>
     <string name="support_system_status_report_share_error">システムステータスレポートを共有できません</string>
     <string name="support_system_status_report_error_copy_to_clipboard">SSR をクリップボードにコピーする際にエラーが発生しました</string>
@@ -831,7 +855,6 @@ Language: ja_JP
     <string name="product_description_empty">商品を説明</string>
     <string name="product_description">説明</string>
     <string name="product_edit_description">説明を編集</string>
-    <string name="product_description_hint">執筆を開始…</string>
     <string name="discard_message">変更を破棄しますか ?</string>
     <string name="update">更新</string>
     <string name="done">終了</string>
@@ -968,7 +991,7 @@ Language: ja_JP
     <string name="login_refresh_app_progress">WooCommerce をチェックしています…</string>
     <string name="login_refresh_app">アプリを再読み込み</string>
     <string name="login_not_woo_store">%1$s は WooCommerce サイトではないようです。サイトに WooCommerce プラグインをインストールして%2$s</string>
-    <string name="orderdetail_empty_shipping_address">アドレスが指定されていません。</string>
+    <string name="orderdetail_empty_address">住所が指定されていません</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
     <string name="enter_email_for_site">&lt;b&gt;%1$s&lt;/b&gt; に接続するには WordPress.com にログインします</string>

@@ -267,8 +267,11 @@ class ProductImagesFragment :
                 it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
                     viewModel.onShowStorageChooserButtonClicked()
                 }
-                it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
-                    viewModel.onShowCameraButtonClicked()
+                it.findViewById<View>(R.id.textCamera)?.apply {
+                    isVisible = ProductImagesUtils.hasCamera(context)
+                    setOnClickListener {
+                        viewModel.onShowCameraButtonClicked()
+                    }
                 }
                 it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
                     viewModel.onShowWPMediaPickerButtonClicked()

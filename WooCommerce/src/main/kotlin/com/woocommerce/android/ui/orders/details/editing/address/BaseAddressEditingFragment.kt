@@ -45,9 +45,12 @@ abstract class BaseAddressEditingFragment :
                 address2 = address2.text,
                 city = city.text,
                 postcode = postcode.text,
-                // temporary field assignments, must be replaced with actual input
-                country = storedAddress.country,
-                state = storedAddress.state
+                country = addressViewModel.countryLocation.code,
+                state = if (shouldShowStateSpinner()) {
+                    addressViewModel.stateLocation.code
+                } else {
+                    stateEditText.text
+                }
             )
         }
 
@@ -58,16 +61,26 @@ abstract class BaseAddressEditingFragment :
         bindTextWatchers()
 
         addressViewModel.start(
-            country = storedAddress.country,
-            state = storedAddress.state
+            countryCode = storedAddress.country,
+            stateCode = storedAddress.state
         )
+
+        binding.countrySpinner.setClickListener {
+            showCountrySelectorDialog()
+        }
+
+        binding.stateSpinner.setClickListener {
+            showStateSelectorDialog()
+        }
 
         setupObservers()
         setupResultHandlers()
         onViewBound(binding)
+        updateStateViews()
     }
 
-    override fun hasChanges() = addressDraft != storedAddress
+    override fun hasChanges() =
+        (addressDraft != storedAddress) || binding.replicateAddressSwitch.isChecked
 
     override fun onStop() {
         super.onStop()
@@ -86,8 +99,12 @@ abstract class BaseAddressEditingFragment :
         binding.address2.text = address2
         binding.city.text = city
         binding.postcode.text = postcode
+        binding.countrySpinner.setText(getCountryLabelByCountryCode())
+        binding.stateSpinner.setText(addressViewModel.stateLocation.name)
+        binding.stateEditText.text = state
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
+            updateDoneMenuItem()
         }
     }
 
@@ -101,15 +118,20 @@ abstract class BaseAddressEditingFragment :
         binding.address2.textWatcher = textWatcher
         binding.city.textWatcher = textWatcher
         binding.postcode.textWatcher = textWatcher
+        binding.stateEditText.textWatcher = textWatcher
     }
 
-    internal fun Address.bindAsAddressReplicationToggleState() {
-        (this == storedAddress)
-            .apply { binding.replicateAddressSwitch.isChecked = this }
-            .also { sharedViewModel.onReplicateAddressSwitchChanged(it) }
+    private fun shouldShowStateSpinner() = addressViewModel.hasStates()
+
+    /**
+     * When the country is empty, or we don't have country or state data, we show an editText
+     * for the state rather than a spinner
+     */
+    private fun updateStateViews() {
+        binding.stateSpinner.isVisible = shouldShowStateSpinner()
+        binding.stateEditText.isVisible = !shouldShowStateSpinner()
     }
 
-    @Suppress("UnusedPrivateMember")
     private fun showCountrySelectorDialog() {
         val countries = addressViewModel.countries
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
@@ -124,7 +146,6 @@ abstract class BaseAddressEditingFragment :
 
     @Suppress("UnusedPrivateMember")
     private fun showStateSelectorDialog() {
-        // TODO nbradbury check we have a country first
         val states = addressViewModel.states
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
             addressDraft.state,
@@ -138,14 +159,21 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.country.takeIfNotEqualTo(old?.country) {
-                // TODO nbradbury update displayed country
+            new.countryLocation.takeIfNotEqualTo(old?.countryLocation) {
+                binding.countrySpinner.setText(it.name)
+                updateDoneMenuItem()
+                updateStateViews()
             }
-            new.state.takeIfNotEqualTo(old?.state) {
-                // TODO nbradbury update displayed state
+            new.stateLocation.takeIfNotEqualTo(old?.stateLocation) {
+                binding.stateSpinner.setText(it.name)
+                binding.stateEditText.text = it.code
+                updateDoneMenuItem()
             }
-            new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
-                binding.progressBar.isVisible = new.isLoading
+            new.isLoading.takeIfNotEqualTo(old?.isLoading) {
+                binding.progressBar.isVisible = it
+                if (old?.isLoading == true) {
+                    updateStateViews()
+                }
             }
         }
     }

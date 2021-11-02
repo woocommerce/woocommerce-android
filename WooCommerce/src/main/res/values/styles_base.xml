@@ -240,6 +240,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical|start</item>
+        <item name="android:textAlignment">gravity</item>
     </style>
 
     <!--

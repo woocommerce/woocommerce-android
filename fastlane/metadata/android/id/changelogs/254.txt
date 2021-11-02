@@ -1,2 +1,0 @@
-7.7:
-Penjual di AS yang menggunakan WooCommerce Payments dapat menerima pembayaran kartu kredit langsung untuk dari pelanggan setelah pengiriman atau penerimaan pesanan. Dalam rilis ini juga disertakan beberapa perbaikan kecil sesuai feedback Anda. Terima kasih telah membantu kami menyempurnakan aplikasi untuk semua orang
