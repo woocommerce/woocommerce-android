@@ -225,12 +225,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun setupOrderEditingObservers(orderEditingViewModel: OrderEditingViewModel) {
-        orderEditingViewModel.viewStateData.observe(viewLifecycleOwner) { _, new ->
-            if (new.orderEdited == true) {
-                viewModel.onOrderEdited()
-            }
-            if (new.orderEditingFailed == true) {
-                viewModel.onOrderEditFailed()
+        orderEditingViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OrderEditingViewModel.OrderEdited -> viewModel.onOrderEdited()
+                is OrderEditingViewModel.OrderEditFailed -> viewModel.onOrderEditFailed(event.message)
             }
         }
     }
