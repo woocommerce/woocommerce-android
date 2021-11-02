@@ -272,6 +272,8 @@ class OrderListFragment :
         _binding = null
     }
 
+    private fun isQuickOrderAvailable() = FeatureFlag.QUICK_ORDER.isEnabled() && AppPrefs.isQuickOrderEnabled
+
     /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
      * search menu item to collapse
@@ -291,9 +293,7 @@ class OrderListFragment :
             }
         }
 
-        if (FeatureFlag.QUICK_ORDER.isEnabled() && AppPrefs.isQuickOrderEnabled) {
-            quickOrderMenuItem?.setVisible(true)
-        }
+        quickOrderMenuItem?.setVisible(isQuickOrderAvailable())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -580,6 +580,7 @@ class OrderListFragment :
         checkOrientation()
         removeTabLayoutFromAppBar()
         onSearchViewActiveChanged(isActive = true)
+        quickOrderMenuItem?.isVisible = false
         return true
     }
 
@@ -595,6 +596,7 @@ class OrderListFragment :
         }
         loadListForActiveTab()
         addTabLayoutToAppBar()
+        quickOrderMenuItem?.setVisible(isQuickOrderAvailable())
         onSearchViewActiveChanged(isActive = false)
         return true
     }
