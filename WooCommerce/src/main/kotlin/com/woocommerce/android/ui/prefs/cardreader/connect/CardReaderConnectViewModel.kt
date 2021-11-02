@@ -93,8 +93,8 @@ class CardReaderConnectViewModel @Inject constructor(
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
     private val viewState = MutableLiveData<CardReaderConnectViewState>(ScanningState(::onCancelClicked))
-    var requiredUpdateStarted: Boolean = false
-    var connectionStarted: Boolean = false
+    private var requiredUpdateStarted: Boolean = false
+    private var connectionStarted: Boolean = false
 
     val viewStateData: LiveData<CardReaderConnectViewState> = viewState
 
@@ -318,7 +318,7 @@ class CardReaderConnectViewModel @Inject constructor(
             connectToReader(lastKnownReader)
         } else {
             viewState.value = when {
-                availableReaders.isEmpty() -> CardReaderConnectViewState.ScanningState(::onCancelClicked)
+                availableReaders.isEmpty() -> ScanningState(::onCancelClicked)
                 availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
                 availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
                 else -> throw IllegalStateException("Unreachable code")
