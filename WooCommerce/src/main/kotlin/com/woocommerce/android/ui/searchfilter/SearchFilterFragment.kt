@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSearchFilterBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,7 +58,24 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
     override fun onQueryTextChange(newText: String): Boolean {
         val searchedItems = searchFilterItems.filter { it.name.contains(other = newText, ignoreCase = true) }
         searchFilterAdapter.setItems(searchedItems)
+        //TODO move to VM
+        if (searchedItems.isEmpty()) {
+            showEmptyView(newText)
+        } else {
+            hideEmptyView()
+        }
         return true
+    }
+
+    private fun showEmptyView(searchQuery: String) {
+        binding.emptyView.show(
+            WCEmptyView.EmptyViewType.SEARCH_RESULTS,
+            searchQueryOrFilter = searchQuery
+        )
+    }
+
+    private fun hideEmptyView() {
+        binding.emptyView.hide()
     }
 
     private fun setupTitle() {
