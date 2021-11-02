@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSearchFilterBinding
 import com.woocommerce.android.ui.base.BaseFragment
@@ -38,11 +39,20 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
         _binding = FragmentSearchFilterBinding.bind(view)
         setupTitle()
         setupSearch()
+        setupSearchList()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onQueryTextSubmit(query: String): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String): Boolean {
+        return false
     }
 
     private fun setupTitle() {
@@ -56,11 +66,15 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
         }
     }
 
-    override fun onQueryTextSubmit(query: String): Boolean {
-        return false
-    }
-
-    override fun onQueryTextChange(newText: String): Boolean {
-        return false
+    private fun setupSearchList() {
+        binding.searchItemsList.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = SearchFilterAdapter(
+                items = searchFilterItems.toList(),
+                onItemSelectedListener = { selectedItem ->
+                    //TODO
+                }
+            )
+        }
     }
 }
