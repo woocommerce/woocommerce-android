@@ -293,7 +293,7 @@ class OrderListFragment :
             }
         }
 
-        quickOrderMenuItem?.setVisible(isQuickOrderAvailable())
+        quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -596,7 +596,7 @@ class OrderListFragment :
         }
         loadListForActiveTab()
         addTabLayoutToAppBar()
-        quickOrderMenuItem?.setVisible(isQuickOrderAvailable())
+        quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
         onSearchViewActiveChanged(isActive = false)
         return true
     }
