@@ -3,7 +3,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 buildscript {
     ext.kotlinVersion = '1.5.31'
     ext.navigationVersion = '2.3.5'
-    ext.daggerVersion = '2.39.1'
+    ext.daggerVersion = '2.40'
     ext.wordPressLoginVersion = 'develop-6f134975e1aca6fe1962a112b6d91e3cd6fdd7d5'
     ext.detektVersion = '1.18.1'
 
