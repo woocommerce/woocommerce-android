@@ -655,4 +655,31 @@
         tools:layout="@layout/fragment_base_edit_address"/>
     <action android:id="@+id/action_global_item_selector_dialog"
         app:destination="@id/itemSelectorDialog"/>
+    <action
+        android:id="@+id/action_search_filter_fragment"
+        app:destination="@id/searchFilterFragment" />
+    <fragment
+        android:id="@+id/searchFilterFragment"
+        android:name="com.woocommerce.android.ui.searchfilter.SearchFilterFragment"
+        android:label="searchFilterFragment"
+        tools:layout="@layout/fragment_search_filter">
+        <argument
+            android:name="selectedItem"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="title"
+            android:defaultValue='""'
+            app:argType="string" />
+        <argument
+            android:name="hint"
+            android:defaultValue='""'
+            app:argType="string" />
+        <argument
+            android:name="items"
+            app:argType="com.woocommerce.android.ui.searchfilter.SearchFilterItem[]" />
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
 </navigation>
