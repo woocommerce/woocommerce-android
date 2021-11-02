@@ -1,12 +1,16 @@
 package com.woocommerce.android.ui.searchfilter
 
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentSearchFilterBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
+class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQueryTextListener {
     companion object {
         val TAG: String = SearchFilterFragment::class.java.simpleName
     }
@@ -27,4 +31,38 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
 
     private val requestKey: String
         get() = navArgs.requestKey
+
+    private var _binding: FragmentSearchFilterBinding? = null
+    private val binding: FragmentSearchFilterBinding
+        get() = _binding!!
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentSearchFilterBinding.bind(view)
+
+        setHasOptionsMenu(true)
+        activity?.title = searchTitle
+        setupSearch()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun setupSearch() {
+        binding.searchView.apply {
+            queryHint = searchHint
+            setOnQueryTextListener(this@SearchFilterFragment)
+        }
+    }
+
+    override fun onQueryTextSubmit(query: String): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String): Boolean {
+        return false
+    }
 }
