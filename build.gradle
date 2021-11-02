@@ -4,7 +4,7 @@ buildscript {
     ext.kotlinVersion = '1.5.31'
     ext.navigationVersion = '2.3.5'
     ext.daggerVersion = '2.39.1'
-    ext.wordPressLoginVersion = '0.0.9'
+    ext.wordPressLoginVersion = 'develop-6f134975e1aca6fe1962a112b6d91e3cd6fdd7d5'
     ext.detektVersion = '1.18.1'
 
     repositories {
@@ -93,7 +93,7 @@ ext {
     fluxCVersion = '1.29.0'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
-    espressoVersion = '3.3.0'
+    espressoVersion = '3.4.0'
     mockitoKotlinVersion = '3.2.0'
     mockitoVersion = '3.12.4'
     constraintLayoutVersion = '1.2.0'
