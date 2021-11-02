@@ -35,6 +35,8 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
     private val binding: FragmentSearchFilterBinding
         get() = _binding!!
 
+    private lateinit var searchFilterAdapter: SearchFilterAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSearchFilterBinding.bind(view)
@@ -49,11 +51,13 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
-        return false
+        return true
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        return false
+        val searchedItems = searchFilterItems.filter { it.name.contains(other = newText, ignoreCase = true) }
+        searchFilterAdapter.setItems(searchedItems)
+        return true
     }
 
     private fun setupTitle() {
@@ -70,12 +74,13 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
     private fun setupSearchList() {
         binding.searchItemsList.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = SearchFilterAdapter(
-                items = searchFilterItems.toList(),
+            searchFilterAdapter = SearchFilterAdapter(
                 onItemSelectedListener = { selectedItem ->
                     navigateBackWithResult(requestKey, selectedItem.value)
                 }
             )
+            adapter = searchFilterAdapter
+            searchFilterAdapter.setItems(searchFilterItems.toList())
         }
     }
 }

@@ -8,9 +8,14 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.searchfilter.SearchFilterAdapter.SearchFilterViewHolder
 
 class SearchFilterAdapter(
-    private val items: List<SearchFilterItem>,
     private val onItemSelectedListener: (SearchFilterItem) -> Unit
 ) : RecyclerView.Adapter<SearchFilterViewHolder>() {
+
+    private var items: List<SearchFilterItem> = emptyList()
+
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchFilterViewHolder =
         SearchFilterViewHolder(
@@ -22,6 +27,13 @@ class SearchFilterAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+
+    override fun getItemId(position: Int): Long = items[position].hashCode().toLong()
+
+    fun setItems(items: List<SearchFilterItem>) {
+        this.items = items
+        notifyDataSetChanged()
+    }
 
     inner class SearchFilterViewHolder(val viewBinding: FilterListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
