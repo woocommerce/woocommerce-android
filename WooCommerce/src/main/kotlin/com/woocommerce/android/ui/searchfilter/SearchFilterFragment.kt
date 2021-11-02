@@ -7,6 +7,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSearchFilterBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -72,7 +73,7 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
             adapter = SearchFilterAdapter(
                 items = searchFilterItems.toList(),
                 onItemSelectedListener = { selectedItem ->
-                    //TODO
+                    navigateBackWithResult(requestKey, selectedItem.value)
                 }
             )
         }
