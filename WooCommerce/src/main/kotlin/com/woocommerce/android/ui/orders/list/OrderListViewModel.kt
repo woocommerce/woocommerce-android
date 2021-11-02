@@ -488,7 +488,6 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun refreshOrders(orderListFilters: Map<OrderListFilterCategory, List<String>>) {
-
         val dateRangeFilters = orderListFilters[OrderListFilterCategory.DATE_RANGE]
             ?.map { DateRange.fromValue(it) }
             ?.first()
