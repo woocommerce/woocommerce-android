@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
+import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
@@ -134,25 +135,34 @@ abstract class BaseAddressEditingFragment :
 
     private fun showCountrySelectorDialog() {
         val countries = addressViewModel.countries
-        val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
-            addressDraft.country,
-            countries.map { it.name }.toTypedArray(),
-            countries.map { it.code }.toTypedArray(),
-            SELECT_COUNTRY_REQUEST,
-            getString(R.string.shipping_label_edit_address_country)
+        val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
+            selectedItem = addressDraft.country,
+            items = countries.map {
+                SearchFilterItem(
+                    name = it.name,
+                    value = it.code
+                )
+            }.toTypedArray(),
+            hint = getString(R.string.shipping_label_edit_address_country_search_hint),
+            requestKey = SELECT_COUNTRY_REQUEST,
+            title = getString(R.string.shipping_label_edit_address_country)
         )
         findNavController().navigateSafely(action)
     }
 
-    @Suppress("UnusedPrivateMember")
     private fun showStateSelectorDialog() {
         val states = addressViewModel.states
-        val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
-            addressDraft.state,
-            states.map { it.name }.toTypedArray(),
-            states.map { it.code }.toTypedArray(),
-            SELECT_STATE_REQUEST,
-            getString(R.string.shipping_label_edit_address_state)
+        val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
+            selectedItem = addressDraft.state,
+            items = states.map {
+                SearchFilterItem(
+                    name = it.name,
+                    value = it.code
+                )
+            }.toTypedArray(),
+            hint = getString(R.string.shipping_label_edit_address_state_search_hint),
+            requestKey = SELECT_STATE_REQUEST,
+            title = getString(R.string.shipping_label_edit_address_state)
         )
         findNavController().navigateSafely(action)
     }
