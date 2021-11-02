@@ -578,7 +578,7 @@
         android:id="@+id/printingInstructionsFragment"
         android:name="com.woocommerce.android.ui.orders.details.PrintingInstructionsFragment"
         android:label="PrintingInstructionsFragment"
-        tools:layout="@layout/fragment_printing_instructions"></fragment>
+        tools:layout="@layout/fragment_printing_instructions" />
     <fragment
         android:id="@+id/shippingCustomsFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment"
@@ -663,10 +663,6 @@
         android:name="com.woocommerce.android.ui.searchfilter.SearchFilterFragment"
         android:label="searchFilterFragment"
         tools:layout="@layout/fragment_search_filter">
-        <argument
-            android:name="selectedItem"
-            app:argType="string"
-            app:nullable="true" />
         <argument
             android:name="title"
             android:defaultValue='""'

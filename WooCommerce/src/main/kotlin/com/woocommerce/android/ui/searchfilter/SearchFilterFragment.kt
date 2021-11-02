@@ -17,9 +17,6 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
 
     private val navArgs: SearchFilterFragmentArgs by navArgs()
 
-    private val selectedItem: String?
-        get() = navArgs.selectedItem
-
     private val searchTitle: String
         get() = navArgs.title
 
