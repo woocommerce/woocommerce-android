@@ -50,6 +50,26 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `should replace email info with original one when empty`() {
+
+    }
+
+    @Test
+    fun `should call update only when connection is available`() {
+
+    }
+
+    @Test
+    fun `should replicate billing to shipping when toggle is activated`() {
+
+    }
+
+    @Test
+    fun `should replicate shipping to billing when toggle is activated`() {
+
+    }
+
+    @Test
     fun `should emit success event if update was successful`() {
         orderEditingRepository.stub {
             onBlocking {
