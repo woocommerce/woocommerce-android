@@ -147,6 +147,10 @@ class OrderListFragment :
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
+        if (FeatureFlag.QUICK_ORDER.isEnabled() && AppPrefs.isQuickOrderEnabled) {
+            menu.findItem(R.id.menu_add)?.setVisible(true)
+        }
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -293,6 +297,10 @@ class OrderListFragment :
             R.id.menu_search -> {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
+                true
+            }
+            R.id.menu_add -> {
+                // TODO nbradbury - show quick order view
                 true
             }
             else -> super.onOptionsItemSelected(item)
