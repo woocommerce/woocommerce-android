@@ -13,6 +13,8 @@ sealed class OrderFilterEvent : MultiLiveEvent.Event() {
     data class OnFilterOptionsSelectionUpdated(
         val category: OrderFilterCategoryUiModel
     ) : OrderFilterEvent()
+
+    object OnShowOrders : OrderFilterEvent()
 }
 
 @Parcelize

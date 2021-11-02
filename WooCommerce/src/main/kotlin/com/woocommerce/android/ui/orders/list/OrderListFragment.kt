@@ -765,7 +765,7 @@ class OrderListFragment :
             binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
             removeTabLayoutFromAppBar()
             handleResult<Boolean>(ORDER_FILTER_RESULT_KEY) {
-                viewModel.onFiltersChanged(it)
+                viewModel.updateOrdersWithFilters()
             }
         }
     }

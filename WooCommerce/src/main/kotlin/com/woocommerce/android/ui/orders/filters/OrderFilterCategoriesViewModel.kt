@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DA
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.addFilterOptionAll
@@ -21,7 +22,6 @@ import com.woocommerce.android.ui.orders.filters.model.isAnyFilterOptionSelected
 import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
 import com.woocommerce.android.ui.orders.filters.model.toOrderFilterOptionUiModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -53,7 +53,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         launch {
             _orderFilterCategories.value = buildFilterListUiModel()
             _orderFilterCategoryViewState.value = getFilterCategoryViewState()
-            saveState()
+            saveUiState()
         }
     }
 
@@ -63,7 +63,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
 
     fun onShowOrdersClicked() {
         saveFiltersSelection()
-        triggerEvent(ExitWithResult(true))
+        triggerEvent(OnShowOrders)
     }
 
     fun onClearFilters() {
@@ -87,7 +87,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 } else it
             }
             _orderFilterCategoryViewState.value = getFilterCategoryViewState()
-            saveState()
+            saveUiState()
         }
     }
 
@@ -198,7 +198,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         }
     }
 
-    private fun saveState() {
+    private fun saveUiState() {
         savedState[KEY_SAVED_ORDER_STATUS_SELECTION] = _orderFilterCategories.value?.first()
         savedState[KEY_SAVED_DATE_RANGE_SELECTION] = _orderFilterCategories.value?.last()
     }

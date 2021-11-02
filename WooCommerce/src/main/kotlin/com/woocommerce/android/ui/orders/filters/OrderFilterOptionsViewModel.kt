@@ -9,11 +9,11 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DA
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel.Companion.DEFAULT_ALL_KEY
 import com.woocommerce.android.ui.orders.filters.model.clearAllFilterSelections
 import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -55,7 +55,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
 
     fun onShowOrdersClicked() {
         saveFiltersSelection()
-        triggerEvent(ExitWithResult(true))
+        triggerEvent(OnShowOrders)
     }
 
     private fun saveFiltersSelection() {

@@ -473,19 +473,17 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun onFiltersChanged(filtersChanged: Boolean) {
-        if (filtersChanged) {
-            if (networkStatus.isConnected()) {
-                val selectedFilters = orderFiltersRepository.getCachedFiltersSelection()
-                refreshOrders(selectedFilters)
-                val selectedFilterCount = selectedFilters.values
-                    .map { it.count() }
-                    .sum()
-                viewState = viewState.copy(filterCount = selectedFilterCount)
-            } else {
-                viewState = viewState.copy(isRefreshPending = true)
-                showOfflineSnack()
-            }
+    fun updateOrdersWithFilters() {
+        if (networkStatus.isConnected()) {
+            val selectedFilters = orderFiltersRepository.getCachedFiltersSelection()
+            refreshOrders(selectedFilters)
+            val selectedFilterCount = selectedFilters.values
+                .map { it.count() }
+                .sum()
+            viewState = viewState.copy(filterCount = selectedFilterCount)
+        } else {
+            viewState = viewState.copy(isRefreshPending = true)
+            showOfflineSnack()
         }
     }
 
