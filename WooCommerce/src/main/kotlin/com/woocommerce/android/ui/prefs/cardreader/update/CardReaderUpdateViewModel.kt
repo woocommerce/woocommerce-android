@@ -42,7 +42,6 @@ import javax.inject.Inject
 private const val PERCENT_100: Int = 100
 
 @HiltViewModel
-@Suppress("TooManyFunctions")
 class CardReaderUpdateViewModel @Inject constructor(
     private val cardReaderManager: CardReaderManager,
     private val tracker: AnalyticsTrackerWrapper,

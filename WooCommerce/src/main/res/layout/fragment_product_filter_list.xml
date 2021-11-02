@@ -18,17 +18,17 @@
         tools:itemCount="4"
         app:layout_constrainedHeight="true"
         app:layout_constraintVertical_bias="0.0"
-        tools:listitem="@layout/product_filter_list_item" />
+        tools:listitem="@layout/filter_list_item" />
 
     <View
         style="@style/Woo.Divider"
         android:id="@+id/bottomDivider"
-        app:layout_constraintBottom_toTopOf="@+id/filterList_btnFrame"
+        app:layout_constraintBottom_toTopOf="@+id/showOrdersButtonFrameLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.woocommerce.android.widgets.WCElevatedLinearLayout
-        android:id="@+id/filterList_btnFrame"
+        android:id="@+id/showOrdersButtonFrameLinearLayout"
         style="@style/Woo.Card.WithoutPadding"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -27,7 +27,6 @@ import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjuste
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.PercentageBased
 import javax.inject.Inject
 
-@Suppress("TooManyFunctions")
 @HiltViewModel
 class OrderedAddonViewModel @Inject constructor(
     savedState: SavedStateHandle,

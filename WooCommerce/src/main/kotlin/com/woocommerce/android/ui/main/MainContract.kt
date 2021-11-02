@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.base.BasePresenter
 import com.woocommerce.android.ui.base.BaseView
 import org.wordpress.android.fluxc.model.SiteModel
 
-@Suppress("TooManyFunctions")
 interface MainContract {
     interface Presenter : BasePresenter<View> {
         fun userIsLoggedIn(): Boolean

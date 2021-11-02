@@ -24,7 +24,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-@Suppress("TooManyFunctions")
 @ExperimentalCoroutinesApi
 class MediaFileUploadHandler @Inject constructor(
     private val notificationHandler: ProductImagesNotificationHandler,

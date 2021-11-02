@@ -50,7 +50,8 @@ class MainActivityViewModel @Inject constructor(
         notification?.let {
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()
-            if (it.remoteSiteId != currentSite.siteId) {
+            val isSiteSpecificNotification = it.remoteSiteId != 0L
+            if (isSiteSpecificNotification && it.remoteSiteId != currentSite.siteId) {
                 // Update selected store
                 siteStore.getSiteBySiteId(it.remoteSiteId)?.let { updatedSite ->
                     selectedSite.set(updatedSite)

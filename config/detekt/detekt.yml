@@ -8,7 +8,7 @@ complexity:
     ignoreDefaultParameters: true
     ignoreAnnotated: ['Inject']
   TooManyFunctions:
-    ignoreOverridden: true
+    active: false
 
 formatting:
   active: true

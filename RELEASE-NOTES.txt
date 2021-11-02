@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+7.9
+-----
+[**] Merchants can now edit Customer Notes, shipping, and billing addresses from orders. [https://github.com/woocommerce/woocommerce-android/pull/5106]
+
 7.8
 -----
 - [*] In-Person Payments: Long click on the readers name copies it to the clipboard

@@ -261,6 +261,21 @@
     <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_loading">Looking up your orders…</string>
+    <string name="orderlist_no_filters_title">All Orders</string>
+    <string name="orderlist_filters_title">Filtered Orders</string>
+    <!--
+        Order Filters
+    -->
+    <string name="orderfilters_show_orders_button">Show Orders</string>
+    <string name="orderfilters_default_filter_value">All</string>
+    <string name="orderfilters_order_status_filter">Order Status</string>
+    <string name="orderfilters_date_range_filter">Date Range</string>
+    <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
+    <string name="orderfilters_filter_order_status_options_title">Order Status</string>
+    <string name="orderfilters_filter_date_range_options_title">Date Range</string>
+    <string name="orderfilters_filters_default_title">Filters</string>
+    <string name="orderfilters_filters_count_title">Filters (%d)</string>
+
     <!--
         Order Detail Views
     -->
@@ -390,6 +405,8 @@
     <string name="order_detail_add_shipping_address">Add shipping address</string>
     <string name="order_detail_add_billing_address">Add billing address</string>
     <string name="orderdetail_empty_address">No address specified</string>
+    <string name="order_detail_use_as_billing_address">Use as Billing Address</string>
+    <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
 
     <!--
         Shipping label Refunds
@@ -941,8 +958,8 @@
     -->
     <string name="new_notifications">%d new notifications</string>
     <string name="more_notifications">and %d more.</string>
-    <string name="notification_order_title">You have 1 new order! 🎉</string>
-    <string name="notification_review_title">You have 1 new review! 🌟</string>
+    <string name="notification_order_title">You have a new order! 🎉</string>
+    <string name="notification_review_title">You have a new review! 🌟</string>
     <!--
         Product Review Detail
     -->
@@ -1277,6 +1294,7 @@
     <string name="privacy_settings">Privacy settings</string>
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
+    <string name="beta_features_message">View Add-ons, quick order</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
@@ -1287,6 +1305,8 @@
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
+    <string name="settings_enable_quick_order_teaser_title">Quick order</string>
+    <string name="settings_enable_quick_order_teaser_message">Test out creating orders with minimal information as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
@@ -1599,6 +1619,16 @@
     <!-- Jetpack Connection Package -->
     <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">See the benefits</string>
+    <string name="jetpack_benefits_modal_title">Get the most out of your store</string>
+    <string name="jetpack_benefits_modal_subtitle">Install the free Jetpack plugin to experience the best mobile experience.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Push Notifications</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Get push notifications for new orders, reviews, etc. delivered to your device.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analytics</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">New analytics views, let you see visitors, reports and more.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">User Profiles</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Allow multiple users to access WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Install Jetpack</string>
+    <string name="jetpack_benefits_modal_dismiss">Not Now</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

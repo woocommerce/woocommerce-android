@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.orders.details.editing
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
@@ -60,29 +62,53 @@ class OrderEditingViewModel @Inject constructor(
         }
     }
 
-    fun updateCustomerOrderNote(updatedNote: String): Boolean {
-        return if (checkConnectionAndResetState()) {
-            launch(dispatchers.io) {
-                collectUpdateFlow(orderEditingRepository.updateCustomerOrderNote(order.localId, updatedNote))
-            }
-            true
+    fun updateCustomerOrderNote(updatedNote: String) = runWhenUpdateIsPossible {
+        orderEditingRepository.updateCustomerOrderNote(
+            order.localId, updatedNote
+        ).collectTracking(AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE)
+    }
+
+    fun updateShippingAddress(updatedShippingAddress: Address) = runWhenUpdateIsPossible {
+        if (viewState.replicateBothAddressesToggleActivated == true) {
+            sendReplicateShippingAndBillingAddressesWith(updatedShippingAddress)
         } else {
-            false
-        }
+            orderEditingRepository.updateOrderAddress(
+                order.localId,
+                updatedShippingAddress.toShippingAddressModel()
+            )
+        }.collectTracking(AnalyticsTracker.ORDER_EDIT_SHIPPING_ADDRESS)
     }
 
-    fun updateShippingAddress(shippingAddress: Address): Boolean {
-        // Will be implemented in future PRs, making a unrelated call to avoid lint issues
-        return shippingAddress.hasInfo()
+    fun updateBillingAddress(updatedBillingAddress: Address) = runWhenUpdateIsPossible {
+        if (viewState.replicateBothAddressesToggleActivated == true) {
+            sendReplicateShippingAndBillingAddressesWith(updatedBillingAddress)
+        } else {
+            orderEditingRepository.updateOrderAddress(
+                order.localId,
+                updatedBillingAddress.toBillingAddressModel()
+            )
+        }.collectTracking(AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS)
     }
 
-    fun updateBillingAddress(billingAddress: Address): Boolean {
-        // Will be implemented in future PRs, making a unrelated call to avoid lint issues
-        return billingAddress.hasInfo()
+    private suspend fun sendReplicateShippingAndBillingAddressesWith(orderAddress: Address) =
+        orderEditingRepository.updateBothOrderAddresses(
+            order.localId,
+            orderAddress.toShippingAddressModel(),
+            orderAddress.toBillingAddressModel(
+                customEmail = orderAddress.email
+                    .takeIf { it.isNotEmpty() }
+                    ?: order.billingAddress.email
+            )
+        )
+
+    fun onReplicateAddressSwitchChanged(enabled: Boolean) {
+        viewState = viewState.copy(replicateBothAddressesToggleActivated = enabled)
     }
 
-    private suspend fun collectUpdateFlow(flow: Flow<WCOrderStore.UpdateOrderResult>) {
-        flow.collect { result ->
+    private suspend fun Flow<WCOrderStore.UpdateOrderResult>.collectTracking(
+        editingSubject: String
+    ) {
+        collect { result ->
             when (result) {
                 is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {
                     withContext(Dispatchers.Main) {
@@ -90,19 +116,34 @@ class OrderEditingViewModel @Inject constructor(
                     }
                 }
                 is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
-                    if (result.event.isError) {
+                    val stat = if (result.event.isError) {
                         withContext(Dispatchers.Main) {
                             viewState = viewState.copy(orderEditingFailed = true)
                         }
+                        Stat.ORDER_DETAIL_EDIT_FLOW_FAILED
+                    } else {
+                        Stat.ORDER_DETAIL_EDIT_FLOW_COMPLETED
                     }
+
+                    AnalyticsTracker.track(
+                        stat,
+                        mapOf(AnalyticsTracker.KEY_SUBJECT to editingSubject)
+                    )
                 }
             }
         }
     }
 
+    private inline fun runWhenUpdateIsPossible(
+        crossinline action: suspend () -> Unit
+    ) = checkConnectionAndResetState().also {
+        if (it) launch(dispatchers.io) { action() }
+    }
+
     @Parcelize
     data class ViewState(
         val orderEdited: Boolean? = null,
-        val orderEditingFailed: Boolean? = null
+        val orderEditingFailed: Boolean? = null,
+        val replicateBothAddressesToggleActivated: Boolean? = null
     ) : Parcelable
 }

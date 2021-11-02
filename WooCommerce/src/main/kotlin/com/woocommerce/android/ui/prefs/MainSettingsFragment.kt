@@ -62,6 +62,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onRequestLogout()
         fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
+        fun onQuickOrderOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -161,8 +162,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
-
-        binding.optionBetaFeatures.optionValue = getString(R.string.settings_enable_product_addons_teaser_title)
 
         binding.optionPrivacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
