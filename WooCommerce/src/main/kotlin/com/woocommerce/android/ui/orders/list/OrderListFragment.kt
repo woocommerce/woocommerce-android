@@ -100,6 +100,7 @@ class OrderListFragment :
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private val searchHandler = Handler()
+    private var quickOrderMenuItem: MenuItem? = null
 
     private var _binding: FragmentOrderListBinding? = null
     private val binding get() = _binding!!
@@ -147,9 +148,7 @@ class OrderListFragment :
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
-        if (FeatureFlag.QUICK_ORDER.isEnabled() && AppPrefs.isQuickOrderEnabled) {
-            menu.findItem(R.id.menu_add)?.setVisible(true)
-        }
+        quickOrderMenuItem = menu.findItem(R.id.menu_add)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -268,6 +267,7 @@ class OrderListFragment :
         searchView = null
         orderListMenu = null
         searchMenuItem = null
+        quickOrderMenuItem = null
         super.onDestroyView()
         _binding = null
     }
@@ -289,6 +289,10 @@ class OrderListFragment :
                 if (it.isActionViewExpanded) it.collapseActionView()
                 if (it.isVisible != showSearch) it.isVisible = showSearch
             }
+        }
+
+        if (FeatureFlag.QUICK_ORDER.isEnabled() && AppPrefs.isQuickOrderEnabled) {
+            quickOrderMenuItem?.setVisible(true)
         }
     }
 
