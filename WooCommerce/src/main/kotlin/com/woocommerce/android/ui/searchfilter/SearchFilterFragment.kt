@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSearchFilterBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -99,6 +101,13 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter), OnQu
             )
             adapter = searchFilterAdapter
             searchFilterAdapter.setItems(searchFilterItems.toList())
+            addItemDecoration(
+                AlignedDividerDecoration(
+                    ctx = context,
+                    orientation = DividerItemDecoration.VERTICAL,
+                    alignStartToStartOf = R.id.filterItemName
+                )
+            )
         }
     }
 }
