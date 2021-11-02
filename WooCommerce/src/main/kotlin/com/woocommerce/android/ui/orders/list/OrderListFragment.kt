@@ -24,6 +24,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -59,6 +61,7 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val STATE_KEY_IS_FILTER_ENABLED = "is_filter_enabled"
+        const val ORDER_FILTER_RESULT_KEY = "order_filter_result"
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val TAB_INDEX_PROCESSING = 0
@@ -390,6 +393,12 @@ class OrderListFragment :
                 } ?: hideEmptyView()
             }
         )
+
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
+                binding.orderFiltersCard.updateFilterSelection(filterCount)
+            }
+        }
     }
 
     private fun showOrderFilters() {
@@ -757,6 +766,12 @@ class OrderListFragment :
 
     private fun setupOrderFilters() {
         binding.orderFiltersCard.isVisible = FeatureFlag.ORDER_FILTERS.isEnabled()
-        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
+        if (FeatureFlag.ORDER_FILTERS.isEnabled()) {
+            binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
+            removeTabLayoutFromAppBar()
+            handleResult<Boolean>(ORDER_FILTER_RESULT_KEY) {
+                viewModel.onFiltersChanged(it)
+            }
+        }
     }
 }
