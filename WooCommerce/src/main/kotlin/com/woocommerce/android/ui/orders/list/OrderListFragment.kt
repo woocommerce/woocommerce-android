@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.widget.EditText
-import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.children
@@ -21,18 +20,15 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.FeedbackPrefs
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
@@ -48,7 +44,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
@@ -65,6 +61,7 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val STATE_KEY_IS_FILTER_ENABLED = "is_filter_enabled"
+        const val ORDER_FILTER_RESULT_KEY = "order_filter_result"
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val TAB_INDEX_PROCESSING = 0
@@ -122,9 +119,6 @@ class OrderListFragment :
     private val emptyView
         get() = binding.orderListView.emptyView
 
-    private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -170,10 +164,6 @@ class OrderListFragment :
                 AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
                 refreshOrders()
             }
-        }
-
-        if (FeatureFlag.QUICK_ORDER.isEnabled()) {
-            displayQuickOrderWIPCard(true)
         }
 
         initializeViewModel()
@@ -403,6 +393,12 @@ class OrderListFragment :
                 } ?: hideEmptyView()
             }
         )
+
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
+                binding.orderFiltersCard.updateFilterSelection(filterCount)
+            }
+        }
     }
 
     private fun showOrderFilters() {
@@ -770,60 +766,12 @@ class OrderListFragment :
 
     private fun setupOrderFilters() {
         binding.orderFiltersCard.isVisible = FeatureFlag.ORDER_FILTERS.isEnabled()
-        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
-    }
-
-    private fun displayQuickOrderWIPCard(show: Boolean) {
-        if (!show || feedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED) {
-            binding.quickOrderWIPcard.isVisible = false
-            return
+        if (FeatureFlag.ORDER_FILTERS.isEnabled()) {
+            binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
+            removeTabLayoutFromAppBar()
+            handleResult<Boolean>(ORDER_FILTER_RESULT_KEY) {
+                viewModel.onFiltersChanged(it)
+            }
         }
-
-        val isEnabled = AppPrefs.isQuickOrderEnabled
-        @StringRes val messageId = if (isEnabled) {
-            R.string.orderlist_quickorder_wip_message_enabled
-        } else {
-            R.string.orderlist_quickorder_wip_message_disabled
-        }
-
-        binding.quickOrderWIPcard.isVisible = true
-        binding.quickOrderWIPcard.initView(
-            getString(R.string.orderlist_quickorder_wip_title),
-            getString(messageId),
-            onGiveFeedbackClick = { onGiveFeedbackClicked() },
-            onDismissClick = { onDismissWIPCardClicked() },
-            showFeedbackButton = isEnabled
-        )
-    }
-
-    private fun onGiveFeedbackClicked() {
-        AnalyticsTracker.track(
-            Stat.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_QUICK_ORDER_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-            )
-        )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
-        NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.QUICK_ORDER)
-            .apply { findNavController().navigateSafely(this) }
-    }
-
-    private fun onDismissWIPCardClicked() {
-        AnalyticsTracker.track(
-            Stat.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_QUICK_ORDER_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-            )
-        )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-        displayQuickOrderWIPCard(false)
-    }
-
-    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
-        FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.QUICK_ORDER.name, state)
-            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 }

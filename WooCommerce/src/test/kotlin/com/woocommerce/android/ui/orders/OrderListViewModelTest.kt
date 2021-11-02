@@ -1,21 +1,14 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.reset
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -38,6 +31,14 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
@@ -60,7 +61,7 @@ import kotlin.test.assertTrue
 class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
-    private val repository: OrderListRepository = mock()
+    private val orderListRepository: OrderListRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val resourceProvider: ResourceProvider = mock()
@@ -72,6 +73,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
     private val orderFetcher: WCOrderFetcher = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val orderFiltersRepository: OrderFiltersRepository = mock()
 
     @Before
     fun setup() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -87,14 +89,14 @@ class OrderListViewModelTest : BaseUnitTest() {
                 lifecycle = any()
             )
         ).doReturn(pagedListWrapper)
-        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(SiteModel()).whenever(selectedSite).get()
 
         viewModel = OrderListViewModel(
             savedState = savedStateHandle,
             dispatchers = coroutinesTestRule.testDispatchers,
-            repository = repository,
+            orderListRepository = orderListRepository,
             orderStore = orderStore,
             listStore = listStore,
             networkStatus = networkStatus,
@@ -102,7 +104,8 @@ class OrderListViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             fetcher = orderFetcher,
             resourceProvider = resourceProvider,
-            wooCommerceStore = wooCommerceStore
+            wooCommerceStore = wooCommerceStore,
+            orderFiltersRepository = orderFiltersRepository
         )
     }
 
@@ -114,31 +117,31 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Cached order status options fetched and emitted during initialization`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            verify(repository, times(1)).getCachedOrderStatusOptions()
+            verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
             assertEquals(viewModel.orderStatusOptions.getOrAwaitValue(), orderStatusOptions)
         }
 
     @Test
     fun `request to load new list fetches order status options and payment gateways if connected`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
+            doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
-            clearInvocations(repository)
+            clearInvocations(orderListRepository)
             viewModel.submitSearchOrFilter()
 
             verify(viewModel.activePagedListWrapper, times(1))?.fetchFirstPage()
-            verify(repository, times(1)).fetchOrderStatusOptionsFromApi()
-            verify(repository, times(1)).getCachedOrderStatusOptions()
-            verify(repository, times(1)).fetchPaymentGateways()
+            verify(orderListRepository, times(1)).fetchOrderStatusOptionsFromApi()
+            verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
+            verify(orderListRepository, times(1)).fetchPaymentGateways()
         }
 
     @Test
     fun `load orders for ALL tab activates list wrapper`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
         viewModel.initializeListsForMainTabs()
         viewModel.loadAllList()
@@ -153,9 +156,9 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `load orders for ALL tab after initial run does not fetch first page`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
+            doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
             viewModel.initializeListsForMainTabs()
             clearInvocations(viewModel.allPagedListWrapper)
@@ -171,12 +174,12 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `load orders for PROCESSING activates list wrapper and fetches first page`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
+            doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
             viewModel.initializeListsForMainTabs()
-            clearInvocations(repository)
+            clearInvocations(orderListRepository)
             clearInvocations(viewModel.processingPagedListWrapper)
             viewModel.loadProcessingList()
 
@@ -190,9 +193,9 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `load orders for PROCESSING tab after initial run does not fetch first page`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
+            doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
             viewModel.initializeListsForMainTabs()
             viewModel.loadProcessingList()
@@ -213,13 +216,13 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Request to fetch order status options emits options`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
 
-        clearInvocations(repository)
+        clearInvocations(orderListRepository)
         viewModel.fetchOrderStatusOptions()
 
-        verify(repository, times(1)).fetchOrderStatusOptionsFromApi()
-        verify(repository, times(1)).getCachedOrderStatusOptions()
+        verify(orderListRepository, times(1)).fetchOrderStatusOptionsFromApi()
+        verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
         assertEquals(viewModel.orderStatusOptions.getOrAwaitValue(), orderStatusOptions)
     }
 
@@ -268,7 +271,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `Display 'No orders yet' empty view when no orders for site for ALL tab`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             viewModel.isSearching = false
-            doReturn(true).whenever(repository).hasCachedOrdersForSite()
+            doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
 
             whenever(pagedListWrapper.data.value).doReturn(mock())
             whenever(pagedListWrapper.isEmpty.value).doReturn(true)
@@ -304,7 +307,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             viewModel.isSearching = false
             viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
-            doReturn(true).whenever(repository).hasCachedOrdersForSite()
+            doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
 
             whenever(pagedListWrapper.data.value).doReturn(mock())
             whenever(pagedListWrapper.isEmpty.value).doReturn(true)
@@ -339,7 +342,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             viewModel.isSearching = false
             viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
-            doReturn(true).whenever(repository).hasCachedOrdersForSite()
+            doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
 
             whenever(pagedListWrapper.data.value).doReturn(mock())
             whenever(pagedListWrapper.isEmpty.value).doReturn(true)
@@ -509,11 +512,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Payment gateways are fetched if network connected and variable set when successful`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
             viewModel.fetchPaymentGateways()
 
-            verify(repository, times(1)).fetchPaymentGateways()
+            verify(orderListRepository, times(1)).fetchPaymentGateways()
             assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
         }
 
@@ -524,24 +527,24 @@ class OrderListViewModelTest : BaseUnitTest() {
 
             viewModel.fetchPaymentGateways()
 
-            verify(repository, times(0)).fetchPaymentGateways()
+            verify(orderListRepository, times(0)).fetchPaymentGateways()
             assertFalse(viewModel.viewState.arePaymentGatewaysFetched)
         }
 
     @Test
     fun `Payment gateways are not fetched if already fetched and network connected`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
             // Fetch the first time around
             viewModel.fetchPaymentGateways()
-            verify(repository, times(1)).fetchPaymentGateways()
+            verify(orderListRepository, times(1)).fetchPaymentGateways()
             assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
-            clearInvocations(repository)
+            clearInvocations(orderListRepository)
 
             // Try to fetch a second time
             viewModel.fetchPaymentGateways()
-            verify(repository, times(0)).fetchPaymentGateways()
+            verify(orderListRepository, times(0)).fetchPaymentGateways()
             assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
         }
 
@@ -559,8 +562,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Request refresh for active list when received new order notification and is in search`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
             viewModel.isSearching = true
             viewModel.initializeListsForMainTabs()
 

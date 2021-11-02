@@ -18,13 +18,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.*
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
@@ -64,7 +67,7 @@ typealias PagedOrdersList = PagedList<OrderListItemUIType>
 class OrderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    protected val repository: OrderListRepository,
+    protected val orderListRepository: OrderListRepository,
     private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
@@ -72,11 +75,13 @@ class OrderListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val orderFiltersRepository: OrderFiltersRepository
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
+
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
     internal var allPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
@@ -90,7 +95,7 @@ class OrderListViewModel @Inject constructor(
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
 
-    protected val _pagedListData = MediatorLiveData<PagedOrdersList>()
+    private val _pagedListData = MediatorLiveData<PagedOrdersList>()
     val pagedListData: LiveData<PagedOrdersList> = _pagedListData
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()
@@ -99,7 +104,7 @@ class OrderListViewModel @Inject constructor(
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
     val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
-    protected val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
+    private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
 
     private val _isEmpty = MediatorLiveData<Boolean>()
@@ -129,7 +134,7 @@ class OrderListViewModel @Inject constructor(
         launch {
             // Populate any cached order status options immediately since we use this
             // value in many different places in the order list view.
-            _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
+            _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
 
             // refresh plugin information
             if (selectedSite.exists()) {
@@ -227,9 +232,10 @@ class OrderListViewModel @Inject constructor(
     fun fetchOrderStatusOptions() {
         launch(dispatchers.main) {
             // Fetch and load order status options
-            when (repository.fetchOrderStatusOptionsFromApi()) {
-                SUCCESS -> _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
-                else -> { /* do nothing */ }
+            when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
+                SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
+                else -> { /* do nothing */
+                }
             }
         }
     }
@@ -239,7 +245,7 @@ class OrderListViewModel @Inject constructor(
      */
     suspend fun fetchPaymentGateways() {
         if (networkStatus.isConnected() && !viewState.arePaymentGatewaysFetched) {
-            when (repository.fetchPaymentGateways()) {
+            when (orderListRepository.fetchPaymentGateways()) {
                 SUCCESS -> {
                     viewState = viewState.copy(arePaymentGatewaysFetched = true)
                 }
@@ -337,7 +343,7 @@ class OrderListViewModel @Inject constructor(
         val isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
             wrapper.data.value == null
         val isListEmpty = wrapper.isEmpty.value ?: true
-        val hasOrders = repository.hasCachedOrdersForSite()
+        val hasOrders = orderListRepository.hasCachedOrdersForSite()
         val isError = wrapper.listError.value != null
 
         val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
@@ -394,7 +400,7 @@ class OrderListViewModel @Inject constructor(
         clearLiveDataSources(activePagedListWrapper)
         EventBus.getDefault().unregister(this)
         dispatcher.unregister(this)
-        repository.onCleanup()
+        orderListRepository.onCleanup()
         super.onCleared()
     }
 
@@ -404,7 +410,8 @@ class OrderListViewModel @Inject constructor(
         when (event.causeOfChange) {
             // A child fragment made a change that requires a data refresh.
             UPDATE_ORDER_STATUS -> activePagedListWrapper?.fetchFirstPage()
-            else -> {}
+            else -> {
+            }
         }
     }
 
@@ -462,6 +469,32 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
+    fun onFiltersChanged(filtersChanged: Boolean) {
+        if (filtersChanged) {
+            if (networkStatus.isConnected()) {
+                val selectedFilters = orderFiltersRepository.getCachedFiltersSelection()
+                refreshOrders(selectedFilters)
+                val selectedFilterCount = selectedFilters.values
+                    .map { it.count() }
+                    .sum()
+                viewState = viewState.copy(filterCount = selectedFilterCount)
+            } else {
+                viewState = viewState.copy(isRefreshPending = true)
+                showOfflineSnack()
+            }
+        }
+    }
+
+    private fun refreshOrders(orderListFilters: Map<OrderListFilterCategory, List<String>>) {
+        val listDescriptor = WCOrderListDescriptor(
+            selectedSite.get(),
+            orderListFilters[OrderListFilterCategory.ORDER_STATUS]?.joinToString(separator = ",")
+        )
+        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+
+        activatePagedListWrapper(pagedListWrapper)
+    }
+
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
@@ -470,6 +503,7 @@ class OrderListViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isRefreshPending: Boolean = false,
-        val arePaymentGatewaysFetched: Boolean = false
+        val arePaymentGatewaysFetched: Boolean = false,
+        val filterCount: Int = 0
     ) : Parcelable
 }
