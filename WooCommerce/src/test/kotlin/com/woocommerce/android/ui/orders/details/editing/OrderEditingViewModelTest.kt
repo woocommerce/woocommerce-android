@@ -56,6 +56,12 @@ class OrderEditingViewModelTest : BaseUnitTest() {
                 on { getOrder(any()) } doReturn originalOrder
             }
 
+            orderEditingRepository.stub {
+                onBlocking {
+                    updateBothOrderAddresses(any(), any(), any())
+                } doReturn flowOf()
+            }
+
             sut.apply {
                 start()
                 onReplicateAddressSwitchChanged(true)
