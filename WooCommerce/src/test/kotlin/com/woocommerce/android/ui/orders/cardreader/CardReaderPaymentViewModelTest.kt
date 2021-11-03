@@ -41,6 +41,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import java.math.BigDecimal
 import kotlin.test.assertEquals
@@ -97,6 +98,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(orderRepository.getOrder(any())).thenReturn(mockedOrder)
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("GBP")
+        whenever(mockedOrder.remoteId).thenReturn(LocalOrRemoteId.RemoteId(DUMMY_ORDER_NUMBER.toLong()))
         whenever(currencyFormatter.formatAmountWithCurrency("GBP", DUMMY_TOTAL.toDouble()))
             .thenReturn("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
         val address = mock<Address>()

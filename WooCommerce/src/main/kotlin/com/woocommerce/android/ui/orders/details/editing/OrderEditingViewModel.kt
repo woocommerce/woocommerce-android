@@ -63,7 +63,7 @@ class OrderEditingViewModel @Inject constructor(
 
     fun updateCustomerOrderNote(updatedNote: String) = runWhenUpdateIsPossible {
         orderEditingRepository.updateCustomerOrderNote(
-            order.localId, updatedNote
+            order.remoteId, updatedNote
         ).collect()
     }
 
@@ -72,7 +72,7 @@ class OrderEditingViewModel @Inject constructor(
             sendReplicateShippingAndBillingAddressesWith(updatedShippingAddress)
         } else {
             orderEditingRepository.updateOrderAddress(
-                order.localId,
+                order.remoteId,
                 updatedShippingAddress.toShippingAddressModel()
             )
         }.collect()
@@ -83,7 +83,7 @@ class OrderEditingViewModel @Inject constructor(
             sendReplicateShippingAndBillingAddressesWith(updatedBillingAddress)
         } else {
             orderEditingRepository.updateOrderAddress(
-                order.localId,
+                order.remoteId,
                 updatedBillingAddress.toBillingAddressModel()
             )
         }.collect()
@@ -91,7 +91,7 @@ class OrderEditingViewModel @Inject constructor(
 
     private suspend fun sendReplicateShippingAndBillingAddressesWith(orderAddress: Address) =
         orderEditingRepository.updateBothOrderAddresses(
-            order.localId,
+            order.remoteId,
             orderAddress.toShippingAddressModel(),
             orderAddress.toBillingAddressModel(
                 customEmail = order.billingAddress.email

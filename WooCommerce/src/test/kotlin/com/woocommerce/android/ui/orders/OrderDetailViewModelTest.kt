@@ -468,8 +468,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
                 )
             ).whenever(repository).getWooServicesPluginInfo()
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
-            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -516,8 +516,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             ).whenever(repository).getWooServicesPluginInfo()
 
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
-            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -597,8 +597,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             ).whenever(repository).getWooServicesPluginInfo()
 
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
-            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -716,7 +716,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         snackbar?.undoAction?.onClick(mock())
         assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
-        verify(repository, times(2)).updateOrderStatus(eq(order.localId), statusChangeCaptor.capture())
+        verify(repository, times(2)).updateOrderStatus(eq(order.remoteId), statusChangeCaptor.capture())
 
         assertThat(listOf(initialStatus) + statusChangeCaptor.allValues).containsExactly(
             initialStatus, newStatus, initialStatus
@@ -826,8 +826,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
             .whenever(repository).getWooServicesPluginInfo()
-        doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
-        doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+        doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
+        doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
@@ -889,8 +889,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             )
                 .whenever(repository).getWooServicesPluginInfo()
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
-            doReturn(false).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
+            doReturn(false).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())

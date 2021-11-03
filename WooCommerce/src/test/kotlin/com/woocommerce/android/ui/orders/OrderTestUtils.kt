@@ -6,6 +6,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
@@ -20,7 +21,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 object OrderTestUtils {
-    const val TEST_LOCAL_SITE_ID = 1
+    val TEST_LOCAL_SITE_ID = LocalOrRemoteId.LocalId(1)
+    val TEST_REMOTE_ORDER_ID = LocalOrRemoteId.RemoteId(2)
     const val TEST_ORDER_STATUS_COUNT = 20
 
     /**
@@ -35,6 +37,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-01-05T05:14:30Z",
             localSiteId = TEST_LOCAL_SITE_ID,
+            remoteOrderId = TEST_REMOTE_ORDER_ID,
             number = "51",
             status = "processing",
             total = "14.53",
@@ -47,6 +50,7 @@ object OrderTestUtils {
             currency = "CAD",
             dateCreated = "2017-12-08T16:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
+            remoteOrderId = TEST_REMOTE_ORDER_ID,
             number = "63",
             status = "pending",
             total = "106.00",
@@ -59,6 +63,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-02-05T16:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
+            remoteOrderId = TEST_REMOTE_ORDER_ID,
             number = "14",
             status = "processing",
             total = "25.73",
@@ -71,6 +76,7 @@ object OrderTestUtils {
             currency = "CAD",
             dateCreated = "2018-02-06T09:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
+            remoteOrderId = TEST_REMOTE_ORDER_ID,
             number = "15",
             status = "pending, on-hold, complete",
             total = "106.00",
@@ -83,6 +89,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-02-05T16:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
+            remoteOrderId = TEST_REMOTE_ORDER_ID,
             number = "3",
             status = "pending",
             total = "106.00",
@@ -95,6 +102,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
+            remoteOrderId = TEST_REMOTE_ORDER_ID,
             number = "55",
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
@@ -118,6 +126,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
+            remoteOrderId = TEST_REMOTE_ORDER_ID,
             number = "55",
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
@@ -161,7 +170,7 @@ object OrderTestUtils {
         val result = ArrayList<WCOrderShipmentProviderModel>()
         result.add(
             WCOrderShipmentProviderModel().apply {
-                localSiteId = TEST_LOCAL_SITE_ID
+                localSiteId = TEST_LOCAL_SITE_ID.value
                 country = "Australia"
                 carrierName = "Anitaa Test"
                 carrierLink = "http://google.com"
@@ -174,7 +183,7 @@ object OrderTestUtils {
     fun generateOrderStatusOptions(): List<WCOrderStatusModel> {
         return CoreOrderStatus.values().map {
             WCOrderStatusModel().apply {
-                localSiteId = TEST_LOCAL_SITE_ID
+                localSiteId = TEST_LOCAL_SITE_ID.value
                 statusKey = it.value
                 label = it.value
                 statusCount = TEST_ORDER_STATUS_COUNT
@@ -260,8 +269,8 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = orderIdSet.localSiteId,
-            remoteOrderId = orderIdSet.remoteOrderId,
+            localSiteId = LocalOrRemoteId.LocalId(orderIdSet.localSiteId),
+            remoteOrderId = LocalOrRemoteId.RemoteId(orderIdSet.remoteOrderId),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -308,8 +317,8 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = orderIdSet.localSiteId,
-            remoteOrderId = orderIdSet.remoteOrderId,
+            localSiteId = LocalOrRemoteId.LocalId(orderIdSet.localSiteId),
+            remoteOrderId = LocalOrRemoteId.RemoteId(orderIdSet.remoteOrderId),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -343,8 +352,8 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = orderIdSet.localSiteId,
-            remoteOrderId = orderIdSet.remoteOrderId,
+            localSiteId = LocalOrRemoteId.LocalId(orderIdSet.localSiteId),
+            remoteOrderId = LocalOrRemoteId.RemoteId(orderIdSet.remoteOrderId),
             number = "55",
             status = "pending",
             total = "106.00",

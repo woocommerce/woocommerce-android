@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.main
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -212,7 +213,7 @@ class MainPresenterTest : BaseUnitTest() {
     private fun generateFakeOrders(size: Int): List<WCOrderModel> {
         return mutableListOf<WCOrderModel>().also { list ->
             repeat(size) { repeatCount ->
-                list.add(WCOrderModel(id = repeatCount))
+                list.add(OrderTestUtils.generateOrder())
             }
         }
     }

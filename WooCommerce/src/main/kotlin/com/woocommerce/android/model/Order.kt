@@ -22,8 +22,7 @@ data class Order(
     @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
     val identifier: OrderIdentifier,
     private val rawLocalOrderId: Int,
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
-    val remoteId: Long,
+    private val rawRemoteOrderId: Long,
     val number: String,
     val dateCreated: Date,
     val dateModified: Date,
@@ -52,8 +51,12 @@ data class Order(
     val shippingLines: List<ShippingLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
+    @Deprecated(message = "")
     val localId
         get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
+
+    val remoteId
+        get() = LocalOrRemoteId.RemoteId(this.rawRemoteOrderId)
 
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -240,10 +243,11 @@ data class Order(
 }
 
 fun WCOrderModel.toAppModel(): Order {
+    @Suppress("DEPRECATION_ERROR")
     return Order(
         identifier = OrderIdentifier(this),
         rawLocalOrderId = this.id,
-        remoteId = this.remoteOrderId,
+        rawRemoteOrderId = this.remoteOrderId.value,
         number = this.number,
         dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
         dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),

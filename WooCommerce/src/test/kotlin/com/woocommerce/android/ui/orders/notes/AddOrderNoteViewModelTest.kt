@@ -147,7 +147,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
             doReturn(
                 OnOrderChanged()
-            ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), any())
+            ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId.value), any())
 
             initViewModel()
 
@@ -159,7 +159,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.pushOrderNote()
 
             verify(repository, times(1)).addOrderNote(
-                eq(REMOTE_ORDER_ID), eq(testOrder.remoteId),
+                eq(REMOTE_ORDER_ID), eq(testOrder.remoteId.value),
                 argThat {
                     this.note == note
                     this.isCustomerNote == isCustomerNote
@@ -202,7 +202,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
             doReturn(
                 OnOrderChanged().apply { this.error = OrderError(GENERIC_ERROR) }
-            ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), any())
+            ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId.value), any())
 
             initViewModel()
 
@@ -214,7 +214,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.pushOrderNote()
 
             verify(repository, times(1)).addOrderNote(
-                eq(REMOTE_ORDER_ID), eq(testOrder.remoteId),
+                eq(REMOTE_ORDER_ID), eq(testOrder.remoteId.value),
                 argThat {
                     this.note == note
                     this.isCustomerNote == isCustomerNote

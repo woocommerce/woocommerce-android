@@ -4,7 +4,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.OrderUpdateStore
@@ -21,26 +21,27 @@ class OrderEditingRepository @Inject constructor(
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)!!.toAppModel()
 
     suspend fun updateCustomerOrderNote(
-        orderLocalId: LocalId,
+        remoteOrderId: LocalOrRemoteId.RemoteId,
         customerOrderNote: String
     ): Flow<WCOrderStore.UpdateOrderResult> {
-        return orderUpdateStore.updateCustomerOrderNote(orderLocalId, selectedSite.get(), customerOrderNote)
+        return orderUpdateStore.updateCustomerOrderNote(remoteOrderId, selectedSite.get(), customerOrderNote)
     }
 
     suspend fun updateOrderAddress(
-        orderLocalId: LocalId,
+        remoteOrderId: LocalOrRemoteId.RemoteId,
         orderAddress: OrderAddress
     ): Flow<WCOrderStore.UpdateOrderResult> {
-        return orderUpdateStore.updateOrderAddress(orderLocalId, orderAddress)
+        return orderUpdateStore.updateOrderAddress(remoteOrderId, selectedSite.get().localId(), orderAddress)
     }
 
     suspend fun updateBothOrderAddresses(
-        orderLocalId: LocalId,
+        remoteOrderId: LocalOrRemoteId.RemoteId,
         shippingAddress: OrderAddress.Shipping,
         billingAddress: OrderAddress.Billing
     ): Flow<WCOrderStore.UpdateOrderResult> {
         return orderUpdateStore.updateBothOrderAddresses(
-            orderLocalId,
+            remoteOrderId,
+            selectedSite.get().localId(),
             shippingAddress,
             billingAddress
         )
