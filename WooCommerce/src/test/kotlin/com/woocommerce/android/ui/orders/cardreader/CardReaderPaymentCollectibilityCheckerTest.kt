@@ -221,8 +221,6 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    // TODO cardreader remove the following test when the backend issue is fixed
-    // https://github.com/Automattic/woocommerce-payments/issues/2390
     fun `when order has been refunded, then hide collect button `() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = getOrder(refundTotal = 99)
