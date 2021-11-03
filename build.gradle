@@ -62,7 +62,6 @@ tasks.register("detektAll", Detekt) {
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     include("**/*.kt")
     exclude("**/resources/**", "**/build/**")
-    autoCorrect = true
 
     reports {
         html.enabled = true
