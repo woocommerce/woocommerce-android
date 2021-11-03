@@ -34,7 +34,7 @@ class CardReaderWelcomeDialog : DialogFragment(R.layout.card_reader_welcome_dial
 
     private fun initObservers(binding: CardReaderWelcomeDialogBinding) {
         viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
-            UiHelpers.setImageOrHide(binding.illustration, viewState.img)
+            UiHelpers.setImageOrHideInLandscape(binding.illustration, viewState.img)
             UiHelpers.setTextOrHide(binding.headerLabel, viewState.header)
             UiHelpers.setTextOrHide(binding.text, viewState.text)
             UiHelpers.setTextOrHide(binding.actionBtn, viewState.buttonLabel)

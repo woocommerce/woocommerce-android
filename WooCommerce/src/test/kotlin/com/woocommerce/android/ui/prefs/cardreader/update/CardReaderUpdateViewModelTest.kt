@@ -1,165 +1,124 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Initializing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Installing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Success
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.UpToDate
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ExplanationState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateFailedBatteryLow
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class CardReaderUpdateViewModelTest : BaseUnitTest() {
-    private val cardReaderManager: CardReaderManager = mock()
+    private val softwareStatus = MutableStateFlow<SoftwareUpdateStatus>(Unknown)
+    private val cardReaderManager: CardReaderManager = mock {
+        on { softwareUpdateStatus }.thenReturn(softwareStatus)
+    }
     private val tracker: AnalyticsTrackerWrapper = mock()
-
-    @Test
-    fun `on view model init with should emit explanation state`() {
-        // WHEN
-        val viewModel = createViewModel()
-
-        // THEN
-        assertThat(viewModel.viewStateData.value).isInstanceOf(ExplanationState::class.java)
+    companion object {
+        private const val REQUIRED_UPDATE = "Required"
+        private const val OPTIONAL_UPDATE = "Optional"
     }
 
     @Test
-    fun `on view model init with skip update true should emit explanation state`() {
-        // GIVEN
-        val skipUpdate = true
-
-        // WHEN
-        val viewModel = createViewModel(skipUpdate)
-
-        // THEN
-        verifyExplanationState(viewModel, skipUpdate)
-    }
-
-    @Test
-    fun `on view model init with skip update false should emit explanation state`() {
-        // GIVEN
-        val startedByUser = false
-
-        // WHEN
-        val viewModel = createViewModel(startedByUser)
-
-        // THEN
-        verifyExplanationState(viewModel, startedByUser)
-    }
-
-    @Test
-    fun `when click on primary btn explanation state with initializing should emit updating state`() =
+    fun `given required update, when view model created, then installation not started`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            val requiredUpdate = true
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            createViewModel(requiredUpdate = requiredUpdate)
 
             // THEN
-            assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingState::class.java)
+            verify(cardReaderManager, never()).startAsyncSoftwareUpdate()
         }
 
     @Test
-    fun `when click on primary btn explanation state with installing should emit updating state`() =
+    fun `given optional update, when view model created, then installation started`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(
-                flow {
-                    emit(Initializing)
-                    emit(Installing(0f))
-                }
-            )
+            val requiredUpdate = false
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            createViewModel(requiredUpdate = requiredUpdate)
 
             // THEN
-            assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingState::class.java)
+            verify(cardReaderManager).startAsyncSoftwareUpdate()
         }
 
     @Test
-    fun `when click on primary btn explanation state with initializing should emit updating state with values`() =
+    fun `given installation started status, when view model created, then update about to start`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            val status = InstallationStarted
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            val viewModel = createViewModel()
+            softwareStatus.value = status
 
             // THEN
-            verifyUpdatingState(viewModel)
+            val state = viewModel.viewStateData.value as UpdateAboutToStart
+            assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_in_progress_title))
+            assertThat(state.description).isEqualTo(UiStringRes(R.string.card_reader_software_update_description))
+            assertThat(state.progressText).isEqualTo(buildProgressText(0))
+            assertThat(state.progress).isEqualTo(0)
+            assertThat(state.illustration).isEqualTo(R.drawable.img_card_reader_update_progress)
+            assertThat(state.button?.text).isEqualTo(null)
         }
 
     @Test
-    fun `when click on primary btn explanation state with success should emit exit with success result`() =
+    fun `given installing 10 status, when view model created, then updating state with 10`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Success))
+            val status = Installing(.1f)
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            val viewModel = createViewModel()
+            softwareStatus.value = status
 
             // THEN
-            assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
-            assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(UpdateResult.SUCCESS)
+            verifyUpdatingState(viewModel, 10)
         }
 
     @Test
-    fun `when click on primary btn explanation state with up to date should emit exit with skip result`() =
+    fun `given failed status with failed type, when view model created, then exit with failed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
+            val reason = "reason"
+            val status = Failed(SoftwareUpdateStatusErrorType.Failed, reason)
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
-
-            // THEN
-            assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
-            assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(UpdateResult.SKIPPED)
-        }
-
-    @Test
-    fun `when click on primary btn explanation state with failed should emit exit with failed result`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Failed("")))
-
-            // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = status
 
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
@@ -167,108 +126,234 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when click on secondary btn explanation state should emit exit with skip result`() =
+    fun `given failed status with battery low type, when view model created, then battery low status`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
+            val reason = "reason"
+            val batteryLevel = 0.3f
+            val status = Failed(SoftwareUpdateStatusErrorType.BatteryLow(batteryLevel), reason)
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).secondaryButton?.onActionClicked!!.invoke()
+            val viewModel = createViewModel()
+            softwareStatus.value = status
+
+            // THEN
+            val state = viewModel.viewStateData.value as UpdateFailedBatteryLow
+            assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_title_battery_low))
+            assertThat(state.description).isEqualTo(
+                UiStringRes(
+                    R.string.card_reader_software_update_progress_description_low_battery,
+                    listOf(UiString.UiStringText("30"))
+                )
+            )
+            assertThat(state.progressText).isNull()
+            assertThat(state.progress).isNull()
+            assertThat(state.illustration).isEqualTo(R.drawable.img_card_reader_update_failed_battery_low)
+        }
+
+    @Test
+    fun `given failed status with battery low with battery level, when view model created, then special description`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val reason = "reason"
+            val status = Failed(SoftwareUpdateStatusErrorType.BatteryLow(null), reason)
+
+            // WHEN
+            val viewModel = createViewModel()
+            softwareStatus.value = status
+
+            // THEN
+            val state = viewModel.viewStateData.value as UpdateFailedBatteryLow
+            assertThat(state.description).isEqualTo(
+                UiStringRes(
+                    R.string.card_reader_software_update_progress_description_low_battery_level_unknown
+                )
+            )
+        }
+
+    @Test
+    fun `given success status, when view model created, then exit with success`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = Success
+
+            // WHEN
+            val viewModel = createViewModel()
+            softwareStatus.value = status
 
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ExitWithResult::class.java)
-            assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(UpdateResult.SKIPPED)
+            assertThat((viewModel.event.value as ExitWithResult<*>).data).isEqualTo(SUCCESS)
         }
 
     @Test
-    fun `when click on primary btn explanation state should track tap event`() =
+    fun `given success status for required update, when view model created, then success tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
+            val status = Success
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            createViewModel(requiredUpdate = true)
+            softwareStatus.value = status
 
             // THEN
-            verify(tracker).track(CARD_READER_SOFTWARE_UPDATE_TAPPED)
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_SUCCESS,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE
+                )
+            )
         }
 
     @Test
-    fun `when click on primary btn explanation state with success should track success event`() =
+    fun `given success status for optional update, when view model created, then success tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Success))
+            val status = Success
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            createViewModel()
+            softwareStatus.value = status
 
             // THEN
-            verify(tracker).track(CARD_READER_SOFTWARE_UPDATE_SUCCESS)
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_SUCCESS,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE
+                )
+            )
         }
 
     @Test
-    fun `when click on primary btn explanation state with failed should track failed event`() =
+    fun `given failed status for optional update, when view model created, then failed tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Failed("")))
+            val status = Failed(SoftwareUpdateStatusErrorType.Failed, "Failed")
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            createViewModel()
+            softwareStatus.value = status
 
             // THEN
-            verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel",
+                    AnalyticsTracker.KEY_ERROR_DESC to status.message
+                )
+            )
         }
 
     @Test
-    fun `when click on primary btn explanation state with up to date should track error event`() =
+    fun `given required update started, when view model created, then started tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(UpToDate))
+            val status = InstallationStarted
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            createViewModel(requiredUpdate = true)
+            softwareStatus.value = status
 
             // THEN
-            verify(tracker).track(eq(CARD_READER_SOFTWARE_UPDATE_FAILED), anyOrNull(), anyOrNull(), anyOrNull())
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_STARTED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE
+                )
+            )
         }
 
     @Test
-    fun `when click on secondary btn explanation state should track skip event`() =
+    fun `given optional update started, when view model created, then started tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
+            val status = InstallationStarted
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).secondaryButton?.onActionClicked!!.invoke()
+            createViewModel()
+            softwareStatus.value = status
 
             // THEN
-            verify(tracker).track(CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED)
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_STARTED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE
+                )
+            )
         }
 
     @Test
-    fun `given user presses back, when explanation state shown, then dialog dismissed`() =
+    fun `given failed status for required update, when view model created, then failed tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
+            val status = Failed(SoftwareUpdateStatusErrorType.Failed, "")
+
+            // WHEN
+            createViewModel(requiredUpdate = true)
+            softwareStatus.value = status
+
+            // THEN
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel",
+                    AnalyticsTracker.KEY_ERROR_DESC to status.message
+                )
+            )
+        }
+
+    @Test
+    fun `given user presses cancel, when optional update is shown, then failed event is tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            softwareStatus.value = Installing(0.5f)
             val viewModel = createViewModel()
 
             // WHEN
             viewModel.onBackPressed()
+            (viewModel.viewStateData.value as UpdatingCancelingState).button.onActionClicked.invoke()
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(ExitWithResult(FAILED))
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel",
+                    AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
+                )
+            )
+        }
+
+    @Test
+    fun `given user presses cancel, when required update is shown, then failed event is tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            softwareStatus.value = Installing(0.5f)
+            val viewModel = createViewModel(requiredUpdate = true)
+
+            // WHEN
+            viewModel.onBackPressed()
+            (viewModel.viewStateData.value as UpdatingCancelingState).button.onActionClicked.invoke()
+
+            // THEN
+            verify(tracker).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderUpdateViewModel",
+                    AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
+                )
+            )
         }
 
     @Test
     fun `given user presses back, when progress state shown, then dialog not dismissed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
+            softwareStatus.value = InstallationStarted
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(MutableStateFlow(Initializing))
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
 
             // WHEN
             viewModel.onBackPressed()
@@ -278,23 +363,33 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user presses back, when progress state shown, then cancel shown`() =
+    fun `given required update user presses back, when progress state shown, then updating canceling state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(
-                flow {
-                    emit(Initializing)
-                    emit(Installing(0f))
-                }
-            )
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            val requiredUpdate = true
+            val viewModel = createViewModel(requiredUpdate = requiredUpdate)
+            softwareStatus.value = Installing(.1f)
 
             // WHEN
             viewModel.onBackPressed()
 
             // THEN
-            assertThat(viewModel.viewStateData.value).isInstanceOf(UpdatingCancelingState::class.java)
+            verifyUpdatingCancelingState(viewModel, requiredUpdate, 10)
+        }
+
+    @Test
+    fun `given optional update user presses back, when progress state shown, then updating canceling state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val requiredUpdate = false
+            val viewModel = createViewModel(requiredUpdate = requiredUpdate)
+            softwareStatus.value = Installing(.1f)
+
+            // WHEN
+            viewModel.onBackPressed()
+
+            // THEN
+            verifyUpdatingCancelingState(viewModel, requiredUpdate, 10)
         }
 
     @Test
@@ -302,13 +397,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(
-                flow {
-                    emit(Initializing)
-                    emit(Installing(0f))
-                }
-            )
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Installing(0f)
             viewModel.onBackPressed()
 
             // WHEN
@@ -324,19 +413,14 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             // GIVEN
             val currentProgress = 0.2f
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(
-                flow {
-                    emit(Initializing)
-                    emit(Installing(currentProgress))
-                }
-            )
 
             // WHEN
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Installing(currentProgress)
 
             // THEN
-            assertThat((viewModel.viewStateData.value as UpdatingState).progress)
-                .isEqualTo((currentProgress * 100).toInt())
+            val updatingState = viewModel.viewStateData.value as UpdatingState
+            assertThat(updatingState.progressText).isEqualTo(buildProgressText((currentProgress * 100).toInt()))
+            assertThat(updatingState.progress).isEqualTo(20)
         }
 
     @Test
@@ -345,50 +429,59 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             // GIVEN
             val currentProgress = 0.2f
             val viewModel = createViewModel()
-            whenever(cardReaderManager.updateSoftware()).thenReturn(
-                flow {
-                    emit(Initializing)
-                    emit(Installing(currentProgress))
-                }
-            )
-            (viewModel.viewStateData.value as ExplanationState).primaryButton?.onActionClicked!!.invoke()
+            softwareStatus.value = Installing(currentProgress)
 
             // WHEN
             viewModel.onBackPressed()
 
             // THEN
-            assertThat((viewModel.viewStateData.value as UpdatingCancelingState).progress)
-                .isEqualTo((currentProgress * 100).toInt())
+            val updatingCancelingState = viewModel.viewStateData.value as UpdatingCancelingState
+            assertThat(updatingCancelingState.progressText)
+                .isEqualTo(buildProgressText((currentProgress * 100).toInt()))
+            assertThat(updatingCancelingState.progress).isEqualTo(20)
         }
 
-    private fun verifyExplanationState(viewModel: CardReaderUpdateViewModel, startedByUser: Boolean) {
-        val state = viewModel.viewStateData.value as ExplanationState
-        assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_title))
-        assertThat(state.description).isEqualTo(UiStringRes(R.string.card_reader_software_update_description))
-        assertThat(state.primaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_update))
-        assertThat(state.progress).isNull()
-        if (startedByUser) {
-            assertThat(state.secondaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_cancel))
-        } else {
-            assertThat(state.secondaryButton!!.text).isEqualTo(UiStringRes(R.string.card_reader_software_update_skip))
-        }
-    }
-
-    private fun verifyUpdatingState(viewModel: CardReaderUpdateViewModel) {
+    private fun verifyUpdatingState(viewModel: CardReaderUpdateViewModel, progress: Int) {
         val state = viewModel.viewStateData.value as UpdatingState
         assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_in_progress_title))
-        assertThat(state.description).isNull()
-        assertThat(state.progress).isNotNull
-        assertThat(state.progressText).isNotNull
-        assertThat(state.primaryButton).isNull()
-        assertThat(state.secondaryButton).isNull()
+        assertThat(state.description).isEqualTo(UiStringRes(R.string.card_reader_software_update_description))
+        assertThat(state.progressText).isEqualTo(buildProgressText(progress))
+        assertThat(state.progress).isEqualTo(progress)
+        assertThat(state.illustration).isEqualTo(R.drawable.img_card_reader_update_progress)
     }
 
+    private fun verifyUpdatingCancelingState(
+        viewModel: CardReaderUpdateViewModel,
+        requiredUpdate: Boolean,
+        progress: Int
+    ) {
+        val state = viewModel.viewStateData.value as UpdatingCancelingState
+        assertThat(state.title).isEqualTo(UiStringRes(R.string.card_reader_software_update_in_progress_title))
+        if (requiredUpdate) {
+            assertThat(state.description).isEqualTo(
+                UiStringRes(R.string.card_reader_software_update_progress_cancel_required_warning)
+            )
+        } else {
+            assertThat(state.description).isEqualTo(
+                UiStringRes(R.string.card_reader_software_update_progress_cancel_warning)
+            )
+        }
+        assertThat(state.illustration).isEqualTo(R.drawable.img_card_reader_update_progress)
+        assertThat(state.progressText).isEqualTo(buildProgressText(progress))
+        assertThat(state.button.text).isEqualTo(UiStringRes(R.string.cancel_anyway))
+    }
+
+    private fun buildProgressText(progress: Int) =
+        UiStringRes(
+            R.string.card_reader_software_update_progress_indicator,
+            listOf(UiString.UiStringText(progress.toString()))
+        )
+
     private fun createViewModel(
-        startedByUser: Boolean = false
+        requiredUpdate: Boolean = false
     ) = CardReaderUpdateViewModel(
         cardReaderManager,
         tracker,
-        CardReaderUpdateDialogFragmentArgs(startedByUser).initSavedStateHandle()
+        CardReaderUpdateDialogFragmentArgs(requiredUpdate).initSavedStateHandle()
     )
 }

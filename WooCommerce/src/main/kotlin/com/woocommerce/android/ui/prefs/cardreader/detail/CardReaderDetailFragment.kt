@@ -66,7 +66,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                     is CardReaderUpdateScreen ->
                         findNavController().navigateSafely(
                             CardReaderDetailFragmentDirections
-                                .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(event.startedByUser)
+                                .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(requiredUpdate = false)
                         )
                     is ShowSnackbar -> {
                         Snackbar.make(
@@ -119,7 +119,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                     is NotConnectedState -> {
                         with(binding.readerDisconnectedState) {
                             UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
-                            UiHelpers.setImageOrHide(cardReaderDetailIllustration, state.illustration)
+                            UiHelpers.setImageOrHideInLandscape(cardReaderDetailIllustration, state.illustration)
                             UiHelpers.setTextOrHide(cardReaderDetailFirstHintLabel, state.firstHintLabel)
                             UiHelpers.setTextOrHide(cardReaderDetailFirstHintNumberLabel, state.firstHintNumber)
                             UiHelpers.setTextOrHide(cardReaderDetailSecondHintLabel, state.secondHintLabel)
