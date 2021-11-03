@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.orders.filters.data.DateRange.THIS_WEEK
 import com.woocommerce.android.ui.orders.filters.data.DateRange.TODAY
 import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 fun OrderStatusOption.toOrderFilterOptionUiModel(resourceProvider: ResourceProvider) =
@@ -41,13 +40,3 @@ fun DateRange.toDisplayName(resourceProvider: ResourceProvider): String =
             THIS_MONTH -> R.string.orderfilters_date_range_filter_this_month
         }
     )
-
-fun DateRange.toAfterIso8061DateString(dateUtils: DateUtils): String? {
-    val afterDate = when (this) {
-        TODAY -> dateUtils.getDateForTodayAtTheStartOfTheDay()
-        LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(2)
-        THIS_WEEK -> dateUtils.getDateForFirstDayOfCurrentWeek()
-        THIS_MONTH -> dateUtils.getDateForFirstDayOfCurrentMonth()
-    }
-    return dateUtils.toIso8601Format(afterDate)
-}

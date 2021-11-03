@@ -21,7 +21,7 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
     operator fun invoke(): WCOrderListDescriptor {
         val selectedFilters = orderFiltersRepository.getCachedFiltersSelection()
         val dateRangeAfterFilter = selectedFilters[DATE_RANGE]
-            ?.map { OrderFilterDateRangeUiModel.fromValue(it) }
+            ?.map { DateRange.fromValue(it) }
             ?.first()
             ?.toAfterIso8061DateString(dateUtils)
 
@@ -30,6 +30,16 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
             statusFilter = selectedFilters[ORDER_STATUS]?.joinToString(separator = ","),
             afterFilter = dateRangeAfterFilter
         )
+    }
+
+    private fun DateRange.toAfterIso8061DateString(dateUtils: DateUtils): String? {
+        val afterDate = when (this) {
+            TODAY -> dateUtils.getDateForTodayAtTheStartOfTheDay()
+            LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(2)
+            THIS_WEEK -> dateUtils.getDateForFirstDayOfCurrentWeek()
+            THIS_MONTH -> dateUtils.getDateForFirstDayOfCurrentMonth()
+        }
+        return dateUtils.toIso8601Format(afterDate)
     }
 }
 
