@@ -8,9 +8,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
@@ -47,8 +45,12 @@ abstract class BaseAddressEditingFragment :
                 address2 = address2.text,
                 city = city.text,
                 postcode = postcode.text,
-                country = addressViewModel.getCountryCodeFromCountryName(countrySpinner.getText()),
-                state = stateEditText.text
+                country = addressViewModel.countryLocation.code,
+                state = if (shouldShowStateSpinner()) {
+                    addressViewModel.stateLocation.code
+                } else {
+                    stateEditText.text
+                }
             )
         }
 
@@ -59,8 +61,8 @@ abstract class BaseAddressEditingFragment :
         bindTextWatchers()
 
         addressViewModel.start(
-            country = storedAddress.country,
-            state = storedAddress.state
+            countryCode = storedAddress.country,
+            stateCode = storedAddress.state
         )
 
         binding.countrySpinner.setClickListener {
@@ -77,7 +79,8 @@ abstract class BaseAddressEditingFragment :
         updateStateViews()
     }
 
-    override fun hasChanges() = addressDraft != storedAddress
+    override fun hasChanges() =
+        (addressDraft != storedAddress) || binding.replicateAddressSwitch.isChecked
 
     override fun onStop() {
         super.onStop()
@@ -97,10 +100,11 @@ abstract class BaseAddressEditingFragment :
         binding.city.text = city
         binding.postcode.text = postcode
         binding.countrySpinner.setText(getCountryLabelByCountryCode())
-        binding.stateSpinner.setText(state)
+        binding.stateSpinner.setText(addressViewModel.stateLocation.name)
         binding.stateEditText.text = state
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
+            updateDoneMenuItem()
         }
     }
 
@@ -117,27 +121,15 @@ abstract class BaseAddressEditingFragment :
         binding.stateEditText.textWatcher = textWatcher
     }
 
+    private fun shouldShowStateSpinner() = addressViewModel.hasStates()
+
     /**
      * When the country is empty, or we don't have country or state data, we show an editText
      * for the state rather than a spinner
      */
     private fun updateStateViews() {
-        if (addressDraft.country.isEmpty() ||
-            !addressViewModel.hasCountries() ||
-            !addressViewModel.hasStates()
-        ) {
-            binding.stateEditText.show()
-            binding.stateSpinner.hide()
-        } else {
-            binding.stateEditText.hide()
-            binding.stateSpinner.show()
-        }
-    }
-
-    internal fun Address.bindAsAddressReplicationToggleState() {
-        (this == storedAddress)
-            .apply { binding.replicateAddressSwitch.isChecked = this }
-            .also { sharedViewModel.onReplicateAddressSwitchChanged(it) }
+        binding.stateSpinner.isVisible = shouldShowStateSpinner()
+        binding.stateEditText.isVisible = !shouldShowStateSpinner()
     }
 
     private fun showCountrySelectorDialog() {
@@ -167,17 +159,14 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.countryCode.takeIfNotEqualTo(old?.countryCode) {
-                binding.countrySpinner.setText(addressViewModel.getCountryNameFromCountryCode(it))
-                // clear the state when the country is changed
-                binding.stateSpinner.setText("")
-                binding.stateEditText.text = ""
+            new.countryLocation.takeIfNotEqualTo(old?.countryLocation) {
+                binding.countrySpinner.setText(it.name)
                 updateDoneMenuItem()
                 updateStateViews()
             }
-            new.stateCode.takeIfNotEqualTo(old?.stateCode) {
-                binding.stateSpinner.setText(it)
-                binding.stateEditText.text = it
+            new.stateLocation.takeIfNotEqualTo(old?.stateLocation) {
+                binding.stateSpinner.setText(it.name)
+                binding.stateEditText.text = it.code
                 updateDoneMenuItem()
             }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {

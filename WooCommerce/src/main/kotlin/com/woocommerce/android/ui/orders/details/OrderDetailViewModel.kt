@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -256,9 +257,9 @@ class OrderDetailViewModel @Inject constructor(
     /**
      * This is triggered when the above network request to edit an order fails
      */
-    fun onOrderEditFailed() {
+    fun onOrderEditFailed(@StringRes message: Int) {
         reloadOrderDetails()
-        triggerEvent(ShowSnackbar(string.order_error_update_general))
+        triggerEvent(ShowSnackbar(message))
     }
 
     private fun loadReceiptUrl(): String? {

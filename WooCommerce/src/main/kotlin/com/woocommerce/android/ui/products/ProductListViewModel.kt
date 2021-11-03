@@ -179,19 +179,34 @@ class ProductListViewModel @Inject constructor(
 
     private suspend fun cancelSearch() {
         searchJob?.cancelAndJoin()
-        viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false)
+        viewState = viewState.copy(
+            query = null,
+            isSearchActive = false,
+            isAddProductButtonVisible = false,
+            isEmptyViewVisible = false
+        )
         _productList.value = productRepository.getProductList()
     }
 
     fun onSearchOpened() {
         _productList.value = emptyList()
-        viewState = viewState.copy(isSearchActive = true)
+        viewState = viewState.copy(
+            isSearchActive = true,
+            displaySortAndFilterCard = false,
+            isAddProductButtonVisible = false
+        )
     }
 
     fun onSearchClosed() {
         launch {
             searchJob?.cancelAndJoin()
-            viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false)
+            viewState = viewState.copy(
+                query = null,
+                isSearchActive = false,
+                isEmptyViewVisible = false,
+                displaySortAndFilterCard = true,
+                isAddProductButtonVisible = true
+            )
             loadProducts()
         }
     }
@@ -283,7 +298,7 @@ class ProductListViewModel @Inject constructor(
                         isEmptyViewVisible = false,
                         isRefreshing = isRefreshing,
                         displaySortAndFilterCard = !showSkeleton,
-                        isAddProductButtonVisible = !showSkeleton
+                        isAddProductButtonVisible = false
                     )
                     fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
                 }
@@ -309,7 +324,7 @@ class ProductListViewModel @Inject constructor(
                     else -> false
                 }
             } else {
-                true
+                !isSearching()
             }
 
         viewState = viewState.copy(
@@ -320,7 +335,8 @@ class ProductListViewModel @Inject constructor(
             canLoadMore = productRepository.canLoadMoreProducts,
             isEmptyViewVisible = _productList.value?.isEmpty() == true,
             isAddProductButtonVisible = shouldShowAddProductButton,
-            displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
+            displaySortAndFilterCard = !isSearching() &&
+                (productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true)
         )
     }
 
@@ -431,8 +447,10 @@ class ProductListViewModel @Inject constructor(
         val isEmptyViewVisible: Boolean? = null,
         val sortingTitleResource: Int? = null,
         val displaySortAndFilterCard: Boolean? = null,
-        val isAddProductButtonVisible: Boolean? = null
-    ) : Parcelable
+        val isAddProductButtonVisible: Boolean? = null,
+    ) : Parcelable {
+        val isBottomNavBarVisible = isSearchActive != true
+    }
 
     sealed class ProductListEvent : Event() {
         object ScrollToTop : ProductListEvent()
