@@ -40,7 +40,7 @@ class AppSettingsPresenter @Inject constructor(
 
     override fun clearCardReaderData() {
         coroutineScope.launch {
-            if (cardReaderManager.isInitialized) {
+            if (cardReaderManager.initialized) {
                 cardReaderManager.disconnectReader()
                 cardReaderManager.clearCachedCredentials()
             }

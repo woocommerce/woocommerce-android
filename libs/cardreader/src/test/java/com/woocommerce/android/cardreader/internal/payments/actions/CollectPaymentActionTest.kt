@@ -1,16 +1,9 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import com.stripe.stripeterminal.callable.Cancelable
-import com.stripe.stripeterminal.callable.PaymentIntentCallback
-import com.stripe.stripeterminal.callable.ReaderDisplayListener
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.DisplayMessageRequested
+import com.stripe.stripeterminal.external.callable.Cancelable
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
+import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Failure
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.ReaderInputRequested
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +18,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -39,8 +36,8 @@ internal class CollectPaymentActionTest {
 
     @Test
     fun `when collecting payment succeeds, then Success is emitted`() = runBlockingTest {
-        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onSuccess(mock())
+        whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
             mock<Cancelable>()
         }
 
@@ -51,8 +48,8 @@ internal class CollectPaymentActionTest {
 
     @Test
     fun `when collecting payment fails, then Failure is emitted`() = runBlockingTest {
-        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onFailure(mock())
+        whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
             mock<Cancelable>()
         }
 
@@ -64,8 +61,8 @@ internal class CollectPaymentActionTest {
     @Test
     fun `when collecting payment succeeds, then updated paymentIntent is returned`() = runBlockingTest {
         val updatedPaymentIntent = mock<PaymentIntent>()
-        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
+        whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
             mock<Cancelable>()
         }
 
@@ -76,8 +73,8 @@ internal class CollectPaymentActionTest {
 
     @Test
     fun `when collecting payment succeeds, then flow is terminated`() = runBlockingTest {
-        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onSuccess(mock())
+        whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
             mock<Cancelable>()
         }
 
@@ -88,8 +85,8 @@ internal class CollectPaymentActionTest {
 
     @Test
     fun `when collecting payment fails, then flow is terminated`() = runBlockingTest {
-        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onFailure(mock())
+        whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
             mock<Cancelable>()
         }
 
@@ -99,63 +96,10 @@ internal class CollectPaymentActionTest {
     }
 
     @Test
-    fun `when display message requested, then DisplayMessageRequested emitted`() = runBlockingTest {
-        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderDisplayMessage(mock())
-            mock<Cancelable>()
-        }
-
-        val result = action.collectPayment(mock()).first()
-
-        assertThat(result).isInstanceOf(DisplayMessageRequested::class.java)
-    }
-
-    @Test
-    fun `when insert card requested, then ReaderInputRequested emitted`() = runBlockingTest {
-        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock())
-            mock<Cancelable>()
-        }
-
-        val result = action.collectPayment(mock()).first()
-
-        assertThat(result).isInstanceOf(ReaderInputRequested::class.java)
-    }
-
-    @Test
-    fun `given last event is terminal, when multiple events emitted, then flow terminates`() = runBlockingTest {
-        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock()) // non-terminal
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderDisplayMessage(mock()) // non-terminal
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock()) // non-terminal
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderDisplayMessage(mock()) // non-terminal
-            (it.arguments[2] as PaymentIntentCallback).onSuccess(mock()) // terminal
-            mock<Cancelable>()
-        }
-
-        val result = action.collectPayment(mock()).toList()
-
-        assertThat(result.size).isEqualTo(5)
-    }
-
-    @Test
-    fun `given more events emitted, when terminal event already processed, then event is not sent`() =
-        runBlockingTest {
-            whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-                (it.arguments[2] as PaymentIntentCallback).onSuccess(mock()) // terminal
-                (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock()) // non-terminal
-                mock<Cancelable>()
-            }
-
-            val result = action.collectPayment(mock()).toList()
-            assertThat(result.size).isEqualTo(1)
-        }
-
-    @Test
     fun `given flow not terminated, when job canceled, then collect payment gets canceled`() = runBlockingTest {
         val cancelable = mock<Cancelable>()
         whenever(cancelable.isCompleted).thenReturn(false)
-        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer { cancelable }
+        whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer { cancelable }
         val job = launch {
             action.collectPayment(mock()).collect { }
         }
