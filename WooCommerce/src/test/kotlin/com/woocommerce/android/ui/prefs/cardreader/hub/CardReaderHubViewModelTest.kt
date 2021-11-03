@@ -66,10 +66,20 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen shown, then m2 manual card reader row present`() {
+    fun `when screen shown, then m2 manual card reader icon present`() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
-                it.label == UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader)
+                it.label == UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader) &&
+                    it.icon == R.drawable.ic_card_reader_manual
+            }
+    }
+
+    @Test
+    fun `when screen shown, then bbpos chipper manual card reader icon present`() {
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader) &&
+                    it.icon == R.drawable.ic_card_reader_manual
             }
     }
 
