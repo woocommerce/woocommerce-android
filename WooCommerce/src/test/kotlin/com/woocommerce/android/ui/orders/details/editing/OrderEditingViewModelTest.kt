@@ -10,19 +10,15 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.stub
+import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
+import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 
 @ExperimentalCoroutinesApi
@@ -50,9 +46,31 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should replace email info with original one when empty`() {
+    fun `should replace email info with original one when empty`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val originalOrder = testOrder.copy(
+                billingAddress = addressToUpdate.copy(email = "original@email.com")
+            )
 
-    }
+            orderDetailRepository.stub {
+                on { getOrder(any()) } doReturn originalOrder
+            }
+
+            sut.apply {
+                start()
+                onReplicateAddressSwitchChanged(true)
+                updateBillingAddress(addressToUpdate)
+            }
+
+            verify(
+                orderEditingRepository,
+                times(1)
+            ).updateBothOrderAddresses(
+                testOrder.localId,
+                addressToUpdate.toShippingAddressModel(),
+                addressToUpdate.toBillingAddressModel("original@email.com")
+            )
+        }
 
     @Test
     fun `should call update only when connection is available`() {
