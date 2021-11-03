@@ -111,6 +111,70 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `should execute updateShippingAddress only when connection is available`() {
+        var eventWasCalled = false
+        networkStatus.stub {
+            on { isConnected() } doReturn true
+        }
+
+        orderEditingRepository.stub {
+            onBlocking {
+                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
+            } doReturn flowOf(
+                UpdateOrderResult.OptimisticUpdateResult(
+                    OnOrderChanged(0)
+                )
+            )
+        }
+
+        sut.apply {
+            start()
+            updateShippingAddress(addressToUpdate)
+        }
+
+        observeEvents {
+            eventWasCalled = when (it) {
+                is OrderEditingViewModel.OrderEdited -> true
+                else -> false
+            }
+        }
+
+        assertThat(eventWasCalled).isFalse
+    }
+
+    @Test
+    fun `should execute updateCustomerOrderNote only when connection is available`() {
+        var eventWasCalled = false
+        networkStatus.stub {
+            on { isConnected() } doReturn true
+        }
+
+        orderEditingRepository.stub {
+            onBlocking {
+                updateCustomerOrderNote(testOrder.localId, "test note")
+            } doReturn flowOf(
+                UpdateOrderResult.OptimisticUpdateResult(
+                    OnOrderChanged(0)
+                )
+            )
+        }
+
+        sut.apply {
+            start()
+            updateCustomerOrderNote("test note")
+        }
+
+        observeEvents {
+            eventWasCalled = when (it) {
+                is OrderEditingViewModel.OrderEdited -> true
+                else -> false
+            }
+        }
+
+        assertThat(eventWasCalled).isFalse
+    }
+
+    @Test
     fun `should replicate billing to shipping when toggle is activated`() {
 
     }
