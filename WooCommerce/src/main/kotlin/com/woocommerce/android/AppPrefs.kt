@@ -445,7 +445,8 @@ object AppPrefs {
     fun getOrderFilters(currentSiteId: Int, filterCategory: String) =
         PreferenceUtils.getString(
             getPreferences(),
-            getOrderFilterKey(currentSiteId, filterCategory)
+            getOrderFilterKey(currentSiteId, filterCategory),
+            null
         )
 
     private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
