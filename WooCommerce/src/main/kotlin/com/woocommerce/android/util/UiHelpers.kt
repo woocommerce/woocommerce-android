@@ -73,7 +73,7 @@ object UiHelpers {
         }
     }
 
-    fun setImageOrHide(imageView: ImageView, @DrawableRes resId: Int?, setInvisible: Boolean = false) {
+    fun setImageOrHideInLandscape(imageView: ImageView, @DrawableRes resId: Int?, setInvisible: Boolean = false) {
         val isLandscape = DisplayUtils.isLandscape(imageView.context)
         updateVisibility(imageView, resId != null && !isLandscape, setInvisible)
         resId?.let {

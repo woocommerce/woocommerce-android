@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-14 09:54:04+0000
+Translation-Revision-Date: 2021-10-26 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Ver las ventajas</string>
+    <string name="jetpack_benefits_bottom_banner_title">Consigue la experiencia completa con Jetpack</string>
+    <string name="product_description_hint_with_title">Cuéntanos más sobre %s…</string>
+    <string name="product_description_hint_no_title">Describe el producto a tus futuros clientes…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Se ha copiado el número de serie del lector al portapapeles</string>
+    <string name="card_reader_manual_card_reader">Manual del lector de tarjetas</string>
+    <string name="order_detail_add_billing_address">Añadir dirección de facturación</string>
+    <string name="order_detail_add_shipping_address">Añadir dirección de envío</string>
+    <string name="order_detail_add_customer_note">Añadir nota para el cliente</string>
+    <string name="order_detail_billing_address_section">Dirección de facturación</string>
+    <string name="order_detail_shipping_address_section">Dirección de envío</string>
+    <string name="order_detail_address_section">Dirección</string>
+    <string name="order_detail_edit_address_country">País</string>
+    <string name="order_detail_edit_address_state">Región / Provincia</string>
+    <string name="order_detail_edit_address_zip">Código postal</string>
+    <string name="order_detail_edit_address_city">Ciudad</string>
+    <string name="order_detail_edit_address_line2">Dirección 2</string>
+    <string name="order_detail_edit_address_line1">Dirección 1</string>
+    <string name="order_detail_edit_address_company">Empresa</string>
+    <string name="order_detail_edit_address_details_phone">Teléfono</string>
+    <string name="order_detail_edit_address_details_email">Correo electrónico</string>
+    <string name="order_detail_edit_address_details_last_name">Apellido(s)</string>
+    <string name="order_detail_edit_address_details_first_name">Nombre</string>
+    <string name="orderdetail_customer_note_hint">Editar una nota del pedido de un cliente</string>
     <string name="support_system_status_report_fetch_error">Se ha producido un error al recuperar SSR. Consulta WooCommerce -&gt; Estado en wp-admin.</string>
     <string name="support_system_status_report_share_error">No se puede compartir el informe de estado del sistema</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Se ha producido un error al copiar SSR en el portapapeles.</string>
@@ -831,7 +855,6 @@ Language: es
     <string name="product_description_empty">Describe tu producto</string>
     <string name="product_description">Descripción</string>
     <string name="product_edit_description">Editar descripción</string>
-    <string name="product_description_hint">Empieza a escribir…</string>
     <string name="discard_message">¿Quieres descartar los cambios?</string>
     <string name="update">Actualizar</string>
     <string name="done">Listo</string>
@@ -968,7 +991,7 @@ Language: es
     <string name="login_refresh_app_progress">Comprobando WooCommerce…</string>
     <string name="login_refresh_app">actualizar la aplicación</string>
     <string name="login_not_woo_store">Parece que %1$s no es un sitio de WooCommerce. Instala el plugin de WooCommerce en tu sitio y luego %2$s</string>
-    <string name="orderdetail_empty_shipping_address">No se ha indicado ninguna dirección.</string>
+    <string name="orderdetail_empty_address">No se ha indicado ninguna dirección</string>
     <string name="login_need_help_finding_connected_email">¿Necesitas ayuda para saber la dirección de correo electrónico con la que te conectaste?</string>
     <string name="enter_wordpress_site">Esta dirección no pertenece a un sitio de WordPress. El sitio debe tener instalado WordPress para que podamos conectarnos a él.</string>
     <string name="enter_email_for_site">Iniciar sesión en WordPress.com para conectarse a &lt;b&gt;%1$s&lt;/b&gt;</string>

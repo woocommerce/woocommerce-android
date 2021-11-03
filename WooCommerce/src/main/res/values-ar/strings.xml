@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-14 11:54:55+0000
+Translation-Revision-Date: 2021-10-26 11:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">الاطلاع على المزايا</string>
+    <string name="jetpack_benefits_bottom_banner_title">الحصول على التجربة الكاملة باستخدام Jetpack</string>
+    <string name="product_description_hint_with_title">إخبارنا بالمزيد حول %s…</string>
+    <string name="product_description_hint_no_title">صِف منتجك لعملائك في المستقبل…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">تم نسخ الرقم التسلسلي للقارئ إلى الحافظة</string>
+    <string name="card_reader_manual_card_reader">دليل قارئ البطاقة</string>
+    <string name="order_detail_add_billing_address">إضافة عنوان الفوترة</string>
+    <string name="order_detail_add_shipping_address">إضافة عنوان الشحن</string>
+    <string name="order_detail_add_customer_note">إضافة ملحوظة العميل</string>
+    <string name="order_detail_billing_address_section">عنوان الفوترة</string>
+    <string name="order_detail_shipping_address_section">عنوان الشحن</string>
+    <string name="order_detail_address_section">العنوان</string>
+    <string name="order_detail_edit_address_country">البلد</string>
+    <string name="order_detail_edit_address_state">المنطقة</string>
+    <string name="order_detail_edit_address_zip">الرمز البريدي</string>
+    <string name="order_detail_edit_address_city">المدينة</string>
+    <string name="order_detail_edit_address_line2">العنوان 2</string>
+    <string name="order_detail_edit_address_line1">العنوان 1</string>
+    <string name="order_detail_edit_address_company">الشركة</string>
+    <string name="order_detail_edit_address_details_phone">الهاتف</string>
+    <string name="order_detail_edit_address_details_email">البريد الإلكتروني</string>
+    <string name="order_detail_edit_address_details_last_name">اسم العائلة</string>
+    <string name="order_detail_edit_address_details_first_name">الاسم الأول</string>
+    <string name="orderdetail_customer_note_hint">تحرير ملحوظة طلب العميل</string>
     <string name="support_system_status_report_fetch_error">خطأ في أثناء إحضار تقرير حالة النظام. يرجى التحقُّق من WooCommerce -&gt; الحالة في مسؤول ووردبريس.</string>
     <string name="support_system_status_report_share_error">تتعذر مشاركة تقرير حالة النظام</string>
     <string name="support_system_status_report_error_copy_to_clipboard">خطأ في أثناء نسخ  تقرير حالة النظام إلى الحافظة</string>
@@ -831,7 +855,6 @@ Language: ar
     <string name="product_description_empty">وصف منتجك</string>
     <string name="product_description">الوصف</string>
     <string name="product_edit_description">تحرير الوصف</string>
-    <string name="product_description_hint">جارٍ بدء الكتابة…</string>
     <string name="discard_message">هل ترغب في تجاهل تغييراتك؟</string>
     <string name="update">تحديث</string>
     <string name="done">تم</string>
@@ -968,7 +991,7 @@ Language: ar
     <string name="login_refresh_app_progress">جارٍ التحقُّق من WooCommerce…</string>
     <string name="login_refresh_app">تحديث التطبيق</string>
     <string name="login_not_woo_store">يبدو أنَّ %1$s ليس موقع WooCommerce. ثبِّت إضافة WooCommerce على موقعك ثم %2$s</string>
-    <string name="orderdetail_empty_shipping_address">لا يوجد عنوان محدَّد.</string>
+    <string name="orderdetail_empty_address">لم يتم تحديد أي عنوان</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
     <string name="enter_email_for_site">تسجيل الدخول باستخدام ووردبريس للاتصال بـ &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>

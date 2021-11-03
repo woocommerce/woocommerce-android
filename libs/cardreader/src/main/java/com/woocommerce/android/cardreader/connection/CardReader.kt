@@ -5,4 +5,5 @@ interface CardReader {
     val type: String?
     val currentBatteryLevel: Float?
     val firmwareVersion: String
+    val locationId: String?
 }
