@@ -83,10 +83,11 @@ abstract class BaseAddressEditingFragment :
         (addressDraft != storedAddress) || binding.replicateAddressSwitch.isChecked
 
     override fun onStop() {
-        super.onStop()
+        sharedViewModel.onReplicateAddressSwitchChanged(false)
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
+        super.onStop()
     }
 
     private fun Address.bindToView() {
