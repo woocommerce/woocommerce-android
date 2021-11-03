@@ -62,6 +62,7 @@ tasks.register("detektAll", Detekt) {
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     include("**/*.kt")
     exclude("**/resources/**", "**/build/**")
+    autoCorrect = true
 
     reports {
         html.enabled = true
@@ -90,7 +91,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2166-9a756ca54f9bc0cf5423231744a32c3f42f053d8'
+    fluxCVersion = '2174-7fc42e6a90def25b5a269369096b56224aa47dc1'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.3.0'
