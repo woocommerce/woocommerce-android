@@ -19,15 +19,18 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
     private val dateUtils: DateUtils
 ) {
     operator fun invoke(): WCOrderListDescriptor {
-        val selectedFilters = orderFiltersRepository.getCachedFiltersSelection()
-        val dateRangeAfterFilter = selectedFilters[DATE_RANGE]
-            ?.map { DateRange.fromValue(it) }
-            ?.first()
+        val dateRangeAfterFilter = orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE)
+            .map { DateRange.fromValue(it) }
+            .firstOrNull()
             ?.toAfterIso8061DateString(dateUtils)
+
+        val orderStatusFilters =
+            orderFiltersRepository.getCurrentFilterSelection(ORDER_STATUS)
+                .joinToString(separator = ",")
 
         return WCOrderListDescriptor(
             site = selectedSite.get(),
-            statusFilter = selectedFilters[ORDER_STATUS]?.joinToString(separator = ","),
+            statusFilter = orderStatusFilters,
             afterFilter = dateRangeAfterFilter
         )
     }
@@ -47,9 +50,9 @@ class GetSelectedOrderFiltersCount @Inject constructor(
     private val orderFiltersRepository: OrderFiltersRepository
 ) {
     operator fun invoke(): Int =
-        orderFiltersRepository.getCachedFiltersSelection().values
-            .map { it.count() }
-            .sum()
+        (orderFiltersRepository.getCurrentFilterSelection(ORDER_STATUS) +
+            orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE)
+            ).size
 }
 
 class GetOrderStatusFilterOptions @Inject constructor(
@@ -78,8 +81,9 @@ class GetOrderStatusFilterOptions @Inject constructor(
     }
 
     private fun checkIfSelected(filterKey: String): Boolean =
-        orderFiltersRepository.getCachedFiltersSelection()[ORDER_STATUS]
-            ?.contains(filterKey) ?: false
+        orderFiltersRepository
+            .getCurrentFilterSelection(ORDER_STATUS)
+            .contains(filterKey)
 }
 
 class GetDateRangeFilterOptions @Inject constructor(
@@ -95,6 +99,7 @@ class GetDateRangeFilterOptions @Inject constructor(
             }
 
     private fun checkIfSelected(filterKey: String): Boolean =
-        orderFiltersRepository.getCachedFiltersSelection()[DATE_RANGE]
-            ?.contains(filterKey) ?: false
+        orderFiltersRepository
+            .getCurrentFilterSelection(DATE_RANGE)
+            .contains(filterKey)
 }

@@ -62,7 +62,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
         val newSelectedFilters = orderFilterOptions.value
             ?.filter { it.isSelected && it.key != DEFAULT_ALL_KEY }
             ?.map { it.key } ?: emptyList()
-        orderFilterRepository.updateSelectedFilters(selectedFilterCategory.categoryKey, newSelectedFilters)
+        orderFilterRepository.setSelectedFilters(selectedFilterCategory.categoryKey, newSelectedFilters)
     }
 
     fun onBackPressed(): Boolean {

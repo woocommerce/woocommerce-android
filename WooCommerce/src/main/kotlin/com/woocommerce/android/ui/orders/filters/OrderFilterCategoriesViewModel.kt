@@ -194,7 +194,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             val newSelectedFilters = category.orderFilterOptions
                 .filter { it.isSelected && it.key != OrderFilterOptionUiModel.DEFAULT_ALL_KEY }
                 .map { it.key }
-            orderFilterRepository.updateSelectedFilters(category.categoryKey, newSelectedFilters)
+            orderFilterRepository.setSelectedFilters(category.categoryKey, newSelectedFilters)
         }
     }
 

@@ -65,7 +65,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
         viewModel.onShowOrdersClicked()
 
-        verify(orderFilterRepository).updateSelectedFilters(
+        verify(orderFilterRepository).setSelectedFilters(
             AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER.categoryKey,
             listOf(SELECTED_ORDER_STATUS_FILTER_OPTION.key)
         )
@@ -84,7 +84,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     fun `Given no filters are selected, when show orders is clicked, then an empty list is saved`() {
         viewModel.onShowOrdersClicked()
 
-        verify(orderFilterRepository).updateSelectedFilters(
+        verify(orderFilterRepository).setSelectedFilters(
             AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER.categoryKey,
             emptyList()
         )
