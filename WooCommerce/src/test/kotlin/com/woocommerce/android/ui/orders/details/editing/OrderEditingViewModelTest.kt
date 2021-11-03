@@ -82,7 +82,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should execute updateBillingAddress only when connection is available`() {
         var eventWasCalled = false
         networkStatus.stub {
-            on { isConnected() } doReturn true
+            on { isConnected() } doReturn false
         }
 
         orderEditingRepository.stub {
@@ -114,12 +114,12 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should execute updateShippingAddress only when connection is available`() {
         var eventWasCalled = false
         networkStatus.stub {
-            on { isConnected() } doReturn true
+            on { isConnected() } doReturn false
         }
 
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.localId, addressToUpdate.toShippingAddressModel())
             } doReturn flowOf(
                 UpdateOrderResult.OptimisticUpdateResult(
                     OnOrderChanged(0)
@@ -146,7 +146,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should execute updateCustomerOrderNote only when connection is available`() {
         var eventWasCalled = false
         networkStatus.stub {
-            on { isConnected() } doReturn true
+            on { isConnected() } doReturn false
         }
 
         orderEditingRepository.stub {
