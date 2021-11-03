@@ -79,8 +79,35 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `should call update only when connection is available`() {
+    fun `should execute updateBillingAddress only when connection is available`() {
+        var eventWasCalled = false
+        networkStatus.stub {
+            on { isConnected() } doReturn true
+        }
 
+        orderEditingRepository.stub {
+            onBlocking {
+                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
+            } doReturn flowOf(
+                UpdateOrderResult.OptimisticUpdateResult(
+                    OnOrderChanged(0)
+                )
+            )
+        }
+
+        sut.apply {
+            start()
+            updateBillingAddress(addressToUpdate)
+        }
+
+        observeEvents {
+            eventWasCalled = when (it) {
+                is OrderEditingViewModel.OrderEdited -> true
+                else -> false
+            }
+        }
+
+        assertThat(eventWasCalled).isFalse
     }
 
     @Test
