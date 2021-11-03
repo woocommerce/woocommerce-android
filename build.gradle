@@ -95,7 +95,7 @@ ext {
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
     mockitoKotlinVersion = '3.2.0'
-    mockitoVersion = '3.12.4'
+    mockitoVersion = '4.0.0'
     constraintLayoutVersion = '1.2.0'
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.2.0'
