@@ -1,11 +1,16 @@
 package com.woocommerce.android.ui.mystore
 
+import com.woocommerce.android.AppConstants
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -16,6 +21,7 @@ import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
+import org.wordpress.android.fluxc.store.StatsStore
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
@@ -27,6 +33,7 @@ import javax.inject.Inject
 class StatsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dispatcher: Dispatcher,
+    private val coroutineDispatchers: CoroutineDispatchers,
     private val wcStatsStore: WCStatsStore,
     @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
     private val wcOrderStore: WCOrderStore,
@@ -99,14 +106,13 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun checkIfStoreHasNoOrders(): Result<Boolean> {
-        val result = continuationHasOrders.callAndWait {
-            val payload = FetchHasOrdersPayload(selectedSite.get())
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchHasOrdersAction(payload))
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            wcOrderStore.fetchHasOrders(selectedSite.get(), status = null)
         }
-
-        return when (result) {
-            is Cancellation -> Result.failure(result.exception)
-            is Success -> result.value
+        return if (result?.isError == false) {
+            Result.success(value = true)
+        } else {
+            Result.failure((result?.error ?: WCOrderStore.OrderErrorType.GENERIC_ERROR) as Throwable)
         }
     }
 
