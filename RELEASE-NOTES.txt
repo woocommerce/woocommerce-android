@@ -2,7 +2,8 @@
 
 8.0
 -----
-
+- [***] In-Person Payments: Support of Stripe M2 Card Reader
+- [***] In-Person Payments: Some firmware updates are required and update will be started automatically
 
 7.9
 -----
