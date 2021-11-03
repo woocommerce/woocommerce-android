@@ -46,6 +46,56 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `should replicate billing to shipping when toggle is activated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            orderEditingRepository.stub {
+                onBlocking {
+                    updateBothOrderAddresses(any(), any(), any())
+                } doReturn flowOf()
+            }
+
+            sut.apply {
+                start()
+                onReplicateAddressSwitchChanged(true)
+                updateBillingAddress(addressToUpdate)
+            }
+
+            verify(
+                orderEditingRepository,
+                times(1)
+            ).updateBothOrderAddresses(
+                testOrder.localId,
+                addressToUpdate.toShippingAddressModel(),
+                addressToUpdate.toBillingAddressModel("")
+            )
+        }
+
+    @Test
+    fun `should replicate shipping to billing when toggle is activated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            orderEditingRepository.stub {
+                onBlocking {
+                    updateBothOrderAddresses(any(), any(), any())
+                } doReturn flowOf()
+            }
+
+            sut.apply {
+                start()
+                onReplicateAddressSwitchChanged(true)
+                updateShippingAddress(addressToUpdate)
+            }
+
+            verify(
+                orderEditingRepository,
+                times(1)
+            ).updateBothOrderAddresses(
+                testOrder.localId,
+                addressToUpdate.toShippingAddressModel(),
+                addressToUpdate.toBillingAddressModel("")
+            )
+        }
+
+    @Test
     fun `should replace email info with original one when empty`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val originalOrder = testOrder.copy(
@@ -172,16 +222,6 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         }
 
         assertThat(eventWasCalled).isFalse
-    }
-
-    @Test
-    fun `should replicate billing to shipping when toggle is activated`() {
-
-    }
-
-    @Test
-    fun `should replicate shipping to billing when toggle is activated`() {
-
     }
 
     @Test
