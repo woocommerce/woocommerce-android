@@ -49,4 +49,11 @@ class AppPrefsWrapper @Inject constructor() {
     fun recordJetpackBenefitsDismissal() {
         AppPrefs.recordJetpackBenefitsDismissal()
     }
+
+    fun setOrderFilters(selectedSiteId: Int, filterCategory: String, filterValue: String) {
+        AppPrefs.setOrderFilters(selectedSiteId, filterCategory, filterValue)
+    }
+
+    fun getOrderFilters(selectedSiteId: Int, filterCategory: String) =
+        AppPrefs.getOrderFilters(selectedSiteId, filterCategory)
 }

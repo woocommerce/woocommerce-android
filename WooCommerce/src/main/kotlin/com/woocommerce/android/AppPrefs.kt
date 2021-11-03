@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
@@ -52,7 +53,8 @@ object AppPrefs {
         IS_USER_ELIGIBLE,
         USER_EMAIL,
         RECEIPT_PREFIX,
-        CARD_READER_ONBOARDING_COMPLETED
+        CARD_READER_ONBOARDING_COMPLETED,
+        ORDER_FILTER_PREFIX,
     }
 
     /**
@@ -432,6 +434,22 @@ object AppPrefs {
     fun setTrackingExtensionAvailable(isAvailable: Boolean) {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
+
+    fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) =
+        PreferenceUtils.setString(
+            getPreferences(),
+            getOrderFilterKey(currentSiteId, filterCategory),
+            filterValue
+        )
+
+    fun getOrderFilters(currentSiteId: Int, filterCategory: String) =
+        PreferenceUtils.getString(
+            getPreferences(),
+            getOrderFilterKey(currentSiteId, filterCategory)
+        )
+
+    private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
+        "$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory"
 
     /**
      * Remove all user and site-related preferences.
