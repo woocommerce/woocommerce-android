@@ -1,6 +1,27 @@
 ## Warning
 If reading this you find anything is not up-to-date, please fix it or report to the team if not sure how to do that
 
+# Usage of existing UI flows implemented in WCAndroid
+There are several sections/screens/flows related to In-Person-Payments (IPP) already implemented in WCAndroid and can be reused to access IPP from a new section of the app.
+
+## Onboarding Flow
+`CardReaderOnboardingChecker` is a class used to check eligibility of a store for IPP. It can be used from any class to check store's eligibility. However, when the store is not eligible, it is recommended to navigate to `CardReaderOnboardingFragment` instead of handling the errors on each screen separately.
+
+In general, the UI related to In-Person-Payments (eg. row in settings, collect payment button on order detail etc) is visible on all stores. When a user attempts to access one of the IPP sections with a store which is not eligible for IPP, the app displays `CardReaderOnboardingFragment` with an explanation what makes the store not-eligible.
+
+## Hub screen
+`CardReaderHubFragment` is an "intersection/hub" with links to different flows - eg. Order Card Reader, Open Card Reader Manual, Manage Card Reader, etc.
+
+## Connection Flow
+`CardReaderConnectDialogFragment` encapsulates the connection flow. Displays each step of the flow in a dialog. Returns a boolean flag (KEY_CONNECT_TO_READER_RESULT = "key_connect_to_reader_result") indicating whether the connection was successfully established to the original destination the flow was started from.
+
+## Payment Flow
+`CardReaderPaymentDialogFragment` encapsulates the payment flow. Displays each step of the flow in a dialog. A card reader needs to be already connected before this flow is started, otherwise finishes immediately and displays a Snackbar with an error message.
+
+`CardReaderPaymentCollectibilityChecker` should be used to verify whether an Order meets the requirements for IPP. If the app navigates to `CardReaderPaymentDialogFragment` for an order which is not eligible for IPP, the payment might fail with a generic error.
+
+# How to integrate CardReaderModule in another app
+
 ## Useful Links To Get Started
 * Store Setup for Card Present Payment Testing - P91TBi-4BH-p2
 * Stripe terminal In-Person Payments - https://stripe.com/docs/terminal
