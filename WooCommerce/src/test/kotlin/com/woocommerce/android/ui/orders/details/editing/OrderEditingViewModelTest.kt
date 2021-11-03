@@ -96,6 +96,66 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `should NOT replicate shipping to billing when toggle is deactivated`() {
+        var eventWasCalled = false
+
+        orderEditingRepository.stub {
+            onBlocking {
+                updateBothOrderAddresses(any(), any(), any())
+            } doReturn flowOf(
+                UpdateOrderResult.OptimisticUpdateResult(
+                    OnOrderChanged(0)
+                )
+            )
+        }
+
+        sut.apply {
+            start()
+            onReplicateAddressSwitchChanged(false)
+            updateShippingAddress(addressToUpdate)
+        }
+
+        observeEvents {
+            eventWasCalled = when (it) {
+                is OrderEditingViewModel.OrderEdited -> true
+                else -> false
+            }
+        }
+
+        assertThat(eventWasCalled).isFalse
+    }
+
+    @Test
+    fun `should NOT replicate billing to shipping when toggle is deactivated`() {
+        var eventWasCalled = false
+
+        orderEditingRepository.stub {
+            onBlocking {
+                updateBothOrderAddresses(any(), any(), any())
+            } doReturn flowOf(
+                UpdateOrderResult.OptimisticUpdateResult(
+                    OnOrderChanged(0)
+                )
+            )
+        }
+
+        sut.apply {
+            start()
+            onReplicateAddressSwitchChanged(false)
+            updateBillingAddress(addressToUpdate)
+        }
+
+        observeEvents {
+            eventWasCalled = when (it) {
+                is OrderEditingViewModel.OrderEdited -> true
+                else -> false
+            }
+        }
+
+        assertThat(eventWasCalled).isFalse
+    }
+
+    @Test
     fun `should replace email info with original one when empty`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val originalOrder = testOrder.copy(
