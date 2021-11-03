@@ -38,7 +38,7 @@
         android:layout_marginBottom="@dimen/minor_100"
         android:letterSpacing="0.15"
         android:text="@string/card_reader_detail_connected_header"
-        android:textColor="@color/color_on_surface_disabled"
+        android:textColor="@color/color_on_surface_medium"
         android:textSize="@dimen/text_minor_60" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -50,7 +50,7 @@
         android:layout_marginEnd="0dp"
         android:paddingHorizontal="@dimen/major_100"
         android:background="?attr/selectableItemBackground"
-        android:paddingVertical="@dimen/minor_50"
+        android:paddingVertical="@dimen/minor_100"
         android:layout_marginBottom="0dp"
         tools:text="CHB204909005931" />
 
