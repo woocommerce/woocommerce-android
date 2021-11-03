@@ -95,11 +95,12 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should emit success event if update was successful`() {
+        var eventWasCalled = false
         orderEditingRepository.stub {
             onBlocking {
                 updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
-                RemoteUpdateResult(
+                UpdateOrderResult.OptimisticUpdateResult(
                     OnOrderChanged(0)
                 )
             )
@@ -111,8 +112,11 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         }
 
         observeEvents { event ->
+            eventWasCalled = true
             assertThat(event).isEqualTo(OrderEditingViewModel.OrderEdited)
         }
+
+        assertThat(eventWasCalled).isTrue
     }
 
     @Test
