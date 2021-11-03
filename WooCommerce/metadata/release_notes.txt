@@ -1,1 +1,2 @@
-This release has a handful of minor improvements for several features based on feedback from merchants like you. We appreciate it!
+[**] Merchants can now edit Customer Notes, shipping, and billing addresses from orders. [https://github.com/woocommerce/woocommerce-android/pull/5106]
+

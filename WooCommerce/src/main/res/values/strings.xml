@@ -263,6 +263,9 @@
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
+    <string name="orderlist_quickorder_wip_title">Take payments from your device!</string>
+    <string name="orderlist_quickorder_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
+    <string name="orderlist_quickorder_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
     <!--
         Order Filters
     -->
@@ -273,8 +276,12 @@
     <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
     <string name="orderfilters_filter_date_range_options_title">Date Range</string>
+    <string name="orderfilters_filter_card_title_all_orders">All orders</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">Filtered orders</string>
     <string name="orderfilters_filters_default_title">Filters</string>
     <string name="orderfilters_filters_count_title">Filters (%d)</string>
+    <string name="orderfilters_default_filter_option">All</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
 
     <!--
         Order Detail Views
@@ -369,6 +376,7 @@
     <string name="order_status_updated">Order status updated</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
+    <string name="order_error_update_empty_mail">Unable to update address with empty email. Make sure you are running the latest version of WooCommerce.</string>
     <string name="order_error_fetch_generic">Error fetching order</string>
     <string name="order_shipment_tracking">Tracking</string>
     <string name="order_shipment_tracking_number">Tracking Number</string>
