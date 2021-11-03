@@ -259,5 +259,13 @@
     <dialog
         android:id="@+id/jetpackBenefitsDialog"
         android:name="com.woocommerce.android.ui.mystore.JetpackBenefitsDialog"
-        android:label="JetpackBenefitsDialog" />
+        android:label="JetpackBenefitsDialog" >
+        <action
+            android:id="@+id/action_jetpackBenefitsDialog_to_jetpackInstallStartDialog"
+            app:destination="@id/jetpackInstallStartDialog" />
+    </dialog>
+    <dialog
+        android:id="@+id/jetpackInstallStartDialog"
+        android:name="com.woocommerce.android.ui.mystore.JetpackInstallStartDialog"
+        android:label="JetpackInstallStartDialog" />
 </navigation>
