@@ -14,8 +14,8 @@ If reading this you find anything is not up-to-date, please fix it or report to 
 * **CPP** - Card Present Payments
 * **Stripe** - Third party company we use as payments processing for In-Person Payments
 * **WCPay** - Or WooCommerce Payments is a plugin for WooCommerce (which itself is a plugin for Wordpress) that contains integrations with different payments platform including Stripe
-* **Card Reader** - At the moment only one reader is supported *BBPOS Chipper 2X BT* (ask Aaron to order your own reader)
-* **COD** - Cash On Delivery. Paying with a card is also "cash", so CPP is COD 🤷
+* **Card Reader** - At the moment the app supports *BBPOS Chipper 2X BT* and *Stripe M2* readers (ask Aaron to order your own reader)
+* **COD** - Cash On Delivery. Paying with a card is also "cash", so CPP is COD 🤷 (Cash On Delivery option can be renamed to "Pay On Delivery" on the site, but internally COD is used for both)
 * **POS** - Point Of Sale
 * **KYC** - Know Your Customer
 * **Card Present Payments / In-Person Payments / Card Reader Payments** - are interchangeable terms in our internal documentation and code, but only “In-Person Payments” is used in user facing features.
@@ -34,7 +34,7 @@ This module provides an abstraction from a provider-specific SDK to connect and 
 `CardPaymentStatus` - Events that can be emitted when accepting a payment.
 `CardReaderStatus` - Current state of a connection status to a card reader.
 `PaymentInfo` - Model containing data necessary to initiate a payment.
-`SoftwareUpdateAvailability` - Events that can be emitted during a check for software updates.
+`SoftwareUpdateAvailability` - Current state of software update availability.
 `SoftwareUpdateStatus` - Events that can be emitted during an ongoing software update.
 
 ### Overview
@@ -43,10 +43,21 @@ The first step a client app needs to take is initialize the CardReaderModule. `C
 
 #### Connecting to a card reader
 The `CardReaderManager` provides `discoverReaders(..)` method that starts a discovery of nearby readers. The discovery process is mandatory no matter if the app was connected to a card reader before or not.
-When a card reader is discovered, the client app is informed and can invoke `connectToReader(..)` method to connect to the card reader. This method will work only when the discovery is still in progress and a recently found reader is provided (it is not allowed to cache any discovered readers by the client app).
-When a successful connection to a card reader is established, the SDK invokes `CardReaderStore.getConnectionToken(..)`. The client app is responsible for obtaining the token and passing it back to the SDK. The token is required to pair the reader with the user’s Stripe account. The card reader is ready to accept payments now.
+
+When a card reader is discovered, the client app is informed and can invoke `startConnectionToReader(..)` method to connect to the card reader. This method will work only when the discovery is still in progress and a recently found reader is provided (it is not allowed to cache any discovered readers by the client app).
+
+Each card reader needs to be assigned to a physical location. The `startConnectionToReader()` accepts a mandatory location id and it's up to the client app to provide an id which is registered to the corresponding Stripe's account. The `CardReader` object contains a cached location id which can be used if it's not empty. More info about registering a new location can be found on the following link - https://stripe.com/docs/terminal/fleet/locations.
+
+When a successful connection to a card reader is established, the SDK invokes `CardReaderStore.getConnectionToken(..)`. The client app is responsible for obtaining the token and passing it back to the SDK - this is done through `CardReaderStore` which is provided to CardReaderManager during initialization. The token is required to pair the reader with the user’s Stripe account.
+
+Sometimes, the Stripe Terminal SDK might start updating the app during the connection flow. This happens when there is a required update available. The client app cannot skip the update therefore the card reader cannot be used to accept payments until it's updated. Most software updates for card readers are optional at first and they become required later.
+
+The card reader is ready to accept payments now.
 
 Most of the related code is encapsulated in ConnectionManager and its dependencies.
+
+#### Installing optional updates
+The client app needs to observe `CardReaderManager.softwareUpdateAvailability` in order to receive current state of SoftwareUpdateAvailability. When an update is available, the client app can invoke `CardReaderManager.startAsyncSoftwareUpdate()` to start the update process and observe `CardReaderManager.softwareUpdateStatus` in order to receive updates.
 
 #### Accepting Payments
 The payment process is consisted of 4 steps:

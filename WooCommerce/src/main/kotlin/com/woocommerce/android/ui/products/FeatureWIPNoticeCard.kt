@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.FeatureWipNoticeBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.util.WooAnimUtils
 
 class FeatureWIPNoticeCard @JvmOverloads constructor(
@@ -29,7 +30,8 @@ class FeatureWIPNoticeCard @JvmOverloads constructor(
         title: String,
         message: String,
         onGiveFeedbackClick: () -> Unit = {},
-        onDismissClick: () -> Unit = {}
+        onDismissClick: () -> Unit = {},
+        showFeedbackButton: Boolean = true
     ) {
         binding.featureWipViewMore.setOnCheckedChangeListener { _, isChecked ->
             isExpanded = isChecked
@@ -42,7 +44,12 @@ class FeatureWIPNoticeCard @JvmOverloads constructor(
         binding.featureWipViewMore.text = title
         binding.featureWipMessage.text = message
 
-        binding.btnGiveFeedback.setOnClickListener { onGiveFeedbackClick() }
+        if (showFeedbackButton) {
+            binding.btnGiveFeedback.setOnClickListener { onGiveFeedbackClick() }
+        } else {
+            binding.btnGiveFeedback.hide()
+        }
+
         binding.btnDismiss.setOnClickListener { onDismissClick() }
     }
 }

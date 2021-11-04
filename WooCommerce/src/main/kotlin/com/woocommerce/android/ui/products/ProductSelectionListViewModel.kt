@@ -58,7 +58,8 @@ class ProductSelectionListViewModel @Inject constructor(
     private var loadJob: Job? = null
     private var searchJob: Job? = null
 
-    private val excludedProductIds = navArgs.excludedProductIds.toList()
+    private val excludedProductIds
+        get() = navArgs.excludedProductIds.toList().plus(navArgs.remoteProductId)
 
     init {
         if (_productList.value == null) {

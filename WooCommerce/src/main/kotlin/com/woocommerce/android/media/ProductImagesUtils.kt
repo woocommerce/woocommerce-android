@@ -135,7 +135,7 @@ object ProductImagesUtils {
         }
     }
 
-    private fun hasCamera(context: Context): Boolean =
+    fun hasCamera(context: Context): Boolean =
         context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
 
     /**

@@ -1,2 +1,0 @@
-7.7:
-Handlare som använder WooCommerce Payments i USA kan ta emot personliga betalningar via kreditkort för kundbetalningar vid leverans eller upphämtning. I den här versionen ingår dessutom ett antal mindre förbättringar som är baserade på er feedback. Tack för att ni hjälper oss att skapa en bättre app för alla.

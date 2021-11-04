@@ -1,0 +1,2 @@
+7.8:
+En esta versión, hemos añadido unas pequeñas mejoras en varias funciones gracias a los comentarios de vendedores como tú. ¡Muchas gracias!

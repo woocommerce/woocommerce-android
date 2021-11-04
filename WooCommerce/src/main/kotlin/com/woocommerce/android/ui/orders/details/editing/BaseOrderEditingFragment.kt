@@ -118,7 +118,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
         }
     }
 
-    private fun updateDoneMenuItem() {
+    protected fun updateDoneMenuItem() {
         doneMenuItem?.isVisible = hasChanges()
     }
 

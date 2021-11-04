@@ -39,6 +39,8 @@ class StatsRepository @Inject constructor(
     private val continuationRevenueStats = ContinuationWrapper<Result<WCRevenueStatsModel?>>(DASHBOARD)
     private val continuationVisitorStats = ContinuationWrapper<Result<Map<String, Int>>>(DASHBOARD)
     private val continuationHasOrders = ContinuationWrapper<Result<Boolean>>(DASHBOARD)
+    private lateinit var lastRevenueStatsGranularity: StatsGranularity
+    private lateinit var lastVisitorStatsGranularity: StatsGranularity
 
     fun init() {
         dispatcher.register(this)
@@ -49,6 +51,7 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean): Result<WCRevenueStatsModel?> {
+        lastRevenueStatsGranularity = granularity
         val result = continuationRevenueStats.callAndWait {
             val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, forced = forced)
             dispatcher.dispatch(WCStatsActionBuilder.newFetchRevenueStatsAction(statsPayload))
@@ -61,6 +64,7 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Result<Map<String, Int>> {
+        lastVisitorStatsGranularity = granularity
         val result = continuationVisitorStats.callAndWait {
             val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
             dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
@@ -109,7 +113,7 @@ class StatsRepository @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCRevenueStatsChanged(event: OnWCRevenueStatsChanged) {
-        if (event.causeOfChange == FETCH_REVENUE_STATS) {
+        if (event.causeOfChange == FETCH_REVENUE_STATS && event.granularity == lastRevenueStatsGranularity) {
             if (event.isError) {
                 WooLog.e(DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
                 // display a different error snackbar if the error type is not "plugin not active", since
@@ -130,7 +134,7 @@ class StatsRepository @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCStatsChanged(event: OnWCStatsChanged) {
-        if (event.causeOfChange == FETCH_NEW_VISITOR_STATS) {
+        if (event.causeOfChange == FETCH_NEW_VISITOR_STATS && event.granularity == lastVisitorStatsGranularity) {
             if (event.isError) {
                 WooLog.e(DASHBOARD, "$TAG - Error fetching visitor stats: ${event.error.message}")
                 continuationVisitorStats.continueWith(Result.failure(StatsException(event.error)))

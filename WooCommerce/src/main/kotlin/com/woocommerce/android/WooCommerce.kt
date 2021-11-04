@@ -26,8 +26,6 @@ open class WooCommerce : Application(), HasAndroidInjector {
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
         WellSql.init(wellSqlConfig)
 
-        FeedbackPrefs.init(this)
-
         appInitializer.get().init(this)
     }
 
