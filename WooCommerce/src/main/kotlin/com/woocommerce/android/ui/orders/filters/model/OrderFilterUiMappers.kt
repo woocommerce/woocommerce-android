@@ -31,9 +31,9 @@ fun OrderFilterDateRangeUiModel.toFilterListOptionUiModel(resourceProvider: Reso
 fun OrderFilterDateRangeUiModel.toAfterIso8061DateString(dateUtils: DateUtils): String? {
     val afterDate = when (this) {
         TODAY -> dateUtils.getDateForTodayAtTheStartOfTheDay()
-        LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(2)
-        LAST_7_DAYS -> dateUtils.getCurrentDateTimeMinusDays(7)
-        LAST_30_DAYS -> dateUtils.getCurrentDateTimeMinusDays(30)
+        LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 2)
+        LAST_7_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 7)
+        LAST_30_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 30)
     }
     return dateUtils.toIso8601Format(afterDate)
 }
