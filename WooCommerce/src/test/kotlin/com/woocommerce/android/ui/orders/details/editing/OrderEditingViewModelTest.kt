@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -53,10 +54,10 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should emit success event if update was successful`() {
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.remoteId, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 RemoteUpdateResult(
-                    OnOrderChanged(0)
+                    OnOrderChanged()
                 )
             )
         }
@@ -75,12 +76,10 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should emit generic error event for errors other than empty billing mail error`() {
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.remoteId, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 RemoteUpdateResult(
-                    OnOrderChanged(0).apply {
-                        error = OrderError(type = OrderErrorType.INVALID_RESPONSE)
-                    }
+                    OnOrderChanged(orderError = OrderError(type = OrderErrorType.INVALID_RESPONSE))
                 )
             )
         }
@@ -99,12 +98,10 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should emit empty mail failure if store returns empty billing mail error`() {
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.remoteId, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 RemoteUpdateResult(
-                    OnOrderChanged(0).apply {
-                        error = OrderError(type = OrderErrorType.EMPTY_BILLING_EMAIL)
-                    }
+                    OnOrderChanged(orderError = OrderError(type = OrderErrorType.EMPTY_BILLING_EMAIL))
                 )
             )
         }
@@ -137,6 +134,6 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             email = ""
         )
 
-        val testOrder = WCOrderModel().toAppModel()
+        val testOrder = OrderTestUtils.generateTestOrder()
     }
 }
