@@ -27,10 +27,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -175,10 +175,6 @@ class OrderListFragment :
             }
         }
 
-        if (FeatureFlag.QUICK_ORDER.isEnabled()) {
-            displayQuickOrderWIPCard(true)
-        }
-
         initializeViewModel()
         initializeTabs()
 
@@ -238,6 +234,13 @@ class OrderListFragment :
                 binding.orderListView.scrollToTop()
             }
         })
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (FeatureFlag.QUICK_ORDER.isEnabled()) {
+            displayQuickOrderWIPCard(true)
+        }
     }
 
     override fun onResume() {

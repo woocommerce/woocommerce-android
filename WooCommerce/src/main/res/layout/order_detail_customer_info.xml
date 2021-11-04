@@ -273,7 +273,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_viewMoreButtonTitle"
-                style="@style/Woo.Button.TextButton"
+                style="@style/Woo.Button.TextButton.TextStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
