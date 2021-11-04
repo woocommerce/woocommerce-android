@@ -39,8 +39,8 @@ data class OrderListFilterOptionUiModel(
 enum class OrderFilterDateRangeUiModel(@StringRes val stringResource: Int, val filterKey: String) {
     TODAY(R.string.orderfilters_date_range_filter_today, "Today"),
     LAST_2_DAYS(R.string.orderfilters_date_range_filter_last_two_days, "Last2Days"),
-    THIS_WEEK(R.string.orderfilters_date_range_filter_this_week, "ThisWeek"),
-    THIS_MONTH(R.string.orderfilters_date_range_filter_this_month, "ThisMonth");
+    LAST_7_DAYS(R.string.orderfilters_date_range_filter_last_7_days, "Last7Days"),
+    LAST_30_DAYS(R.string.orderfilters_date_range_filter_last_30_days, "Last30Days");
 
     companion object {
         private val valueMap = values().associateBy(OrderFilterDateRangeUiModel::filterKey)

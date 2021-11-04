@@ -12,8 +12,8 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.Ord
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.LAST_2_DAYS
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.THIS_MONTH
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.THIS_WEEK
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.LAST_30_DAYS
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.LAST_7_DAYS
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.TODAY
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.model.OrderListFilterOptionUiModel
@@ -79,7 +79,7 @@ class OrderFilterListViewModel @Inject constructor(
     }
 
     private fun loadDateRangeFilterOptions(selectedDateRangeFilter: List<String>?): List<OrderListFilterOptionUiModel> =
-        listOf(TODAY, LAST_2_DAYS, THIS_WEEK, THIS_MONTH)
+        listOf(TODAY, LAST_2_DAYS, LAST_7_DAYS, LAST_30_DAYS)
             .map { it.toFilterListOptionUiModel(resourceProvider) }
             .map { it.markAsSelectedIfPreviouslySelected(selectedDateRangeFilter) }
             .toMutableList()

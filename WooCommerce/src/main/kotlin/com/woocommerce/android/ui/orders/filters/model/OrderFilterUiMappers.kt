@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.orders.filters.model
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.LAST_2_DAYS
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.THIS_MONTH
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.THIS_WEEK
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.LAST_30_DAYS
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.LAST_7_DAYS
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel.TODAY
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -32,8 +32,8 @@ fun OrderFilterDateRangeUiModel.toAfterIso8061DateString(dateUtils: DateUtils): 
     val afterDate = when (this) {
         TODAY -> dateUtils.getDateForTodayAtTheStartOfTheDay()
         LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(2)
-        THIS_WEEK -> dateUtils.getDateForFirstDayOfCurrentWeek()
-        THIS_MONTH -> dateUtils.getDateForFirstDayOfCurrentMonth()
+        LAST_7_DAYS -> dateUtils.getCurrentDateTimeMinusDays(7)
+        LAST_30_DAYS -> dateUtils.getCurrentDateTimeMinusDays(30)
     }
     return dateUtils.toIso8601Format(afterDate)
 }
