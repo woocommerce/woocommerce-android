@@ -101,7 +101,7 @@ ext {
     eventBusVersion = '3.2.0'
     googlePlayCoreVersion = '1.10.0'
     coroutinesVersion = '1.5.2'
-    lifecycleVersion = '2.3.1'
+    lifecycleVersion = '2.4.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
     flipperVersion = '0.116.0'
