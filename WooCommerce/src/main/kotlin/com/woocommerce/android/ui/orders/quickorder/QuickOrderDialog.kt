@@ -41,20 +41,12 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         }
 
         val binding = DialogQuickOrderBinding.bind(view)
-        binding.imageClose.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
         binding.editPrice.initView(viewModel.currencyCode, viewModel.decimals, currencyFormatter)
-        binding.editPrice.value.observe(
-            this,
-            {
-                viewModel.currentPrice = it
-            }
-        )
-
         binding.buttonDone.setOnClickListener {
             returnResult()
+        }
+        binding.imageClose.setOnClickListener {
+            findNavController().navigateUp()
         }
 
         ActivityUtils.showKeyboard(binding.editPrice)
@@ -63,6 +55,13 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
     }
 
     private fun setupObservers(binding: DialogQuickOrderBinding) {
+        binding.editPrice.value.observe(
+            this,
+            {
+                viewModel.currentPrice = it
+            }
+        )
+
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.currentPrice.takeIfNotEqualTo(old?.currentPrice) {
                 binding.buttonDone.isEnabled = it > BigDecimal.ZERO
