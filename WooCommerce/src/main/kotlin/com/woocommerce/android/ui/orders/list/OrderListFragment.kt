@@ -304,7 +304,7 @@ class OrderListFragment :
                 true
             }
             R.id.menu_add -> {
-                // TODO nbradbury - show quick order view
+                showQuickOrderDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -431,6 +431,10 @@ class OrderListFragment :
 
     private fun showOrderFilters() {
         findNavController().navigate(R.id.action_orderListFragment_to_orderFilterListFragment)
+    }
+
+    private fun showQuickOrderDialog() {
+        findNavController().navigate(R.id.action_orderListFragment_to_quickOrderDialog)
     }
 
     private fun hideEmptyView() {

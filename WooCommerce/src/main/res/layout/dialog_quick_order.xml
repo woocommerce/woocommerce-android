@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="@color/color_surface"
     android:orientation="vertical"
-    android:padding="@dimen/major_100">
+    android:padding="@dimen/major_100"
+    tools:context=".ui.orders.quickorder.QuickOrderDialog">
 
     <com.woocommerce.android.widgets.CurrencyEditText
         android:id="@+id/editPrice"
