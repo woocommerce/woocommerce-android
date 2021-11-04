@@ -14,17 +14,18 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/close"
+        app:layout_constraintBottom_toBottomOf="@+id/titleText"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/titleText"
         app:srcCompat="@drawable/ic_gridicons_cross_24dp" />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/titleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/quickorder_dialog_title"
         android:textAppearance="@style/TextAppearance.Woo.CollapsingToolbar.Collapsed"
-        android:textSize="@dimen/text_minor_125"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
