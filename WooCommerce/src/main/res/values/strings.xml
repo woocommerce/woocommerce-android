@@ -782,14 +782,15 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
-    <string name="card_reader_manual_card_reader">Card Reader Manual</string>
+    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
+    <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
     <!--
         Card Reader Payments
     -->
     <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
     <string name="card_reader_payment_collect_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
-    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/card_reader_payment_remove_card_prompt</string>
-    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/card_reader_payment_remove_card_prompt</string>
+    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
 
     <string name="card_reader_payment_collect_payment_loading_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
@@ -822,6 +823,7 @@
     <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Multiple cards detected. Try again with a single card</string>
     <string name="card_reader_payment_try_another_read_method_prompt">Retry tapping, inserting or swiping your card</string>
     <string name="card_reader_payment_try_another_card_prompt">Retry with another card</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">Check your mobile device</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
@@ -850,6 +852,8 @@
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
+    <string name="card_reader_connect_missing_address">Please provide your store address in order to proceed</string>
+    <string name="card_reader_connect_missing_address_button">Enter address</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
@@ -885,14 +889,17 @@
         Card Reader Software update
     -->
     <string name="card_reader_software_update_update" translatable="false">@string/update</string>
-    <string name="card_reader_software_update_skip" translatable="false">@string/skip</string>
     <string name="card_reader_software_update_cancel" translatable="false">@string/cancel</string>
-    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly. Do you want to update it now?</string>
+    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly</string>
     <string name="card_reader_software_update_title">Software update</string>
+    <string name="card_reader_software_update_title_battery_low">Please charge reader</string>
     <string name="card_reader_software_update_in_progress_title">Updating your reader\'s software</string>
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
+    <string name="card_reader_software_update_progress_description_low_battery">Updating the reader software failed because the reader\’s battery is %1$s%% charged. Please charge the reader above 50%% before trying again.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">Updating the reader software failed because the reader\’s battery is insufficiently charged. Please charge the reader above 50%% before trying again.</string>
     <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">Canceling an ongoing software update is not recommended. Cancelling will block your reader connection.</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% complete</string>
 
     <!--
         Card Reader Onboarding

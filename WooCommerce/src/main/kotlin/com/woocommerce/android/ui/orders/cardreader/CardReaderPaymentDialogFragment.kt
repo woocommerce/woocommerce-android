@@ -94,7 +94,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
             { viewState ->
                 UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
                 UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
-                UiHelpers.setImageOrHide(binding.illustration, viewState.illustration)
+                UiHelpers.setImageOrHideInLandscape(binding.illustration, viewState.illustration)
                 UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
                 (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
                     .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)

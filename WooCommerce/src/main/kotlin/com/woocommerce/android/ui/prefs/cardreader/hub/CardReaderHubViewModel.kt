@@ -32,8 +32,13 @@ class CardReaderHubViewModel @Inject constructor(
             ),
             CardReaderHubListItemViewState(
                 icon = R.drawable.ic_card_reader_manual,
-                label = UiString.UiStringRes(R.string.card_reader_manual_card_reader),
-                onItemClicked = ::onManualCardReaderClicked
+                label = UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader),
+                onItemClicked = ::onBbposManualCardReaderClicked
+            ),
+            CardReaderHubListItemViewState(
+                icon = R.drawable.ic_card_reader_manual,
+                label = UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader),
+                onItemClicked = ::onM2ManualCardReaderClicked
             ),
         )
     )
@@ -48,8 +53,12 @@ class CardReaderHubViewModel @Inject constructor(
         triggerEvent(CardReaderHubEvents.NavigateToPurchaseCardReaderFlow)
     }
 
-    private fun onManualCardReaderClicked() {
-        triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow)
+    private fun onBbposManualCardReaderClicked() {
+        triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.BBPOS_MANUAL_CARD_READER))
+    }
+
+    private fun onM2ManualCardReaderClicked() {
+        triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.M2_MANUAL_CARD_READER))
     }
 
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
@@ -57,9 +66,7 @@ class CardReaderHubViewModel @Inject constructor(
         object NavigateToPurchaseCardReaderFlow : CardReaderHubEvents() {
             const val url = AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER
         }
-        object NavigateToManualCardReaderFlow : CardReaderHubEvents() {
-            const val url = AppUrls.WOOCOMMERCE_MANUAL_CARD_READER
-        }
+        data class NavigateToManualCardReaderFlow(val url: String) : CardReaderHubEvents()
     }
 
     sealed class CardReaderHubViewState {
