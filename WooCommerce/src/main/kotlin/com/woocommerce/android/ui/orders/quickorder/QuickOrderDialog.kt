@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -21,6 +22,7 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private val navArgs: QuickOrderDialogArgs by navArgs()
+    private var currentPrice = BigDecimal.ZERO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +52,14 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
 
         binding.editPrice.initView(navArgs.currency, navArgs.decimals, currencyFormatter)
         binding.editPrice.setValue(BigDecimal.ZERO)
+        binding.editPrice.value.observe(
+            this,
+            Observer {
+                binding.buttonDone.isEnabled = it > BigDecimal.ZERO
+                currentPrice = it
+            }
+        )
+
         ActivityUtils.showKeyboard(binding.editPrice)
     }
 
@@ -59,6 +69,6 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
     }
 
     companion object {
-        const val RATIO = 0.9
+        const val RATIO = 0.95
     }
 }

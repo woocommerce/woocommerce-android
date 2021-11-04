@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:imeOptions="flagNoExtractUi"
-        android:textSize="@dimen/text_major_200"
+        android:textSize="@dimen/text_major_150"
         tools:hint="0.00" />
 
     <com.google.android.material.button.MaterialButton
