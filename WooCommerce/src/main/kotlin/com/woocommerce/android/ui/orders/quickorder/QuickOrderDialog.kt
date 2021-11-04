@@ -12,7 +12,6 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -48,8 +47,6 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         binding.imageClose.setOnClickListener {
             findNavController().navigateUp()
         }
-
-        ActivityUtils.showKeyboard(binding.editPrice)
 
         setupObservers(binding)
     }

@@ -27,12 +27,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
-import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -40,11 +38,8 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.quickorder.QuickOrderDialog
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
