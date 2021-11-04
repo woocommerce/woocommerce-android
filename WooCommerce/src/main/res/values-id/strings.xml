@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-11 19:54:03+0000
+Translation-Revision-Date: 2021-10-26 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Lihat manfaatnya</string>
+    <string name="jetpack_benefits_bottom_banner_title">Dapatkan pengalaman penuh menggunakan Jetpack</string>
+    <string name="product_description_hint_with_title">Beri tahu kami lebih banyak tentang %s…</string>
+    <string name="product_description_hint_no_title">Jelaskan produk Anda ke calon pelanggan…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Nomor seri pembaca disalin ke clipboard</string>
+    <string name="card_reader_manual_card_reader">Panduan Pembaca Kartu</string>
+    <string name="order_detail_add_billing_address">Tambahkan alamat penagihan</string>
+    <string name="order_detail_add_shipping_address">Tambahkan alamat pengiriman</string>
+    <string name="order_detail_add_customer_note">Tambahkan catatan pelanggan</string>
+    <string name="order_detail_billing_address_section">Alamat Penagihan</string>
+    <string name="order_detail_shipping_address_section">Alamat Pengiriman</string>
+    <string name="order_detail_address_section">Alamat</string>
+    <string name="order_detail_edit_address_country">Negara</string>
+    <string name="order_detail_edit_address_state">Provinsi</string>
+    <string name="order_detail_edit_address_zip">Kode Pos</string>
+    <string name="order_detail_edit_address_city">Kota</string>
+    <string name="order_detail_edit_address_line2">Alamat 2</string>
+    <string name="order_detail_edit_address_line1">Alamat 1</string>
+    <string name="order_detail_edit_address_company">Perusahaan</string>
+    <string name="order_detail_edit_address_details_phone">Telepon</string>
+    <string name="order_detail_edit_address_details_email">Surel</string>
+    <string name="order_detail_edit_address_details_last_name">Nama belakang</string>
+    <string name="order_detail_edit_address_details_first_name">Nama depan</string>
+    <string name="orderdetail_customer_note_hint">Sunting catatan pesanan pelanggan</string>
     <string name="support_system_status_report_fetch_error">Error saat mengambil LSS. Harap periksa WooCommerce -&gt; Status di wp-admin.</string>
     <string name="support_system_status_report_share_error">Tidak dapat membagikan Laporan Status Sistem</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error saat menyalin LSS ke clipboard</string>
@@ -831,7 +855,6 @@ Language: id
     <string name="product_description_empty">Deskripsikan produk Anda</string>
     <string name="product_description">Deskripsi</string>
     <string name="product_edit_description">Sunting deskripsi</string>
-    <string name="product_description_hint">Mulai menulis…</string>
     <string name="discard_message">Ingin membuang perubahan?</string>
     <string name="update">Perbarui</string>
     <string name="done">Selesai</string>
@@ -968,7 +991,7 @@ Language: id
     <string name="login_refresh_app_progress">Memeriksa WooCommerce…</string>
     <string name="login_refresh_app">segarkan aplikasi</string>
     <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu %2$s</string>
-    <string name="orderdetail_empty_shipping_address">Tidak ada alamat yang dicantumkan.</string>
+    <string name="orderdetail_empty_address">Tidak ada alamat yang dicantumkan</string>
     <string name="login_need_help_finding_connected_email">Perlu bantuan untuk menemukan email yang terhubung dengan Anda?</string>
     <string name="enter_wordpress_site">Situs web di alamat ini bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>
     <string name="enter_email_for_site">Login dengan WordPress.com untuk terhubung ke &lt;b&gt;%1$s&lt;/b&gt;</string>

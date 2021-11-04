@@ -168,7 +168,8 @@
         android:id="@+id/option_beta_features"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:optionTitle="@string/beta_features" />
+        app:optionTitle="@string/beta_features"
+        app:optionValue="@string/beta_features_message" />
 
     <!--
         Send Feedback

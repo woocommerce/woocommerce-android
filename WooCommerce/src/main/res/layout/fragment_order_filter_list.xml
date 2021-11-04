@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface"
         app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toTopOf="@+id/bottomDivider"
+        app:layout_constraintBottom_toTopOf="@+id/bottomDividerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,14 +20,14 @@
         tools:listitem="@layout/filter_list_item" />
 
     <View
-        android:id="@+id/bottomDivider"
+        android:id="@+id/bottomDividerView"
         style="@style/Woo.Divider"
-        app:layout_constraintBottom_toTopOf="@+id/filterList_btnFrame"
+        app:layout_constraintBottom_toTopOf="@+id/showOrdersButtonFrameLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.woocommerce.android.widgets.WCElevatedLinearLayout
-        android:id="@+id/filterList_btnFrame"
+        android:id="@+id/showOrdersButtonFrameLinearLayout"
         style="@style/Woo.Card.WithoutPadding"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/filterList_btnShowOrders"
+            android:id="@+id/showOrdersButton"
             style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

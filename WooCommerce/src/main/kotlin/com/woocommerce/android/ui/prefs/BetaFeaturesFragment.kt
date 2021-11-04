@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import android.os.Bundle
 import android.view.View
+import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -10,8 +11,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
+import com.woocommerce.android.util.FeatureFlag
 
 class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     companion object {
@@ -28,7 +32,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         val binding = FragmentSettingsBetaBinding.bind(view)
 
         binding.switchAddonsToggle.isChecked = AppPrefs.isProductAddonsEnabled
-        binding.switchAddonsToggle.setOnCheckedChangeListener { _, isChecked ->
+        binding.switchAddonsToggle.setOnCheckedChangeListener { switch, isChecked ->
             AnalyticsTracker.track(
                 PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED,
                 mapOf(
@@ -38,7 +42,19 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
             )
 
             settingsListener?.onProductAddonsOptionChanged(isChecked)
-                ?: binding.handleToggleChangeFailure(isChecked)
+                ?: binding.handleToggleChangeFailure(switch, isChecked)
+        }
+
+        if (FeatureFlag.QUICK_ORDER.isEnabled()) {
+            binding.switchQuickOrderToggle.show()
+            binding.switchQuickOrderToggle.isChecked = AppPrefs.isQuickOrderEnabled
+            binding.switchQuickOrderToggle.setOnCheckedChangeListener { switch, isChecked ->
+                // TODO nbradbury analytics
+                settingsListener?.onQuickOrderOptionChanged(isChecked)
+                    ?: binding.handleToggleChangeFailure(switch, isChecked)
+            }
+        } else {
+            binding.switchQuickOrderToggle.hide()
         }
     }
 
@@ -49,8 +65,8 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         activity?.setTitle(R.string.beta_features)
     }
 
-    private fun FragmentSettingsBetaBinding.handleToggleChangeFailure(isChecked: Boolean) {
-        switchAddonsToggle.isChecked = !isChecked
+    private fun FragmentSettingsBetaBinding.handleToggleChangeFailure(switch: CompoundButton, isChecked: Boolean) {
+        switch.isChecked = !isChecked
         Snackbar.make(
             mainView,
             R.string.settings_enable_beta_feature_failed_snackbar_text,

@@ -146,7 +146,6 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    /* We hide the Add Product FAB and use the empty view's button instead. */
     fun `Hides add product button when list of products is empty`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // when
@@ -165,6 +164,98 @@ class ProductListViewModelTest : BaseUnitTest() {
 
             // then
             assertThat(isAddProductButtonVisible).containsExactly(false)
+        }
+
+    @Test
+    fun `Hides add product button when searching`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // when
+            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+
+            createViewModel()
+
+            val isAddProductButtonVisible = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                    isAddProductButtonVisible.add(it)
+                }
+            }
+
+            viewModel.loadProducts()
+            viewModel.onSearchOpened()
+
+            // then
+            assertThat(isAddProductButtonVisible).containsExactly(false)
+        }
+
+    @Test
+    /* We show the Add Product FAB after searching is completed. */
+    fun `Shows add product button after opening and closing search`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // when
+            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+
+            createViewModel()
+
+            val isAddProductButtonVisible = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                    isAddProductButtonVisible.add(it)
+                }
+            }
+
+            viewModel.loadProducts()
+            viewModel.onSearchOpened()
+            viewModel.onSearchClosed()
+
+            // then
+            assertThat(isAddProductButtonVisible).containsExactly(false, true, false)
+        }
+
+    @Test
+    /* We hide the filters when searching. */
+    fun `Hides filters buttons when searching`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // when
+            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+
+            createViewModel()
+
+            val displaySortAndFilterCard = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.displaySortAndFilterCard?.takeIfNotEqualTo(old?.displaySortAndFilterCard) {
+                    displaySortAndFilterCard.add(it)
+                }
+            }
+
+            viewModel.loadProducts()
+            viewModel.onSearchOpened()
+
+            // then
+            assertThat(displaySortAndFilterCard).containsExactly(false)
+        }
+
+    @Test
+    fun `Shows filters buttons after opening and closing search`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // when
+            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+
+            createViewModel()
+
+            val displaySortAndFilterCard = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.displaySortAndFilterCard?.takeIfNotEqualTo(old?.displaySortAndFilterCard) {
+                    displaySortAndFilterCard.add(it)
+                }
+            }
+
+            viewModel.loadProducts()
+            viewModel.onSearchOpened()
+            viewModel.onSearchClosed()
+
+            // then
+            assertThat(displaySortAndFilterCard).containsExactly(false, true, false)
         }
 
     @Test

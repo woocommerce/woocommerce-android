@@ -28,7 +28,7 @@ class OrderFilterOptionListFragment :
         val binding = FragmentOrderFilterListBinding.bind(view)
         setUpObservers(viewModel)
         setUpFilterOptionsRecyclerView(binding)
-        binding.filterListBtnShowOrders.setOnClickListener {
+        binding.showOrdersButton.setOnClickListener {
             viewModel.onShowOrdersClicked()
         }
     }

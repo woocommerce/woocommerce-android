@@ -229,7 +229,7 @@ class EditShippingLabelAddressFragment :
                 }
                 is ShowCountrySelector -> {
                     val action = EditShippingLabelAddressFragmentDirections
-                        .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
+                        .actionGlobalItemSelectorDialog(
                             event.currentCountryCode,
                             event.locations.map { it.name }.toTypedArray(),
                             event.locations.map { it.code }.toTypedArray(),
@@ -240,7 +240,7 @@ class EditShippingLabelAddressFragment :
                 }
                 is ShowStateSelector -> {
                     val action = EditShippingLabelAddressFragmentDirections
-                        .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
+                        .actionGlobalItemSelectorDialog(
                             event.currentStateCode,
                             event.locations.map { it.name }.toTypedArray(),
                             event.locations.map { it.code }.toTypedArray(),
