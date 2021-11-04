@@ -8,6 +8,10 @@
     android:padding="@dimen/major_100"
     tools:context=".ui.orders.quickorder.QuickOrderDialog">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_toolbar"/>
+
     <com.woocommerce.android.widgets.CurrencyEditText
         android:id="@+id/editPrice"
         android:layout_width="match_parent"
