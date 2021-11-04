@@ -12,6 +12,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
+import org.wordpress.android.mediapicker.util.MediaFileUtils
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.MediaUtils
@@ -38,7 +39,7 @@ object ProductImagesUtils {
             return null
         }
 
-        var path = MediaUtils.getRealPathFromURI(context, fetchedUri)
+        var path = MediaFileUtils.getMediaStoreFilePath(context, fetchedUri)
         if (path == null) {
             WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to get path from uri, $fetchedUri")
             return null
@@ -47,15 +48,16 @@ object ProductImagesUtils {
         // optimize the image if the setting is enabled
         @Suppress("TooGenericExceptionCaught")
         if (AppPrefs.getImageOptimizationEnabled()) {
+            val oldPath = path
             getOptimizedImagePath(context, path)?.let {
                 // Delete original file if it's in the cache directly
-                if (path.contains(context.cacheDir.absolutePath)) File(path).delete()
+                if (oldPath.contains(context.cacheDir.absolutePath)) File(oldPath).delete()
                 // Use the optimized image
                 path = it
             }
         }
 
-        val file = File(path)
+        val file = File(path!!)
         if (!file.exists()) {
             WooLog.w(T.MEDIA, "mediaModelFromLocalUri > file does not exist, $path")
             return null
