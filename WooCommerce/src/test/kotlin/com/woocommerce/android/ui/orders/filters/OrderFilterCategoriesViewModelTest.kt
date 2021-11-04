@@ -151,7 +151,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
     private fun givenDateRangeFiltersAvailable() {
         whenever(getDateRangeFilterOptions.invoke()).thenReturn(
-            listOf(DateRange.TODAY, DateRange.LAST_2_DAYS, DateRange.THIS_WEEK, DateRange.THIS_MONTH)
+            listOf(DateRange.TODAY, DateRange.LAST_2_DAYS, DateRange.LAST_7_DAYS, DateRange.LAST_30_DAYS)
                 .map {
                     DateRangeFilterOption(
                         dateRange = it,

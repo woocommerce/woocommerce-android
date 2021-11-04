@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.orders.filters.data
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_2_DAYS
-import com.woocommerce.android.ui.orders.filters.data.DateRange.THIS_MONTH
-import com.woocommerce.android.ui.orders.filters.data.DateRange.THIS_WEEK
+import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_30_DAYS
+import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_7_DAYS
 import com.woocommerce.android.ui.orders.filters.data.DateRange.TODAY
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
@@ -35,9 +35,9 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
     private fun DateRange.toAfterIso8061DateString(dateUtils: DateUtils): String? {
         val afterDate = when (this) {
             TODAY -> dateUtils.getDateForTodayAtTheStartOfTheDay()
-            LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(2)
-            THIS_WEEK -> dateUtils.getDateForFirstDayOfCurrentWeek()
-            THIS_MONTH -> dateUtils.getDateForFirstDayOfCurrentMonth()
+            LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 2)
+            LAST_7_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 7)
+            LAST_30_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 30)
         }
         return dateUtils.toIso8601Format(afterDate)
     }
@@ -86,7 +86,7 @@ class GetDateRangeFilterOptions @Inject constructor(
     private val orderFiltersRepository: OrderFiltersRepository
 ) {
     operator fun invoke(): List<DateRangeFilterOption> =
-        listOf(TODAY, LAST_2_DAYS, THIS_WEEK, THIS_MONTH)
+        listOf(TODAY, LAST_2_DAYS, LAST_7_DAYS, LAST_30_DAYS)
             .map {
                 DateRangeFilterOption(
                     dateRange = it,

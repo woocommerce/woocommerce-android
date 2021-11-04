@@ -36,7 +36,7 @@ fun DateRange.toDisplayName(resourceProvider: ResourceProvider): String =
         when (this) {
             TODAY -> R.string.orderfilters_date_range_filter_today
             LAST_2_DAYS -> R.string.orderfilters_date_range_filter_last_two_days
-            THIS_WEEK -> R.string.orderfilters_date_range_filter_this_week
-            THIS_MONTH -> R.string.orderfilters_date_range_filter_this_month
+            LAST_7_DAYS -> R.string.orderfilters_date_range_filter_last_7_days
+            LAST_30_DAYS -> R.string.orderfilters_date_range_filter_last_30_days
         }
     )
