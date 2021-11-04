@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.orders.filters.model
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_2_DAYS
-import com.woocommerce.android.ui.orders.filters.data.DateRange.THIS_MONTH
-import com.woocommerce.android.ui.orders.filters.data.DateRange.THIS_WEEK
+import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_30_DAYS
+import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_7_DAYS
 import com.woocommerce.android.ui.orders.filters.data.DateRange.TODAY
 import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption

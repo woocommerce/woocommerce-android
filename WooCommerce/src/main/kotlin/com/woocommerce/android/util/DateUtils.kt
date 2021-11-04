@@ -324,30 +324,6 @@ class DateUtils @Inject constructor(
         }.time
 
     /**
-     * Returns a date object with the date for the first day of the current week
-     */
-    fun getDateForFirstDayOfCurrentWeek(): Date =
-        Calendar.getInstance().apply {
-            clear(Calendar.MILLISECOND)
-            clear(Calendar.SECOND)
-            clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
-        }.time
-
-    /**
-     * Returns a date object with the date for the first day of the current month
-     */
-    fun getDateForFirstDayOfCurrentMonth(): Date =
-        Calendar.getInstance().apply {
-            clear(Calendar.MILLISECOND)
-            clear(Calendar.SECOND)
-            clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.DAY_OF_MONTH, 1)
-        }.time
-
-    /**
      * Returns a Date object with current date minus N days
      */
     fun getCurrentDateTimeMinusDays(days: Int): Date =
