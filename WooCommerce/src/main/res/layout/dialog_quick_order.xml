@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_surface"
-    android:padding="@dimen/major_100"
+    android:paddingVertical="@dimen/major_100"
     tools:context=".ui.orders.quickorder.QuickOrderDialog">
 
     <ImageView
@@ -14,6 +14,8 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/close"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="@+id/titleText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/titleText"
@@ -70,6 +72,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:enabled="false"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
         android:text="@string/done"
         app:layout_constraintBottom_toBottomOf="parent" />
 
