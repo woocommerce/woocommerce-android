@@ -434,11 +434,7 @@ class OrderListFragment :
     }
 
     private fun showQuickOrderDialog() {
-        val action = OrderListFragmentDirections.actionOrderListFragmentToQuickOrderDialog(
-            viewModel.getStoreCurrencyCode(),
-            viewModel.getStoreDecimals()
-        )
-        findNavController().navigateSafely(action)
+        findNavController().navigate(R.id.action_orderListFragment_to_quickOrderDialog)
     }
 
     private fun hideEmptyView() {

@@ -495,11 +495,6 @@ class OrderListViewModel @Inject constructor(
         activatePagedListWrapper(pagedListWrapper)
     }
 
-    fun getStoreCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
-
-    fun getStoreDecimals() =
-        wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber ?: DEFAULT_DECIMAL_PRECISION
-
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
@@ -511,8 +506,4 @@ class OrderListViewModel @Inject constructor(
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
     ) : Parcelable
-
-    companion object {
-        private const val DEFAULT_DECIMAL_PRECISION = 2
-    }
 }

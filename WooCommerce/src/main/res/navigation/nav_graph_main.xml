@@ -16,16 +16,7 @@
     <dialog
         android:id="@+id/quickOrderDialog"
         android:name="com.woocommerce.android.ui.orders.quickorder.QuickOrderDialog"
-        android:label="QuickOrderDialog">
-        <argument
-            android:name="currency"
-            app:argType="string"
-            app:nullable="false" />
-        <argument
-            android:name="decimals"
-            app:argType="integer"
-            app:nullable="false" />
-    </dialog>
+        android:label="QuickOrderDialog" />
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"

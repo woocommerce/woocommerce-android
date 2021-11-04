@@ -8,9 +8,26 @@
     android:padding="@dimen/major_100"
     tools:context=".ui.orders.quickorder.QuickOrderDialog">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/view_toolbar" />
+    <ImageView
+        android:id="@+id/imageClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/close"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_gridicons_cross_24dp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/quickorder_dialog_title"
+        android:textAppearance="@style/TextAppearance.Woo.CollapsingToolbar.Collapsed"
+        android:textSize="@dimen/text_minor_125"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textview.MaterialTextView
         style="@style/Woo.TextView.Caption"
@@ -19,7 +36,9 @@
         android:gravity="center"
         android:text="@string/quickorder_enter_amount"
         android:textSize="@dimen/text_minor_125"
-        app:layout_constraintBottom_toTopOf="@+id/editPrice" />
+        app:layout_constraintBottom_toTopOf="@+id/editPrice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.woocommerce.android.widgets.CurrencyEditText
         android:id="@+id/editPrice"
@@ -29,6 +48,8 @@
         android:imeOptions="flagNoExtractUi"
         android:textSize="@dimen/text_major_150"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:hint="0.00" />
 
