@@ -50,9 +50,9 @@ class GetSelectedOrderFiltersCount @Inject constructor(
     private val orderFiltersRepository: OrderFiltersRepository
 ) {
     operator fun invoke(): Int =
-        (orderFiltersRepository.getCurrentFilterSelection(ORDER_STATUS) +
-            orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE)
-            ).size
+        orderFiltersRepository.getCurrentFilterSelection(ORDER_STATUS)
+            .plus(orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE))
+            .size
 }
 
 class GetOrderStatusFilterOptions @Inject constructor(
