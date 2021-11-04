@@ -8,8 +8,8 @@ enum class OrderListFilterCategory {
 enum class DateRange(val filterKey: String) {
     TODAY("Today"),
     LAST_2_DAYS("Last2Days"),
-    THIS_WEEK("ThisWeek"),
-    THIS_MONTH("ThisMonth");
+    LAST_7_DAYS("Last7Days"),
+    LAST_30_DAYS("Last8Days");
 
     companion object {
         private val valueMap = values().associateBy(DateRange::filterKey)

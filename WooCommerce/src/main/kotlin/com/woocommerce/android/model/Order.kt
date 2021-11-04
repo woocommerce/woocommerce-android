@@ -286,7 +286,7 @@ fun WCOrderModel.toAppModel(): Order {
                 it.company,
                 it.firstName,
                 it.lastName,
-                "",
+                it.phone,
                 it.country,
                 it.state,
                 it.address1,

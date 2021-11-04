@@ -58,8 +58,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
-// TODO Extract logic out of MainActivity to reduce size and remove this @Suppress("TooManyFunctions")
-@Suppress("TooManyFunctions")
+// TODO Extract logic out of MainActivity to reduce size
 @AndroidEntryPoint
 class MainActivity :
     AppUpgradeActivity(),
@@ -829,12 +828,6 @@ class MainActivity :
         val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
         navController.navigateSafely(action)
-    }
-
-    override fun showOrderFilters() {
-        OrderListFragmentDirections.actionOrderListFragmentToOrderFilterListFragment().apply {
-            navController.navigateSafely(this)
-        }
     }
 
     override fun showFeedbackSurvey() {

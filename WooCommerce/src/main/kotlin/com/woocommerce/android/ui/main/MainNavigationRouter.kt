@@ -15,7 +15,6 @@ interface MainNavigationRouter {
         launchedFromNotification: Boolean = false
     )
 
-    fun showOrderFilters()
     fun showAddProduct()
     fun showReviewDetail(
         remoteReviewId: Long,

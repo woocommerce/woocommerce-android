@@ -58,7 +58,7 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
                     isInEditMode,
                     R.styleable.WCSettingsToggleOptionView_toggleOptionIcon,
                     R.styleable.WCSettingsToggleOptionView_tools_toggleOptionIcon
-                ).let { UiHelpers.setImageOrHide(binding.toggleSettingIcon, it, setInvisible = true) }
+                ).let { UiHelpers.setImageOrHideInLandscape(binding.toggleSettingIcon, it, setInvisible = true) }
 
                 // Set the view checked state
                 binding.toggleSettingSwitch.isChecked = StyleAttrUtils.getBoolean(
@@ -84,7 +84,7 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
         set(value) { UiHelpers.setTextOrHide(binding.toggleSettingDesc, value) }
 
     var iconImageResource: Int? = null
-        set(value) { UiHelpers.setImageOrHide(binding.toggleSettingIcon, value) }
+        set(value) { UiHelpers.setImageOrHideInLandscape(binding.toggleSettingIcon, value) }
 
     var iconDrawable: Drawable? = null
         set(value) { UiHelpers.setDrawableOrHide(binding.toggleSettingIcon, value) }

@@ -23,12 +23,12 @@
     <View
         style="@style/Woo.Divider"
         android:id="@+id/bottomDivider"
-        app:layout_constraintBottom_toTopOf="@+id/filterList_btnFrame"
+        app:layout_constraintBottom_toTopOf="@+id/showOrdersButtonFrameLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.woocommerce.android.widgets.WCElevatedLinearLayout
-        android:id="@+id/filterList_btnFrame"
+        android:id="@+id/showOrdersButtonFrameLinearLayout"
         style="@style/Woo.Card.WithoutPadding"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

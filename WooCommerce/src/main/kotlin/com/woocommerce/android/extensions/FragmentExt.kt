@@ -31,6 +31,23 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinati
 }
 
 /**
+ * A helper function that pops back stack to the [childId] and then invokes [navigateBackWithResult]
+ * This is useful for scenarios when the fragment returning result doesn't know who their parent is since
+ * they can be added to the navigation graph from various places of the app
+ *
+ * @param [key] A unique string that is the same as the one used in [handleResult]
+ * @param [result] A result value to be returned
+ * @param [childId] an destinationId, that used to navigate up from the specified destination
+ *
+ */
+fun <T> Fragment.navigateToParentWithResult(key: String, result: T, @IdRes childId: Int) {
+    if (findNavController().currentDestination?.id != childId) {
+        findNavController().popBackStack(childId, false)
+    }
+    navigateBackWithResult(key, result, null)
+}
+
+/**
  * A helper function that returns a notification in the Fragment's SavedStateHandle. Its purpose is to notify the caller
  * without returning any value. The notice can be observed as a LiveData using the same key - see the
  * Fragment.handleNotice() extension function.

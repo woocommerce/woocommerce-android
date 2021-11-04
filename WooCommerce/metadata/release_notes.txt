@@ -1,1 +1,1 @@
-Merchants using WooCommerce Payments in the USA can accept in-person credit card payments for your customers’ payment upon delivery or pickup orders. Also included in this release are a few minor improvements based on your feedback. Thanks for helping us make a better app for everyone.
+We know that your customers don’t always enter their addresses correctly when they place their orders. You’ll find that you can now edit the billing and shipping address along with customer-provided notes.

@@ -1,11 +1,12 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import com.stripe.stripeterminal.callable.PaymentIntentCallback
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.stripe.stripeterminal.model.external.TerminalException
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
+import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus.Success
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
@@ -24,14 +25,14 @@ internal class ProcessPaymentAction(private val terminal: TerminalWrapper, priva
                 paymentIntent,
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
-                        logWrapper.d("CardReader", "Processing payment succeeded")
+                        logWrapper.d(LOG_TAG, "Processing payment succeeded")
                         this@callbackFlow.sendBlocking(Success(paymentIntent))
                         this@callbackFlow.close()
                     }
 
                     override fun onFailure(exception: TerminalException) {
                         logWrapper.e(
-                            "CardReader",
+                            LOG_TAG,
                             "Processing payment failed. " +
                                 "Message: ${exception.errorMessage}, DeclineCode: ${exception.apiError?.declineCode}"
                         )

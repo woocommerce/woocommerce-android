@@ -25,7 +25,7 @@ class NotificationRegistrationHandler @Inject constructor(
             val payload = RegisterDevicePayload(
                 gcmToken = token,
                 appKey = NotificationStore.NotificationAppKey.WOOCOMMERCE,
-                site = selectedSite.get()
+                site = null
             )
             dispatcher.dispatch(NotificationActionBuilder.newRegisterDeviceAction(payload))
         }
