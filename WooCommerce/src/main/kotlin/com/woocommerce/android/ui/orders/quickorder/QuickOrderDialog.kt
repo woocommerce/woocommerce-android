@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogQuickOrderBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
@@ -18,7 +18,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
-    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: QuickOrderViewModel by viewModels()
     private var currentPrice = BigDecimal.ZERO
@@ -53,6 +54,10 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
             }
         )
 
+        binding.buttonDone.setOnClickListener {
+            returnResult()
+        }
+
         ActivityUtils.showKeyboard(binding.editPrice)
     }
 
@@ -61,7 +66,12 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         AnalyticsTracker.trackViewShown(this)
     }
 
+    private fun returnResult() {
+        navigateBackWithResult(KEY_QUICK_ORDER_RESULT, currentPrice)
+    }
+
     companion object {
-        const val RATIO = 0.95 // TODO nbradbury tablet?
+        const val KEY_QUICK_ORDER_RESULT = "quick_order_result"
+        private const val RATIO = 0.95 // TODO nbradbury tablet?
     }
 }
