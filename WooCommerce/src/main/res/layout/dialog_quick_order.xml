@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_surface"
-    android:orientation="vertical"
     android:padding="@dimen/major_100"
     tools:context=".ui.orders.quickorder.QuickOrderDialog">
 
@@ -15,10 +15,11 @@
     <com.google.android.material.textview.MaterialTextView
         style="@style/Woo.TextView.Caption"
         android:layout_width="match_parent"
-        android:textSize="@dimen/text_minor_125"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/quickorder_enter_amount" />
+        android:text="@string/quickorder_enter_amount"
+        android:textSize="@dimen/text_minor_125"
+        app:layout_constraintBottom_toTopOf="@+id/editPrice" />
 
     <com.woocommerce.android.widgets.CurrencyEditText
         android:id="@+id/editPrice"
@@ -27,6 +28,8 @@
         android:gravity="center"
         android:imeOptions="flagNoExtractUi"
         android:textSize="@dimen/text_major_150"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:hint="0.00" />
 
     <com.google.android.material.button.MaterialButton
@@ -35,6 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:enabled="false"
-        android:text="@string/done" />
+        android:text="@string/done"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
