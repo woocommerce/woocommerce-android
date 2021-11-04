@@ -9,6 +9,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -27,9 +28,15 @@ class QuickOrderViewModel @Inject constructor(
     val decimals: Int
         get() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber ?: DEFAULT_DECIMAL_PRECISION
 
+    var currentPrice: BigDecimal
+        get() = viewState.currentPrice
+        set(value) {
+            viewState = viewState.copy(currentPrice = value)
+        }
+
     @Parcelize
     data class ViewState(
-        val dummyValue: Int = 0
+        val currentPrice: BigDecimal = BigDecimal.ZERO
     ) : Parcelable
 
     companion object {

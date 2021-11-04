@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogQuickOrderBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
@@ -22,7 +23,6 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
     internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: QuickOrderViewModel by viewModels()
-    private var currentPrice = BigDecimal.ZERO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,8 +49,7 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         binding.editPrice.value.observe(
             this,
             {
-                binding.buttonDone.isEnabled = it > BigDecimal.ZERO
-                currentPrice = it
+                viewModel.currentPrice = it
             }
         )
 
@@ -59,6 +58,16 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         }
 
         ActivityUtils.showKeyboard(binding.editPrice)
+
+        setupObservers(binding)
+    }
+
+    private fun setupObservers(binding: DialogQuickOrderBinding) {
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.currentPrice.takeIfNotEqualTo(old?.currentPrice) {
+                binding.buttonDone.isEnabled = it > BigDecimal.ZERO
+            }
+        }
     }
 
     override fun onResume() {
@@ -67,7 +76,7 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
     }
 
     private fun returnResult() {
-        navigateBackWithResult(KEY_QUICK_ORDER_RESULT, currentPrice)
+        navigateBackWithResult(KEY_QUICK_ORDER_RESULT, viewModel.currentPrice)
     }
 
     companion object {
