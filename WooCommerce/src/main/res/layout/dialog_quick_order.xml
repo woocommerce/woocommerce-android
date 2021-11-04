@@ -10,7 +10,15 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/view_toolbar"/>
+        layout="@layout/view_toolbar" />
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/Woo.TextView.Caption"
+        android:layout_width="match_parent"
+        android:textSize="@dimen/text_minor_125"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/quickorder_enter_amount" />
 
     <com.woocommerce.android.widgets.CurrencyEditText
         android:id="@+id/editPrice"
