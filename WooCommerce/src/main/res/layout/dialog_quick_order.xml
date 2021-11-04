@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_surface"
+    android:orientation="vertical"
+    android:padding="@dimen/major_100">
+
+    <com.woocommerce.android.widgets.CurrencyEditText
+        android:id="@+id/editPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:imeOptions="flagNoExtractUi"
+        android:textSize="@dimen/text_major_200"
+        tools:hint="0.00" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonDone"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/done" />
+
+</LinearLayout>
