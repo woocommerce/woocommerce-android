@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.orders.filters
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.filters.data.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.data.GetOrderStatusFilterOptions
@@ -10,23 +10,17 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.model.*
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
-import com.woocommerce.android.ui.orders.filters.model.addFilterOptionAll
-import com.woocommerce.android.ui.orders.filters.model.clearAllFilterSelections
-import com.woocommerce.android.ui.orders.filters.model.getNumberOfSelectedFilterOptions
-import com.woocommerce.android.ui.orders.filters.model.isAnyFilterOptionSelected
-import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
-import com.woocommerce.android.ui.orders.filters.model.toOrderFilterOptionUiModel
+import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,17 +37,21 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         const val KEY_SAVED_DATE_RANGE_SELECTION = "key_current_date_range_selection"
     }
 
-    private val _orderFilterCategories = MutableLiveData<List<OrderFilterCategoryUiModel>>()
-    val orderFilterCategories: LiveData<List<OrderFilterCategoryUiModel>> = _orderFilterCategories
+    val categories = LiveDataDelegate(
+        savedState,
+        OrderFilterCategories(emptyList())
+    )
+    private var _categories by categories
 
-    private val _orderFilterCategoryViewState = MutableLiveData<OrderFilterCategoryListViewState>()
-    val orderFilterCategoryViewState: LiveData<OrderFilterCategoryListViewState> = _orderFilterCategoryViewState
+    val orderFilterCategoryViewState = categories.liveData.map {
+        getFilterCategoryViewState(it.list)
+    }
 
     init {
-        launch {
-            _orderFilterCategories.value = buildFilterListUiModel()
-            _orderFilterCategoryViewState.value = getFilterCategoryViewState()
-            saveUiState()
+        if (_categories.list.isEmpty()) {
+            launch {
+                _categories = OrderFilterCategories(buildFilterListUiModel())
+            }
         }
     }
 
@@ -67,34 +65,30 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     fun onClearFilters() {
-        _orderFilterCategories.value = _orderFilterCategories.value
-            ?.map {
-                it.copy(
-                    orderFilterOptions = it.orderFilterOptions
-                        .clearAllFilterSelections()
-                        .markOptionAllIfNothingSelected(),
-                    displayValue = resourceProvider.getString(R.string.orderfilters_default_filter_value)
-                )
-            }
-        _orderFilterCategoryViewState.value = getFilterCategoryViewState()
+        _categories = OrderFilterCategories(_categories.list.map {
+            it.copy(
+                orderFilterOptions = it.orderFilterOptions
+                    .clearAllFilterSelections()
+                    .markOptionAllIfNothingSelected(),
+                displayValue = resourceProvider.getString(R.string.orderfilters_default_filter_value)
+            )
+        })
     }
 
     fun onFilterOptionsUpdated(updatedCategory: OrderFilterCategoryUiModel) {
-        _orderFilterCategories.value?.let { filterOptions ->
-            _orderFilterCategories.value = filterOptions.map {
+        _categories.list.let { filterOptions ->
+            _categories = OrderFilterCategories(filterOptions.map {
                 if (it.categoryKey == updatedCategory.categoryKey) {
                     updateFilterOptionsForCategory(it, updatedCategory)
                 } else it
-            }
-            _orderFilterCategoryViewState.value = getFilterCategoryViewState()
-            saveUiState()
+            })
         }
     }
 
     fun onBackPressed(): Boolean {
-        val selectedFiltersCount = _orderFilterCategories.value
-            ?.map { it.orderFilterOptions.getNumberOfSelectedFilterOptions() }
-            ?.sum() ?: 0
+        val selectedFiltersCount = _categories.list
+            .map { it.orderFilterOptions.getNumberOfSelectedFilterOptions() }
+            .sum() ?: 0
         return if (selectedFiltersCount > 0) {
             triggerEvent(
                 ShowDialog.buildDiscardDialogEvent(
@@ -120,12 +114,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         )
 
     private suspend fun buildFilterListUiModel(): List<OrderFilterCategoryUiModel> {
-        val orderStatusFilterUiOptions =
-            savedState.get<OrderFilterCategoryUiModel>(KEY_SAVED_ORDER_STATUS_SELECTION)?.orderFilterOptions
-                ?: loadOrderStatusFilterOptions()
-        val dateRangeFilterOptions =
-            savedState.get<OrderFilterCategoryUiModel>(KEY_SAVED_DATE_RANGE_SELECTION)?.orderFilterOptions
-                ?: loadDateRangeFilterOptions()
+        val orderStatusFilterUiOptions = loadOrderStatusFilterOptions()
+        val dateRangeFilterOptions = loadDateRangeFilterOptions()
 
         return listOf(
             OrderFilterCategoryUiModel(
@@ -154,8 +144,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         .toMutableList()
         .apply { addFilterOptionAll(resourceProvider) }
 
-    private fun getFilterCategoryViewState(): OrderFilterCategoryListViewState {
-        val selectedFiltersCount = orderFilterCategories.value
+    private fun getFilterCategoryViewState(filterCategories: List<OrderFilterCategoryUiModel>?): OrderFilterCategoryListViewState {
+        val selectedFiltersCount = filterCategories
             ?.map { it.orderFilterOptions.getNumberOfSelectedFilterOptions() }
             ?.sum() ?: 0
 
@@ -190,7 +180,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         }
 
     private fun saveFiltersSelection() {
-        _orderFilterCategories.value?.forEach { category ->
+        _categories.list.forEach { category ->
             val newSelectedFilters = category.orderFilterOptions
                 .filter { it.isSelected && it.key != OrderFilterOptionUiModel.DEFAULT_ALL_KEY }
                 .map { it.key }
@@ -198,10 +188,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         }
     }
 
-    private fun saveUiState() {
-        savedState[KEY_SAVED_ORDER_STATUS_SELECTION] = _orderFilterCategories.value
-            ?.first { it.categoryKey == ORDER_STATUS }
-        savedState[KEY_SAVED_DATE_RANGE_SELECTION] = _orderFilterCategories.value
-            ?.first { it.categoryKey == DATE_RANGE }
-    }
+    @Parcelize
+    data class OrderFilterCategories(
+        val list: List<OrderFilterCategoryUiModel>
+    ) : Parcelable
 }
