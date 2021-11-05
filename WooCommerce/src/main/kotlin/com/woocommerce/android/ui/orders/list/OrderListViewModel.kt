@@ -55,7 +55,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L

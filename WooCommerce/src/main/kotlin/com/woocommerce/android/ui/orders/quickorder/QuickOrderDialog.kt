@@ -17,8 +17,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
-    @Inject
-    internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: QuickOrderViewModel by viewModels()
 
