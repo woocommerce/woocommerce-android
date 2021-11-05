@@ -34,8 +34,8 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         requireDialog().window?.let { window ->
             window.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
             window.setLayout(
-                (DisplayUtils.getDisplayPixelWidth() * RATIO).toInt(),
-                (DisplayUtils.getDisplayPixelHeight(context) * RATIO).toInt()
+                (DisplayUtils.getDisplayPixelWidth() * WIDTH_RATIO).toInt(),
+                (DisplayUtils.getDisplayPixelHeight(context) * HEIGHT_RATIO).toInt()
             )
         }
 
@@ -77,6 +77,8 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
 
     companion object {
         const val KEY_QUICK_ORDER_RESULT = "quick_order_result"
-        private const val RATIO = 0.95 // TODO nbradbury tablet?
+        // TODO nbradbury tablet?
+        private const val HEIGHT_RATIO = 0.6
+        private const val WIDTH_RATIO = 0.9
     }
 }
