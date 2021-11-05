@@ -4,7 +4,12 @@
         "urlPathPattern": "/rest/v1.(1|2)/sites/161477129",
         "queryParameters": {
             "fields": {
-                "matches": "(.*)ID,URL,name,description,jetpack,visible,is_private,options,plan,capabilities,quota,icon,meta(.*)"
+                "contains": "ID",
+                "contains": "URL",
+                "contains": "name",
+                "contains": "description",
+                "contains": "jetpack",
+                "contains": "plan"
             },
             "locale": {
                 "matches": "(.*)"

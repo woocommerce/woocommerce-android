@@ -1,4 +1,4 @@
-package com.woocommerce.android.cardreader.internal.wrappers
+package com.woocommerce.android.cardreader
 
 interface LogWrapper {
     fun w(tag: String, message: String)
