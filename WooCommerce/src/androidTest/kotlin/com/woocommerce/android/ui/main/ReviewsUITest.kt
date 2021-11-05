@@ -9,9 +9,9 @@ import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
 import com.woocommerce.android.screenshots.util.ReviewData
 import com.woocommerce.android.screenshots.util.MocksReader
+import com.woocommerce.android.screenshots.util.iterator
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -43,14 +43,13 @@ class ReviewsUITest : TestBase() {
     fun reviewListShowsAllReviews() {
         val reviewsJSONArray = MocksReader().readAllReviewsToArray()
 
-        for (i in 0 until reviewsJSONArray.length()) {
-            val reviewContainer: JSONObject = reviewsJSONArray.getJSONObject(i)
+        for (review in reviewsJSONArray.iterator()) {
             val currentReview = ReviewData(
-                reviewContainer.getInt("product_id"),
-                reviewContainer.getString("status"),
-                reviewContainer.getString("reviewer"),
-                reviewContainer.getString("review"),
-                reviewContainer.getInt("rating")
+                review.getInt("product_id"),
+                review.getString("status"),
+                review.getString("reviewer"),
+                review.getString("review"),
+                review.getInt("rating")
             )
 
             ReviewsListScreen()
