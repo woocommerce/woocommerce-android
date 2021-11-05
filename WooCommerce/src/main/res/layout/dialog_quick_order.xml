@@ -70,9 +70,8 @@
         style="@style/Woo.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_100"
         android:enabled="false"
-        android:paddingStart="@dimen/major_100"
-        android:paddingEnd="@dimen/major_100"
         android:text="@string/done"
         app:layout_constraintBottom_toBottomOf="parent" />
 
