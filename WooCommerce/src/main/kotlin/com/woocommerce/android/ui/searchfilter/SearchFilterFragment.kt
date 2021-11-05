@@ -3,13 +3,19 @@ package com.woocommerce.android.ui.searchfilter
 import android.os.Bundle
 import android.view.View
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSearchFilterBinding
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.searchfilter.SearchFilterEvent.ItemSelected
+import com.woocommerce.android.ui.searchfilter.SearchFilterViewState.Empty
+import com.woocommerce.android.ui.searchfilter.SearchFilterViewState.Loaded
+import com.woocommerce.android.ui.searchfilter.SearchFilterViewState.Search
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,19 +26,9 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
         val TAG: String = SearchFilterFragment::class.java.simpleName
     }
 
+    private val viewModel: SearchFilterViewModel by viewModels()
+
     private val navArgs: SearchFilterFragmentArgs by navArgs()
-
-    private val searchTitle: String
-        get() = navArgs.title
-
-    private val searchHint: String
-        get() = navArgs.hint
-
-    private val searchFilterItems: Array<SearchFilterItem>
-        get() = navArgs.items
-
-    private val requestKey: String
-        get() = navArgs.requestKey
 
     private var _binding: FragmentSearchFilterBinding? = null
     private val binding: FragmentSearchFilterBinding
@@ -43,8 +39,15 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSearchFilterBinding.bind(view)
-        setupTitle()
-        setupSearch()
+        viewModel.start(
+            title = navArgs.title,
+            searchFilterItems = navArgs.items,
+            searchHint = navArgs.hint,
+            requestKey = navArgs.requestKey
+        )
+        setupViewStateObserver()
+        setupEventObserver()
+        setupSearchInput()
         setupSearchList()
     }
 
@@ -53,34 +56,39 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
         _binding = null
     }
 
-    private fun showEmptyView(searchQuery: String) {
-        binding.emptyView.show(
-            WCEmptyView.EmptyViewType.SEARCH_RESULTS,
-            searchQueryOrFilter = searchQuery
-        )
-    }
-
-    private fun hideEmptyView() {
-        binding.emptyView.hide()
-    }
-
-    private fun setupTitle() {
-        activity?.title = searchTitle
-    }
-
-    private fun setupSearch() {
-        binding.searchEditText.apply {
-            hint = searchHint
-            doAfterTextChanged {
-                val text = it.toString()
-                val searchedItems = searchFilterItems.filter { it.name.contains(other = text, ignoreCase = true) }
-                searchFilterAdapter.setItems(searchedItems)
-                //TODO move to VM
-                if (searchedItems.isEmpty()) {
-                    showEmptyView(text)
-                } else {
+    private fun setupViewStateObserver() {
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner, { viewState ->
+            when (viewState) {
+                is Loaded -> {
+                    updateSearchList(viewState.searchFilterItems)
+                    setupTitle(viewState.title)
+                    binding.searchEditText.hint = viewState.searchHint
+                }
+                is Search -> {
+                    updateSearchList(viewState.searchFilterItems)
                     hideEmptyView()
                 }
+                is Empty -> {
+                    showEmptyView(viewState.searchQuery)
+                }
+            }.exhaustive
+        })
+    }
+
+    private fun setupEventObserver() {
+        viewModel.eventLiveData.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is ItemSelected -> {
+                    navigateBackWithResult(event.requestKey, event.selectedItemValue)
+                }
+            }.exhaustive
+        })
+    }
+
+    private fun setupSearchInput() {
+        binding.searchEditText.apply {
+            doAfterTextChanged {
+                viewModel.onSearch(it.toString())
             }
         }
     }
@@ -90,11 +98,10 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
             layoutManager = LinearLayoutManager(context)
             searchFilterAdapter = SearchFilterAdapter(
                 onItemSelectedListener = { selectedItem ->
-                    navigateBackWithResult(requestKey, selectedItem.value)
+                    viewModel.onItemSelected(selectedItem)
                 }
             )
             adapter = searchFilterAdapter
-            searchFilterAdapter.setItems(searchFilterItems.toList())
             addItemDecoration(
                 AlignedDividerDecoration(
                     ctx = context,
@@ -103,5 +110,24 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
                 )
             )
         }
+    }
+
+    private fun updateSearchList(searchFilterItems: List<SearchFilterItem>) {
+        searchFilterAdapter.setItems(searchFilterItems.toList())
+    }
+
+    private fun setupTitle(title: String) {
+        activity?.title = title
+    }
+
+    private fun hideEmptyView() {
+        binding.emptyView.hide()
+    }
+
+    private fun showEmptyView(searchQuery: String) {
+        binding.emptyView.show(
+            WCEmptyView.EmptyViewType.SEARCH_RESULTS,
+            searchQueryOrFilter = searchQuery
+        )
     }
 }
