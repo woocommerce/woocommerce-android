@@ -544,10 +544,12 @@ class SitePickerActivity :
                 } else {
                     binding.progressBar.isVisible = true
                 }
+                binding.loginEpilogueButtonBar.root.isVisible = false
             }
             false -> {
                 skeletonView.hide()
                 binding.progressBar.isVisible = false
+                binding.loginEpilogueButtonBar.root.isVisible = true
             }
         }
     }
