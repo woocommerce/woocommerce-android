@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class SearchFilterItem(
+data class SearchFilterItem(
     val name: String,
     val value: String
 ) : Parcelable
