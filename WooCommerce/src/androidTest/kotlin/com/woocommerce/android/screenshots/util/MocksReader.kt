@@ -5,7 +5,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 class MocksReader {
-
     fun readAllReviewsToArray(): JSONArray {
         val reviewsWireMockFileName = "mocks/mappings/jetpack-blogs/wc/reviews/products_reviews_all.json"
         val reviewsWireMockString = this.readAssetsFile(reviewsWireMockFileName)
