@@ -6,15 +6,16 @@ import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.DialogJetpackInstallStartBinding
+import com.woocommerce.android.databinding.DialogJetpackInstallProgressBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooAnimUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class JetpackInstallStartDialog : DialogFragment(R.layout.dialog_jetpack_install_start) {
+class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_install_progress) {
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
@@ -34,25 +35,30 @@ class JetpackInstallStartDialog : DialogFragment(R.layout.dialog_jetpack_install
         // Specify transition animations
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
 
-        val binding = DialogJetpackInstallStartBinding.bind(view)
+        val binding = DialogJetpackInstallProgressBinding.bind(view)
 
         with(binding.subtitle) {
-            val siteString = if (selectedSite.get().name.orEmpty().isNotEmpty()) {
-                selectedSite.get().name
-            } else {
-                context.getString(R.string.jetpack_install_start_default_name)
+            val stringBuilder = StringBuilder()
+            stringBuilder.append(context.getString(R.string.jetpack_install_start_default_name))
+
+            selectedSite.get().name?.let {
+                stringBuilder.append(" <b>${selectedSite.get().name}</b> ",)
             }
+
             text = HtmlCompat.fromHtml(
-                context.getString(R.string.jetpack_install_start_subtitle, siteString),
+                context.getString(R.string.jetpack_install_progress_subtitle, stringBuilder.toString()),
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             )
         }
 
-        binding.installJetpackButton.setOnClickListener {
+        binding.jetpackProgressActionButton.setOnClickListener {
             findNavController().navigateSafely(
-                JetpackInstallStartDialogDirections.actionJetpackInstallStartDialogToJetpackInstallProgressDialog()
+                JetpackInstallProgressDialogDirections.actionJetpackInstallProgressDialogToDashboard()
             )
         }
+
+        // Temporary animation for testing the UI. Replace with actual animation when it's ready.
+        WooAnimUtils.rotate(binding.secondStepIcon)
     }
 
     override fun onStart() {
