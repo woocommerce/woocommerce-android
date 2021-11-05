@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.main
 
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.helpers.InitializationRule
@@ -9,6 +8,7 @@ import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
 import com.woocommerce.android.screenshots.util.ReviewData
+import com.woocommerce.android.screenshots.util.MocksReader
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.json.JSONObject
@@ -41,16 +41,10 @@ class ReviewsUITest : TestBase() {
 
     @Test
     fun reviewListShowsAllReviews() {
-        val reviewsWireMockFileName = "mocks/mappings/jetpack-blogs/wc/reviews/products_reviews_all.json"
-        val reviewsWireMockString = readAssetsFile(reviewsWireMockFileName)
-        val reviewsWireMockJSON = JSONObject(reviewsWireMockString)
-        val reviewsJSONResponse = reviewsWireMockJSON
-            .getJSONObject("response")
-            .getJSONObject("jsonBody")
-            .getJSONArray("data")
+        val reviewsJSONArray = MocksReader().readAllReviewsToArray()
 
-        for (i in 0 until reviewsJSONResponse.length()) {
-            val reviewContainer: JSONObject = reviewsJSONResponse.getJSONObject(i)
+        for (i in 0 until reviewsJSONArray.length()) {
+            val reviewContainer: JSONObject = reviewsJSONArray.getJSONObject(i)
             val currentReview = ReviewData(
                 reviewContainer.getInt("product_id"),
                 reviewContainer.getString("status"),
@@ -66,10 +60,5 @@ class ReviewsUITest : TestBase() {
                 .assertSingleReviewScreen(currentReview)
                 .goBackToReviewsScreen()
         }
-    }
-
-    private fun readAssetsFile(fileName: String): String {
-        val appContext = InstrumentationRegistry.getInstrumentation().context
-        return appContext.assets.open(fileName).bufferedReader().use { it.readText() }
     }
 }
