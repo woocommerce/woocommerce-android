@@ -367,12 +367,7 @@ class CardReaderConnectViewModel @Inject constructor(
                         cardReaderManager.startConnectionToReader(cardReader, result.locationId)
                     }
                     is CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress -> {
-                        tracker.track(
-                            CARD_READER_LOCATION_FAILURE,
-                            this@CardReaderConnectViewModel.javaClass.simpleName,
-                            null,
-                            "Missing Address"
-                        )
+                        trackLocationFailureFetching("Missing Address")
                         viewState.value = CardReaderConnectViewState.MissingMerchantAddressError(
                             {
                                 tracker.track(CARD_READER_LOCATION_MISSING_TAPPED)
@@ -383,18 +378,26 @@ class CardReaderConnectViewModel @Inject constructor(
                             }
                         )
                     }
+                    is CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode -> {
+                        trackLocationFailureFetching("Invalid Postal Code")
+                        viewState.value = CardReaderConnectViewState.InvalidMerchantAddressPostCodeError(::startFlow)
+                    }
                     is CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
-                        tracker.track(
-                            CARD_READER_LOCATION_FAILURE,
-                            this@CardReaderConnectViewModel.javaClass.simpleName,
-                            null,
-                            result.error
-                        )
+                        trackLocationFailureFetching(result.error)
                         onReaderConnectionFailed()
                     }
                 }
             }
         }
+    }
+
+    private fun trackLocationFailureFetching(errorDescription: String?) {
+        tracker.track(
+            CARD_READER_LOCATION_FAILURE,
+            this.javaClass.simpleName,
+            null,
+            errorDescription,
+        )
     }
 
     private fun onReaderConnectionFailed() {
