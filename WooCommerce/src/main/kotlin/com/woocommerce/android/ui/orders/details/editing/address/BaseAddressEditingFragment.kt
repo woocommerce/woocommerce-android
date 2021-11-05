@@ -84,9 +84,7 @@ abstract class BaseAddressEditingFragment :
 
     override fun onStop() {
         sharedViewModel.onReplicateAddressSwitchChanged(false)
-        activity?.let {
-            ActivityUtils.hideKeyboard(it)
-        }
+        hideKeyboard()
         super.onStop()
     }
 
@@ -186,5 +184,9 @@ abstract class BaseAddressEditingFragment :
         handleResult<String>(SELECT_STATE_REQUEST) {
             addressViewModel.onStateSelected(it)
         }
+    }
+
+    fun hideKeyboard() {
+        activity?.let { ActivityUtils.hideKeyboard(it) }
     }
 }
