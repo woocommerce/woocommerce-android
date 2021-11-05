@@ -13,7 +13,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -60,8 +59,8 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         )
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.currentPrice.takeIfNotEqualTo(old?.currentPrice) {
-                binding.buttonDone.isEnabled = it > BigDecimal.ZERO
+            new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) {
+                binding.buttonDone.isEnabled = new.isDoneButtonEnabled
             }
         }
     }
@@ -77,7 +76,6 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
 
     companion object {
         const val KEY_QUICK_ORDER_RESULT = "quick_order_result"
-        // TODO nbradbury tablet?
         private const val HEIGHT_RATIO = 0.6
         private const val WIDTH_RATIO = 0.9
     }

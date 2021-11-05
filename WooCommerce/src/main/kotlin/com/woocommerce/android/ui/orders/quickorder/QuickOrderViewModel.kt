@@ -31,12 +31,16 @@ class QuickOrderViewModel @Inject constructor(
     var currentPrice: BigDecimal
         get() = viewState.currentPrice
         set(value) {
-            viewState = viewState.copy(currentPrice = value)
+            viewState = viewState.copy(
+                currentPrice = value,
+                isDoneButtonEnabled = value > BigDecimal.ZERO
+            )
         }
 
     @Parcelize
     data class ViewState(
-        val currentPrice: BigDecimal = BigDecimal.ZERO
+        val currentPrice: BigDecimal = BigDecimal.ZERO,
+        val isDoneButtonEnabled: Boolean = false
     ) : Parcelable
 
     companion object {
