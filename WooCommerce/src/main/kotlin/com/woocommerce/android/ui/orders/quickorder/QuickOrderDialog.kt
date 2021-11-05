@@ -59,8 +59,8 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         )
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) {
-                binding.buttonDone.isEnabled = new.isDoneButtonEnabled
+            new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
+                binding.buttonDone.isEnabled = isEnabled
             }
         }
     }

@@ -51,6 +51,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
+import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
@@ -432,8 +433,8 @@ class OrderListFragment :
     }
 
     private fun initializeResultHandlers() {
-        handleResult<String>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) {
-            // TODO nbradbury
+        handleResult<BigDecimal>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) {
+            // TODO nbradbury create order using the passed price
         }
     }
 
