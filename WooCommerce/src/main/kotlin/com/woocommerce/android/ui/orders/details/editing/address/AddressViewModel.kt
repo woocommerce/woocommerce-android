@@ -76,7 +76,8 @@ class AddressViewModel @Inject constructor(
         if (countryCode != viewState.countryLocation.code) {
             viewState = viewState.copy(
                 countryLocation = getCountryLocationFromCode(countryCode),
-                stateLocation = Location("", "")
+                stateLocation = Location("", ""),
+                isStateSelectionEnabled = true
             )
         }
     }
@@ -103,7 +104,8 @@ class AddressViewModel @Inject constructor(
 
         viewState = this.copy(
             countryLocation = countryLocation,
-            stateLocation = getStateLocationFromCode(stateCode)
+            stateLocation = getStateLocationFromCode(stateCode),
+            isStateSelectionEnabled = countryCode.isNotEmpty()
         )
     }
 
@@ -111,6 +113,7 @@ class AddressViewModel @Inject constructor(
     data class ViewState(
         val countryLocation: Location = Location("", ""),
         val stateLocation: Location = Location("", ""),
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
+        val isStateSelectionEnabled: Boolean = false
     ) : Parcelable
 }

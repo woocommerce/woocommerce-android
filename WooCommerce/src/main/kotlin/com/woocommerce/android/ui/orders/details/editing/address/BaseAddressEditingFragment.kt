@@ -67,11 +67,11 @@ abstract class BaseAddressEditingFragment :
         )
 
         binding.countrySpinner.setClickListener {
-            showCountrySelectorDialog()
+            showCountrySearchScreen()
         }
 
         binding.stateSpinner.setClickListener {
-            showStateSelectorDialog()
+            showStateSearchScreen()
         }
 
         setupObservers()
@@ -133,7 +133,7 @@ abstract class BaseAddressEditingFragment :
         binding.stateEditText.isVisible = !shouldShowStateSpinner()
     }
 
-    private fun showCountrySelectorDialog() {
+    private fun showCountrySearchScreen() {
         val countries = addressViewModel.countries
         val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
             items = countries.map {
@@ -149,7 +149,7 @@ abstract class BaseAddressEditingFragment :
         findNavController().navigateSafely(action)
     }
 
-    private fun showStateSelectorDialog() {
+    private fun showStateSearchScreen() {
         val states = addressViewModel.states
         val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
             items = states.map {
@@ -182,6 +182,9 @@ abstract class BaseAddressEditingFragment :
                 if (old?.isLoading == true) {
                     updateStateViews()
                 }
+            }
+            new.isStateSelectionEnabled.takeIfNotEqualTo(old?.isStateSelectionEnabled) {
+                binding.stateSpinner.isEnabled = it
             }
         }
     }

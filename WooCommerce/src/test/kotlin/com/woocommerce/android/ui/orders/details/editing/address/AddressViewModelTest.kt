@@ -64,14 +64,15 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should apply country and state changes to view state safely on start if countries list is empty`() {
-        whenever(dataStore.getCountries()).thenReturn(emptyList())
+        whenever(dataStore.getCountries()).thenReturn(listOf(location))
         val countryCode = "countryCode"
         val stateCode = "stateCode"
         addressViewModel.start(countryCode, stateCode)
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
             ViewState(
                 countryLocation = Location(countryCode, countryCode),
-                stateLocation = Location(stateCode, stateCode)
+                stateLocation = Location(stateCode, stateCode),
+                isStateSelectionEnabled = true
             )
         )
     }
@@ -101,14 +102,15 @@ class AddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Should update viewState with selected country and reset selected state on onCountrySelected`() {
+    fun `Should update viewState with selected country, reset selected state and enable state selection on onCountrySelected`() {
         whenever(dataStore.getCountries()).thenReturn(listOf(location))
         val countryCode = location.code
         addressViewModel.onCountrySelected(countryCode)
         verify(viewStateObserver, times(1)).onChanged(
             ViewState(
                 countryLocation = Location(countryCode, location.name),
-                stateLocation = Location("", "")
+                stateLocation = Location("", ""),
+                isStateSelectionEnabled = true
             )
         )
     }
@@ -121,7 +123,8 @@ class AddressViewModelTest : BaseUnitTest() {
         verify(viewStateObserver, times(1)).onChanged(
             ViewState(
                 countryLocation = Location(countryCode, countryCode),
-                stateLocation = Location("", "")
+                stateLocation = Location("", ""),
+                isStateSelectionEnabled = true
             )
         )
     }
