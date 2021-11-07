@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSearchFilterBinding
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.searchfilter.SearchFilterEvent.ItemSelected
 import com.woocommerce.android.ui.searchfilter.SearchFilterViewState.Empty
@@ -60,15 +62,18 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner, { viewState ->
             when (viewState) {
                 is Loaded -> {
+                    showSearchList()
                     updateSearchList(viewState.searchFilterItems)
                     setupTitle(viewState.title)
                     binding.searchEditText.hint = viewState.searchHint
                 }
                 is Search -> {
+                    showSearchList()
                     updateSearchList(viewState.searchFilterItems)
                     hideEmptyView()
                 }
                 is Empty -> {
+                    hideSearchList()
                     showEmptyView(viewState.searchQuery)
                 }
             }.exhaustive
@@ -114,6 +119,14 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
 
     private fun updateSearchList(searchFilterItems: List<SearchFilterItem>) {
         searchFilterAdapter.setItems(searchFilterItems.toList())
+    }
+
+    private fun showSearchList() {
+        binding.searchItemsList.show()
+    }
+
+    private fun hideSearchList() {
+        binding.searchItemsList.hide()
     }
 
     private fun setupTitle(title: String) {
