@@ -63,6 +63,20 @@ class AddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `Should apply country and state changes to view state safely on start if countries list is empty`() {
+        whenever(dataStore.getCountries()).thenReturn(emptyList())
+        val countryCode = "countryCode"
+        val stateCode = "stateCode"
+        addressViewModel.start(countryCode, stateCode)
+        assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
+            ViewState(
+                countryLocation = Location(countryCode, countryCode),
+                stateLocation = Location(stateCode, stateCode)
+            )
+        )
+    }
+
+    @Test
     fun `Should return true on hasCountries if countries list is NOT empty`() {
         whenever(dataStore.getCountries()).thenReturn(listOf(location))
         assertTrue(addressViewModel.hasCountries())
@@ -131,19 +145,6 @@ class AddressViewModelTest : BaseUnitTest() {
         addressViewModel.onStateSelected(stateCode)
         verify(viewStateObserver, times(1)).onChanged(
             ViewState(
-                stateLocation = Location(stateCode, stateCode)
-            )
-        )
-    }
-
-    @Test
-    fun `Should apply country and state changes to view state safely on start`() {
-        val countryCode = "countryCode"
-        val stateCode = "stateCode"
-        addressViewModel.start(countryCode, stateCode)
-        assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
-            ViewState(
-                countryLocation = Location(countryCode, countryCode),
                 stateLocation = Location(stateCode, stateCode)
             )
         )
