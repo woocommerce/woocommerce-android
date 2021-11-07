@@ -62,8 +62,8 @@ abstract class BaseAddressEditingFragment :
         bindTextWatchers()
 
         addressViewModel.start(
-            countryCode = storedAddress.country,
-            stateCode = storedAddress.state
+            storedAddress = storedAddress,
+            addressDraft = addressDraft
         )
 
         binding.countrySpinner.setClickListener {
