@@ -99,7 +99,7 @@ class SitePickerPresenter
                 if (result.model?.any { it.isJetpackCPConnected } == true) {
                     AnalyticsTracker.track(
                         stat = Stat.JETPACK_CP_SITES_FETCHED,
-                        properties = mapOf(AnalyticsTracker.KEY_DURATION to duration)
+                        properties = mapOf(AnalyticsTracker.KEY_FETCH_SITES_DURATION to duration)
                     )
                 }
             }

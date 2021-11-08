@@ -188,7 +188,7 @@ class MyStoreFragment :
         binding.jetpackBenefitsBanner.root.setOnClickListener {
             AnalyticsTracker.track(
                 stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
-                properties = mapOf(AnalyticsTracker.KEY_ACTION to "tapped")
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
             )
             findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
         }

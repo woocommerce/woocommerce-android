@@ -41,7 +41,7 @@ class JetpackBenefitsDialog : DialogFragment(R.layout.dialog_jetpack_benefits) {
             )
             AnalyticsTracker.track(
                 stat = Stat.JETPACK_INSTALL_BUTTON_TAPPED,
-                properties = mapOf(AnalyticsTracker.KEY_SOURCE to "benefits_modal")
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_SOURCE to "benefits_modal")
             )
         }
     }

@@ -161,7 +161,7 @@ class MyStorePresenter @Inject constructor(
             myStoreView?.showJetpackBenefitsBanner(daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER)
             AnalyticsTracker.track(
                 stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
-                properties = mapOf(AnalyticsTracker.KEY_ACTION to "shown")
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
             )
         } else {
             myStoreView?.showJetpackBenefitsBanner(false)
@@ -173,7 +173,7 @@ class MyStorePresenter @Inject constructor(
         appPrefsWrapper.recordJetpackBenefitsDismissal()
         AnalyticsTracker.track(
             stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
-            properties = mapOf(AnalyticsTracker.KEY_ACTION to "dismissed")
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
         )
     }
 
