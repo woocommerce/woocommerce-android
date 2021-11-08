@@ -391,15 +391,6 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun trackLocationFailureFetching(errorDescription: String?) {
-        tracker.track(
-            CARD_READER_LOCATION_FAILURE,
-            this.javaClass.simpleName,
-            null,
-            errorDescription,
-        )
-    }
-
     private fun onReaderConnectionFailed() {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
@@ -455,6 +446,15 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun findLastKnowReader(readers: List<CardReader>): CardReader? {
         return readers.find { it.id == appPrefs.getLastConnectedCardReaderId() }
+    }
+
+    private fun trackLocationFailureFetching(errorDescription: String?) {
+        tracker.track(
+            CARD_READER_LOCATION_FAILURE,
+            this.javaClass.simpleName,
+            null,
+            errorDescription,
+        )
     }
 
     sealed class ListItemViewState {
