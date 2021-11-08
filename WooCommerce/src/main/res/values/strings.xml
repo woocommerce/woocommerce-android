@@ -263,6 +263,10 @@
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
+    <string name="orderlist_quickorder_wip_title">Take payments from your device!</string>
+    <string name="orderlist_quickorder_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
+    <string name="orderlist_quickorder_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
+    <string name="orderlist_quickorder_menu">Quick order</string>
     <!--
         Order Filters
     -->
@@ -273,8 +277,12 @@
     <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
     <string name="orderfilters_filter_date_range_options_title">Date Range</string>
+    <string name="orderfilters_filter_card_title_all_orders">All orders</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">Filtered orders</string>
     <string name="orderfilters_filters_default_title">Filters</string>
     <string name="orderfilters_filters_count_title">Filters (%d)</string>
+    <string name="orderfilters_default_filter_option">All</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
 
     <!--
         Order Detail Views
@@ -369,6 +377,7 @@
     <string name="order_status_updated">Order status updated</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
+    <string name="order_error_update_empty_mail">Unable to update address with empty email. Make sure you are running the latest version of WooCommerce.</string>
     <string name="order_error_fetch_generic">Error fetching order</string>
     <string name="order_shipment_tracking">Tracking</string>
     <string name="order_shipment_tracking_number">Tracking Number</string>
@@ -773,14 +782,15 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
-    <string name="card_reader_manual_card_reader">Card Reader Manual</string>
+    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
+    <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
     <!--
         Card Reader Payments
     -->
     <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
     <string name="card_reader_payment_collect_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
-    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/card_reader_payment_remove_card_prompt</string>
-    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/card_reader_payment_remove_card_prompt</string>
+    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
 
     <string name="card_reader_payment_collect_payment_loading_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
@@ -813,6 +823,7 @@
     <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Multiple cards detected. Try again with a single card</string>
     <string name="card_reader_payment_try_another_read_method_prompt">Retry tapping, inserting or swiping your card</string>
     <string name="card_reader_payment_try_another_card_prompt">Retry with another card</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">Check your mobile device</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
@@ -841,6 +852,8 @@
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
+    <string name="card_reader_connect_missing_address">Please provide your store address in order to proceed</string>
+    <string name="card_reader_connect_missing_address_button">Enter address</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
@@ -876,14 +889,17 @@
         Card Reader Software update
     -->
     <string name="card_reader_software_update_update" translatable="false">@string/update</string>
-    <string name="card_reader_software_update_skip" translatable="false">@string/skip</string>
     <string name="card_reader_software_update_cancel" translatable="false">@string/cancel</string>
-    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly. Do you want to update it now?</string>
+    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly</string>
     <string name="card_reader_software_update_title">Software update</string>
+    <string name="card_reader_software_update_title_battery_low">Please charge reader</string>
     <string name="card_reader_software_update_in_progress_title">Updating your reader\'s software</string>
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
+    <string name="card_reader_software_update_progress_description_low_battery">Updating the reader software failed because the reader\’s battery is %1$s%% charged. Please charge the reader above 50%% before trying again.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">Updating the reader software failed because the reader\’s battery is insufficiently charged. Please charge the reader above 50%% before trying again.</string>
     <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">Canceling an ongoing software update is not recommended. Cancelling will block your reader connection.</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% complete</string>
 
     <!--
         Card Reader Onboarding
@@ -945,6 +961,12 @@
     <string name="card_reader_tutorial_reconnect_detail">Your reader will go to sleep after 10 min of inactivity. Simply press the power button to reconnect it.</string>
     <string name="card_reader_tutorial_charged_label">Keep your reader charged</string>
     <string name="card_reader_tutorial_charged_detail">Your reader takes about three hours to fully charge</string>
+
+    <!--
+        Card reader Accessibility
+    -->
+    <string name="card_reader_accessibility_reader_is_connected">Reader is connected</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">Reader is disconnected</string>
 
     <!--
         Notifications

@@ -1,33 +1,36 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
+import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOFTWARE_UPDATE_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Initializing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Installing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.Success
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus.UpToDate
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SKIPPED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ButtonState
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ExplanationState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.StateWithProgress
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -50,154 +53,212 @@ class CardReaderUpdateViewModel @Inject constructor(
     private val navArgs: CardReaderUpdateDialogFragmentArgs by savedState.navArgs()
 
     init {
-        viewState.value = ExplanationState(
-            primaryButton = ButtonState(
-                onActionClicked = ::onUpdateClicked,
-                text = UiStringRes(R.string.card_reader_software_update_update)
-            ),
-            secondaryButton = ButtonState(
-                onActionClicked = ::onSkipClicked,
-                text = UiStringRes(
-                    if (navArgs.startedByUser) R.string.card_reader_software_update_cancel
-                    else R.string.card_reader_software_update_skip
-                )
-            )
-        )
-    }
-
-    private fun onUpdateClicked() {
-        tracker.track(CARD_READER_SOFTWARE_UPDATE_TAPPED)
+        trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_STARTED)
         launch {
-            cardReaderManager.updateSoftware().collect { status ->
-                when (status) {
-                    is Failed -> onUpdateFailed(status)
-                    Initializing -> viewState.value = UpdatingState(0)
-                    is Installing -> updateProgress(viewState.value, convertProgressToPercentage(status.progress))
-                    Success -> onUpdateSucceeded()
-                    UpToDate -> onUpdateUpToDate()
-                }.exhaustive
+            if (navArgs.requiredUpdate.not()) {
+                cardReaderManager.startAsyncSoftwareUpdate()
             }
+            listenToSoftwareUpdateStatus()
         }
     }
 
-    private fun onUpdateUpToDate() {
+    fun onBackPressed() {
+        return when (val currentState = viewState.value) {
+            is UpdatingState -> showCancelAnywayButton(currentState)
+            is UpdatingCancelingState -> viewState.value = UpdatingState(
+                progress = currentState.progress,
+                progressText = currentState.progressText
+            )
+            is UpdateAboutToStart -> {
+                // noop. Update is initiating, we can not cancel it
+            }
+            else -> finishFlow(FAILED)
+        }
+    }
+
+    private suspend fun listenToSoftwareUpdateStatus() {
+        cardReaderManager.softwareUpdateStatus.collect { status ->
+            when (status) {
+                is Failed -> onUpdateFailed(status)
+                is InstallationStarted -> viewState.value = UpdateAboutToStart(
+                    buildProgressText(convertToPercentage(0f))
+                )
+                is Installing -> updateProgress(viewState.value, convertToPercentage(status.progress))
+                Success -> onUpdateSucceeded()
+                Unknown -> onUpdateStatusUnknown()
+            }.exhaustive
+        }
+    }
+
+    private fun onUpdateStatusUnknown() {
         tracker.track(
             CARD_READER_SOFTWARE_UPDATE_FAILED,
             this@CardReaderUpdateViewModel.javaClass.simpleName,
             null,
-            "Already up to date"
+            "Unknown software update status"
         )
-        finishFlow(SKIPPED)
     }
 
     private fun onUpdateSucceeded() {
-        tracker.track(CARD_READER_SOFTWARE_UPDATE_SUCCESS)
+        trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_SUCCESS)
         finishFlow(SUCCESS)
     }
 
     private fun onUpdateFailed(status: Failed) {
-        tracker.track(
-            CARD_READER_SOFTWARE_UPDATE_FAILED,
-            this@CardReaderUpdateViewModel.javaClass.simpleName,
-            null,
-            status.message
-        )
-        finishFlow(FAILED)
-    }
-
-    private fun onSkipClicked() {
-        tracker.track(CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED)
-        finishFlow(SKIPPED)
+        trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_FAILED, status.message)
+        val errorType = status.errorType
+        when (errorType) {
+            is SoftwareUpdateStatusErrorType.BatteryLow ->
+                viewState.value = ViewState.UpdateFailedBatteryLow(
+                    description = getLowBatteryErrorDescription(errorType.currentBatteryLevel),
+                    button = ButtonState(
+                        { finishFlow(FAILED) },
+                        UiStringRes(R.string.cancel)
+                    ),
+                )
+            else -> finishFlow(FAILED)
+        }.exhaustive
     }
 
     private fun finishFlow(result: UpdateResult) {
         triggerEvent(ExitWithResult(result))
     }
 
-    fun onBackPressed() {
-        return when (val currentState = viewState.value) {
-            is UpdatingState -> showCancelButton(currentState)
-            is UpdatingCancelingState -> viewState.value = UpdatingState(currentState.progress)
-            else -> triggerEvent(ExitWithResult(FAILED))
-        }
-    }
-
     private fun updateProgress(currentState: ViewState?, progress: Int) {
         if (currentState is StateWithProgress<*>) {
-            viewState.value = currentState.copyWithUpdatedProgress(progress)
+            viewState.value = currentState.copyWithUpdatedProgress(
+                progress,
+                buildProgressText(progress)
+            )
         } else {
-            WooLog.e(WooLog.T.CARD_READER, "Trying to update progress, but not in any of the updating states.")
+            viewState.value = UpdatingState(
+                progress = progress,
+                progressText = buildProgressText(progress)
+            )
         }
     }
 
-    private fun showCancelButton(currentState: UpdatingState) {
+    private fun showCancelAnywayButton(currentState: UpdatingState) {
         viewState.value = UpdatingCancelingState(
-            currentState.progress,
-            secondaryButton = ButtonState(
+            progress = currentState.progress,
+            progressText = currentState.progressText,
+            button = ButtonState(
                 ::onCancelClicked,
                 UiStringRes(R.string.cancel_anyway)
-            )
+            ),
+            description = UiStringRes(getWarningDescriptionStringRes()),
         )
     }
 
     private fun onCancelClicked() {
-        tracker.track(
+        cardReaderManager.cancelOngoingFirmwareUpdate()
+        trackSoftwareUpdateEvent(
             CARD_READER_SOFTWARE_UPDATE_FAILED,
-            this@CardReaderUpdateViewModel.javaClass.simpleName,
-            null,
             "User manually cancelled the flow"
         )
         triggerEvent(ExitWithResult(FAILED))
     }
 
-    private fun convertProgressToPercentage(progress: Float) = (progress * PERCENT_100).toInt()
+    private fun trackSoftwareUpdateEvent(event: AnalyticsTracker.Stat, errorDescription: String? = null) {
+        val eventPropertiesMap = errorDescription?.let { errorDescription ->
+            hashMapOf(
+                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
+                KEY_ERROR_CONTEXT to this@CardReaderUpdateViewModel.javaClass.simpleName,
+                KEY_ERROR_DESC to errorDescription
+            )
+        } ?: run {
+            hashMapOf(
+                KEY_SOFTWARE_UPDATE_TYPE to if (navArgs.requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE
+            )
+        }
+        tracker.track(
+            event,
+            eventPropertiesMap
+        )
+    }
+
+    private fun convertToPercentage(progress: Float) = (progress * PERCENT_100).toInt()
+
+    private fun getWarningDescriptionStringRes() =
+        if (navArgs.requiredUpdate) {
+            R.string.card_reader_software_update_progress_cancel_required_warning
+        } else {
+            R.string.card_reader_software_update_progress_cancel_warning
+        }
+
+    private fun getLowBatteryErrorDescription(currentBatteryLevel: Float?): UiStringRes {
+        return if (currentBatteryLevel != null) {
+            UiStringRes(
+                R.string.card_reader_software_update_progress_description_low_battery,
+                listOf(UiStringText(convertToPercentage(currentBatteryLevel).toString()))
+            )
+        } else {
+            UiStringRes(R.string.card_reader_software_update_progress_description_low_battery_level_unknown)
+        }
+    }
+
+    private fun buildProgressText(progress: Int) =
+        UiStringRes(
+            R.string.card_reader_software_update_progress_indicator,
+            listOf(UiStringText(progress.toString()))
+        )
 
     sealed class ViewState(
         val title: UiString? = null,
-        val description: UiString? = null,
-        open val cancelWarning: UiString? = null,
+        @DrawableRes val illustration: Int = R.drawable.img_card_reader_update_progress,
+        open val description: UiString? = null,
         open val progress: Int? = null,
         open val progressText: UiString? = null,
-        open val primaryButton: ButtonState? = null,
-        open val secondaryButton: ButtonState? = null
+        open val button: ButtonState? = null,
     ) {
-        data class ExplanationState(
-            override val primaryButton: ButtonState?,
-            override val secondaryButton: ButtonState?
+        data class UpdateAboutToStart(
+            override val progressText: UiString,
         ) : ViewState(
-            title = UiStringRes(R.string.card_reader_software_update_title),
-            description = UiStringRes(R.string.card_reader_software_update_description)
+            progress = 0,
+            title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
+            description = UiStringRes(R.string.card_reader_software_update_description),
         )
 
         data class UpdatingState(
-            override val progress: Int
+            override val progress: Int,
+            override val progressText: UiString,
+            override val description: UiStringRes = UiStringRes(
+                R.string.card_reader_software_update_description
+            ),
         ) : StateWithProgress<UpdatingState>, ViewState(
             title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
-            progressText = UiStringRes(
-                R.string.card_reader_software_update_progress_indicator,
-                listOf(UiStringText(progress.toString()))
-            )
         ) {
-            override fun copyWithUpdatedProgress(progress: Int): UpdatingState {
-                return this.copy(progress = progress)
+            override fun copyWithUpdatedProgress(progress: Int, progressText: UiString): UpdatingState {
+                return this.copy(
+                    progress = progress,
+                    progressText = progressText
+                )
             }
         }
 
         data class UpdatingCancelingState(
             override val progress: Int,
-            override val secondaryButton: ButtonState,
+            override val progressText: UiString,
+            override val button: ButtonState,
+            override val description: UiStringRes,
         ) : StateWithProgress<UpdatingCancelingState>, ViewState(
             title = UiStringRes(R.string.card_reader_software_update_in_progress_title),
-            progressText = UiStringRes(
-                R.string.card_reader_software_update_progress_indicator,
-                listOf(UiStringText(progress.toString()))
-            ),
-            cancelWarning = UiStringRes(R.string.card_reader_software_update_progress_cancel_warning)
         ) {
-            override fun copyWithUpdatedProgress(progress: Int): UpdatingCancelingState {
-                return this.copy(progress = progress)
+            override fun copyWithUpdatedProgress(progress: Int, progressText: UiString): UpdatingCancelingState {
+                return this.copy(
+                    progress = progress,
+                    progressText = progressText
+                )
             }
         }
+
+        data class UpdateFailedBatteryLow(
+            override val description: UiString,
+            override val button: ButtonState,
+        ) : ViewState(
+            title = UiStringRes(R.string.card_reader_software_update_title_battery_low),
+            illustration = R.drawable.img_card_reader_update_failed_battery_low,
+        )
 
         data class ButtonState(
             val onActionClicked: (() -> Unit),
@@ -205,11 +266,16 @@ class CardReaderUpdateViewModel @Inject constructor(
         )
 
         interface StateWithProgress<T : ViewState> {
-            fun copyWithUpdatedProgress(progress: Int): T
+            fun copyWithUpdatedProgress(progress: Int, progressText: UiString): T
         }
     }
 
     enum class UpdateResult {
-        SUCCESS, SKIPPED, FAILED
+        SUCCESS, FAILED
+    }
+
+    companion object {
+        private const val OPTIONAL_UPDATE: String = "Optional"
+        private const val REQUIRED_UPDATE: String = "Required"
     }
 }

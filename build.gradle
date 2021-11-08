@@ -4,7 +4,7 @@ buildscript {
     ext.kotlinVersion = '1.5.31'
     ext.navigationVersion = '2.3.5'
     ext.daggerVersion = '2.39.1'
-    ext.wordPressLoginVersion = '0.0.9'
+    ext.wordPressLoginVersion = 'develop-6f134975e1aca6fe1962a112b6d91e3cd6fdd7d5'
     ext.detektVersion = '1.18.1'
 
     repositories {
@@ -90,12 +90,12 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '1.29.0'
+    fluxCVersion = 'develop-eb59f32bf58a596a75cbdc524d3f3284cb7ba40a'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
-    espressoVersion = '3.3.0'
-    mockitoKotlinVersion = '3.2.0'
-    mockitoVersion = '3.12.4'
+    espressoVersion = '3.4.0'
+    mockitoKotlinVersion = '4.0.0'
+    mockitoVersion = '4.0.0'
     constraintLayoutVersion = '1.2.0'
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.2.0'

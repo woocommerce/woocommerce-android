@@ -36,7 +36,7 @@ interface SitePickerContract {
         fun siteVerificationPassed(site: SiteModel)
         fun siteVerificationFailed(site: SiteModel)
         fun siteVerificationError(site: SiteModel)
-        fun showSkeleton(show: Boolean)
+        fun showLoadingView(show: Boolean)
         fun userVerificationCompleted()
         fun showProgressDialog(@StringRes title: Int)
         fun hideProgressDialog()

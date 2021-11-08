@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.detail
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -11,29 +12,26 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.CheckForUpdatesFailed
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.Initializing
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.UpToDate
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability.UpdateAvailable
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
-import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState.ButtonState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SKIPPED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,36 +49,59 @@ class CardReaderDetailViewModel @Inject constructor(
     private val viewState = MutableLiveData<ViewState>(Loading)
     val viewStateData: LiveData<ViewState> = viewState
 
+    private lateinit var softwareUpdateAvailabilityJob: Job
+
     init {
         launch {
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
-                    is Connected -> cardReaderManager.softwareUpdateAvailability().collect(::handleSoftwareUpdateStatus)
-                    else -> showNotConnectedState()
-                }
-            }.exhaustive
+                    is Connected -> {
+                        triggerEvent(
+                            CardReaderDetailEvent.CardReaderConnected(
+                                R.string.card_reader_accessibility_reader_is_connected
+                            )
+                        )
+                        softwareUpdateAvailabilityJob = launch {
+                            cardReaderManager.softwareUpdateAvailability.collect(
+                                ::handleSoftwareUpdateAvailability
+                            )
+                        }
+                    }
+                    is Connecting -> {
+                        showNotConnectedState()
+                    }
+                    is NotConnected -> {
+                        triggerEvent(
+                            CardReaderDetailEvent.CardReaderDisconnected(
+                                R.string.card_reader_accessibility_reader_is_disconnected
+                            )
+                        )
+                        showNotConnectedState()
+                    }
+                }.exhaustive
+            }
         }
     }
 
     fun onUpdateReaderResult(updateResult: UpdateResult) {
         when (updateResult) {
             SUCCESS -> {
-                handleSoftwareUpdateStatus(UpToDate)
+                handleSoftwareUpdateAvailability(SoftwareUpdateAvailability.NotAvailable)
                 triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
             }
             FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
-            SKIPPED -> {
-            }
         }.exhaustive
     }
 
     private fun showNotConnectedState() {
+        if (::softwareUpdateAvailabilityJob.isInitialized) {
+            softwareUpdateAvailabilityJob.cancel()
+        }
         viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
     }
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
         viewState.value = if (updateAvailable) {
-            triggerEvent(CardReaderUpdateScreen(startedByUser = false))
             ConnectedState(
                 enforceReaderUpdate = UiStringRes(
                     R.string.card_reader_detail_connected_enforced_update_software
@@ -120,7 +141,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onUpdateReaderClicked() {
-        triggerEvent(CardReaderUpdateScreen(startedByUser = true))
+        triggerEvent(NavigationTarget.CardReaderUpdateScreen)
     }
 
     private fun onDisconnectClicked() {
@@ -135,16 +156,12 @@ class CardReaderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun handleSoftwareUpdateStatus(updateStatus: SoftwareUpdateAvailability) {
+    private fun handleSoftwareUpdateAvailability(updateStatus: SoftwareUpdateAvailability) {
         val readerStatus = cardReaderManager.readerStatus.value
         if (readerStatus !is Connected) return
         when (updateStatus) {
-            Initializing -> viewState.value = Loading
-            UpToDate -> showConnectedState(readerStatus)
-            is UpdateAvailable -> showConnectedState(readerStatus, updateAvailable = true)
-            CheckForUpdatesFailed -> showConnectedState(readerStatus).also {
-                triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
-            }
+            SoftwareUpdateAvailability.Available -> showConnectedState(readerStatus, updateAvailable = true)
+            SoftwareUpdateAvailability.NotAvailable -> showConnectedState(readerStatus)
         }.exhaustive
     }
 
@@ -160,11 +177,19 @@ class CardReaderDetailViewModel @Inject constructor(
 
     sealed class NavigationTarget : Event() {
         object CardReaderConnectScreen : NavigationTarget()
-        data class CardReaderUpdateScreen(val startedByUser: Boolean) : NavigationTarget()
+        object CardReaderUpdateScreen : NavigationTarget()
     }
 
     sealed class CardReaderDetailEvent : Event() {
         data class CopyReadersNameToClipboard(val readersName: String) : CardReaderDetailEvent()
+        data class CardReaderDisconnected(
+            @StringRes val accessibilityDisconnectedText: Int =
+                R.string.card_reader_accessibility_reader_is_disconnected
+        ) : CardReaderDetailEvent()
+        data class CardReaderConnected(
+            @StringRes val accessibilityConnectedText: Int =
+                R.string.card_reader_accessibility_reader_is_connected
+        ) : CardReaderDetailEvent()
     }
 
     sealed class ViewState {

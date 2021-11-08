@@ -1,10 +1,7 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
-import com.stripe.stripeterminal.callable.PaymentIntentCallback
-import com.stripe.stripeterminal.model.external.PaymentIntent
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
+import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,6 +13,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
