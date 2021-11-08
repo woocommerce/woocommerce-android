@@ -32,6 +32,8 @@ class SitePickerPresenter
 ) : SitePickerContract.Presenter {
     private var view: SitePickerContract.View? = null
 
+    private var hasFetchedWooSites = false
+
     override fun takeView(view: SitePickerContract.View) {
         dispatcher.register(this)
         this.view = view
@@ -42,7 +44,17 @@ class SitePickerPresenter
         view = null
     }
 
-    override fun getWooCommerceSites() = wooCommerceStore.getWooCommerceSites()
+    override fun getWooCommerceSites(): List<SiteModel> {
+        val currentWooSites = wooCommerceStore.getWooCommerceSites()
+        return if (!FeatureFlag.JETPACK_CP.isEnabled() ||
+            hasFetchedWooSites ||
+            currentWooSites.none { it.isJetpackCPConnected }
+        ) {
+            currentWooSites
+        } else {
+            emptyList()
+        }
+    }
 
     override fun getSiteBySiteId(siteId: Long): SiteModel? = siteStore.getSiteBySiteId(siteId)
 
@@ -62,11 +74,11 @@ class SitePickerPresenter
     }
 
     override fun loadAndFetchSites() {
-        val wcSites = wooCommerceStore.getWooCommerceSites()
-        if (wcSites.size > 0) {
+        val wcSites = getWooCommerceSites()
+        if (wcSites.isNotEmpty()) {
             view?.showStoreList(wcSites)
         } else {
-            view?.showSkeleton(true)
+            view?.showLoadingView(true)
         }
         fetchSitesFromAPI()
     }
@@ -74,10 +86,11 @@ class SitePickerPresenter
     override fun fetchSitesFromAPI() {
         coroutineScope.launch {
             val result = wooCommerceStore.fetchWooCommerceSites()
-            view?.showSkeleton(false)
+            view?.showLoadingView(false)
             if (result.isError) {
                 WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
             } else {
+                hasFetchedWooSites = true
                 view?.showStoreList(result.model!!)
             }
         }
@@ -85,9 +98,9 @@ class SitePickerPresenter
 
     override fun fetchUpdatedSiteFromAPI(site: SiteModel) {
         coroutineScope.launch {
-            view?.showSkeleton(true)
+            view?.showLoadingView(true)
             val result = wooCommerceStore.fetchWooCommerceSite(site)
-            view?.showSkeleton(false)
+            view?.showLoadingView(false)
             if (result.isError) {
                 WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
             }
@@ -110,7 +123,7 @@ class SitePickerPresenter
     }
 
     override fun loadSites() {
-        val wcSites = wooCommerceStore.getWooCommerceSites()
+        val wcSites = getWooCommerceSites()
         view?.showStoreList(wcSites)
     }
 
