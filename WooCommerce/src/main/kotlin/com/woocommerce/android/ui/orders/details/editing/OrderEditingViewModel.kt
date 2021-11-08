@@ -85,7 +85,9 @@ class OrderEditingViewModel @Inject constructor(
         } else {
             orderEditingRepository.updateOrderAddress(
                 order.localId,
-                updatedBillingAddress.toBillingAddressModel()
+                updatedBillingAddress.toBillingAddressModel(
+                    customEmail = updatedBillingAddress.email.takeIf { it.isNotEmpty() }
+                )
             )
         }.collectTracking(AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS)
     }
