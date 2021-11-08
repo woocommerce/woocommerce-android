@@ -12,6 +12,8 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
@@ -65,7 +67,10 @@ class CardReaderDetailViewModel @Inject constructor(
                             )
                         }
                     }
-                    else -> {
+                    is Connecting -> {
+                        showNotConnectedState()
+                    }
+                    is NotConnected -> {
                         triggerEvent(
                             CardReaderDetailEvent.CardReaderDisconnected(
                                 R.string.card_reader_accessibility_reader_is_disconnected
