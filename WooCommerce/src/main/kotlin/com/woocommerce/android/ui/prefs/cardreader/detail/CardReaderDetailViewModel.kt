@@ -54,13 +54,25 @@ class CardReaderDetailViewModel @Inject constructor(
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> {
+                        triggerEvent(
+                            CardReaderDetailEvent.CardReaderConnected(
+                                R.string.card_reader_accessibility_reader_is_connected
+                            )
+                        )
                         softwareUpdateAvailabilityJob = launch {
                             cardReaderManager.softwareUpdateAvailability.collect(
                                 ::handleSoftwareUpdateAvailability
                             )
                         }
                     }
-                    else -> showNotConnectedState()
+                    else -> {
+                        triggerEvent(
+                            CardReaderDetailEvent.CardReaderDisconnected(
+                                R.string.card_reader_accessibility_reader_is_disconnected
+                            )
+                        )
+                        showNotConnectedState()
+                    }
                 }.exhaustive
             }
         }
@@ -135,12 +147,6 @@ class CardReaderDetailViewModel @Inject constructor(
             if (!disconnectionResult) {
                 WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
                 showNotConnectedState()
-            } else {
-                triggerEvent(
-                    CardReaderDetailEvent.CardReaderDisconnected(
-                        R.string.card_reader_accessibility_reader_is_disconnected
-                    )
-                )
             }
         }
     }
@@ -172,7 +178,12 @@ class CardReaderDetailViewModel @Inject constructor(
     sealed class CardReaderDetailEvent : Event() {
         data class CopyReadersNameToClipboard(val readersName: String) : CardReaderDetailEvent()
         data class CardReaderDisconnected(
-            @StringRes val text: Int = R.string.card_reader_accessibility_reader_is_disconnected
+            @StringRes val accessibilityDisconnectedText: Int =
+                R.string.card_reader_accessibility_reader_is_disconnected
+        ) : CardReaderDetailEvent()
+        data class CardReaderConnected(
+            @StringRes val accessibilityConnectedText: Int =
+                R.string.card_reader_accessibility_reader_is_connected
         ) : CardReaderDetailEvent()
     }
 

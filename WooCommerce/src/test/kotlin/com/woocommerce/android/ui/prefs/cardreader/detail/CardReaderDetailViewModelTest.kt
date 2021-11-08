@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailab
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
@@ -258,8 +259,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ConnectedState).onReaderNameLongClick.invoke()
 
             // THEN
-            assertThat(events[0]).isEqualTo(CopyReadersNameToClipboard(READER_NAME))
-            assertThat(events[1]).isEqualTo(
+            assertThat(events[1]).isEqualTo(CopyReadersNameToClipboard(READER_NAME))
+            assertThat(events[2]).isEqualTo(
                 Event.ShowSnackbar(
                     R.string.card_reader_detail_connected_readers_name_clipboard
                 )
@@ -368,12 +369,11 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when card reader disconnected successfully, then trigger accessibility announcement`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            initConnectedState()
-            whenever(cardReaderManager.disconnectReader()).thenReturn(true)
-            val viewModel = createViewModel()
+            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
 
             // WHEN
-            (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
+            val viewModel = createViewModel()
 
             // THEN
             assertThat(viewModel.event.value)
@@ -386,17 +386,50 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when card reader disconnection fails, then do not trigger accessibility announcement`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            initConnectedState()
-            whenever(cardReaderManager.disconnectReader()).thenReturn(false)
-            val viewModel = createViewModel()
+            val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
 
             // WHEN
-            (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
+            val viewModel = createViewModel()
 
             // THEN
             assertThat(viewModel.event.value)
                 .isNotEqualTo(
                     CardReaderDisconnected(R.string.card_reader_accessibility_reader_is_disconnected)
+                )
+        }
+
+    @Test
+    fun `when card reader connected successfully, then trigger accessibility announcement`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(
+                    CardReaderConnected(R.string.card_reader_accessibility_reader_is_connected)
+                )
+        }
+
+    @Test
+    fun `when card reader connection fails, then do not trigger accessibility announcement`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = MutableStateFlow(CardReaderStatus.Connecting)
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isNotEqualTo(
+                    CardReaderConnected(R.string.card_reader_accessibility_reader_is_connected)
                 )
         }
 
