@@ -59,35 +59,41 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
     }
 
     private fun setupViewStateObserver() {
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner, { viewState ->
-            when (viewState) {
-                is Loaded -> {
-                    showSearchList()
-                    updateSearchList(viewState.searchFilterItems)
-                    setupTitle(viewState.title)
-                    binding.searchEditText.hint = viewState.searchHint
-                }
-                is Search -> {
-                    showSearchList()
-                    updateSearchList(viewState.searchFilterItems)
-                    hideEmptyView()
-                }
-                is Empty -> {
-                    hideSearchList()
-                    showEmptyView(viewState.searchQuery)
-                }
-            }.exhaustive
-        })
+        viewModel.viewStateLiveData.observe(
+            viewLifecycleOwner,
+            { viewState ->
+                when (viewState) {
+                    is Loaded -> {
+                        showSearchList()
+                        updateSearchList(viewState.searchFilterItems)
+                        setupTitle(viewState.title)
+                        binding.searchEditText.hint = viewState.searchHint
+                    }
+                    is Search -> {
+                        showSearchList()
+                        updateSearchList(viewState.searchFilterItems)
+                        hideEmptyView()
+                    }
+                    is Empty -> {
+                        hideSearchList()
+                        showEmptyView(viewState.searchQuery)
+                    }
+                }.exhaustive
+            }
+        )
     }
 
     private fun setupEventObserver() {
-        viewModel.eventLiveData.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                is ItemSelected -> {
-                    navigateBackWithResult(event.requestKey, event.selectedItemValue)
-                }
-            }.exhaustive
-        })
+        viewModel.eventLiveData.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is ItemSelected -> {
+                        navigateBackWithResult(event.requestKey, event.selectedItemValue)
+                    }
+                }.exhaustive
+            }
+        )
     }
 
     private fun setupSearchInput() {
