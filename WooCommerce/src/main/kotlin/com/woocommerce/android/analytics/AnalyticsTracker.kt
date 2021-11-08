@@ -550,6 +550,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- What's new / feature announcements
         FEATURE_ANNOUNCEMENT_SHOWN,
 
+        // -- Jetpack CP
+        JETPACK_CP_SITES_FETCHED,
+
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
         TOP_EARNER_PRODUCT_TAPPED,
@@ -736,6 +739,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_DATE_RANGE = "date_range"
         const val KEY_IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_conntected"
         const val KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS = "active_jetpack_connection_plugins"
+        const val KEY_DURATION = "duration"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
