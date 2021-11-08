@@ -552,6 +552,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Jetpack CP
         JETPACK_CP_SITES_FETCHED,
+        FEATURE_JETPACK_BENEFITS_BANNER,
 
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
@@ -740,6 +741,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_conntected"
         const val KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS = "active_jetpack_connection_plugins"
         const val KEY_DURATION = "duration"
+        const val KEY_ACTION = "action"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
