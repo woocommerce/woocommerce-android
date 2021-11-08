@@ -60,14 +60,12 @@ class OrderEditingViewModelTest : BaseUnitTest() {
                 updateBillingAddress(addressToUpdate)
             }
 
-            verify(
-                orderEditingRepository,
-                times(1)
-            ).updateBothOrderAddresses(
-                testOrder.localId,
-                addressToUpdate.toShippingAddressModel(),
-                addressToUpdate.toBillingAddressModel("")
-            )
+            verify(orderEditingRepository)
+                .updateBothOrderAddresses(
+                    testOrder.localId,
+                    addressToUpdate.toShippingAddressModel(),
+                    addressToUpdate.toBillingAddressModel("")
+                )
         }
 
     @Test
@@ -85,14 +83,12 @@ class OrderEditingViewModelTest : BaseUnitTest() {
                 updateShippingAddress(addressToUpdate)
             }
 
-            verify(
-                orderEditingRepository,
-                times(1)
-            ).updateBothOrderAddresses(
-                testOrder.localId,
-                addressToUpdate.toShippingAddressModel(),
-                addressToUpdate.toBillingAddressModel("")
-            )
+            verify(orderEditingRepository)
+                .updateBothOrderAddresses(
+                    testOrder.localId,
+                    addressToUpdate.toShippingAddressModel(),
+                    addressToUpdate.toBillingAddressModel("")
+                )
         }
 
     @Test
@@ -178,14 +174,12 @@ class OrderEditingViewModelTest : BaseUnitTest() {
                 updateBillingAddress(addressToUpdate)
             }
 
-            verify(
-                orderEditingRepository,
-                times(1)
-            ).updateBothOrderAddresses(
-                testOrder.localId,
-                addressToUpdate.toShippingAddressModel(),
-                addressToUpdate.toBillingAddressModel("original@email.com")
-            )
+            verify(orderEditingRepository)
+                .updateBothOrderAddresses(
+                    testOrder.localId,
+                    addressToUpdate.toShippingAddressModel(),
+                    addressToUpdate.toBillingAddressModel("original@email.com")
+                )
         }
 
     @Test
