@@ -55,6 +55,8 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
                         KEY_READER_UPDATE_RESULT,
                         event.data as UpdateResult
                     )
+                    is CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateProgress ->
+                        announceSoftwareUpdateProgress(event.progress, binding)
                     else -> event.isHandled = false
                 }
             }
@@ -64,9 +66,6 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
             viewLifecycleOwner,
             { state ->
                 with(binding) {
-                    state.progressText?.let { progressText ->
-                        announceSoftwareUpdateProgress(progressText, binding)
-                    }
                     UiHelpers.setTextOrHide(titleTextView, state.title)
                     UiHelpers.setTextOrHide(descriptionTextView, state.description)
                     UiHelpers.setTextOrHide(progressTextView, state.progressText)
@@ -84,7 +83,8 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
 
     private fun announceSoftwareUpdateProgress(
         progressText: UiString,
-        binding: CardReaderUpdateDialogBinding) {
+        binding: CardReaderUpdateDialogBinding
+    ) {
         val progress = UiHelpers.getTextOfUiString(requireActivity(), progressText)
         binding.progressTextView.announceForAccessibility("$progress")
     }
