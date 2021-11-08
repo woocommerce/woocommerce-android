@@ -928,7 +928,6 @@ class ProductDetailViewModel @Inject constructor(
         productRepository.onCleanup()
         productCategoriesRepository.onCleanup()
         productTagsRepository.onCleanup()
-        mediaFilesRepository.onCleanup()
         if (isProductUnderCreation) {
             // cancel uploads for the default ID, since we can't assign the uploads to it
             mediaFileUploadHandler.cancelUpload(DEFAULT_ADD_NEW_PRODUCT_ID)
