@@ -5,6 +5,8 @@ import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.DialogJetpackBenefitsBinding
 import com.woocommerce.android.extensions.navigateSafely
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,6 +38,10 @@ class JetpackBenefitsDialog : DialogFragment(R.layout.dialog_jetpack_benefits) {
         binding.installJetpackButton.setOnClickListener {
             findNavController().navigateSafely(
                 JetpackBenefitsDialogDirections.actionJetpackBenefitsDialogToJetpackInstallStartDialog()
+            )
+            AnalyticsTracker.track(
+                stat = Stat.JETPACK_INSTALL_BUTTON_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_SOURCE to "benefits_modal")
             )
         }
     }
