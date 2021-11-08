@@ -15,7 +15,6 @@ class OrderShipmentProvidersRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore
 ) {
-
     suspend fun fetchOrderShipmentProviders(orderIdentifier: OrderIdentifier): List<OrderShipmentProvider>? {
         // Check db first
         val providersInDb = getShipmentProvidersFromDB()
