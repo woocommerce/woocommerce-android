@@ -43,6 +43,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
+import org.wordpress.android.mediapicker.util.MediaPickerUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -57,6 +58,7 @@ class ProductImagesFragment :
     private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
     @Inject lateinit var navigator: ProductNavigator
+    @Inject lateinit var mediaPickerUtils: MediaPickerUtils
 
     private var _binding: FragmentProductImagesBinding? = null
     private val binding get() = _binding!!
@@ -268,7 +270,7 @@ class ProductImagesFragment :
                     viewModel.onShowStorageChooserButtonClicked()
                 }
                 it.findViewById<View>(R.id.textCamera)?.apply {
-                    isVisible = ProductImagesUtils.hasCamera(context)
+                    isVisible = mediaPickerUtils.isCameraAvailable
                     setOnClickListener {
                         viewModel.onShowCameraButtonClicked()
                     }

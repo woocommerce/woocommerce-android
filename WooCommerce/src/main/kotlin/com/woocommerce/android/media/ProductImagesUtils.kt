@@ -1,26 +1,19 @@
 package com.woocommerce.android.media
 
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Environment
 import android.webkit.MimeTypeMap
-import androidx.core.content.FileProvider
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
-import org.wordpress.android.mediapicker.util.MediaFileUtils
+import org.wordpress.android.mediapicker.util.MediaPickerUtils
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.MediaUtils
 import org.wordpress.android.util.UrlUtils
 import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 
 object ProductImagesUtils {
     private const val OPTIMIZE_IMAGE_MAX_SIZE = 3000
@@ -30,7 +23,8 @@ object ProductImagesUtils {
         context: Context,
         localSiteId: Int,
         localUri: Uri,
-        mediaStore: MediaStore
+        mediaStore: MediaStore,
+        mediaPickerUtils: MediaPickerUtils
     ): MediaModel? {
         // "fetch" the media - necessary to support choosing from Downloads, Google Photos, etc.
         val fetchedUri = fetchMedia(context, localUri)
@@ -39,7 +33,7 @@ object ProductImagesUtils {
             return null
         }
 
-        var path = MediaFileUtils.getMediaStoreFilePath(context, fetchedUri)
+        var path = mediaPickerUtils.getMediaStoreFilePath(fetchedUri)
         if (path == null) {
             WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to get path from uri, $fetchedUri")
             return null
@@ -117,54 +111,6 @@ object ProductImagesUtils {
             WooLog.e(T.MEDIA, "Can't download the image at: $mediaUri", e)
             null
         }
-    }
-
-    /**
-     * Creates a temporary file for storing captured photos
-     */
-    private fun createCaptureImageFile(context: Context): File? {
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return try {
-            File.createTempFile(
-                "JPEG_${timeStamp}_",
-                ".jpg",
-                storageDir
-            )
-        } catch (ex: IOException) {
-            WooLog.e(T.MEDIA, ex)
-            null
-        }
-    }
-
-    fun hasCamera(context: Context): Boolean =
-        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
-
-    /**
-     * Create an intent for capturing a device photo
-     */
-    fun createCaptureImageIntent(context: Context): Intent? {
-        if (!hasCamera(context)) {
-            return null
-        }
-
-        Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
-            // Ensure that there's a camera activity to handle the intent
-            intent.resolveActivity(context.packageManager)?.also {
-                createCaptureImageFile(context)?.also { file ->
-                    // capturedPhotoPath = file.absolutePath
-                    val authority = context.applicationContext.packageName + ".provider"
-                    val imageUri = FileProvider.getUriForFile(
-                        context,
-                        authority,
-                        file
-                    )
-                    intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri)
-                    return intent
-                }
-            }
-        }
-        return null
     }
 
     /**

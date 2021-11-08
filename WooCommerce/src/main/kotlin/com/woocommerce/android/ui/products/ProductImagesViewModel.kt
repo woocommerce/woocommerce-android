@@ -49,6 +49,7 @@ class ProductImagesViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
+            showSourceChooser = navArgs.showChooser,
             uploadingImageUris = emptyList(),
             isImageDeletingAllowed = true,
             images = navArgs.images.toList(),
@@ -70,7 +71,8 @@ class ProductImagesViewModel @Inject constructor(
         get() = viewState.isImageDeletingAllowed ?: true
 
     init {
-        if (navArgs.showChooser) {
+        if (viewState.showSourceChooser == true) {
+            viewState = viewState.copy(showSourceChooser = false)
             clearImageUploadErrors()
             triggerEvent(ShowImageSourceDialog)
         } else if (navArgs.selectedImage != null) {
@@ -233,6 +235,7 @@ class ProductImagesViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
+        val showSourceChooser: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
         val isImageDeletingAllowed: Boolean? = null,
         val images: List<Image>? = null,
