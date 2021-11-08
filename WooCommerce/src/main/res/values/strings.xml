@@ -964,6 +964,7 @@
     <!--
         Card reader Accessibility
     -->
+    <string name="card_reader_accessibility_reader_is_connected">Reader is connected</string>
     <string name="card_reader_accessibility_reader_is_disconnected">Reader is disconnected</string>
 
     <!--
