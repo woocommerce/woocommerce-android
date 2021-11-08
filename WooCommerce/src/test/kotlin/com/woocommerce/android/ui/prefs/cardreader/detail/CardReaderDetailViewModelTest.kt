@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailab
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
@@ -361,6 +362,42 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
+        }
+
+    @Test
+    fun `when card reader disconnected successfully, then trigger accessibility announcement`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState()
+            whenever(cardReaderManager.disconnectReader()).thenReturn(true)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(
+                    CardReaderDisconnected(R.string.card_reader_accessibility_reader_is_disconnected)
+                )
+        }
+
+    @Test
+    fun `when card reader disconnection fails, then do not trigger accessibility announcement`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState()
+            whenever(cardReaderManager.disconnectReader()).thenReturn(false)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isNotEqualTo(
+                    CardReaderDisconnected(R.string.card_reader_accessibility_reader_is_disconnected)
+                )
         }
 
     private fun verifyNotConnectedState(viewModel: CardReaderDetailViewModel) {

@@ -79,6 +79,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         event.readersName,
                         event.readersName
                     )
+                    is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected ->
+                        binding.readerDisconnectedState.cardReaderDetailConnectBtn.announceForAccessibility(
+                            getString(event.text)
+                        )
                     else -> event.isHandled = false
                 }
             }
@@ -93,6 +97,9 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 when (state) {
                     is ConnectedState -> {
                         with(binding.readerConnectedState) {
+                            primaryActionBtn.announceForAccessibility(
+                                getString(R.string.card_reader_accessibility_reader_is_connected)
+                            )
                             UiHelpers.setTextOrHide(enforcedUpdateTv, state.enforceReaderUpdate)
                             enforcedUpdateDivider.visibility = enforcedUpdateTv.visibility
                             with(readerNameTv) {

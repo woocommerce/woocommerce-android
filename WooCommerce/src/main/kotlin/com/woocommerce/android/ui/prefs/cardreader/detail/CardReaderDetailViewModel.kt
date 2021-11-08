@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.detail
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -134,6 +135,12 @@ class CardReaderDetailViewModel @Inject constructor(
             if (!disconnectionResult) {
                 WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
                 showNotConnectedState()
+            } else {
+                triggerEvent(
+                    CardReaderDetailEvent.CardReaderDisconnected(
+                        R.string.card_reader_accessibility_reader_is_disconnected
+                    )
+                )
             }
         }
     }
@@ -164,6 +171,9 @@ class CardReaderDetailViewModel @Inject constructor(
 
     sealed class CardReaderDetailEvent : Event() {
         data class CopyReadersNameToClipboard(val readersName: String) : CardReaderDetailEvent()
+        data class CardReaderDisconnected(
+            @StringRes val text: Int = R.string.card_reader_accessibility_reader_is_disconnected
+        ) : CardReaderDetailEvent()
     }
 
     sealed class ViewState {
