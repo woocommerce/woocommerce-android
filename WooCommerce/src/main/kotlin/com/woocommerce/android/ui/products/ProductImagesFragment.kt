@@ -41,6 +41,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import org.wordpress.android.mediapicker.util.MediaPickerUtils
@@ -325,7 +326,8 @@ class ProductImagesFragment :
             if (mediaUris.isEmpty()) {
                 WooLog.w(T.MEDIA, "Photo chooser returned empty list")
             } else {
-                val source = if (result.data?.getStringExtra("media_source") == "APP_PICKER") {
+                val mediaSourceExtra = result.data?.getStringExtra(MediaPickerConstants.EXTRA_MEDIA_SOURCE)
+                val source = if (mediaSourceExtra == MediaPickerSetup.DataSource.SYSTEM_PICKER.name) {
                     AnalyticsTracker.IMAGE_SOURCE_DEVICE
                 } else {
                     AnalyticsTracker.IMAGE_SOURCE_CAMERA
