@@ -83,6 +83,14 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         event.readersName,
                         event.readersName
                     )
+                    is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected ->
+                        binding.readerDisconnectedState.cardReaderDetailConnectBtn.announceForAccessibility(
+                            getString(event.accessibilityDisconnectedText)
+                        )
+                    is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected ->
+                        binding.readerConnectedState.primaryActionBtn.announceForAccessibility(
+                            getString(event.accessibilityConnectedText)
+                        )
                     else -> event.isHandled = false
                 }
             }

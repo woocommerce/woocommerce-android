@@ -963,6 +963,12 @@
     <string name="card_reader_tutorial_charged_detail">Your reader takes about three hours to fully charge</string>
 
     <!--
+        Card reader Accessibility
+    -->
+    <string name="card_reader_accessibility_reader_is_connected">Reader is connected</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">Reader is disconnected</string>
+
+    <!--
         Notifications
     -->
     <string name="new_notifications">%d new notifications</string>
