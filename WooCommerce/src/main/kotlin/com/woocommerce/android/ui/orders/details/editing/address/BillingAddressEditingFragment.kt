@@ -4,7 +4,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 
 class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS
@@ -12,25 +11,12 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override val storedAddress: Address
         get() = sharedViewModel.order.billingAddress
 
-    private lateinit var emailField: WCMaterialOutlinedEditTextView
-
-    override fun saveChanges() =
-        if (addressDraft.email.isEmpty()) {
-            highlightEmptyEmailField()
-            false
-        } else sharedViewModel.updateBillingAddress(addressDraft)
+    override fun saveChanges() = sharedViewModel.updateBillingAddress(addressDraft)
 
     override fun getFragmentTitle() = getString(R.string.order_detail_billing_address_section)
 
     override fun onViewBound(binding: FragmentBaseEditAddressBinding) {
         binding.addressSectionHeader.text = getString(R.string.order_detail_billing_address_section)
         binding.replicateAddressSwitch.text = getString(R.string.order_detail_use_as_shipping_address)
-        emailField = binding.email
-    }
-
-    private fun highlightEmptyEmailField() {
-        hideKeyboard()
-        emailField.requestFocus()
-        uiMessageResolver.showSnack(R.string.order_detail_fill_billing_address_email_warning)
     }
 }
