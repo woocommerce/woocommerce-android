@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderUpdateDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -63,6 +64,9 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
             viewLifecycleOwner,
             { state ->
                 with(binding) {
+                    state.progressText?.let { progressText ->
+                        announceSoftwareUpdateProgress(progressText, binding)
+                    }
                     UiHelpers.setTextOrHide(titleTextView, state.title)
                     UiHelpers.setTextOrHide(descriptionTextView, state.description)
                     UiHelpers.setTextOrHide(progressTextView, state.progressText)
@@ -76,6 +80,13 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
                 }
             }
         )
+    }
+
+    private fun announceSoftwareUpdateProgress(
+        progressText: UiString,
+        binding: CardReaderUpdateDialogBinding) {
+        val progress = UiHelpers.getTextOfUiString(requireActivity(), progressText)
+        binding.progressTextView.announceForAccessibility("$progress")
     }
 
     override fun onResume() {
