@@ -6,7 +6,6 @@ import dagger.android.AndroidInjectionModule
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.login.di.LoginServiceModule
-import org.wordpress.android.mediapicker.api.MediaInsertHandlerFactory
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
 import org.wordpress.android.mediapicker.util.Log
@@ -32,11 +31,6 @@ abstract class MediaPickerModule {
     abstract fun bindMediaLoaderFactory(
         sampleMediaLoaderFactory: WooMediaLoaderFactory
     ): MediaLoaderFactory
-
-    @Binds
-    abstract fun bindMediaInsertHandlerFactory(
-        sampleMediaLoaderFactory: WooMediaInsertHandlerFactory
-    ): MediaInsertHandlerFactory
 
     @Binds
     abstract fun bindTracker(tracker: MediaPickerTracker): Tracker
