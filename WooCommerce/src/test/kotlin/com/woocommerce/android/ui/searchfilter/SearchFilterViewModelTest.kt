@@ -28,13 +28,11 @@ class SearchFilterViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should emit Loaded view state when start is called`() {
-        val title = "title"
         val searchFilterItems = arrayOf(SearchFilterItem("name", "value"))
         val searchHint = "hint"
-        searchFilterViewModel.start(title, searchFilterItems, searchHint, "requestKey")
+        searchFilterViewModel.start(searchFilterItems, searchHint, "requestKey")
         verify(viewStateObserver, times(1)).onChanged(
             Loaded(
-                title = title,
                 searchFilterItems = searchFilterItems.toList(),
                 searchHint = searchHint
             )
@@ -50,7 +48,7 @@ class SearchFilterViewModelTest : BaseUnitTest() {
             SearchFilterItem("name2", "value2"),
             SearchFilterItem("name3", "value3")
         )
-        searchFilterViewModel.start("title", searchFilterItems, "hint", "requestKey")
+        searchFilterViewModel.start(searchFilterItems, "hint", "requestKey")
         searchFilterViewModel.onSearch(resultSearchFilterItemName)
         verify(viewStateObserver, times(1)).onChanged(
             Search(
@@ -62,7 +60,7 @@ class SearchFilterViewModelTest : BaseUnitTest() {
     @Test
     fun `Should emit Empty view state when onSearch is called and there are NO results for the query`() {
         val query = "query"
-        searchFilterViewModel.start("title", emptyArray(), "hint", "requestKey")
+        searchFilterViewModel.start(emptyArray(), "hint", "requestKey")
         searchFilterViewModel.onSearch(query)
         verify(viewStateObserver, times(1)).onChanged(Empty(query))
     }
@@ -71,7 +69,7 @@ class SearchFilterViewModelTest : BaseUnitTest() {
     fun `Should emit ItemSelected event when onItemSelected is called`() {
         val selectedItem = SearchFilterItem("name", "value")
         val requestKey = "requestKey"
-        searchFilterViewModel.start("title", emptyArray(), "hint", requestKey)
+        searchFilterViewModel.start(emptyArray(), "hint", requestKey)
         searchFilterViewModel.onItemSelected(selectedItem)
         verify(eventObserver, times(1)).onChanged(ItemSelected(selectedItem.value, requestKey))
     }

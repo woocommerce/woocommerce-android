@@ -25,11 +25,10 @@ class SearchFilterViewModel @Inject constructor() : ViewModel() {
 
     private lateinit var requestKey: String
 
-    fun start(title: String, searchFilterItems: Array<SearchFilterItem>, searchHint: String, requestKey: String) {
+    fun start(searchFilterItems: Array<SearchFilterItem>, searchHint: String, requestKey: String) {
         allSearchFilterItems = searchFilterItems.toList()
         this.requestKey = requestKey
         _viewStateLiveData.value = Loaded(
-            title = title,
             searchFilterItems = allSearchFilterItems,
             searchHint = searchHint
         )

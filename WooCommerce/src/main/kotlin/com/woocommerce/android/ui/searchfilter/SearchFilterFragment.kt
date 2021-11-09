@@ -42,7 +42,6 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSearchFilterBinding.bind(view)
         viewModel.start(
-            title = navArgs.title,
             searchFilterItems = navArgs.items,
             searchHint = navArgs.hint,
             requestKey = navArgs.requestKey
@@ -58,6 +57,8 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
         _binding = null
     }
 
+    override fun getFragmentTitle(): String = navArgs.title
+
     private fun setupViewStateObserver() {
         viewModel.viewStateLiveData.observe(
             viewLifecycleOwner,
@@ -66,7 +67,6 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
                     is Loaded -> {
                         showSearchList()
                         updateSearchList(viewState.searchFilterItems)
-                        setupTitle(viewState.title)
                         binding.searchEditText.hint = viewState.searchHint
                     }
                     is Search -> {
@@ -133,10 +133,6 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
 
     private fun hideSearchList() {
         binding.searchItemsList.hide()
-    }
-
-    private fun setupTitle(title: String) {
-        activity?.title = title
     }
 
     private fun hideEmptyView() {

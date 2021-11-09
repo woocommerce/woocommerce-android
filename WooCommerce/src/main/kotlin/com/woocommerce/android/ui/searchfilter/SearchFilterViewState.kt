@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.searchfilter
 sealed class SearchFilterViewState {
 
     data class Loaded(
-        val title: String,
         val searchFilterItems: List<SearchFilterItem>,
         val searchHint: String
     ) : SearchFilterViewState()
