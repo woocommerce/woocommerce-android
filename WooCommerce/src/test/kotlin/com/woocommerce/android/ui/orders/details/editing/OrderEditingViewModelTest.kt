@@ -10,19 +10,15 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.stub
+import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
+import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 
 @ExperimentalCoroutinesApi
@@ -50,12 +46,246 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should emit success event if update was successful`() {
+    fun `should replicate billing to shipping when toggle is activated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            orderEditingRepository.stub {
+                onBlocking {
+                    updateBothOrderAddresses(any(), any(), any())
+                } doReturn flowOf()
+            }
+
+            sut.apply {
+                start()
+                onReplicateAddressSwitchChanged(true)
+                updateBillingAddress(addressToUpdate)
+            }
+
+            verify(orderEditingRepository)
+                .updateBothOrderAddresses(
+                    testOrder.localId,
+                    addressToUpdate.toShippingAddressModel(),
+                    addressToUpdate.toBillingAddressModel("")
+                )
+        }
+
+    @Test
+    fun `should replicate shipping to billing when toggle is activated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            orderEditingRepository.stub {
+                onBlocking {
+                    updateBothOrderAddresses(any(), any(), any())
+                } doReturn flowOf()
+            }
+
+            sut.apply {
+                start()
+                onReplicateAddressSwitchChanged(true)
+                updateShippingAddress(addressToUpdate)
+            }
+
+            verify(orderEditingRepository)
+                .updateBothOrderAddresses(
+                    testOrder.localId,
+                    addressToUpdate.toShippingAddressModel(),
+                    addressToUpdate.toBillingAddressModel("")
+                )
+        }
+
+    @Test
+    fun `should NOT replicate shipping to billing when toggle is deactivated`() {
+        var eventWasCalled = false
+
+        orderEditingRepository.stub {
+            onBlocking {
+                updateBothOrderAddresses(any(), any(), any())
+            } doReturn flowOf(
+                UpdateOrderResult.OptimisticUpdateResult(
+                    OnOrderChanged(0)
+                )
+            )
+        }
+
+        sut.apply {
+            start()
+            onReplicateAddressSwitchChanged(false)
+            updateShippingAddress(addressToUpdate)
+        }
+
+        observeEvents {
+            eventWasCalled = when (it) {
+                is OrderEditingViewModel.OrderEdited -> true
+                else -> false
+            }
+        }
+
+        assertThat(eventWasCalled).isFalse
+    }
+
+    @Test
+    fun `should NOT replicate billing to shipping when toggle is deactivated`() {
+        var eventWasCalled = false
+
+        orderEditingRepository.stub {
+            onBlocking {
+                updateBothOrderAddresses(any(), any(), any())
+            } doReturn flowOf(
+                UpdateOrderResult.OptimisticUpdateResult(
+                    OnOrderChanged(0)
+                )
+            )
+        }
+
+        sut.apply {
+            start()
+            onReplicateAddressSwitchChanged(false)
+            updateBillingAddress(addressToUpdate)
+        }
+
+        observeEvents {
+            eventWasCalled = when (it) {
+                is OrderEditingViewModel.OrderEdited -> true
+                else -> false
+            }
+        }
+
+        assertThat(eventWasCalled).isFalse
+    }
+
+    @Test
+    fun `should replace email info with original one when empty`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val originalOrder = testOrder.copy(
+                billingAddress = addressToUpdate.copy(email = "original@email.com")
+            )
+
+            orderDetailRepository.stub {
+                on { getOrder(any()) } doReturn originalOrder
+            }
+
+            orderEditingRepository.stub {
+                onBlocking {
+                    updateBothOrderAddresses(any(), any(), any())
+                } doReturn flowOf()
+            }
+
+            sut.apply {
+                start()
+                onReplicateAddressSwitchChanged(true)
+                updateBillingAddress(addressToUpdate)
+            }
+
+            verify(orderEditingRepository)
+                .updateBothOrderAddresses(
+                    testOrder.localId,
+                    addressToUpdate.toShippingAddressModel(),
+                    addressToUpdate.toBillingAddressModel("original@email.com")
+                )
+        }
+
+    @Test
+    fun `should execute updateBillingAddress only when connection is available`() {
+        var eventWasCalled = false
+        networkStatus.stub {
+            on { isConnected() } doReturn false
+        }
+
         orderEditingRepository.stub {
             onBlocking {
                 updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
-                RemoteUpdateResult(
+                UpdateOrderResult.OptimisticUpdateResult(
+                    OnOrderChanged(0)
+                )
+            )
+        }
+
+        sut.apply {
+            start()
+            updateBillingAddress(addressToUpdate)
+        }
+
+        observeEvents {
+            eventWasCalled = when (it) {
+                is OrderEditingViewModel.OrderEdited -> true
+                else -> false
+            }
+        }
+
+        assertThat(eventWasCalled).isFalse
+    }
+
+    @Test
+    fun `should execute updateShippingAddress only when connection is available`() {
+        var eventWasCalled = false
+        networkStatus.stub {
+            on { isConnected() } doReturn false
+        }
+
+        orderEditingRepository.stub {
+            onBlocking {
+                updateOrderAddress(testOrder.localId, addressToUpdate.toShippingAddressModel())
+            } doReturn flowOf(
+                UpdateOrderResult.OptimisticUpdateResult(
+                    OnOrderChanged(0)
+                )
+            )
+        }
+
+        sut.apply {
+            start()
+            updateShippingAddress(addressToUpdate)
+        }
+
+        observeEvents {
+            eventWasCalled = when (it) {
+                is OrderEditingViewModel.OrderEdited -> true
+                else -> false
+            }
+        }
+
+        assertThat(eventWasCalled).isFalse
+    }
+
+    @Test
+    fun `should execute updateCustomerOrderNote only when connection is available`() {
+        var eventWasCalled = false
+        networkStatus.stub {
+            on { isConnected() } doReturn false
+        }
+
+        orderEditingRepository.stub {
+            onBlocking {
+                updateCustomerOrderNote(testOrder.localId, "test note")
+            } doReturn flowOf(
+                UpdateOrderResult.OptimisticUpdateResult(
+                    OnOrderChanged(0)
+                )
+            )
+        }
+
+        sut.apply {
+            start()
+            updateCustomerOrderNote("test note")
+        }
+
+        observeEvents {
+            eventWasCalled = when (it) {
+                is OrderEditingViewModel.OrderEdited -> true
+                else -> false
+            }
+        }
+
+        assertThat(eventWasCalled).isFalse
+    }
+
+    @Test
+    fun `should emit success event if update was successful`() {
+        var eventWasCalled = false
+        orderEditingRepository.stub {
+            onBlocking {
+                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
+            } doReturn flowOf(
+                UpdateOrderResult.OptimisticUpdateResult(
                     OnOrderChanged(0)
                 )
             )
@@ -67,8 +297,11 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         }
 
         observeEvents { event ->
+            eventWasCalled = true
             assertThat(event).isEqualTo(OrderEditingViewModel.OrderEdited)
         }
+
+        assertThat(eventWasCalled).isTrue
     }
 
     @Test
