@@ -13,6 +13,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderUpdateDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateAboutToStart
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateProgress
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -55,8 +57,10 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
                         KEY_READER_UPDATE_RESULT,
                         event.data as UpdateResult
                     )
-                    is CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateProgress ->
+                    is SoftwareUpdateProgress ->
                         announceSoftwareUpdateProgress(event.progress, binding)
+                    is SoftwareUpdateAboutToStart ->
+                        binding.root.announceForAccessibility(getString(event.accessibilityText))
                     else -> event.isHandled = false
                 }
             }

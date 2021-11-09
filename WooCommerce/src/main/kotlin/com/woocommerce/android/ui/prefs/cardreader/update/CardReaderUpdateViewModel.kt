@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -24,6 +25,7 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateAboutToStart
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ButtonState
@@ -81,9 +83,12 @@ class CardReaderUpdateViewModel @Inject constructor(
         cardReaderManager.softwareUpdateStatus.collect { status ->
             when (status) {
                 is Failed -> onUpdateFailed(status)
-                is InstallationStarted -> viewState.value = UpdateAboutToStart(
-                    buildProgressText(convertToPercentage(0f))
-                )
+                is InstallationStarted -> {
+                    triggerEvent(SoftwareUpdateAboutToStart(R.string.card_reader_software_update_description))
+                    viewState.value = UpdateAboutToStart(
+                        buildProgressText(convertToPercentage(0f))
+                    )
+                }
                 is Installing -> {
                     triggerEvent(
                         CardReaderUpdateEvent.SoftwareUpdateProgress(
@@ -215,6 +220,9 @@ class CardReaderUpdateViewModel @Inject constructor(
 
     sealed class CardReaderUpdateEvent : Event() {
         data class SoftwareUpdateProgress(val progress: UiString) : Event()
+        data class SoftwareUpdateAboutToStart(
+            @StringRes val accessibilityText: Int
+        ) : Event()
     }
 
     sealed class ViewState(
