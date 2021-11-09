@@ -86,7 +86,7 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
         binding: CardReaderUpdateDialogBinding
     ) {
         val progress = UiHelpers.getTextOfUiString(requireActivity(), progressText)
-        binding.progressTextView.announceForAccessibility("$progress")
+        binding.progressTextView.announceForAccessibility(progress)
     }
 
     override fun onResume() {
