@@ -26,7 +26,6 @@ import org.robolectric.RobolectricTestRunner
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
-
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val shipmentProvidersRepository: OrderShipmentProvidersRepository = mock()
     private val resourceProvider: ResourceProvider = mock()

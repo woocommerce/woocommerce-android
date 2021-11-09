@@ -25,7 +25,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
-
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val siteModel = SiteModel()

@@ -26,7 +26,6 @@ import kotlin.test.assertEquals
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
-
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
 
