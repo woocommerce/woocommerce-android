@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
+import android.os.Parcelable
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.trySendBlocking
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.mystore.JetpackInstallRepository.PluginStatus.
 import com.woocommerce.android.ui.mystore.JetpackInstallRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.mystore.JetpackInstallRepository.PluginStatus.PluginActivationFailed
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.parcelize.Parcelize
 
 class JetpackInstallRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -25,6 +27,7 @@ class JetpackInstallRepository @Inject constructor(
 ) {
     companion object {
         const val JETPACK_SLUG = "wp-category-meta" // example plugin, should be jetpack
+        const val JETPACK_NAME = "jetpack/jetpack"
         const val GENERIC_ERROR = "Unknown issue."
     }
 
@@ -38,6 +41,11 @@ class JetpackInstallRepository @Inject constructor(
         awaitClose {
             dispatcher.unregister(listener)
         }
+    }
+
+    fun fetchJetpackPlugin() {
+        val payload = PluginStore.FetchJetpackSitePluginPayload(selectedSite.get(), JETPACK_NAME)
+        dispatcher.dispatch(PluginActionBuilder.newFetchJetpackSitePluginAction(payload))
     }
 
     private inner class PluginActionListener(private val producerScope: ProducerScope<PluginStatus>) {
@@ -71,10 +79,16 @@ class JetpackInstallRepository @Inject constructor(
         }
     }
 
-    sealed class PluginStatus {
+    sealed class PluginStatus : Parcelable {
+        @Parcelize
         data class PluginInstalled(val slug: String, val site: SiteModel) : PluginStatus()
+        @Parcelize
         data class PluginInstallFailed(val error: String) : PluginStatus()
+        @Parcelize
         data class PluginActivated(val name: String, val site: SiteModel) : PluginStatus()
+        @Parcelize
         data class PluginActivationFailed(val error: String) : PluginStatus()
+        @Parcelize
+        object PluginInstallStopped: PluginStatus()
     }
 }
