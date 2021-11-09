@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.orders.quickorder.QuickOrderDialog
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -50,6 +51,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
+import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
@@ -179,6 +181,7 @@ class OrderListFragment :
         }
 
         initializeViewModel()
+        initializeResultHandlers()
         initializeTabs()
 
         if (isFilterEnabled) {
@@ -304,7 +307,7 @@ class OrderListFragment :
                 true
             }
             R.id.menu_add -> {
-                // TODO nbradbury - show quick order view
+                showQuickOrderDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -429,8 +432,18 @@ class OrderListFragment :
         }
     }
 
+    private fun initializeResultHandlers() {
+        handleResult<BigDecimal>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) {
+            // TODO nbradbury create order using the passed price
+        }
+    }
+
     private fun showOrderFilters() {
         findNavController().navigate(R.id.action_orderListFragment_to_orderFilterListFragment)
+    }
+
+    private fun showQuickOrderDialog() {
+        findNavController().navigate(R.id.action_orderListFragment_to_quickOrderDialog)
     }
 
     private fun hideEmptyView() {
