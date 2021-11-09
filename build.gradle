@@ -99,7 +99,7 @@ ext {
     constraintLayoutVersion = '1.2.0'
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.2.0'
-    googlePlayCoreVersion = '1.10.0'
+    googlePlayCoreVersion = '1.10.2'
     coroutinesVersion = '1.5.2'
     lifecycleVersion = '2.3.1'
     assertjVersion = '3.11.1'

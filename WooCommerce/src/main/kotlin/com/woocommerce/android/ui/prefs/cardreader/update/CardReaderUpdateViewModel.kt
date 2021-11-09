@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.update
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -24,6 +25,7 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateAboutToStart
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.ButtonState
@@ -31,6 +33,7 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewMo
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -80,10 +83,22 @@ class CardReaderUpdateViewModel @Inject constructor(
         cardReaderManager.softwareUpdateStatus.collect { status ->
             when (status) {
                 is Failed -> onUpdateFailed(status)
-                is InstallationStarted -> viewState.value = UpdateAboutToStart(
-                    buildProgressText(convertToPercentage(0f))
-                )
-                is Installing -> updateProgress(viewState.value, convertToPercentage(status.progress))
+                is InstallationStarted -> {
+                    triggerEvent(SoftwareUpdateAboutToStart(R.string.card_reader_software_update_description))
+                    viewState.value = UpdateAboutToStart(
+                        buildProgressText(convertToPercentage(0f))
+                    )
+                }
+                is Installing -> {
+                    triggerEvent(
+                        CardReaderUpdateEvent.SoftwareUpdateProgress(
+                            buildProgressText(
+                                convertToPercentage(status.progress)
+                            )
+                        )
+                    )
+                    updateProgress(viewState.value, convertToPercentage(status.progress))
+                }
                 Success -> onUpdateSucceeded()
                 Unknown -> onUpdateStatusUnknown()
             }.exhaustive
@@ -202,6 +217,13 @@ class CardReaderUpdateViewModel @Inject constructor(
             R.string.card_reader_software_update_progress_indicator,
             listOf(UiStringText(progress.toString()))
         )
+
+    sealed class CardReaderUpdateEvent : Event() {
+        data class SoftwareUpdateProgress(val progress: UiString) : Event()
+        data class SoftwareUpdateAboutToStart(
+            @StringRes val accessibilityText: Int
+        ) : Event()
+    }
 
     sealed class ViewState(
         val title: UiString? = null,
