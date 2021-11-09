@@ -21,7 +21,7 @@ import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.*
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
-import org.wordpress.android.mediapicker.util.MediaPickerUtils
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import java.io.File
 import javax.inject.Inject
 

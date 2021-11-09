@@ -6,10 +6,10 @@ import dagger.android.AndroidInjectionModule
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.login.di.LoginServiceModule
+import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
+import org.wordpress.android.mediapicker.api.Tracker
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
-import org.wordpress.android.mediapicker.util.Log
-import org.wordpress.android.mediapicker.util.Tracker
 import javax.inject.Qualifier
 import kotlin.annotation.AnnotationRetention.RUNTIME
 

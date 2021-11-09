@@ -41,10 +41,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
-import org.wordpress.android.mediapicker.util.MediaPickerUtils
+import java.security.InvalidParameterException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -324,18 +325,23 @@ class ProductImagesFragment :
                 ?: emptyList()
 
             if (mediaUris.isEmpty()) {
-                WooLog.w(T.MEDIA, "Photo chooser returned empty list")
+                WooLog.w(T.MEDIA, "Media picker returned empty list")
             } else {
-                val mediaSourceExtra = result.data?.getStringExtra(MediaPickerConstants.EXTRA_MEDIA_SOURCE)
-                val source = if (mediaSourceExtra == MediaPickerSetup.DataSource.SYSTEM_PICKER.name) {
-                    AnalyticsTracker.IMAGE_SOURCE_DEVICE
+                val sourceExtra = result.data?.getStringExtra(MediaPickerConstants.EXTRA_MEDIA_SOURCE)
+                if (sourceExtra != null) {
+                    val source = when (val dataSource = MediaPickerSetup.DataSource.valueOf(sourceExtra)) {
+                        MediaPickerSetup.DataSource.SYSTEM_PICKER,
+                        MediaPickerSetup.DataSource.DEVICE -> AnalyticsTracker.IMAGE_SOURCE_DEVICE
+                        MediaPickerSetup.DataSource.CAMERA -> AnalyticsTracker.IMAGE_SOURCE_CAMERA
+                        else -> throw InvalidParameterException("${dataSource.name} is not a supported data source")
+                    }
+                    AnalyticsTracker.track(
+                        Stat.PRODUCT_IMAGE_ADDED,
+                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
+                    )
                 } else {
-                    AnalyticsTracker.IMAGE_SOURCE_CAMERA
+                    WooLog.w(T.MEDIA, "Media picker returned empty media source")
                 }
-                AnalyticsTracker.track(
-                    Stat.PRODUCT_IMAGE_ADDED,
-                    mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
-                )
 
                 viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
             }
