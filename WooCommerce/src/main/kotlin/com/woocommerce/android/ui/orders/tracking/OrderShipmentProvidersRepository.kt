@@ -35,13 +35,13 @@ class OrderShipmentProvidersRepository @Inject constructor(
         val payload = FetchOrderShipmentProvidersPayload(selectedSite.get(), order)
         val result = orderStore.fetchOrderShipmentProviders(payload)
         return when {
-            result.rowsAffected == 0 -> {
-                WooLog.e(ORDERS, "Error fetching shipment providers : empty list")
-                emptyList()
-            }
             result.isError -> {
                 WooLog.e(ORDERS, "Error fetching shipment providers : ${result.error.message}")
                 null
+            }
+            result.rowsAffected == 0 -> {
+                WooLog.e(ORDERS, "Error fetching shipment providers : empty list")
+                emptyList()
             }
             else -> getShipmentProvidersFromDB()
         }
