@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingPermissionsError
@@ -896,6 +897,22 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             readerStatusFlow.emit(CardReaderStatus.NotConnected)
 
             (viewModel.viewStateData.value as ConnectingFailedState).onPrimaryActionClicked()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
+        }
+
+    @Test
+    fun `given invalid postcode screen shown, when user clicks on retry, then flow restarted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            (viewModel.viewStateData.value as InvalidMerchantAddressPostCodeError).onPrimaryActionClicked()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
         }
