@@ -90,9 +90,6 @@ class JetpackInstallRepository @Inject constructor(
 
     sealed class PluginStatus : Parcelable {
         @Parcelize
-        object PluginInstallStarted : PluginStatus()
-
-        @Parcelize
         data class PluginInstalled(val slug: String, val site: SiteModel) : PluginStatus()
 
         @Parcelize
@@ -103,8 +100,5 @@ class JetpackInstallRepository @Inject constructor(
 
         @Parcelize
         data class PluginActivationFailed(val error: String) : PluginStatus()
-
-        @Parcelize
-        object PluginInstallStopped : PluginStatus()
     }
 }
