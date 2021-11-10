@@ -217,7 +217,7 @@ class ReviewListRepository @Inject constructor(
         val newOffset = if (loadMore) offset + PAGE_SIZE else 0
         isFetchingProductReviews = true
 
-        val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), offset)
+        val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), newOffset)
         val result = productStore.fetchProductReviews(payload)
         isFetchingProductReviews = false
         if (result.isError) {

@@ -34,7 +34,7 @@ class ProductReviewsRepository @Inject constructor(
         val newOffset = if (loadMore) offset + PAGE_SIZE else 0
 
         val payload = FetchProductReviewsPayload(
-            selectedSite.get(), offset,
+            selectedSite.get(), newOffset,
             productIds = listOf(remoteProductId),
             filterByStatus = listOf(PRODUCT_REVIEW_STATUS_APPROVED)
         )
