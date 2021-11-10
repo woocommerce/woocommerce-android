@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.filters
 
-import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import com.woocommerce.android.R
@@ -10,9 +9,18 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
-import com.woocommerce.android.ui.orders.filters.model.*
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategories
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
+import com.woocommerce.android.ui.orders.filters.model.addFilterOptionAll
+import com.woocommerce.android.ui.orders.filters.model.clearAllFilterSelections
+import com.woocommerce.android.ui.orders.filters.model.getNumberOfSelectedFilterOptions
+import com.woocommerce.android.ui.orders.filters.model.isAnyFilterOptionSelected
+import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
+import com.woocommerce.android.ui.orders.filters.model.toOrderFilterOptionUiModel
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -20,7 +28,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,11 +39,6 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val orderFilterRepository: OrderFiltersRepository
 
 ) : ScopedViewModel(savedState) {
-    companion object {
-        const val KEY_SAVED_ORDER_STATUS_SELECTION = "key_current_order_status_selection"
-        const val KEY_SAVED_DATE_RANGE_SELECTION = "key_current_date_range_selection"
-    }
-
     val categories = LiveDataDelegate(
         savedState,
         OrderFilterCategories(emptyList())
@@ -88,7 +90,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     fun onBackPressed(): Boolean {
         val selectedFiltersCount = _categories.list
             .map { it.orderFilterOptions.getNumberOfSelectedFilterOptions() }
-            .sum() ?: 0
+            .sum()
         return if (selectedFiltersCount > 0) {
             triggerEvent(
                 ShowDialog.buildDiscardDialogEvent(
@@ -144,10 +146,11 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         .toMutableList()
         .apply { addFilterOptionAll(resourceProvider) }
 
-    private fun getFilterCategoryViewState(filterCategories: List<OrderFilterCategoryUiModel>?): OrderFilterCategoryListViewState {
+    private fun getFilterCategoryViewState(filterCategories: List<OrderFilterCategoryUiModel>)
+        : OrderFilterCategoryListViewState {
         val selectedFiltersCount = filterCategories
-            ?.map { it.orderFilterOptions.getNumberOfSelectedFilterOptions() }
-            ?.sum() ?: 0
+            .map { it.orderFilterOptions.getNumberOfSelectedFilterOptions() }
+            .sum()
 
         val title = if (selectedFiltersCount > 0) {
             resourceProvider.getString(R.string.orderfilters_filters_count_title, selectedFiltersCount)
@@ -187,9 +190,4 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             orderFilterRepository.updateSelectedFilters(category.categoryKey, newSelectedFilters)
         }
     }
-
-    @Parcelize
-    data class OrderFilterCategories(
-        val list: List<OrderFilterCategoryUiModel>
-    ) : Parcelable
 }
