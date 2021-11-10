@@ -45,10 +45,12 @@ class QuickOrderViewModel @Inject constructor(
 
     fun createQuickOrder() {
         launch {
+            viewState = viewState.copy(isProgressShowing = true, isDoneButtonEnabled = false)
             val result = orderStore.postQuickOrder(
                 selectedSite.get(),
                 viewState.currentPrice.toString()
             )
+            viewState = viewState.copy(isProgressShowing = false, isDoneButtonEnabled = true)
             if (result.isError) {
                 WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
             } else {
@@ -61,6 +63,7 @@ class QuickOrderViewModel @Inject constructor(
     data class ViewState(
         val currentPrice: BigDecimal = BigDecimal.ZERO,
         val isDoneButtonEnabled: Boolean = false,
+        val isProgressShowing: Boolean = false,
         val createdOrder: Order? = null
     ) : Parcelable
 

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.quickorder
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -64,6 +65,9 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
             }
             new.createdOrder.takeIfNotEqualTo(old?.createdOrder) { order ->
                 returnResult(order!!)
+            }
+            new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { isShowing ->
+                binding.progressBar.isVisible = isShowing
             }
         }
     }
