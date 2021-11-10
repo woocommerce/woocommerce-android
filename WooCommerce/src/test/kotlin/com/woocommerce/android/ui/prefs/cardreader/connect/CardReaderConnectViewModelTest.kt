@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -33,6 +32,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingPermissionsError
@@ -456,7 +456,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             init(scanState = READER_FOUND)
 
-            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_AUTO_CONNECTION_STARTED)
+            verify(tracker).track(CARD_READER_AUTO_CONNECTION_STARTED)
         }
 
     @Test
@@ -495,7 +495,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = FAILED)
 
             verify(tracker).track(
-                eq(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED), anyOrNull(), anyOrNull(), anyOrNull()
+                eq(CARD_READER_DISCOVERY_FAILED), anyOrNull(), anyOrNull(), anyOrNull()
             )
         }
 
@@ -505,7 +505,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = READER_FOUND)
 
             verify(tracker)
-                .track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED, mapOf("reader_count" to 1))
+                .track(CARD_READER_DISCOVERY_READER_DISCOVERED, mapOf("reader_count" to 1))
         }
 
     @Test
@@ -514,7 +514,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = MULTIPLE_READERS_FOUND)
 
             verify(tracker)
-                .track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED, mapOf("reader_count" to 2))
+                .track(CARD_READER_DISCOVERY_READER_DISCOVERED, mapOf("reader_count" to 2))
         }
 
     @Test
@@ -532,6 +532,24 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 "CardReaderConnectViewModel",
                 null,
                 "Missing Address"
+            )
+        }
+
+    @Test
+    fun `given location fetching invalid postcode, when user clicks on connect to reader button, then track failure`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).track(
+                CARD_READER_LOCATION_FAILURE,
+                "CardReaderConnectViewModel",
+                null,
+                "Invalid Postal Code"
             )
         }
 
@@ -608,6 +626,22 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 CardReaderConnectViewState.MissingMerchantAddressError::class.java
+            )
+        }
+
+    @Test
+    fun `given location fetching invalid postcode, when user clicks on connect button, then invalid pc error state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                CardReaderConnectViewState.InvalidMerchantAddressPostCodeError::class.java
             )
         }
 
@@ -753,7 +787,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(tracker)
-                .track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)
+                .track(CARD_READER_CONNECTION_TAPPED)
         }
 
     @Test
@@ -765,7 +799,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             reader.onConnectClicked()
 
             verify(tracker)
-                .track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)
+                .track(CARD_READER_CONNECTION_TAPPED)
         }
 
     @Test
@@ -808,7 +842,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connected(reader))
 
-            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
+            verify(tracker).track(CARD_READER_CONNECTION_SUCCESS)
         }
 
     @Test
@@ -851,7 +885,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected)
 
-            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
+            verify(tracker).track(CARD_READER_CONNECTION_FAILED)
         }
 
     @Test
@@ -863,6 +897,22 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             readerStatusFlow.emit(CardReaderStatus.NotConnected)
 
             (viewModel.viewStateData.value as ConnectingFailedState).onPrimaryActionClicked()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
+        }
+
+    @Test
+    fun `given invalid postcode screen shown, when user clicks on retry, then flow restarted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            (viewModel.viewStateData.value as InvalidMerchantAddressPostCodeError).onPrimaryActionClicked()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
         }
@@ -1079,6 +1129,33 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.card_reader_connect_missing_address_button)
             assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
                 .isEqualTo(R.string.cancel)
+            assertThat(viewModel.viewStateData.value!!.illustration)
+                .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .isEqualTo(R.dimen.major_150)
+        }
+
+    @Test
+    fun `given invalid postcode state, when connecting to reader, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init(scanState = READER_FOUND)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected)
+            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
+            )
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                CardReaderConnectViewState.InvalidMerchantAddressPostCodeError::class.java
+            )
+            assertThat(viewModel.viewStateData.value!!.headerLabel)
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_invalid_postal_code_header))
+            assertThat(viewModel.viewStateData.value!!.hintLabel)
+                .isEqualTo(R.string.card_reader_connect_invalid_postal_code_hint)
+            assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
+                .isEqualTo(R.string.try_again)
+            assertThat(viewModel.viewStateData.value!!.secondaryActionLabel).isNull()
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .isEqualTo(R.drawable.img_products_error)
             assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
