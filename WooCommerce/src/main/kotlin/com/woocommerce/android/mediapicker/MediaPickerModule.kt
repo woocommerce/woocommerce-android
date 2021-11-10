@@ -35,11 +35,11 @@ abstract class MediaPickerModule {
     internal abstract fun provideMediaPickerLogger(logger: MediaPickerLogger): Log
 
     @Binds
-    internal abstract fun provideMimeTypeSupportProvider(provider: WooMimeTypeProvider): MimeTypeProvider
+    internal abstract fun provideMimeTypeSupportProvider(provider: MediaPickerMimeTypeProvider): MimeTypeProvider
 
     @Binds
     abstract fun bindMediaLoaderFactory(
-        sampleMediaLoaderFactory: WooMediaLoaderFactory
+        mediaPickerLoaderFactory: MediaPickerLoaderFactory
     ): MediaLoaderFactory
 
     @Binds
