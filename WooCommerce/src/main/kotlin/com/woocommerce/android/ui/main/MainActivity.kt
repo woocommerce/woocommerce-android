@@ -87,14 +87,10 @@ class MainActivity :
         }
     }
 
-    @Inject
-    lateinit var presenter: MainContract.Presenter
-    @Inject
-    lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject
-    lateinit var selectedSite: SelectedSite
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var presenter: MainContract.Presenter
+    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: MainActivityViewModel by viewModels()
 

@@ -5,7 +5,6 @@ import androidx.annotation.MainThread
 import androidx.collection.ArrayMap
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavArgs
-import androidx.navigation.navArgs
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
@@ -31,10 +30,11 @@ class NavArgsLazy<Args : NavArgs>(
             var args = cached
             if (args == null) {
                 val method: Method = methodMap[navArgsClass]
-                    ?: navArgsClass.java.getMethod("fromSavedStateHandle", SavedStateHandle::class.java).also { method ->
-                        // Save a reference to the method
-                        methodMap[navArgsClass] = method
-                    }
+                    ?: navArgsClass.java.getMethod("fromSavedStateHandle", SavedStateHandle::class.java)
+                        .also { method ->
+                            // Save a reference to the method
+                            methodMap[navArgsClass] = method
+                        }
 
                 @SuppressLint("BanUncheckedReflection") // needed for method.invoke
                 @Suppress("UNCHECKED_CAST")
