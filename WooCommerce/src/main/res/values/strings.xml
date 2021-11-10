@@ -854,6 +854,8 @@
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
     <string name="card_reader_connect_missing_address">Please provide your store address in order to proceed</string>
     <string name="card_reader_connect_missing_address_button">Enter address</string>
+    <string name="card_reader_connect_invalid_postal_code_header">Store address postcode is invalid</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">Please provide a valid postcode in your store settings and try again</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
