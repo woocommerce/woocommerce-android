@@ -11,6 +11,7 @@ import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductReviewsPayload
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
 
 class ProductReviewsRepository @Inject constructor(
@@ -37,7 +38,7 @@ class ProductReviewsRepository @Inject constructor(
     suspend fun fetchApprovedProductReviewsFromApi(
         remoteProductId: Long,
         loadMore: Boolean
-    ): List<ProductReview> {
+    ): OnProductReviewChanged {
         offset = if (loadMore) offset + PAGE_SIZE else 0
         isFetchingProductReviews = true
 
@@ -74,7 +75,7 @@ class ProductReviewsRepository @Inject constructor(
             canLoadMore = result.canLoadMore
             continuationReviews.continueWith(true)
         }
-        return getProductReviewsFromDB(remoteProductId)
+        return result
     }
 
     /**

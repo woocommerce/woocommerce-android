@@ -76,7 +76,8 @@ class ProductReviewsViewModel @Inject constructor(
         loadMore: Boolean
     ) {
         if (networkStatus.isConnected()) {
-            _reviewList.value = reviewsRepository.fetchApprovedProductReviewsFromApi(remoteProductId, loadMore)
+            val result = reviewsRepository.fetchApprovedProductReviewsFromApi(remoteProductId, loadMore)
+            _reviewList.value = reviewsRepository.getProductReviewsFromDB(remoteProductId)
         } else {
             // Network is not connected
             triggerEvent(ShowSnackbar(string.offline_error))
