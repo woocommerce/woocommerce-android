@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -27,7 +28,8 @@ class QuickOrderViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
@@ -48,6 +50,11 @@ class QuickOrderViewModel @Inject constructor(
         }
 
     fun createQuickOrder() {
+        if (!networkStatus.isConnected()) {
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+            return
+        }
+
         viewState = viewState.copy(isProgressShowing = true, isDoneButtonEnabled = false)
 
         launch {
