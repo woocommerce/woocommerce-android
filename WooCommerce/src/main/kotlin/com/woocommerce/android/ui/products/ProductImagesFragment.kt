@@ -43,9 +43,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.model.MediaTypes
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
+import org.wordpress.android.mediapicker.source.wordpress.MediaLibraryPickerSetup
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import java.security.InvalidParameterException
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -136,7 +139,7 @@ class ProductImagesFragment :
 
     private fun setupResultHandlers(viewModel: ProductImagesViewModel) {
         handleResult<List<Image>>(KEY_WP_IMAGE_PICKER_RESULT) {
-            viewModel.onImagesAdded(it)
+            viewModel.onMediaLibraryImagesAdded(it)
         }
     }
 
@@ -204,9 +207,9 @@ class ProductImagesFragment :
                     is ShowDialog -> event.showDialog()
                     ShowImageSourceDialog -> showImageSourceDialog()
                     is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
-                    ShowStorageChooser -> chooseProductImage()
+                    ShowStorageChooser -> showLocalDeviceMediaPicker()
                     ShowCamera -> captureProductImage()
-                    ShowWPMediaPicker -> showWPMediaPicker()
+                    ShowWPMediaPicker -> showMediaLibraryPicker()
                     is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
                     else -> event.isHandled = false
                 }
@@ -287,21 +290,28 @@ class ProductImagesFragment :
             .show()
     }
 
-    private fun showWPMediaPicker() {
-        val action = ProductImagesFragmentDirections.actionGlobalWpMediaFragment(viewModel.isMultiSelectionAllowed)
-        findNavController().navigateSafely(action)
-    }
-
-    private fun chooseProductImage() {
+    private fun showMediaLibraryPicker() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            DeviceMediaPickerSetup.buildMediaPicker(
-                mediaTypes = DeviceMediaPickerSetup.MediaTypes.IMAGES,
+            MediaLibraryPickerSetup.build(
+                mediaTypes = MediaTypes.IMAGES,
                 canMultiSelect = viewModel.isMultiSelectionAllowed
             )
         )
 
-        resultLauncher.launch(intent)
+        mediaPickerLauncher.launch(intent)
+    }
+
+    private fun showLocalDeviceMediaPicker() {
+        val intent = MediaPickerActivity.buildIntent(
+            requireContext(),
+            DeviceMediaPickerSetup.buildMediaPicker(
+                mediaTypes = MediaTypes.IMAGES,
+                canMultiSelect = viewModel.isMultiSelectionAllowed
+            )
+        )
+
+        mediaPickerLauncher.launch(intent)
     }
 
     private fun captureProductImage() {
@@ -310,41 +320,65 @@ class ProductImagesFragment :
             DeviceMediaPickerSetup.buildCameraPicker()
         )
 
-        resultLauncher.launch(intent)
+        mediaPickerLauncher.launch(intent)
     }
 
-    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private val mediaPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         handleMediaPickerResult(it)
     }
 
     private fun handleMediaPickerResult(result: ActivityResult) {
         if (result.resultCode == AppCompatActivity.RESULT_OK) {
-            val mediaUris = (result.data?.extras?.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)
-                ?.mapNotNull { it as? String }
-                ?.map { Uri.parse(it) }
-                ?: emptyList()
-
-            if (mediaUris.isEmpty()) {
-                WooLog.w(T.MEDIA, "Media picker returned empty list")
-            } else {
-                val sourceExtra = result.data?.getStringExtra(MediaPickerConstants.EXTRA_MEDIA_SOURCE)
-                if (sourceExtra != null) {
-                    val source = when (val dataSource = MediaPickerSetup.DataSource.valueOf(sourceExtra)) {
-                        MediaPickerSetup.DataSource.SYSTEM_PICKER,
-                        MediaPickerSetup.DataSource.DEVICE -> AnalyticsTracker.IMAGE_SOURCE_DEVICE
-                        MediaPickerSetup.DataSource.CAMERA -> AnalyticsTracker.IMAGE_SOURCE_CAMERA
-                        else -> throw InvalidParameterException("${dataSource.name} is not a supported data source")
+            val sourceExtra = result.data?.getStringExtra(MediaPickerConstants.EXTRA_MEDIA_SOURCE)
+            if (sourceExtra != null) {
+                val data = result.data!!.extras!!
+                when (val dataSource = MediaPickerSetup.DataSource.valueOf(sourceExtra)) {
+                    MediaPickerSetup.DataSource.SYSTEM_PICKER,
+                    MediaPickerSetup.DataSource.DEVICE -> {
+                        handleDeviceMediaPickerResult(data, AnalyticsTracker.IMAGE_SOURCE_DEVICE)
                     }
-                    AnalyticsTracker.track(
-                        Stat.PRODUCT_IMAGE_ADDED,
-                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
-                    )
-                } else {
-                    WooLog.w(T.MEDIA, "Media picker returned empty media source")
+                    MediaPickerSetup.DataSource.CAMERA -> {
+                        handleDeviceMediaPickerResult(data, AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+                    }
+                    MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY -> {
+                        handleMediaLibraryPickerResult(data)
+                    }
+                    else -> throw InvalidParameterException("${dataSource.name} is not a supported data source")
                 }
-
-                viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
+            } else {
+                WooLog.w(T.MEDIA, "Media picker returned empty media source")
             }
+        }
+    }
+
+    private fun handleDeviceMediaPickerResult(data: Bundle, source: String) {
+        val mediaUris = data.getStringArray(MediaPickerConstants.EXTRA_MEDIA_URIS)?.asList()?.map { Uri.parse(it) }
+            ?: emptyList()
+        if (mediaUris.isEmpty()) {
+            WooLog.w(T.MEDIA, "Media picker returned empty list")
+        } else {
+            AnalyticsTracker.track(
+                Stat.PRODUCT_IMAGE_ADDED,
+                mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
+            )
+
+            viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
+        }
+    }
+
+    private fun handleMediaLibraryPickerResult(data: Bundle) {
+        val mediaIds = data.getLongArray(MediaPickerConstants.RESULT_IDS)?.asList() ?: emptyList()
+        if (mediaIds.isEmpty()) {
+            WooLog.w(T.MEDIA, "Media picker returned empty list")
+        } else {
+            AnalyticsTracker.track(
+                Stat.PRODUCT_IMAGE_ADDED,
+                mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
+            )
+
+            viewModel.onMediaLibraryImagesAdded(
+                mediaIds.map { Image(it, "", "", Date()) }
+            )
         }
     }
 
