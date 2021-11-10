@@ -10,7 +10,6 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -23,41 +22,32 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImagesBinding
-import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.mediapicker.MediaPickerUtil.processDeviceMediaResult
+import com.woocommerce.android.mediapicker.MediaPickerUtil.processMediaLibraryResult
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductImagesViewModel.*
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
-import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerUtils
-import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.model.MediaTypes
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
 import org.wordpress.android.mediapicker.source.wordpress.MediaLibraryPickerSetup
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
-import java.security.InvalidParameterException
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductImagesFragment :
     BaseProductEditorFragment(R.layout.fragment_product_images),
     OnGalleryImageInteractionListener {
-    companion object {
-        private const val KEY_CAPTURED_PHOTO_URI = "key_captured_photo_uri"
-    }
 
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
@@ -72,7 +62,6 @@ class ProductImagesFragment :
         get() = viewModel.event.value
 
     private var imageSourceDialog: AlertDialog? = null
-    private var capturedPhotoUri: Uri? = null
     private var imageUploadErrorsSnackbar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -80,14 +69,9 @@ class ProductImagesFragment :
 
         _binding = FragmentProductImagesBinding.bind(view)
 
-        savedInstanceState?.let { bundle ->
-            capturedPhotoUri = bundle.getParcelable(KEY_CAPTURED_PHOTO_URI)
-        }
-
         setHasOptionsMenu(true)
 
         setupObservers(viewModel)
-        setupResultHandlers(viewModel)
         setupViews()
     }
 
@@ -95,11 +79,6 @@ class ProductImagesFragment :
         super.onDestroyView()
         _binding = null
         imageUploadErrorsSnackbar?.dismiss()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_CAPTURED_PHOTO_URI, capturedPhotoUri)
     }
 
     override fun onPause() {
@@ -134,12 +113,6 @@ class ProductImagesFragment :
             else -> {
                 super.onOptionsItemSelected(item)
             }
-        }
-    }
-
-    private fun setupResultHandlers(viewModel: ProductImagesViewModel) {
-        handleResult<List<Image>>(KEY_WP_IMAGE_PICKER_RESULT) {
-            viewModel.onMediaLibraryImagesAdded(it)
         }
     }
 
@@ -299,7 +272,7 @@ class ProductImagesFragment :
             )
         )
 
-        mediaPickerLauncher.launch(intent)
+        mediaLibraryLauncher.launch(intent)
     }
 
     private fun showLocalDeviceMediaPicker() {
@@ -311,7 +284,7 @@ class ProductImagesFragment :
             )
         )
 
-        mediaPickerLauncher.launch(intent)
+        mediaDeviceMediaPickerLauncher.launch(intent)
     }
 
     private fun captureProductImage() {
@@ -320,65 +293,40 @@ class ProductImagesFragment :
             DeviceMediaPickerSetup.buildCameraPicker()
         )
 
-        mediaPickerLauncher.launch(intent)
+        cameraLauncher.launch(intent)
     }
 
-    private val mediaPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        handleMediaPickerResult(it)
+    private val mediaDeviceMediaPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        handleDeviceMediaResult(it, AnalyticsTracker.IMAGE_SOURCE_DEVICE)
     }
 
-    private fun handleMediaPickerResult(result: ActivityResult) {
-        if (result.resultCode == AppCompatActivity.RESULT_OK) {
-            val sourceExtra = result.data?.getStringExtra(MediaPickerConstants.EXTRA_MEDIA_SOURCE)
-            if (sourceExtra != null) {
-                val data = result.data!!.extras!!
-                when (val dataSource = MediaPickerSetup.DataSource.valueOf(sourceExtra)) {
-                    MediaPickerSetup.DataSource.SYSTEM_PICKER,
-                    MediaPickerSetup.DataSource.DEVICE -> {
-                        handleDeviceMediaPickerResult(data, AnalyticsTracker.IMAGE_SOURCE_DEVICE)
-                    }
-                    MediaPickerSetup.DataSource.CAMERA -> {
-                        handleDeviceMediaPickerResult(data, AnalyticsTracker.IMAGE_SOURCE_CAMERA)
-                    }
-                    MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY -> {
-                        handleMediaLibraryPickerResult(data)
-                    }
-                    else -> throw InvalidParameterException("${dataSource.name} is not a supported data source")
-                }
-            } else {
-                WooLog.w(T.MEDIA, "Media picker returned empty media source")
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        handleDeviceMediaResult(it, AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+    }
+
+    private val mediaLibraryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        handleMediaLibraryPickerResult(it)
+    }
+
+    private fun handleDeviceMediaResult(result: ActivityResult, source: String) {
+        result.processDeviceMediaResult()?.let { mediaUris ->
+            if (mediaUris.isNotEmpty()) {
+                AnalyticsTracker.track(
+                    Stat.PRODUCT_IMAGE_ADDED,
+                    mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
+                )
+                viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
             }
         }
     }
 
-    private fun handleDeviceMediaPickerResult(data: Bundle, source: String) {
-        val mediaUris = data.getStringArray(MediaPickerConstants.EXTRA_MEDIA_URIS)?.asList()?.map { Uri.parse(it) }
-            ?: emptyList()
-        if (mediaUris.isEmpty()) {
-            WooLog.w(T.MEDIA, "Media picker returned empty list")
-        } else {
-            AnalyticsTracker.track(
-                Stat.PRODUCT_IMAGE_ADDED,
-                mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
-            )
-
-            viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
-        }
-    }
-
-    private fun handleMediaLibraryPickerResult(data: Bundle) {
-        val mediaIds = data.getLongArray(MediaPickerConstants.RESULT_IDS)?.asList() ?: emptyList()
-        if (mediaIds.isEmpty()) {
-            WooLog.w(T.MEDIA, "Media picker returned empty list")
-        } else {
+    private fun handleMediaLibraryPickerResult(result: ActivityResult) {
+        result.processMediaLibraryResult()?.let {
             AnalyticsTracker.track(
                 Stat.PRODUCT_IMAGE_ADDED,
                 mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
             )
-
-            viewModel.onMediaLibraryImagesAdded(
-                mediaIds.map { Image(it, "", "", Date()) }
-            )
+            viewModel.onMediaLibraryImagesAdded(it)
         }
     }
 
