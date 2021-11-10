@@ -5,7 +5,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.withTimeoutOrNull
@@ -28,7 +27,6 @@ import javax.inject.Inject
 class StatsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dispatcher: Dispatcher,
-    private val coroutineDispatchers: CoroutineDispatchers,
     private val wcStatsStore: WCStatsStore,
     @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
     private val wcOrderStore: WCOrderStore,
