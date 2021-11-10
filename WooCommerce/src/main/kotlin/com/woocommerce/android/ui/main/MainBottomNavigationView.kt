@@ -21,6 +21,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
 import com.google.android.material.bottomnavigation.LabelVisibilityMode
+import com.google.android.material.navigation.NavigationBarView.OnItemReselectedListener
+import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils
 import java.lang.ref.WeakReference
@@ -30,8 +32,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : BottomNavigationView(context, attrs),
-    OnNavigationItemSelectedListener,
-    OnNavigationItemReselectedListener {
+    OnItemSelectedListener,
+    OnItemReselectedListener {
     private lateinit var navController: NavController
     private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable
@@ -191,9 +193,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // the default implementation of [NavigationUI#onNavDestinationSelected] use default animations
-        // while our previous Navigator didn't have any animations, which causes a difference in the behavior
-        // TODO confirm if the animations are OK, or should we alter the behavior
         val navSuccess = NavigationUI.onNavDestinationSelected(item, navController)
         if (navSuccess) {
             listener.onNavItemSelected(findNavigationPositionById(item.itemId))
