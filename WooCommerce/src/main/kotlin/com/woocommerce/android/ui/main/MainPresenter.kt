@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.main
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -13,7 +14,11 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
+import com.woocommerce.android.tracker.SendTelemetry
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -38,7 +43,9 @@ class MainPresenter @Inject constructor(
     private val notificationStore: NotificationStore,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val sendTelemetry: SendTelemetry,
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -49,6 +56,18 @@ class MainPresenter @Inject constructor(
         mainView = view
         dispatcher.register(this)
         ConnectionChangeReceiver.getEventBus().register(this)
+
+        CoroutineScope(coroutineDispatchers.io).launch {
+            selectedSite.observe()
+                .collect { siteModel ->
+                    if (siteModel != null) {
+                        sendTelemetry.invoke(
+                            appVersion = BuildConfig.VERSION_NAME,
+                            siteModel = siteModel
+                        )
+                    }
+                }
+        }
     }
 
     override fun dropView() {

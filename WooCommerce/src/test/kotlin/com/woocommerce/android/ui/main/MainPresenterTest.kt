@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.main
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -36,9 +40,12 @@ class MainPresenterTest : BaseUnitTest() {
     private val siteStore: SiteStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val notificationStore: NotificationStore = mock()
-    private val selectedSite: SelectedSite = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { observe() } doReturn flowOf(testSiteModel)
+    }
     private val productImageMap: ProductImageMap = mock()
     private val appPrefs: AppPrefs = mock()
+    private val sendTelemetry: SendTelemetry = mock()
 
     private lateinit var mainPresenter: MainPresenter
 
@@ -55,11 +62,13 @@ class MainPresenterTest : BaseUnitTest() {
                 notificationStore,
                 selectedSite,
                 productImageMap,
-                appPrefs
+                appPrefs,
+                coroutinesTestRule.testDispatchers,
+                sendTelemetry,
             )
         )
         mainPresenter.takeView(mainContractView)
-        doReturn(SiteModel()).whenever(selectedSite).get()
+        doReturn(testSiteModel).whenever(selectedSite).get()
         doReturn(true).whenever(selectedSite).exists()
         actionCaptor = argumentCaptor()
     }
@@ -178,5 +187,14 @@ class MainPresenterTest : BaseUnitTest() {
             verify(mainContractView).showProgressDialog(any())
             verify(mainContractView).updateSelectedSite()
         }
+    }
+
+    @Test
+    fun `Should send telemetry on initialization`() = runBlockingTest {
+        verify(sendTelemetry).invoke(BuildConfig.VERSION_NAME, testSiteModel)
+    }
+
+    private companion object {
+        val testSiteModel = SiteModel()
     }
 }
