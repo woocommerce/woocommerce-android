@@ -8,8 +8,8 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.filters.data.GetSelectedOrderFiltersCount
-import com.woocommerce.android.ui.orders.filters.data.GetWCOrderListDescriptorWithFilters
+import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
+import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
