@@ -31,6 +31,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -51,7 +52,6 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
-import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
@@ -433,8 +433,8 @@ class OrderListFragment :
     }
 
     private fun initializeResultHandlers() {
-        handleResult<BigDecimal>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) {
-            // TODO nbradbury create order using the passed price
+        handleResult<Order>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) { order ->
+            // openOrderDetail(order.localId, order.remoteId, order.status.value)
         }
     }
 

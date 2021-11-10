@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogQuickOrderBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -40,7 +41,7 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         val binding = DialogQuickOrderBinding.bind(view)
         binding.editPrice.initView(viewModel.currencyCode, viewModel.decimals, currencyFormatter)
         binding.buttonDone.setOnClickListener {
-            returnResult()
+            // TODO nbradbury create the order
         }
         binding.imageClose.setOnClickListener {
             findNavController().navigateUp()
@@ -61,6 +62,9 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
             new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
                 binding.buttonDone.isEnabled = isEnabled
             }
+            new.createdOrder.takeIfNotEqualTo(old?.createdOrder) { order ->
+                returnResult(order!!)
+            }
         }
     }
 
@@ -69,8 +73,8 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         AnalyticsTracker.trackViewShown(this)
     }
 
-    private fun returnResult() {
-        navigateBackWithResult(KEY_QUICK_ORDER_RESULT, viewModel.currentPrice)
+    private fun returnResult(order: Order) {
+        navigateBackWithResult(KEY_QUICK_ORDER_RESULT, order)
     }
 
     companion object {
