@@ -1,7 +1,6 @@
 package com.woocommerce.android.tracker
 
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.tracker.TrackerStore
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
@@ -13,14 +12,14 @@ class SendTelemetry @Inject constructor(
     private val currentTimeProvider: CurrentTimeProvider,
 ) {
     suspend operator fun invoke(appVersion: String, siteModel: SiteModel) {
-        trackerRepository.observeLastSendingDate(siteModel).map { lastUpdate ->
+        trackerRepository.observeLastSendingDate(siteModel).first().let { lastUpdate ->
             val currentTime = currentTimeProvider.currentDate().time
 
             if (currentTime > lastUpdate + UPDATE_INTERVAL) {
                 trackerStore.sendTelemetry(appVersion, siteModel)
                 trackerRepository.updateLastSendingDate(siteModel, currentTime)
             }
-        }.collect()
+        }
     }
 
     companion object {
