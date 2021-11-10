@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.reviews
 
-import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductReview
@@ -10,18 +9,11 @@ import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.WooLog.T.REVIEWS
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_REVIEWS
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductReviewsPayload
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
 
 class ProductReviewsRepository @Inject constructor(
-    private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore
 ) {
@@ -39,14 +31,6 @@ class ProductReviewsRepository @Inject constructor(
     var canLoadMore: Boolean = false
         private set
 
-    init {
-        dispatcher.register(this)
-    }
-
-    fun onCleanup() {
-        dispatcher.unregister(this)
-    }
-
     /**
      * Submits a fetch request to get a page of product reviews for the current site and [remoteProductId]
      */
@@ -63,7 +47,33 @@ class ProductReviewsRepository @Inject constructor(
             filterByStatus = listOf(PRODUCT_REVIEW_STATUS_APPROVED)
         )
         val result = productStore.fetchProductReviews(payload)
+        if (result.isError) {
+            AnalyticsTracker.track(
+                Stat.PRODUCT_REVIEWS_LOAD_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
+                )
+            )
 
+            WooLog.e(
+                REVIEWS,
+                "Error fetching product review: " +
+                    "${result.error?.type} - ${result.error?.message}"
+            )
+            continuationReviews.continueWith(false)
+        } else {
+            AnalyticsTracker.track(
+                Stat.PRODUCT_REVIEWS_LOADED,
+                mapOf(
+                    AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore
+                )
+            )
+            isLoadingMore = false
+            canLoadMore = result.canLoadMore
+            continuationReviews.continueWith(true)
+        }
         return getProductReviewsFromDB(remoteProductId)
     }
 
@@ -75,40 +85,5 @@ class ProductReviewsRepository @Inject constructor(
             localSiteId = selectedSite.get().id,
             remoteProductId = remoteProductId
         ).map { it.toAppModel() }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onProductReviewChanged(event: OnProductReviewChanged) {
-        if (event.causeOfChange == FETCH_PRODUCT_REVIEWS) {
-            isFetchingProductReviews = false
-            if (event.isError) {
-                AnalyticsTracker.track(
-                    Stat.PRODUCT_REVIEWS_LOAD_FAILED,
-                    mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                    )
-                )
-
-                WooLog.e(
-                    REVIEWS,
-                    "Error fetching product review: " +
-                        "${event.error?.type} - ${event.error?.message}"
-                )
-                continuationReviews.continueWith(false)
-            } else {
-                AnalyticsTracker.track(
-                    Stat.PRODUCT_REVIEWS_LOADED,
-                    mapOf(
-                        AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore
-                    )
-                )
-                isLoadingMore = false
-                canLoadMore = event.canLoadMore
-                continuationReviews.continueWith(true)
-            }
-        }
     }
 }
