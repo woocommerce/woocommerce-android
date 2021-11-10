@@ -434,7 +434,7 @@ class OrderListFragment :
 
     private fun initializeResultHandlers() {
         handleResult<Order>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) { order ->
-            // openOrderDetail(order.localId, order.remoteId, order.status.value)
+            openOrderDetail(order.localId.value, order.remoteId, order.status.value)
         }
     }
 

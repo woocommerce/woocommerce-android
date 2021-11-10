@@ -12,14 +12,17 @@ import com.woocommerce.android.databinding.DialogQuickOrderBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
-    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: QuickOrderViewModel by viewModels()
 
@@ -58,6 +61,12 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
                 viewModel.currentPrice = it
             }
         )
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+            }
+        }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->

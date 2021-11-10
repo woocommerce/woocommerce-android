@@ -2,15 +2,19 @@ package com.woocommerce.android.ui.orders.quickorder
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -44,17 +48,22 @@ class QuickOrderViewModel @Inject constructor(
         }
 
     fun createQuickOrder() {
+        viewState = viewState.copy(isProgressShowing = true, isDoneButtonEnabled = false)
+
         launch {
-            viewState = viewState.copy(isProgressShowing = true, isDoneButtonEnabled = false)
             val result = orderStore.postQuickOrder(
                 selectedSite.get(),
                 viewState.currentPrice.toString()
             )
-            viewState = viewState.copy(isProgressShowing = false, isDoneButtonEnabled = true)
-            if (result.isError) {
-                WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
-            } else {
-                viewState = viewState.copy(createdOrder = result.order!!.toAppModel())
+
+            withContext(Dispatchers.Main) {
+                viewState = viewState.copy(isProgressShowing = false, isDoneButtonEnabled = true)
+                if (result.isError) {
+                    WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.quickorder_creation_error))
+                } else {
+                    viewState = viewState.copy(createdOrder = result.order!!.toAppModel())
+                }
             }
         }
     }
