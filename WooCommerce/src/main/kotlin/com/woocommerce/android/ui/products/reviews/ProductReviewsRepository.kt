@@ -49,14 +49,7 @@ class ProductReviewsRepository @Inject constructor(
         )
         val result = productStore.fetchProductReviews(payload)
         if (result.isError) {
-            AnalyticsTracker.track(
-                Stat.PRODUCT_REVIEWS_LOAD_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                    AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
-                )
-            )
+
 
             WooLog.e(
                 REVIEWS,
@@ -65,12 +58,6 @@ class ProductReviewsRepository @Inject constructor(
             )
             continuationReviews.continueWith(false)
         } else {
-            AnalyticsTracker.track(
-                Stat.PRODUCT_REVIEWS_LOADED,
-                mapOf(
-                    AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore
-                )
-            )
             isLoadingMore = false
             canLoadMore = result.canLoadMore
             continuationReviews.continueWith(true)

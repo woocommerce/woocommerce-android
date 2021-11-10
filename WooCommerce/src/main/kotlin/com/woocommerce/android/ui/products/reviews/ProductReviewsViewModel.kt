@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.WooLog
@@ -77,6 +79,23 @@ class ProductReviewsViewModel @Inject constructor(
     ) {
         if (networkStatus.isConnected()) {
             val result = reviewsRepository.fetchApprovedProductReviewsFromApi(remoteProductId, loadMore)
+            if (result.isError) {
+                AnalyticsTracker.track(
+                    Stat.PRODUCT_REVIEWS_LOAD_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
+                    )
+                )
+            } else {
+                AnalyticsTracker.track(
+                    Stat.PRODUCT_REVIEWS_LOADED,
+                    mapOf(
+                        AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore
+                    )
+                )
+            }
             _reviewList.value = reviewsRepository.getProductReviewsFromDB(remoteProductId)
         } else {
             // Network is not connected
