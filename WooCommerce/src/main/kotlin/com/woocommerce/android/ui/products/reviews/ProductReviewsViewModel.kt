@@ -92,7 +92,7 @@ class ProductReviewsViewModel @Inject constructor(
                 AnalyticsTracker.track(
                     Stat.PRODUCT_REVIEWS_LOADED,
                     mapOf(
-                        AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore
+                        AnalyticsTracker.KEY_IS_LOADING_MORE to loadMore
                     )
                 )
             }
