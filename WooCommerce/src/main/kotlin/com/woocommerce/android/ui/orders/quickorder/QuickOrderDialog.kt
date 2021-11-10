@@ -11,7 +11,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogQuickOrderBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -73,7 +72,7 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
                 binding.buttonDone.isEnabled = isEnabled
             }
             new.createdOrder.takeIfNotEqualTo(old?.createdOrder) { order ->
-                returnResult(order!!)
+                navigateBackWithResult(KEY_QUICK_ORDER_RESULT, order!!)
             }
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
                 binding.progressBar.isVisible = show
@@ -85,10 +84,6 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-    }
-
-    private fun returnResult(order: Order) {
-        navigateBackWithResult(KEY_QUICK_ORDER_RESULT, order)
     }
 
     companion object {
