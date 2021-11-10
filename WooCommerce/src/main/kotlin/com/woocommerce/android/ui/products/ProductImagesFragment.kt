@@ -317,6 +317,7 @@ class ProductImagesFragment :
         handleMediaPickerResult(it)
     }
 
+    @Suppress("NestedBlockDepth")
     private fun handleMediaPickerResult(result: ActivityResult) {
         if (result.resultCode == AppCompatActivity.RESULT_OK) {
             val mediaUris = (result.data?.extras?.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)
