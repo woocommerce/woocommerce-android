@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.filters
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import com.woocommerce.android.R
@@ -9,7 +10,6 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategories
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
@@ -28,6 +28,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -190,4 +191,9 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             orderFilterRepository.updateSelectedFilters(category.categoryKey, newSelectedFilters)
         }
     }
+
+    @Parcelize
+    data class OrderFilterCategories(
+        val list: List<OrderFilterCategoryUiModel>
+    ) : Parcelable
 }

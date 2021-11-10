@@ -40,6 +40,9 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
 
+    private val currentCategoryList
+        get() = viewModel.categories.liveData.value!!.list
+
     @Before
     fun setup() = testBlocking {
         givenResourceProviderReturnsNonEmptyStrings()
@@ -100,7 +103,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When clear button clicked, then clear button should be hidden and toolbar title updated`() {
+    fun `When clear button clicked, then clear button should be hidden and toolbar title updated to default`() {
         whenever(resourceProvider.getString(R.string.orderfilters_filters_default_title))
             .thenReturn(DEFAULT_FILTER_TITLE)
 
@@ -114,12 +117,12 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
         )
     }
 
-    private fun allFilterOptionsAreUnselected() = viewModel.orderFilterCategories.value
-        ?.map {
+    private fun allFilterOptionsAreUnselected() = currentCategoryList
+        .map {
             it.orderFilterOptions.any { filterOption ->
                 filterOption.isSelected && filterOption.key != OrderFilterOptionUiModel.DEFAULT_ALL_KEY
             }
-        }?.all { true } ?: false
+        }.all { true }
 
     private fun givenAFilterOptionHasBeenSelected(updatedFilters: OrderFilterCategoryUiModel) {
         viewModel.onFilterOptionsUpdated(updatedFilters)
