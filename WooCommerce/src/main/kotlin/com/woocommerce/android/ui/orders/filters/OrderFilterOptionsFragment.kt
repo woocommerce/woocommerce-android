@@ -57,11 +57,9 @@ class OrderFilterOptionsFragment :
     }
 
     private fun setUpObservers(viewModel: OrderFilterOptionsViewModel) {
-        viewModel.orderFilterOptions.observe(viewLifecycleOwner) { filterOptions ->
-            showOrderFilterOptions(filterOptions)
-        }
-        viewModel.orderFilterOptionScreenTitle.observe(viewLifecycleOwner) { title ->
-            requireActivity().title = title
+        viewModel.viewState.observe(viewLifecycleOwner) { _, newState ->
+            showOrderFilterOptions(newState.filterOptions)
+            requireActivity().title = newState.title
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
