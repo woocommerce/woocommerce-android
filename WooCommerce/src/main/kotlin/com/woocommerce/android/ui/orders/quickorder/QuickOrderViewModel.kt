@@ -10,6 +10,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -42,15 +43,17 @@ class QuickOrderViewModel @Inject constructor(
             )
         }
 
-    suspend fun createQuickOrder() {
-        val result = orderStore.postQuickOrder(
-            selectedSite.get(),
-            viewState.currentPrice.toString()
-        )
-        if (result.isError) {
-            WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
-        } else {
-            viewState = viewState.copy(createdOrder = result.order.toAppModel())
+    fun createQuickOrder() {
+        launch {
+            val result = orderStore.postQuickOrder(
+                selectedSite.get(),
+                viewState.currentPrice.toString()
+            )
+            if (result.isError) {
+                WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
+            } else {
+                viewState = viewState.copy(createdOrder = result.order!!.toAppModel())
+            }
         }
     }
 
