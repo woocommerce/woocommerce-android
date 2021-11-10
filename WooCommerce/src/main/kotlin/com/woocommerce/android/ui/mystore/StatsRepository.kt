@@ -112,7 +112,7 @@ class StatsRepository @Inject constructor(
         return if (result?.isError == false) {
             Result.success(value = true)
         } else {
-            Result.failure((result?.error ?: WCOrderStore.OrderErrorType.GENERIC_ERROR) as Throwable)
+            Result.failure(Exception(result?.error?.message.orEmpty()))
         }
     }
 
