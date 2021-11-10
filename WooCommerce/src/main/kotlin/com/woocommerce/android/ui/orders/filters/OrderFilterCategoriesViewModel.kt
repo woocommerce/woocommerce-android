@@ -68,23 +68,27 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     fun onClearFilters() {
-        _categories = OrderFilterCategories(_categories.list.map {
-            it.copy(
-                orderFilterOptions = it.orderFilterOptions
-                    .clearAllFilterSelections()
-                    .markOptionAllIfNothingSelected(),
-                displayValue = resourceProvider.getString(R.string.orderfilters_default_filter_value)
-            )
-        })
+        _categories = OrderFilterCategories(
+            _categories.list.map {
+                it.copy(
+                    orderFilterOptions = it.orderFilterOptions
+                        .clearAllFilterSelections()
+                        .markOptionAllIfNothingSelected(),
+                    displayValue = resourceProvider.getString(R.string.orderfilters_default_filter_value)
+                )
+            }
+        )
     }
 
     fun onFilterOptionsUpdated(updatedCategory: OrderFilterCategoryUiModel) {
         _categories.list.let { filterOptions ->
-            _categories = OrderFilterCategories(filterOptions.map {
-                if (it.categoryKey == updatedCategory.categoryKey) {
-                    updateFilterOptionsForCategory(it, updatedCategory)
-                } else it
-            })
+            _categories = OrderFilterCategories(
+                filterOptions.map {
+                    if (it.categoryKey == updatedCategory.categoryKey) {
+                        updateFilterOptionsForCategory(it, updatedCategory)
+                    } else it
+                }
+            )
         }
     }
 
@@ -147,8 +151,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         .toMutableList()
         .apply { addFilterOptionAll(resourceProvider) }
 
-    private fun getFilterCategoryViewState(filterCategories: List<OrderFilterCategoryUiModel>)
-        : OrderFilterCategoryListViewState {
+    private fun getFilterCategoryViewState(filterCategories: List<OrderFilterCategoryUiModel>):
+        OrderFilterCategoryListViewState {
         val selectedFiltersCount = filterCategories
             .map { it.orderFilterOptions.getNumberOfSelectedFilterOptions() }
             .sum()
