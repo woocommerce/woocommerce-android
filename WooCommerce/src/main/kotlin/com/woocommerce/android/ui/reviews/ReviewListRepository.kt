@@ -58,7 +58,6 @@ class ReviewListRepository @Inject constructor(
 
     private var offset = 0
     private var isFetchingProductReviews = false
-    private var isLoadingMore = false
 
     var canLoadMore: Boolean = false
         private set
@@ -81,7 +80,6 @@ class ReviewListRepository @Inject constructor(
      */
     suspend fun fetchProductReviews(loadMore: Boolean): RequestResult {
         return if (!isFetchingProductReviews) {
-            isLoadingMore = loadMore
             coroutineScope {
                 val fetchNotifs = async {
                     /*
@@ -241,10 +239,9 @@ class ReviewListRepository @Inject constructor(
             AnalyticsTracker.track(
                 Stat.REVIEWS_LOADED,
                 mapOf(
-                    AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore
+                    AnalyticsTracker.KEY_IS_LOADING_MORE to loadMore
                 )
             )
-            isLoadingMore = false
             canLoadMore = result.canLoadMore
             offset = newOffset
         }
