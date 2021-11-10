@@ -35,7 +35,7 @@ class ProductReviewsRepository @Inject constructor(
         remoteProductId: Long,
         loadMore: Boolean
     ): OnProductReviewChanged {
-        offset = if (loadMore) offset + PAGE_SIZE else 0
+        val newOffset = if (loadMore) offset + PAGE_SIZE else 0
 
         val payload = FetchProductReviewsPayload(
             selectedSite.get(), offset,
@@ -51,6 +51,7 @@ class ProductReviewsRepository @Inject constructor(
             )
         } else {
             canLoadMore = result.canLoadMore
+            offset = newOffset
         }
         return result
     }
