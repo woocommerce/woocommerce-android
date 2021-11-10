@@ -114,6 +114,11 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
+    private fun restartFlow() {
+        this@CardReaderConnectViewModel.coroutineContext.cancelChildren()
+        startFlow()
+    }
+
     fun onScreenResumed() {
         if (viewState.value is MissingPermissionsError) {
             triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
@@ -208,7 +213,7 @@ class CardReaderConnectViewModel @Inject constructor(
             when (onboardingChecker.getOnboardingState()) {
                 is CardReaderOnboardingState.GenericError,
                 is CardReaderOnboardingState.NoConnectionError -> {
-                    viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
+                    viewState.value = ScanningFailedState(::restartFlow, ::onCancelClicked)
                 }
                 is CardReaderOnboardingState.OnboardingCompleted -> {
                     triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
@@ -221,9 +226,24 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
         launch {
             this@CardReaderConnectViewModel.cardReaderManager = cardReaderManager
-            launch { listenToConnectionStatus() }
-            launch { listenToSoftwareUpdateStatus() }
             startScanningIfNotStarted()
+        }
+    }
+
+    private suspend fun startScanningIfNotStarted() {
+        launch { listenToConnectionStatus() }
+        launch { listenToSoftwareUpdateStatus() }
+
+        if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connecting) {
+            cardReaderManager
+                .discoverReaders(
+                    isSimulated = BuildConfig.USE_SIMULATED_READER,
+                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(SUPPORTED_READERS)
+                )
+                .flowOn(dispatchers.io)
+                .collect { discoveryEvent ->
+                    handleScanEvent(discoveryEvent)
+                }
         }
     }
 
@@ -256,20 +276,6 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private suspend fun startScanningIfNotStarted() {
-        if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connecting) {
-            cardReaderManager
-                .discoverReaders(
-                    isSimulated = BuildConfig.USE_SIMULATED_READER,
-                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(SUPPORTED_READERS)
-                )
-                .flowOn(dispatchers.io)
-                .collect { discoveryEvent ->
-                    handleScanEvent(discoveryEvent)
-                }
-        }
-    }
-
     private fun handleScanEvent(discoveryEvent: CardReaderDiscoveryEvents) {
         when (discoveryEvent) {
             Started -> {
@@ -295,7 +301,7 @@ class CardReaderConnectViewModel @Inject constructor(
                     discoveryEvent.msg
                 )
                 WooLog.e(WooLog.T.CARD_READER, "Scanning failed: ${discoveryEvent.msg}")
-                viewState.value = ScanningFailedState(::startFlow, ::onCancelClicked)
+                viewState.value = ScanningFailedState(::restartFlow, ::onCancelClicked)
             }
         }
     }
@@ -394,7 +400,7 @@ class CardReaderConnectViewModel @Inject constructor(
             }
             is CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode -> {
                 trackLocationFailureFetching("Invalid Postal Code")
-                viewState.value = InvalidMerchantAddressPostCodeError(::startFlow)
+                viewState.value = InvalidMerchantAddressPostCodeError(::restartFlow)
             }
             is CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
                 trackLocationFailureFetching(result.error)
@@ -406,7 +412,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReaderConnectionFailed() {
         tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
-        viewState.value = ConnectingFailedState({ startFlow() }, ::onCancelClicked)
+        viewState.value = ConnectingFailedState(::restartFlow, ::onCancelClicked)
     }
 
     private fun triggerOpenUrlEventAndExitIfNeeded(
