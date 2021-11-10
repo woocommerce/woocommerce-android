@@ -7,6 +7,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_REVIEWS_LOADED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_REVIEWS_LOAD_FAILED
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.WooLog
@@ -18,6 +20,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
 
 @HiltViewModel
@@ -79,23 +82,7 @@ class ProductReviewsViewModel @Inject constructor(
     ) {
         if (networkStatus.isConnected()) {
             val result = reviewsRepository.fetchApprovedProductReviewsFromApi(remoteProductId, loadMore)
-            if (result.isError) {
-                AnalyticsTracker.track(
-                    Stat.PRODUCT_REVIEWS_LOAD_FAILED,
-                    mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
-                    )
-                )
-            } else {
-                AnalyticsTracker.track(
-                    Stat.PRODUCT_REVIEWS_LOADED,
-                    mapOf(
-                        AnalyticsTracker.KEY_IS_LOADING_MORE to loadMore
-                    )
-                )
-            }
+            trackFetchProductReviewsResult(result, loadMore)
             _reviewList.value = reviewsRepository.getProductReviewsFromDB(remoteProductId)
         } else {
             // Network is not connected
@@ -108,6 +95,29 @@ class ProductReviewsViewModel @Inject constructor(
             isRefreshing = false,
             isEmptyViewVisible = _reviewList.value?.isEmpty() == true
         )
+    }
+
+    private fun trackFetchProductReviewsResult(
+        result: OnProductReviewChanged,
+        loadMore: Boolean
+    ) {
+        if (result.isError) {
+            AnalyticsTracker.track(
+                PRODUCT_REVIEWS_LOAD_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
+                )
+            )
+        } else {
+            AnalyticsTracker.track(
+                PRODUCT_REVIEWS_LOADED,
+                mapOf(
+                    AnalyticsTracker.KEY_IS_LOADING_MORE to loadMore
+                )
+            )
+        }
     }
 
     @Parcelize
