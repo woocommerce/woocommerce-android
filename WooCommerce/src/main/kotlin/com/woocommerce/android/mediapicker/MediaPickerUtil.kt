@@ -13,37 +13,6 @@ import org.wordpress.android.util.DateTimeUtils
 import java.security.InvalidParameterException
 
 object MediaPickerUtil {
-    fun ActivityResult.processResult2(): List<*>? {
-        if (resultCode == AppCompatActivity.RESULT_OK) {
-            val sourceExtra = data?.getStringExtra(MediaPickerConstants.EXTRA_MEDIA_SOURCE)
-            if (sourceExtra != null) {
-                val data = data!!.extras!!
-                val list = when (val dataSource = MediaPickerSetup.DataSource.valueOf(sourceExtra)) {
-                    MediaPickerSetup.DataSource.SYSTEM_PICKER,
-                    MediaPickerSetup.DataSource.DEVICE -> {
-                        handleDeviceMediaPickerResult(data)
-                    }
-                    MediaPickerSetup.DataSource.CAMERA -> {
-                        handleDeviceMediaPickerResult(data)
-                    }
-                    MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY -> {
-                        handleMediaLibraryPickerResult(data)
-                    }
-                    else -> throw InvalidParameterException("${dataSource.name} is not a supported data source")
-                }
-
-                if (list.isEmpty()) {
-                    WooLog.w(WooLog.T.MEDIA, "Media picker returned empty list")
-                }
-
-                return list
-            } else {
-                WooLog.w(WooLog.T.MEDIA, "Media picker returned empty media source")
-            }
-        }
-        return null
-    }
-
     fun ActivityResult.processDeviceMediaResult(): List<Uri>? = processIntent()
 
     fun ActivityResult.processMediaLibraryResult(): List<Product.Image>? = processIntent()

@@ -183,7 +183,6 @@ class ProductDetailFragment :
             changesMade()
         }
 
-
         handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) { result ->
             if (!result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) return@handleResult
             when (result.getInt(AztecEditorFragment.ARG_AZTEC_REQUEST_CODE)) {

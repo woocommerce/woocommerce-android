@@ -86,7 +86,6 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
         }
     }
 
-
     override fun getFragmentTitle(): String = getString(R.string.product_downloadable_files)
 
     fun setupObservers(viewModel: ProductDetailViewModel) {
