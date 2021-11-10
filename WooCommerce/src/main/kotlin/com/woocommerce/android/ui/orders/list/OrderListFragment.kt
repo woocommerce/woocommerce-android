@@ -100,6 +100,7 @@ class OrderListFragment :
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private val searchHandler = Handler()
+    private var quickOrderMenuItem: MenuItem? = null
 
     private var _binding: FragmentOrderListBinding? = null
     private val binding get() = _binding!!
@@ -146,6 +147,8 @@ class OrderListFragment :
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.orderlist_search_hint)
+
+        quickOrderMenuItem = menu.findItem(R.id.menu_add)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -264,9 +267,12 @@ class OrderListFragment :
         searchView = null
         orderListMenu = null
         searchMenuItem = null
+        quickOrderMenuItem = null
         super.onDestroyView()
         _binding = null
     }
+
+    private fun isQuickOrderAvailable() = FeatureFlag.QUICK_ORDER.isEnabled() && AppPrefs.isQuickOrderEnabled
 
     /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
@@ -286,6 +292,8 @@ class OrderListFragment :
                 if (it.isVisible != showSearch) it.isVisible = showSearch
             }
         }
+
+        quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -293,6 +301,10 @@ class OrderListFragment :
             R.id.menu_search -> {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
+                true
+            }
+            R.id.menu_add -> {
+                // TODO nbradbury - show quick order view
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -568,6 +580,7 @@ class OrderListFragment :
         checkOrientation()
         removeTabLayoutFromAppBar()
         onSearchViewActiveChanged(isActive = true)
+        quickOrderMenuItem?.isVisible = false
         return true
     }
 
@@ -583,6 +596,7 @@ class OrderListFragment :
         }
         loadListForActiveTab()
         addTabLayoutToAppBar()
+        quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
         onSearchViewActiveChanged(isActive = false)
         return true
     }

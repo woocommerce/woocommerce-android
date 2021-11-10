@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.detail
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -11,6 +12,8 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
@@ -53,13 +56,28 @@ class CardReaderDetailViewModel @Inject constructor(
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> {
+                        triggerEvent(
+                            CardReaderDetailEvent.CardReaderConnected(
+                                R.string.card_reader_accessibility_reader_is_connected
+                            )
+                        )
                         softwareUpdateAvailabilityJob = launch {
                             cardReaderManager.softwareUpdateAvailability.collect(
                                 ::handleSoftwareUpdateAvailability
                             )
                         }
                     }
-                    else -> showNotConnectedState()
+                    is Connecting -> {
+                        showNotConnectedState()
+                    }
+                    is NotConnected -> {
+                        triggerEvent(
+                            CardReaderDetailEvent.CardReaderDisconnected(
+                                R.string.card_reader_accessibility_reader_is_disconnected
+                            )
+                        )
+                        showNotConnectedState()
+                    }
                 }.exhaustive
             }
         }
@@ -164,6 +182,14 @@ class CardReaderDetailViewModel @Inject constructor(
 
     sealed class CardReaderDetailEvent : Event() {
         data class CopyReadersNameToClipboard(val readersName: String) : CardReaderDetailEvent()
+        data class CardReaderDisconnected(
+            @StringRes val accessibilityDisconnectedText: Int =
+                R.string.card_reader_accessibility_reader_is_disconnected
+        ) : CardReaderDetailEvent()
+        data class CardReaderConnected(
+            @StringRes val accessibilityConnectedText: Int =
+                R.string.card_reader_accessibility_reader_is_connected
+        ) : CardReaderDetailEvent()
     }
 
     sealed class ViewState {

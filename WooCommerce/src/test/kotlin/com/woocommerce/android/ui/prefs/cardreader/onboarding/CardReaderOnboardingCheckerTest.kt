@@ -435,7 +435,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             statementDescriptor = "",
             storeCurrencies = WCPaymentAccountResult.WCPayAccountStatusEnum.StoreCurrencies("", listOf()),
             country = countryCode,
-            isCardPresentEligible = true,
             isLive = liveAccount,
             testMode = testModeEnabled
         )
