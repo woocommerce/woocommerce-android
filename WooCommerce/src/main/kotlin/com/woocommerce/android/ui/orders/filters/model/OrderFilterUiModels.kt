@@ -41,3 +41,8 @@ data class OrderFilterOptionUiModel(
         const val DEFAULT_ALL_KEY = "All"
     }
 }
+
+@Parcelize
+data class OrderFilterCategories(
+    val list: List<OrderFilterCategoryUiModel>
+) : Parcelable
