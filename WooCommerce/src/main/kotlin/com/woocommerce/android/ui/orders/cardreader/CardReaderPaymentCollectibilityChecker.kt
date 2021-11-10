@@ -16,8 +16,6 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
                 (listOf(Order.Status.Pending, Order.Status.Processing, Order.Status.OnHold)).any { it == status } &&
                 !isOrderPaid &&
                 order.total.compareTo(BigDecimal.ZERO) == 1 &&
-                // TODO cardreader remove the following check when the backend issue is fixed
-                // https://github.com/Automattic/woocommerce-payments/issues/2390
                 BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
                 // Empty payment method explanation:
                 // https://github.com/woocommerce/woocommerce/issues/29471
