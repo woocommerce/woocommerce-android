@@ -54,17 +54,15 @@ class ProductReviewsRepository @Inject constructor(
         remoteProductId: Long,
         loadMore: Boolean
     ): List<ProductReview> {
-        continuationReviews.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            offset = if (loadMore) offset + PAGE_SIZE else 0
-            isFetchingProductReviews = true
+        offset = if (loadMore) offset + PAGE_SIZE else 0
+        isFetchingProductReviews = true
 
-            val payload = FetchProductReviewsPayload(
-                selectedSite.get(), offset,
-                productIds = listOf(remoteProductId),
-                filterByStatus = listOf(PRODUCT_REVIEW_STATUS_APPROVED)
-            )
-            dispatcher.dispatch(WCProductActionBuilder.newFetchProductReviewsAction(payload))
-        }
+        val payload = FetchProductReviewsPayload(
+            selectedSite.get(), offset,
+            productIds = listOf(remoteProductId),
+            filterByStatus = listOf(PRODUCT_REVIEW_STATUS_APPROVED)
+        )
+        val result = productStore.fetchProductReviews(payload)
 
         return getProductReviewsFromDB(remoteProductId)
     }
