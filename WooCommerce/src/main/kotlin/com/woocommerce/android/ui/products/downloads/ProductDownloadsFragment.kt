@@ -13,13 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductDownloadsListBinding
-import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
-import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,7 +57,6 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
 
         setHasOptionsMenu(true)
         setupObservers(viewModel)
-        setupResultHandlers(viewModel)
 
         with(binding.productDownloadsRecycler) {
             adapter = productDownloadsAdapter
@@ -90,11 +86,6 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
         }
     }
 
-    private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
-        handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
-            viewModel.showAddProductDownload(it.first().source)
-        }
-    }
 
     override fun getFragmentTitle(): String = getString(R.string.product_downloadable_files)
 

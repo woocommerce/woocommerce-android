@@ -41,7 +41,6 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
-import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -184,10 +183,6 @@ class ProductDetailFragment :
             changesMade()
         }
 
-        handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
-            viewModel.showAddProductDownload(it.first().source)
-            changesMade()
-        }
 
         handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) { result ->
             if (!result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) return@handleResult

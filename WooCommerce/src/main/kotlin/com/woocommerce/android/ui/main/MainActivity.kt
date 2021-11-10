@@ -122,9 +122,7 @@ class MainActivity :
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
             val currentDestination = navController.currentDestination!!
-            val isFullScreenFragment = currentDestination.id == R.id.productImageViewerFragment ||
-                currentDestination.id == R.id.wpMediaViewerFragment
-
+            val isFullScreenFragment = currentDestination.id == R.id.productImageViewerFragment
             val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
 
             if (!isFullScreenFragment && !isDialogDestination) {
@@ -430,10 +428,9 @@ class MainActivity :
             toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
         }
 
-        val isFullScreenFragment = destination.id == R.id.productImageViewerFragment ||
-            destination.id == R.id.wpMediaViewerFragment
+        val isFullScreenFragment = destination.id == R.id.productImageViewerFragment
 
-        supportActionBar?.let { actionBar ->
+        supportActionBar?.let {
             // the image viewers should be shown full screen
             if (isFullScreenFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
