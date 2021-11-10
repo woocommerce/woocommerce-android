@@ -293,6 +293,7 @@ dependencies {
 
     implementation "com.github.wordpress-mobile.WordPress-MediaPicker-Android:mediapicker:$mediapickerVersion"
     implementation "com.github.wordpress-mobile.WordPress-MediaPicker-Android:source-device:$mediapickerVersion"
+    implementation "com.github.wordpress-mobile.WordPress-MediaPicker-Android:source-wordpress:$mediapickerVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
