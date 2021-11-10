@@ -18,7 +18,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomnavigation.LabelVisibilityMode
+import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigation.NavigationBarView.OnItemReselectedListener
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.woocommerce.android.R
@@ -129,7 +129,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     @SuppressLint("PrivateResource")
     private fun detectLabelVisibilityMode() {
         // default to showing labels for all tabs
-        labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_LABELED
+        labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
 
         var numVisibleItems = 0
         for (index in 0 until menu.size()) {
@@ -157,7 +157,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
             val title = menu.getItem(index).title.toString()
             textPaint.getTextBounds(title, 0, title.length, bounds)
             if (bounds.width() > itemWidth) {
-                labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_AUTO
+                labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_AUTO
                 break
             }
         }
