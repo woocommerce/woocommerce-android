@@ -216,7 +216,7 @@ class ReviewListRepository @Inject constructor(
     }
 
     private suspend fun fetchProductReviewsFromApi(loadMore: Boolean): Boolean {
-        offset = if (loadMore) offset + PAGE_SIZE else 0
+        val newOffset = if (loadMore) offset + PAGE_SIZE else 0
         isFetchingProductReviews = true
 
         val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), offset)
@@ -246,6 +246,7 @@ class ReviewListRepository @Inject constructor(
             )
             isLoadingMore = false
             canLoadMore = result.canLoadMore
+            offset = newOffset
         }
         return !result.isError
     }
