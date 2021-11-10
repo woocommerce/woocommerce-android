@@ -27,7 +27,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATIONS
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_REVIEWS
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_REVIEW_STATUS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
@@ -218,18 +217,40 @@ class ReviewListRepository @Inject constructor(
     }
 
     private suspend fun fetchProductReviewsFromApi(loadMore: Boolean): Boolean {
-        val result = continuationReview.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            offset = if (loadMore) offset + PAGE_SIZE else 0
-            isFetchingProductReviews = true
+        offset = if (loadMore) offset + PAGE_SIZE else 0
+        isFetchingProductReviews = true
 
-            val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), offset)
-            dispatcher.dispatch(WCProductActionBuilder.newFetchProductReviewsAction(payload))
-        }
+        val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), offset)
+        val result = productStore.fetchProductReviews(payload)
+        isFetchingProductReviews = false
+        if (result.isError) {
+            AnalyticsTracker.track(
+                Stat.REVIEWS_LOAD_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
+                )
+            )
 
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
+            WooLog.e(
+                REVIEWS,
+                "Error fetching product review: " +
+                    "${result.error?.type} - ${result.error?.message}"
+            )
+            continuationReview.continueWith(false)
+        } else {
+            AnalyticsTracker.track(
+                Stat.REVIEWS_LOADED,
+                mapOf(
+                    AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore
+                )
+            )
+            isLoadingMore = false
+            canLoadMore = result.canLoadMore
+            continuationReview.continueWith(true)
         }
+        return !result.isError
     }
 
     /**
@@ -305,36 +326,7 @@ class ReviewListRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductReviewChanged(event: OnProductReviewChanged) {
-        if (event.causeOfChange == FETCH_PRODUCT_REVIEWS) {
-            isFetchingProductReviews = false
-            if (event.isError) {
-                AnalyticsTracker.track(
-                    Stat.REVIEWS_LOAD_FAILED,
-                    mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                    )
-                )
-
-                WooLog.e(
-                    REVIEWS,
-                    "Error fetching product review: " +
-                        "${event.error?.type} - ${event.error?.message}"
-                )
-                continuationReview.continueWith(false)
-            } else {
-                AnalyticsTracker.track(
-                    Stat.REVIEWS_LOADED,
-                    mapOf(
-                        AnalyticsTracker.KEY_IS_LOADING_MORE to isLoadingMore
-                    )
-                )
-                isLoadingMore = false
-                canLoadMore = event.canLoadMore
-                continuationReview.continueWith(true)
-            }
-        } else if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
+        if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
             if (event.isError) {
                 AnalyticsTracker.track(
                     Stat.REVIEW_ACTION_FAILED,
