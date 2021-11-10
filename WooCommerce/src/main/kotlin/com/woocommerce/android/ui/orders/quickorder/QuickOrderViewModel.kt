@@ -49,6 +49,10 @@ class QuickOrderViewModel @Inject constructor(
             )
         }
 
+    fun onDoneButtonClicked() {
+        createQuickOrder()
+    }
+
     fun createQuickOrder() {
         if (!networkStatus.isConnected()) {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))

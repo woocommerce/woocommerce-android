@@ -44,7 +44,7 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         val binding = DialogQuickOrderBinding.bind(view)
         binding.editPrice.initView(viewModel.currencyCode, viewModel.decimals, currencyFormatter)
         binding.buttonDone.setOnClickListener {
-            viewModel.createQuickOrder()
+            viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
             findNavController().navigateUp()
