@@ -56,7 +56,10 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: EditShippingLabelPackagesViewModel
 
     suspend fun setup(currentPackages: Array<ShippingLabelPackage>) {
-        val savedState = EditShippingLabelPackagesFragmentArgs(ORDER_ID, currentPackages).initSavedStateHandle()
+        val savedState = EditShippingLabelPackagesFragmentArgs(
+            orderId = ORDER_ID,
+            shippingLabelPackages = currentPackages
+        ).initSavedStateHandle()
         whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         whenever(orderDetailRepository.getOrder(ORDER_ID)).thenReturn(testOrder)
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
