@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -63,7 +64,10 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.ShowSnackbar -> {
+                    ActivityUtils.hideKeyboardForced(binding.editPrice)
+                    uiMessageResolver.showSnack(event.message)
+                }
             }
         }
 
