@@ -11,26 +11,27 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.PluginActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
-import com.woocommerce.android.ui.mystore.JetpackInstallRepository.PluginStatus.PluginInstalled
-import com.woocommerce.android.ui.mystore.JetpackInstallRepository.PluginStatus.PluginInstallFailed
-import com.woocommerce.android.ui.mystore.JetpackInstallRepository.PluginStatus.PluginActivated
-import com.woocommerce.android.ui.mystore.JetpackInstallRepository.PluginStatus.PluginActivationFailed
+import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginInstalled
+import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginInstallFailed
+import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginActivated
+import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginActivationFailed
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.PluginStore.*
 
-class JetpackInstallRepository @Inject constructor(
+class PluginRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite
 ) {
     companion object {
-        const val JETPACK_SLUG = "jetpack"
-        const val JETPACK_NAME = "jetpack/jetpack"
         const val GENERIC_ERROR = "Unknown issue."
     }
 
-    fun installJetpackPlugin() = callbackFlow<PluginStatus> {
-        val payload = InstallSitePluginPayload(selectedSite.get(), JETPACK_SLUG)
+    // Note that the `newInstallSitePluginAction` action automatically tries to activate the plugin after
+    // installation is successful, so when using this function, there's no need to call `activateJetpackPlugin()
+    // separately.
+    fun installPlugin(slug: String) = callbackFlow<PluginStatus> {
+        val payload = InstallSitePluginPayload(selectedSite.get(), slug)
         dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
 
         val listener = PluginActionListener(this)
@@ -41,18 +42,18 @@ class JetpackInstallRepository @Inject constructor(
         }
     }
 
-    fun fetchJetpackPlugin() {
-        val payload = FetchJetpackSitePluginPayload(selectedSite.get(), JETPACK_NAME)
+    fun fetchJetpackSitePlugin(name: String) {
+        val payload = FetchJetpackSitePluginPayload(selectedSite.get(), name)
         dispatcher.dispatch(PluginActionBuilder.newFetchJetpackSitePluginAction(payload))
     }
 
-    fun activateJetpackPlugin() {
+    fun activatePlugin(name: String, slug: String, enableAutoUpdate: Boolean = true) {
         val payload = ConfigureSitePluginPayload(
             selectedSite.get(),
-            JETPACK_NAME,
-            JETPACK_SLUG,
+            name,
+            slug,
             true,
-            true
+            enableAutoUpdate
         )
         dispatcher.dispatch(PluginActionBuilder.newConfigureSitePluginAction(payload))
     }

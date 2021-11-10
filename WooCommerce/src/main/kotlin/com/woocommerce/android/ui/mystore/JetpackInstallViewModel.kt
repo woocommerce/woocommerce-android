@@ -8,7 +8,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.PluginStore.OnJetpackSitePluginFetched
-import com.woocommerce.android.ui.mystore.JetpackInstallRepository.PluginStatus.*
+import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.*
 import com.woocommerce.android.ui.mystore.JetpackInstallViewModel.InstallStatus.*
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 class JetpackInstallViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val repository: JetpackInstallRepository,
+    private val repository: PluginRepository,
     private val dispatcher: Dispatcher,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) : ScopedViewModel(savedState) {
@@ -29,6 +29,8 @@ class JetpackInstallViewModel @Inject constructor(
         const val MAXIMUM_ATTEMPT = 3
         const val GENERIC_ERROR = "Unknown issue."
         const val CONNECTION_DELAY = 1000L
+        const val JETPACK_SLUG = "jetpack"
+        const val JETPACK_NAME = "jetpack/jetpack"
     }
 
     private var installAttemptCount: Int = 0
@@ -45,7 +47,7 @@ class JetpackInstallViewModel @Inject constructor(
 
         // Start by checking Jetpack plugin's existence in the site.
         // Depending on the result, this view model will then try to either install or activate Jetpack.
-        repository.fetchJetpackPlugin()
+        repository.fetchJetpackSitePlugin(JETPACK_NAME)
     }
 
     override fun onCleared() {
@@ -57,7 +59,7 @@ class JetpackInstallViewModel @Inject constructor(
         installAttemptCount++
 
         appCoroutineScope.launch {
-            repository.installJetpackPlugin().collect {
+            repository.installPlugin(JETPACK_SLUG).collect {
                 when (it) {
                     is PluginInstalled -> {
                         viewState = viewState.copy(installStatus = Activating)
@@ -68,7 +70,7 @@ class JetpackInstallViewModel @Inject constructor(
                         // we fetch the plugin again, which depending on the result will then trigger another install or
                         // activation attempt.
                         if (installAttemptCount < MAXIMUM_ATTEMPT) {
-                            repository.fetchJetpackPlugin()
+                            repository.fetchJetpackSitePlugin(JETPACK_NAME)
                         } else {
                             viewState = viewState.copy(installStatus = Failed(it.error))
                         }
@@ -81,7 +83,7 @@ class JetpackInstallViewModel @Inject constructor(
                     is PluginActivationFailed -> {
                         if (activationAttemptCount < MAXIMUM_ATTEMPT) {
                             activationAttemptCount++
-                            repository.activateJetpackPlugin()
+                            repository.activatePlugin(JETPACK_NAME, JETPACK_SLUG)
                         } else {
                             viewState = viewState.copy(installStatus = Failed(it.error))
                         }
@@ -111,7 +113,7 @@ class JetpackInstallViewModel @Inject constructor(
             if (activationAttemptCount < MAXIMUM_ATTEMPT) {
                 activationAttemptCount++
                 viewState = viewState.copy(installStatus = Activating)
-                repository.activateJetpackPlugin()
+                repository.activatePlugin(JETPACK_NAME, JETPACK_SLUG)
             } else {
                 viewState = viewState.copy(installStatus = Failed(GENERIC_ERROR))
             }
