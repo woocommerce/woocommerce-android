@@ -18,7 +18,6 @@ import java.util.Date
 
 @ExperimentalCoroutinesApi
 class SendTelemetryTest {
-
     private lateinit var sut: SendTelemetry
     private val trackerStore = mock<TrackerStore>()
     private val trackerRepository = mock<TrackerRepository>()
