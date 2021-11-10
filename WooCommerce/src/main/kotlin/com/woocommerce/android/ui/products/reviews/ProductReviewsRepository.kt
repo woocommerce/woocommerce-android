@@ -27,7 +27,6 @@ class ProductReviewsRepository @Inject constructor(
 
     private var offset = 0
     private var isFetchingProductReviews = false
-    private var isLoadingMore = false
 
     var canLoadMore: Boolean = false
         private set
@@ -49,8 +48,6 @@ class ProductReviewsRepository @Inject constructor(
         )
         val result = productStore.fetchProductReviews(payload)
         if (result.isError) {
-
-
             WooLog.e(
                 REVIEWS,
                 "Error fetching product review: " +
@@ -58,7 +55,6 @@ class ProductReviewsRepository @Inject constructor(
             )
             continuationReviews.continueWith(false)
         } else {
-            isLoadingMore = false
             canLoadMore = result.canLoadMore
             continuationReviews.continueWith(true)
         }
