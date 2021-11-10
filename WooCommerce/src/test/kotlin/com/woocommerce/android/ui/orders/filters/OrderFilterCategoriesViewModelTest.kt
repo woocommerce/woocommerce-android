@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiMode
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -109,12 +110,13 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
         viewModel.onClearFilters()
 
-        assertThat(viewModel.orderFilterCategoryViewState.value).isEqualTo(
+        assertThat(viewModel.orderFilterCategoryViewState.getOrAwaitValue()).isEqualTo(
             OrderFilterCategoryListViewState(
                 screenTitle = DEFAULT_FILTER_TITLE,
                 displayClearButton = false
             )
         )
+
     }
 
     private fun allFilterOptionsAreUnselected() = currentCategoryList
