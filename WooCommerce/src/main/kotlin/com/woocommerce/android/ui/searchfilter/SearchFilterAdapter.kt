@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.searchfilter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.FilterListItemBinding
 import com.woocommerce.android.extensions.hide
@@ -11,7 +12,12 @@ class SearchFilterAdapter(
     private val onItemSelectedListener: (SearchFilterItem) -> Unit
 ) : RecyclerView.Adapter<SearchFilterViewHolder>() {
 
-    private var items: List<SearchFilterItem> = emptyList()
+    var items: List<SearchFilterItem> = emptyList()
+        set(value) {
+            val diffResult = DiffUtil.calculateDiff(SearchFilterDiffCallback(field, value))
+            field = value
+            diffResult.dispatchUpdatesTo(this)
+        }
 
     init {
         setHasStableIds(true)
@@ -30,11 +36,6 @@ class SearchFilterAdapter(
 
     override fun getItemId(position: Int): Long = items[position].hashCode().toLong()
 
-    fun setItems(items: List<SearchFilterItem>) {
-        this.items = items
-        notifyDataSetChanged()
-    }
-
     inner class SearchFilterViewHolder(val viewBinding: FilterListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
 
@@ -42,6 +43,23 @@ class SearchFilterAdapter(
             viewBinding.filterItemName.text = item.name
             viewBinding.filterItemSelection.hide()
             viewBinding.root.setOnClickListener { onItemSelectedListener(item) }
+        }
+    }
+
+    private class SearchFilterDiffCallback(
+        private val oldList: List<SearchFilterItem>,
+        private val newList: List<SearchFilterItem>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].value == newList[newItemPosition].value
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
         }
     }
 }
