@@ -4,9 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_REVIEWS_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_REVIEWS_LOAD_FAILED
 import com.woocommerce.android.model.ProductReview
@@ -32,15 +31,10 @@ class ProductReviewsViewModel @Inject constructor(
     private val _reviewList = MutableLiveData<List<ProductReview>>()
     val reviewList: LiveData<List<ProductReview>> = _reviewList
 
-    final val productReviewsViewStateData = LiveDataDelegate(savedState, ProductReviewsViewState())
+    val productReviewsViewStateData = LiveDataDelegate(savedState, ProductReviewsViewState())
     private var productReviewsViewState by productReviewsViewStateData
 
     private val navArgs: ProductReviewsFragmentArgs by savedState.navArgs()
-
-    override fun onCleared() {
-        super.onCleared()
-        reviewsRepository.onCleanup()
-    }
 
     init {
         if (_reviewList.value == null) {
@@ -83,10 +77,13 @@ class ProductReviewsViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             val result = reviewsRepository.fetchApprovedProductReviewsFromApi(remoteProductId, loadMore)
             trackFetchProductReviewsResult(result, loadMore)
-            _reviewList.value = reviewsRepository.getProductReviewsFromDB(remoteProductId)
+            if (result.isError) {
+                triggerEvent(ShowSnackbar(R.string.product_review_list_fetching_failed))
+            } else {
+                _reviewList.value = reviewsRepository.getProductReviewsFromDB(remoteProductId)
+            }
         } else {
-            // Network is not connected
-            triggerEvent(ShowSnackbar(string.offline_error))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
 
         productReviewsViewState = productReviewsViewState.copy(

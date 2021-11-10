@@ -1,13 +1,9 @@
 package com.woocommerce.android.ui.products.reviews
 
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductReviewsPayload
