@@ -128,7 +128,7 @@ data class Address(
 
     fun toBillingAddressModel(customEmail: String? = null): OrderAddress.Billing {
         return OrderAddress.Billing(
-            email = customEmail?.takeIf { it.isNotEmpty() } ?: email,
+            email = customEmail ?: email,
             firstName = firstName,
             lastName = lastName,
             company = company,
