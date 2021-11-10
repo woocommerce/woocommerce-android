@@ -116,7 +116,6 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
                 displayClearButton = false
             )
         )
-
     }
 
     private fun allFilterOptionsAreUnselected() = currentCategoryList
