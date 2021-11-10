@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.PreferenceUtils
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
@@ -22,6 +24,14 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
     }
 
     private var selectedSite: SiteModel? = null
+
+    private val siteStateFlow = MutableStateFlow<SiteModel?>(null)
+
+    init {
+        siteStateFlow.value = getIfExists()
+    }
+
+    fun observe(): Flow<SiteModel?> = siteStateFlow
 
     fun get(): SiteModel {
         selectedSite?.let { return it }
@@ -53,6 +63,7 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
 
         // Notify listeners
         getEventBus().post(SelectedSiteChangedEvent(siteModel))
+        siteStateFlow.value = siteModel
     }
 
     fun exists(): Boolean {
