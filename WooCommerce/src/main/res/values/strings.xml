@@ -268,6 +268,11 @@
     <string name="orderlist_quickorder_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
     <string name="orderlist_quickorder_menu">Quick order</string>
     <!--
+        Quick Order
+    -->
+    <string name="quickorder_dialog_title">Take payment</string>
+    <string name="quickorder_enter_amount">Enter amount</string>
+    <!--
         Order Filters
     -->
     <string name="orderfilters_show_orders_button">Show Orders</string>
