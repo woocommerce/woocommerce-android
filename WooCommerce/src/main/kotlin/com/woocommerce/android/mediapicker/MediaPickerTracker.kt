@@ -11,6 +11,8 @@ class MediaPickerTracker @Inject constructor() : Tracker {
 
     @Suppress("ComplexMethod")
     private fun Tracker.Event.toStat(): AnalyticsTracker.Stat = when (this) {
+        Tracker.Event.MEDIA_PERMISSION_GRANTED -> AnalyticsTracker.Stat.APP_PERMISSION_GRANTED
+        Tracker.Event.MEDIA_PERMISSION_DENIED -> AnalyticsTracker.Stat.APP_PERMISSION_DENIED
         Tracker.Event.MEDIA_PICKER_PREVIEW_OPENED -> AnalyticsTracker.Stat.MEDIA_PICKER_PREVIEW_OPENED
         Tracker.Event.MEDIA_PICKER_RECENT_MEDIA_SELECTED -> AnalyticsTracker.Stat.MEDIA_PICKER_RECENT_MEDIA_SELECTED
         Tracker.Event.MEDIA_PICKER_OPEN_GIF_LIBRARY -> AnalyticsTracker.Stat.MEDIA_PICKER_OPEN_GIF_LIBRARY
@@ -25,7 +27,8 @@ class MediaPickerTracker @Inject constructor() : Tracker {
         Tracker.Event.MEDIA_PICKER_SELECTION_CLEARED -> AnalyticsTracker.Stat.MEDIA_PICKER_SELECTION_CLEARED
         Tracker.Event.MEDIA_PICKER_OPENED -> AnalyticsTracker.Stat.MEDIA_PICKER_OPENED
         Tracker.Event.MEDIA_PICKER_OPEN_SYSTEM_PICKER -> AnalyticsTracker.Stat.MEDIA_PICKER_OPEN_SYSTEM_PICKER
-        Tracker.Event.MEDIA_PERMISSION_GRANTED -> AnalyticsTracker.Stat.APP_PERMISSION_GRANTED
-        Tracker.Event.MEDIA_PERMISSION_DENIED -> AnalyticsTracker.Stat.APP_PERMISSION_DENIED
+        Tracker.Event.MEDIA_PICKER_OPEN_WORDPRESS_MEDIA_LIBRARY_PICKER -> {
+            AnalyticsTracker.Stat.MEDIA_PICKER_OPEN_WORDPRESS_MEDIA_LIBRARY_PICKER
+        }
     }
 }
