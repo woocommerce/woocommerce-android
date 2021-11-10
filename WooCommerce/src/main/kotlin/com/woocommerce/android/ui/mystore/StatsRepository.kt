@@ -148,22 +148,5 @@ class StatsRepository @Inject constructor(
         }
     }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onOrderChanged(event: OnOrderChanged) {
-        if (event.causeOfChange == FETCH_HAS_ORDERS) {
-            if (event.isError) {
-                WooLog.e(
-                    DASHBOARD,
-                    "$TAG - Error fetching whether orders exist: ${event.error.message}"
-                )
-                continuationHasOrders.continueWith(Result.failure(Exception(event.error.message)))
-            } else {
-                val hasNoOrders = event.rowsAffected == 0
-                continuationHasOrders.continueWith(Result.success(hasNoOrders))
-            }
-        }
-    }
-
     data class StatsException(val error: OrderStatsError?) : Exception()
 }
