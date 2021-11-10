@@ -152,7 +152,7 @@ class AddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Should update viewState with selected country, reset selected state and enable state selection on onCountrySelected`() {
+    fun `Should update viewState with selected country, reset state and enable state selection on onCountrySelected`() {
         whenever(dataStore.getCountries()).thenReturn(listOf(location))
         val countryCode = location.code
         addressViewModel.onCountrySelected(countryCode)
