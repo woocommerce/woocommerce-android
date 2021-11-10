@@ -24,7 +24,6 @@ class ProductReviewsRepository @Inject constructor(
     }
 
     private var offset = 0
-    private var isFetchingProductReviews = false
 
     var canLoadMore: Boolean = false
         private set
@@ -37,7 +36,6 @@ class ProductReviewsRepository @Inject constructor(
         loadMore: Boolean
     ): OnProductReviewChanged {
         offset = if (loadMore) offset + PAGE_SIZE else 0
-        isFetchingProductReviews = true
 
         val payload = FetchProductReviewsPayload(
             selectedSite.get(), offset,
