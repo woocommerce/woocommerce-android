@@ -103,7 +103,8 @@ class StatsRepository @Inject constructor(
             wcOrderStore.fetchHasOrders(selectedSite.get(), status = null)
         }
         return if (result?.isError == false) {
-            Result.success(value = true)
+            val hasNoOrders = result.rowsAffected == 0
+            Result.success(hasNoOrders)
         } else {
             Result.failure(Exception(result?.error?.message.orEmpty()))
         }
