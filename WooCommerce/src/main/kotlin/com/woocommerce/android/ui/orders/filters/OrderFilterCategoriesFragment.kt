@@ -97,8 +97,8 @@ class OrderFilterCategoriesFragment :
     }
 
     private fun setUpObservers(viewModel: OrderFilterCategoriesViewModel) {
-        viewModel.orderFilterCategories.observe(viewLifecycleOwner) {
-            showOrderFilters(it)
+        viewModel.categories.observe(viewLifecycleOwner) { _, newValue ->
+            showOrderFilters(newValue.list)
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

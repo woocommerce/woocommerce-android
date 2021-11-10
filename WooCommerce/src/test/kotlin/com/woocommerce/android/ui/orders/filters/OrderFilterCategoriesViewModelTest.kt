@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiMode
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,6 +40,9 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     private val orderFilterRepository: OrderFiltersRepository = mock()
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
+
+    private val currentCategoryList
+        get() = viewModel.categories.liveData.value!!.list
 
     @Before
     fun setup() = testBlocking {
@@ -100,13 +104,13 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When clear button clicked, then clear button should be hidden and toolbar title updated`() {
+    fun `When clear button clicked, then clear button should be hidden and toolbar title updated to default`() {
         whenever(resourceProvider.getString(R.string.orderfilters_filters_default_title))
             .thenReturn(DEFAULT_FILTER_TITLE)
 
         viewModel.onClearFilters()
 
-        assertThat(viewModel.orderFilterCategoryViewState.value).isEqualTo(
+        assertThat(viewModel.orderFilterCategoryViewState.getOrAwaitValue()).isEqualTo(
             OrderFilterCategoryListViewState(
                 screenTitle = DEFAULT_FILTER_TITLE,
                 displayClearButton = false
@@ -114,12 +118,12 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
         )
     }
 
-    private fun allFilterOptionsAreUnselected() = viewModel.orderFilterCategories.value
-        ?.map {
+    private fun allFilterOptionsAreUnselected() = currentCategoryList
+        .map {
             it.orderFilterOptions.any { filterOption ->
                 filterOption.isSelected && filterOption.key != OrderFilterOptionUiModel.DEFAULT_ALL_KEY
             }
-        }?.all { true } ?: false
+        }.all { true }
 
     private fun givenAFilterOptionHasBeenSelected(updatedFilters: OrderFilterCategoryUiModel) {
         viewModel.onFilterOptionsUpdated(updatedFilters)
