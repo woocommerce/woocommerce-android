@@ -23,8 +23,6 @@ class ProductReviewsRepository @Inject constructor(
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
     }
 
-    private var continuationReviews = ContinuationWrapper<Boolean>(PRODUCTS)
-
     private var offset = 0
     private var isFetchingProductReviews = false
 
@@ -53,10 +51,8 @@ class ProductReviewsRepository @Inject constructor(
                 "Error fetching product review: " +
                     "${result.error?.type} - ${result.error?.message}"
             )
-            continuationReviews.continueWith(false)
         } else {
             canLoadMore = result.canLoadMore
-            continuationReviews.continueWith(true)
         }
         return result
     }
