@@ -20,6 +20,7 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ShowSnackbarInDialog
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.util.ActivityUtils
@@ -92,6 +93,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
         viewModel.viewStateData.observe(
             viewLifecycleOwner,
             { viewState ->
+                announceForAccessibility(binding, viewState)
                 UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
                 UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
                 UiHelpers.setImageOrHideInLandscape(binding.illustration, viewState.illustration)
@@ -125,6 +127,23 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                 }
             }
         )
+    }
+
+    private fun announceForAccessibility(binding: CardReaderPaymentDialogBinding, viewState: ViewState) {
+        with(binding) {
+            if (viewState is ViewState.PaymentSuccessfulState) {
+                viewState.headerLabel?.let {
+                    headerLabel.announceForAccessibility(getString(it) + viewState.amountWithCurrencyLabel)
+                }
+            } else {
+                viewState.paymentStateLabel?.let {
+                    paymentStateLabel.announceForAccessibility(getString(it))
+                }
+            }
+            viewState.hintLabel?.let {
+                hintLabel.announceForAccessibility(getString(it))
+            }
+        }
     }
 
     private fun playChaChing() {
