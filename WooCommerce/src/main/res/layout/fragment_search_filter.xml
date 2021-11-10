@@ -24,10 +24,7 @@
             android:layout_marginBottom="@dimen/major_100"
             android:drawableStart="@drawable/ic_search_24dp"
             android:drawablePadding="@dimen/major_100"
-            android:imeOptions="flagNoExtractUi"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:imeOptions="flagNoExtractUi" />
 
     </FrameLayout>
 
