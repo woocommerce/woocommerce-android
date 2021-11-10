@@ -76,14 +76,10 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
                 returnResult(order!!)
             }
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
-                showProgress(show, binding)
+                binding.progressBar.isVisible = show
+                binding.buttonDone.text = if (show) "" else getString(R.string.done)
             }
         }
-    }
-
-    private fun showProgress(show: Boolean, binding: DialogQuickOrderBinding) {
-        binding.progressBar.isVisible = show
-        binding.buttonDone.text = if (show) "" else getString(R.string.done)
     }
 
     override fun onResume() {
