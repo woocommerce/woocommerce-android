@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.filters.ui
+package com.woocommerce.android.ui.orders.filters
 
 import android.os.Bundle
 import android.view.Menu
@@ -15,9 +15,9 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.filters.ui.adapter.OrderFilterCategoryAdapter
-import com.woocommerce.android.ui.orders.filters.ui.model.FilterListCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
+import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -114,7 +114,7 @@ class OrderFilterCategoryListFragment :
         view?.post { clearAllMenuItem?.isVisible = show }
     }
 
-    private fun showOrderFilters(orderFilters: List<FilterListCategoryUiModel>) {
+    private fun showOrderFilters(orderFilters: List<OrderFilterCategoryUiModel>) {
         orderFilterCategoryAdapter.submitList(orderFilters)
     }
 

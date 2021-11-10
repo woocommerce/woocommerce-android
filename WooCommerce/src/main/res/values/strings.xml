@@ -283,6 +283,10 @@
     <string name="orderfilters_filters_count_title">Filters (%d)</string>
     <string name="orderfilters_default_filter_option">All</string>
     <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
+    <string name="orderfilters_date_range_filter_today">Today</string>
+    <string name="orderfilters_date_range_filter_last_two_days">Last 2 Days</string>
+    <string name="orderfilters_date_range_filter_last_7_days">Last 7 days</string>
+    <string name="orderfilters_date_range_filter_last_30_days">Last 30 days</string>
 
     <!--
         Order Detail Views
@@ -854,6 +858,8 @@
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
     <string name="card_reader_connect_missing_address">Please provide your store address in order to proceed</string>
     <string name="card_reader_connect_missing_address_button">Enter address</string>
+    <string name="card_reader_connect_invalid_postal_code_header">Store address postcode is invalid</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">Please provide a valid postcode in your store settings and try again</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>

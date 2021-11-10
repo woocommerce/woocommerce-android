@@ -6,7 +6,7 @@
     app:startDestination="@id/orderFilterCategoryListFragment">
     <fragment
         android:id="@+id/orderFilterCategoryListFragment"
-        android:name="com.woocommerce.android.ui.orders.filters.ui.OrderFilterCategoryListFragment"
+        android:name="com.woocommerce.android.ui.orders.filters.OrderFilterCategoryListFragment"
         tools:layout="@layout/fragment_order_filter_list">
         <action
             android:id="@+id/action_orderFilterListFragment_to_orderFilterOptionListFragment"
@@ -16,6 +16,6 @@
     </fragment>
     <fragment
         android:id="@+id/orderFilterOptionsListFragment"
-        android:name="com.woocommerce.android.ui.orders.filters.ui.OrderFilterOptionListFragment"
+        android:name="com.woocommerce.android.ui.orders.filters.OrderFilterOptionListFragment"
         tools:layout="@layout/fragment_order_filter_list" />
 </navigation>
