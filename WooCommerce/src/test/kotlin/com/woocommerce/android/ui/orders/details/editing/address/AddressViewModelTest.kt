@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ViewState
@@ -40,34 +39,6 @@ class AddressViewModelTest : BaseUnitTest() {
 
     private val viewStateObserver: Observer<ViewState> = mock()
 
-    private val storedAddress = Address(
-        firstName = "first name stored",
-        lastName = "last name stored",
-        company = "Company stored",
-        phone = "phone stored",
-        address1 = "Address 1 stored",
-        address2 = "address 2 stored",
-        city = "City stored",
-        postcode = "postcode stored",
-        email = "email stored",
-        country = "country stored",
-        state = "state stored"
-    )
-
-    private val addressDraft = Address(
-        firstName = "first name draft",
-        lastName = "last name draft",
-        company = "Company draft",
-        phone = "phone draft",
-        address1 = "Address 1 draft",
-        address2 = "address 2 draft",
-        city = "City draft",
-        postcode = "postcode draft",
-        email = "email draft",
-        country = "country draft",
-        state = "state draft"
-    )
-
     @Before
     fun setup() {
         addressViewModel.viewStateData.liveData.observeForever(viewStateObserver)
@@ -78,11 +49,55 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
         coroutinesTestRule.testDispatcher.runBlockingTest {
             addressViewModel.start(
-                storedAddress = storedAddress,
-                addressDraft = addressDraft
+                countryCode = "countryCode",
+                stateCode = "stateCode"
             )
             verify(dataStore, times(1)).fetchCountriesAndStates(selectedSite.get())
         }
+    }
+
+    @Test
+    fun `Should NOT execute start more than once`() {
+        whenever(dataStore.getCountries()).thenReturn(emptyList())
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            addressViewModel.start(
+                countryCode = "countryCode",
+                stateCode = "stateCode"
+            )
+            addressViewModel.start(
+                countryCode = "countryCode",
+                stateCode = "stateCode"
+            )
+            verify(dataStore, times(1)).fetchCountriesAndStates(selectedSite.get())
+        }
+    }
+
+    @Test
+    fun `Should execute start again after onScreenDetached is called`() {
+        whenever(dataStore.getCountries()).thenReturn(emptyList())
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            addressViewModel.start(
+                countryCode = "countryCode",
+                stateCode = "stateCode"
+            )
+            addressViewModel.onScreenDetached()
+            addressViewModel.start(
+                countryCode = "countryCode",
+                stateCode = "stateCode"
+            )
+            verify(dataStore, times(2)).fetchCountriesAndStates(selectedSite.get())
+        }
+    }
+
+    @Test
+    fun `Should reset view state when onScreenDetached is called`() {
+        whenever(dataStore.getCountries()).thenReturn(listOf(location))
+        val countryCode = location.code
+        addressViewModel.onCountrySelected(countryCode)
+        addressViewModel.onScreenDetached()
+        // Default view state is first emitted in the test setup (observeForever) and again on onScreenDetached.
+        // That's why we're verifying if default view state was emitted 2 times.
+        verify(viewStateObserver, times(2)).onChanged(ViewState())
     }
 
     @Test
@@ -90,8 +105,8 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getCountries()).thenReturn(listOf(location))
         coroutinesTestRule.testDispatcher.runBlockingTest {
             addressViewModel.start(
-                storedAddress = storedAddress,
-                addressDraft = addressDraft
+                countryCode = "countryCode",
+                stateCode = "stateCode"
             )
             verify(dataStore, times(0)).fetchCountriesAndStates(selectedSite.get())
         }
@@ -99,67 +114,15 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should apply country and state changes to view state safely on start if countries list is empty`() {
-        addressViewModel.start(
-            storedAddress = storedAddress,
-            addressDraft = addressDraft
-        )
-        assertThat(addressViewModel.viewStateData.liveData.value?.isStateSelectionEnabled).isEqualTo(true)
-    }
-
-    @Test
-    fun `Should update view state with address draft country if it's not empty`() {
-        addressViewModel.start(
-            storedAddress = storedAddress,
-            addressDraft = addressDraft
-        )
-        assertThat(addressViewModel.viewStateData.liveData.value?.countryLocation).isEqualTo(
-            Location(
-                addressDraft.country,
-                addressDraft.country
-            )
-        )
-    }
-
-    @Test
-    fun `Should update view state with address draft state if it's not empty`() {
-        addressViewModel.start(
-            storedAddress = storedAddress,
-            addressDraft = addressDraft
-        )
-        assertThat(addressViewModel.viewStateData.liveData.value?.stateLocation).isEqualTo(
-            Location(
-                addressDraft.state,
-                addressDraft.state
-            )
-        )
-    }
-
-    @Test
-    fun `Should update view state with stored address country if address draft country is empty`() {
-        val emptyCountryAndStateAddress = addressDraft.copy(country = "", state = "")
-        addressViewModel.start(
-            storedAddress = storedAddress,
-            addressDraft = emptyCountryAndStateAddress
-        )
-        assertThat(addressViewModel.viewStateData.liveData.value?.countryLocation).isEqualTo(
-            Location(
-                storedAddress.country,
-                storedAddress.country
-            )
-        )
-    }
-
-    @Test
-    fun `Should update view state with stored address state if address draft state is empty`() {
-        val emptyCountryAndStateAddress = addressDraft.copy(country = "", state = "")
-        addressViewModel.start(
-            storedAddress = storedAddress,
-            addressDraft = emptyCountryAndStateAddress
-        )
-        assertThat(addressViewModel.viewStateData.liveData.value?.stateLocation).isEqualTo(
-            Location(
-                storedAddress.state,
-                storedAddress.state
+        whenever(dataStore.getCountries()).thenReturn(emptyList())
+        val countryCode = "countryCode"
+        val stateCode = "stateCode"
+        addressViewModel.start(countryCode, stateCode)
+        assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
+            ViewState(
+                countryLocation = Location(countryCode, countryCode),
+                stateLocation = Location(stateCode, stateCode),
+                isStateSelectionEnabled = true
             )
         )
     }

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -35,12 +34,25 @@ class AddressViewModel @Inject constructor(
     val stateLocation: Location
         get() = viewState.stateLocation
 
-    fun start(storedAddress: Address, addressDraft: Address) {
-        loadCountriesAndStates(storedAddress, addressDraft)
-        viewState.applyCountryStateChangesSafely(storedAddress, addressDraft)
+    private var hasStarted = false
+
+    /**
+     * The start method is called when the view is created. When the view is recreated (e.g. navigating to country
+     * search and back) we don't want this method to be called again, otherwise the ViewModel will replace the newly
+     * selected country or state with the previously saved values.
+     *
+     * @see applyCountryStateChangesSafely
+     */
+    fun start(countryCode: String, stateCode: String) {
+        if (hasStarted) {
+            return
+        }
+        hasStarted = true
+        loadCountriesAndStates(countryCode, stateCode)
+        viewState.applyCountryStateChangesSafely(countryCode, stateCode)
     }
 
-    private fun loadCountriesAndStates(storedAddress: Address, addressDraft: Address) {
+    private fun loadCountriesAndStates(countryCode: String, stateCode: String) {
         launch {
             // we only fetch the countries and states if they've never been fetched
             if (countries.isEmpty()) {
@@ -48,7 +60,7 @@ class AddressViewModel @Inject constructor(
                 dataStore.fetchCountriesAndStates(selectedSite.get())
                 viewState.copy(
                     isLoading = false
-                ).applyCountryStateChangesSafely(storedAddress, addressDraft)
+                ).applyCountryStateChangesSafely(countryCode, stateCode)
             }
         }
     }
@@ -56,6 +68,18 @@ class AddressViewModel @Inject constructor(
     fun hasCountries() = countries.isNotEmpty()
 
     fun hasStates() = states.isNotEmpty()
+
+    /**
+     * Even when the [BaseAddressEditingFragment] instance is destroyed the instance of [AddressViewModel] will still
+     * be alive. That means if the user have selected a country or state, discarded the change and navigated again to
+     * [BaseAddressEditingFragment] the discarded values of country and state will be used. Because of that, when the
+     * Fragment is detached we must clear these values from the ViewModel. We should also allow the [start] method
+     * to be called again.
+     */
+    fun onScreenDetached() {
+        hasStarted = false
+        viewState = ViewState()
+    }
 
     private fun getCountryNameFromCode(countryCode: String): String {
         return countries.find { it.code == countryCode }?.name ?: countryCode
@@ -94,22 +118,14 @@ class AddressViewModel @Inject constructor(
     /**
      * State data acquisition depends on the Country configuration, so when updating the ViewState
      * we need to make sure that we updated the Country code before applying everything else to avoid
-     * looking into a outdated state information. If country is currently being edited, we should use it's value.
-     * If user doesn't change country while editing the address data, we should try to use a previously selected
-     * country (if there is one).
-     *
-     * @param storedAddress previously selected address.
-     * @param addressDraft address being edited. Country and state are not empty if they were just selected.
+     * looking into a outdated state information
      */
-    private fun ViewState.applyCountryStateChangesSafely(storedAddress: Address, addressDraft: Address) {
-        val countryCode = if (addressDraft.country.isEmpty()) storedAddress.country else addressDraft.country
-        val stateCode = if (addressDraft.state.isEmpty()) storedAddress.state else addressDraft.state
+    private fun ViewState.applyCountryStateChangesSafely(countryCode: String, stateCode: String) {
         val countryLocation = getCountryLocationFromCode(countryCode)
 
         viewState = viewState.copy(
             countryLocation = countryLocation
         )
-
         viewState = this.copy(
             countryLocation = countryLocation,
             stateLocation = getStateLocationFromCode(stateCode),

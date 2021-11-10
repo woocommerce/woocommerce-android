@@ -62,8 +62,8 @@ abstract class BaseAddressEditingFragment :
         bindTextWatchers()
 
         addressViewModel.start(
-            storedAddress = storedAddress,
-            addressDraft = addressDraft
+            countryCode = storedAddress.country,
+            stateCode = storedAddress.state
         )
 
         binding.countrySpinner.setClickListener {
@@ -88,6 +88,11 @@ abstract class BaseAddressEditingFragment :
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
+    }
+
+    override fun onDetach() {
+        addressViewModel.onScreenDetached()
+        super.onDetach()
     }
 
     private fun Address.bindToView() {
