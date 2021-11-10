@@ -52,7 +52,6 @@ class ReviewListRepository @Inject constructor(
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
     }
 
-    private var continuationReview = ContinuationWrapper<Boolean>(REVIEWS)
     private var continuationProduct = ContinuationWrapper<Boolean>(REVIEWS)
     private var continuationNotification = ContinuationWrapper<Boolean>(REVIEWS)
     private var continuationMarkAllRead = ContinuationWrapper<RequestResult>(REVIEWS)
@@ -238,7 +237,6 @@ class ReviewListRepository @Inject constructor(
                 "Error fetching product review: " +
                     "${result.error?.type} - ${result.error?.message}"
             )
-            continuationReview.continueWith(false)
         } else {
             AnalyticsTracker.track(
                 Stat.REVIEWS_LOADED,
@@ -248,7 +246,6 @@ class ReviewListRepository @Inject constructor(
             )
             isLoadingMore = false
             canLoadMore = result.canLoadMore
-            continuationReview.continueWith(true)
         }
         return !result.isError
     }
