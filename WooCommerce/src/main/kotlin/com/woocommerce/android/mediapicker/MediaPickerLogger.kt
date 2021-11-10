@@ -1,6 +1,6 @@
 package com.woocommerce.android.mediapicker
 
-import org.wordpress.android.mediapicker.util.Log
+import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 

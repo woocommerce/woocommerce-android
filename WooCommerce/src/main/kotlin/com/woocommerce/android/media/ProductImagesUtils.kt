@@ -8,7 +8,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
-import org.wordpress.android.mediapicker.util.MediaPickerUtils
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.MediaUtils
@@ -33,7 +33,7 @@ object ProductImagesUtils {
             return null
         }
 
-        var path = mediaPickerUtils.getMediaStoreFilePath(fetchedUri)
+        var path = mediaPickerUtils.getFilePath(fetchedUri)
         if (path == null) {
             WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to get path from uri, $fetchedUri")
             return null

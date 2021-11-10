@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.filters.ui
+package com.woocommerce.android.ui.orders.filters
 
 import android.os.Bundle
 import android.view.View
@@ -9,8 +9,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.orders.filters.ui.adapter.OrderFilterOptionAdapter
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderListFilterOptionUiModel
+import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterOptionAdapter
+import com.woocommerce.android.ui.orders.filters.model.OrderListFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
