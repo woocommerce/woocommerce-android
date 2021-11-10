@@ -36,7 +36,6 @@ class StatsRepository @Inject constructor(
 
     private val continuationRevenueStats = ContinuationWrapper<Result<WCRevenueStatsModel?>>(DASHBOARD)
     private val continuationVisitorStats = ContinuationWrapper<Result<Map<String, Int>>>(DASHBOARD)
-    private val continuationHasOrders = ContinuationWrapper<Result<Boolean>>(DASHBOARD)
     private lateinit var lastRevenueStatsGranularity: StatsGranularity
     private lateinit var lastVisitorStatsGranularity: StatsGranularity
 
