@@ -1,10 +1,14 @@
 package com.woocommerce.android.ui.orders.filters.data
 
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory.DATE_RANGE
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory.ORDER_STATUS
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterDateRangeUiModel
-import com.woocommerce.android.ui.orders.filters.model.toAfterIso8061DateString
+import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_2_DAYS
+import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_30_DAYS
+import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_7_DAYS
+import com.woocommerce.android.ui.orders.filters.data.DateRange.TODAY
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
+import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import javax.inject.Inject
@@ -17,7 +21,7 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
     operator fun invoke(): WCOrderListDescriptor {
         val selectedFilters = orderFiltersRepository.getCachedFiltersSelection()
         val dateRangeAfterFilter = selectedFilters[DATE_RANGE]
-            ?.map { OrderFilterDateRangeUiModel.fromValue(it) }
+            ?.map { DateRange.fromValue(it) }
             ?.first()
             ?.toAfterIso8061DateString(dateUtils)
 
@@ -26,6 +30,16 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
             statusFilter = selectedFilters[ORDER_STATUS]?.joinToString(separator = ","),
             afterFilter = dateRangeAfterFilter
         )
+    }
+
+    private fun DateRange.toAfterIso8061DateString(dateUtils: DateUtils): String? {
+        val afterDate = when (this) {
+            TODAY -> dateUtils.getDateForTodayAtTheStartOfTheDay()
+            LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 2)
+            LAST_7_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 7)
+            LAST_30_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 30)
+        }
+        return dateUtils.toIso8601Format(afterDate)
     }
 }
 
@@ -36,4 +50,51 @@ class GetSelectedOrderFiltersCount @Inject constructor(
         orderFiltersRepository.getCachedFiltersSelection().values
             .map { it.count() }
             .sum()
+}
+
+class GetOrderStatusFilterOptions @Inject constructor(
+    private val orderListRepository: OrderListRepository,
+    private val orderFiltersRepository: OrderFiltersRepository
+) {
+    suspend operator fun invoke(): List<OrderStatusOption> {
+        var orderStatus = orderListRepository.getCachedOrderStatusOptions()
+        if (orderStatus.isEmpty()) {
+            when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
+                RequestResult.SUCCESS -> orderStatus = orderListRepository.getCachedOrderStatusOptions()
+                else -> { /* do nothing */
+                }
+            }
+        }
+        return orderStatus.values
+            .toList()
+            .map {
+                OrderStatusOption(
+                    key = it.statusKey,
+                    label = it.label,
+                    statusCount = it.statusCount,
+                    isSelected = checkIfSelected(it.statusKey)
+                )
+            }
+    }
+
+    private fun checkIfSelected(filterKey: String): Boolean =
+        orderFiltersRepository.getCachedFiltersSelection()[ORDER_STATUS]
+            ?.contains(filterKey) ?: false
+}
+
+class GetDateRangeFilterOptions @Inject constructor(
+    private val orderFiltersRepository: OrderFiltersRepository
+) {
+    operator fun invoke(): List<DateRangeFilterOption> =
+        listOf(TODAY, LAST_2_DAYS, LAST_7_DAYS, LAST_30_DAYS)
+            .map {
+                DateRangeFilterOption(
+                    dateRange = it,
+                    isSelected = checkIfSelected(it.filterKey)
+                )
+            }
+
+    private fun checkIfSelected(filterKey: String): Boolean =
+        orderFiltersRepository.getCachedFiltersSelection()[DATE_RANGE]
+            ?.contains(filterKey) ?: false
 }

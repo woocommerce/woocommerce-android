@@ -469,15 +469,13 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun onFiltersChanged(filtersChanged: Boolean) {
-        if (filtersChanged) {
-            if (networkStatus.isConnected()) {
-                refreshOrders()
-                viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
-            } else {
-                viewState = viewState.copy(isRefreshPending = true)
-                showOfflineSnack()
-            }
+    fun updateOrdersWithFilters() {
+        if (networkStatus.isConnected()) {
+            refreshOrders()
+            viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+        } else {
+            viewState = viewState.copy(isRefreshPending = true)
+            showOfflineSnack()
         }
     }
 
