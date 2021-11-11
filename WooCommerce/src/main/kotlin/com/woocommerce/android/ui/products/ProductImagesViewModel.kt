@@ -89,6 +89,10 @@ class ProductImagesViewModel @Inject constructor(
         }
 
         mediaFileUploadHandler.enqueueUpload(remoteProductId, localUriList.map { it.toString() })
+
+        if (!isMultiSelectionAllowed) {
+            viewState = viewState.copy(images = emptyList())
+        }
     }
 
     fun onShowStorageChooserButtonClicked() {
