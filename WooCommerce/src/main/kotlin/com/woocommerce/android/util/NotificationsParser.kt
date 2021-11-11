@@ -2,17 +2,22 @@ package com.woocommerce.android.util
 
 import android.util.Base64
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONException
-import org.json.JSONObject
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationApiResponse
 import java.io.UnsupportedEncodingException
 import java.util.zip.DataFormatException
 import java.util.zip.Inflater
+import javax.inject.Inject
 
-object NotificationsUtils {
-    private const val PUSH_ARG_NOTE_FULL_DATA = "note_full_data"
+class NotificationsParser @Inject constructor(private val base64Decoder: Base64Decoder) {
+    companion object {
+        const val PUSH_ARG_NOTE_FULL_DATA = "note_full_data"
+    }
+
+    private val gson: Gson by lazy { Gson() }
 
     /**
      * Builds a [NotificationModel] from a push notification payload.
@@ -20,7 +25,7 @@ object NotificationsUtils {
     fun buildNotificationModelFromPayloadMap(dataMap: Map<String, String>): NotificationModel? {
         return dataMap[PUSH_ARG_NOTE_FULL_DATA]?.let {
             getNotificationJsonFromBase64EncodedData(it)?.let { json ->
-                val apiResponse = Gson().fromJson(json.toString(), NotificationApiResponse::class.java)
+                val apiResponse = gson.fromJson(json, NotificationApiResponse::class.java)
                 NotificationApiResponse.notificationResponseToNotificationModel(apiResponse)
             }
         }
@@ -29,8 +34,8 @@ object NotificationsUtils {
     /**
      * Takes a base64 encoded string and attempts to decode and parse out the containing notification object.
      */
-    @Synchronized fun getNotificationJsonFromBase64EncodedData(base64FullNoteData: String): JSONObject? {
-        val b64DecodedPayload = Base64.decode(base64FullNoteData, Base64.DEFAULT)
+    @Synchronized private fun getNotificationJsonFromBase64EncodedData(base64FullNoteData: String): JsonObject? {
+        val b64DecodedPayload = base64Decoder.decode(base64FullNoteData, Base64.DEFAULT)
 
         // Decompress the payload
         val decompresser = Inflater()
@@ -43,7 +48,7 @@ object NotificationsUtils {
             0
         }
 
-        var resultJson: JSONObject? = null
+        var resultJson: JsonObject? = null
 
         // Attempt to parse into a String
         try {
@@ -54,12 +59,12 @@ object NotificationsUtils {
         }?.let { out ->
             try {
                 // Get jsonObject from the string
-                val jsonObject = JSONObject(out)
+                val jsonObject = gson.fromJson(out, JsonObject::class.java)
                 // Attempt to pull out the notification object
                 if (jsonObject.has("notes")) {
-                    val jsonArray = jsonObject.getJSONArray("notes")
-                    if (jsonArray.length() == 1) {
-                        resultJson = jsonArray.getJSONObject(0)
+                    val jsonArray = jsonObject.getAsJsonArray("notes")
+                    if (jsonArray.size() == 1) {
+                        resultJson = jsonArray[0].asJsonObject
                     }
                 }
             } catch (e: JSONException) {
