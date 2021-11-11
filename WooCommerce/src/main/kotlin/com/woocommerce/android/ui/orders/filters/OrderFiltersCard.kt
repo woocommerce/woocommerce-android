@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.filters.ui
+package com.woocommerce.android.ui.orders.filters
 
 import android.content.Context
 import android.util.AttributeSet
