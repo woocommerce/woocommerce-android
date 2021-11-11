@@ -39,9 +39,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
-    private val resources: ResourceProvider = mock {
-        on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
-    }
+    private val resources: ResourceProvider = mock()
 
     private val savedState = OrderFulfillFragmentArgs(orderIdentifier = ORDER_IDENTIFIER).initSavedStateHandle()
 
@@ -182,7 +180,6 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     fun `Do not display shipment tracking when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
 
             var orderData: ViewState? = null
@@ -218,7 +215,6 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Do not update order status when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(order).whenever(repository).getOrder(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
         var snackbar: ShowSnackbar? = null

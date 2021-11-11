@@ -210,7 +210,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn("").whenever(prefs).getSelectedProductType()
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
@@ -649,7 +648,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).fetchProduct(any())
         doReturn(product).whenever(productRepository).getProduct(any())
         val errorMessage = "message"
-        doReturn(errorMessage).whenever(resources).getString(any())
         doReturn(errorMessage).whenever(resources).getString(any(), anyVararg())
 
         viewModel.start()

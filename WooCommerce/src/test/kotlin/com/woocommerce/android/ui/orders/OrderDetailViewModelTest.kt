@@ -55,7 +55,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
         on(it.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenAnswer { true }
     }
-    private val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+    private val editor = mock<SharedPreferences.Editor>()
     private val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
@@ -631,7 +631,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Do not fetch order from api when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(null).whenever(repository).getOrder(any())
         doReturn(false).whenever(networkStatus).isConnected()
-        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {

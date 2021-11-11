@@ -50,7 +50,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                 .doReturn(storeParametersMock)
         }
 
-        val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+        val editor = mock<SharedPreferences.Editor>()
         val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
         mock<Context> {
             whenever(it.applicationContext).thenReturn(it)

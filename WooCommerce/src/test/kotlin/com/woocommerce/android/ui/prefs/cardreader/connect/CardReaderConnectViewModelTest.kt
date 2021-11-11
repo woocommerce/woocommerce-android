@@ -409,7 +409,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given last connected reader is matching, when reader found, then reader connecting state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
             val readerStatusStateFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connecting)
             whenever(cardReaderManager.readerStatus).thenReturn(readerStatusStateFlow)
 
