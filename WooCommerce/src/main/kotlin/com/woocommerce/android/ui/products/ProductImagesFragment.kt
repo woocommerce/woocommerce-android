@@ -46,9 +46,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductImagesFragment :
-    BaseProductEditorFragment(R.layout.fragment_product_images),
-    OnGalleryImageInteractionListener {
-
+    BaseProductEditorFragment(R.layout.fragment_product_images), OnGalleryImageInteractionListener {
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
@@ -296,7 +294,9 @@ class ProductImagesFragment :
         cameraLauncher.launch(intent)
     }
 
-    private val mediaDeviceMediaPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private val mediaDeviceMediaPickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
         handleDeviceMediaResult(it, AnalyticsTracker.IMAGE_SOURCE_DEVICE)
     }
 

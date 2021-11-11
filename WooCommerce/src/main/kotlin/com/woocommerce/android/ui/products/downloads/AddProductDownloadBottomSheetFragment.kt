@@ -76,7 +76,9 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment() {
         handleMediaLibraryPickerResult(it)
     }
 
-    private val mediaDeviceMediaPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private val mediaDeviceMediaPickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
         handleDeviceMediaResult(it)
     }
 
