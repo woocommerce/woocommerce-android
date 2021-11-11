@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.list
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -93,7 +94,7 @@ class OrderListFragment :
     private var orderListMenu: Menu? = null
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
-    private val searchHandler = Handler()
+    private val searchHandler = Handler(Looper.getMainLooper())
     private var quickOrderMenuItem: MenuItem? = null
 
     private var _binding: FragmentOrderListBinding? = null
