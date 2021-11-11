@@ -30,7 +30,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.InitializeCardReaderManager
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
@@ -75,6 +74,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val onboardingChecker: CardReaderOnboardingChecker,
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
+    private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
 
@@ -91,8 +91,6 @@ class CardReaderConnectViewModel @Inject constructor(
      */
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
-
-    private lateinit var cardReaderManager: CardReaderManager
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
     private val viewState = MutableLiveData<CardReaderConnectViewState>(ScanningState(::onCancelClicked))
@@ -199,12 +197,11 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onBluetoothStateVerified() {
-        if (!::cardReaderManager.isInitialized) {
-            triggerEvent(InitializeCardReaderManager(::onCardReaderManagerInitialized))
-        } else {
-            launch {
-                startScanningIfNotStarted()
-            }
+        if (!cardReaderManager.initialized) {
+            cardReaderManager.initialize()
+        }
+        launch {
+            startScanningIfNotStarted()
         }
     }
 
@@ -220,13 +217,6 @@ class CardReaderConnectViewModel @Inject constructor(
                 }
                 else -> triggerEvent(CardReaderConnectEvent.NavigateToOnboardingFlow)
             }
-        }
-    }
-
-    private fun onCardReaderManagerInitialized(cardReaderManager: CardReaderManager) {
-        launch {
-            this@CardReaderConnectViewModel.cardReaderManager = cardReaderManager
-            startScanningIfNotStarted()
         }
     }
 
