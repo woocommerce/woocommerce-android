@@ -657,7 +657,11 @@
         app:destination="@id/itemSelectorDialog" />
     <action
         android:id="@+id/action_search_filter_fragment"
-        app:destination="@id/searchFilterFragment" />
+        app:destination="@id/searchFilterFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <fragment
         android:id="@+id/searchFilterFragment"
         android:name="com.woocommerce.android.ui.searchfilter.SearchFilterFragment"
