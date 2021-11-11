@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.searchfilter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.FilterListItemBinding
 import com.woocommerce.android.extensions.hide
@@ -10,14 +11,7 @@ import com.woocommerce.android.ui.searchfilter.SearchFilterAdapter.SearchFilterV
 
 class SearchFilterAdapter(
     private val onItemSelectedListener: (SearchFilterItem) -> Unit
-) : RecyclerView.Adapter<SearchFilterViewHolder>() {
-
-    var items: List<SearchFilterItem> = emptyList()
-        set(value) {
-            val diffResult = DiffUtil.calculateDiff(SearchFilterDiffCallback(field, value))
-            field = value
-            diffResult.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<SearchFilterItem, SearchFilterViewHolder>(SearchFilterDiffCallback) {
 
     init {
         setHasStableIds(true)
@@ -29,12 +23,10 @@ class SearchFilterAdapter(
         )
 
     override fun onBindViewHolder(holder: SearchFilterViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int = items.size
-
-    override fun getItemId(position: Int): Long = items[position].hashCode().toLong()
+    override fun getItemId(position: Int): Long = getItem(position).hashCode().toLong()
 
     inner class SearchFilterViewHolder(val viewBinding: FilterListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
@@ -46,20 +38,16 @@ class SearchFilterAdapter(
         }
     }
 
-    private class SearchFilterDiffCallback(
-        private val oldList: List<SearchFilterItem>,
-        private val newList: List<SearchFilterItem>
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldList.size
+    object SearchFilterDiffCallback : DiffUtil.ItemCallback<SearchFilterItem>() {
 
-        override fun getNewListSize(): Int = newList.size
+        override fun areItemsTheSame(
+            oldSearchFilterItem: SearchFilterItem,
+            newSearchFilterItem: SearchFilterItem
+        ): Boolean = oldSearchFilterItem.value == newSearchFilterItem.value
 
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].value == newList[newItemPosition].value
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
-        }
+        override fun areContentsTheSame(
+            oldSearchFilterItem: SearchFilterItem,
+            newSearchFilterItem: SearchFilterItem
+        ): Boolean = oldSearchFilterItem == newSearchFilterItem
     }
 }

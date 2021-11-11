@@ -124,7 +124,7 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
     }
 
     private fun updateSearchList(searchFilterItems: List<SearchFilterItem>) {
-        searchFilterAdapter.items = searchFilterItems.toList()
+        searchFilterAdapter.submitList(searchFilterItems)
     }
 
     private fun showSearchList() {
