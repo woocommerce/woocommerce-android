@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
 import com.woocommerce.android.R
@@ -44,16 +43,13 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
-import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.Locale
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
@@ -102,9 +98,6 @@ class OrderListViewModel @Inject constructor(
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
     val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
-    private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
-    val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
-
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
@@ -120,7 +113,6 @@ class OrderListViewModel @Inject constructor(
 
     var isSearching = false
     var searchQuery = ""
-    var orderStatusFilter = ""
 
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
@@ -130,10 +122,6 @@ class OrderListViewModel @Inject constructor(
         dispatcher.register(this)
 
         launch {
-            // Populate any cached order status options immediately since we use this
-            // value in many different places in the order list view.
-            _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
-
             // refresh plugin information
             if (selectedSite.exists()) {
                 wooCommerceStore.fetchSitePlugins(selectedSite.get())
@@ -182,26 +170,11 @@ class OrderListViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
-                fetchOrderStatusOptions()
                 fetchPaymentGateways()
             }
         } else {
             viewState = viewState.copy(isRefreshPending = true)
             showOfflineSnack()
-        }
-    }
-
-    /**
-     * Refresh the order count by order status list with fresh data from the API
-     */
-    fun fetchOrderStatusOptions() {
-        launch(dispatchers.main) {
-            // Fetch and load order status options
-            when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
-                SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
-                else -> { /* do nothing */
-                }
-            }
         }
     }
 
@@ -320,9 +293,7 @@ class OrderListViewModel @Inject constructor(
                         EmptyViewType.ORDER_LIST
                     }
                 }
-                orderStatusFilter.isNotEmpty() -> {
-                    EmptyViewType.ORDER_LIST_FILTERED
-                }
+                viewState.filterCount != 0 -> EmptyViewType.ORDER_LIST_FILTERED
                 else -> {
                     if (networkStatus.isConnected()) {
                         EmptyViewType.ORDER_LIST
@@ -338,8 +309,10 @@ class OrderListViewModel @Inject constructor(
         _emptyViewType.postValue(newEmptyViewType)
     }
 
-    private fun isShowingProcessingOrders() = orderStatusFilter.isNotEmpty() &&
-        orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value
+    private fun isShowingProcessingOrders(): Boolean {
+        //TODO jorge mucientes retrieve filters and check for processing
+        return false
+    }
 
     private fun showOfflineSnack() {
         // Network is not connected
