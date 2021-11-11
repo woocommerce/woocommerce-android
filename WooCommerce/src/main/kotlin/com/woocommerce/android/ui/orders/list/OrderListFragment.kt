@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.orders.quickorder.QuickOrderDialog
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -50,6 +51,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
+import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
@@ -100,6 +102,7 @@ class OrderListFragment :
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private val searchHandler = Handler()
+    private var quickOrderMenuItem: MenuItem? = null
 
     private var _binding: FragmentOrderListBinding? = null
     private val binding get() = _binding!!
@@ -147,6 +150,8 @@ class OrderListFragment :
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
+        quickOrderMenuItem = menu.findItem(R.id.menu_add)
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -176,6 +181,7 @@ class OrderListFragment :
         }
 
         initializeViewModel()
+        initializeResultHandlers()
         initializeTabs()
 
         if (isFilterEnabled) {
@@ -264,9 +270,12 @@ class OrderListFragment :
         searchView = null
         orderListMenu = null
         searchMenuItem = null
+        quickOrderMenuItem = null
         super.onDestroyView()
         _binding = null
     }
+
+    private fun isQuickOrderAvailable() = FeatureFlag.QUICK_ORDER.isEnabled() && AppPrefs.isQuickOrderEnabled
 
     /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
@@ -286,6 +295,8 @@ class OrderListFragment :
                 if (it.isVisible != showSearch) it.isVisible = showSearch
             }
         }
+
+        quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -293,6 +304,10 @@ class OrderListFragment :
             R.id.menu_search -> {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
+                true
+            }
+            R.id.menu_add -> {
+                showQuickOrderDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -417,8 +432,18 @@ class OrderListFragment :
         }
     }
 
+    private fun initializeResultHandlers() {
+        handleResult<BigDecimal>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) {
+            // TODO nbradbury create order using the passed price
+        }
+    }
+
     private fun showOrderFilters() {
         findNavController().navigate(R.id.action_orderListFragment_to_orderFilterListFragment)
+    }
+
+    private fun showQuickOrderDialog() {
+        findNavController().navigate(R.id.action_orderListFragment_to_quickOrderDialog)
     }
 
     private fun hideEmptyView() {
@@ -568,6 +593,7 @@ class OrderListFragment :
         checkOrientation()
         removeTabLayoutFromAppBar()
         onSearchViewActiveChanged(isActive = true)
+        quickOrderMenuItem?.isVisible = false
         return true
     }
 
@@ -583,6 +609,7 @@ class OrderListFragment :
         }
         loadListForActiveTab()
         addTabLayoutToAppBar()
+        quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
         onSearchViewActiveChanged(isActive = false)
         return true
     }

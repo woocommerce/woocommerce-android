@@ -30,8 +30,6 @@ internal class TerminalListenerImpl(
     }
 
     override fun onPaymentStatusChange(status: PaymentStatus) {
-        super.onPaymentStatusChange(status)
-        // TODO cardreader: Not Implemented
         logWrapper.d(LOG_TAG, "onPaymentStatusChange: ${status.name}")
     }
 }
