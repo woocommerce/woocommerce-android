@@ -9,7 +9,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
 class SearchFilterViewModelTest : BaseUnitTest() {
@@ -31,7 +30,7 @@ class SearchFilterViewModelTest : BaseUnitTest() {
         val searchFilterItems = arrayOf(SearchFilterItem("name", "value"))
         val searchHint = "hint"
         searchFilterViewModel.start(searchFilterItems, searchHint, "requestKey")
-        verify(viewStateObserver, times(1)).onChanged(
+        verify(viewStateObserver).onChanged(
             Loaded(
                 searchFilterItems = searchFilterItems.toList(),
                 searchHint = searchHint
@@ -50,7 +49,7 @@ class SearchFilterViewModelTest : BaseUnitTest() {
         )
         searchFilterViewModel.start(searchFilterItems, "hint", "requestKey")
         searchFilterViewModel.onSearch(resultSearchFilterItemName)
-        verify(viewStateObserver, times(1)).onChanged(
+        verify(viewStateObserver).onChanged(
             Search(
                 searchFilterItems = listOf(resultSearchFilterItem)
             )
@@ -62,7 +61,7 @@ class SearchFilterViewModelTest : BaseUnitTest() {
         val query = "query"
         searchFilterViewModel.start(emptyArray(), "hint", "requestKey")
         searchFilterViewModel.onSearch(query)
-        verify(viewStateObserver, times(1)).onChanged(Empty(query))
+        verify(viewStateObserver).onChanged(Empty(query))
     }
 
     @Test
@@ -71,6 +70,6 @@ class SearchFilterViewModelTest : BaseUnitTest() {
         val requestKey = "requestKey"
         searchFilterViewModel.start(emptyArray(), "hint", requestKey)
         searchFilterViewModel.onItemSelected(selectedItem)
-        verify(eventObserver, times(1)).onChanged(ItemSelected(selectedItem.value, requestKey))
+        verify(eventObserver).onChanged(ItemSelected(selectedItem.value, requestKey))
     }
 }

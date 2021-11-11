@@ -52,7 +52,7 @@ class AddressViewModelTest : BaseUnitTest() {
                 countryCode = "countryCode",
                 stateCode = "stateCode"
             )
-            verify(dataStore, times(1)).fetchCountriesAndStates(selectedSite.get())
+            verify(dataStore).fetchCountriesAndStates(selectedSite.get())
         }
     }
 
@@ -68,7 +68,7 @@ class AddressViewModelTest : BaseUnitTest() {
                 countryCode = "countryCode",
                 stateCode = "stateCode"
             )
-            verify(dataStore, times(1)).fetchCountriesAndStates(selectedSite.get())
+            verify(dataStore).fetchCountriesAndStates(selectedSite.get())
         }
     }
 
@@ -156,7 +156,7 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getCountries()).thenReturn(listOf(location))
         val countryCode = location.code
         addressViewModel.onCountrySelected(countryCode)
-        verify(viewStateObserver, times(1)).onChanged(
+        verify(viewStateObserver).onChanged(
             ViewState(
                 countryLocation = Location(countryCode, location.name),
                 stateLocation = Location("", ""),
@@ -170,7 +170,7 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
         val countryCode = "countryCode"
         addressViewModel.onCountrySelected(countryCode)
-        verify(viewStateObserver, times(1)).onChanged(
+        verify(viewStateObserver).onChanged(
             ViewState(
                 countryLocation = Location(countryCode, countryCode),
                 stateLocation = Location("", ""),
@@ -184,7 +184,7 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getStates(any())).thenReturn(listOf(location))
         val stateCode = location.code
         addressViewModel.onStateSelected(stateCode)
-        verify(viewStateObserver, times(1)).onChanged(
+        verify(viewStateObserver).onChanged(
             ViewState(
                 stateLocation = Location(stateCode, location.name)
             )
@@ -196,7 +196,7 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getStates(any())).thenReturn(emptyList())
         val stateCode = "stateCode"
         addressViewModel.onStateSelected(stateCode)
-        verify(viewStateObserver, times(1)).onChanged(
+        verify(viewStateObserver).onChanged(
             ViewState(
                 stateLocation = Location(stateCode, stateCode)
             )
