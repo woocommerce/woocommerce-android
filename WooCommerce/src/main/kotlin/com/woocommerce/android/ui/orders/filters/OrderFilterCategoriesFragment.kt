@@ -1,34 +1,39 @@
-package com.woocommerce.android.ui.orders.filters.ui
+package com.woocommerce.android.ui.orders.filters
 
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.filters.ui.adapter.OrderFilterCategoryAdapter
-import com.woocommerce.android.ui.orders.filters.ui.model.FilterListCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.ui.model.OrderFilterListEvent.ShowOrderStatusFilterOptions
+import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderFilterCategoryListFragment :
+class OrderFilterCategoriesFragment :
     BaseFragment(R.layout.fragment_order_filter_list),
     BackPressListener {
-    private val viewModel: OrderFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_filters)
+    companion object {
+        const val KEY_UPDATED_FILTER_OPTIONS = "key_updated_filter_options"
+    }
+
+    private val viewModel: OrderFilterCategoriesViewModel by viewModels()
 
     lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter
 
@@ -44,6 +49,9 @@ class OrderFilterCategoryListFragment :
         setUpFiltersRecyclerView(binding)
         binding.showOrdersButton.setOnClickListener {
             viewModel.onShowOrdersClicked()
+        }
+        handleResult<OrderFilterCategoryUiModel>(KEY_UPDATED_FILTER_OPTIONS) {
+            viewModel.onFilterOptionsUpdated(it)
         }
     }
 
@@ -82,23 +90,23 @@ class OrderFilterCategoryListFragment :
         }
     }
 
-    private fun navigateToFilterOptions() {
-        val action = OrderFilterCategoryListFragmentDirections
-            .actionOrderFilterListFragmentToOrderFilterOptionListFragment()
+    private fun navigateToFilterOptions(category: OrderFilterCategoryUiModel) {
+        val action = OrderFilterCategoriesFragmentDirections
+            .actionOrderFilterListFragmentToOrderFilterOptionListFragment(category)
         findNavController().navigateSafely(action)
     }
 
-    private fun setUpObservers(viewModel: OrderFilterListViewModel) {
-        viewModel.orderFilterCategories.observe(viewLifecycleOwner) {
-            showOrderFilters(it)
+    private fun setUpObservers(viewModel: OrderFilterCategoriesViewModel) {
+        viewModel.categories.observe(viewLifecycleOwner) { _, newValue ->
+            showOrderFilters(newValue.list)
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowOrderStatusFilterOptions -> navigateToFilterOptions()
+                is ShowFilterOptionsForCategory -> navigateToFilterOptions(event.category)
                 is ShowDialog -> event.showDialog()
-                is ExitWithResult<*> -> navigateBackWithResult(
+                is OnShowOrders -> navigateBackWithResult(
                     OrderListFragment.ORDER_FILTER_RESULT_KEY,
-                    event.data
+                    true
                 )
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
@@ -114,7 +122,7 @@ class OrderFilterCategoryListFragment :
         view?.post { clearAllMenuItem?.isVisible = show }
     }
 
-    private fun showOrderFilters(orderFilters: List<FilterListCategoryUiModel>) {
+    private fun showOrderFilters(orderFilters: List<OrderFilterCategoryUiModel>) {
         orderFilterCategoryAdapter.submitList(orderFilters)
     }
 

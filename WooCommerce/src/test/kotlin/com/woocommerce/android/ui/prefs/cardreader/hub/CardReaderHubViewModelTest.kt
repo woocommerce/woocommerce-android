@@ -118,6 +118,18 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when user clicks on purchase card reader, then app opens external webview with in-person-payments link`() {
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
+            }!!.onItemClicked.invoke()
+
+        assertThat(
+            (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
+        ).isEqualTo(AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER)
+    }
+
+    @Test
     fun `when user clicks on bbpos manual card reader, then app opens external webview with bbpos link`() {
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {

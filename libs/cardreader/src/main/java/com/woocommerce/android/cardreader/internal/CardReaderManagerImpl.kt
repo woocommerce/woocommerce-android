@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
  */
 @Suppress("LongParameterList")
 internal class CardReaderManagerImpl(
+    private var application: Application,
     private val terminal: TerminalWrapper,
     private val tokenProvider: TokenProvider,
     private val logWrapper: LogWrapper,
@@ -36,8 +37,6 @@ internal class CardReaderManagerImpl(
     companion object {
         private const val TAG = "CardReaderManager"
     }
-
-    private lateinit var application: Application
 
     override val initialized: Boolean
         get() {
@@ -52,12 +51,11 @@ internal class CardReaderManagerImpl(
 
     override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
 
-    override fun initialize(app: Application) {
+    override fun initialize() {
         if (!terminal.isInitialized()) {
-            application = app
-            terminal.getLifecycleObserver().onCreate(app)
+            terminal.getLifecycleObserver().onCreate(application)
 
-            app.registerComponentCallbacks(object : ComponentCallbacks2 {
+            application.registerComponentCallbacks(object : ComponentCallbacks2 {
                 override fun onConfigurationChanged(newConfig: Configuration) {}
 
                 override fun onLowMemory() {}

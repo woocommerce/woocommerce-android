@@ -80,4 +80,24 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
         }
+
+    @Test
+    fun `given store returns invalid postcode error, when get default location, then invalid pc error returned`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val url = "https://wordpress.com"
+            whenever(wcPayStore.getStoreLocationForSite(any())).thenReturn(
+                WCTerminalStoreLocationResult(
+                    WCTerminalStoreLocationError(WCTerminalStoreLocationErrorType.InvalidPostalCode),
+                )
+            )
+
+            // WHEN
+            val result = repository.getDefaultLocationId()
+
+            // THEN
+            assertThat(result).isEqualTo(
+                CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
+            )
+        }
 }
