@@ -150,23 +150,14 @@ class OrderListViewModel @Inject constructor(
      * Create and prefetch the two main order lists to prevent them getting out of
      * sync when the device goes offline.
      */
-    fun initializeList() {
-        // "ALL" tab
-        if (ordersPagedListWrapper == null) {
-            val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = false)
-            ordersPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle)
-                .also { it.fetchFirstPage() }
-        }
+    fun initializeOrdersList() {
+        ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
+            .also { it.fetchFirstPage() }
+        viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+        activatePagedListWrapper(ordersPagedListWrapper!!)
 
         // Fetch order dependencies such as order status list and payment gateways
         fetchOrdersAndOrderDependencies()
-    }
-
-    fun loadOrders() {
-        requireNotNull(ordersPagedListWrapper) {
-            "allPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
-        }
-        activatePagedListWrapper(ordersPagedListWrapper!!)
     }
 
     /**
@@ -427,19 +418,25 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun updateOrdersWithFilters() {
-        if (networkStatus.isConnected()) {
-            refreshOrders()
-            viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
-        } else {
-            viewState = viewState.copy(isRefreshPending = true)
-            showOfflineSnack()
+    fun onFiltersChanged(changed: Boolean) {
+        if (changed) {
+            if (networkStatus.isConnected()) {
+                refreshOrders()
+                viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+            } else {
+                viewState = viewState.copy(isRefreshPending = true)
+                showOfflineSnack()
+            }
         }
     }
 
     private fun refreshOrders() {
         val pagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper)
+    }
+
+    fun onSearchClosed() {
+        initializeOrdersList()
     }
 
     sealed class OrderListEvent : Event() {

@@ -172,8 +172,6 @@ class OrderListFragment :
             viewModel.submitSearchOrFilter(statusFilter = orderStatusFilter)
         } else if (isSearching) {
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
-        } else {
-            viewModel.loadOrders()
         }
 
         setupOrderFilters()
@@ -270,7 +268,7 @@ class OrderListFragment :
 
     @Suppress("LongMethod")
     private fun initializeViewModel() {
-        viewModel.initializeList()
+        viewModel.initializeOrdersList()
 
         // populate views with any existing viewModel data
         viewModel.orderStatusOptions.value?.let { options ->
@@ -476,6 +474,7 @@ class OrderListFragment :
             clearSearchResults()
             searchMenuItem?.isVisible = true
         }
+        viewModel.onSearchClosed()
         quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
         onSearchViewActiveChanged(isActive = false)
         return true
@@ -650,7 +649,7 @@ class OrderListFragment :
         if (FeatureFlag.ORDER_FILTERS.isEnabled()) {
             binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
             handleResult<Boolean>(ORDER_FILTER_RESULT_KEY) {
-                viewModel.updateOrdersWithFilters()
+                viewModel.onFiltersChanged(it)
             }
         }
     }

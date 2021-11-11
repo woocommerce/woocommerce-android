@@ -146,8 +146,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
-        viewModel.initializeList()
-        viewModel.loadOrders()
+        viewModel.initializeOrdersList()
 
         assertNotNull(viewModel.ordersPagedListWrapper)
         assertNotNull(viewModel.activePagedListWrapper)
@@ -163,9 +162,8 @@ class OrderListViewModelTest : BaseUnitTest() {
             doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
             doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
-            viewModel.initializeList()
+            viewModel.initializeOrdersList()
             clearInvocations(viewModel.ordersPagedListWrapper)
-            viewModel.loadOrders()
 
             assertNotNull(viewModel.ordersPagedListWrapper)
             assertNotNull(viewModel.activePagedListWrapper)
@@ -530,7 +528,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
             doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
             viewModel.isSearching = true
-            viewModel.initializeList()
+            viewModel.initializeOrdersList()
 
             viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
 
