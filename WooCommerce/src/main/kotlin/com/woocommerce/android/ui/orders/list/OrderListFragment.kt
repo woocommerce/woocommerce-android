@@ -13,10 +13,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
-import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.FeedbackPrefs
@@ -49,7 +47,6 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
 import java.math.BigDecimal
-import java.util.Locale
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
@@ -284,84 +281,66 @@ class OrderListFragment :
         }
 
         // setup observers
-        viewModel.isFetchingFirstPage.observe(
-            viewLifecycleOwner,
-            Observer {
-                binding.orderRefreshLayout.isRefreshing = it == true
-            }
-        )
+        viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
+            binding.orderRefreshLayout.isRefreshing = it == true
+        }
 
-        viewModel.isLoadingMore.observe(
-            viewLifecycleOwner,
-            Observer {
-                it?.let { isLoadingMore ->
-                    binding.orderListView.setLoadingMoreIndicator(active = isLoadingMore)
+        viewModel.isLoadingMore.observe(viewLifecycleOwner) {
+            it?.let { isLoadingMore ->
+                binding.orderListView.setLoadingMoreIndicator(active = isLoadingMore)
+            }
+        }
+
+        viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
+            it?.let { options ->
+                // So the order status can be matched to the appropriate label
+                binding.orderListView.setOrderStatusOptions(options)
+
+                updateOrderStatusList(options)
+            }
+        }
+
+        viewModel.pagedListData.observe(viewLifecycleOwner) {
+            updatePagedListData(it)
+        }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowErrorSnack -> {
+                    uiMessageResolver.showSnack(event.messageRes)
+                    binding.orderRefreshLayout.isRefreshing = false
                 }
+                is ShowOrderFilters -> showOrderFilters()
+                else -> event.isHandled = false
             }
-        )
+        }
 
-        viewModel.orderStatusOptions.observe(
-            viewLifecycleOwner,
-            Observer {
-                it?.let { options ->
-                    // So the order status can be matched to the appropriate label
-                    binding.orderListView.setOrderStatusOptions(options)
-
-                    updateOrderStatusList(options)
-                }
-            }
-        )
-
-        viewModel.pagedListData.observe(
-            viewLifecycleOwner,
-            Observer {
-                updatePagedListData(it)
-            }
-        )
-
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowErrorSnack -> {
-                        uiMessageResolver.showSnack(event.messageRes)
-                        binding.orderRefreshLayout.isRefreshing = false
+        viewModel.emptyViewType.observe(viewLifecycleOwner) {
+            it?.let { emptyViewType ->
+                when (emptyViewType) {
+                    EmptyViewType.SEARCH_RESULTS -> {
+                        binding.orderStatusListView
+                        emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
                     }
-                    is ShowOrderFilters -> showOrderFilters()
-                    else -> event.isHandled = false
-                }
-            }
-        )
-
-        viewModel.emptyViewType.observe(
-            viewLifecycleOwner,
-            Observer {
-                it?.let { emptyViewType ->
-                    when (emptyViewType) {
-                        EmptyViewType.SEARCH_RESULTS -> {
-                            binding.orderStatusListView
-                            emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
-                        }
-                        EmptyViewType.ORDER_LIST -> {
-                            emptyView.show(emptyViewType) {
-                                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
-                            }
-                        }
-                        EmptyViewType.ORDER_LIST_FILTERED -> {
-                            emptyView.show(emptyViewType, searchQueryOrFilter = viewModel.orderStatusFilter)
-                        }
-                        EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
-                            emptyView.show(emptyViewType) {
-                                refreshOrders()
-                            }
-                        }
-                        else -> {
-                            emptyView.show(emptyViewType)
+                    EmptyViewType.ORDER_LIST -> {
+                        emptyView.show(emptyViewType) {
+                            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
                     }
-                } ?: hideEmptyView()
-            }
-        )
+                    EmptyViewType.ORDER_LIST_FILTERED -> {
+                        emptyView.show(emptyViewType, searchQueryOrFilter = viewModel.orderStatusFilter)
+                    }
+                    EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
+                        emptyView.show(emptyViewType) {
+                            refreshOrders()
+                        }
+                    }
+                    else -> {
+                        emptyView.show(emptyViewType)
+                    }
+                }
+            } ?: hideEmptyView()
+        }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
@@ -449,20 +428,6 @@ class OrderListFragment :
 
             updateActivityTitle()
             searchMenuItem?.isVisible = shouldShowSearchMenuItem()
-        }
-    }
-
-    /**
-     * Calculates the filter to apply based on the state of filtering and which tab is selected.
-     *
-     * @return If there is an active filter, return that filter. Otherwise, if the "Processing"
-     * tab is currently selected, return a filter of "processing", else return null (no filter).
-     */
-    private fun calculateOrderStatusFilter(tab: TabLayout.Tab): String {
-        return when {
-            isFilterEnabled -> orderStatusFilter
-            tab.position == 0 -> (tab.tag as? String)?.toLowerCase(Locale.getDefault()) ?: StringUtils.EMPTY
-            else -> StringUtils.EMPTY
         }
     }
 

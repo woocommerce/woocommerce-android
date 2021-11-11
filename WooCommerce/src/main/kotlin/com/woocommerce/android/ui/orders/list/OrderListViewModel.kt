@@ -9,7 +9,6 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
 import com.woocommerce.android.R
@@ -262,15 +261,11 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        pagedListWrapper.listError.observe(
-            this,
-            Observer {
-                it?.let {
-                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
-                }
+        pagedListWrapper.listError.observe(this) {
+            it?.let {
+                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
             }
-        )
-
+        }
         this.activePagedListWrapper = pagedListWrapper
 
         if (isFirstInit) {
