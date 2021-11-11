@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.jetpack
 
 import android.os.Bundle
 import android.view.View

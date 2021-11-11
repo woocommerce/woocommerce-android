@@ -1,26 +1,21 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.jetpack
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.DialogJetpackInstallStartBinding
+import com.woocommerce.android.databinding.DialogJetpackBenefitsBinding
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class JetpackInstallStartDialog : DialogFragment(R.layout.dialog_jetpack_install_start) {
+class JetpackBenefitsDialog : DialogFragment(R.layout.dialog_jetpack_benefits) {
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
-
-    @Inject lateinit var selectedSite: SelectedSite
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,23 +29,13 @@ class JetpackInstallStartDialog : DialogFragment(R.layout.dialog_jetpack_install
         // Specify transition animations
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
 
-        val binding = DialogJetpackInstallStartBinding.bind(view)
-
-        with(binding.subtitle) {
-            val siteString = if (selectedSite.get().name.orEmpty().isNotEmpty()) {
-                selectedSite.get().name
-            } else {
-                context.getString(R.string.jetpack_install_start_default_name)
-            }
-            text = HtmlCompat.fromHtml(
-                context.getString(R.string.jetpack_install_start_subtitle, siteString),
-                HtmlCompat.FROM_HTML_MODE_LEGACY
-            )
+        val binding = DialogJetpackBenefitsBinding.bind(view)
+        binding.dismissButton.setOnClickListener {
+            dismiss()
         }
-
         binding.installJetpackButton.setOnClickListener {
             findNavController().navigateSafely(
-                JetpackInstallStartDialogDirections.actionJetpackInstallStartDialogToJetpackInstallProgressDialog()
+                JetpackBenefitsDialogDirections.actionJetpackBenefitsDialogToJetpackInstallStartDialog()
             )
         }
     }
