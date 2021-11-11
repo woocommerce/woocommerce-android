@@ -11,13 +11,11 @@ import android.widget.EditText
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
@@ -48,11 +46,10 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
 import java.math.BigDecimal
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
@@ -72,8 +69,6 @@ class OrderListFragment :
         const val ORDER_FILTER_RESULT_KEY = "order_filter_result"
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
-        private const val TAB_INDEX_PROCESSING = 0
-        private const val TAB_INDEX_ALL = 1
     }
 
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
@@ -121,10 +116,6 @@ class OrderListFragment :
      */
     private var isFilterEnabled: Boolean = false
 
-    private var _tabLayout: TabLayout? = null
-    private val tabLayout
-        get() = _tabLayout!!
-
     private val emptyView
         get() = binding.orderListView.emptyView
 
@@ -165,9 +156,6 @@ class OrderListFragment :
 
         setHasOptionsMenu(true)
 
-        _tabLayout = TabLayout(requireContext(), null, R.attr.tabStyle)
-        addTabLayoutToAppBar()
-
         _binding = FragmentOrderListBinding.bind(view)
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
         binding.orderStatusListView.init(listener = this)
@@ -182,64 +170,16 @@ class OrderListFragment :
 
         initializeViewModel()
         initializeResultHandlers()
-        initializeTabs()
 
         if (isFilterEnabled) {
             viewModel.submitSearchOrFilter(statusFilter = orderStatusFilter)
         } else if (isSearching) {
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
         } else {
-            loadListForActiveTab()
+            viewModel.loadAllList()
         }
 
         setupOrderFilters()
-    }
-
-    private fun initializeTabs() {
-        // Get the english version to use for setting the tab tag.
-        val englishTabArray = StringUtils
-            .getStringArrayByLocale(requireContext(), R.array.order_list_tabs, "en")
-
-        resources.getStringArray(R.array.order_list_tabs).toList()
-            .forEachIndexed { index, title ->
-                val tab = tabLayout.newTab().apply {
-                    text = title
-                    tag = englishTabArray?.get(index) ?: title
-                }
-                tabLayout.addTab(tab)
-
-                // If this tab is the one that should be active, select it and load
-                // the appropriate list.
-                if (index == calculateStartupTabPosition()) {
-                    orderStatusFilter = calculateOrderStatusFilter(tab)
-                    tab.select()
-                }
-            }
-
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                hideEmptyView()
-
-                // Calculate the filter that should be active based on the selected
-                // tab and the state of the list.
-                val previousOrderStatus = orderStatusFilter
-                orderStatusFilter = calculateOrderStatusFilter(tab)
-
-                if (orderStatusFilter != previousOrderStatus) {
-                    // store the selected tab in SharedPrefs and clear the adapter data,
-                    // then load orders with the calculated filter.
-                    AppPrefs.setSelectedOrderListTab(tab.position)
-                    binding.orderListView.clearAdapterData()
-                    loadListForActiveTab()
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-
-            override fun onTabReselected(tab: TabLayout.Tab) {
-                binding.orderListView.scrollToTop()
-            }
-        })
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -265,8 +205,6 @@ class OrderListFragment :
 
     override fun onDestroyView() {
         disableSearchListeners()
-        removeTabLayoutFromAppBar()
-        _tabLayout = null
         searchView = null
         orderListMenu = null
         searchMenuItem = null
@@ -515,39 +453,6 @@ class OrderListFragment :
     }
 
     /**
-     * Calculates the default tab position to display using the following logic:
-     * - If no orders for selected store -> "All Orders" tab
-     * - If no orders to process -> "All Orders" tab
-     * - The last tab the user viewed (saved in SharedPrefs)
-     * - Else the "Processing" tab (default)
-     *
-     * @return the index of the tab to be activated
-     */
-    private fun calculateStartupTabPosition(): Int {
-        val orderStatusOptions = getOrderStatusOptions()
-        return if (orderStatusFilter == PROCESSING.value) {
-            TAB_INDEX_PROCESSING
-        } else if (AppPrefs.hasSelectedOrderListTabPosition()) {
-            // If the user has already changed tabs once then select
-            // the last tab they had selected.
-            AppPrefs.getSelectedOrderListTabPosition()
-        } else if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
-            // There are no "processing" orders to display, show all.
-            TAB_INDEX_ALL
-        } else {
-            // Default to the "processing" tab if there are orders to
-            // process.
-            TAB_INDEX_PROCESSING
-        }
-    }
-
-    private fun getOrderStatusFilterForActiveTab(): String {
-        return tabLayout.getTabAt(tabLayout.selectedTabPosition)?.let {
-            calculateOrderStatusFilter(it)
-        } ?: StringUtils.EMPTY
-    }
-
-    /**
      * Calculates the filter to apply based on the state of filtering and which tab is selected.
      *
      * @return If there is an active filter, return that filter. Otherwise, if the "Processing"
@@ -591,7 +496,6 @@ class OrderListFragment :
         clearOrderListData()
         isSearching = true
         checkOrientation()
-        removeTabLayoutFromAppBar()
         onSearchViewActiveChanged(isActive = true)
         quickOrderMenuItem?.isVisible = false
         return true
@@ -607,8 +511,6 @@ class OrderListFragment :
             clearSearchResults()
             searchMenuItem?.isVisible = true
         }
-        loadListForActiveTab()
-        addTabLayoutToAppBar()
         quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
         onSearchViewActiveChanged(isActive = false)
         return true
@@ -622,15 +524,6 @@ class OrderListFragment :
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
             (activity as? MainActivity)?.showBottomNav()
-        }
-    }
-
-    private fun loadListForActiveTab() {
-        orderStatusFilter = getOrderStatusFilterForActiveTab()
-        getOrderStatusFilterForActiveTab()
-        when (tabLayout.selectedTabPosition) {
-            TAB_INDEX_PROCESSING -> viewModel.loadProcessingList()
-            TAB_INDEX_ALL -> viewModel.loadAllList()
         }
     }
 
@@ -783,26 +676,6 @@ class OrderListFragment :
     }
     // endregion
 
-    private fun addTabLayoutToAppBar() {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            if (!appBar.children.contains(tabLayout)) {
-                appBar.addView(tabLayout)
-            }
-            appBar.post {
-                if (context != null) {
-                    appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
-                }
-            }
-        }
-    }
-
-    private fun removeTabLayoutFromAppBar() {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            appBar.removeView(tabLayout)
-            appBar.elevation = 0f
-        }
-    }
-
     override fun shouldExpandToolbar(): Boolean {
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
     }
@@ -811,7 +684,6 @@ class OrderListFragment :
         binding.orderFiltersCard.isVisible = FeatureFlag.ORDER_FILTERS.isEnabled()
         if (FeatureFlag.ORDER_FILTERS.isEnabled()) {
             binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
-            removeTabLayoutFromAppBar()
             handleResult<Boolean>(ORDER_FILTER_RESULT_KEY) {
                 viewModel.updateOrdersWithFilters()
             }
