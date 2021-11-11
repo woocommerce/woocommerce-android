@@ -4,7 +4,6 @@ import android.util.Base64
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.woocommerce.android.util.WooLog.T
-import org.json.JSONException
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationApiResponse
 import java.io.UnsupportedEncodingException
@@ -15,6 +14,7 @@ import javax.inject.Inject
 class NotificationsParser @Inject constructor(private val base64Decoder: Base64Decoder) {
     companion object {
         const val PUSH_ARG_NOTE_FULL_DATA = "note_full_data"
+        private const val MAX_PAYLOAD_SIZE = 4096
     }
 
     private val gson: Gson by lazy { Gson() }
@@ -40,7 +40,7 @@ class NotificationsParser @Inject constructor(private val base64Decoder: Base64D
         // Decompress the payload
         val decompresser = Inflater()
         decompresser.setInput(b64DecodedPayload, 0, b64DecodedPayload.size)
-        val result = ByteArray(4096) // max length an Android PN payload can have
+        val result = ByteArray(MAX_PAYLOAD_SIZE) // max length an Android PN payload can have
         val resultLength = try {
             decompresser.inflate(result).also { decompresser.end() }
         } catch (e: DataFormatException) {
@@ -48,30 +48,29 @@ class NotificationsParser @Inject constructor(private val base64Decoder: Base64D
             0
         }
 
-        var resultJson: JsonObject? = null
-
         // Attempt to parse into a String
-        try {
-            String(result, 0, resultLength, Charsets.UTF_8)
-        } catch (e: UnsupportedEncodingException) {
-            WooLog.e(T.NOTIFICATIONS, "Notification data contains non UTF8 characters.", e)
-            null
-        }?.let { out ->
-            try {
-                // Get jsonObject from the string
-                val jsonObject = gson.fromJson(out, JsonObject::class.java)
-                // Attempt to pull out the notification object
-                if (jsonObject.has("notes")) {
-                    val jsonArray = jsonObject.getAsJsonArray("notes")
-                    if (jsonArray.size() == 1) {
-                        resultJson = jsonArray[0].asJsonObject
-                    }
+        return runCatching {
+            val json = String(result, 0, resultLength, Charsets.UTF_8)
+            // Get jsonObject from the string
+            val jsonObject = gson.fromJson(json, JsonObject::class.java)
+            // Attempt to pull out the notification object
+            if (jsonObject.has("notes")) {
+                val jsonArray = jsonObject.getAsJsonArray("notes")
+                if (jsonArray.size() == 1) {
+                    return@runCatching jsonArray[0].asJsonObject
                 }
-            } catch (e: JSONException) {
-                WooLog.e(T.NOTIFICATIONS, "Can't parse the Note JSON received in the PN", e)
             }
-        }
-
-        return resultJson
+            return@runCatching null
+        }.fold(
+            onSuccess = { it },
+            onFailure = { e ->
+                val message = when (e) {
+                    is UnsupportedEncodingException -> "Notification data contains non UTF8 characters"
+                    else -> "Can't parse the Note JSON received in the PN"
+                }
+                WooLog.e(T.NOTIFICATIONS, message, e)
+                null
+            }
+        )
     }
 }
