@@ -3,19 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_order_filters"
-    app:startDestination="@id/orderFilterCategoryListFragment">
+    app:startDestination="@id/orderFilterCategoriesFragment">
     <fragment
-        android:id="@+id/orderFilterCategoryListFragment"
-        android:name="com.woocommerce.android.ui.orders.filters.OrderFilterCategoryListFragment"
+        android:id="@+id/orderFilterCategoriesFragment"
+        android:name="com.woocommerce.android.ui.orders.filters.OrderFilterCategoriesFragment"
         tools:layout="@layout/fragment_order_filter_list">
         <action
             android:id="@+id/action_orderFilterListFragment_to_orderFilterOptionListFragment"
-            app:destination="@id/orderFilterOptionsListFragment"
+            app:destination="@id/orderFilterOptionsFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
-        android:id="@+id/orderFilterOptionsListFragment"
-        android:name="com.woocommerce.android.ui.orders.filters.OrderFilterOptionListFragment"
-        tools:layout="@layout/fragment_order_filter_list" />
+        android:id="@+id/orderFilterOptionsFragment"
+        android:name="com.woocommerce.android.ui.orders.filters.OrderFilterOptionsFragment"
+        tools:layout="@layout/fragment_order_filter_list">
+        <argument
+            android:name="filterCategory"
+            app:argType="com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel"
+            app:nullable="false" />
+    </fragment>
 </navigation>

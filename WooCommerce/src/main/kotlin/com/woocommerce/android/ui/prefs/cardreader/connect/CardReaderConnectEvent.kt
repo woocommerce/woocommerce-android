@@ -1,13 +1,9 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import androidx.annotation.StringRes
-import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
-    data class InitializeCardReaderManager(val onCardManagerInitialized: (manager: CardReaderManager) -> Unit) :
-        CardReaderConnectEvent()
-
     data class CheckLocationPermissions(val onPermissionsCheckResult: (Boolean) -> Unit) : CardReaderConnectEvent()
 
     data class CheckLocationEnabled(val onLocationEnabledCheckResult: (Boolean) -> Unit) : CardReaderConnectEvent()
