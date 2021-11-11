@@ -1,5 +1,6 @@
 package com.woocommerce.android.di
 
+import android.app.Application
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
@@ -20,9 +21,10 @@ class CardReaderModule {
     @Provides
     @Singleton
     fun provideCardReaderManager(
+        application: Application,
         cardReaderStore: CardReaderStore,
         logWrapper: LogWrapper
-    ) = CardReaderManagerFactory.createCardReaderManager(cardReaderStore, logWrapper)
+    ) = CardReaderManagerFactory.createCardReaderManager(application, cardReaderStore, logWrapper)
 
     @Provides
     fun provideCardReaderStore(

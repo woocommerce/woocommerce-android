@@ -33,7 +33,6 @@ import com.woocommerce.android.extensions.navigateToParentWithResult
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.InitializeCardReaderManager
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
@@ -197,12 +196,6 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                 is RequestEnableBluetooth -> {
                     val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                     requestEnableBluetoothLauncher.launch(enableBtIntent)
-                }
-                is InitializeCardReaderManager -> {
-                    cardReaderManager.let {
-                        it.initialize(requireActivity().application)
-                        event.onCardManagerInitialized(it)
-                    }
                 }
                 is ShowCardReaderTutorial -> {
                     findNavController()
