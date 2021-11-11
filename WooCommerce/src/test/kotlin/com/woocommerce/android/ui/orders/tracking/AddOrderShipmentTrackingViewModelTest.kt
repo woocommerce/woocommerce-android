@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.tracking
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderTestUtils.ORDER_IDENTIFIER
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -25,10 +26,6 @@ import kotlin.test.assertEquals
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
-    companion object {
-        private const val ORDER_IDENTIFIER = "1-1-1"
-    }
-
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
 
