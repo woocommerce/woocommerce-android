@@ -61,7 +61,7 @@ class QuickOrderViewModel @Inject constructor(
 
         viewState = viewState.copy(isProgressShowing = true, isDoneButtonEnabled = false)
 
-        launch {
+        launch(Dispatchers.IO) {
             val result = orderStore.postQuickOrder(
                 selectedSite.get(),
                 viewState.currentPrice.toString()
