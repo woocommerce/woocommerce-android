@@ -103,7 +103,13 @@ class StatsRepository @Inject constructor(
             val hasNoOrders = result.rowsAffected == 0
             Result.success(hasNoOrders)
         } else {
-            Result.failure(Exception(result?.error?.message.orEmpty()))
+            val errorMessage = result?.error?.message ?: "Timeout"
+            WooLog.e(
+                DASHBOARD,
+                "$TAG - Error fetching whether orders exist: $errorMessage"
+            )
+
+            Result.failure(Exception(errorMessage))
         }
     }
 
