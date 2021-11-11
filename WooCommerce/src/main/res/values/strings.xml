@@ -266,6 +266,12 @@
     <string name="orderlist_quickorder_wip_title">Take payments from your device!</string>
     <string name="orderlist_quickorder_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
     <string name="orderlist_quickorder_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
+    <string name="orderlist_quickorder_menu">Quick order</string>
+    <!--
+        Quick Order
+    -->
+    <string name="quickorder_dialog_title">Take payment</string>
+    <string name="quickorder_enter_amount">Enter amount</string>
     <!--
         Order Filters
     -->
@@ -857,6 +863,8 @@
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
     <string name="card_reader_connect_missing_address">Please provide your store address in order to proceed</string>
     <string name="card_reader_connect_missing_address_button">Enter address</string>
+    <string name="card_reader_connect_invalid_postal_code_header">Store address postcode is invalid</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">Please provide a valid postcode in your store settings and try again</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
@@ -964,6 +972,12 @@
     <string name="card_reader_tutorial_reconnect_detail">Your reader will go to sleep after 10 min of inactivity. Simply press the power button to reconnect it.</string>
     <string name="card_reader_tutorial_charged_label">Keep your reader charged</string>
     <string name="card_reader_tutorial_charged_detail">Your reader takes about three hours to fully charge</string>
+
+    <!--
+        Card reader Accessibility
+    -->
+    <string name="card_reader_accessibility_reader_is_connected">Reader is connected</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">Reader is disconnected</string>
 
     <!--
         Notifications
