@@ -177,9 +177,7 @@ class ProductDetailFragment :
             changesMade()
         }
         handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
-            viewModel.updateProductDraft(
-                images = it
-            )
+            viewModel.updateProductDraft(images = it)
             changesMade()
         }
 
