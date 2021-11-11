@@ -84,8 +84,7 @@ class OrderListViewModel @Inject constructor(
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
-    internal var allPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
-    internal var processingPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
+    internal var ordersPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
     private val dataSource by lazy {
@@ -152,22 +151,11 @@ class OrderListViewModel @Inject constructor(
      * Create and prefetch the two main order lists to prevent them getting out of
      * sync when the device goes offline.
      */
-    fun initializeListsForMainTabs() {
+    fun initializeList() {
         // "ALL" tab
-        if (allPagedListWrapper == null) {
+        if (ordersPagedListWrapper == null) {
             val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = false)
-            allPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle)
-                .also { it.fetchFirstPage() }
-        }
-
-        // "PROCESSING" tab
-        if (processingPagedListWrapper == null) {
-            val processingDescriptor = WCOrderListDescriptor(
-                site = selectedSite.get(),
-                statusFilter = CoreOrderStatus.PROCESSING.value,
-                excludeFutureOrders = false
-            )
-            processingPagedListWrapper = listStore.getList(processingDescriptor, dataSource, lifecycle)
+            ordersPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle)
                 .also { it.fetchFirstPage() }
         }
 
@@ -175,24 +163,11 @@ class OrderListViewModel @Inject constructor(
         fetchOrdersAndOrderDependencies()
     }
 
-    /**
-     * Loads orders for the "ALL" tab.
-     */
-    fun loadAllList() {
-        requireNotNull(allPagedListWrapper) {
+    fun loadOrders() {
+        requireNotNull(ordersPagedListWrapper) {
             "allPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
         }
-        activatePagedListWrapper(allPagedListWrapper!!)
-    }
-
-    /**
-     * Loads orders for the "PROCESSING" tab.
-     */
-    fun loadProcessingList() {
-        requireNotNull(processingPagedListWrapper) {
-            "processingPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
-        }
-        activatePagedListWrapper(processingPagedListWrapper!!)
+        activatePagedListWrapper(ordersPagedListWrapper!!)
     }
 
     /**
@@ -424,8 +399,7 @@ class OrderListViewModel @Inject constructor(
                 if (isSearching) {
                     activePagedListWrapper?.fetchFirstPage()
                 }
-                allPagedListWrapper?.fetchFirstPage()
-                processingPagedListWrapper?.fetchFirstPage()
+                ordersPagedListWrapper?.fetchFirstPage()
             }
         } else {
             // Invalidate the list data so that orders that have not
@@ -434,8 +408,7 @@ class OrderListViewModel @Inject constructor(
             if (isSearching) {
                 activePagedListWrapper?.invalidateData()
             }
-            allPagedListWrapper?.invalidateData()
-            processingPagedListWrapper?.invalidateData()
+            ordersPagedListWrapper?.invalidateData()
         }
     }
 

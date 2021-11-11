@@ -176,7 +176,7 @@ class OrderListFragment :
         } else if (isSearching) {
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
         } else {
-            viewModel.loadAllList()
+            viewModel.loadOrders()
         }
 
         setupOrderFilters()
@@ -273,7 +273,7 @@ class OrderListFragment :
 
     @Suppress("LongMethod")
     private fun initializeViewModel() {
-        viewModel.initializeListsForMainTabs()
+        viewModel.initializeList()
 
         // populate views with any existing viewModel data
         viewModel.orderStatusOptions.value?.let { options ->
