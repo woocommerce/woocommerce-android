@@ -376,6 +376,7 @@ class OrderListFragment :
         checkOrientation()
         onSearchViewActiveChanged(isActive = true)
         quickOrderMenuItem?.isVisible = false
+        binding.orderFiltersCard.isVisible = false
         return true
     }
 
@@ -384,6 +385,7 @@ class OrderListFragment :
         searchMenuItem?.isVisible = true
         viewModel.onSearchClosed()
         quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
+        binding.orderFiltersCard.isVisible = true
         onSearchViewActiveChanged(isActive = false)
         return true
     }
