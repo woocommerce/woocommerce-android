@@ -16,9 +16,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.AccountModel
@@ -30,7 +28,6 @@ import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayl
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 
-@RunWith(RobolectricTestRunner::class)
 class NotificationMessageHandlerTest {
     private lateinit var notificationMessageHandler: NotificationMessageHandler
 

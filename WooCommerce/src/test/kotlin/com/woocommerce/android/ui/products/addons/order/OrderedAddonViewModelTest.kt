@@ -21,18 +21,15 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType
 import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderedAddonViewModelTest : BaseUnitTest() {
     private lateinit var viewModelUnderTest: OrderedAddonViewModel
     private var addonRepositoryMock: AddonRepository = mock()

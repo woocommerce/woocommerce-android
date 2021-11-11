@@ -2,36 +2,15 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.atLeastOnce
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.Status
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
@@ -39,9 +18,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibil
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -55,10 +32,9 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -69,7 +45,6 @@ import java.util.concurrent.CancellationException
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"

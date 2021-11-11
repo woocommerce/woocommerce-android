@@ -18,17 +18,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderFilterListViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()

@@ -14,15 +14,12 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderEditingViewModelTest : BaseUnitTest() {
     private lateinit var sut: OrderEditingViewModel
 
