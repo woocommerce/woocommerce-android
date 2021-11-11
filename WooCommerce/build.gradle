@@ -28,6 +28,7 @@ repositories {
             includeGroup "org.wordpress"
             includeGroup "org.wordpress.fluxc"
             includeGroup "org.wordpress.fluxc.plugins"
+            includeGroup "org.wordpress.mediapicker"
         }
     }
     maven {
@@ -291,9 +292,9 @@ dependencies {
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 
-    implementation "com.github.wordpress-mobile.WordPress-MediaPicker-Android:mediapicker:$mediapickerVersion"
-    implementation "com.github.wordpress-mobile.WordPress-MediaPicker-Android:source-device:$mediapickerVersion"
-    implementation "com.github.wordpress-mobile.WordPress-MediaPicker-Android:source-wordpress:$mediapickerVersion"
+    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:$mediapickerVersion")
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
