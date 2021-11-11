@@ -110,7 +110,7 @@ class OrderListViewModel @Inject constructor(
     val isEmpty: LiveData<Boolean> = _isEmpty
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
-        ThrottleLiveData<EmptyViewType?>(
+        ThrottleLiveData(
             offset = EMPTY_VIEW_THROTTLE,
             coroutineScope = this,
             mainDispatcher = dispatchers.main,
@@ -229,16 +229,6 @@ class OrderListViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    /**
-     * Reload the orders list with the database available in the database. This is the ideal way to
-     * load changes to orders that were initiated from within this app instance. If the change was
-     * successfully pushed to the API, then the database would already be updated so there is no
-     * need to hit the API again.
-     */
-    fun reloadListFromCache() {
-        activePagedListWrapper?.invalidateData()
     }
 
     /**
