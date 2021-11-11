@@ -367,6 +367,8 @@ class OrderListFragment :
 
         if (newText.length > 2) {
             submitSearchDelayed(newText)
+        } else {
+            binding.orderListView.clearAdapterData()
         }
         return true
     }
