@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath 'com.google.gms:google-services:4.3.8'
         classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.68.3'
-        classpath 'io.sentry:sentry-android-gradle-plugin:2.0.0'
+        classpath 'io.sentry:sentry-android-gradle-plugin:2.1.5'
     }
 }
 
@@ -46,7 +46,7 @@ allOpen {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.woocommerce.android"
@@ -219,7 +219,7 @@ dependencies {
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
-    debugImplementation "com.facebook.soloader:soloader:0.10.1"
+    debugImplementation "com.facebook.soloader:soloader:0.10.3"
     debugImplementation ("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
         // Force Flipper to use the okhttp version defined in the fluxc module
         // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
