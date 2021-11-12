@@ -198,6 +198,7 @@ class VariationDetailViewModel @Inject constructor(
         onVariationChanged(isVisible = isVisible)
     }
 
+    @Suppress("ComplexMethod")
     fun onVariationChanged(
         remoteProductId: Long? = null,
         remoteVariationId: Long? = null,
