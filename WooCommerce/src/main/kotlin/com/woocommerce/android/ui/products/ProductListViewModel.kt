@@ -20,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -426,6 +427,7 @@ class ProductListViewModel @Inject constructor(
         val displaySortAndFilterCard: Boolean? = null,
         val isAddProductButtonVisible: Boolean? = null,
     ) : Parcelable {
+        @IgnoredOnParcel
         val isBottomNavBarVisible = isSearchActive != true
     }
 
