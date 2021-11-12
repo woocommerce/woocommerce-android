@@ -815,7 +815,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ANNOUNCEMENT_SOURCE_UPGRADE = "app_upgrade"
         const val VALUE_ANNOUNCEMENT_SOURCE_SETTINGS = "app_settings"
 
-
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
