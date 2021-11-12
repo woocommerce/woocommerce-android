@@ -7,7 +7,6 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
-import com.woocommerce.android.screenshots.reviews.SingleProductScreen
 import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.Matchers
