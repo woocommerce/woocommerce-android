@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.internal
 
-import com.stripe.stripeterminal.callable.ConnectionTokenCallback
-import com.stripe.stripeterminal.callable.ConnectionTokenProvider
-import com.stripe.stripeterminal.model.external.ConnectionTokenException
+import com.stripe.stripeterminal.external.callable.ConnectionTokenCallback
+import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
+import com.stripe.stripeterminal.external.models.ConnectionTokenException
 import com.woocommerce.android.cardreader.CardReaderStore
 import kotlinx.coroutines.runBlocking
 

@@ -1,1 +1,1 @@
-This release has a handful of minor improvements for several features based on feedback from merchants like you. We appreciate it!
+We know that your customers don’t always enter their addresses correctly when they place their orders. You’ll find that you can now edit the billing and shipping address along with customer-provided notes.

@@ -1,19 +1,17 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
-import com.woocommerce.android.cardreader.CardPaymentStatus
-import com.woocommerce.android.cardreader.CardPaymentStatus.*
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType.GENERIC_ERROR
+import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.GenericError
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
-import com.woocommerce.android.cardreader.PaymentData
+import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.DisplayMessageRequested
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.ReaderInputRequested
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
@@ -36,7 +34,6 @@ internal class PaymentManager(
     private val cancelPaymentAction: CancelPaymentAction,
     private val paymentUtils: PaymentUtils,
     private val errorMapper: PaymentErrorMapper,
-    private val additionalInfoMapper: AdditionalInfoMapper,
 ) {
     suspend fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
         if (isInvalidState(paymentInfo)) return@flow
@@ -93,7 +90,7 @@ internal class PaymentManager(
         paymentIntent: PaymentIntent
     ): String? {
         return paymentIntent.getCharges().takeIf { it.isNotEmpty() }?.get(0)?.receiptUrl ?: run {
-            emit(PaymentFailed(GENERIC_ERROR, null, "ReceiptUrl not available"))
+            emit(PaymentFailed(GenericError, null, "ReceiptUrl not available"))
             null
         }
     }
@@ -117,8 +114,6 @@ internal class PaymentManager(
         emit(CollectingPayment)
         collectPaymentAction.collectPayment(paymentIntent).collect {
             when (it) {
-                is DisplayMessageRequested -> emit(ShowAdditionalInfo(additionalInfoMapper.map(it.msg)))
-                is ReaderInputRequested -> emit(WaitingForInput)
                 is CollectPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is CollectPaymentStatus.Success -> result = it.paymentIntent
             }
@@ -172,4 +167,4 @@ internal class PaymentManager(
     }
 }
 
-data class PaymentDataImpl(val paymentIntent: PaymentIntent) : PaymentData
+internal data class PaymentDataImpl(val paymentIntent: PaymentIntent) : PaymentData

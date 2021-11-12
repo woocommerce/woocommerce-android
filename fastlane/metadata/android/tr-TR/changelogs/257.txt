@@ -1,0 +1,2 @@
+7.8:
+Bu sürümde, sizin gibi satıcılardan gelen geri bildirimleri temel alarak çeşitli özelliklerde küçük iyileştirmeler yaptık. Geri bildirimlerinizi gerçekten takdir ediyoruz!

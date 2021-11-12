@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-12 15:54:03+0000
+Translation-Revision-Date: 2021-10-27 13:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Avantajları görün</string>
+    <string name="jetpack_benefits_bottom_banner_title">Jetpack ile tam deneyimi yaşayın</string>
+    <string name="product_description_hint_with_title">Bize %s hakkında daha fazla bilgi verin…</string>
+    <string name="product_description_hint_no_title">Ürününüzü gelecekteki müşterilerinize anlatın…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Okuyucunun seri numarası panoya kopyalandı</string>
+    <string name="card_reader_manual_card_reader">Kart Okuyucu Kılavuzu </string>
+    <string name="order_detail_add_billing_address">Fatura adresi ekle</string>
+    <string name="order_detail_add_shipping_address">Teslimat adresi ekle</string>
+    <string name="order_detail_add_customer_note">Müşteri notu ekle</string>
+    <string name="order_detail_billing_address_section">Fatura adresi</string>
+    <string name="order_detail_shipping_address_section">Gönderim adresi</string>
+    <string name="order_detail_address_section">Adres</string>
+    <string name="order_detail_edit_address_country">Ülke</string>
+    <string name="order_detail_edit_address_state">Şehir</string>
+    <string name="order_detail_edit_address_zip">Posta kodu</string>
+    <string name="order_detail_edit_address_city">Şehir</string>
+    <string name="order_detail_edit_address_line2">Adres 2</string>
+    <string name="order_detail_edit_address_line1">Adres 1</string>
+    <string name="order_detail_edit_address_company">Firma</string>
+    <string name="order_detail_edit_address_details_phone">Telefon</string>
+    <string name="order_detail_edit_address_details_email">E-posta</string>
+    <string name="order_detail_edit_address_details_last_name">Soyad</string>
+    <string name="order_detail_edit_address_details_first_name">İsim</string>
+    <string name="orderdetail_customer_note_hint">Bir müşterinin sipariş notunu düzenleyin</string>
     <string name="support_system_status_report_fetch_error">SSR alınırken hata oluştu. Lütfen wp-admin\'de WooCommerce -&gt; Durum bölümünü kontrol edin.</string>
     <string name="support_system_status_report_share_error">Sistem Durum Raporu paylaşılamıyor</string>
     <string name="support_system_status_report_error_copy_to_clipboard">SSR panoya kopyalanırken hata oluştu</string>
@@ -831,7 +855,6 @@ Language: tr
     <string name="product_description_empty">Ürününüzü tanımlayın</string>
     <string name="product_description">Tanım</string>
     <string name="product_edit_description">Tanımı düzenle</string>
-    <string name="product_description_hint">Yazmaya başlayın…</string>
     <string name="discard_message">Değişikliklerinizi iptal etmek mi istiyorsunuz?</string>
     <string name="update">Güncelle</string>
     <string name="done">Bitti</string>
@@ -968,7 +991,7 @@ Language: tr
     <string name="login_refresh_app_progress">WooCommerce kontrol ediliyor…</string>
     <string name="login_refresh_app">uygulamayı yenile</string>
     <string name="login_not_woo_store">Görünüşe göre %1$s bir WooCommerce sitesi değil. Sitenize WooCommerce eklentisini yükleyin ve daha sonra %2$s</string>
-    <string name="orderdetail_empty_shipping_address">Adres belirtilmedi.</string>
+    <string name="orderdetail_empty_address">Adres belirtilmedi</string>
     <string name="login_need_help_finding_connected_email">Bağlanırken kullandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="enter_wordpress_site">Bu adresteki web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
     <string name="enter_email_for_site">&lt;b&gt;%1$s&lt;/b&gt; ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>

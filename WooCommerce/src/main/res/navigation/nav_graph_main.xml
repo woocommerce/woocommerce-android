@@ -13,6 +13,10 @@
             android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
             app:destination="@id/jetpackBenefitsDialog" />
     </fragment>
+    <dialog
+        android:id="@+id/quickOrderDialog"
+        android:name="com.woocommerce.android.ui.orders.quickorder.QuickOrderDialog"
+        android:label="QuickOrderDialog" />
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -35,6 +39,11 @@
         <action
             android:id="@+id/action_orderListFragment_to_orderFilterListFragment"
             app:destination="@id/nav_graph_order_filters"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_orderListFragment_to_quickOrderDialog"
+            app:destination="@id/quickOrderDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
@@ -258,7 +267,7 @@
         app:popExitAnim="@anim/activity_fade_out" />
     <dialog
         android:id="@+id/jetpackBenefitsDialog"
-        android:name="com.woocommerce.android.ui.mystore.JetpackBenefitsDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackBenefitsDialog"
         android:label="JetpackBenefitsDialog" >
         <action
             android:id="@+id/action_jetpackBenefitsDialog_to_jetpackInstallStartDialog"
@@ -266,7 +275,7 @@
     </dialog>
     <dialog
         android:id="@+id/jetpackInstallStartDialog"
-        android:name="com.woocommerce.android.ui.mystore.JetpackInstallStartDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackInstallStartDialog"
         android:label="JetpackInstallStartDialog"
         tools:layout="@layout/dialog_jetpack_install_start">
         <action
@@ -275,7 +284,7 @@
     </dialog>
     <dialog
         android:id="@+id/jetpackInstallProgressDialog"
-        android:name="com.woocommerce.android.ui.mystore.JetpackInstallProgressDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackInstallProgressDialog"
         android:label="JetpackInstallProgressDialog"
         tools:layout="@layout/dialog_jetpack_install_progress" >
         <action

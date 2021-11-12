@@ -266,10 +266,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         CARD_READER_AUTO_CONNECTION_STARTED,
 
         // -- Card Reader - software update
-        CARD_READER_SOFTWARE_UPDATE_TAPPED,
+        CARD_READER_SOFTWARE_UPDATE_STARTED,
         CARD_READER_SOFTWARE_UPDATE_SUCCESS,
-        CARD_READER_SOFTWARE_UPDATE_SKIP_TAPPED,
         CARD_READER_SOFTWARE_UPDATE_FAILED,
+
+        // -- Card Reader - Location
+        CARD_READER_LOCATION_SUCCESS,
+        CARD_READER_LOCATION_FAILURE,
+        CARD_READER_LOCATION_MISSING_TAPPED,
 
         // -- Receipts
         RECEIPT_PRINT_TAPPED,
@@ -698,6 +702,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FULFILL_ORDER = "fulfill_order"
         const val KEY_STEP = "step"
         const val KEY_ADDONS = "addons"
+        const val KEY_SOFTWARE_UPDATE_TYPE = "software_update_type"
         const val KEY_SUBJECT = "subject"
 
         const val KEY_SORT_ORDER = "order"
@@ -753,6 +758,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
+
+        // TODO nbradbury change to production when feature is released
+        const val VALUE_QUICK_ORDER_FEEDBACK = "quick_order_prototype"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"

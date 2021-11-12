@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-13 13:54:04+0000
+Translation-Revision-Date: 2021-10-27 13:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Преимущества</string>
+    <string name="jetpack_benefits_bottom_banner_title">Все возможности с Jetpack</string>
+    <string name="product_description_hint_with_title">Расскажите нам больше о %s…</string>
+    <string name="product_description_hint_no_title">Опишите товар для потенциальных покупателей…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Серийный номер терминала, скопированный в буфер обмена</string>
+    <string name="card_reader_manual_card_reader">Руководство по работе с платёжным терминалом</string>
+    <string name="order_detail_add_billing_address">Добавить платёжный адрес</string>
+    <string name="order_detail_add_shipping_address">Добавить адрес доставки</string>
+    <string name="order_detail_add_customer_note">Добавить примечание для клиента</string>
+    <string name="order_detail_billing_address_section">Платёжный адрес</string>
+    <string name="order_detail_shipping_address_section">Адрес доставки</string>
+    <string name="order_detail_address_section">Адрес</string>
+    <string name="order_detail_edit_address_country">Страна</string>
+    <string name="order_detail_edit_address_state">Область/район</string>
+    <string name="order_detail_edit_address_zip">Почтовый индекс</string>
+    <string name="order_detail_edit_address_city">Город</string>
+    <string name="order_detail_edit_address_line2">Адрес 2</string>
+    <string name="order_detail_edit_address_line1">Адрес 1</string>
+    <string name="order_detail_edit_address_company">Компания</string>
+    <string name="order_detail_edit_address_details_phone">Телефон</string>
+    <string name="order_detail_edit_address_details_email">E-mail</string>
+    <string name="order_detail_edit_address_details_last_name">Фамилия</string>
+    <string name="order_detail_edit_address_details_first_name">Имя</string>
+    <string name="orderdetail_customer_note_hint">Изменить примечание к заказу клиента</string>
     <string name="support_system_status_report_fetch_error">Не удалось получить данные о состоянии системы. Войдите в панель управления и выберите \"WooCommerce -&gt; Статус\".</string>
     <string name="support_system_status_report_share_error">Не удалось отправить данные о состоянии системы</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Не удалось скопировать данные о состоянии системы в буфер обмена</string>
@@ -831,7 +855,6 @@ Language: ru
     <string name="product_description_empty">Опишите продукт</string>
     <string name="product_description">Описание</string>
     <string name="product_edit_description">Редактировать описание</string>
-    <string name="product_description_hint">Начните писать…</string>
     <string name="discard_message">Отменить изменения?</string>
     <string name="update">Обновить</string>
     <string name="done">Готово</string>
@@ -968,7 +991,7 @@ Language: ru
     <string name="login_refresh_app_progress">Поиск WooCommerce…</string>
     <string name="login_refresh_app">обновите приложение</string>
     <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce. Установите плагин WooCommerce на свой сайт, а затем %2$s.</string>
-    <string name="orderdetail_empty_shipping_address">Адрес не указан.</string>
+    <string name="orderdetail_empty_address">Адрес не указан</string>
     <string name="login_need_help_finding_connected_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="enter_wordpress_site">Расположенный по этому адресу веб-сайт не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>
     <string name="enter_email_for_site">Войдите на WordPress.com, чтобы подключиться к &lt;b&gt;%1$s&lt;/b&gt;</string>

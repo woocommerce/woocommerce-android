@@ -19,7 +19,7 @@
             android:paddingBottom="@dimen/major_300">
 
             <LinearLayout
-                android:id="@+id/progress_icon"
+                android:id="@+id/header_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -64,7 +64,7 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
                 app:layout_constraintEnd_toEndOf="@id/jetpack_progress_guideline_end"
-                app:layout_constraintTop_toBottomOf="@id/progress_icon" />
+                app:layout_constraintTop_toBottomOf="@id/header_layout" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/subtitle"
