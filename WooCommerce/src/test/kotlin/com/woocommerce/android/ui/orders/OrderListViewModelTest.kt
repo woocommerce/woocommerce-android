@@ -8,7 +8,8 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
+import com.woocommerce.android.ui.orders.filters.data.GetSelectedOrderFiltersCount
+import com.woocommerce.android.ui.orders.filters.data.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -73,7 +74,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
     private val orderFetcher: WCOrderFetcher = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val orderFiltersRepository: OrderFiltersRepository = mock()
+    private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
+    private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
 
     @Before
     fun setup() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -105,7 +107,8 @@ class OrderListViewModelTest : BaseUnitTest() {
             fetcher = orderFetcher,
             resourceProvider = resourceProvider,
             wooCommerceStore = wooCommerceStore,
-            orderFiltersRepository = orderFiltersRepository
+            getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
+            getSelectedOrderFiltersCount = getSelectedOrderFiltersCount
         )
     }
 

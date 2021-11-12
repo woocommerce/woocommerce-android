@@ -24,8 +24,8 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.GetSelectedOrderFiltersCount
+import com.woocommerce.android.ui.orders.filters.data.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -41,7 +41,6 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
@@ -76,7 +75,8 @@ class OrderListViewModel @Inject constructor(
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore,
-    private val orderFiltersRepository: OrderFiltersRepository
+    private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
+    private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -405,7 +405,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
             // A child fragment made a change that requires a data refresh.
@@ -416,7 +416,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
@@ -440,7 +440,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = MAIN)
     fun onNotificationReceived(event: NotificationReceivedEvent) {
         if (event.channel == NotificationChannelType.NEW_ORDER && isSearching) {
             activePagedListWrapper?.fetchFirstPage()
@@ -469,29 +469,18 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun onFiltersChanged(filtersChanged: Boolean) {
-        if (filtersChanged) {
-            if (networkStatus.isConnected()) {
-                val selectedFilters = orderFiltersRepository.getCachedFiltersSelection()
-                refreshOrders(selectedFilters)
-                val selectedFilterCount = selectedFilters.values
-                    .map { it.count() }
-                    .sum()
-                viewState = viewState.copy(filterCount = selectedFilterCount)
-            } else {
-                viewState = viewState.copy(isRefreshPending = true)
-                showOfflineSnack()
-            }
+    fun updateOrdersWithFilters() {
+        if (networkStatus.isConnected()) {
+            refreshOrders()
+            viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+        } else {
+            viewState = viewState.copy(isRefreshPending = true)
+            showOfflineSnack()
         }
     }
 
-    private fun refreshOrders(orderListFilters: Map<OrderListFilterCategory, List<String>>) {
-        val listDescriptor = WCOrderListDescriptor(
-            selectedSite.get(),
-            orderListFilters[OrderListFilterCategory.ORDER_STATUS]?.joinToString(separator = ",")
-        )
-        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
-
+    private fun refreshOrders() {
+        val pagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper)
     }
 

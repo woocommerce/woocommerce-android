@@ -312,6 +312,38 @@ class DateUtils @Inject constructor(
         crashLogger.sendReport(exception = exception)
     }
 
+    /**
+     * Returns a date object with the date for today at 00:00:00
+     */
+    fun getDateForTodayAtTheStartOfTheDay(): Date =
+        Calendar.getInstance().apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, 0)
+        }.time
+
+    /**
+     * Returns a Date object with current date minus N days
+     */
+    fun getCurrentDateTimeMinusDays(days: Int): Date =
+        Calendar.getInstance().apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, 0)
+            add(Calendar.DATE, -days)
+        }.time
+
+    fun toIso8601Format(date: Date): String? =
+        try {
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+                .format(date)
+        } catch (e: Exception) {
+            "Error while parsing $date to Iso8601 string format".reportAsError(e)
+            null
+        }
+
     companion object {
         /**
          * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT
