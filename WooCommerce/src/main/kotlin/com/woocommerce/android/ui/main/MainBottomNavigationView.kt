@@ -66,11 +66,10 @@ class MainBottomNavigationView @JvmOverloads constructor(
      * of our badges. To work around this we remove the badges before state is saved and recreate
      * them ourselves when state is restored.
      */
-    override fun onSaveInstanceState(): Parcelable? {
+    override fun onSaveInstanceState() = run {
         removeBadge(R.id.orders)
         removeBadge(R.id.reviews)
-        return super.onSaveInstanceState()
-    }
+    }.let { super.onSaveInstanceState() }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
         super.onRestoreInstanceState(state)
