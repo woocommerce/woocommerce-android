@@ -55,7 +55,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
         val newSelectedFilters = _viewState.filterOptions
             .filter { it.isSelected && it.key != DEFAULT_ALL_KEY }
             .map { it.key }
-        orderFilterRepository.updateSelectedFilters(categoryKey, newSelectedFilters)
+        orderFilterRepository.setSelectedFilters(categoryKey, newSelectedFilters)
     }
 
     fun onBackPressed(): Boolean {
