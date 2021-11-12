@@ -104,7 +104,7 @@ ext {
     lifecycleVersion = '2.4.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.116.0'
+    flipperVersion = '0.118.1'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.7.0'
     appCompatVersion = '1.3.1'
@@ -114,7 +114,7 @@ ext {
     robolectricVersion = '4.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = "develop-eebc5d8e91a1d90190919f900f924b39c861a528"
-    mediapickerVersion = 'wp-media-library-35d6caa5d55f5f681a99728893da5445828d2e69'
+    mediapickerVersion = 'wp-media-library-5f49e14a716aa30b9b38f94941efe4105b012217'
 }
 
 // Onboarding and dev env setup tasks
