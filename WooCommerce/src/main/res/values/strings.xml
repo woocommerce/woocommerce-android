@@ -268,6 +268,12 @@
     <string name="orderlist_quickorder_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
     <string name="orderlist_quickorder_menu">Quick order</string>
     <!--
+        Quick Order
+    -->
+    <string name="quickorder_dialog_title">Take payment</string>
+    <string name="quickorder_enter_amount">Enter amount</string>
+    <string name="quickorder_creation_error">Unable to create order</string>
+    <!--
         Order Filters
     -->
     <string name="orderfilters_show_orders_button">Show Orders</string>
@@ -1650,6 +1656,17 @@
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Allow multiple users to access WooCommerce Mobile.</string>
     <string name="jetpack_benefits_modal_install_jetpack">Install Jetpack</string>
     <string name="jetpack_benefits_modal_dismiss">Not Now</string>
+
+    <string name="jetpack_install_start_title">Install Jetpack</string>
+    <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
+    <string name="jetpack_install_start_default_name">your site</string>
+
+    <string name="jetpack_install_progress_title">Installing\nJetpack</string>
+    <string name="jetpack_install_progress_subtitle">Please wait while we connect %s with Jetpack.</string>
+    <string name="jetpack_install_progress_step_one_message">Installing Jetpack</string>
+    <string name="jetpack_install_progress_step_two_message">Activating</string>
+    <string name="jetpack_install_progress_step_three_message">Connecting your store</string>
+    <string name="jetpack_install_progress_step_four_message">All done</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

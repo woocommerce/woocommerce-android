@@ -14,6 +14,7 @@ import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.MediaUtils
 import org.wordpress.android.util.UrlUtils
 import java.io.File
+import org.wordpress.android.fluxc.utils.MediaUtils as FluxCMediaUtils
 
 object ProductImagesUtils {
     private const val OPTIMIZE_IMAGE_MAX_SIZE = 3000
@@ -27,39 +28,32 @@ object ProductImagesUtils {
         mediaPickerUtils: MediaPickerUtils
     ): MediaModel? {
         // "fetch" the media - necessary to support choosing from Downloads, Google Photos, etc.
-        val fetchedUri = fetchMedia(context, localUri)
-        if (fetchedUri == null) {
-            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > fetched media path is null or empty")
-            return null
-        }
+        fetchMedia(context, localUri)?.let { fetchedUri ->
+            mediaPickerUtils.getFilePath(fetchedUri)?.let { filePath ->
+                // optimize the image if the setting is enabled
+                val path = getOptimizedPath(context, filePath)
 
-        var path = mediaPickerUtils.getFilePath(fetchedUri)
-        if (path == null) {
-            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to get path from uri, $fetchedUri")
-            return null
-        }
+                val file = File(path)
+                if (file.exists()) {
+                    return createMediaModel(mediaStore, fetchedUri, path, localSiteId)
+                } else {
+                    WooLog.w(T.MEDIA, "mediaModelFromLocalUri > file does not exist, $path")
+                }
+            } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to get path from uri, $fetchedUri")
+        } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > fetched media path is null or empty")
 
-        // optimize the image if the setting is enabled
-        @Suppress("TooGenericExceptionCaught")
-        if (AppPrefs.getImageOptimizationEnabled()) {
-            val oldPath = path
-            getOptimizedImagePath(context, path)?.let {
-                // Delete original file if it's in the cache directly
-                if (oldPath.contains(context.cacheDir.absolutePath)) File(oldPath).delete()
-                // Use the optimized image
-                path = it
-            }
-        }
+        return null
+    }
 
-        val file = File(path!!)
-        if (!file.exists()) {
-            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > file does not exist, $path")
-            return null
-        }
-
+    private fun createMediaModel(
+        mediaStore: MediaStore,
+        fetchedUri: Uri,
+        path: String,
+        localSiteId: Int
+    ): MediaModel? {
         val media = mediaStore.instantiateMediaModel()
-        var filename = org.wordpress.android.fluxc.utils.MediaUtils.getFileName(fetchedUri.path)
-        var fileExtension: String? = org.wordpress.android.fluxc.utils.MediaUtils.getExtension(fetchedUri.path)
+        var filename = FluxCMediaUtils.getFileName(fetchedUri.path)
+        var fileExtension: String? = FluxCMediaUtils.getExtension(fetchedUri.path)
 
         var mimeType = UrlUtils.getUrlMimeType(fetchedUri.toString())
         if (mimeType == null) {
@@ -85,6 +79,21 @@ object ProductImagesUtils {
         media.uploadDate = DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000)
 
         return media
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private fun getOptimizedPath(
+        context: Context,
+        filePath: String
+    ) = if (AppPrefs.getImageOptimizationEnabled()) {
+        getOptimizedImagePath(context, filePath)?.let { optimizedPath ->
+            // Delete original file if it's in the cache directly
+            if (filePath.contains(context.cacheDir.absolutePath)) File(filePath).delete()
+            // Return optimized path
+            optimizedPath
+        } ?: filePath
+    } else {
+        filePath
     }
 
     /**

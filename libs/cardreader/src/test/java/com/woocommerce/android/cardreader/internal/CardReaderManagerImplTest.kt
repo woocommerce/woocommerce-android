@@ -46,6 +46,7 @@ class CardReaderManagerImplTest {
     @Before
     fun setUp() {
         cardReaderManager = CardReaderManagerImpl(
+            application,
             terminalWrapper,
             tokenProvider,
             logWrapper,
@@ -58,14 +59,14 @@ class CardReaderManagerImplTest {
 
     @Test
     fun `when manager gets initialized, then terminal gets registered to components lifecycle`() {
-        cardReaderManager.initialize(application)
+        cardReaderManager.initialize()
 
         verify(application, atLeastOnce()).registerComponentCallbacks(any())
     }
 
     @Test
     fun `given application delegate, when manager gets initialized, then delegate calls on create`() {
-        cardReaderManager.initialize(application)
+        cardReaderManager.initialize()
 
         verify(terminalApplicationDelegateWrapper).onCreate(application)
     }
@@ -88,7 +89,7 @@ class CardReaderManagerImplTest {
     fun `given terminal not initialized, when init() invoked, then Terminal init() invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.initialize(application)
+        cardReaderManager.initialize()
 
         verify(terminalWrapper).initTerminal(any(), any(), any(), any())
     }
@@ -97,7 +98,7 @@ class CardReaderManagerImplTest {
     fun `given terminal initialized, when init() invoked, then Terminal init() not invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
-        cardReaderManager.initialize(application)
+        cardReaderManager.initialize()
 
         verify(terminalWrapper, never()).initTerminal(any(), any(), any(), any())
     }

@@ -1,10 +1,12 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.jetpack
 
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogJetpackBenefitsBinding
+import com.woocommerce.android.extensions.navigateSafely
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 
@@ -32,7 +34,9 @@ class JetpackBenefitsDialog : DialogFragment(R.layout.dialog_jetpack_benefits) {
             dismiss()
         }
         binding.installJetpackButton.setOnClickListener {
-            // TODO navigate to the jetpack installation screen
+            findNavController().navigateSafely(
+                JetpackBenefitsDialogDirections.actionJetpackBenefitsDialogToJetpackInstallStartDialog()
+            )
         }
     }
 

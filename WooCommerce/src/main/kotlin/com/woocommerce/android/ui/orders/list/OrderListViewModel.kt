@@ -92,7 +92,7 @@ class OrderListViewModel @Inject constructor(
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher, resourceProvider)
     }
 
-    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
     internal var viewState by viewStateLiveData
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList>()
@@ -469,15 +469,13 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun onFiltersChanged(filtersChanged: Boolean) {
-        if (filtersChanged) {
-            if (networkStatus.isConnected()) {
-                refreshOrders()
-                viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
-            } else {
-                viewState = viewState.copy(isRefreshPending = true)
-                showOfflineSnack()
-            }
+    fun updateOrdersWithFilters() {
+        if (networkStatus.isConnected()) {
+            refreshOrders()
+            viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+        } else {
+            viewState = viewState.copy(isRefreshPending = true)
+            showOfflineSnack()
         }
     }
 
