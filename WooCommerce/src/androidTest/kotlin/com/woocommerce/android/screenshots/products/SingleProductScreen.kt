@@ -1,6 +1,7 @@
 package com.woocommerce.android.screenshots.products
 
 import com.woocommerce.android.R
+import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.Screen
 
 class SingleProductScreen : Screen {
@@ -14,4 +15,11 @@ class SingleProductScreen : Screen {
         pressBack()
         return ProductListScreen()
     }
+
+    fun assertProductDetails(productData: ProductData): SingleProductScreen {
+        // TODO: check the product details page against the mock data
+        // check name
+        return SingleProductScreen()
+    }
+
 }
