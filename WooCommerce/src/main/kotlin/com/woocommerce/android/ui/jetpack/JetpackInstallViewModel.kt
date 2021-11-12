@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.jetpack
 
 import android.os.Handler
 import android.os.Looper
@@ -9,7 +9,8 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.PluginStore.OnJetpackSitePluginFetched
 import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.*
-import com.woocommerce.android.ui.mystore.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.ui.mystore.PluginRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.coroutines.CoroutineScope
