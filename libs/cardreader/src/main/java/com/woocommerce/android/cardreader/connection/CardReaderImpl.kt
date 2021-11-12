@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.connection
 
-import com.stripe.stripeterminal.model.external.Reader
+import com.stripe.stripeterminal.external.models.Reader
 
-class CardReaderImpl(val cardReader: Reader) : CardReader {
+internal class CardReaderImpl(val cardReader: Reader) : CardReader {
     override val id: String?
         get() = cardReader.serialNumber
     override val type: String
@@ -11,4 +11,6 @@ class CardReaderImpl(val cardReader: Reader) : CardReader {
         get() = cardReader.batteryLevel
     override val firmwareVersion: String
         get() = cardReader.softwareVersion
+    override val locationId: String?
+        get() = cardReader.location?.id
 }

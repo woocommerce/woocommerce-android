@@ -1,2 +1,0 @@
-7.7:
-Verkopers in de VS die gebruikmaken van WooCommerce Payments kunnen fysieke creditcardbetalingen aannemen voor de betalingen van je klanten bij levering of ophaalbestellingen. In deze versie zijn tevens een aantal kleine verbeteringen doorgevoerd, op basis van jullie feedback. Bedankt voor de hulp, zo kunnen we voor iedereen een betere app maken.

@@ -95,14 +95,11 @@ class AddressViewModel @Inject constructor(
      * looking into a outdated state information
      */
     private fun ViewState.applyCountryStateChangesSafely(countryCode: String, stateCode: String) {
-        val countryLocation = getCountryLocationFromCode(countryCode)
-
-        viewState = viewState.copy(
-            countryLocation = countryLocation
+        viewState = this.copy(
+            countryLocation = getCountryLocationFromCode(countryCode)
         )
 
-        viewState = this.copy(
-            countryLocation = countryLocation,
+        viewState = viewState.copy(
             stateLocation = getStateLocationFromCode(stateCode)
         )
     }
