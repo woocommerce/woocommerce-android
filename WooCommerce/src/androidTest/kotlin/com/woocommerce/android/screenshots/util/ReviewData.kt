@@ -27,3 +27,9 @@ data class ReviewData(
     val content = if (status == "hold") "Pending Review • $review" else review
     val approveButtonTitle = if (status == "hold") "Approve" else "Approved"
 }
+
+data class ProductData(
+    val id: Int,
+    val name: String,
+) {}
+

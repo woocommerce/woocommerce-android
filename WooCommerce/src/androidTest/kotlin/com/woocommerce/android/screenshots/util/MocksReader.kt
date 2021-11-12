@@ -15,6 +15,15 @@ class MocksReader {
             .getJSONArray("data")
     }
 
+    fun readAllProductsToArray(): JSONArray {
+        val productsWireMockString = this.readAssetsFile("mocks/mappings/jetpack-blogs/wc/products/products.json")
+        val productsWireMockJSON = JSONObject(productsWireMockString)
+        return productsWireMockJSON
+            .getJSONObject("response")
+            .getJSONObject("jsonBody")
+            .getJSONArray("data")
+    }
+
     private fun readAssetsFile(fileName: String): String {
         val appContext = InstrumentationRegistry.getInstrumentation().context
         return appContext.assets.open(fileName).bufferedReader().use { it.readText() }
