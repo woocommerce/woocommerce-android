@@ -453,7 +453,12 @@ class ProductListFragment :
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = true)
     }
 
-    private fun showAddProductBottomSheet() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
+    private fun showAddProductBottomSheet() {
+        val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
+            isAddProduct = true
+        )
+        findNavController().navigateSafely(action)
+    }
 
     override fun onRequestLoadMore() {
         viewModel.onLoadMoreRequested()
