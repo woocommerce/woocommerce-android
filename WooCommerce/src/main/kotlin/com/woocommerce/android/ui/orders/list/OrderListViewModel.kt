@@ -134,17 +134,10 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Create and prefetch the two main order lists to prevent them getting out of
-     * sync when the device goes offline.
-     */
     fun initializeOrdersList() {
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
-            .also { it.fetchFirstPage() }
-        viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
         activatePagedListWrapper(ordersPagedListWrapper!!)
-
-        // Fetch order dependencies such as order status list and payment gateways
+        viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
         fetchOrdersAndOrderDependencies()
     }
 
@@ -155,10 +148,9 @@ class OrderListViewModel @Inject constructor(
      * NOTE: Although technically the "PROCESSING" tab is a filtered list, it should not use this method. The
      * processing list will always use the same [processingPagedListWrapper].
      */
-    fun submitSearchOrFilter(statusFilter: String? = null, searchQuery: String? = null) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
+    fun submitSearchOrFilter(searchQuery: String) {
+        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), searchQuery = searchQuery)
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
-
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
 
@@ -281,9 +273,7 @@ class OrderListViewModel @Inject constructor(
                         EmptyViewType.ORDER_LIST_LOADING
                     }
                 }
-                isSearching && searchQuery.isNotEmpty() -> {
-                    EmptyViewType.SEARCH_RESULTS
-                }
+                isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
                 isShowingProcessingOrders() -> {
                     if (hasOrders) {
                         // there are orders but none are processing
@@ -293,7 +283,7 @@ class OrderListViewModel @Inject constructor(
                         EmptyViewType.ORDER_LIST
                     }
                 }
-                viewState.filterCount != 0 -> EmptyViewType.ORDER_LIST_FILTERED
+                viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
                 else -> {
                     if (networkStatus.isConnected()) {
                         EmptyViewType.ORDER_LIST

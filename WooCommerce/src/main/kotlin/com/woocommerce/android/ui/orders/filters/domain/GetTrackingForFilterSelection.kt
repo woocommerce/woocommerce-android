@@ -19,7 +19,7 @@ class GetTrackingForFilterSelection @Inject constructor(
             trackingData[AnalyticsTracker.KEY_STATUS] = orderStatusOptions.joinToString(separator = ",")
         }
         if (dateRangeOptions.isNotEmpty()) {
-            trackingData[AnalyticsTracker.KEY_DATE_RANGE] = orderStatusOptions.first()
+            trackingData[AnalyticsTracker.KEY_DATE_RANGE] = dateRangeOptions.first()
         }
         return trackingData
     }

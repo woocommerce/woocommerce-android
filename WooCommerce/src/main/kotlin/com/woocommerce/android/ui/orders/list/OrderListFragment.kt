@@ -379,6 +379,7 @@ class OrderListFragment :
         onSearchViewActiveChanged(isActive = true)
         quickOrderMenuItem?.isVisible = false
         binding.orderFiltersCard.isVisible = false
+        binding.orderListView.clearAdapterData()
         return true
     }
 
