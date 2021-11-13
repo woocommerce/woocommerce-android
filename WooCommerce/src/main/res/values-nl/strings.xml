@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-27 13:54:04+0000
+Translation-Revision-Date: 2021-11-09 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Niet nu</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Jetpack installeren</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Meerdere gebruikers kunnen gebruikmaken van WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Gebruikersprofielen</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Nieuwe analytische weergaven: bekijk bezoekers, rapporten en meer.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analytische gegevens</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Ontvang pushberichten voor nieuwe bestellingen, beoordelingen, enz. op je apparaat.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Pushberichten</string>
+    <string name="jetpack_benefits_modal_subtitle">Installeer de gratis Jetpack-plugin voor de beste mobiele ervaring.</string>
+    <string name="jetpack_benefits_modal_title">Haal het optimale uit je winkel</string>
+    <string name="settings_enable_quick_order_teaser_message">Probeer eens wat bestellingen aan te maken met minimale gegevens terwijl wij ons voorbereiden op de lancering</string>
+    <string name="settings_enable_quick_order_teaser_title">Snelle bestelling</string>
+    <string name="beta_features_message">Bekijk add-ons, snelle bestelling</string>
+    <string name="order_detail_use_as_shipping_address">Gebruiken als verzendadres</string>
+    <string name="order_detail_use_as_billing_address">Gebruiken als factuuradres</string>
+    <string name="orderfilters_filters_count_title">Filters (%d)</string>
+    <string name="orderfilters_filters_default_title">Filters</string>
+    <string name="orderfilters_filter_date_range_options_title">Datumbereik</string>
+    <string name="orderfilters_filter_order_status_options_title">Bestelstatus</string>
+    <string name="orderfilters_filter_option_item_selected">Geselecteerde filteroptie</string>
+    <string name="orderfilters_date_range_filter">Datumbereik</string>
+    <string name="orderfilters_order_status_filter">Bestelstatus</string>
+    <string name="orderfilters_default_filter_value">Alles</string>
+    <string name="orderfilters_show_orders_button">Bestellingen weergeven</string>
+    <string name="orderlist_filters_title">Gefilterde bestellingen</string>
+    <string name="orderlist_no_filters_title">Alle bestellingen</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Bekijk de voordelen</string>
     <string name="jetpack_benefits_bottom_banner_title">Profiteer van de volledige ervaring met Jetpack</string>
     <string name="product_description_hint_with_title">Vertel ons meer over %s…</string>
@@ -56,8 +82,8 @@ Language: nl
     <string name="settings_enable_product_addons_teaser_title">Add-ons bekijken</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">We kunnen deze functie-instelling momenteel niet wijzigen</string>
     <string name="product_category">Categorie</string>
-    <string name="notification_review_title">Je hebt 1 nieuwe beoordeling! 🌟</string>
-    <string name="notification_order_title">Je hebt 1 nieuwe bestelling! 🎉</string>
+    <string name="notification_review_title">Je hebt een nieuwe beoordeling!</string>
+    <string name="notification_order_title">Je hebt een nieuwe bestelling!</string>
     <string name="shipping_label_package_details_items_count_one">%d artikel</string>
     <string name="upsell_product_count_many">%d upsell-producten</string>
     <string name="upsell_product_count_one">%d upsell-product</string>
