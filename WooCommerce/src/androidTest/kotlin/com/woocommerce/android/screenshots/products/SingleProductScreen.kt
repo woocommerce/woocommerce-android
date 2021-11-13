@@ -1,8 +1,13 @@
 package com.woocommerce.android.screenshots.products
 
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.Screen
+import org.hamcrest.Matchers
+import java.lang.Thread.sleep
 
 class SingleProductScreen : Screen {
     companion object {
@@ -17,7 +22,20 @@ class SingleProductScreen : Screen {
     }
 
     fun assertProductDetails(productData: ProductData): SingleProductScreen {
-        // check the product details page against the mock data
+        // select the parent page container
+        val view = Espresso.onView(ViewMatchers.withId(PRODUCT_DETAIL_CONTAINER))
+
+        view.check(
+            ViewAssertions.matches(
+                ViewMatchers.hasDescendant(
+                    // check that the page has an editText with the product name
+                    Matchers.allOf(
+                        ViewMatchers.withId(R.id.editText),
+                        ViewMatchers.withText(productData.name),
+                    )
+                )
+            )
+        )
         return SingleProductScreen()
     }
 }
