@@ -17,8 +17,7 @@ class SingleProductScreen : Screen {
     }
 
     fun assertProductDetails(productData: ProductData): SingleProductScreen {
-        // TODO: check the product details page against the mock data
-        // check name
+        // check the product details page against the mock data
         return SingleProductScreen()
     }
 }

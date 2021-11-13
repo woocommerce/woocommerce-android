@@ -13,7 +13,6 @@ import org.hamcrest.Matchers
 
 class ProductListScreen : Screen {
     companion object {
-        // TODO: refactor to LAYOUT_ID from LIST_VIEW
         const val LIST_VIEW = R.id.productsRecycler
     }
 
@@ -56,8 +55,6 @@ class ProductListScreen : Screen {
             // check if it exists!
             ViewAssertions.matches(ViewMatchers.withId(R.id.productInfoContainer))
         )
-        // TODO: add more checks. productCardMatch.check(...)
-
         return this
     }
 

@@ -31,5 +31,4 @@ data class ReviewData(
 data class ProductData(
     val id: Int,
     val name: String,
-) {}
-
+)

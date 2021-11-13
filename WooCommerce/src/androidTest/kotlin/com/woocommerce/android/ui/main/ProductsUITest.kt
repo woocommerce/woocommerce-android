@@ -47,13 +47,10 @@ class ProductsUITest : TestBase() {
         )
     }
 
-
     @Test
     fun productListCheck() {
-        // TODO: consider making this an array of productData not the json data. Parse once.
         val productsJSONArray = MocksReader().readAllProductsToArray()
 
-        // TODO: consider moving this logic to ProductListScreen().assertProductList(productsJSONArray)
         for (productJSON in productsJSONArray.iterator()) {
             // parsing the json data
             val productData = mapJSONToProduct(productJSON)
