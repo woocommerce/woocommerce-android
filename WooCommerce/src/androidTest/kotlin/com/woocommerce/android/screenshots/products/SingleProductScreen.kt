@@ -21,5 +21,4 @@ class SingleProductScreen : Screen {
         // check name
         return SingleProductScreen()
     }
-
 }

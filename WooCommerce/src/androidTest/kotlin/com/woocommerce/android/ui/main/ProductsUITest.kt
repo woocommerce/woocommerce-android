@@ -67,7 +67,6 @@ class ProductsUITest : TestBase() {
             productListScreen.selectSingleProductByName(productData.name)
                 .assertProductDetails(productData)
                 .goBackToProductsScreen()
-
         }
     }
 }

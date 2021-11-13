@@ -12,7 +12,6 @@ import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.Matchers
 
 class ProductListScreen : Screen {
-
     companion object {
         // TODO: refactor to LAYOUT_ID from LIST_VIEW
         const val LIST_VIEW = R.id.productsRecycler
@@ -76,6 +75,4 @@ class ProductListScreen : Screen {
 
         return SingleProductScreen()
     }
-
-
 }
