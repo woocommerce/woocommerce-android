@@ -802,13 +802,6 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
-    override fun showProductAddBottomSheet() {
-        val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
-            isAddProduct = true
-        )
-        navController.navigateSafely(action)
-    }
-
     override fun showOrderDetail(
         localSiteId: Int,
         localOrderId: Int,

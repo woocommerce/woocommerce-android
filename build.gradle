@@ -90,7 +90,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'develop-8d17e649cad65e6d7bb25e10a2bfa0162253d97d'
+    fluxCVersion = 'develop-4823726ffc80ce39039ea58ca6b5c0de679eb468'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
@@ -114,7 +114,7 @@ ext {
     robolectricVersion = '4.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = "develop-eebc5d8e91a1d90190919f900f924b39c861a528"
-    mediapickerVersion = 'wp-media-library-5f49e14a716aa30b9b38f94941efe4105b012217'
+    mediapickerVersion = 'trunk-e70c6df699fbfad8bd907a6b8c0862c69bafb04f'
 }
 
 // Onboarding and dev env setup tasks
