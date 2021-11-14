@@ -5,11 +5,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptions
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
-import com.woocommerce.android.ui.orders.filters.data.GetDateRangeFilterOptions
-import com.woocommerce.android.ui.orders.filters.data.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
+import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
+import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
