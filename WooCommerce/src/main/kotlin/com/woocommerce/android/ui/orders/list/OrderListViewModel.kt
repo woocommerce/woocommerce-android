@@ -381,23 +381,6 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun onFiltersChanged(changed: Boolean) {
-        if (changed) {
-            if (networkStatus.isConnected()) {
-                refreshOrders()
-                viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
-            } else {
-                viewState = viewState.copy(isRefreshPending = true)
-                showOfflineSnack()
-            }
-        }
-    }
-
-    private fun refreshOrders() {
-        val pagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
-        activatePagedListWrapper(pagedListWrapper)
-    }
-
     fun onSearchClosed() {
         initializeOrdersList()
     }

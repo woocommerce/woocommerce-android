@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.filters
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -15,7 +16,6 @@ import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterOptionAdapte
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
-import com.woocommerce.android.ui.orders.list.OrderListFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -63,11 +63,7 @@ class OrderFilterOptionsFragment :
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OnShowOrders -> navigateBackWithResult(
-                    OrderListFragment.ORDER_FILTER_RESULT_KEY,
-                    true,
-                    R.id.orders
-                )
+                is OnShowOrders -> findNavController().popBackStack(R.id.orders, false)
                 is OnFilterOptionsSelectionUpdated -> navigateBackWithResult(
                     KEY_UPDATED_FILTER_OPTIONS,
                     event.category

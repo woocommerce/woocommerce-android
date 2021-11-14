@@ -56,8 +56,6 @@ class OrderListFragment :
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
-        const val ORDER_FILTER_RESULT_KEY = "order_filter_result"
-
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }
 
@@ -487,9 +485,6 @@ class OrderListFragment :
         binding.orderFiltersCard.isVisible = FeatureFlag.ORDER_FILTERS.isEnabled()
         if (FeatureFlag.ORDER_FILTERS.isEnabled()) {
             binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
-            handleResult<Boolean>(ORDER_FILTER_RESULT_KEY) {
-                viewModel.onFiltersChanged(it)
-            }
         }
     }
 
