@@ -28,21 +28,31 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product.Image
-import com.woocommerce.android.ui.products.ProductImagesViewModel.*
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.model.MediaTypes
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import java.security.InvalidParameterException
@@ -296,7 +306,7 @@ class ProductImagesFragment :
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
             DeviceMediaPickerSetup.buildMediaPicker(
-                mediaTypes = DeviceMediaPickerSetup.MediaTypes.IMAGES,
+                mediaTypes = MediaTypes.IMAGES,
                 canMultiSelect = viewModel.isMultiSelectionAllowed
             )
         )
