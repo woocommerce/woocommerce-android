@@ -14,7 +14,21 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.WcEmptyViewBinding
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.*
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.FILTER_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILTERED
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_CATEGORY_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_TAG_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_CARRIER_RATES
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_SERVICE_PACKAGE_LIST
 import org.wordpress.android.util.DisplayUtils
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
@@ -108,11 +122,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             }
             ORDER_LIST_FILTERED -> {
                 isTitleBold = false
-                val fmtArgs = "<strong>$searchQueryOrFilter</strong>"
-                title = String.format(
-                    context.getString(R.string.orders_empty_message_with_order_status_filter),
-                    fmtArgs
-                )
+                title = context.getString(R.string.orders_empty_message_for_filtered_orders)
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_empty_search
