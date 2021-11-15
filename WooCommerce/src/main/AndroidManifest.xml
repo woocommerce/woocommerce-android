@@ -13,20 +13,6 @@
     <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT"/>
     <uses-permission android:name="android.permission.NFC" />
 
-    <!-- Dangerous permissions, access must be requested at runtime -->
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <queries>
-        <!-- Required for Android 11 to allow camera access -->
-        <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE" />
-        </intent>
-        <!-- Required for Android 11 and allows for querying for installed apps -->
-        <intent>
-            <action android:name="android.intent.action.MAIN"/>
-        </intent>
-    </queries>
-
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_scheme"
