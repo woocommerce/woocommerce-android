@@ -188,6 +188,18 @@
                     tools:text="$49.00"/>
             </LinearLayout>
 
+            <!-- Accept Card Present Payment button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/paymentInfo_collectCardPresentPaymentButton"
+                style="@style/Woo.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_100"
+                android:layout_gravity="end|center_vertical"
+                android:text="@string/orderdetail_collect_payment_button"/>
+
             <LinearLayout
                 android:id="@+id/paymentInfo_paidSection"
                 android:layout_width="match_parent"
@@ -353,18 +365,6 @@
                 android:paddingEnd="@dimen/major_100"
                 android:text="@string/orderdetail_see_receipt_button"
                 android:textAllCaps="false" />
-
-            <!-- Accept Card Present Payment button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/paymentInfo_collectCardPresentPaymentButton"
-                style="@style/Woo.Button.Colored"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginTop="@dimen/minor_100"
-                android:layout_gravity="end|center_vertical"
-                android:text="@string/orderdetail_collect_payment_button"/>
 
             <!-- Refund button -->
             <com.google.android.material.button.MaterialButton
