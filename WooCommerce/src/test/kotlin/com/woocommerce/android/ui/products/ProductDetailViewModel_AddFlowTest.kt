@@ -217,7 +217,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         // then
         verify(productRepository, times(1)).getProduct(1L)
@@ -247,7 +247,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         // then
         assertThat(successSnackbarShown).isTrue()
@@ -273,7 +273,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(true)
 
         // then
         assertThat(successSnackbarShown).isTrue()
@@ -301,7 +301,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
             viewModel.start()
 
-            viewModel.onUpdateButtonClicked()
+            viewModel.onUpdateButtonClicked(true)
 
             // then
             verify(productRepository, times(1)).getProduct(1L)
@@ -314,7 +314,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             // when
             doReturn(true).whenever(productRepository).updateProduct(any())
 
-            viewModel.onUpdateButtonClicked()
+            viewModel.onUpdateButtonClicked(true)
             verify(productRepository, times(1)).updateProduct(any())
 
             viewModel.event.observeForever {
