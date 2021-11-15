@@ -155,6 +155,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
         FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
 
+        // -- Quick Order
+        QUICK_ORDER_FLOW_STARTED,
+        QUICK_ORDER_FLOW_COMPLETED,
+        QUICK_ORDER_FLOW_CANCELED,
+        QUICK_ORDER_FLOW_FAILED,
+        SETTINGS_BETA_FEATURES_QUICK_ORDER_TOGGLED,
+
         // -- Order Detail
         ORDER_OPEN,
         ORDER_NOTES_LOADED,
@@ -735,6 +742,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PURCHASE_FAILED = "purchase_failed"
         const val VALUE_PURCHASE_SUCCEEDED = "purchase_succeeded"
         const val VALUE_PURCHASE_READY = "purchase_ready"
+        const val VALUE_STATE_ON = "on"
+        const val VALUE_STATE_OFF = "off"
 
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
