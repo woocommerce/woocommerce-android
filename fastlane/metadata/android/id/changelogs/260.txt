@@ -1,0 +1,2 @@
+7.9:
+Kami tahu bahwa pelanggan tidak selalu mencantumkan alamat yang benar saat membuat pesanan. Sekarang Anda bisa menyunting alamat penagihan dan pengiriman sesuai dengan catatan yang diberikan pelanggan.

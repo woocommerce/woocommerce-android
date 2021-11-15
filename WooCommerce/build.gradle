@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath 'com.google.gms:google-services:4.3.8'
         classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.68.3'
-        classpath 'io.sentry:sentry-android-gradle-plugin:2.0.0'
+        classpath 'io.sentry:sentry-android-gradle-plugin:2.1.5'
     }
 }
 
@@ -54,9 +54,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "7.9-rc-1"
+            versionName "7.9"
         }
-        versionCode 258
+        versionCode 260
 
         minSdkVersion 21
         targetSdkVersion 30

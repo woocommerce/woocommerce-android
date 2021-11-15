@@ -409,7 +409,7 @@ class MainActivity :
                 R.id.editCustomerOrderNoteFragment,
                 R.id.shippingAddressEditingFragment,
                 R.id.billingAddressEditingFragment,
-                R.id.orderFilterCategoryListFragment -> {
+                R.id.orderFilterCategoriesFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -801,13 +801,6 @@ class MainActivity :
     ) {
         val action = ProductListFragmentDirections.actionProductListFragmentToProductFilterListFragment(
             stockStatus, productStatus, productType, productCategory, productCategoryName
-        )
-        navController.navigateSafely(action)
-    }
-
-    override fun showProductAddBottomSheet() {
-        val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
-            isAddProduct = true
         )
         navController.navigateSafely(action)
     }
