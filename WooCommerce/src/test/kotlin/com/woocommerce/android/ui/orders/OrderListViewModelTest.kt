@@ -23,7 +23,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,7 +43,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -228,75 +226,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
             assertEquals(emptyView, ORDER_LIST)
-        }
-    }
-
-    /**
-     * Test the logic that generates the "No orders to process yet" empty view for the PROCESSING tab
-     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
-     *
-     * This view gets generated when:
-     * - viewModel.isSearching = false
-     * - viewModel.orderStatusFilter = "processing"
-     * - pagedListWrapper.isEmpty = true
-     * - pagedListWrapper.isFetchingFirstPage = false
-     * - pagedListWrapper.isError = null
-     * - pagedListWrapper.data != null
-     * - There are NO orders in the db for the active store
-     */
-    @Test
-    fun `Display 'No orders to process yet' empty view when no orders for site for PROCESSING tab`() = testBlocking {
-        viewModel.isSearching = false
-        viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
-        doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
-
-        whenever(pagedListWrapper.data.value).doReturn(mock())
-        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-        whenever(pagedListWrapper.listError.value).doReturn(null)
-        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
-
-        viewModel.createAndPostEmptyViewType(pagedListWrapper)
-        advanceUntilIdle()
-
-        viewModel.emptyViewType.observeForTesting {
-            // Verify
-            val emptyView = viewModel.emptyViewType.value
-            assertNotNull(emptyView)
-            assertEquals(emptyView, ORDER_LIST_ALL_PROCESSED)
-        }
-    }
-
-    /**
-     * Test the logic that generates the "All orders processed" empty list view for the PROCESSING tab
-     * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
-     *
-     * This view gets generated when:
-     * - viewModel.isSearching = false
-     * - viewModel.orderStatusFilter = "processing"
-     * - pagedListWrapper.isEmpty = true
-     * - pagedListWrapper.isFetchingFirstPage = false
-     * - pagedListWrapper.isError = null
-     * - There is 1 or more orders in the db for the active store
-     */
-    @Test
-    fun `Processing Tab displays 'All orders processed' empty view if no orders to process`() = testBlocking {
-        viewModel.isSearching = false
-        viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
-        doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
-
-        whenever(pagedListWrapper.data.value).doReturn(mock())
-        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-        whenever(pagedListWrapper.listError.value).doReturn(null)
-        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
-
-        viewModel.createAndPostEmptyViewType(pagedListWrapper)
-        advanceUntilIdle()
-
-        viewModel.emptyViewType.observeForTesting {
-            // Verify
-            val emptyView = viewModel.emptyViewType.value
-            assertNotNull(emptyView)
-            assertEquals(emptyView, ORDER_LIST_ALL_PROCESSED)
         }
     }
 

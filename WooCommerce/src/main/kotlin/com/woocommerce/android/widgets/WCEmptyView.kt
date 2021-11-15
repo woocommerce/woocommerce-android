@@ -19,7 +19,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.FILTER_RESULTS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILTERED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_CATEGORY_LIST
@@ -38,7 +37,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         DASHBOARD,
         ORDER_LIST,
         ORDER_LIST_LOADING,
-        ORDER_LIST_ALL_PROCESSED,
         ORDER_LIST_FILTERED,
         PRODUCT_LIST,
         REVIEW_LIST,
@@ -112,13 +110,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_empty_orders_loading
-            }
-            ORDER_LIST_ALL_PROCESSED -> {
-                isTitleBold = true
-                title = context.getString(R.string.empty_order_list_all_processed)
-                message = null
-                buttonText = null
-                drawableId = R.drawable.img_empty_orders_all_fulfilled
             }
             ORDER_LIST_FILTERED -> {
                 isTitleBold = false

@@ -260,7 +260,6 @@ class OrderListViewModel @Inject constructor(
         val isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
             wrapper.data.value == null
         val isListEmpty = wrapper.isEmpty.value ?: true
-        val hasOrders = orderListRepository.hasCachedOrdersForSite()
         val isError = wrapper.listError.value != null
 
         val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
@@ -275,15 +274,6 @@ class OrderListViewModel @Inject constructor(
                     }
                 }
                 isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
-                isShowingProcessingOrders() -> {
-                    if (hasOrders) {
-                        // there are orders but none are processing
-                        EmptyViewType.ORDER_LIST_ALL_PROCESSED
-                    } else {
-                        // Waiting for orders to process
-                        EmptyViewType.ORDER_LIST
-                    }
-                }
                 viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
                 else -> {
                     if (networkStatus.isConnected()) {
@@ -296,13 +286,7 @@ class OrderListViewModel @Inject constructor(
         } else {
             null
         }
-
         _emptyViewType.postValue(newEmptyViewType)
-    }
-
-    private fun isShowingProcessingOrders(): Boolean {
-        //TODO jorge mucientes retrieve filters and check for processing
-        return false
     }
 
     private fun showOfflineSnack() {
