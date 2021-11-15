@@ -56,7 +56,7 @@ class QuickOrderViewModel @Inject constructor(
 
     fun createQuickOrder() {
         if (!networkStatus.isConnected()) {
-            AnalyticsTracker.track(AnalyticsTracker.Stat.QUICK_ORDER_FLOW_FAILED)
+            AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
             return
         }
@@ -73,11 +73,11 @@ class QuickOrderViewModel @Inject constructor(
                 viewState = viewState.copy(isProgressShowing = false, isDoneButtonEnabled = true)
                 if (result.isError) {
                     WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
-                    AnalyticsTracker.track(AnalyticsTracker.Stat.QUICK_ORDER_FLOW_FAILED)
+                    AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.quickorder_creation_error))
                 } else {
                     AnalyticsTracker.track(
-                        AnalyticsTracker.Stat.QUICK_ORDER_FLOW_COMPLETED,
+                        AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
                         mapOf(AnalyticsTracker.KEY_AMOUNT to viewState.currentPrice.toString())
                     )
                     viewState = viewState.copy(createdOrder = result.order!!.toAppModel())

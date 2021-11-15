@@ -9,7 +9,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED
 import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
@@ -50,7 +51,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
             binding.switchQuickOrderToggle.isChecked = AppPrefs.isQuickOrderEnabled
             binding.switchQuickOrderToggle.setOnCheckedChangeListener { switch, isChecked ->
                 AnalyticsTracker.track(
-                    SETTINGS_BETA_FEATURES_QUICK_ORDER_TOGGLED,
+                    SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
                     mapOf(
                         AnalyticsTracker.KEY_STATE to
                             AnalyticsUtils.getToggleStateLabel(isChecked)
