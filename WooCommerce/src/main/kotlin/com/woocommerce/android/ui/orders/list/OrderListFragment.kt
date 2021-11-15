@@ -27,6 +27,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -42,7 +43,6 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
-import java.math.BigDecimal
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
@@ -294,8 +294,10 @@ class OrderListFragment :
     }
 
     private fun initializeResultHandlers() {
-        handleResult<BigDecimal>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) {
-            // TODO nbradbury create order using the passed price
+        handleResult<Order>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) { order ->
+            binding.orderListView.post {
+                openOrderDetail(order.localId.value, order.remoteId, order.status.value)
+            }
         }
     }
 

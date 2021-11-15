@@ -136,8 +136,8 @@ class OrderListViewModel @Inject constructor(
 
     fun initializeOrdersList() {
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
-        activatePagedListWrapper(ordersPagedListWrapper!!)
         viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+        activatePagedListWrapper(ordersPagedListWrapper!!)
         fetchOrdersAndOrderDependencies()
     }
 

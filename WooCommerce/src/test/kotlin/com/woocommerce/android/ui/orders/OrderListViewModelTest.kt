@@ -28,7 +28,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOAD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -78,7 +77,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
 
     @Before
-    fun setup() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun setup() = testBlocking {
+        whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(WCOrderListDescriptor(site = mock()))
         whenever(pagedListWrapper.listError).doReturn(mock())
         whenever(pagedListWrapper.isEmpty).doReturn(mock())
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(mock())
@@ -118,30 +118,28 @@ class OrderListViewModelTest : BaseUnitTest() {
      * [setup] method, there is nothing to do but verify everything here.
      */
     @Test
-    fun `Cached order status options fetched and emitted during initialization`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
-            assertEquals(viewModel.orderStatusOptions.getOrAwaitValue(), orderStatusOptions)
-        }
+    fun `Cached order status options fetched and emitted during initialization`() = testBlocking {
+        verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
+        assertEquals(viewModel.orderStatusOptions.getOrAwaitValue(), orderStatusOptions)
+    }
 
     @Test
-    fun `Request to load new list fetches order status options and payment gateways if connected`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
+    fun `Request to load new list fetches order status options and payment gateways if connected`() = testBlocking {
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
-            clearInvocations(orderListRepository)
-            viewModel.submitSearchOrFilter()
+        clearInvocations(orderListRepository)
+        viewModel.submitSearchOrFilter()
 
-            verify(viewModel.activePagedListWrapper, times(1))?.fetchFirstPage()
-            verify(orderListRepository, times(1)).fetchOrderStatusOptionsFromApi()
-            verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
-            verify(orderListRepository, times(1)).fetchPaymentGateways()
-        }
+        verify(viewModel.activePagedListWrapper, times(1))?.fetchFirstPage()
+        verify(orderListRepository, times(1)).fetchOrderStatusOptionsFromApi()
+        verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
+        verify(orderListRepository, times(1)).fetchPaymentGateways()
+    }
 
     @Test
-    fun `Load orders activates list wrapper`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Load orders activates list wrapper`() = testBlocking {
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
         doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
@@ -155,30 +153,13 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertEquals(viewModel.ordersPagedListWrapper, viewModel.activePagedListWrapper)
     }
 
-    @Test
-    fun `Load orders after initial run does not fetch first page`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
-
-            viewModel.initializeOrdersList()
-            clearInvocations(viewModel.ordersPagedListWrapper)
-
-            assertNotNull(viewModel.ordersPagedListWrapper)
-            assertNotNull(viewModel.activePagedListWrapper)
-            verify(viewModel.ordersPagedListWrapper, times(0))?.fetchFirstPage()
-            verify(viewModel.ordersPagedListWrapper, times(1))?.invalidateData()
-            assertEquals(viewModel.ordersPagedListWrapper, viewModel.activePagedListWrapper)
-        }
-
     /**
      * Test order status options are emitted via [OrderListViewModel.orderStatusOptions]
      * once fetched, and verify expected methods are called the correct number of
      * times.
      */
     @Test
-    fun `Request to fetch order status options emits options`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Request to fetch order status options emits options`() = testBlocking {
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
 
         clearInvocations(orderListRepository)
@@ -197,25 +178,24 @@ class OrderListViewModelTest : BaseUnitTest() {
      * attempt once the device comes back online.
      */
     @Test
-    fun `Request to fetch order status options while offline handled correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(false).whenever(networkStatus).isConnected()
+    fun `Request to fetch order status options while offline handled correctly`() = testBlocking {
+        doReturn(false).whenever(networkStatus).isConnected()
 
-            viewModel.fetchOrdersAndOrderDependencies()
+        viewModel.fetchOrdersAndOrderDependencies()
 
-            viewModel.event.getOrAwaitValue().let { event ->
-                assertTrue(event is ShowErrorSnack)
-                assertEquals(event.messageRes, R.string.offline_error)
-            }
-
-            var isRefreshPending = false
-            viewModel.viewStateLiveData.observeForever { old, new ->
-                new.isRefreshPending.takeIfNotEqualTo(old?.isRefreshPending) {
-                    isRefreshPending = it
-                }
-            }
-            assertTrue(isRefreshPending)
+        viewModel.event.getOrAwaitValue().let { event ->
+            assertTrue(event is ShowErrorSnack)
+            assertEquals(event.messageRes, R.string.offline_error)
         }
+
+        var isRefreshPending = false
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.isRefreshPending.takeIfNotEqualTo(old?.isRefreshPending) {
+                isRefreshPending = it
+            }
+        }
+        assertTrue(isRefreshPending)
+    }
 
     /**
      * Test the logic that generates the "No orders yet" empty view for the ALL tab
@@ -231,26 +211,25 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - There are NO orders in the db for the active store
      */
     @Test
-    fun `Display 'No orders yet' empty view when no orders for site for ALL tab`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            viewModel.isSearching = false
-            doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
+    fun `Display 'No orders yet' empty view when no orders for site for ALL tab`() = testBlocking {
+        viewModel.isSearching = false
+        doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
 
-            whenever(pagedListWrapper.data.value).doReturn(mock())
-            whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-            whenever(pagedListWrapper.listError.value).doReturn(null)
-            whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-            viewModel.createAndPostEmptyViewType(pagedListWrapper)
-            advanceUntilIdle()
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        advanceUntilIdle()
 
-            viewModel.emptyViewType.observeForTesting {
-                // Verify
-                val emptyView = viewModel.emptyViewType.value
-                assertNotNull(emptyView)
-                assertEquals(emptyView, ORDER_LIST)
-            }
+        viewModel.emptyViewType.observeForTesting {
+            // Verify
+            val emptyView = viewModel.emptyViewType.value
+            assertNotNull(emptyView)
+            assertEquals(emptyView, ORDER_LIST)
         }
+    }
 
     /**
      * Test the logic that generates the "No orders to process yet" empty view for the PROCESSING tab
@@ -266,27 +245,26 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - There are NO orders in the db for the active store
      */
     @Test
-    fun `Display 'No orders to process yet' empty view when no orders for site for PROCESSING tab`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            viewModel.isSearching = false
-            viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
-            doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
+    fun `Display 'No orders to process yet' empty view when no orders for site for PROCESSING tab`() = testBlocking {
+        viewModel.isSearching = false
+        viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
+        doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
 
-            whenever(pagedListWrapper.data.value).doReturn(mock())
-            whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-            whenever(pagedListWrapper.listError.value).doReturn(null)
-            whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-            viewModel.createAndPostEmptyViewType(pagedListWrapper)
-            advanceUntilIdle()
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        advanceUntilIdle()
 
-            viewModel.emptyViewType.observeForTesting {
-                // Verify
-                val emptyView = viewModel.emptyViewType.value
-                assertNotNull(emptyView)
-                assertEquals(emptyView, ORDER_LIST_ALL_PROCESSED)
-            }
+        viewModel.emptyViewType.observeForTesting {
+            // Verify
+            val emptyView = viewModel.emptyViewType.value
+            assertNotNull(emptyView)
+            assertEquals(emptyView, ORDER_LIST_ALL_PROCESSED)
         }
+    }
 
     /**
      * Test the logic that generates the "All orders processed" empty list view for the PROCESSING tab
@@ -301,27 +279,26 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - There is 1 or more orders in the db for the active store
      */
     @Test
-    fun `Processing Tab displays 'All orders processed' empty view if no orders to process`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            viewModel.isSearching = false
-            viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
-            doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
+    fun `Processing Tab displays 'All orders processed' empty view if no orders to process`() = testBlocking {
+        viewModel.isSearching = false
+        viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
+        doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
 
-            whenever(pagedListWrapper.data.value).doReturn(mock())
-            whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-            whenever(pagedListWrapper.listError.value).doReturn(null)
-            whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-            viewModel.createAndPostEmptyViewType(pagedListWrapper)
-            advanceUntilIdle()
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        advanceUntilIdle()
 
-            viewModel.emptyViewType.observeForTesting {
-                // Verify
-                val emptyView = viewModel.emptyViewType.value
-                assertNotNull(emptyView)
-                assertEquals(emptyView, ORDER_LIST_ALL_PROCESSED)
-            }
+        viewModel.emptyViewType.observeForTesting {
+            // Verify
+            val emptyView = viewModel.emptyViewType.value
+            assertNotNull(emptyView)
+            assertEquals(emptyView, ORDER_LIST_ALL_PROCESSED)
         }
+    }
 
     /**
      * Test the logic that generates the "error fetching orders" empty list view for any tab
@@ -335,26 +312,25 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - pagedListWrapper.isError = TRUE
      */
     @Test
-    fun `Display error empty view on fetch orders error when no cached orders`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            viewModel.isSearching = false
-            viewModel.orderStatusFilter = StringUtils.EMPTY
+    fun `Display error empty view on fetch orders error when no cached orders`() = testBlocking {
+        viewModel.isSearching = false
+        viewModel.orderStatusFilter = StringUtils.EMPTY
 
-            whenever(pagedListWrapper.data.value).doReturn(mock())
-            whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-            whenever(pagedListWrapper.listError.value).doReturn(mock())
-            whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
+        whenever(pagedListWrapper.listError.value).doReturn(mock())
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-            viewModel.createAndPostEmptyViewType(pagedListWrapper)
-            advanceUntilIdle()
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        advanceUntilIdle()
 
-            viewModel.emptyViewType.observeForTesting {
-                // Verify
-                val emptyView = viewModel.emptyViewType.value
-                assertNotNull(emptyView)
-                assertEquals(emptyView, NETWORK_ERROR)
-            }
+        viewModel.emptyViewType.observeForTesting {
+            // Verify
+            val emptyView = viewModel.emptyViewType.value
+            assertNotNull(emptyView)
+            assertEquals(emptyView, NETWORK_ERROR)
         }
+    }
 
     /**
      * Test the logic that generates the "device offline" empty error list view for any tab
@@ -369,26 +345,25 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - pagedListWrapper.isError = null
      */
     @Test
-    fun `Display offline empty view when offline and list is empty`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            viewModel.isSearching = false
-            viewModel.orderStatusFilter = StringUtils.EMPTY
-            doReturn(false).whenever(networkStatus).isConnected()
-            whenever(pagedListWrapper.data.value).doReturn(mock())
-            whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-            whenever(pagedListWrapper.listError.value).doReturn(null)
-            whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+    fun `Display offline empty view when offline and list is empty`() = testBlocking {
+        viewModel.isSearching = false
+        viewModel.orderStatusFilter = StringUtils.EMPTY
+        doReturn(false).whenever(networkStatus).isConnected()
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
-            viewModel.createAndPostEmptyViewType(pagedListWrapper)
-            advanceUntilIdle()
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        advanceUntilIdle()
 
-            viewModel.emptyViewType.observeForTesting {
-                // Verify
-                val emptyView = viewModel.emptyViewType.value
-                assertNotNull(emptyView)
-                assertEquals(emptyView, NETWORK_OFFLINE)
-            }
+        viewModel.emptyViewType.observeForTesting {
+            // Verify
+            val emptyView = viewModel.emptyViewType.value
+            assertNotNull(emptyView)
+            assertEquals(emptyView, NETWORK_OFFLINE)
         }
+    }
 
     /**
      * Test the logic that generates the "No matching orders" empty list view for search/filter
@@ -401,7 +376,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - pagedListWrapper.isError = null
      */
     @Test
-    fun `Display empty view for empty search result`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Display empty view for empty search result`() = testBlocking {
         viewModel.isSearching = true
         viewModel.searchQuery = "query"
         whenever(pagedListWrapper.data.value).doReturn(mock())
@@ -431,7 +406,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - pagedListWrapper.isError = null
      */
     @Test
-    fun `Display Loading empty view for any order list tab`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Display Loading empty view for any order list tab`() = testBlocking {
         viewModel.isSearching = false
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
@@ -459,7 +434,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - pagedListWrapper.isError = null
      */
     @Test
-    fun `Does not display the Loading empty view in search mode`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Does not display the Loading empty view in search mode`() = testBlocking {
         viewModel.isSearching = true
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
@@ -473,43 +448,40 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Payment gateways are fetched if network connected and variable set when successful`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
+    fun `Payment gateways are fetched if network connected and variable set when successful`() = testBlocking {
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
-            viewModel.fetchPaymentGateways()
+        viewModel.fetchPaymentGateways()
 
-            verify(orderListRepository, times(1)).fetchPaymentGateways()
-            assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
-        }
-
-    @Test
-    fun `Payment gateways are not fetched if network not connected`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(false).whenever(networkStatus).isConnected()
-
-            viewModel.fetchPaymentGateways()
-
-            verify(orderListRepository, times(0)).fetchPaymentGateways()
-            assertFalse(viewModel.viewState.arePaymentGatewaysFetched)
-        }
+        verify(orderListRepository, times(1)).fetchPaymentGateways()
+        assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
+    }
 
     @Test
-    fun `Payment gateways are not fetched if already fetched and network connected`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
+    fun `Payment gateways are not fetched if network not connected`() = testBlocking {
+        doReturn(false).whenever(networkStatus).isConnected()
 
-            // Fetch the first time around
-            viewModel.fetchPaymentGateways()
-            verify(orderListRepository, times(1)).fetchPaymentGateways()
-            assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
-            clearInvocations(orderListRepository)
+        viewModel.fetchPaymentGateways()
 
-            // Try to fetch a second time
-            viewModel.fetchPaymentGateways()
-            verify(orderListRepository, times(0)).fetchPaymentGateways()
-            assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
-        }
+        verify(orderListRepository, times(0)).fetchPaymentGateways()
+        assertFalse(viewModel.viewState.arePaymentGatewaysFetched)
+    }
+
+    @Test
+    fun `Payment gateways are not fetched if already fetched and network connected`() = testBlocking {
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
+
+        // Fetch the first time around
+        viewModel.fetchPaymentGateways()
+        verify(orderListRepository, times(1)).fetchPaymentGateways()
+        assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
+        clearInvocations(orderListRepository)
+
+        // Try to fetch a second time
+        viewModel.fetchPaymentGateways()
+        verify(orderListRepository, times(0)).fetchPaymentGateways()
+        assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
+    }
 
     /**
      * Ideally, this shouldn't be required as NotificationMessageHandler.dispatchBackgroundEvents
@@ -523,21 +495,20 @@ class OrderListViewModelTest : BaseUnitTest() {
      * of fetching order.
      */
     @Test
-    fun `Request refresh for active list when received new order notification and is in search`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
-            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
-            viewModel.isSearching = true
-            viewModel.initializeOrdersList()
+    fun `Request refresh for active list when received new order notification and is in search`() = testBlocking {
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
+        viewModel.isSearching = true
+        viewModel.initializeOrdersList()
 
-            viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
+        viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
 
-            // Reset as we're no interested in previous invocations in this test
-            reset(viewModel.activePagedListWrapper)
-            viewModel.onNotificationReceived(
-                NotificationReceivedEvent(NotificationChannelType.NEW_ORDER)
-            )
+        // Reset as we're no interested in previous invocations in this test
+        reset(viewModel.activePagedListWrapper)
+        viewModel.onNotificationReceived(
+            NotificationReceivedEvent(NotificationChannelType.NEW_ORDER)
+        )
 
-            verify(viewModel.activePagedListWrapper)?.fetchFirstPage()
-        }
+        verify(viewModel.activePagedListWrapper)?.fetchFirstPage()
+    }
 }

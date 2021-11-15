@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.quickorder
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -10,14 +11,18 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogQuickOrderBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
-    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: QuickOrderViewModel by viewModels()
 
@@ -40,7 +45,7 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
         val binding = DialogQuickOrderBinding.bind(view)
         binding.editPrice.initView(viewModel.currencyCode, viewModel.decimals, currencyFormatter)
         binding.buttonDone.setOnClickListener {
-            returnResult()
+            viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
             findNavController().navigateUp()
@@ -57,9 +62,25 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
             }
         )
 
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowSnackbar -> {
+                    ActivityUtils.hideKeyboardForced(binding.editPrice)
+                    uiMessageResolver.showSnack(event.message)
+                }
+            }
+        }
+
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
                 binding.buttonDone.isEnabled = isEnabled
+            }
+            new.createdOrder.takeIfNotEqualTo(old?.createdOrder) { order ->
+                navigateBackWithResult(KEY_QUICK_ORDER_RESULT, order!!)
+            }
+            new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
+                binding.progressBar.isVisible = show
+                binding.buttonDone.text = if (show) "" else getString(R.string.done)
             }
         }
     }
@@ -67,10 +88,6 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-    }
-
-    private fun returnResult() {
-        navigateBackWithResult(KEY_QUICK_ORDER_RESULT, viewModel.currentPrice)
     }
 
     companion object {

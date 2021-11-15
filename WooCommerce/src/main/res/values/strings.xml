@@ -272,6 +272,7 @@
     -->
     <string name="quickorder_dialog_title">Take payment</string>
     <string name="quickorder_enter_amount">Enter amount</string>
+    <string name="quickorder_creation_error">Unable to create order</string>
     <!--
         Order Filters
     -->
@@ -1009,6 +1010,7 @@
     <string name="wc_mark_all_read">Mark all as read</string>
     <string name="wc_mark_all_read_success">All reviews marked as read</string>
     <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
+    <string name="product_review_list_fetching_failed">Error fetching product reviews</string>
     <string name="pending_review_label">Pending Review</string>
     <!--
         Products
@@ -1655,6 +1657,17 @@
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Allow multiple users to access WooCommerce Mobile.</string>
     <string name="jetpack_benefits_modal_install_jetpack">Install Jetpack</string>
     <string name="jetpack_benefits_modal_dismiss">Not Now</string>
+
+    <string name="jetpack_install_start_title">Install Jetpack</string>
+    <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
+    <string name="jetpack_install_start_default_name">your site</string>
+
+    <string name="jetpack_install_progress_title">Installing\nJetpack</string>
+    <string name="jetpack_install_progress_subtitle">Please wait while we connect %s with Jetpack.</string>
+    <string name="jetpack_install_progress_step_one_message">Installing Jetpack</string>
+    <string name="jetpack_install_progress_step_two_message">Activating</string>
+    <string name="jetpack_install_progress_step_three_message">Connecting your store</string>
+    <string name="jetpack_install_progress_step_four_message">All done</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
