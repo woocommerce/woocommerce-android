@@ -50,6 +50,7 @@ import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageI
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
+import java.util.Locale
 
 @AndroidEntryPoint
 class ProductDetailFragment :
@@ -75,11 +76,9 @@ class ProductDetailFragment :
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-    private var updateMenuItem: MenuItem? = null
+    private lateinit var saveMenuItem: MenuItem
+    private lateinit var publishMenuItem: MenuItem
     private var imageUploadErrorsSnackbar: Snackbar? = null
-
-    private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
-    private val saveTitleId = R.string.save
 
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
@@ -210,7 +209,7 @@ class ProductDetailFragment :
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
-            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateMenuItem(it) }
+            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showSaveMenuItem(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 if (it) {
@@ -335,7 +334,8 @@ class ProductDetailFragment :
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-        updateMenuItem = menu.findItem(R.id.menu_done)
+        saveMenuItem = menu.findItem(R.id.menu_save)
+        publishMenuItem = menu.findItem(R.id.menu_publish)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -392,14 +392,27 @@ class ProductDetailFragment :
 
         menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.canBeStoredAsDraft && viewModel.hasChanges()
 
-        updateMenuItem?.let {
-            it.title = if (viewModel.isAddFlowEntryPoint) getString(publishTitleId) else getString(saveTitleId)
-            it.isVisible = viewModel.hasChanges() or viewModel.isProductUnderCreation
+        saveMenuItem.isVisible = viewModel.isSaveOptionNeeded
+        publishMenuItem.isVisible = viewModel.isPublishOptionNeeded
+
+        if (saveMenuItem.isVisible) {
+            publishMenuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
+            publishMenuItem.title = getString(R.string.product_add_tool_bar_menu_button_done)
+        } else {
+            publishMenuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            publishMenuItem.title =
+                getString(R.string.product_add_tool_bar_menu_button_done).uppercase(Locale.getDefault())
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.menu_publish -> {
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onUpdateButtonClicked(isPublish = true)
+                true
+            }
+
             R.id.menu_save_as_draft -> {
                 viewModel.onSaveAsDraftButtonClicked()
                 true
@@ -410,9 +423,9 @@ class ProductDetailFragment :
                 true
             }
 
-            R.id.menu_done -> {
+            R.id.menu_save -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onUpdateButtonClicked()
+                viewModel.onUpdateButtonClicked(isPublish = false)
                 true
             }
 
@@ -435,8 +448,8 @@ class ProductDetailFragment :
         }
     }
 
-    private fun showUpdateMenuItem(show: Boolean) {
-        updateMenuItem?.isVisible = show
+    private fun showSaveMenuItem(show: Boolean) {
+        saveMenuItem.isVisible = show
     }
 
     private fun changesMade() {
