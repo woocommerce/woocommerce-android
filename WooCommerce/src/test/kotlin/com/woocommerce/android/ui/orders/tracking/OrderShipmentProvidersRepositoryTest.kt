@@ -19,7 +19,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 
 @ExperimentalCoroutinesApi
@@ -36,12 +35,12 @@ class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     @Before
     fun setup() {
         repository = OrderShipmentProvidersRepository(selectedSite, orderStore)
-        doReturn(siteModel).whenever(selectedSite).get()
-        doReturn(order).whenever(orderStore).getOrderByIdentifier(ORDER_IDENTIFIER)
+       whenever(selectedSite.get()).thenReturn(siteModel)
+       whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(order)
     }
 
     @Test
-    fun `When there are shipment providers in local db`() = runBlockingTest {
+    fun `Given data in local db, when fetch shipment providers invoked, then cached data returned`() = runBlockingTest {
         // When there are shipment providers in local db
         doReturn(providers).whenever(orderStore).getShipmentProvidersForSite(siteModel)
 
@@ -56,16 +55,13 @@ class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When there are NO shipment providers in local db`() = runBlockingTest {
+    fun `If NO data in local db, data is fetched from the network and loaded from the db`() = runBlockingTest {
         // When there are NO shipment providers in local db
-        doReturn(
-            emptyList<WCOrderShipmentProviderModel>(),
-            providers
-        ).whenever(orderStore).getShipmentProvidersForSite(siteModel)
+        whenever(orderStore.getShipmentProvidersForSite(siteModel)).thenReturn(emptyList(), providers)
 
         // Then should fetch shipment providers from the network
         val onChanged = WCOrderStore.OnOrderShipmentProvidersChanged(providers.size)
-        doReturn(onChanged).whenever(orderStore).fetchOrderShipmentProviders(any())
+        whenever(orderStore.fetchOrderShipmentProviders(any())).thenReturn(onChanged)
 
         val result = repository.fetchOrderShipmentProviders(ORDER_IDENTIFIER)
 
@@ -76,12 +72,12 @@ class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When there are NO rows affected`() = runBlockingTest {
+    fun `If there are NO rows affected, an empty list is returned`() = runBlockingTest {
         // When there are NO rows affected
-        doReturn(emptyList<WCOrderShipmentProviderModel>()).whenever(orderStore).getShipmentProvidersForSite(siteModel)
+        whenever(orderStore.getShipmentProvidersForSite(siteModel)).thenReturn(emptyList())
 
         val onChanged = WCOrderStore.OnOrderShipmentProvidersChanged(0)
-        doReturn(onChanged).whenever(orderStore).fetchOrderShipmentProviders(any())
+        whenever(orderStore.fetchOrderShipmentProviders(any())).thenReturn(onChanged)
 
         val result = repository.fetchOrderShipmentProviders(ORDER_IDENTIFIER)
 
@@ -91,14 +87,14 @@ class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When something goes wrong`() = runBlockingTest {
+    fun `If an error occurs, a null result is returned`() = runBlockingTest {
         // When something goes wrong
-        doReturn(emptyList<WCOrderShipmentProviderModel>()).whenever(orderStore).getShipmentProvidersForSite(siteModel)
+        whenever(orderStore.getShipmentProvidersForSite(siteModel)).thenReturn(emptyList())
 
         val onChanged = WCOrderStore.OnOrderShipmentProvidersChanged(0).also {
             it.error = WCOrderStore.OrderError(message = "Something goes wrong")
         }
-        doReturn(onChanged).whenever(orderStore).fetchOrderShipmentProviders(any())
+        whenever(orderStore.fetchOrderShipmentProviders(any())).thenReturn(onChanged)
 
         val result = repository.fetchOrderShipmentProviders(ORDER_IDENTIFIER)
 
