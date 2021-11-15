@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
-import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -110,17 +109,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         )
     }
 
-    /**
-     * Test cached order status options are fetched from the db when the
-     * ViewModel is initialized. Since the ViewModel is initialized during the
-     * [setup] method, there is nothing to do but verify everything here.
-     */
-    @Test
-    fun `Cached order status options fetched and emitted during initialization`() = testBlocking {
-        verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
-        assertEquals(viewModel.orderStatusOptions.getOrAwaitValue(), orderStatusOptions)
-    }
-
     @Test
     fun `Request to load new list fetches order status options and payment gateways if connected`() = testBlocking {
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
@@ -128,11 +116,9 @@ class OrderListViewModelTest : BaseUnitTest() {
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
         clearInvocations(orderListRepository)
-        viewModel.submitSearchOrFilter()
+        viewModel.submitSearchOrFilter(ANY_SEARCH_QUERY)
 
         verify(viewModel.activePagedListWrapper, times(1))?.fetchFirstPage()
-        verify(orderListRepository, times(1)).fetchOrderStatusOptionsFromApi()
-        verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
         verify(orderListRepository, times(1)).fetchPaymentGateways()
     }
 
@@ -142,30 +128,13 @@ class OrderListViewModelTest : BaseUnitTest() {
         doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
-        viewModel.initializeOrdersList()
+        viewModel.loadOrders()
 
         assertNotNull(viewModel.ordersPagedListWrapper)
         assertNotNull(viewModel.activePagedListWrapper)
         verify(viewModel.ordersPagedListWrapper, times(1))?.fetchFirstPage()
         verify(viewModel.ordersPagedListWrapper, times(1))?.invalidateData()
         assertEquals(viewModel.ordersPagedListWrapper, viewModel.activePagedListWrapper)
-    }
-
-    /**
-     * Test order status options are emitted via [OrderListViewModel.orderStatusOptions]
-     * once fetched, and verify expected methods are called the correct number of
-     * times.
-     */
-    @Test
-    fun `Request to fetch order status options emits options`() = testBlocking {
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
-
-        clearInvocations(orderListRepository)
-        viewModel.fetchOrderStatusOptions()
-
-        verify(orderListRepository, times(1)).fetchOrderStatusOptionsFromApi()
-        verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
-        assertEquals(viewModel.orderStatusOptions.getOrAwaitValue(), orderStatusOptions)
     }
 
     /**
@@ -243,7 +212,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Display error empty view on fetch orders error when no cached orders`() = testBlocking {
         viewModel.isSearching = false
-        viewModel.orderStatusFilter = StringUtils.EMPTY
 
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
@@ -276,7 +244,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Display offline empty view when offline and list is empty`() = testBlocking {
         viewModel.isSearching = false
-        viewModel.orderStatusFilter = StringUtils.EMPTY
         doReturn(false).whenever(networkStatus).isConnected()
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
@@ -428,7 +395,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
         viewModel.isSearching = true
-        viewModel.initializeOrdersList()
 
         viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
 
@@ -439,5 +405,9 @@ class OrderListViewModelTest : BaseUnitTest() {
         )
 
         verify(viewModel.activePagedListWrapper)?.fetchFirstPage()
+    }
+
+    private companion object {
+        const val ANY_SEARCH_QUERY = "search query"
     }
 }
