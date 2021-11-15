@@ -5,11 +5,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptions
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
-import com.woocommerce.android.ui.orders.filters.data.GetDateRangeFilterOptions
-import com.woocommerce.android.ui.orders.filters.data.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
+import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
+import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
@@ -69,7 +69,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
         viewModel.onShowOrdersClicked()
 
-        verify(orderFilterRepository).updateSelectedFilters(
+        verify(orderFilterRepository).setSelectedFilters(
             AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER.categoryKey,
             listOf(SELECTED_ORDER_STATUS_FILTER_OPTION.key)
         )
@@ -88,7 +88,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     fun `Given no filters are selected, when show orders is clicked, then an empty list is saved`() {
         viewModel.onShowOrdersClicked()
 
-        verify(orderFilterRepository).updateSelectedFilters(
+        verify(orderFilterRepository).setSelectedFilters(
             AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER.categoryKey,
             emptyList()
         )
