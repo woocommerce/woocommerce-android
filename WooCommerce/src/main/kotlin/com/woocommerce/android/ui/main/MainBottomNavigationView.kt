@@ -17,7 +17,6 @@ import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
-import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import com.woocommerce.android.R
 import com.woocommerce.android.R.anim
 import org.wordpress.android.util.DisplayUtils
