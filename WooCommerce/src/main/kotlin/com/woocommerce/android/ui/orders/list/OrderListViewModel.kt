@@ -146,13 +146,8 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Create and prefetch the two main order lists to prevent them getting out of
-     * sync when the device goes offline.
-     */
     fun initializeOrdersList() {
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
-            .also { it.fetchFirstPage() }
         viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
         activatePagedListWrapper(ordersPagedListWrapper!!)
 
