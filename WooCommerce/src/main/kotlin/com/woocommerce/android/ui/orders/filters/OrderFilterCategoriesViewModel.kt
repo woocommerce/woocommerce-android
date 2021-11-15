@@ -43,7 +43,13 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection
 
 ) : ScopedViewModel(savedState) {
-    private lateinit var oldFilterSelection: List<OrderFilterCategoryUiModel>
+    companion object {
+        const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
+    }
+
+    private var oldFilterSelection: List<OrderFilterCategoryUiModel> =
+        savedState.get(OLD_FILTER_SELECTION_KEY) ?: emptyList()
+
     val categories = LiveDataDelegate(
         savedState,
         OrderFilterCategories(emptyList())
@@ -59,6 +65,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             launch {
                 _categories = OrderFilterCategories(buildFilterListUiModel())
                 oldFilterSelection = _categories.list
+                savedState[OLD_FILTER_SELECTION_KEY] = oldFilterSelection
             }
         }
     }
