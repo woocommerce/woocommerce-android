@@ -482,10 +482,7 @@ class OrderListFragment :
     }
 
     private fun setupOrderFilters() {
-        binding.orderFiltersCard.isVisible = FeatureFlag.ORDER_FILTERS.isEnabled()
-        if (FeatureFlag.ORDER_FILTERS.isEnabled()) {
-            binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
-        }
+        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
     }
 
     private fun displayQuickOrderWIPCard(show: Boolean) {
