@@ -2,11 +2,13 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
 import androidx.core.view.isVisible
@@ -74,7 +76,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (visibility == View.VISIBLE && type != lastEmptyViewType) {
             WooAnimUtils.fadeOut(this, Duration.SHORT)
             val durationMs = Duration.SHORT.toMillis(context) + 50L
-            Handler().postDelayed(
+            Handler(Looper.getMainLooper()).postDelayed(
                 {
                     show(type, searchQueryOrFilter, onButtonClick)
                 },
@@ -198,8 +200,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         }
 
         binding.emptyViewTitle.text = HtmlCompat.fromHtml(titleHtml, FROM_HTML_MODE_LEGACY)
-        binding.emptyViewImage.setImageDrawable(context.getDrawable(drawableId))
-
+        binding.emptyViewImage.setImageDrawable(AppCompatResources.getDrawable(context, drawableId))
         if (message != null) {
             binding.emptyViewMessage.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
             binding.emptyViewMessage.visibility = View.VISIBLE
