@@ -125,6 +125,7 @@ class OrderListViewModel @Inject constructor(
             // refresh plugin information
             if (selectedSite.exists()) {
                 wooCommerceStore.fetchSitePlugins(selectedSite.get())
+                loadOrders()
             } else {
                 WooLog.w(
                     WooLog.T.ORDERS,
@@ -134,7 +135,7 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun initializeOrdersList() {
+    fun loadOrders() {
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
         viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
         activatePagedListWrapper(ordersPagedListWrapper!!)
@@ -382,7 +383,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun onSearchClosed() {
-        initializeOrdersList()
+        loadOrders()
     }
 
     sealed class OrderListEvent : Event() {

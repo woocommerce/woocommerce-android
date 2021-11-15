@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -19,6 +20,7 @@ import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdap
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -102,7 +104,9 @@ class OrderFilterCategoriesFragment :
             when (event) {
                 is ShowFilterOptionsForCategory -> navigateToFilterOptions(event.category)
                 is ShowDialog -> event.showDialog()
-                is OnShowOrders,
+                is OnShowOrders -> navigateBackWithNotice(
+                    OrderListFragment.FILTER_CHANGE_NOTICE_KEY
+                )
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }

@@ -57,6 +57,7 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         private const val SEARCH_TYPING_DELAY_MS = 500L
+        const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
     }
 
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
@@ -139,12 +140,12 @@ class OrderListFragment :
             }
         }
 
-        initializeViewModel()
+        initObservers()
         initializeResultHandlers()
         if (isSearching) {
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
         }
-        setupOrderFilters()
+        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -231,9 +232,7 @@ class OrderListFragment :
     }
 
     @Suppress("LongMethod")
-    private fun initializeViewModel() {
-        viewModel.initializeOrdersList()
-
+    private fun initObservers() {
         // setup observers
         viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
             binding.orderRefreshLayout.isRefreshing = it == true
@@ -298,6 +297,9 @@ class OrderListFragment :
             binding.orderListView.post {
                 openOrderDetail(order.localId.value, order.remoteId, order.status.value)
             }
+        }
+        handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
+            viewModel.loadOrders()
         }
     }
 
@@ -481,10 +483,6 @@ class OrderListFragment :
 
     override fun shouldExpandToolbar(): Boolean {
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
-    }
-
-    private fun setupOrderFilters() {
-        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
     }
 
     private fun displayQuickOrderWIPCard(show: Boolean) {
