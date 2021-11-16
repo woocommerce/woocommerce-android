@@ -20,7 +20,7 @@ class SelectedSite(
     private val context: Context,
     private val siteStore: SiteStore,
 ) {
-    private companion object {
+    companion object {
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"
 
         fun getEventBus(): EventBus = EventBus.getDefault()
