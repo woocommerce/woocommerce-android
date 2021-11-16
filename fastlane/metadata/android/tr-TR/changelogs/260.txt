@@ -1,0 +1,2 @@
+7.9:
+Müşterilerinizin sipariş verirken adreslerini her zaman doğru girmediğini biliyoruz. Artık fatura ve teslimat adresini müşteri tarafından sağlanan notlarla birlikte düzenleyebileceğinizi göreceksiniz.

@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-27 09:54:04+0000
+Translation-Revision-Date: 2021-11-10 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">後で</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Jetpack をインストール</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">複数のユーザーに WooCommerce モバイルへのアクセスを許可します。</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">ユーザープロフィール</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">新しいアナリティクスビューでは、訪問者やレポートなどを確認できます。</string>
+    <string name="jetpack_benefits_modal_analytics_title">アナリティクス</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">新しい注文やレビューなどのプッシュ通知がお使いのデバイスに届きます。</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">プッシュ通知</string>
+    <string name="jetpack_benefits_modal_subtitle">無料の Jetpack プラグインをインストールすると、最高のモバイル環境をご利用いただけます。</string>
+    <string name="jetpack_benefits_modal_title">ストアを最大限に活用する</string>
+    <string name="settings_enable_quick_order_teaser_message">リリースの準備ができ次第、最小限の情報で注文の作成をテストしてください</string>
+    <string name="settings_enable_quick_order_teaser_title">クイックオーダー</string>
+    <string name="beta_features_message">アドオンを表示、クイックオーダー</string>
+    <string name="order_detail_use_as_shipping_address">配送先住所として使用</string>
+    <string name="order_detail_use_as_billing_address">請求先住所として使用</string>
+    <string name="orderfilters_filters_count_title">絞り込み (%d)</string>
+    <string name="orderfilters_filters_default_title">絞り込み</string>
+    <string name="orderfilters_filter_date_range_options_title">日付の範囲</string>
+    <string name="orderfilters_filter_order_status_options_title">注文ステータス</string>
+    <string name="orderfilters_filter_option_item_selected">選択済みのフィルターオプション</string>
+    <string name="orderfilters_date_range_filter">日付の範囲</string>
+    <string name="orderfilters_order_status_filter">注文ステータス</string>
+    <string name="orderfilters_default_filter_value">すべて</string>
+    <string name="orderfilters_show_orders_button">注文を表示</string>
+    <string name="orderlist_filters_title">絞り込み済み注文</string>
+    <string name="orderlist_no_filters_title">すべての注文</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">メリットを見る</string>
     <string name="jetpack_benefits_bottom_banner_title">Jetpack でフル機能を利用</string>
     <string name="product_description_hint_with_title">%s の詳しい情報を教えてください…</string>
@@ -56,8 +82,8 @@ Language: ja_JP
     <string name="settings_enable_product_addons_teaser_title">アドオンを表示</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">現在はこの機能の設定を変更できません</string>
     <string name="product_category">カテゴリー</string>
-    <string name="notification_review_title">1件の新しいレビューがあります。 🌟</string>
-    <string name="notification_order_title">1件の新しい注文があります。 🎉</string>
+    <string name="notification_review_title">新しいレビューがあります。🌟</string>
+    <string name="notification_order_title">新しい注文があります。🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d アイテム</string>
     <string name="upsell_product_count_many">%dアップセル商品</string>
     <string name="upsell_product_count_one">%dアップセル商品</string>
