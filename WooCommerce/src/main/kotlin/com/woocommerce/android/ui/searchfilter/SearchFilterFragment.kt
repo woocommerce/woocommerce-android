@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.searchfilter
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -38,6 +39,20 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
 
     private lateinit var searchFilterAdapter: SearchFilterAdapter
 
+    private val searchTextWatcher = object : TextWatcher {
+        override fun afterTextChanged(editable: Editable?) {
+            // noop
+        }
+
+        override fun beforeTextChanged(charSequence: CharSequence?, start: Int, count: Int, after: Int) {
+            // noop
+        }
+
+        override fun onTextChanged(charSequence: CharSequence?, start: Int, before: Int, count: Int) {
+            viewModel.onSearch(charSequence.toString())
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSearchFilterBinding.bind(view)
@@ -53,6 +68,7 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
     }
 
     override fun onDestroyView() {
+        binding.searchEditText.removeTextChangedListener(searchTextWatcher)
         super.onDestroyView()
         _binding = null
     }
@@ -98,9 +114,7 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
 
     private fun setupSearchInput() {
         binding.searchEditText.apply {
-            doAfterTextChanged {
-                viewModel.onSearch(it.toString())
-            }
+            addTextChangedListener(searchTextWatcher)
         }
     }
 
