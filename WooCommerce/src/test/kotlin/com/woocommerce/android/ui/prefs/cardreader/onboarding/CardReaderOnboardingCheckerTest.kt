@@ -404,7 +404,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     fun `when onboarding completed, then onboarding completed flag saved`() = testBlocking {
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong(), true)
+        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())
     }
 
     @Test
@@ -416,7 +416,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         )
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper, never()).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong(), true)
+        verify(appPrefsWrapper, never()).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())
     }
 
     private fun buildPaymentAccountResult(
