@@ -60,11 +60,12 @@ class VariationDetailViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_VARIATION_PARAMETERS = "key_variation_parameters"
+        private const val KEY_ORIGINAL_VARIATION = "key_original_variation"
     }
 
     private val navArgs: VariationDetailFragmentArgs by savedState.navArgs()
 
-    private var originalVariation: ProductVariation? = null
+    private var originalVariation: ProductVariation? = savedState.get<ProductVariation>(KEY_ORIGINAL_VARIATION)
         get() {
             if (field == null) {
                 loadVariation(navArgs.remoteProductId, navArgs.remoteVariationId)
@@ -75,6 +76,7 @@ class VariationDetailViewModel @Inject constructor(
             // Update the cards (and the original SKU, so that that the "SKU error taken" is not shown unnecessarily
             if (field != value && value != null) {
                 field = value
+                savedState[KEY_ORIGINAL_VARIATION] = value
                 updateCards(value)
             }
         }

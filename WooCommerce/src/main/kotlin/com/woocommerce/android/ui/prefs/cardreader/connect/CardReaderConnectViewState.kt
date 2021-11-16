@@ -123,4 +123,14 @@ sealed class CardReaderConnectViewState(
         secondaryActionLabel = R.string.cancel,
         illustrationTopMargin = R.dimen.major_150
     )
+
+    data class InvalidMerchantAddressPostCodeError(
+        override val onPrimaryActionClicked: () -> Unit,
+    ) : CardReaderConnectViewState(
+        headerLabel = UiString.UiStringRes(R.string.card_reader_connect_invalid_postal_code_header),
+        hintLabel = R.string.card_reader_connect_invalid_postal_code_hint,
+        illustration = R.drawable.img_products_error,
+        primaryActionLabel = R.string.try_again,
+        illustrationTopMargin = R.dimen.major_150,
+    )
 }

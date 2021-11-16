@@ -31,6 +31,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -40,6 +41,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.orders.quickorder.QuickOrderDialog
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -179,6 +181,7 @@ class OrderListFragment :
         }
 
         initializeViewModel()
+        initializeResultHandlers()
         initializeTabs()
 
         if (isFilterEnabled) {
@@ -304,7 +307,7 @@ class OrderListFragment :
                 true
             }
             R.id.menu_add -> {
-                // TODO nbradbury - show quick order view
+                showQuickOrderDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -429,8 +432,20 @@ class OrderListFragment :
         }
     }
 
+    private fun initializeResultHandlers() {
+        handleResult<Order>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) { order ->
+            binding.orderListView.post {
+                openOrderDetail(order.localId.value, order.remoteId, order.status.value)
+            }
+        }
+    }
+
     private fun showOrderFilters() {
         findNavController().navigate(R.id.action_orderListFragment_to_orderFilterListFragment)
+    }
+
+    private fun showQuickOrderDialog() {
+        findNavController().navigate(R.id.action_orderListFragment_to_quickOrderDialog)
     }
 
     private fun hideEmptyView() {
@@ -800,7 +815,7 @@ class OrderListFragment :
             binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
             removeTabLayoutFromAppBar()
             handleResult<Boolean>(ORDER_FILTER_RESULT_KEY) {
-                viewModel.onFiltersChanged(it)
+                viewModel.updateOrdersWithFilters()
             }
         }
     }

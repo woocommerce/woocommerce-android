@@ -8,6 +8,7 @@ import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.OrderShipmentProvider
+import com.woocommerce.android.ui.orders.OrderTestUtils.ORDER_IDENTIFIER
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -25,10 +26,6 @@ import org.robolectric.RobolectricTestRunner
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
-    companion object {
-        private const val ORDER_IDENTIFIER = "1-1-1"
-    }
-
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val shipmentProvidersRepository: OrderShipmentProvidersRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
