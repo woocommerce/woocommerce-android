@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath 'com.google.gms:google-services:4.3.8'
         classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.68.3'
-        classpath 'io.sentry:sentry-android-gradle-plugin:2.0.0'
+        classpath 'io.sentry:sentry-android-gradle-plugin:2.1.5'
     }
 }
 
@@ -28,6 +28,7 @@ repositories {
             includeGroup "org.wordpress"
             includeGroup "org.wordpress.fluxc"
             includeGroup "org.wordpress.fluxc.plugins"
+            includeGroup "org.wordpress.mediapicker"
         }
     }
     maven {
@@ -54,12 +55,12 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "7.9-rc-1"
+            versionName "7.9"
         }
-        versionCode 258
+        versionCode 260
 
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
 
         vectorDrawables.useSupportLibrary = true
 
@@ -68,6 +69,11 @@ android {
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
         buildConfigField "boolean", "USE_SIMULATED_READER", project.hasProperty("useSimulatedReader").toString()
+
+        packagingOptions {
+            exclude 'META-INF/gradle/incremental.annotation.processors'
+            exclude("META-INF/*.kotlin_module")
+        }
     }
 
     buildFeatures {
@@ -219,7 +225,7 @@ dependencies {
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
-    debugImplementation "com.facebook.soloader:soloader:0.10.1"
+    debugImplementation "com.facebook.soloader:soloader:0.10.3"
     debugImplementation ("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
         // Force Flipper to use the okhttp version defined in the fluxc module
         // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
@@ -284,6 +290,9 @@ dependencies {
     implementation "commons-io:commons-io:2.11.0"
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
+
+    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

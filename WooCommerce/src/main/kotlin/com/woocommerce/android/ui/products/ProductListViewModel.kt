@@ -10,32 +10,23 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.*
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -170,22 +161,9 @@ class ProductListViewModel @Inject constructor(
 
     fun onAddProductButtonClicked() {
         launch {
-            cancelSearch()
-
             AnalyticsTracker.track(Stat.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
             triggerEvent(ShowAddProductBottomSheet)
         }
-    }
-
-    private suspend fun cancelSearch() {
-        searchJob?.cancelAndJoin()
-        viewState = viewState.copy(
-            query = null,
-            isSearchActive = false,
-            isAddProductButtonVisible = false,
-            isEmptyViewVisible = false
-        )
-        _productList.value = productRepository.getProductList()
     }
 
     fun onSearchOpened() {
@@ -449,6 +427,7 @@ class ProductListViewModel @Inject constructor(
         val displaySortAndFilterCard: Boolean? = null,
         val isAddProductButtonVisible: Boolean? = null,
     ) : Parcelable {
+        @IgnoredOnParcel
         val isBottomNavBarVisible = isSearchActive != true
     }
 

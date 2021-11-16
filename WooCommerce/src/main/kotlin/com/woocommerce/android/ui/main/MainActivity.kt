@@ -294,10 +294,8 @@ class MainActivity :
             }
             navController.navigateUp()
             return
-        } else if (binding.bottomNav.currentPosition != MY_STORE) {
-            navController.navigate(R.id.dashboard)
         } else {
-            finish()
+            super.onBackPressed()
         }
     }
 
@@ -404,7 +402,7 @@ class MainActivity :
                 R.id.editCustomerOrderNoteFragment,
                 R.id.shippingAddressEditingFragment,
                 R.id.billingAddressEditingFragment,
-                R.id.orderFilterCategoryListFragment -> {
+                R.id.orderFilterCategoriesFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -800,13 +798,6 @@ class MainActivity :
             selectedProductType = productType,
             selectedProductCategoryId = productCategory,
             selectedProductCategoryName = productCategoryName
-        )
-        navController.navigateSafely(action)
-    }
-
-    override fun showProductAddBottomSheet() {
-        val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
-            isAddProduct = true
         )
         navController.navigateSafely(action)
     }
