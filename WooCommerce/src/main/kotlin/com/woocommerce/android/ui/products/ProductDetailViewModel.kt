@@ -663,7 +663,6 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun startPublishProduct(productStatus: ProductStatus = PUBLISH, exitWhenDone: Boolean = false) {
-
         viewState.productDraft?.let {
             val product = it.copy(status = productStatus)
             trackPublishing(product)
