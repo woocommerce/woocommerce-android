@@ -4,31 +4,34 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
+import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import androidx.navigation.NavOptions.Builder
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.ui.NavigationUI
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
-import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
-import com.google.android.material.bottomnavigation.LabelVisibilityMode
+import com.google.android.material.navigation.NavigationBarView
+import com.google.android.material.navigation.NavigationBarView.OnItemReselectedListener
+import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.woocommerce.android.R
-import com.woocommerce.android.R.anim
 import org.wordpress.android.util.DisplayUtils
+import java.lang.ref.WeakReference
 import kotlin.math.min
 
 class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : BottomNavigationView(context, attrs),
-    OnNavigationItemSelectedListener,
-    OnNavigationItemReselectedListener {
+    OnItemSelectedListener,
+    OnItemReselectedListener {
     private lateinit var navController: NavController
     private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable
@@ -51,13 +54,26 @@ class MainBottomNavigationView @JvmOverloads constructor(
         createBadges()
 
         assignNavigationListeners(true)
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            menu.forEach { item ->
-                if (destination.id == item.itemId) {
-                    item.isChecked = true
+        val weakReference = WeakReference(this)
+        navController.addOnDestinationChangedListener(
+            object : NavController.OnDestinationChangedListener {
+                override fun onDestinationChanged(
+                    controller: NavController,
+                    destination: NavDestination,
+                    arguments: Bundle?
+                ) {
+                    val view = weakReference.get()
+                    if (view == null) {
+                        navController.removeOnDestinationChangedListener(this)
+                        return
+                    }
+                    view.menu.forEach { item ->
+                        if (destination.matchDestination(item.itemId)) {
+                            item.isChecked = true
+                        }
+                    }
                 }
-            }
-        }
+            })
     }
 
     /**
@@ -66,7 +82,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
      * of our badges. To work around this we remove the badges before state is saved and recreate
      * them ourselves when state is restored.
      */
-    override fun onSaveInstanceState(): Parcelable? {
+    override fun onSaveInstanceState(): Parcelable {
         removeBadge(R.id.orders)
         removeBadge(R.id.reviews)
         return super.onSaveInstanceState()
@@ -113,7 +129,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     @SuppressLint("PrivateResource")
     private fun detectLabelVisibilityMode() {
         // default to showing labels for all tabs
-        labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_LABELED
+        labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
 
         var numVisibleItems = 0
         for (index in 0 until menu.size()) {
@@ -141,7 +157,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
             val title = menu.getItem(index).title.toString()
             textPaint.getTextBounds(title, 0, title.length, bounds)
             if (bounds.width() > itemWidth) {
-                labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_AUTO
+                labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_AUTO
                 break
             }
         }
@@ -175,22 +191,12 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val navPos = findNavigationPositionById(item.itemId)
-        val builder = Builder()
-            .setLaunchSingleTop(true)
-            .setEnterAnim(anim.nav_default_enter_anim)
-            .setExitAnim(anim.nav_default_exit_anim)
-            .setPopEnterAnim(anim.nav_default_pop_enter_anim)
-            .setPopExitAnim(anim.nav_default_pop_exit_anim)
-
-        val options: NavOptions = builder.build()
-        try {
-            navController.navigate(item.itemId, null, options)
-        } catch (e: IllegalArgumentException) {
-            return false
+        val navSuccess = NavigationUI.onNavDestinationSelected(item, navController)
+        if (navSuccess) {
+            listener.onNavItemSelected(findNavigationPositionById(item.itemId))
+            return true
         }
-        listener.onNavItemSelected(navPos)
-        return true
+        return false
     }
 
     override fun onNavigationItemReselected(item: MenuItem) {
@@ -199,7 +205,10 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     private fun assignNavigationListeners(assign: Boolean) {
-        setOnNavigationItemSelectedListener(if (assign) this else null)
-        setOnNavigationItemReselectedListener(if (assign) this else null)
+        setOnItemSelectedListener(if (assign) this else null)
+        setOnItemReselectedListener(if (assign) this else null)
     }
+
+    fun NavDestination.matchDestination(@IdRes destId: Int): Boolean =
+        hierarchy.any { it.id == destId }
 }

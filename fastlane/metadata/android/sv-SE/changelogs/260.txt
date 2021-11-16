@@ -1,0 +1,2 @@
+7.9:
+Vi vet att dina kunder inte alltid anger sina adresser korrekt när de gör sina beställningar. Du kommer att märka att du nu kan redigera fakturerings- och leveransadresser samt kundanteckningar.

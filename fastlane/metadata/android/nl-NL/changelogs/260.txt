@@ -1,0 +1,2 @@
+7.9:
+Klanten voeren hun adres niet altijd juist in bij het plaatsen van bestellingen. Je kunt vanaf nu het factuur- en verzendadres en berichten van de klant bewerken.

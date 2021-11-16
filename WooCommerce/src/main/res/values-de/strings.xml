@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-27 15:54:04+0000
+Translation-Revision-Date: 2021-11-09 11:54:13+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Nicht jetzt</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Jetpack installieren</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Erlaube mehreren Benutzen, auf WooCommerce Mobile zuzugreifen. </string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Benutzerprofile</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Mit den neuen Statistikanzeigen siehst du Besucher, Berichte und mehr.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Statistiken</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Erhalte Push-Benachrichtigungen zu neuen Bestellungen, Bewertungen usw. direkt auf dein Gerät.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Push-Benachrichtigungen</string>
+    <string name="jetpack_benefits_modal_subtitle">Installiere das kostenlose Jetpack-Plugin, um auf deinem Mobilgerät die bestmögliche Erfahrung zu haben.</string>
+    <string name="jetpack_benefits_modal_title">Hole das Maximum aus deinem Store heraus</string>
+    <string name="settings_enable_quick_order_teaser_message">Versuche, Bestellungen mit nur wenigen Informationen zu erstellen, während wir uns auf den Launch vorbereiten</string>
+    <string name="settings_enable_quick_order_teaser_title">Quick Order</string>
+    <string name="beta_features_message">Add-ons anzeigen, quick order</string>
+    <string name="order_detail_use_as_shipping_address">Als Lieferadresse verwenden</string>
+    <string name="order_detail_use_as_billing_address">Als Rechnungsadresse verwenden</string>
+    <string name="orderfilters_filters_count_title">Filter (%d)</string>
+    <string name="orderfilters_filters_default_title">Filter</string>
+    <string name="orderfilters_filter_date_range_options_title">Zeitraum</string>
+    <string name="orderfilters_filter_order_status_options_title">Bestellstatus</string>
+    <string name="orderfilters_filter_option_item_selected">Ausgewählte Filteroption</string>
+    <string name="orderfilters_date_range_filter">Zeitraum</string>
+    <string name="orderfilters_order_status_filter">Bestellstatus</string>
+    <string name="orderfilters_default_filter_value">Alle</string>
+    <string name="orderfilters_show_orders_button">Bestellungen anzeigen</string>
+    <string name="orderlist_filters_title">Gefilterte Bestellungen</string>
+    <string name="orderlist_no_filters_title">Alle Bestellungen</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Die Vorteile</string>
     <string name="jetpack_benefits_bottom_banner_title">Mit Jetpack sämtliche Optionen erhalten</string>
     <string name="product_description_hint_with_title">Erzähle uns mehr über %s …</string>
@@ -56,8 +82,8 @@ Language: de
     <string name="settings_enable_product_addons_teaser_title">Add-ons anzeigen</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Diese Feature-Einstellung konnten wir leider gerade nicht ändern</string>
     <string name="product_category">Kategorie</string>
-    <string name="notification_review_title">Du hast 1 neue Bewertung! 🌟</string>
-    <string name="notification_order_title">Du hast 1 neue Bestellung! 🎉</string>
+    <string name="notification_review_title">Du hast eine neue Bewertung! 🌟</string>
+    <string name="notification_order_title">Du hast eine neue Bestellung! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d Artikel</string>
     <string name="upsell_product_count_many">%d Verkaufe zusätzliche Produkte</string>
     <string name="upsell_product_count_one">%d Verkaufe ein zusätzliches Produkt</string>
