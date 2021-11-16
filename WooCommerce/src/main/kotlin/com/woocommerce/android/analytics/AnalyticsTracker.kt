@@ -536,6 +536,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL,
         ENCRYPTED_LOGGING_UPLOAD_FAILED,
 
+        // -- What's new / feature announcements
+        FEATURE_ANNOUNCEMENT_SHOWN,
+
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
         TOP_EARNER_PRODUCT_TAPPED,
@@ -821,6 +824,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_AMOUNT = "amount"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+
+        // -- Feature Announcement / What's New
+        const val KEY_ANNOUNCEMENT_VIEW_SOURCE = "source"
+        const val VALUE_ANNOUNCEMENT_SOURCE_UPGRADE = "app_upgrade"
+        const val VALUE_ANNOUNCEMENT_SOURCE_SETTINGS = "app_settings"
 
         var sendUsageStats: Boolean = true
             set(value) {
