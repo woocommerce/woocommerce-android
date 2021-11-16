@@ -28,4 +28,6 @@ class OrderFiltersRepository @Inject constructor(
             appSharedPrefs.getOrderFilters(it.id, filterCategory.name)
                 ?.split(",")
         } ?: emptyList()
+
+    fun getCustomDateRangeFilter() = Pair(1622412000000, 1637084354712)
 }

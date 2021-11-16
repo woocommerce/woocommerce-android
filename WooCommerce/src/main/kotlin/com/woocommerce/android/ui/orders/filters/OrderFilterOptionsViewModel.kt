@@ -97,10 +97,10 @@ class OrderFilterOptionsViewModel @Inject constructor(
         _viewState = _viewState.copy(
             filterOptions = _viewState.filterOptions.clearAllFilterSelections()
         )
+        updateSelectedFilterValues(dateRangeOptionClicked)
+
         if (DateRange.fromValue(dateRangeOptionClicked.key) == DateRange.CUSTOM_RANGE) {
             triggerEvent(ShowCustomDateRangeOptions)
-        } else {
-            updateSelectedFilterValues(dateRangeOptionClicked)
         }
     }
 

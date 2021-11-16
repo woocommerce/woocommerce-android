@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.orders.filters.model.getNumberOfSelectedFilter
 import com.woocommerce.android.ui.orders.filters.model.isAnyFilterOptionSelected
 import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
 import com.woocommerce.android.ui.orders.filters.model.toOrderFilterOptionUiModel
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -40,8 +41,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions,
     private val getDateRangeFilterOptions: GetDateRangeFilterOptions,
     private val orderFilterRepository: OrderFiltersRepository,
-    private val getTrackingForFilterSelection: GetTrackingForFilterSelection
-
+    private val getTrackingForFilterSelection: GetTrackingForFilterSelection,
+    private val dateUtils: DateUtils
 ) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
@@ -158,7 +159,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     private fun loadDateRangeFilterOptions(): List<OrderFilterOptionUiModel> = getDateRangeFilterOptions()
-        .map { it.toOrderFilterOptionUiModel(resourceProvider) }
+        .map { it.toOrderFilterOptionUiModel(resourceProvider, dateUtils) }
         .toMutableList()
         .apply { addFilterOptionAll(resourceProvider) }
 

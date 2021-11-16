@@ -344,6 +344,20 @@ class DateUtils @Inject constructor(
             null
         }
 
+    /**
+     * Given a date in millis, returns date string in MMMM d, YYYY format
+     *
+     * return null if the argument is not a valid date string.
+     */
+    fun toDisplayDateFormat(dateMillis: Long): String? =
+        try {
+            SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
+                .format(Date(dateMillis))
+        } catch (e: Exception) {
+            "Date string argument is not a valid date".reportAsError(e)
+            null
+        }
+
     companion object {
         /**
          * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT

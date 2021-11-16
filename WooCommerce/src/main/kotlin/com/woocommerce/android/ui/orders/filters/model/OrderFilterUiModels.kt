@@ -37,6 +37,7 @@ data class OrderFilterCategoryUiModel(
 data class OrderFilterOptionUiModel(
     val key: String,
     val displayName: String,
+    val displayValue: String? = null,
     val isSelected: Boolean = false
 ) : Parcelable {
     companion object {

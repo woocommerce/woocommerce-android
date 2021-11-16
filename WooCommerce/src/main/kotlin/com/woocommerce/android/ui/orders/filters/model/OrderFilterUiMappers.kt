@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_7_DAYS
 import com.woocommerce.android.ui.orders.filters.data.DateRange.TODAY
 import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 fun OrderStatusOption.toOrderFilterOptionUiModel(resourceProvider: ResourceProvider) =
@@ -25,12 +26,31 @@ fun OrderStatusOption.getDisplayNameForOrderStatusFilter(resourceProvider: Resou
         label
     }
 
-fun DateRangeFilterOption.toOrderFilterOptionUiModel(resourceProvider: ResourceProvider) =
+fun DateRangeFilterOption.toOrderFilterOptionUiModel(resourceProvider: ResourceProvider, dateUtils: DateUtils) =
     OrderFilterOptionUiModel(
         key = dateRange.filterKey,
         displayName = dateRange.toDisplayName(resourceProvider),
+        displayValue = dateRangeToDisplayValue(startDate, endDate, dateUtils),
         isSelected = isSelected
     )
+
+fun dateRangeToDisplayValue(
+    startDate: Long?,
+    endDate: Long?,
+    dateUtils: DateUtils
+): String {
+    val builder = StringBuilder()
+    startDate?.apply {
+        builder.append(dateUtils.toDisplayDateFormat(this))
+    }
+    endDate?.apply {
+        if (startDate != null) {
+            builder.append("-")
+        }
+        builder.append(dateUtils.toDisplayDateFormat(this))
+    }
+    return builder.toString()
+}
 
 fun DateRange.toDisplayName(resourceProvider: ResourceProvider): String =
     resourceProvider.getString(
