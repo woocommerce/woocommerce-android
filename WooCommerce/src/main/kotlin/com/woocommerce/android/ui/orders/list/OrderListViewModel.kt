@@ -142,7 +142,8 @@ class OrderListViewModel @Inject constructor(
             } else {
                 WooLog.w(
                     WooLog.T.ORDERS,
-                    "Order list can't fetch site plugins, no selected site - siteId ${selectedSite.getSelctedSiteId()}$"
+                    "Order list can't fetch site plugins, no selected site " +
+                        "- siteId ${selectedSite.getSelectedSiteId()}$"
                 )
             }
         }

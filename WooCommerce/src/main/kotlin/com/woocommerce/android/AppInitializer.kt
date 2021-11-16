@@ -20,6 +20,7 @@ import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.*
@@ -31,6 +32,7 @@ import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadR
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -68,6 +70,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
     @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
+    @Inject lateinit var sendTelemetry: SendTelemetry
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -128,6 +131,18 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         observeEncryptedLogsUploadResults()
         uploadEncryptedLogs()
+
+        appCoroutineScope.launch {
+            selectedSite.observe()
+                .collect { siteModel ->
+                    if (siteModel != null) {
+                        sendTelemetry(
+                            appVersion = BuildConfig.VERSION_NAME,
+                            siteModel = siteModel
+                        )
+                    }
+                }
+        }
     }
 
     override fun onAppComesFromBackground() {
