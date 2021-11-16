@@ -26,22 +26,21 @@ class SelectedSite(
         fun getEventBus(): EventBus = EventBus.getDefault()
     }
 
-    private val state: MutableStateFlow<SiteModel?> = MutableStateFlow(getIfExists())
+    private val state: MutableStateFlow<SiteModel?> = MutableStateFlow(getSelectedSiteFromPersistance())
 
     fun observe(): Flow<SiteModel?> = state
 
     fun get(): SiteModel {
         state.value?.let { return it }
 
-        val localSiteId = getSelectedSiteId()
-        val siteModel = siteStore.getSiteByLocalId(localSiteId)
-        siteModel?.let {
+        getSelectedSiteFromPersistance()?.let {
             state.value = it
             return it
         }
 
         // if the selected site id is valid but the site isn't in the site store, reset the
         // preference. this can happen if the user has been removed from the active site.
+        val localSiteId = getSelectedSiteId()
         if (localSiteId > -1) {
             getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
         }
@@ -78,6 +77,11 @@ class SelectedSite(
     }
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
+
+    private fun getSelectedSiteFromPersistance(): SiteModel? {
+        val localSiteId = getSelectedSiteId()
+        return siteStore.getSiteByLocalId(localSiteId)
+    }
 
     @Deprecated("Event bus is considered deprecated.", ReplaceWith("observe()"))
     class SelectedSiteChangedEvent(val site: SiteModel)
