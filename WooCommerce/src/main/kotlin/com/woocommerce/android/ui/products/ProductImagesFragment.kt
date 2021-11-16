@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.Manifest.permission
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -10,7 +7,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -20,7 +20,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImagesBinding
@@ -28,21 +27,35 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
-import com.woocommerce.android.ui.products.ProductImagesViewModel.*
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.mediapicker.MediaPickerConstants
+import org.wordpress.android.mediapicker.MediaPickerUtils
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.model.MediaTypes
+import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
+import org.wordpress.android.mediapicker.ui.MediaPickerActivity
+import java.security.InvalidParameterException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -57,6 +70,7 @@ class ProductImagesFragment :
     private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
     @Inject lateinit var navigator: ProductNavigator
+    @Inject lateinit var mediaPickerUtils: MediaPickerUtils
 
     private var _binding: FragmentProductImagesBinding? = null
     private val binding get() = _binding!!
@@ -268,7 +282,7 @@ class ProductImagesFragment :
                     viewModel.onShowStorageChooserButtonClicked()
                 }
                 it.findViewById<View>(R.id.textCamera)?.apply {
-                    isVisible = ProductImagesUtils.hasCamera(context)
+                    isVisible = mediaPickerUtils.isCameraAvailable
                     setOnClickListener {
                         viewModel.onShowCameraButtonClicked()
                     }
@@ -289,100 +303,58 @@ class ProductImagesFragment :
     }
 
     private fun chooseProductImage() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).also {
-            it.type = "image/*"
-            it.addCategory(Intent.CATEGORY_OPENABLE)
-            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, viewModel.isMultiSelectionAllowed)
-        }
-        val chooser = Intent.createChooser(intent, null)
-        activity?.startActivityFromFragment(this, chooser, RequestCodes.CHOOSE_PHOTO)
+        val intent = MediaPickerActivity.buildIntent(
+            requireContext(),
+            DeviceMediaPickerSetup.buildMediaPicker(
+                mediaTypes = MediaTypes.IMAGES,
+                canMultiSelect = viewModel.isMultiSelectionAllowed
+            )
+        )
+
+        resultLauncher.launch(intent)
     }
 
     private fun captureProductImage() {
-        if (requestCameraPermission()) {
-            val intent = ProductImagesUtils.createCaptureImageIntent(requireActivity())
-            if (intent == null) {
-                uiMessageResolver.showSnack(R.string.product_images_camera_error)
-                return
-            }
-            capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
-            requireActivity().startActivityFromFragment(this, intent, RequestCodes.CAPTURE_PHOTO)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                RequestCodes.CHOOSE_PHOTO -> data?.let {
-                    val uriList = ArrayList<Uri>()
-                    val clipData = it.clipData
-                    if (clipData != null) {
-                        // handle multiple images
-                        for (i in 0 until clipData.itemCount) {
-                            val uri = clipData.getItemAt(i).uri
-                            uriList.add(uri)
-                        }
-                    } else {
-                        // handle single image
-                        it.data?.let { uri ->
-                            uriList.add(uri)
-                        }
-                    }
-                    if (uriList.isEmpty()) {
-                        WooLog.w(T.MEDIA, "Photo chooser returned empty list")
-                        return
-                    }
-                    AnalyticsTracker.track(
-                        Stat.PRODUCT_IMAGE_ADDED,
-                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
-                    )
-                    viewModel.uploadProductImages(navArgs.remoteId, uriList)
-                }
-                RequestCodes.CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
-                    AnalyticsTracker.track(
-                        Stat.PRODUCT_IMAGE_ADDED,
-                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
-                    )
-                    val uriList = ArrayList<Uri>().also { it.add(imageUri) }
-                    viewModel.uploadProductImages(navArgs.remoteId, uriList)
-                }
-            }
-        }
-    }
-
-    /**
-     * Requests camera permissions, returns true only if camera permission is already available
-     */
-    private fun requestCameraPermission(): Boolean {
-        if (isAdded) {
-            if (WooPermissionUtils.hasCameraPermission(requireActivity())) {
-                return true
-            }
-            requestPermissions(arrayOf(permission.CAMERA), RequestCodes.CAMERA_PERMISSION)
-        }
-        return false
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (!isAdded) {
-            return
-        }
-
-        val allGranted = WooPermissionUtils.setPermissionListAsked(
-            requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied = true
+        val intent = MediaPickerActivity.buildIntent(
+            requireContext(),
+            DeviceMediaPickerSetup.buildCameraPicker()
         )
 
-        if (allGranted) {
-            when (requestCode) {
-                RequestCodes.CAMERA_PERMISSION -> {
-                    captureProductImage()
+        resultLauncher.launch(intent)
+    }
+
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        handleMediaPickerResult(it)
+    }
+
+    @Suppress("NestedBlockDepth")
+    private fun handleMediaPickerResult(result: ActivityResult) {
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            val mediaUris = (result.data?.extras?.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)
+                ?.mapNotNull { it as? String }
+                ?.map { Uri.parse(it) }
+                ?: emptyList()
+
+            if (mediaUris.isEmpty()) {
+                WooLog.w(T.MEDIA, "Media picker returned empty list")
+            } else {
+                val sourceExtra = result.data?.getStringExtra(MediaPickerConstants.EXTRA_MEDIA_SOURCE)
+                if (sourceExtra != null) {
+                    val source = when (val dataSource = MediaPickerSetup.DataSource.valueOf(sourceExtra)) {
+                        MediaPickerSetup.DataSource.SYSTEM_PICKER,
+                        MediaPickerSetup.DataSource.DEVICE -> AnalyticsTracker.IMAGE_SOURCE_DEVICE
+                        MediaPickerSetup.DataSource.CAMERA -> AnalyticsTracker.IMAGE_SOURCE_CAMERA
+                        else -> throw InvalidParameterException("${dataSource.name} is not a supported data source")
+                    }
+                    AnalyticsTracker.track(
+                        Stat.PRODUCT_IMAGE_ADDED,
+                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
+                    )
+                } else {
+                    WooLog.w(T.MEDIA, "Media picker returned empty media source")
                 }
+
+                viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
             }
         }
     }

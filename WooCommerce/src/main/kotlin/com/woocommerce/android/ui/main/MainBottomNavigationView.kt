@@ -17,7 +17,6 @@ import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
-import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import com.woocommerce.android.R
 import com.woocommerce.android.R.anim
 import org.wordpress.android.util.DisplayUtils
@@ -66,7 +65,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
      * of our badges. To work around this we remove the badges before state is saved and recreate
      * them ourselves when state is restored.
      */
-    override fun onSaveInstanceState(): Parcelable? {
+    override fun onSaveInstanceState(): Parcelable {
         removeBadge(R.id.orders)
         removeBadge(R.id.reviews)
         return super.onSaveInstanceState()
@@ -113,7 +112,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     @SuppressLint("PrivateResource")
     private fun detectLabelVisibilityMode() {
         // default to showing labels for all tabs
-        labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_LABELED
+        labelVisibilityMode = LABEL_VISIBILITY_LABELED
 
         var numVisibleItems = 0
         for (index in 0 until menu.size()) {
@@ -141,7 +140,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
             val title = menu.getItem(index).title.toString()
             textPaint.getTextBounds(title, 0, title.length, bounds)
             if (bounds.width() > itemWidth) {
-                labelVisibilityMode = LabelVisibilityMode.LABEL_VISIBILITY_AUTO
+                labelVisibilityMode = LABEL_VISIBILITY_AUTO
                 break
             }
         }

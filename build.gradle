@@ -101,7 +101,7 @@ ext {
     eventBusVersion = '3.2.0'
     googlePlayCoreVersion = '1.10.2'
     coroutinesVersion = '1.5.2'
-    lifecycleVersion = '2.3.1'
+    lifecycleVersion = '2.4.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
     flipperVersion = '0.118.1'
@@ -114,6 +114,7 @@ ext {
     robolectricVersion = '4.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = "develop-eebc5d8e91a1d90190919f900f924b39c861a528"
+    mediapickerVersion = 'trunk-e70c6df699fbfad8bd907a6b8c0862c69bafb04f'
 }
 
 // Onboarding and dev env setup tasks
