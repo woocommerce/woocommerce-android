@@ -129,7 +129,6 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         doReturn(errorEvents).whenever(mediaFileUploadHandler)
             .observeCurrentUploadErrors(TEST_VARIATION.remoteVariationId)
         val errorMessage = "message"
-        doReturn(errorMessage).whenever(resourceProvider).getString(any())
         doReturn(errorMessage).whenever(resourceProvider).getString(any(), anyVararg())
 
         setup()

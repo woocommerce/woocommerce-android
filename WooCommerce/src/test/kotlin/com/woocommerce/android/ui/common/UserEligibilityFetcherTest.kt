@@ -58,7 +58,6 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
 
     @Test
     fun `Fetches user info correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(WooResult(expectedUser)).whenever(userStore).fetchUserRole(any())
         doReturn(expectedUser.isUserEligible()).whenever(appPrefsWrapper).isUserEligible()
         doReturn(expectedUser.email).whenever(appPrefsWrapper).getUserEmail()
 
