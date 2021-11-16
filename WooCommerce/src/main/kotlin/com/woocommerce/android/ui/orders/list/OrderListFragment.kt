@@ -275,7 +275,11 @@ class OrderListFragment :
         _binding = null
     }
 
-    private fun isQuickOrderAvailable() = FeatureFlag.QUICK_ORDER.isEnabled() && AppPrefs.isQuickOrderEnabled
+    private fun isQuickOrderAvailable(): Boolean {
+        return FeatureFlag.QUICK_ORDER.isEnabled() &&
+            AppPrefs.isQuickOrderEnabled &&
+            viewModel.isCardReaderOnboardingCompleted()
+    }
 
     /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
@@ -821,7 +825,10 @@ class OrderListFragment :
     }
 
     private fun displayQuickOrderWIPCard(show: Boolean) {
-        if (!show || feedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED) {
+        if (!show ||
+            feedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED ||
+            !viewModel.isCardReaderOnboardingCompleted()
+        ) {
             binding.quickOrderWIPcard.isVisible = false
             return
         }
