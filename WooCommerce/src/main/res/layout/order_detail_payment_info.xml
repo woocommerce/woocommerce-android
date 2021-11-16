@@ -331,7 +331,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Refund button section -->
+        <!-- Refund button & In-Person Payments section -->
         <LinearLayout
             android:id="@+id/paymentInfo_issueRefundButtonSection"
             android:layout_width="match_parent"

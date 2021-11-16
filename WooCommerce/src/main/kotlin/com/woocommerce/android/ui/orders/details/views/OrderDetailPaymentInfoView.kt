@@ -189,7 +189,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         }
 
         // TODO: Once the refund by amount is supported again, this condition will need to be updated
-        binding.paymentInfoIssueRefundButtonSection.isVisible = availableRefundQuantity > 0 && order.isRefundAvailable
+        binding.paymentInfoIssueRefundButton.isVisible = availableRefundQuantity > 0 && order.isRefundAvailable
     }
 
     fun showRefundTotal(
@@ -200,6 +200,6 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         binding.paymentInfoRefundTotal.text = formatCurrencyForDisplay(refundTotal)
         binding.paymentInfoRefunds.hide()
         binding.paymentInfoRefundTotalSection.show()
-        binding.paymentInfoIssueRefundButtonSection.isVisible = show
+        binding.paymentInfoIssueRefundButton.isVisible = show
     }
 }
