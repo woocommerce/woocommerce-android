@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.main
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Paint
-import android.graphics.Rect
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -18,13 +15,10 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigation.NavigationBarView.OnItemReselectedListener
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.woocommerce.android.R
-import org.wordpress.android.util.DisplayUtils
 import java.lang.ref.WeakReference
-import kotlin.math.min
 
 class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
@@ -119,48 +113,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
         divider.layoutParams = dividerParams
 
         addView(divider)
-    }
-
-    /**
-     * We want to override the bottom nav's default behavior of only showing labels for the active tab when
-     * more than three tabs are showing, but we only want to do this if we know it won't cause any of the
-     * tabs to wrap to more than one line.
-     */
-    @SuppressLint("PrivateResource")
-    private fun detectLabelVisibilityMode() {
-        // default to showing labels for all tabs
-        labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
-
-        var numVisibleItems = 0
-        for (index in 0 until menu.size()) {
-            if (menu.getItem(index).isVisible) {
-                numVisibleItems++
-            }
-        }
-
-        // determine the width of a navbar item
-        val displayWidth = DisplayUtils.getDisplayPixelWidth(context)
-        val itemMargin = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_margin)
-        val itemMaxWidth = resources.getDimensionPixelSize(R.dimen.design_bottom_navigation_item_max_width)
-        val itemWidth = min(itemMaxWidth, (displayWidth / numVisibleItems) - (itemMargin * 3))
-
-        // create a paint object whose text size matches the bottom navigation active text size - note that
-        // we have to use the active size since it's 2sp larger than inactive
-        val textPaint = Paint().also {
-            it.textSize = resources.getDimension(R.dimen.design_bottom_navigation_active_text_size)
-        }
-
-        // iterate through the menu items and determine whether they can all fit their space - if any of them
-        // can't, we revert to LABEL_VISIBILITY_AUTO
-        val bounds = Rect()
-        for (index in 0 until menu.size()) {
-            val title = menu.getItem(index).title.toString()
-            textPaint.getTextBounds(title, 0, title.length, bounds)
-            if (bounds.width() > itemWidth) {
-                labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_AUTO
-                break
-            }
-        }
     }
 
     /**
