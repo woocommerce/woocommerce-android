@@ -16,30 +16,27 @@ import javax.inject.Singleton
  * Persists and restores the selected site to/from the app preferences.
  */
 @Singleton
-class SelectedSite(private var context: Context, private var siteStore: SiteStore) {
-    companion object {
+class SelectedSite(
+    private val context: Context,
+    private val siteStore: SiteStore,
+) {
+    private companion object {
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"
 
-        fun getEventBus() = EventBus.getDefault()
+        fun getEventBus(): EventBus = EventBus.getDefault()
     }
 
-    private var selectedSite: SiteModel? = null
+    private val state: MutableStateFlow<SiteModel?> = MutableStateFlow(getIfExists())
 
-    private val siteStateFlow = MutableStateFlow<SiteModel?>(null)
-
-    init {
-        siteStateFlow.value = getIfExists()
-    }
-
-    fun observe(): Flow<SiteModel?> = siteStateFlow
+    fun observe(): Flow<SiteModel?> = state
 
     fun get(): SiteModel {
-        selectedSite?.let { return it }
+        state.value?.let { return it }
 
-        val localSiteId = getSelctedSiteId()
+        val localSiteId = getSelectedSiteId()
         val siteModel = siteStore.getSiteByLocalId(localSiteId)
         siteModel?.let {
-            selectedSite = it
+            state.value = it
             return it
         }
 
@@ -56,31 +53,32 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
     }
 
     fun set(siteModel: SiteModel) {
-        selectedSite = siteModel
+        state.value = siteModel
         PreferenceUtils.setInt(getPreferences(), SELECTED_SITE_LOCAL_ID, siteModel.id)
 
         AnalyticsTracker.refreshSiteMetadata(siteModel)
 
         // Notify listeners
         getEventBus().post(SelectedSiteChangedEvent(siteModel))
-        siteStateFlow.value = siteModel
+        state.value = siteModel
     }
 
     fun exists(): Boolean {
-        val siteModel = siteStore.getSiteByLocalId(getSelctedSiteId())
+        val siteModel = siteStore.getSiteByLocalId(getSelectedSiteId())
         return siteModel != null
     }
 
     fun getIfExists(): SiteModel? = if (exists()) get() else null
 
-    fun getSelctedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
+    fun getSelectedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
 
     fun reset() {
-        selectedSite = null
+        state.value = null
         getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
     }
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
+    @Deprecated("Event bus is considered deprecated.", ReplaceWith("observe()"))
     class SelectedSiteChangedEvent(val site: SiteModel)
 }
