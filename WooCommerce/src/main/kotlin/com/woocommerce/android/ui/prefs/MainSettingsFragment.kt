@@ -164,16 +164,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             }
         }
 
-        val isOnboarded = presenter.isCardReaderOnboardingCompleted()
-        binding.optionBetaFeatures.optionValue = if (isOnboarded) {
-            getString(R.string.beta_features_add_ons_and_quick_order)
-        } else {
-            getString(R.string.beta_features_add_ons)
-        }
         binding.optionBetaFeatures.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
             val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToBetaFeaturesFragment(
-                isCardReaderOnboardingCompleted = isOnboarded
+                isCardReaderOnboardingCompleted = presenter.isCardReaderOnboardingCompleted()
             )
             findNavController().navigateSafely(action)
         }
@@ -283,6 +277,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun updateStoreSettings() {
         binding.storeSettingsContainer.visibility =
             if (CARD_READER.isEnabled()) View.VISIBLE else View.GONE
+        binding.optionBetaFeatures.optionValue = if (presenter.isCardReaderOnboardingCompleted()) {
+            getString(R.string.beta_features_add_ons_and_quick_order)
+        } else {
+            getString(R.string.beta_features_add_ons)
+        }
     }
 
     /**
