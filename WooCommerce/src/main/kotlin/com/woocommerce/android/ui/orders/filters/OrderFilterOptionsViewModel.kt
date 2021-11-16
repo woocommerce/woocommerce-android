@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
@@ -11,6 +12,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.OR
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowCustomDateRangeOptions
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel.Companion.DEFAULT_ALL_KEY
 import com.woocommerce.android.ui.orders.filters.model.clearAllFilterSelections
@@ -56,6 +58,15 @@ class OrderFilterOptionsViewModel @Inject constructor(
         triggerEvent(OnShowOrders)
     }
 
+    fun onBackPressed(): Boolean {
+        saveFiltersSelection()
+        val updatedCategory = arguments.filterCategory.copy(
+            orderFilterOptions = _viewState.filterOptions
+        )
+        triggerEvent(OnFilterOptionsSelectionUpdated(updatedCategory))
+        return false
+    }
+
     private fun trackFilterSelection() {
         if (_viewState.filterOptions.isAnyFilterOptionSelected()) {
             AnalyticsTracker.track(
@@ -72,15 +83,6 @@ class OrderFilterOptionsViewModel @Inject constructor(
         orderFilterRepository.setSelectedFilters(categoryKey, newSelectedFilters)
     }
 
-    fun onBackPressed(): Boolean {
-        saveFiltersSelection()
-        val updatedCategory = arguments.filterCategory.copy(
-            orderFilterOptions = _viewState.filterOptions
-        )
-        triggerEvent(OnFilterOptionsSelectionUpdated(updatedCategory))
-        return false
-    }
-
     private fun updateOrderStatusSelectedFilters(orderStatusClicked: OrderFilterOptionUiModel) {
         when (orderStatusClicked.key) {
             DEFAULT_ALL_KEY -> _viewState = _viewState.copy(
@@ -95,7 +97,11 @@ class OrderFilterOptionsViewModel @Inject constructor(
         _viewState = _viewState.copy(
             filterOptions = _viewState.filterOptions.clearAllFilterSelections()
         )
-        updateSelectedFilterValues(dateRangeOptionClicked)
+        if (DateRange.fromValue(dateRangeOptionClicked.key) == DateRange.CUSTOM_RANGE) {
+            triggerEvent(ShowCustomDateRangeOptions)
+        } else {
+            updateSelectedFilterValues(dateRangeOptionClicked)
+        }
     }
 
     private fun updateSelectedFilterValues(selectedFilterOption: OrderFilterOptionUiModel) {

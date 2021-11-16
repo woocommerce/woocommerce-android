@@ -22,5 +22,14 @@
             android:name="filterCategory"
             app:argType="com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel"
             app:nullable="false" />
+        <action
+            android:id="@+id/action_orderFilterOptionsFragment_to_orderFilterCustomDateRangeFragment"
+            app:destination="@id/orderFilterCustomDateRangeFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
+    <fragment
+        android:id="@+id/orderFilterCustomDateRangeFragment"
+        android:name="com.woocommerce.android.ui.orders.filters.OrderFilterCustomDateRangeFragment"
+        tools:layout="@layout/fragment_order_filter_custom_date_range" />
 </navigation>

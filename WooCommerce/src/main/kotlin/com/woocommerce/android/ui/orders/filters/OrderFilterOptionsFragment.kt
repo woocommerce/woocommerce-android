@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.filters
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -13,6 +14,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.OrderFilterCategoriesFragment.Companion.KEY_UPDATED_FILTER_OPTIONS
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterOptionAdapter
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
@@ -64,6 +66,7 @@ class OrderFilterOptionsFragment :
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is OrderFilterEvent.ShowCustomDateRangeOptions -> navigateToCustomDateRangeOptions()
                 is OnFilterOptionsSelectionUpdated -> navigateBackWithResult(
                     KEY_UPDATED_FILTER_OPTIONS,
                     event.category
@@ -75,6 +78,12 @@ class OrderFilterOptionsFragment :
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun navigateToCustomDateRangeOptions() {
+        val action = OrderFilterOptionsFragmentDirections
+            .actionOrderFilterOptionsFragmentToOrderFilterCustomDateRangeFragment()
+        findNavController().navigate(action)
     }
 
     private fun showOrderFilterOptions(orderFilterOptions: List<OrderFilterOptionUiModel>) {

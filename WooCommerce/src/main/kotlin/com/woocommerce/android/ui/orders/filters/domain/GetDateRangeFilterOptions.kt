@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.filters.domain
 
+import com.woocommerce.android.ui.orders.filters.data.DateRange.CUSTOM_RANGE
 import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_2_DAYS
 import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_30_DAYS
 import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_7_DAYS
@@ -13,7 +14,7 @@ class GetDateRangeFilterOptions @Inject constructor(
     private val orderFiltersRepository: OrderFiltersRepository
 ) {
     operator fun invoke(): List<DateRangeFilterOption> =
-        listOf(TODAY, LAST_2_DAYS, LAST_7_DAYS, LAST_30_DAYS)
+        listOf(TODAY, LAST_2_DAYS, LAST_7_DAYS, LAST_30_DAYS, CUSTOM_RANGE)
             .map {
                 DateRangeFilterOption(
                     dateRange = it,

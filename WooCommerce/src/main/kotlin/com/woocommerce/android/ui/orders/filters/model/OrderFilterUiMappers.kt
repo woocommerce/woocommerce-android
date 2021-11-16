@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.filters.model
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.filters.data.DateRange
+import com.woocommerce.android.ui.orders.filters.data.DateRange.CUSTOM_RANGE
 import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_2_DAYS
 import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_30_DAYS
 import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_7_DAYS
@@ -38,5 +39,6 @@ fun DateRange.toDisplayName(resourceProvider: ResourceProvider): String =
             LAST_2_DAYS -> R.string.orderfilters_date_range_filter_last_two_days
             LAST_7_DAYS -> R.string.orderfilters_date_range_filter_last_7_days
             LAST_30_DAYS -> R.string.orderfilters_date_range_filter_last_30_days
+            CUSTOM_RANGE -> R.string.orderfilters_date_range_filter_custom_range
         }
     )
