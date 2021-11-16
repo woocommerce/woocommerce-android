@@ -1,10 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyVararg
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ContentsType
@@ -18,13 +13,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.store.WCDataStore
 import kotlin.math.ceil
 
-@RunWith(RobolectricTestRunner::class)
 class ShippingCustomsViewModelTest : BaseUnitTest() {
     private val countries = listOf(
         WCLocationModel().apply {

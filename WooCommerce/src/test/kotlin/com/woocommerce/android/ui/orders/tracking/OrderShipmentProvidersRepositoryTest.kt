@@ -6,23 +6,14 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.OrderTestUtils.ORDER_IDENTIFIER
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
@@ -40,7 +31,7 @@ class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given data in local db, when fetch shipment providers invoked, then cached data returned`() = runBlockingTest {
+    fun `Given data in local db, when fetch shipment providers invoked, then cached data returned`() = testBlocking {
         // When there are shipment providers in local db
         doReturn(providers).whenever(orderStore).getShipmentProvidersForSite(siteModel)
 
@@ -55,7 +46,7 @@ class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `If NO data in local db, data is fetched from the network and loaded from the db`() = runBlockingTest {
+    fun `If NO data in local db, data is fetched from the network and loaded from the db`() = testBlocking {
         // When there are NO shipment providers in local db
         whenever(orderStore.getShipmentProvidersForSite(siteModel)).thenReturn(emptyList(), providers)
 
@@ -72,7 +63,7 @@ class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `If there are NO rows affected, an empty list is returned`() = runBlockingTest {
+    fun `If there are NO rows affected, an empty list is returned`() = testBlocking {
         // When there are NO rows affected
         whenever(orderStore.getShipmentProvidersForSite(siteModel)).thenReturn(emptyList())
 
@@ -87,7 +78,7 @@ class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `If an error occurs, a null result is returned`() = runBlockingTest {
+    fun `If an error occurs, a null result is returned`() = testBlocking {
         // When something goes wrong
         whenever(orderStore.getShipmentProvidersForSite(siteModel)).thenReturn(emptyList())
 

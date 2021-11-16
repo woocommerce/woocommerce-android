@@ -39,9 +39,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import java.math.BigDecimal
 import kotlin.test.assertEquals
@@ -52,7 +50,6 @@ private const val DUMMY_ORDER_NUMBER = "123"
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class CardReaderPaymentViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"

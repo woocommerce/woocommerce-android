@@ -1,18 +1,12 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
+import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -21,11 +15,9 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class VariationListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val variationRepository: VariationRepository = mock()
