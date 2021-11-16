@@ -67,8 +67,13 @@ class StatsRepository @Inject constructor(
             wcStatsStore.fetchNewVisitorStats(visitsPayload)
         }
 
-        return if (result?.isError == false) {
-            Result.success(result)
+        return if (result?.isError == false && result?.granularity == lastVisitorStatsGranularity) {
+            // TODO. Continue here. this needs to be suspendable as well
+            val visitorStats = wcStatsStore.getNewVisitorStats(
+                selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
+            )
+            //val stats = result.stats
+            Result.success(visitorStats)
         } else {
             val errorMessage = result?.error?.message ?: "Timeout"
             WooLog.e(
