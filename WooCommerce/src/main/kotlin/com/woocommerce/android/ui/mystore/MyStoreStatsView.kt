@@ -14,11 +14,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.MarkerImage
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
@@ -28,7 +28,6 @@ import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
@@ -42,9 +41,8 @@ import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DateTimeUtils
-import java.util.ArrayList
-import java.util.Date
-import java.util.Locale
+import org.wordpress.android.util.DisplayUtils
+import java.util.*
 import kotlin.math.round
 
 class MyStoreStatsView @JvmOverloads constructor(
@@ -52,7 +50,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr), OnChartValueSelectedListener, BarChartGestureListener {
-    private val binding = MyStoreStatsBinding.inflate(LayoutInflater.from(ctx), this)
+    private val binding = com.woocommerce.android.databinding.MyStoreStatsBinding.inflate(LayoutInflater.from(ctx), this)
 
     companion object {
         private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
@@ -141,7 +139,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         // Track range change
         AnalyticsTracker.track(
             Stat.DASHBOARD_MAIN_STATS_DATE,
-            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase(Locale.ROOT))
+            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase())
         )
 
         isRequestingStats = true
@@ -264,14 +262,13 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
-        val barEntry = e as BarEntry
-
+        if (e == null) return
         // display the revenue for this entry
-        val formattedRevenue = getFormattedRevenueValue(barEntry.y.toDouble())
+        val formattedRevenue = getFormattedRevenueValue(e.y.toDouble())
         revenueValue.text = formattedRevenue
 
         // display the order count for this entry
-        val date = getDateFromIndex(barEntry.x.toInt())
+        val date = getDateFromIndex(e.x.toInt())
         val value = chartOrderStats[date]?.toInt() ?: 0
         ordersValue.text = value.toString()
 
@@ -296,13 +293,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         if (lastPerformedGesture == ChartGesture.DRAG || lastPerformedGesture == ChartGesture.FLING) {
             onNothingSelected()
         }
-    }
-
-    /**
-     * removes the highlighted value, which in turn removes the marker view
-     */
-    private fun hideMarker() {
-        binding.chart.highlightValue(null)
     }
 
     fun updateView(revenueStatsModel: WCRevenueStatsModel?, currencyCode: String?) {
@@ -369,7 +359,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun updateChartView() {
-        val wasEmpty = binding.chart.barData?.let { it.dataSetCount == 0 } ?: true
+        val wasEmpty = binding.chart.lineData?.let { it.dataSetCount == 0 } ?: true
 
         val totalModel = revenueStatsModel?.parseTotal()
         val grossRevenue = totalModel?.totalSales ?: 0.0
@@ -388,16 +378,22 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
 
         val barColors = ArrayList<Int>()
-        val normalColor = ContextCompat.getColor(context, R.color.graph_data_color)
+        val normalColor = ContextCompat.getColor(context, R.color.color_primary)
         for (entry in chartRevenueStats) {
             barColors.add(normalColor)
         }
 
-        val dataSet = generateBarDataSet(chartRevenueStats).apply {
+        val dataSet = generateDataSet(chartRevenueStats).apply {
             colors = barColors
             setDrawValues(false)
             isHighlightEnabled = true
-            highLightColor = ContextCompat.getColor(context, R.color.graph_highlight_color)
+            highLightColor = ContextCompat.getColor(context, R.color.graph_data_color)
+            highlightLineWidth = 1.5f
+            setDrawHorizontalHighlightIndicator(false)
+            setDrawCircles(false)
+            fillDrawable = ContextCompat.getDrawable(context, R.drawable.line_chart_fill)
+            setDrawFilled(true)
+            lineWidth = 2f
         }
 
         // determine the min revenue so we can set the min value for the left axis, which should be zero unless
@@ -409,7 +405,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(binding.chart) {
-            data = BarData(dataSet)
+            data = LineData(dataSet)
             if (wasEmpty) {
                 animateY(duration)
             }
@@ -434,9 +430,12 @@ class MyStoreStatsView @JvmOverloads constructor(
                 } else labelCount = 3
                 valueFormatter = RevenueAxisFormatter()
             }
+            val dot = MarkerImage(context, R.drawable.chart_highlight_dot)
+            val offset = DisplayUtils.dpToPx(context, -5).toFloat()
+            dot.setOffset(offset, offset)
+            marker = dot
         }
 
-        hideMarker()
         resetLastUpdated()
         isRequestingStats = false
     }
@@ -487,12 +486,12 @@ class MyStoreStatsView @JvmOverloads constructor(
         )
     }
 
-    private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
+    private fun generateDataSet(revenueStats: Map<String, Double>): LineDataSet {
         chartRevenueStats = revenueStats
-        val barEntries = chartRevenueStats.values.mapIndexed { index, value ->
-            BarEntry((index + 1).toFloat(), value.toFloat())
+        val entries = chartRevenueStats.values.mapIndexed { index, value ->
+            Entry((index + 1).toFloat(), value.toFloat())
         }
-        return BarDataSet(barEntries, "")
+        return LineDataSet(entries, "")
     }
 
     @StringRes
