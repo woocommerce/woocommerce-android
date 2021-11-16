@@ -32,6 +32,11 @@ class CardReaderOnboardingChecker @Inject constructor(
     @Suppress("ReturnCount", "ComplexMethod")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
+
+        with(selectedSite.get()) {
+            appPrefsWrapper.setCardReaderOnboardingCompleted(this.id, this.siteId, this.selfHostedSiteId, false)
+        }
+
         val countryCode = getStoreCountryCode()
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
 
@@ -57,7 +62,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isInUndefinedState(paymentAccount)) return GenericError
 
         with(selectedSite.get()) {
-            appPrefsWrapper.setCardReaderOnboardingCompleted(this.id, this.siteId, this.selfHostedSiteId)
+            appPrefsWrapper.setCardReaderOnboardingCompleted(this.id, this.siteId, this.selfHostedSiteId, true)
         }
 
         return OnboardingCompleted

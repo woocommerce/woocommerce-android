@@ -20,8 +20,9 @@ class AppPrefsWrapper @Inject constructor() {
     fun setCardReaderOnboardingCompleted(
         localSiteId: Int,
         remoteSiteId: Long,
-        selfHostedSiteId: Long
-    ) = AppPrefs.setCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
+        selfHostedSiteId: Long,
+        value: Boolean
+    ) = AppPrefs.setCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId, value)
 
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 
