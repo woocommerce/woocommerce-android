@@ -62,15 +62,31 @@ class StatsRepository @Inject constructor(
 
     suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Result<Map<String, Int>> {
         lastVisitorStatsGranularity = granularity
-        val result = continuationVisitorStats.callAndWait {
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
             val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
-            dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
+            wcStatsStore.fetchNewVisitorStats(visitsPayload)
         }
 
-        return when (result) {
-            is Cancellation -> Result.failure(result.exception)
-            is Success -> result.value
+        return if (result?.isError == false) {
+            Result.success(result)
+        } else {
+            val errorMessage = result?.error?.message ?: "Timeout"
+            WooLog.e(
+                DASHBOARD,
+                "$TAG - Error fetching visitor stats: $errorMessage"
+            )
+            Result.failure(Exception(errorMessage))
         }
+
+//        val result = continuationVisitorStats.callAndWait {
+//            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
+//            dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
+//        }
+//
+//        return when (result) {
+//            is Cancellation -> Result.failure(result.exception)
+//            is Success -> result.value
+//        }
     }
 
     suspend fun fetchProductLeaderboards(granularity: StatsGranularity, quantity: Int, forced: Boolean):
