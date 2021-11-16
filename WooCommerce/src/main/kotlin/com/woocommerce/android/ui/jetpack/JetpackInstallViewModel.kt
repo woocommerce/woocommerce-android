@@ -4,27 +4,21 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.di.AppCoroutineScope
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.store.PluginStore.OnJetpackSitePluginFetched
 import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
 import com.woocommerce.android.ui.mystore.PluginRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.coroutines.CoroutineScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collect
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.Dispatcher
 import javax.inject.Inject
 
+@HiltViewModel
 class JetpackInstallViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val repository: PluginRepository,
-    private val dispatcher: Dispatcher,
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
+    private val repository: PluginRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         const val MAXIMUM_ATTEMPT = 3
@@ -41,25 +35,20 @@ class JetpackInstallViewModel @Inject constructor(
     private var viewState by viewStateLiveData
 
     init {
-        dispatcher.register(this)
         viewState = viewState.copy(
             installStatus = Installing
         )
-
-        // Start by checking Jetpack plugin's existence in the site.
-        // Depending on the result, this view model will then try to either install or activate Jetpack.
-        repository.fetchJetpackSitePlugin(JETPACK_NAME)
     }
 
     override fun onCleared() {
         super.onCleared()
-        dispatcher.unregister(this)
+        repository.onCleanup()
     }
 
     private fun installJetpackPlugin() {
         installAttemptCount++
 
-        appCoroutineScope.launch {
+        launch {
             repository.installPlugin(JETPACK_SLUG).collect {
                 when (it) {
                     is PluginInstalled -> {
@@ -106,22 +95,6 @@ class JetpackInstallViewModel @Inject constructor(
     data class JetpackInstallProgressViewState(
         val installStatus: InstallStatus? = null
     ) : Parcelable
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSitePluginFetched(event: OnJetpackSitePluginFetched) {
-        if (!event.isError) {
-            if (activationAttemptCount < MAXIMUM_ATTEMPT) {
-                activationAttemptCount++
-                viewState = viewState.copy(installStatus = Activating)
-                repository.activatePlugin(JETPACK_NAME, JETPACK_SLUG)
-            } else {
-                viewState = viewState.copy(installStatus = Failed(GENERIC_ERROR))
-            }
-        } else {
-            installJetpackPlugin()
-        }
-    }
 
     sealed class InstallStatus : Parcelable {
         @Parcelize

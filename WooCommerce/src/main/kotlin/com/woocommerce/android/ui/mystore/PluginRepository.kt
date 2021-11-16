@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.mystore
 
 import android.os.Parcelable
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.trySendBlocking
@@ -15,17 +16,32 @@ import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginIn
 import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginInstallFailed
 import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginActivationFailed
+import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.store.PluginStore
 import org.wordpress.android.fluxc.store.PluginStore.*
 
 class PluginRepository @Inject constructor(
     private val dispatcher: Dispatcher,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    @Suppress("unused") private val pluginStore: PluginStore
 ) {
     companion object {
         const val GENERIC_ERROR = "Unknown issue."
     }
+
+    init {
+        dispatcher.register(this)
+    }
+
+    fun onCleanup() {
+        dispatcher.unregister(this)
+    }
+
+    private var continuationFetchJetpackSitePlugin = ContinuationWrapper<SitePluginModel?>(WooLog.T.WP)
 
     // Note that the `newInstallSitePluginAction` action automatically tries to activate the plugin after
     // installation is successful, so when using this function, there's no need to call `activateJetpackPlugin()
@@ -42,9 +58,17 @@ class PluginRepository @Inject constructor(
         }
     }
 
-    fun fetchJetpackSitePlugin(name: String) {
-        val payload = FetchJetpackSitePluginPayload(selectedSite.get(), name)
-        dispatcher.dispatch(PluginActionBuilder.newFetchJetpackSitePluginAction(payload))
+    suspend fun fetchJetpackSitePlugin(name: String): SitePluginModel? {
+        return if (selectedSite.exists()) {
+            val result = continuationFetchJetpackSitePlugin.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+                val payload = FetchJetpackSitePluginPayload(selectedSite.get(), name)
+                dispatcher.dispatch(PluginActionBuilder.newFetchJetpackSitePluginAction(payload))
+            }
+            return when (result) {
+                is ContinuationWrapper.ContinuationResult.Cancellation -> null
+                is ContinuationWrapper.ContinuationResult.Success -> result.value
+            }
+        } else null
     }
 
     fun activatePlugin(name: String, slug: String, enableAutoUpdate: Boolean = true) {
@@ -86,6 +110,16 @@ class PluginRepository @Inject constructor(
                     PluginActivationFailed(event.error.message ?: GENERIC_ERROR)
                 )
             }
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSitePluginFetched(event: OnJetpackSitePluginFetched) {
+        if (!event.isError) {
+            continuationFetchJetpackSitePlugin.continueWith(event.plugin)
+        } else {
+            continuationFetchJetpackSitePlugin.continueWith(null)
         }
     }
 
