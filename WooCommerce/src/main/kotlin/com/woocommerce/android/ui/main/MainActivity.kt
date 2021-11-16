@@ -294,10 +294,8 @@ class MainActivity :
             }
             navController.navigateUp()
             return
-        } else if (binding.bottomNav.currentPosition != MY_STORE) {
-            navController.navigate(R.id.dashboard)
         } else {
-            finish()
+            super.onBackPressed()
         }
     }
 
