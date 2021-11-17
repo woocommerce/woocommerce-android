@@ -20,7 +20,6 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
     private val dateUtils: DateUtils
 ) {
     operator fun invoke(): WCOrderListDescriptor {
-
         val selectedDateRange = orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE)
             .map { DateRange.fromValue(it) }
             .firstOrNull()
