@@ -97,17 +97,16 @@ class OrderFilterOptionsViewModel @Inject constructor(
     }
 
     private fun updateDateRangeFilters(dateRangeOptionClicked: OrderFilterOptionUiModel) {
-        _viewState = _viewState.copy(
-            filterOptions = _viewState.filterOptions.clearAllFilterSelections()
-        )
-        updateSelectedFilterValues(dateRangeOptionClicked)
-
         if (DateRange.fromValue(dateRangeOptionClicked.key) == DateRange.CUSTOM_RANGE) {
             val selectedCustomDateRange = orderFilterRepository.getCustomDateRangeFilter()
             triggerEvent(
                 ShowCustomDateRangePicker(selectedCustomDateRange.first, selectedCustomDateRange.second)
             )
         }
+        _viewState = _viewState.copy(
+            filterOptions = _viewState.filterOptions.clearAllFilterSelections()
+        )
+        updateSelectedFilterValues(dateRangeOptionClicked)
     }
 
     private fun updateSelectedFilterValues(selectedFilterOption: OrderFilterOptionUiModel) {
