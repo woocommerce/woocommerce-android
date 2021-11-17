@@ -12,12 +12,14 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.OR
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowCustomDateRangeOptions
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowCustomDateRangePicker
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel.Companion.DEFAULT_ALL_KEY
 import com.woocommerce.android.ui.orders.filters.model.clearAllFilterSelections
 import com.woocommerce.android.ui.orders.filters.model.isAnyFilterOptionSelected
 import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
+import com.woocommerce.android.ui.orders.filters.model.toDisplayDateRange
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -31,7 +33,8 @@ class OrderFilterOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val orderFilterRepository: OrderFiltersRepository,
-    private val getTrackingForFilterSelection: GetTrackingForFilterSelection
+    private val getTrackingForFilterSelection: GetTrackingForFilterSelection,
+    private val dateUtils: DateUtils
 ) : ScopedViewModel(savedState) {
     private val arguments: OrderFilterOptionsFragmentArgs by savedState.navArgs()
     private val categoryKey = arguments.filterCategory.categoryKey
@@ -100,7 +103,10 @@ class OrderFilterOptionsViewModel @Inject constructor(
         updateSelectedFilterValues(dateRangeOptionClicked)
 
         if (DateRange.fromValue(dateRangeOptionClicked.key) == DateRange.CUSTOM_RANGE) {
-            triggerEvent(ShowCustomDateRangeOptions)
+            val selectedCustomDateRange = orderFilterRepository.getCustomDateRangeFilter()
+            triggerEvent(
+                ShowCustomDateRangePicker(selectedCustomDateRange.first, selectedCustomDateRange.second)
+            )
         }
     }
 
@@ -146,7 +152,9 @@ class OrderFilterOptionsViewModel @Inject constructor(
                 resourceProvider.getString(R.string.orderfilters_filter_date_range_options_title)
         }
 
-    fun onDateRangeChanged(dateRangeDisplayValue: String) {
+    fun onCustomDateRangeChanged(startMillis: Long, endMillis: Long) {
+        orderFilterRepository.setCustomDateRange(startMillis, endMillis)
+        val dateRangeDisplayValue = toDisplayDateRange(startMillis, endMillis, dateUtils)
         _viewState = _viewState.copy(
             filterOptions = _viewState.filterOptions
                 .map {

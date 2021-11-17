@@ -14,11 +14,11 @@ sealed class OrderFilterEvent : MultiLiveEvent.Event() {
         val category: OrderFilterCategoryUiModel
     ) : OrderFilterEvent()
 
-    data class OnDateRangeChanged(
-        val dateRangeDisplayValue: String
+    data class ShowCustomDateRangePicker(
+        val startDateMillis: Long,
+        val endDateMillis: Long
     ) : OrderFilterEvent()
 
-    object ShowCustomDateRangeOptions : OrderFilterEvent()
     object OnShowOrders : OrderFilterEvent()
 }
 
