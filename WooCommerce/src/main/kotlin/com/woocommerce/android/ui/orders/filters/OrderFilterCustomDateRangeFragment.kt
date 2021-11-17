@@ -9,12 +9,14 @@ import com.woocommerce.android.databinding.FragmentOrderFilterCustomDateRangeBin
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.OrderFilterOptionsFragment.Companion.ON_DATE_RANGE_CHANGE_KEY
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnDateRangeChanged
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.list.OrderListFragment.Companion.FILTER_CHANGE_NOTICE_KEY
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderFilterCustomDateRangeFragment :
@@ -24,6 +26,7 @@ class OrderFilterCustomDateRangeFragment :
         const val DATE_PICKER_FRAGMENT_TAG = "DateRangePicker"
     }
 
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: OrderFilterCustomDateRangeViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,14 +51,18 @@ class OrderFilterCustomDateRangeFragment :
         viewModel.viewState.observe(viewLifecycleOwner) { _, newState ->
             binding.startDateValueTextView.text = newState.startDateDisplayValue
             binding.endDateValueTextView.text = newState.endDateDisplayValue
+
+            val selectedStartMillis = newState.startDateMillis ?: System.currentTimeMillis()
+            val selectedEndMillis = newState.endDateMillis ?: System.currentTimeMillis()
+
             binding.startDateLayout.setOnClickListener {
-                showDateRangePicker(newState.startDateMillis ?: System.currentTimeMillis()) {
-                    viewModel.onStartDateSelected(it)
+                showDateRangePicker(selectedStartMillis, selectedEndMillis) {
+                    viewModel.onDateRangeSelected(it.first, it.second)
                 }
             }
             binding.endDateLayout.setOnClickListener {
-                showDateRangePicker(newState.endDateMillis ?: System.currentTimeMillis()) {
-                    viewModel.onEndDateSelected(it)
+                showDateRangePicker(selectedStartMillis, selectedEndMillis) {
+                    viewModel.onDateRangeSelected(it.first, it.second)
                 }
             }
         }
@@ -75,17 +82,18 @@ class OrderFilterCustomDateRangeFragment :
     }
 
     private fun showDateRangePicker(
-        selectedDate: Long,
-        onNewDateSelected: (dateMillis: Long) -> Unit
+        selectedStartMillis: Long,
+        selectedEndMillis: Long,
+        onNewDateSelected: (rangeMillis: Pair<Long, Long>) -> Unit
     ) {
         val datePicker =
-            MaterialDatePicker.Builder.datePicker()
+            MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
-                .setSelection(selectedDate)
+                .setSelection(androidx.core.util.Pair(selectedStartMillis, selectedEndMillis))
                 .build()
         datePicker.show(parentFragmentManager, DATE_PICKER_FRAGMENT_TAG)
         datePicker.addOnPositiveButtonClickListener {
-            onNewDateSelected.invoke(it)
+            onNewDateSelected.invoke(Pair(it.first, it.second))
         }
     }
 }

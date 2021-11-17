@@ -63,17 +63,12 @@ class OrderFilterCustomDateRangeViewModel @Inject constructor(
         return false
     }
 
-    fun onStartDateSelected(startDateMillis: Long) {
+    fun onDateRangeSelected(startMillis: Long, endMillis: Long) {
         _viewState = _viewState.copy(
-            startDateMillis = startDateMillis,
-            startDateDisplayValue = dateUtils.toDisplayDateFormat(startDateMillis)
-        )
-    }
-
-    fun onEndDateSelected(endDateMillis: Long) {
-        _viewState = _viewState.copy(
-            endDateMillis = endDateMillis,
-            endDateDisplayValue = dateUtils.toDisplayDateFormat(endDateMillis)
+            startDateMillis = startMillis,
+            startDateDisplayValue = dateUtils.toDisplayDateFormat(startMillis),
+            endDateMillis = endMillis,
+            endDateDisplayValue = dateUtils.toDisplayDateFormat(endMillis)
         )
     }
 
