@@ -389,17 +389,6 @@ class CardReaderPaymentViewModel
         }
     }
 
-    enum class PaymentState {
-        LOADING,
-        FAILED,
-        CAPTURING,
-        COLLECTING,
-        SUCCESS,
-        PROCESSING,
-        RECEIPT_PRINT,
-        REFETCHING_ORDER
-    }
-
     private fun getCurrentPaymentState(): PaymentState? {
         return when (viewState.value) {
             is LoadingDataState -> PaymentState.LOADING
@@ -545,6 +534,17 @@ class CardReaderPaymentViewModel
             paymentStateLabel = R.string.card_reader_payment_fetch_order_loading_payment_state,
             isProgressVisible = true
         )
+    }
+
+    enum class PaymentState {
+        LOADING,
+        FAILED,
+        CAPTURING,
+        COLLECTING,
+        SUCCESS,
+        PROCESSING,
+        RECEIPT_PRINT,
+        REFETCHING_ORDER
     }
 
     enum class PaymentFlowError(val message: Int) {
