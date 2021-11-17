@@ -244,6 +244,13 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionWhatsNew.show()
         binding.optionWhatsNew.setOnClickListener {
             WooLog.i(T.DEVICE, "Displaying Feature Announcement from Settings menu.")
+            AnalyticsTracker.track(
+                Stat.FEATURE_ANNOUNCEMENT_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
+                        AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_SETTINGS
+                )
+            )
             findNavController()
                 .navigateSafely(
                     MainSettingsFragmentDirections.actionMainSettingsFragmentToFeatureAnnouncementDialogFragment(

@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-26 09:54:04+0000
+Translation-Revision-Date: 2021-11-09 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Non ora</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Installa Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Consenti a più utenti di accedere a WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Profili utente</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Nuove visualizzazioni dell\'analisi, che ti consentono di vedere visitatori, rapporti e altro ancora.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analisi</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Ricevi notifiche push per nuovi ordini, recensioni, ecc. inviate al tuo dispositivo.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Notifiche push</string>
+    <string name="jetpack_benefits_modal_subtitle">Installa il plugin gratuito di Jetpack per vivere la migliore esperienza possibile con i dispositivi mobili.</string>
+    <string name="jetpack_benefits_modal_title">Ottieni il massimo dal tuo negozio</string>
+    <string name="settings_enable_quick_order_teaser_message">Verifica la creazione di ordini con le informazioni minime mentre ci prepariamo al lancio</string>
+    <string name="settings_enable_quick_order_teaser_title">Ordine rapido</string>
+    <string name="beta_features_message">Visualizza i componenti aggiuntivi e l\'ordine rapido</string>
+    <string name="order_detail_use_as_shipping_address">Usa come indirizzo di spedizione</string>
+    <string name="order_detail_use_as_billing_address">Usa come indirizzo di fatturazione</string>
+    <string name="orderfilters_filters_count_title">Filtri (%d)</string>
+    <string name="orderfilters_filters_default_title">Filtri</string>
+    <string name="orderfilters_filter_date_range_options_title">Intervallo di date</string>
+    <string name="orderfilters_filter_order_status_options_title">Stato ordine</string>
+    <string name="orderfilters_filter_option_item_selected">Opzione del filtro selezionata</string>
+    <string name="orderfilters_date_range_filter">Intervallo di date</string>
+    <string name="orderfilters_order_status_filter">Stato ordine</string>
+    <string name="orderfilters_default_filter_value">Tutto</string>
+    <string name="orderfilters_show_orders_button">Mostra ordini</string>
+    <string name="orderlist_filters_title">Ordini filtrati</string>
+    <string name="orderlist_no_filters_title">Tutti gli ordini</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Scopri i vantaggi</string>
     <string name="jetpack_benefits_bottom_banner_title">Vivi l\'esperienza completa con Jetpack</string>
     <string name="product_description_hint_with_title">Raccontaci di più su %s…</string>
@@ -56,8 +82,8 @@ Language: it
     <string name="settings_enable_product_addons_teaser_title">Visualizza componenti aggiuntivi</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Spiacenti, al momento non è stato possibile modificare l\'impostazione di questa funzionalità</string>
     <string name="product_category">Categoria</string>
-    <string name="notification_review_title">Hai 1 nuova recensione. 🌟</string>
-    <string name="notification_order_title">Hai 1 nuovo ordine. 🎉</string>
+    <string name="notification_review_title">Hai una nuova recensione. 🌟</string>
+    <string name="notification_order_title">Hai un nuovo ordine. 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d elemento</string>
     <string name="upsell_product_count_many">%d prodotti di upsell</string>
     <string name="upsell_product_count_one">%d prodotto di upsell</string>

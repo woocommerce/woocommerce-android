@@ -446,7 +446,6 @@ class CardReaderPaymentViewModel
         @StringRes val paymentStateLabel: Int? = null,
         @DimenRes val paymentStateLabelTopMargin: Int = R.dimen.major_275,
         @DrawableRes val illustration: Int? = null,
-        // TODO cardreader add tests
         open val isProgressVisible: Boolean = false,
         val primaryActionLabel: Int? = null,
         val secondaryActionLabel: Int? = null,

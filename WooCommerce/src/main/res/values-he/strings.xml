@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-26 13:54:05+0000
+Translation-Revision-Date: 2021-11-11 16:54:13+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">לא עכשיו</string>
+    <string name="jetpack_benefits_modal_install_jetpack">להתקין את Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">לאפשר למספר משתמשים לגשת אל WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">פרופילי משתמשים</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">להשתמש בתצוגה של נתונים אנליטיים כדי לראות את המבקרים, הדוחות ועוד.</string>
+    <string name="jetpack_benefits_modal_analytics_title">נתונים אנליטיים</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">לקבל הודעות דחיפה לגבי הזמנות חדשות, ביקורות וכו\' במכשיר שלך.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">הודעות דחיפה</string>
+    <string name="jetpack_benefits_modal_subtitle">להתקין את התוסף החינמי של Jetpack בשביל חוויית השימוש הטובה ביותר בנייד.</string>
+    <string name="jetpack_benefits_modal_title">לנצל את מלוא הפוטנציאל של החנות שלך</string>
+    <string name="settings_enable_quick_order_teaser_message">כדאי לבדוק את האפשרות ליצור הזמנות עם מידע חיוני בלבד בזמן שאנחנו מתכוננים להשקה</string>
+    <string name="settings_enable_quick_order_teaser_title">הזמנה מהירה</string>
+    <string name="beta_features_message">להציג הרחבות, הזמנה מהירה</string>
+    <string name="order_detail_use_as_shipping_address">להשתמש בתור כתובת למשלוח</string>
+    <string name="order_detail_use_as_billing_address">להשתמש בתור כתובת לחיוב</string>
+    <string name="orderfilters_filters_count_title">מסננים (%d)</string>
+    <string name="orderfilters_filters_default_title">מסננים</string>
+    <string name="orderfilters_filter_date_range_options_title">טווח תאריכים</string>
+    <string name="orderfilters_filter_order_status_options_title">סטטוס הזמנה</string>
+    <string name="orderfilters_filter_option_item_selected">אפשרות הסינון שנבחרה</string>
+    <string name="orderfilters_date_range_filter">טווח תאריכים</string>
+    <string name="orderfilters_order_status_filter">סטטוס הזמנה</string>
+    <string name="orderfilters_default_filter_value">הכול</string>
+    <string name="orderfilters_show_orders_button">להציג הזמנות</string>
+    <string name="orderlist_filters_title">הזמנות שסוננו</string>
+    <string name="orderlist_no_filters_title">כל ההזמנות</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">לצפייה בהטבות</string>
     <string name="jetpack_benefits_bottom_banner_title">אפשר ליהנות מהחוויה המלאה עם Jetpack</string>
     <string name="product_description_hint_with_title">נשמח לשמוע פרטים נוספים על %s…</string>
@@ -56,8 +82,8 @@ Language: he_IL
     <string name="settings_enable_product_addons_teaser_title">להציג הרחבות</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">מצטערים, לא הצלחנו לשנות את הגדרות האפשרות כעת</string>
     <string name="product_category">קטגוריה</string>
-    <string name="notification_review_title">יש לך ביקורת אחת חדשה! 🌟</string>
-    <string name="notification_order_title">יש לך הזמנה אחת חדשה! 🎉</string>
+    <string name="notification_review_title">יש לך ביקורת חדשה! 🌟</string>
+    <string name="notification_order_title">יש לך הזמנה חדשה! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">פריט %d</string>
     <string name="upsell_product_count_many">%d מוצרים של שדרוגי מכירות</string>
     <string name="upsell_product_count_one">מוצר %d של שדרוגי מכירות</string>

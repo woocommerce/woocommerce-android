@@ -9,16 +9,15 @@ import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_D
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.support.ZendeskHelper
-import com.woocommerce.android.util.NotificationsUtils
+import com.woocommerce.android.util.Base64Decoder
+import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.AccountModel
@@ -30,7 +29,6 @@ import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayl
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 
-@RunWith(RobolectricTestRunner::class)
 class NotificationMessageHandlerTest {
     private lateinit var notificationMessageHandler: NotificationMessageHandler
 
@@ -52,18 +50,24 @@ class NotificationMessageHandlerTest {
     }
     private val notificationBuilder: WooNotificationBuilder = mock()
     private val notificationAnalyticsTracker: NotificationAnalyticsTracker = mock()
+    private val jvmBase64Decoder: Base64Decoder = mock {
+        on { decode(any<String>(), any()) } doAnswer {
+            java.util.Base64.getDecoder().decode(it.arguments.first() as String)
+        }
+    }
+    private val notificationsParser: NotificationsParser = NotificationsParser(jvmBase64Decoder)
 
     private val orderNotificationPayload = NotificationTestUtils.generateTestNewOrderNotificationPayload(
         userId = accountModel.userId
     )
-    private val orderNotification = NotificationsUtils
+    private val orderNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(orderNotificationPayload)!!.toAppModel(resourceProvider)
 
     private val reviewNotificationPayload = NotificationTestUtils.generateTestNewReviewNotificationPayload(
         userId = accountModel.userId
     )
 
-    private val reviewNotification = NotificationsUtils
+    private val reviewNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(reviewNotificationPayload)!!.toAppModel(resourceProvider)
 
     @Before
@@ -78,6 +82,7 @@ class NotificationMessageHandlerTest {
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
             zendeskHelper = zendeskHelper,
+            notificationsParser = notificationsParser
         )
 
         doReturn(true).whenever(accountStore).hasAccessToken()
@@ -334,7 +339,7 @@ class NotificationMessageHandlerTest {
         val orderNotificationPayload2 = NotificationTestUtils.generateTestNewOrderNotificationPayload(
             userId = accountModel.userId, noteData = TEST_ORDER_NOTE_FULL_DATA_2
         )
-        val orderNotification2 = NotificationsUtils.buildNotificationModelFromPayloadMap(
+        val orderNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             orderNotificationPayload2
         )!!.toAppModel(resourceProvider)
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload2, mock())
@@ -391,7 +396,7 @@ class NotificationMessageHandlerTest {
         val reviewNotificationPayload2 = NotificationTestUtils.generateTestNewReviewNotificationPayload(
             userId = accountModel.userId, noteData = TEST_REVIEW_NOTE_FULL_DATA_2
         )
-        val reviewNotification2 = NotificationsUtils.buildNotificationModelFromPayloadMap(
+        val reviewNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             reviewNotificationPayload2
         )!!.toAppModel(resourceProvider)
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload2, mock())
@@ -448,7 +453,7 @@ class NotificationMessageHandlerTest {
         val orderNotificationPayload2 = NotificationTestUtils.generateTestNewOrderNotificationPayload(
             userId = accountModel.userId, noteData = TEST_ORDER_NOTE_FULL_DATA_SITE_2
         )
-        val orderNotification2 = NotificationsUtils.buildNotificationModelFromPayloadMap(
+        val orderNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             orderNotificationPayload2
         )!!.toAppModel(resourceProvider)
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload2, mock())
@@ -505,7 +510,7 @@ class NotificationMessageHandlerTest {
         val reviewNotificationPayload2 = NotificationTestUtils.generateTestNewReviewNotificationPayload(
             userId = accountModel.userId, noteData = TEST_REVIEW_NOTE_FULL_DATA_SITE_2
         )
-        val reviewNotification2 = NotificationsUtils.buildNotificationModelFromPayloadMap(
+        val reviewNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             reviewNotificationPayload2
         )!!.toAppModel(resourceProvider)
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload2, mock())

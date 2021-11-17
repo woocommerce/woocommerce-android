@@ -1,15 +1,6 @@
 ## Warning
 If reading this you find anything is not up-to-date, please fix it or report to the team if not sure how to do that
 
-## Useful Links To Get Started
-* Store Setup for Card Present Payment Testing - P91TBi-4BH-p2
-* Stripe terminal In-Person Payments - https://stripe.com/docs/terminal
-* Our very own P2 - dfdoF-p2
-* Before creating of taptopay P2 we were using general WooMobile P2 with tag #card-present 91TBi-p2
-* WCPay Server repo. If something goes wrong with the API most probably issue has to be created there - https://github.com/Automattic/woocommerce-payments-server
-* Stripe Android SDK github repo - https://github.com/stripe/stripe-android
-* Designs - vaw3DvewbUwuQnPXpdNGGH-fi-8%3A0
-
 ## Dictionary
 * **CPP** - Card Present Payments
 * **Stripe** - Third party company we use as payments processing for In-Person Payments
@@ -20,15 +11,26 @@ If reading this you find anything is not up-to-date, please fix it or report to 
 * **KYC** - Know Your Customer
 * **Card Present Payments / In-Person Payments / Card Reader Payments** - are interchangeable terms in our internal documentation and code, but only “In-Person Payments” is used in user facing features.
 
-## CardReader Module
+## Useful Links To Get Started
+* Store Setup for Card Present Payment Testing - P91TBi-4BH-p2
+* Stripe terminal In-Person Payments - https://stripe.com/docs/terminal
+* Our very own P2 - dfdoF-p2
+* Before creating of taptopay P2 we were using general WooMobile P2 with tag #card-present 91TBi-p2
+* WCPay Server repo. If something goes wrong with the API most probably issue has to be created there - https://github.com/Automattic/woocommerce-payments-server
+* Stripe Android SDK github repo - https://github.com/stripe/stripe-android
+* Designs - vaw3DvewbUwuQnPXpdNGGH-fi-8%3A0
 
-This module provides an abstraction from a provider-specific SDK to connect and accept payments using card readers. The module currently supports only Stripe Terminal SDK for Android and most of this documentation is specific only to this SDK. However, the module tries to hide as many details as possible from the client app.
+## CardReaderModule Overview
 
-### Public Interfaces
+This section is aimed for developers who want to understand how the CardReaderModule works so they can start modifying it or integrate it with another app.
+
+The module provides an abstraction from a provider-specific SDK to connect and accept payments using card readers. The module currently supports only Stripe Terminal SDK for Android and most of this documentation is specific only to this SDK. However, the module tries to hide as many details as possible from the client app.
+
+#### Public Interfaces
 `CardReaderManager` - The main interface for communicating with a card reader from the client application.
 `CardReaderStore` - Abstraction of some network requests made by the `CardReaderModule` (only some since Stripe Terminal SDK performs some requests internally). The abstraction was introduced so the client app can decide how to handle network requests (WCAndroid delegates all requests to FluxC).
 `CardReaderManagerFactory` - Simple implementation of a factory which creates a concrete implementation of CardReaderManager.
-### Model Objects
+#### Model Objects
 `CardReader` - Abstraction of a card reader with basic info such as an id and a battery level.
 `CardReaderDiscoveryEvents` - Events that can be emitted during bluetooth discovery.
 `CardPaymentStatus` - Events that can be emitted when accepting a payment.
@@ -37,7 +39,30 @@ This module provides an abstraction from a provider-specific SDK to connect and 
 `SoftwareUpdateAvailability` - Current state of software update availability.
 `SoftwareUpdateStatus` - Events that can be emitted during an ongoing software update.
 
-### Overview
+## Usage of existing UI flows implemented in WCAndroid
+This section is aimed for developer who want to add IPP into another section of the app without necessarily understanding how the module and communication between the app and the module actually works.
+
+There are several sections/screens/flows related to In-Person-Payments (IPP) already implemented in WCAndroid and can be reused to access IPP from a new section of the app.
+
+#### Onboarding Flow
+`CardReaderOnboardingChecker` is a class used to check eligibility of a store for IPP. It can be used from any class to check store's eligibility. However, when the store is not eligible, it is recommended to navigate to `CardReaderOnboardingFragment` instead of handling the errors on each screen separately.
+
+In general, the UI related to In-Person-Payments (eg. row in settings, collect payment button on order detail etc) is visible on all stores. When a user attempts to access one of the IPP sections with a store which is not eligible for IPP, the app displays `CardReaderOnboardingFragment` with an explanation what makes the store not-eligible.
+
+#### Hub screen
+`CardReaderHubFragment` is an "intersection/hub" with links to different flows - eg. Order Card Reader, Open Card Reader Manual, Manage Card Reader, etc.
+
+#### Connection Flow
+`CardReaderConnectDialogFragment` encapsulates the connection flow. Displays each step of the flow in a dialog. Returns a boolean flag (KEY_CONNECT_TO_READER_RESULT = "key_connect_to_reader_result") indicating whether the connection was successfully established to the original destination the flow was started from.
+
+#### Payment Flow
+`CardReaderPaymentDialogFragment` encapsulates the payment flow. Displays each step of the flow in a dialog. A card reader needs to be already connected before this flow is started, otherwise finishes immediately and displays a Snackbar with an error message.
+
+`CardReaderPaymentCollectibilityChecker` should be used to verify whether an Order meets the requirements for IPP. If the app navigates to `CardReaderPaymentDialogFragment` for an order which is not eligible for IPP, the payment might fail with a generic error.
+
+## CardReaderModule usage flow
+This section explains the happy flow of accepting payment by a merchant using CardReaderModule. This section is useful if you want to implement your own UI with the usage of the solution's built-in in the module
+
 #### Initialization
 The first step a client app needs to take is initialize the CardReaderModule. `CardReaderManager` provides a simple `initialize(..)` method which takes care of the initialization.
 
@@ -73,20 +98,4 @@ In order to switch accounts or to just reset the integration with the Stripe Ter
 
 The method clear() will reset the integration, clear all the caches, and will make the Stripe Terminal ready to fetch a new connection token.
 
-P.S. This document was inspired by and some parts even copied from https://github.com/woocommerce/woocommerce-ios/blob/develop/docs/HARDWARE.md.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+###### This document was inspired by and some parts even copied from https://github.com/woocommerce/woocommerce-ios/blob/develop/docs/HARDWARE.md.

@@ -69,7 +69,17 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `when screen shown, then m2 manual card reader row present`() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
-                it.label == UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader)
+                it.label == UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader) &&
+                    it.icon == R.drawable.ic_card_reader_manual
+            }
+    }
+
+    @Test
+    fun `when screen shown, then bbpos chipper manual card reader row present`() {
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader) &&
+                    it.icon == R.drawable.ic_card_reader_manual
             }
     }
 
@@ -105,6 +115,18 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.value)
             .isEqualTo(CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow)
+    }
+
+    @Test
+    fun `when user clicks on purchase card reader, then app opens external webview with in-person-payments link`() {
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
+            }!!.onItemClicked.invoke()
+
+        assertThat(
+            (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
+        ).isEqualTo(AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER)
     }
 
     @Test

@@ -34,9 +34,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -47,7 +45,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
@@ -213,7 +210,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn("").whenever(prefs).getSelectedProductType()
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
@@ -652,7 +648,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).fetchProduct(any())
         doReturn(product).whenever(productRepository).getProduct(any())
         val errorMessage = "message"
-        doReturn(errorMessage).whenever(resources).getString(any())
         doReturn(errorMessage).whenever(resources).getString(any(), anyVararg())
 
         viewModel.start()

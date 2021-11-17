@@ -10,7 +10,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -22,6 +21,7 @@ import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.*
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import java.io.File
 import javax.inject.Inject
 
@@ -31,25 +31,17 @@ class MediaFilesRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val mediaStore: MediaStore,
     private val dispatchers: CoroutineDispatchers,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val mediaPickerUtils: MediaPickerUtils
 ) {
-    private lateinit var producerScope: ProducerScope<UploadResult>
-
-    init {
-        dispatcher.register(this)
-    }
-
-    fun onCleanup() {
-        dispatcher.unregister(this)
-    }
-
     suspend fun fetchMedia(localUri: String): MediaModel? {
         return withContext(dispatchers.io) {
             val mediaModel = ProductImagesUtils.mediaModelFromLocalUri(
                 context,
                 selectedSite.get().id,
                 Uri.parse(localUri),
-                mediaStore
+                mediaStore,
+                mediaPickerUtils
             )
 
             if (mediaModel == null) {
@@ -60,18 +52,17 @@ class MediaFilesRepository @Inject constructor(
     }
 
     fun uploadMedia(localMediaModel: MediaModel, stripLocation: Boolean = true): Flow<UploadResult> {
-        if (::producerScope.isInitialized) producerScope.cancel()
-
         return callbackFlow {
-            producerScope = this
-
             WooLog.d(T.MEDIA, "MediaFilesRepository > Dispatching request to upload ${localMediaModel.filePath}")
+            val listener = OnMediaUploadListener(this)
+            dispatcher.register(listener)
             val payload = UploadMediaPayload(selectedSite.get(), localMediaModel, stripLocation)
             dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
 
             awaitClose {
+                dispatcher.unregister(listener)
                 // Cancel upload if the collection was cancelled before completion
-                if (!producerScope.isClosedForSend) {
+                if (!isClosedForSend) {
                     val payload = CancelMediaPayload(selectedSite.get(), localMediaModel, true)
                     dispatcher.dispatch(MediaActionBuilder.newCancelMediaUploadAction(payload))
                 }
@@ -108,73 +99,74 @@ class MediaFilesRepository @Inject constructor(
         }
     }
 
-    @Suppress("LongMethod")
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.BACKGROUND)
-    fun onMediaUploaded(event: OnMediaUploaded) {
-        if (!::producerScope.isInitialized) return
-        when {
-            event.isError -> {
-                WooLog.w(
-                    T.MEDIA,
-                    "MediaFilesRepository > error uploading media: ${event.error.type}, ${event.error.message}"
-                )
-                val exception = MediaUploadException(
-                    event.media,
-                    event.error.type,
-                    event.error.message
-                        ?: resourceProvider.getString(R.string.product_image_service_error_uploading)
-                )
-                producerScope.trySendBlocking(UploadFailure(exception))
-                    .onFailure {
+    private inner class OnMediaUploadListener(private val producerScope: ProducerScope<UploadResult>) {
+        @Suppress("LongMethod")
+        @SuppressWarnings("unused")
+        @Subscribe(threadMode = ThreadMode.BACKGROUND)
+        fun onMediaUploaded(event: OnMediaUploaded) {
+            when {
+                event.isError -> {
+                    WooLog.w(
+                        T.MEDIA,
+                        "MediaFilesRepository > error uploading media: ${event.error.type}, ${event.error.message}"
+                    )
+                    val exception = MediaUploadException(
+                        event.media,
+                        event.error.type,
+                        event.error.message
+                            ?: resourceProvider.getString(R.string.product_image_service_error_uploading)
+                    )
+                    producerScope.trySendBlocking(UploadFailure(exception))
+                        .onFailure {
+                            WooLog.w(
+                                T.MEDIA,
+                                "MediaFilesRepository > error delivering result, downstream collector may be cancelled"
+                            )
+                        }
+                    producerScope.close()
+                }
+                event.canceled -> {
+                    WooLog.d(T.MEDIA, "MediaFilesRepository > upload media cancelled")
+                }
+                event.completed -> {
+                    val channelResult = if (event.media?.url != null) {
+                        WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${event.media?.id}")
+                        producerScope.trySendBlocking(
+                            UploadSuccess(event.media)
+                        )
+                    } else {
+                        WooLog.w(
+                            T.MEDIA,
+                            "MediaFilesRepository > error uploading media ${event.media?.id}, null url"
+                        )
+
+                        producerScope.trySendBlocking(
+                            UploadFailure(
+                                error = MediaUploadException(
+                                    event.media,
+                                    GENERIC_ERROR,
+                                    resourceProvider.getString(R.string.product_image_service_error_uploading)
+                                )
+                            )
+                        )
+                    }
+                    channelResult.onFailure {
                         WooLog.w(
                             T.MEDIA,
                             "MediaFilesRepository > error delivering result, downstream collector may be cancelled"
                         )
                     }
-                producerScope.close()
-            }
-            event.canceled -> {
-                WooLog.d(T.MEDIA, "MediaFilesRepository > upload media cancelled")
-            }
-            event.completed -> {
-                val channelResult = if (event.media?.url != null) {
-                    WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${event.media?.id}")
-                    producerScope.trySendBlocking(
-                        UploadSuccess(event.media)
-                    )
-                } else {
-                    WooLog.w(
-                        T.MEDIA,
-                        "MediaFilesRepository > error uploading media ${event.media?.id}, null url"
-                    )
-
-                    producerScope.trySendBlocking(
-                        UploadFailure(
-                            error = MediaUploadException(
-                                event.media,
-                                GENERIC_ERROR,
-                                resourceProvider.getString(R.string.product_image_service_error_uploading)
-                            )
+                    producerScope.close()
+                }
+                else -> {
+                    producerScope.trySend(
+                        UploadResult.UploadProgress(event.progress)
+                    ).onFailure {
+                        WooLog.w(
+                            T.MEDIA,
+                            "MediaFilesRepository > error delivering result, downstream collector may be cancelled"
                         )
-                    )
-                }
-                channelResult.onFailure {
-                    WooLog.w(
-                        T.MEDIA,
-                        "MediaFilesRepository > error delivering result, downstream collector may be cancelled"
-                    )
-                }
-                producerScope.close()
-            }
-            else -> {
-                producerScope.trySend(
-                    UploadResult.UploadProgress(event.progress)
-                ).onFailure {
-                    WooLog.w(
-                        T.MEDIA,
-                        "MediaFilesRepository > error delivering result, downstream collector may be cancelled"
-                    )
+                    }
                 }
             }
         }

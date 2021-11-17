@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader
 
+import android.app.Application
 import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
 import com.woocommerce.android.cardreader.internal.TokenProvider
 import com.woocommerce.android.cardreader.internal.connection.BluetoothReaderListenerImpl
@@ -20,7 +21,11 @@ import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParamet
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 
 object CardReaderManagerFactory {
-    fun createCardReaderManager(cardReaderStore: CardReaderStore, logWrapper: LogWrapper): CardReaderManager {
+    fun createCardReaderManager(
+        application: Application,
+        cardReaderStore: CardReaderStore,
+        logWrapper: LogWrapper
+    ): CardReaderManager {
         val terminal = TerminalWrapper()
         val batteryLevelProvider = { terminal.getConnectedReader()?.currentBatteryLevel }
         val bluetoothReaderListener = BluetoothReaderListenerImpl(
@@ -31,6 +36,7 @@ object CardReaderManagerFactory {
         val terminalListener = TerminalListenerImpl(logWrapper)
 
         return CardReaderManagerImpl(
+            application,
             terminal,
             TokenProvider(cardReaderStore),
             logWrapper,
@@ -55,7 +61,7 @@ object CardReaderManagerFactory {
                 bluetoothReaderListener,
                 logWrapper,
             ),
-            terminalListener
+            terminalListener,
         )
     }
 }
