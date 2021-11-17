@@ -383,7 +383,7 @@ class CardReaderPaymentViewModel
                 AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
                 this@CardReaderPaymentViewModel.javaClass.simpleName,
                 null,
-                "User manually cancelled the payment at state ${getCurrentPaymentState()}"
+                "User manually cancelled the payment during state ${getCurrentPaymentState()}"
             )
             triggerEvent(Exit)
         }

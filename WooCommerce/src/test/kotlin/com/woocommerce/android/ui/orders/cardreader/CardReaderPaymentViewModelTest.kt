@@ -1124,7 +1124,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at state $LOADING")
+                eq("User manually cancelled the payment during state $LOADING")
             )
         }
 
@@ -1142,7 +1142,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at state $FAILED")
+                eq("User manually cancelled the payment during state $FAILED")
             )
         }
 
@@ -1160,7 +1160,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at state $CAPTURING")
+                eq("User manually cancelled the payment during state $CAPTURING")
             )
         }
 
@@ -1178,7 +1178,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at state $COLLECTING")
+                eq("User manually cancelled the payment during state $COLLECTING")
             )
         }
 
@@ -1196,7 +1196,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at state $SUCCESS")
+                eq("User manually cancelled the payment during state $SUCCESS")
             )
         }
 
@@ -1214,7 +1214,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at state $PROCESSING")
+                eq("User manually cancelled the payment during state $PROCESSING")
             )
         }
 
@@ -1233,7 +1233,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at state $RECEIPT_PRINT")
+                eq("User manually cancelled the payment during state $RECEIPT_PRINT")
             )
         }
 
