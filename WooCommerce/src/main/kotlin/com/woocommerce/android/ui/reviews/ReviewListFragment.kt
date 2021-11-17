@@ -57,7 +57,9 @@ class ReviewListFragment :
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
-    private lateinit var reviewsAdapter: ReviewListAdapter
+    private var _reviewsAdapter: ReviewListAdapter? = null
+    private val reviewsAdapter: ReviewListAdapter
+        get() = _reviewsAdapter!!
 
     private val viewModel: ReviewListViewModel by viewModels()
 
@@ -86,7 +88,7 @@ class ReviewListFragment :
 
         val activity = requireActivity()
 
-        reviewsAdapter = ReviewListAdapter(activity, this)
+        _reviewsAdapter = ReviewListAdapter( this)
         val unreadDecoration = UnreadItemDecoration(activity as Context, this)
         binding.reviewsList.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
@@ -165,6 +167,7 @@ class ReviewListFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
+        _reviewsAdapter = null
         super.onDestroyView()
         _binding = null
     }
