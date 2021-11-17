@@ -383,23 +383,37 @@ class CardReaderPaymentViewModel
                 AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
                 this@CardReaderPaymentViewModel.javaClass.simpleName,
                 null,
-                """User manually cancelled the payment at ${getCurrentPaymentState()}"""
+                "User manually cancelled the payment at state ${getCurrentPaymentState()}"
             )
             triggerEvent(Exit)
         }
     }
 
-    private fun getCurrentPaymentState(): String {
+    enum class PaymentState {
+        LOADING,
+        FAILED,
+        CAPTURING,
+        COLLECTING,
+        SUCCESS,
+        PROCESSING,
+        RECEIPT_PRINT,
+        REFETCHING_ORDER
+    }
+
+    private fun getCurrentPaymentState(): PaymentState? {
         return when (viewState.value) {
-            is LoadingDataState -> "Loading State"
-            is FailedPaymentState -> "Payment Failed State"
-            is CapturingPaymentState -> "Payment Capturing State"
-            is CollectPaymentState -> "Payment Collecting State"
-            is PaymentSuccessfulState -> "Payment Success State"
-            is ViewState.PrintingReceiptState -> "Print Receipt State"
-            is ProcessingPaymentState -> "Payment Processing State"
-            ReFetchingOrderState -> "Refetching Order State"
-            null -> ""
+            is LoadingDataState -> PaymentState.LOADING
+            is FailedPaymentState -> PaymentState.FAILED
+            is CapturingPaymentState -> PaymentState.CAPTURING
+            is CollectPaymentState -> PaymentState.COLLECTING
+            is PaymentSuccessfulState -> PaymentState.SUCCESS
+            is ViewState.PrintingReceiptState -> PaymentState.RECEIPT_PRINT
+            is ProcessingPaymentState -> PaymentState.PROCESSING
+            ReFetchingOrderState -> PaymentState.REFETCHING_ORDER
+            null -> {
+                WooLog.e(WooLog.T.CARD_READER, "null payment state received")
+                null
+            }
         }
     }
 

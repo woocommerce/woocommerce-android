@@ -19,12 +19,14 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PaymentFlowError.*
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PaymentState.*
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.*
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.*
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -1125,7 +1127,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at Loading State")
+                eq("User manually cancelled the payment at state $LOADING")
             )
         }
 
@@ -1143,7 +1145,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at Payment Failed State")
+                eq("User manually cancelled the payment at state $FAILED")
             )
         }
 
@@ -1161,7 +1163,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at Payment Capturing State")
+                eq("User manually cancelled the payment at state $CAPTURING")
             )
         }
 
@@ -1179,7 +1181,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at Payment Collecting State")
+                eq("User manually cancelled the payment at state $COLLECTING")
             )
         }
 
@@ -1197,7 +1199,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at Payment Success State")
+                eq("User manually cancelled the payment at state $SUCCESS")
             )
         }
 
@@ -1215,7 +1217,26 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment at Payment Processing State")
+                eq("User manually cancelled the payment at state $PROCESSING")
+            )
+        }
+
+    @Test
+    fun `given user presses back button, when payment flow is receipt print state, then cancel event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            viewModel.start()
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment at state $RECEIPT_PRINT")
             )
         }
 
