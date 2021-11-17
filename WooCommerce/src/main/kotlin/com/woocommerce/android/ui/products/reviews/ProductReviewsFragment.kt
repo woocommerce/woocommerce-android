@@ -33,7 +33,9 @@ class ProductReviewsFragment :
 
     val viewModel: ProductReviewsViewModel by viewModels()
 
-    private lateinit var reviewsAdapter: ReviewListAdapter
+    private var _reviewsAdapter: ReviewListAdapter? = null
+    private val reviewsAdapter: ReviewListAdapter
+        get() = _reviewsAdapter!!
 
     private val skeletonView = SkeletonView()
 
@@ -50,6 +52,7 @@ class ProductReviewsFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
+        _reviewsAdapter = null
         super.onDestroyView()
         _binding = null
     }
