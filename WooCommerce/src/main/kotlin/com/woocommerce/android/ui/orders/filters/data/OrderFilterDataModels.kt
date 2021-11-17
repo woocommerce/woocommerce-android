@@ -32,6 +32,6 @@ data class OrderStatusOption(
 data class DateRangeFilterOption(
     val dateRange: DateRange,
     override val isSelected: Boolean,
-    val startDate: Long? = null,
-    val endDate: Long? = null
+    val startDate: Long,
+    val endDate: Long,
 ) : OrderFilterOption()

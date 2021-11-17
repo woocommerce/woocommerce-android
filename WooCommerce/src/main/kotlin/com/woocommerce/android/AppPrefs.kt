@@ -7,10 +7,33 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.HAS_UNSEEN_REVIEWS
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_QUICK_ORDER_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_USER_ELIGIBLE
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_USING_V4_API
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.LOGIN_SITE_ADDRESS
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.SELECTED_APP_THEME
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.SELECTED_PRODUCT_IS_VIRTUAL
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.SELECTED_PRODUCT_TYPE
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.SUPPORT_EMAIL
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.SUPPORT_NAME
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_SOURCE
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.USER_EMAIL
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.values
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
@@ -56,6 +79,8 @@ object AppPrefs {
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED,
         ORDER_FILTER_PREFIX,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_START,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_END
     }
 
     /**
@@ -146,12 +171,12 @@ object AppPrefs {
             .let { setString(UndeletablePrefKey.APP_INSTALATION_DATE, it) }
 
     var isProductAddonsEnabled: Boolean
-        get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
-        set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
+        get() = getBoolean(IS_PRODUCT_ADDONS_ENABLED, false)
+        set(value) = setBoolean(IS_PRODUCT_ADDONS_ENABLED, value)
 
     var isQuickOrderEnabled: Boolean
-        get() = getBoolean(DeletablePrefKey.IS_QUICK_ORDER_ENABLED, false)
-        set(value) = setBoolean(DeletablePrefKey.IS_QUICK_ORDER_ENABLED, value)
+        get() = getBoolean(IS_QUICK_ORDER_ENABLED, false)
+        set(value) = setBoolean(IS_QUICK_ORDER_ENABLED, value)
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
@@ -171,45 +196,45 @@ object AppPrefs {
 
     fun setSupportEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
-            setString(DeletablePrefKey.SUPPORT_EMAIL, email)
+            setString(SUPPORT_EMAIL, email)
         } else {
-            remove(DeletablePrefKey.SUPPORT_EMAIL)
+            remove(SUPPORT_EMAIL)
         }
     }
 
-    fun getSupportEmail() = getString(DeletablePrefKey.SUPPORT_EMAIL)
+    fun getSupportEmail() = getString(SUPPORT_EMAIL)
 
     fun hasSupportEmail() = getSupportEmail().isNotEmpty()
 
     fun removeSupportEmail() {
-        remove(DeletablePrefKey.SUPPORT_EMAIL)
+        remove(SUPPORT_EMAIL)
     }
 
     fun setSupportName(name: String) {
-        setString(DeletablePrefKey.SUPPORT_NAME, name)
+        setString(SUPPORT_NAME, name)
     }
 
-    fun getSupportName() = getString(DeletablePrefKey.SUPPORT_NAME)
+    fun getSupportName() = getString(SUPPORT_NAME)
 
     fun removeSupportName() {
-        remove(DeletablePrefKey.SUPPORT_NAME)
+        remove(SUPPORT_NAME)
     }
 
     /**
      * Method to check if the v4 stats UI is supported.
      */
 
-    fun isV4StatsSupported() = getBoolean(DeletablePrefKey.IS_USING_V4_API, false)
+    fun isV4StatsSupported() = getBoolean(IS_USING_V4_API, false)
 
-    fun setV4StatsSupported(isUsingV4Api: Boolean) = setBoolean(DeletablePrefKey.IS_USING_V4_API, isUsingV4Api)
+    fun setV4StatsSupported(isUsingV4Api: Boolean) = setBoolean(IS_USING_V4_API, isUsingV4Api)
 
-    fun isUserEligible() = getBoolean(DeletablePrefKey.IS_USER_ELIGIBLE, true)
+    fun isUserEligible() = getBoolean(IS_USER_ELIGIBLE, true)
 
-    fun setIsUserEligible(isUserEligible: Boolean) = setBoolean(DeletablePrefKey.IS_USER_ELIGIBLE, isUserEligible)
+    fun setIsUserEligible(isUserEligible: Boolean) = setBoolean(IS_USER_ELIGIBLE, isUserEligible)
 
-    fun getUserEmail() = getString(DeletablePrefKey.USER_EMAIL)
+    fun getUserEmail() = getString(USER_EMAIL)
 
-    fun setUserEmail(email: String) = setString(DeletablePrefKey.USER_EMAIL, email)
+    fun setUserEmail(email: String) = setString(USER_EMAIL, email)
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         PreferenceUtils.getString(getPreferences(), getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId))
@@ -246,10 +271,10 @@ object AppPrefs {
     /**
      * Flag to check products features are enabled
      */
-    fun isProductsFeatureEnabled() = getBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, false)
+    fun isProductsFeatureEnabled() = getBoolean(IS_PRODUCTS_FEATURE_ENABLED, false)
 
     fun setIsProductsFeatureEnabled(isProductsFeatureEnabled: Boolean) =
-        setBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, isProductsFeatureEnabled)
+        setBoolean(IS_PRODUCTS_FEATURE_ENABLED, isProductsFeatureEnabled)
 
     fun isCrashReportingEnabled(): Boolean {
         // default to False for debug builds
@@ -279,10 +304,10 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
 
-    fun getHasUnseenReviews() = getBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, false)
+    fun getHasUnseenReviews() = getBoolean(HAS_UNSEEN_REVIEWS, false)
 
     fun setHasUnseenReviews(hasUnseen: Boolean) {
-        setBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, hasUnseen)
+        setBoolean(HAS_UNSEEN_REVIEWS, hasUnseen)
     }
 
     fun getNumTimesMarkAllReadSnackShown(): Int =
@@ -294,38 +319,38 @@ object AppPrefs {
     }
 
     fun getSelectedShipmentTrackingProviderName(): String =
-        getString(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME)
+        getString(SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME)
 
     fun setSelectedShipmentTrackingProviderName(providerName: String) {
-        setString(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME, providerName)
+        setString(SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME, providerName)
     }
 
     fun getIsSelectedShipmentTrackingProviderCustom(): Boolean =
-        getBoolean(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, false)
+        getBoolean(SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, false)
 
     fun setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider: Boolean) {
-        setBoolean(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, isCustomProvider)
+        setBoolean(SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, isCustomProvider)
     }
 
     fun setLoginSiteAddress(loginSiteAddress: String) {
-        setString(DeletablePrefKey.LOGIN_SITE_ADDRESS, loginSiteAddress)
+        setString(LOGIN_SITE_ADDRESS, loginSiteAddress)
     }
 
-    fun getLoginSiteAddress() = getString(DeletablePrefKey.LOGIN_SITE_ADDRESS)
+    fun getLoginSiteAddress() = getString(LOGIN_SITE_ADDRESS)
 
     fun removeLoginSiteAddress() {
-        remove(DeletablePrefKey.LOGIN_SITE_ADDRESS)
+        remove(LOGIN_SITE_ADDRESS)
     }
 
     fun setLoginUserBypassedJetpackRequired(bypassedLogin: Boolean = true) {
-        setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, bypassedLogin)
+        setBoolean(LOGIN_USER_BYPASSED_JETPACK_REQUIRED, bypassedLogin)
     }
 
     fun getLoginUserBypassedJetpackRequired() =
-        getBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
+        getBoolean(LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
 
     fun removeLoginUserBypassedJetpackRequired() {
-        remove(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED)
+        remove(LOGIN_USER_BYPASSED_JETPACK_REQUIRED)
     }
 
     fun getDatabaseDowngraded() = getBoolean(DATABASE_DOWNGRADED, false)
@@ -335,20 +360,20 @@ object AppPrefs {
     }
 
     fun setSelectedOrderListTab(selectedOrderListTabPosition: Int) {
-        setInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, selectedOrderListTabPosition)
+        setInt(SELECTED_ORDER_LIST_TAB_POSITION, selectedOrderListTabPosition)
     }
 
     fun getSelectedOrderListTabPosition() =
-        getInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, -1)
+        getInt(SELECTED_ORDER_LIST_TAB_POSITION, -1)
 
-    fun setSelectedProductType(type: ProductType) = setString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, type.value)
+    fun setSelectedProductType(type: ProductType) = setString(SELECTED_PRODUCT_TYPE, type.value)
 
-    fun getSelectedProductType(): String = getString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, "")
+    fun getSelectedProductType(): String = getString(SELECTED_PRODUCT_TYPE, "")
 
     fun setSelectedProductIsVirtual(isVirtual: Boolean) =
-        setBoolean(DeletablePrefKey.SELECTED_PRODUCT_IS_VIRTUAL, isVirtual)
+        setBoolean(SELECTED_PRODUCT_IS_VIRTUAL, isVirtual)
 
-    fun isSelectedProductVirtual(): Boolean = getBoolean(DeletablePrefKey.SELECTED_PRODUCT_IS_VIRTUAL, false)
+    fun isSelectedProductVirtual(): Boolean = getBoolean(SELECTED_PRODUCT_IS_VIRTUAL, false)
 
     /**
      * Checks if the user has a saved order list tab position yet. If no position has been saved,
@@ -365,10 +390,10 @@ object AppPrefs {
     }
 
     fun getAppTheme(): ThemeOption =
-        ThemeOption.valueOf(getString(DeletablePrefKey.SELECTED_APP_THEME, DEFAULT.toString()))
+        ThemeOption.valueOf(getString(SELECTED_APP_THEME, DEFAULT.toString()))
 
     fun setAppTheme(theme: ThemeOption) {
-        setString(DeletablePrefKey.SELECTED_APP_THEME, theme.toString())
+        setString(SELECTED_APP_THEME, theme.toString())
     }
 
     /**
@@ -377,7 +402,7 @@ object AppPrefs {
      * events will be complete.
      */
     fun getUnifiedLoginLastSource(): String? {
-        val result = getString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_SOURCE)
+        val result = getString(UNIFIED_LOGIN_LAST_ACTIVE_SOURCE)
         return if (result.isNotEmpty()) {
             result
         } else {
@@ -386,7 +411,7 @@ object AppPrefs {
     }
 
     fun setUnifiedLoginLastSource(source: String) {
-        setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_SOURCE, source)
+        setString(UNIFIED_LOGIN_LAST_ACTIVE_SOURCE, source)
     }
 
     /**
@@ -395,7 +420,7 @@ object AppPrefs {
      * events will be complete.
      */
     fun getUnifiedLoginLastFlow(): String? {
-        val result = getString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW)
+        val result = getString(UNIFIED_LOGIN_LAST_ACTIVE_FLOW)
         return if (result.isNotEmpty()) {
             result
         } else {
@@ -404,7 +429,7 @@ object AppPrefs {
     }
 
     fun setUnifiedLoginLastFlow(flow: String) {
-        setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
+        setString(UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
     }
 
     fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
@@ -430,7 +455,7 @@ object AppPrefs {
     }
 
     private fun getCardReaderOnboardingCompletedKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        "${DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+        "$CARD_READER_ONBOARDING_COMPLETED:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
     fun isTrackingExtensionAvailable(): Boolean {
         return getBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, false)
@@ -457,12 +482,39 @@ object AppPrefs {
     private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
         "$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory"
 
+    fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> {
+        val startDateMillis = PreferenceUtils.getLong(
+            getPreferences(),
+            key = "$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId",
+            default = 0
+        )
+        val endDateMillis = PreferenceUtils.getLong(
+            getPreferences(),
+            key = "$ORDER_FILTER_CUSTOM_DATE_RANGE_END:$selectedSiteId",
+            default = 0
+        )
+        return Pair(startDateMillis, endDateMillis)
+    }
+
+    fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
+        PreferenceUtils.setLong(
+            getPreferences(),
+            "$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId",
+            startDateMillis
+        )
+        PreferenceUtils.setLong(
+            getPreferences(),
+            "$ORDER_FILTER_CUSTOM_DATE_RANGE_END:$selectedSiteId",
+            endDateMillis
+        )
+    }
+
     /**
      * Remove all user and site-related preferences.
      */
     fun resetUserPreferences() {
         val editor = getPreferences().edit()
-        DeletablePrefKey.values().forEach { a -> editor.remove(a.name) }
+        values().forEach { a -> editor.remove(a.name) }
         editor.remove(SelectedSite.SELECTED_SITE_LOCAL_ID)
         removePreferencesWithDynamicKey(editor)
         editor.apply()

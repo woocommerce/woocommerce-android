@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnDateRangeChanged
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
-import com.woocommerce.android.ui.orders.filters.model.dateRangeToDisplayValue
+import com.woocommerce.android.ui.orders.filters.model.toDisplayDateRange
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -25,23 +25,23 @@ class OrderFilterCustomDateRangeViewModel @Inject constructor(
 
     val viewState = LiveDataDelegate(
         savedState,
-        ViewState()
+        ViewState(
+            startDateMillis = 0,
+            startDateDisplayValue = "",
+            endDateMillis = 0,
+            endDateDisplayValue = ""
+        )
     )
     private var _viewState by viewState
 
     init {
         val selectedDateRangeMillis = orderFilterRepository.getCustomDateRangeFilter()
-        val startDateDisplayValue = selectedDateRangeMillis.first?.let {
-            dateUtils.toDisplayDateFormat(it)
-        } ?: ""
-        val endDateDisplayValue = selectedDateRangeMillis.second?.let {
-            dateUtils.toDisplayDateFormat(it)
-        } ?: ""
+
         _viewState = _viewState.copy(
             startDateMillis = selectedDateRangeMillis.first,
-            startDateDisplayValue = startDateDisplayValue,
+            startDateDisplayValue = selectedDateRangeMillis.first.toDisplayDate(),
             endDateMillis = selectedDateRangeMillis.second,
-            endDateDisplayValue = endDateDisplayValue
+            endDateDisplayValue = selectedDateRangeMillis.second.toDisplayDate()
         )
     }
 
@@ -54,7 +54,7 @@ class OrderFilterCustomDateRangeViewModel @Inject constructor(
     fun onBackPressed(): Boolean {
         orderFilterRepository.setCustomDateRange(_viewState.startDateMillis, _viewState.endDateMillis)
         val dateRangeDisplayValue =
-            dateRangeToDisplayValue(
+            toDisplayDateRange(
                 _viewState.startDateMillis,
                 _viewState.endDateMillis,
                 dateUtils
@@ -66,11 +66,17 @@ class OrderFilterCustomDateRangeViewModel @Inject constructor(
     fun onDateRangeSelected(startMillis: Long, endMillis: Long) {
         _viewState = _viewState.copy(
             startDateMillis = startMillis,
-            startDateDisplayValue = dateUtils.toDisplayDateFormat(startMillis),
+            startDateDisplayValue = dateUtils.toDisplayDate(startMillis),
             endDateMillis = endMillis,
-            endDateDisplayValue = dateUtils.toDisplayDateFormat(endMillis)
+            endDateDisplayValue = dateUtils.toDisplayDate(endMillis)
         )
     }
+
+    private fun Long.toDisplayDate() =
+        when {
+            this > 0 -> dateUtils.toDisplayDate(this)
+            else -> ""
+        }
 
     private fun trackFilterSelection() {
         AnalyticsTracker.track(
@@ -81,9 +87,9 @@ class OrderFilterCustomDateRangeViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val startDateMillis: Long? = null,
-        val startDateDisplayValue: String? = "",
-        val endDateMillis: Long? = null,
-        val endDateDisplayValue: String? = "",
+        val startDateMillis: Long,
+        val startDateDisplayValue: String?,
+        val endDateMillis: Long,
+        val endDateDisplayValue: String?,
     ) : Parcelable
 }

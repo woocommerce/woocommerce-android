@@ -34,7 +34,9 @@ class GetDateRangeFilterOptions @Inject constructor(
     private fun DateRange.toDateRangeFilterOption() =
         DateRangeFilterOption(
             dateRange = this,
-            isSelected = checkIfSelected(filterKey)
+            isSelected = checkIfSelected(filterKey),
+            startDate = 0,
+            endDate = 0
         )
 
     private fun DateRange.toCustomDateRangeFilterOption(): DateRangeFilterOption {

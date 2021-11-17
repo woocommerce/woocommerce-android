@@ -349,7 +349,7 @@ class DateUtils @Inject constructor(
      *
      * return null if the argument is not a valid date string.
      */
-    fun toDisplayDateFormat(dateMillis: Long): String? =
+    fun toDisplayDate(dateMillis: Long): String? =
         try {
             SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
                 .format(Date(dateMillis))

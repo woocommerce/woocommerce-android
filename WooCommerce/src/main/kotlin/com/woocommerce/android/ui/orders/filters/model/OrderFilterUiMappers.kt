@@ -30,27 +30,18 @@ fun DateRangeFilterOption.toOrderFilterOptionUiModel(resourceProvider: ResourceP
     OrderFilterOptionUiModel(
         key = dateRange.filterKey,
         displayName = dateRange.toDisplayName(resourceProvider),
-        displayValue = dateRangeToDisplayValue(startDate, endDate, dateUtils),
+        displayValue = toDisplayDateRange(startDate, endDate, dateUtils),
         isSelected = isSelected
     )
 
-fun dateRangeToDisplayValue(
-    startDate: Long?,
-    endDate: Long?,
-    dateUtils: DateUtils
-): String {
-    val builder = StringBuilder()
-    startDate?.apply {
-        builder.append(dateUtils.toDisplayDateFormat(this))
-    }
-    endDate?.apply {
-        if (startDate != null) {
-            builder.append(" - ")
-        }
-        builder.append(dateUtils.toDisplayDateFormat(this))
-    }
-    return builder.toString()
-}
+fun toDisplayDateRange(startMillis: Long, endMillis: Long, dateUtils: DateUtils): String =
+    when {
+        startMillis > 0 && endMillis > 0 ->
+            "${dateUtils.toDisplayDate(startMillis)} - ${dateUtils.toDisplayDate(endMillis)}"
+        startMillis > 0 -> dateUtils.toDisplayDate(startMillis)
+        endMillis > 0 -> dateUtils.toDisplayDate(endMillis)
+        else -> ""
+    } ?: ""
 
 fun DateRange.toDisplayName(resourceProvider: ResourceProvider): String =
     resourceProvider.getString(

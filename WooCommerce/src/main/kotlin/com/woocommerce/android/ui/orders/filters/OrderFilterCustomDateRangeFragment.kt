@@ -52,8 +52,14 @@ class OrderFilterCustomDateRangeFragment :
             binding.startDateValueTextView.text = newState.startDateDisplayValue
             binding.endDateValueTextView.text = newState.endDateDisplayValue
 
-            val selectedStartMillis = newState.startDateMillis ?: System.currentTimeMillis()
-            val selectedEndMillis = newState.endDateMillis ?: System.currentTimeMillis()
+            val selectedStartMillis = when {
+                newState.startDateMillis > 0 -> newState.startDateMillis
+                else -> System.currentTimeMillis()
+            }
+            val selectedEndMillis = when {
+                newState.startDateMillis > 0 -> newState.endDateMillis
+                else -> System.currentTimeMillis()
+            }
 
             binding.startDateLayout.setOnClickListener {
                 showDateRangePicker(selectedStartMillis, selectedEndMillis) {

@@ -29,13 +29,18 @@ class OrderFiltersRepository @Inject constructor(
                 ?.split(",")
         } ?: emptyList()
 
-    fun getCustomDateRangeFilter() = Pair(_startDateMillis, _endDateMillis)
+    fun getCustomDateRangeFilter(): Pair<Long, Long> =
+        selectedSite.getIfExists()?.let {
+            appSharedPrefs.getOrderFilterCustomDateRange(it.id)
+        } ?: Pair(0, 0)
 
-    fun setCustomDateRange(startDateMillis: Long?, endDateMillis: Long?) {
-        _startDateMillis = startDateMillis
-        _endDateMillis = endDateMillis
+    fun setCustomDateRange(startDateMillis: Long, endDateMillis: Long) {
+        selectedSite.getIfExists()?.let {
+            appSharedPrefs.setOrderFilterCustomDateRange(
+                it.id,
+                startDateMillis,
+                endDateMillis
+            )
+        }
     }
-
-    private var _startDateMillis: Long? = null
-    private var _endDateMillis: Long? = null
 }
