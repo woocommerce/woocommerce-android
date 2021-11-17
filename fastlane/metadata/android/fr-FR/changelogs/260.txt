@@ -1,0 +1,2 @@
+7.9 :
+Nous savons que vos clients ne renseignent pas toujours leurs adresses correctement lorsqu’ils passent commande. Vous avez désormais la possibilité de modifier l’adresse de facturation et l’adresse d’expédition ainsi que les notes du client.

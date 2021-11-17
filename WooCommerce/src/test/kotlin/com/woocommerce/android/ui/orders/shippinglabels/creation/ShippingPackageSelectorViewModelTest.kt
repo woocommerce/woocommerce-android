@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
@@ -19,12 +16,12 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     private val availablePackages = listOf(
         ShippingPackage(

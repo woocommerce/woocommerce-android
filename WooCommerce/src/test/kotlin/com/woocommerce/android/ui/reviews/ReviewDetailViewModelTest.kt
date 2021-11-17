@@ -1,12 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
@@ -22,14 +16,12 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ReviewDetailViewModelTest : BaseUnitTest() {
     companion object {
         const val REVIEW_ID = 1L

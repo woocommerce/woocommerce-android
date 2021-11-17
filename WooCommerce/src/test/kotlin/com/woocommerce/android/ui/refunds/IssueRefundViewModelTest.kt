@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.refunds
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
@@ -16,8 +13,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -28,7 +26,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class IssueRefundViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock()
     private val wooStore: WooCommerceStore = mock()

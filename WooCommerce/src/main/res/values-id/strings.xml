@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-26 09:54:04+0000
+Translation-Revision-Date: 2021-11-09 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Lain Kali</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Menginstal Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Izinkan banyak pengguna untuk mengakses WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Profil Pengguna</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Tampilan analitik baru memungkinkan Anda melihat pengunjung, laporan, dan lain sebagainya.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analytics</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Aktifkan notifikasi otomatis untuk pesanan, ulasan baru, dsb. di perangkat Anda.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Notifikasi Otomatis</string>
+    <string name="jetpack_benefits_modal_subtitle">Instal plugin Jetpack gratis untuk mendapatkan pengalaman seluler terbaik.</string>
+    <string name="jetpack_benefits_modal_title">Dapatkan hasil maksimal dari toko Anda</string>
+    <string name="settings_enable_quick_order_teaser_message">Coba buat pesanan dengan informasi minimal sembari kami bersiap untuk meluncurkan</string>
+    <string name="settings_enable_quick_order_teaser_title">Pesan cepat</string>
+    <string name="beta_features_message">Lihat Add-on, pesan cepat</string>
+    <string name="order_detail_use_as_shipping_address">Gunakan sebagai Alamat Pengiriman</string>
+    <string name="order_detail_use_as_billing_address">Gunakan sebagai Alamat Penagihan</string>
+    <string name="orderfilters_filters_count_title">Penyaring (%d)</string>
+    <string name="orderfilters_filters_default_title">Penyaring</string>
+    <string name="orderfilters_filter_date_range_options_title">Rentang Tanggal</string>
+    <string name="orderfilters_filter_order_status_options_title">Status pesanan</string>
+    <string name="orderfilters_filter_option_item_selected">Pilihan penyaring yang dipilih</string>
+    <string name="orderfilters_date_range_filter">Rentang Tanggal</string>
+    <string name="orderfilters_order_status_filter">Status pesanan</string>
+    <string name="orderfilters_default_filter_value">Semua</string>
+    <string name="orderfilters_show_orders_button">Tampilkan Pesanan</string>
+    <string name="orderlist_filters_title">Pesanan Disaring</string>
+    <string name="orderlist_no_filters_title">Semua Pesanan</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Lihat manfaatnya</string>
     <string name="jetpack_benefits_bottom_banner_title">Dapatkan pengalaman penuh menggunakan Jetpack</string>
     <string name="product_description_hint_with_title">Beri tahu kami lebih banyak tentang %s…</string>
@@ -56,8 +82,8 @@ Language: id
     <string name="settings_enable_product_addons_teaser_title">Lihat Add-on</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Maaf, saat ini kami tidak dapat mengubah pengaturan fitur ini</string>
     <string name="product_category">Kategori</string>
-    <string name="notification_review_title">Anda mendapat 1 ulasan baru! 🌟</string>
-    <string name="notification_order_title">Anda mendapat 1 pesanan baru! 🎉</string>
+    <string name="notification_review_title">Ada ulasan baru! 🌟</string>
+    <string name="notification_order_title">Ada pesanan baru! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d Item</string>
     <string name="upsell_product_count_many">%d produk upsell</string>
     <string name="upsell_product_count_one">%d produk upsell</string>

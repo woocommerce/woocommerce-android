@@ -12,7 +12,7 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.support.ZendeskHelper
-import com.woocommerce.android.util.NotificationsUtils
+import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -42,6 +42,7 @@ class NotificationMessageHandler @Inject constructor(
     private val notificationBuilder: WooNotificationBuilder,
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val zendeskHelper: ZendeskHelper,
+    private val notificationsParser: NotificationsParser
 ) {
     companion object {
         private const val KEY_PUSH_TYPE_ZENDESK = "zendesk"
@@ -95,7 +96,7 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
-        val notificationModel = NotificationsUtils.buildNotificationModelFromPayloadMap(messageData)
+        val notificationModel = notificationsParser.buildNotificationModelFromPayloadMap(messageData)
         if (notificationModel == null) {
             wooLogWrapper.e(NOTIFS, "Notification data is empty!")
             return
