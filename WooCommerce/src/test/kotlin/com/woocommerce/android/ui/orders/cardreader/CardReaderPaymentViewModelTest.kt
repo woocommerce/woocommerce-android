@@ -1112,6 +1112,114 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given user presses back button, when payment flow is loading, then cancel event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(LoadingDataState) }
+            }
+
+            viewModel.start()
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment at Loading State")
+            )
+        }
+
+    @Test
+    fun `given user presses back button, when payment flow is payment failed, then cancel event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentFailed(NoNetwork, null, "")) }
+            }
+
+            viewModel.start()
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment at Payment Failed State")
+            )
+        }
+
+    @Test
+    fun `given user presses back button, when payment flow is capturing state, then cancel event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CapturingPayment) }
+            }
+
+            viewModel.start()
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment at Payment Capturing State")
+            )
+        }
+
+    @Test
+    fun `given user presses back button, when payment flow is collecting state, then cancel event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
+
+            viewModel.start()
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment at Payment Collecting State")
+            )
+        }
+
+    @Test
+    fun `given user presses back button, when payment flow is success state, then cancel event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            viewModel.start()
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment at Payment Success State")
+            )
+        }
+
+    @Test
+    fun `given user presses back button, when payment flow is processing state, then cancel event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPayment) }
+            }
+
+            viewModel.start()
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment at Payment Processing State")
+            )
+        }
+
+    @Test
     fun `given re-fetching order, when user clicks on save for later button, then ReFetchingOrderState shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {

@@ -251,6 +251,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Card Present Payments - collection
         CARD_PRESENT_COLLECT_PAYMENT_TAPPED,
         CARD_PRESENT_COLLECT_PAYMENT_FAILED,
+        CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
         CARD_PRESENT_COLLECT_PAYMENT_SUCCESS,
 
         // -- Card Reader - discovery
