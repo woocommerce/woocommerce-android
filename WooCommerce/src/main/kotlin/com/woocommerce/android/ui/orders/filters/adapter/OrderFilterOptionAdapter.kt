@@ -41,10 +41,13 @@ class OrderFilterOptionAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(orderFilterOption: OrderFilterOptionUiModel) {
             viewBinding.filterOptionNameTextView.text = orderFilterOption.displayName
-            if (!orderFilterOption.displayValue.isNullOrBlank()) {
+            if (!orderFilterOption.displayValue.isNullOrBlank() && orderFilterOption.isSelected) {
                 viewBinding.filterOptionValueTextView.text = orderFilterOption.displayValue
+                viewBinding.filterOptionValueTextView.isVisible = true
+                viewBinding.tickImageView.isVisible = false
             } else {
                 viewBinding.tickImageView.isVisible = orderFilterOption.isSelected
+                viewBinding.filterOptionValueTextView.isVisible = false
             }
         }
     }

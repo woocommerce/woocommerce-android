@@ -345,13 +345,13 @@ class DateUtils @Inject constructor(
         }
 
     /**
-     * Given a date in millis, returns date string in MMMM d, YYYY format
+     * Given a date in millis, returns date string in MMM d, YYYY format
      *
      * return null if the argument is not a valid date string.
      */
     fun toDisplayDateFormat(dateMillis: Long): String? =
         try {
-            SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
+            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
                 .format(Date(dateMillis))
         } catch (e: Exception) {
             "Date string argument is not a valid date".reportAsError(e)

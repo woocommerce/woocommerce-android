@@ -36,7 +36,7 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
             DateRange.LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 2)
             DateRange.LAST_7_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 7)
             DateRange.LAST_30_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 30)
-            DateRange.CUSTOM_RANGE -> TODO("Handle custom date range")
+            DateRange.CUSTOM_RANGE -> dateUtils.getCurrentDateTimeMinusDays(days = 30)
         }
         return dateUtils.toIso8601Format(afterDate)
     }

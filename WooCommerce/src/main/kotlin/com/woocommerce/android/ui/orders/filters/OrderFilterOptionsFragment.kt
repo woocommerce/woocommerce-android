@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
@@ -25,6 +26,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class OrderFilterOptionsFragment :
     BaseFragment(R.layout.fragment_order_filter_list),
     BackPressListener {
+    companion object {
+        const val ON_DATE_RANGE_CHANGE_KEY = "on_date_range_changed"
+    }
+
     private val viewModel: OrderFilterOptionsViewModel by viewModels()
 
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
@@ -38,6 +43,9 @@ class OrderFilterOptionsFragment :
         setUpFilterOptionsRecyclerView(binding)
         binding.showOrdersButton.setOnClickListener {
             viewModel.onShowOrdersClicked()
+        }
+        handleResult<String>(ON_DATE_RANGE_CHANGE_KEY) {
+            viewModel.onDateRangeChanged(it)
         }
     }
 

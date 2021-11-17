@@ -45,7 +45,7 @@ fun dateRangeToDisplayValue(
     }
     endDate?.apply {
         if (startDate != null) {
-            builder.append("-")
+            builder.append(" - ")
         }
         builder.append(dateUtils.toDisplayDateFormat(this))
     }

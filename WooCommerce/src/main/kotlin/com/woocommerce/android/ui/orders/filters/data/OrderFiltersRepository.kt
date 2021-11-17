@@ -29,5 +29,13 @@ class OrderFiltersRepository @Inject constructor(
                 ?.split(",")
         } ?: emptyList()
 
-    fun getCustomDateRangeFilter() = Pair(1622412000000, 1637084354712)
+    fun getCustomDateRangeFilter() = Pair(_startDateMillis, _endDateMillis)
+
+    fun setCustomDateRange(startDateMillis: Long?, endDateMillis: Long?) {
+        _startDateMillis = startDateMillis
+        _endDateMillis = endDateMillis
+    }
+
+    private var _startDateMillis: Long? = null
+    private var _endDateMillis: Long? = null
 }

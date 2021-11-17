@@ -3,16 +3,17 @@ package com.woocommerce.android.ui.orders.filters
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterCustomDateRangeBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.filters.OrderFilterOptionsFragment.Companion.ON_DATE_RANGE_CHANGE_KEY
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnDateRangeChanged
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
-import com.woocommerce.android.ui.orders.list.OrderListFragment
+import com.woocommerce.android.ui.orders.list.OrderListFragment.Companion.FILTER_CHANGE_NOTICE_KEY
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -48,21 +49,24 @@ class OrderFilterCustomDateRangeFragment :
             binding.startDateValueTextView.text = newState.startDateDisplayValue
             binding.endDateValueTextView.text = newState.endDateDisplayValue
             binding.startDateLayout.setOnClickListener {
-                showDateRangePicker(newState.startDateMillis) {
+                showDateRangePicker(newState.startDateMillis ?: System.currentTimeMillis()) {
                     viewModel.onStartDateSelected(it)
                 }
             }
             binding.endDateLayout.setOnClickListener {
-                showDateRangePicker(newState.endDateMillis) {
+                showDateRangePicker(newState.endDateMillis ?: System.currentTimeMillis()) {
                     viewModel.onEndDateSelected(it)
                 }
             }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OnDateRangeChanged -> findNavController().navigateUp()
+                is OnDateRangeChanged -> navigateBackWithResult(
+                    ON_DATE_RANGE_CHANGE_KEY,
+                    event.dateRangeDisplayValue
+                )
                 is OnShowOrders -> navigateBackWithNotice(
-                    OrderListFragment.FILTER_CHANGE_NOTICE_KEY,
+                    FILTER_CHANGE_NOTICE_KEY,
                     R.id.orders
                 )
                 else -> event.isHandled = false

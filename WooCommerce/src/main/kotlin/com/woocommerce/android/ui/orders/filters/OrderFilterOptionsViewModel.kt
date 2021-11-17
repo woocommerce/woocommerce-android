@@ -146,6 +146,17 @@ class OrderFilterOptionsViewModel @Inject constructor(
                 resourceProvider.getString(R.string.orderfilters_filter_date_range_options_title)
         }
 
+    fun onDateRangeChanged(dateRangeDisplayValue: String) {
+        _viewState = _viewState.copy(
+            filterOptions = _viewState.filterOptions
+                .map {
+                    if (it.isSelected && DateRange.fromValue(it.key) == DateRange.CUSTOM_RANGE) {
+                        it.copy(displayValue = dateRangeDisplayValue)
+                    } else it
+                }
+        )
+    }
+
     @Parcelize
     data class ViewState(
         val filterOptions: List<OrderFilterOptionUiModel>,
