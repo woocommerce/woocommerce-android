@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
@@ -116,6 +117,13 @@ class MainActivityViewModel @Inject constructor(
                     cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
                 ) {
                     WooLog.i(T.DEVICE, "Displaying Feature Announcement on main activity")
+                    AnalyticsTracker.track(
+                        AnalyticsTracker.Stat.FEATURE_ANNOUNCEMENT_SHOWN,
+                        mapOf(
+                            AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
+                                AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_UPGRADE
+                        )
+                    )
                     triggerEvent(ShowFeatureAnnouncement(it))
                 }
             }

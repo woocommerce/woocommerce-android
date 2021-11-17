@@ -33,15 +33,12 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
@@ -391,7 +388,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 .onCompletion { isObservingEvents = false }
             doReturn(successEvents).whenever(mediaFileUploadHandler)
                 .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
             savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
 
             setup()
@@ -412,7 +408,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 .onCompletion { isObservingEvents = false }
             doReturn(successEvents).whenever(mediaFileUploadHandler)
                 .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
             savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
 
             setup()

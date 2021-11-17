@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources  xmlns:tools="http://schemas.android.com/tools">
+    <drawable name="media_picker_lib_load_error_image" tools:ignore="MissingDefaultResource">@drawable/ic_woo_error_state</drawable>
+    <drawable name="media_picker_lib_empty_search_image" tools:ignore="MissingDefaultResource">@drawable/img_empty_search</drawable>
+    <drawable name="media_picker_lib_empty_gallery_image" tools:ignore="MissingDefaultResource">@drawable/img_empty_products</drawable>
+    <drawable name="media_picker_lib_missing_permission_image" tools:ignore="MissingDefaultResource">@drawable/img_user_access_error</drawable>
+</resources>

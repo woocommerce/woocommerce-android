@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import org.mockito.kotlin.*
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -19,13 +18,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = "1-1-1"
@@ -56,7 +53,10 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: EditShippingLabelPackagesViewModel
 
     suspend fun setup(currentPackages: Array<ShippingLabelPackage>) {
-        val savedState = EditShippingLabelPackagesFragmentArgs(ORDER_ID, currentPackages).initSavedStateHandle()
+        val savedState = EditShippingLabelPackagesFragmentArgs(
+            orderId = ORDER_ID,
+            shippingLabelPackages = currentPackages
+        ).initSavedStateHandle()
         whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         whenever(orderDetailRepository.getOrder(ORDER_ID)).thenReturn(testOrder)
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
