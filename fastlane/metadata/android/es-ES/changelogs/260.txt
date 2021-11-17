@@ -1,0 +1,2 @@
+7.9:
+Sabemos que los clientes no siempre introducen sus direcciones correctamente al hacer los pedidos. Ahora, puedes editar la dirección de facturación y de envío junto con las notas que te facilita el cliente.

@@ -1,13 +1,9 @@
 package com.woocommerce.android.ui.products.downloads
 
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductFile
-import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.AddFileAndExitEvent
-import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
-import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.*
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -16,12 +12,11 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductDownloadDetailsViewModel
     private val file = ProductFile(id = "id", name = "file", url = "url")

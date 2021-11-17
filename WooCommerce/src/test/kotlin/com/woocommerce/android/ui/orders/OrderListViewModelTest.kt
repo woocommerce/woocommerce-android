@@ -20,26 +20,12 @@ import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.reset
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
@@ -49,15 +35,10 @@ import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()

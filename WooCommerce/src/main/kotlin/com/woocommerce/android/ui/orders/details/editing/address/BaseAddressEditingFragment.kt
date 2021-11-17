@@ -83,10 +83,11 @@ abstract class BaseAddressEditingFragment :
         (addressDraft != storedAddress) || binding.replicateAddressSwitch.isChecked
 
     override fun onStop() {
-        super.onStop()
+        sharedViewModel.onReplicateAddressSwitchChanged(false)
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
+        super.onStop()
     }
 
     private fun Address.bindToView() {
@@ -135,11 +136,11 @@ abstract class BaseAddressEditingFragment :
     private fun showCountrySelectorDialog() {
         val countries = addressViewModel.countries
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
-            addressDraft.country,
-            countries.map { it.name }.toTypedArray(),
-            countries.map { it.code }.toTypedArray(),
-            SELECT_COUNTRY_REQUEST,
-            getString(R.string.shipping_label_edit_address_country)
+            selectedItem = addressDraft.country,
+            keys = countries.map { it.name }.toTypedArray(),
+            values = countries.map { it.code }.toTypedArray(),
+            requestKey = SELECT_COUNTRY_REQUEST,
+            title = getString(R.string.shipping_label_edit_address_country)
         )
         findNavController().navigateSafely(action)
     }
@@ -148,11 +149,11 @@ abstract class BaseAddressEditingFragment :
     private fun showStateSelectorDialog() {
         val states = addressViewModel.states
         val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
-            addressDraft.state,
-            states.map { it.name }.toTypedArray(),
-            states.map { it.code }.toTypedArray(),
-            SELECT_STATE_REQUEST,
-            getString(R.string.shipping_label_edit_address_state)
+            selectedItem = addressDraft.state,
+            keys = states.map { it.name }.toTypedArray(),
+            values = states.map { it.code }.toTypedArray(),
+            requestKey = SELECT_STATE_REQUEST,
+            title = getString(R.string.shipping_label_edit_address_state)
         )
         findNavController().navigateSafely(action)
     }
