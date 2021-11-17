@@ -57,8 +57,7 @@ class ProductReviewsFragment :
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val activity = requireActivity()
-        reviewsAdapter = ReviewListAdapter(activity, this)
+        _reviewsAdapter = ReviewListAdapter( this)
 
         binding.reviewsList.apply {
             layoutManager = LinearLayoutManager(context)
