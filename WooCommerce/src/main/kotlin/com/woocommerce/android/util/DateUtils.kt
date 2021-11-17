@@ -341,12 +341,7 @@ class DateUtils @Inject constructor(
             null
         }
 
-    /**
-     * Given a date in millis, returns date string in MMM d, YYYY format
-     *
-     * return null if the argument is not a valid date string.
-     */
-    fun toDisplayDate(dateMillis: Long): String? =
+    fun toDisplayMMMddYYYYDate(dateMillis: Long): String? =
         try {
             SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
                 .format(Date(dateMillis))
