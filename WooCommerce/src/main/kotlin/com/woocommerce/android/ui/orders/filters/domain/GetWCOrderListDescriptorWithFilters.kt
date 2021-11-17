@@ -2,8 +2,14 @@ package com.woocommerce.android.ui.orders.filters.domain
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.DateRange
+import com.woocommerce.android.ui.orders.filters.data.DateRange.CUSTOM_RANGE
+import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_2_DAYS
+import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_30_DAYS
+import com.woocommerce.android.ui.orders.filters.data.DateRange.LAST_7_DAYS
+import com.woocommerce.android.ui.orders.filters.data.DateRange.TODAY
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import javax.inject.Inject
@@ -14,10 +20,11 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
     private val dateUtils: DateUtils
 ) {
     operator fun invoke(): WCOrderListDescriptor {
-        val dateRangeAfterFilter = orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.DATE_RANGE)
+
+        val selectedDateRange = orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE)
             .map { DateRange.fromValue(it) }
             .firstOrNull()
-            ?.toAfterIso8061DateString(dateUtils)
+        val rangeStartAndEnd = getBeforeAndAfterFrom(selectedDateRange)
 
         val orderStatusFilters =
             orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
@@ -26,18 +33,37 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
         return WCOrderListDescriptor(
             site = selectedSite.get(),
             statusFilter = orderStatusFilters,
-            afterFilter = dateRangeAfterFilter
+            beforeFilter = rangeStartAndEnd.second,
+            afterFilter = rangeStartAndEnd.first
         )
     }
 
-    private fun DateRange.toAfterIso8061DateString(dateUtils: DateUtils): String? {
-        val afterDate = when (this) {
-            DateRange.TODAY -> dateUtils.getDateForTodayAtTheStartOfTheDay()
-            DateRange.LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 2)
-            DateRange.LAST_7_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 7)
-            DateRange.LAST_30_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 30)
-            DateRange.CUSTOM_RANGE -> dateUtils.getCurrentDateTimeMinusDays(days = 30)
+    private fun getBeforeAndAfterFrom(range: DateRange?): Pair<String?, String?> =
+        when {
+            range == null -> Pair(null, null)
+            range != CUSTOM_RANGE -> {
+                Pair(dateUtils.toIso8601Format(range.toDateTimeInMillis()), null)
+            }
+            else -> {
+                val customDateRange = orderFiltersRepository.getCustomDateRangeFilter()
+                var afterDate: String? = null
+                var beforeDate: String? = null
+                if (customDateRange.first > 0) {
+                    afterDate = dateUtils.toIso8601Format(customDateRange.first)
+                }
+                if (customDateRange.second > 0) {
+                    beforeDate = dateUtils.toIso8601Format(customDateRange.second)
+                }
+                Pair(afterDate, beforeDate)
+            }
         }
-        return dateUtils.toIso8601Format(afterDate)
-    }
+
+    private fun DateRange.toDateTimeInMillis(): Long =
+        when (this) {
+            TODAY -> dateUtils.getDateForTodayAtTheStartOfTheDay()
+            LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 2)
+            LAST_7_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 7)
+            LAST_30_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 30)
+            CUSTOM_RANGE -> 0
+        }
 }
