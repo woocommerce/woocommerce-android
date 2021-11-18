@@ -11,7 +11,8 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.*
+import java.util.HashMap
+import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
     // region Track Event Enums
@@ -147,8 +148,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDERS_LIST_LOADED,
         ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
         ORDERS_LIST_PULLED_TO_REFRESH,
-        ORDERS_LIST_MENU_FILTER_TAPPED,
         ORDERS_LIST_MENU_SEARCH_TAPPED,
+        ORDERS_LIST_VIEW_FILTER_OPTIONS_TAPPED,
 
         // -- Order filter by status dialog
         FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,

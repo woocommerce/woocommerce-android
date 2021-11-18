@@ -363,6 +363,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun onFiltersButtonTapped() {
+        AnalyticsTracker.track(Stat.ORDERS_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         triggerEvent(ShowOrderFilters)
     }
 
