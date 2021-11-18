@@ -49,7 +49,7 @@ class ProductListScreen : Screen {
         return this
     }
 
-    fun selectSingleProductByName(productName: String): SingleProductScreen {
+    fun selectProductByName(productName: String): SingleProductScreen {
         Espresso.onView(ViewMatchers.withId(LIST_VIEW)).perform(
             RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
                 ViewMatchers.hasDescendant(

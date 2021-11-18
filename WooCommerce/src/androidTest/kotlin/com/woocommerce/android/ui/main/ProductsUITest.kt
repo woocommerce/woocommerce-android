@@ -55,13 +55,10 @@ class ProductsUITest : TestBase() {
             // parsing the json data
             val productData = mapJSONToProduct(productJSON)
 
-            // create the screen ui object and select the product from the list by name
-            val productListScreen = ProductListScreen()
+            ProductListScreen()
                 .scrollToProduct(productData.name)
                 .assertProductCard(productData)
-
-            // for that detail view, check the data against the UI elements.
-            productListScreen.selectSingleProductByName(productData.name)
+                .selectProductByName(productData.name)
                 .assertProductDetails(productData)
                 .goBackToProductsScreen()
         }
