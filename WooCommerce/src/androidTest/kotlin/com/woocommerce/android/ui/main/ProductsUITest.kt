@@ -40,19 +40,11 @@ class ProductsUITest : TestBase() {
         TabNavComponent().gotoProductsScreen()
     }
 
-    private fun mapJSONToProduct(productJSON: JSONObject): ProductData {
-        return ProductData(
-            id = productJSON.getInt("id"),
-            name = productJSON.getString("name"),
-        )
-    }
-
     @Test
     fun productListShowsAllProducts() {
         val productsJSONArray = MocksReader().readAllProductsToArray()
 
         for (productJSON in productsJSONArray.iterator()) {
-            // parsing the json data
             val productData = mapJSONToProduct(productJSON)
 
             ProductListScreen()
@@ -62,5 +54,12 @@ class ProductsUITest : TestBase() {
                 .assertProductDetails(productData)
                 .goBackToProductsScreen()
         }
+    }
+
+    private fun mapJSONToProduct(productJSON: JSONObject): ProductData {
+        return ProductData(
+            id = productJSON.getInt("id"),
+            name = productJSON.getString("name"),
+        )
     }
 }

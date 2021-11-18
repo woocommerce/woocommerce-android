@@ -29,6 +29,7 @@ class ProductListScreen : Screen {
                 ViewActions.scrollTo()
             )
         )
+
         return this
     }
 

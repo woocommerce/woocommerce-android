@@ -7,7 +7,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.Matchers
-import java.lang.Thread.sleep
 
 class SingleProductScreen : Screen {
     companion object {
@@ -22,13 +21,9 @@ class SingleProductScreen : Screen {
     }
 
     fun assertProductDetails(productData: ProductData): SingleProductScreen {
-        // select the parent page container
-        val view = Espresso.onView(ViewMatchers.withId(PRODUCT_DETAIL_CONTAINER))
-
-        view.check(
+        Espresso.onView(ViewMatchers.withId(PRODUCT_DETAIL_CONTAINER)).check(
             ViewAssertions.matches(
                 ViewMatchers.hasDescendant(
-                    // check that the page has an editText with the product name
                     Matchers.allOf(
                         ViewMatchers.withId(R.id.editText),
                         ViewMatchers.withText(productData.name),
@@ -36,6 +31,7 @@ class SingleProductScreen : Screen {
                 )
             )
         )
+
         return SingleProductScreen()
     }
 }
