@@ -449,6 +449,7 @@ class OrderListFragment :
     }
 
     private fun showQuickOrderDialog() {
+        AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
         findNavController().navigate(R.id.action_orderListFragment_to_quickOrderDialog)
     }
 
