@@ -19,12 +19,11 @@ class ProductListScreen : Screen {
     constructor() : super(LIST_VIEW)
 
     fun scrollToProduct(productTitle: String): ProductListScreen {
-        // this just checks scrolling
         Espresso.onView(ViewMatchers.withId(LIST_VIEW)).perform(
             RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
                 ViewMatchers.hasDescendant(
                     ViewMatchers.withText(
-                        productTitle,
+                        productTitle
                     )
                 ),
                 ViewActions.scrollTo()
