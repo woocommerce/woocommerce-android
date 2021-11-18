@@ -10,7 +10,6 @@ import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.net.Uri
-import android.os.Build
 import android.os.RemoteException
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -183,7 +182,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
      * channels weren't added until API 26
      */
     private fun createNotificationChannel(channelId: String, channelName: String, addChaChingSound: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (AndroidVersionUtils.isAtLeastO()) {
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             // check for existing channel first

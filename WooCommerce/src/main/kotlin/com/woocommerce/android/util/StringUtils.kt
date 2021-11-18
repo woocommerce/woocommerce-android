@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
-import android.os.Build
 import android.text.Html
 import android.text.Spanned
 import android.util.Patterns
@@ -15,7 +14,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.FormatUtils
 import java.io.IOException
-import java.util.Locale
+import java.util.*
 import kotlin.math.abs
 
 @Suppress("unused")
@@ -209,7 +208,7 @@ object StringUtils {
      * Helper method for using the appropriate `Html.fromHtml()` for the build version.
      */
     fun fromHtml(htmlStr: String): Spanned {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        return if (AndroidVersionUtils.isAtLeastN()) {
             Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY)
         } else {
             Html.fromHtml(htmlStr)
