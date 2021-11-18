@@ -72,7 +72,6 @@ class OrderListViewModelTest : BaseUnitTest() {
                 lifecycle = any()
             )
         ).doReturn(pagedListWrapper)
-        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(SiteModel()).whenever(selectedSite).get()
 
@@ -96,10 +95,6 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Request to load new list fetches order status options and payment gateways if connected`() = testBlocking {
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
-        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
-
         clearInvocations(orderListRepository)
         viewModel.submitSearchOrFilter(ANY_SEARCH_QUERY)
 
@@ -109,8 +104,6 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Load orders activates list wrapper`() = testBlocking {
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
-        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
         viewModel.loadOrders()
@@ -165,11 +158,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Display 'No orders yet' empty view when no orders for site for ALL tab`() = testBlocking {
         viewModel.isSearching = false
-        doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
-
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-        whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
@@ -377,8 +367,6 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Request refresh for active list when received new order notification and is in search`() = testBlocking {
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
         viewModel.isSearching = true
 
         viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
