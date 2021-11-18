@@ -58,7 +58,7 @@ class ProductsUITest : TestBase() {
             // create the screen ui object and select the product from the list by name
             val productListScreen = ProductListScreen()
                 .scrollToProduct(productData.name)
-                .assertProductCardMatchesMockData(productData)
+                .assertProductCard(productData)
 
             // for that detail view, check the data against the UI elements.
             productListScreen.selectSingleProductByName(productData.name)

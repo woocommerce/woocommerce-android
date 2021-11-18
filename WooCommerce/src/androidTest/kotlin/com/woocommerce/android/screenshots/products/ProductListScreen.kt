@@ -32,28 +32,20 @@ class ProductListScreen : Screen {
         return this
     }
 
-    fun assertProductCardMatchesMockData(product: ProductData): ProductListScreen {
-        // check the card information against the json data
-
-        // matcher for the card which has the correct product name
-        val matcherForProductCard = Matchers.allOf(
-            // must have element id
-            ViewMatchers.withId(R.id.productInfoContainer),
-            // must have a child
-            ViewMatchers.withChild(
-                Matchers.allOf(
-                    // child must have id productName
-                    ViewMatchers.withId(R.id.productName),
-                    // child text must match the product name mock data
-                    ViewMatchers.withText(product.name),
+    fun assertProductCard(product: ProductData): ProductListScreen {
+        Espresso.onView(
+            Matchers.allOf(
+                ViewMatchers.withId(R.id.productInfoContainer),
+                ViewMatchers.withChild(
+                    Matchers.allOf(
+                        ViewMatchers.withId(R.id.productName),
+                        ViewMatchers.withText(product.name)
+                    )
                 )
             )
         )
-        val productCardMatch = Espresso.onView(matcherForProductCard)
-        productCardMatch.check(
-            // check if it exists!
-            ViewAssertions.matches(ViewMatchers.withId(R.id.productInfoContainer))
-        )
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
         return this
     }
 
