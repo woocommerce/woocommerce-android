@@ -115,7 +115,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
-        if (AndroidVersionUtils.isAtLeastO()) {
+        if (SystemVersionUtils.isAtLeastO()) {
             binding.containerNotifsOld.visibility = View.GONE
             binding.containerNotifsNew.visibility = View.VISIBLE
             binding.optionNotifications.setOnClickListener {
@@ -224,7 +224,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
      * this on API 26+ devices (will do nothing on older devices)
      */
     override fun showDeviceAppNotificationSettings() {
-        if (AndroidVersionUtils.isAtLeastO()) {
+        if (SystemVersionUtils.isAtLeastO()) {
             val intent = Intent()
             intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
             intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.packageName)

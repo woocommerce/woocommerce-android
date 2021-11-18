@@ -208,7 +208,7 @@ object StringUtils {
      * Helper method for using the appropriate `Html.fromHtml()` for the build version.
      */
     fun fromHtml(htmlStr: String): Spanned {
-        return if (AndroidVersionUtils.isAtLeastN()) {
+        return if (SystemVersionUtils.isAtLeastN()) {
             Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY)
         } else {
             Html.fromHtml(htmlStr)

@@ -2,9 +2,7 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.util.AttributeSet
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatTextView
 import com.woocommerce.android.R
 
@@ -26,36 +24,10 @@ class WCTextViewCompat @JvmOverloads constructor(
     init {
         attrs?.let {
             val attributeArray = context.obtainStyledAttributes(attrs, R.styleable.WCTextViewCompat)
-            var drawableStart: Drawable? = null
-            var drawableEnd: Drawable? = null
-            var drawableBottom: Drawable? = null
-            var drawableTop: Drawable? = null
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                drawableStart = attributeArray.getDrawable(R.styleable.WCTextViewCompat_drawableStartCompat)
-                drawableEnd = attributeArray.getDrawable(R.styleable.WCTextViewCompat_drawableEndCompat)
-                drawableBottom = attributeArray.getDrawable(R.styleable.WCTextViewCompat_drawableBottomCompat)
-                drawableTop = attributeArray.getDrawable(R.styleable.WCTextViewCompat_drawableTopCompat)
-            } else {
-                val drawableStartId = attributeArray
-                    .getResourceId(R.styleable.WCTextViewCompat_drawableStartCompat, -1)
-                val drawableEndId = attributeArray.getResourceId(R.styleable.WCTextViewCompat_drawableEndCompat, -1)
-                val drawableBottomId = attributeArray
-                    .getResourceId(R.styleable.WCTextViewCompat_drawableBottomCompat, -1)
-                val drawableTopId = attributeArray.getResourceId(R.styleable.WCTextViewCompat_drawableTopCompat, -1)
-
-                if (drawableStartId != -1) {
-                    drawableStart = AppCompatResources.getDrawable(context, drawableStartId)
-                }
-                if (drawableEndId != -1) {
-                    drawableEnd = AppCompatResources.getDrawable(context, drawableEndId)
-                }
-                if (drawableBottomId != -1) {
-                    drawableBottom = AppCompatResources.getDrawable(context, drawableBottomId)
-                }
-                if (drawableTopId != -1) {
-                    drawableTop = AppCompatResources.getDrawable(context, drawableTopId)
-                }
-            }
+            val drawableStart: Drawable? = attributeArray.getDrawable(R.styleable.WCTextViewCompat_drawableStartCompat)
+            val drawableEnd = attributeArray.getDrawable(R.styleable.WCTextViewCompat_drawableEndCompat)
+            val drawableBottom = attributeArray.getDrawable(R.styleable.WCTextViewCompat_drawableBottomCompat)
+            val drawableTop = attributeArray.getDrawable(R.styleable.WCTextViewCompat_drawableTopCompat)
 
             // to support rtl
             setCompoundDrawablesRelativeWithIntrinsicBounds(drawableStart, drawableTop, drawableEnd, drawableBottom)

@@ -11,8 +11,8 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaUploadErrorListFragmentArgs
 import com.woocommerce.android.ui.products.ProductDetailFragmentArgs
-import com.woocommerce.android.util.AndroidVersionUtils
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.SystemVersionUtils
 import org.wordpress.android.util.SystemServiceFactory
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -183,7 +183,7 @@ class ProductImagesNotificationHandler @Inject constructor(
      * Ensures the notification channel for image uploads is created - only required for Android O+
      */
     private fun createChannel() {
-        if (AndroidVersionUtils.isAtLeastO()) {
+        if (SystemVersionUtils.isAtLeastO()) {
             // first check if the channel already exists
             notificationManager.getNotificationChannel(CHANNEL_ID)?.let {
                 return

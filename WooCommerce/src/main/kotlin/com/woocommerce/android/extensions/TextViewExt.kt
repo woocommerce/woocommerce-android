@@ -12,7 +12,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import com.woocommerce.android.util.AndroidVersionUtils
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.widgets.WooClickableSpan
 
 typealias OnLinkClicked = (ClickableSpan) -> Unit
@@ -24,7 +24,7 @@ typealias OnLinkClicked = (ClickableSpan) -> Unit
  * The callback is triggered in addition to the default link handling behavior, it does not override it.
  */
 fun TextView.setHtmlText(html: String, onLinkClicked: OnLinkClicked? = null) {
-    val spannedHtml = if (AndroidVersionUtils.isAtLeastN()) {
+    val spannedHtml = if (SystemVersionUtils.isAtLeastN()) {
         Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
     } else {
         Html.fromHtml(html)

@@ -2,7 +2,7 @@ package com.woocommerce.android.util
 
 import android.os.Build
 
-object AndroidVersionUtils {
+object SystemVersionUtils {
     fun isAtLeastS() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
     fun isAtLeastR() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R

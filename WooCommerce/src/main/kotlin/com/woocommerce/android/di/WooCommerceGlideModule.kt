@@ -12,7 +12,7 @@ import com.bumptech.glide.load.engine.cache.DiskCache
 import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.AppGlideModule
-import com.woocommerce.android.util.AndroidVersionUtils
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.EntryPoint
@@ -61,7 +61,7 @@ class WooCommerceGlideModule : AppGlideModule() {
      * APIs don't support getCacheQuotaBytes().
      */
     private fun initGlideCache(context: Context, builder: GlideBuilder) {
-        if (AndroidVersionUtils.) {
+        if (SystemVersionUtils.) {
             val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
             try {
                 // can't do this on the main thread - docs for getCacheQuoteBytes() state:
