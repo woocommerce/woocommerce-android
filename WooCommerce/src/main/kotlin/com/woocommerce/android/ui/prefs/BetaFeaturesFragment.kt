@@ -4,12 +4,13 @@ import android.os.Bundle
 import android.view.View
 import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED
 import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
@@ -21,6 +22,8 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     companion object {
         const val TAG = "beta-features"
     }
+
+    private val navArgs: BetaFeaturesFragmentArgs by navArgs()
 
     private val settingsListener by lazy {
         activity as? AppSettingsListener
@@ -45,7 +48,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
                 ?: binding.handleToggleChangeFailure(switch, isChecked)
         }
 
-        if (FeatureFlag.QUICK_ORDER.isEnabled()) {
+        if (FeatureFlag.QUICK_ORDER.isEnabled() && navArgs.isCardReaderOnboardingCompleted) {
             binding.switchQuickOrderToggle.show()
             binding.switchQuickOrderToggle.isChecked = AppPrefs.isQuickOrderEnabled
             binding.switchQuickOrderToggle.setOnCheckedChangeListener { switch, isChecked ->

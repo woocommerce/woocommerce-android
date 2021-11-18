@@ -12,6 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
@@ -75,6 +76,7 @@ class OrderListViewModel @Inject constructor(
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
 ) : ScopedViewModel(savedState), LifecycleOwner {
@@ -482,6 +484,16 @@ class OrderListViewModel @Inject constructor(
     private fun refreshOrders() {
         val pagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper)
+    }
+
+    fun isCardReaderOnboardingCompleted(): Boolean {
+        return selectedSite.getIfExists()?.let {
+            appPrefsWrapper.isCardReaderOnboardingCompleted(
+                localSiteId = it.id,
+                remoteSiteId = it.siteId,
+                selfHostedSiteId = it.selfHostedSiteId
+            )
+        } ?: false
     }
 
     sealed class OrderListEvent : Event() {

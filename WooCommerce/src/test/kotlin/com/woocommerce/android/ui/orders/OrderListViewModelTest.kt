@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -57,6 +58,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     @Before
     fun setup() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -88,6 +90,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             fetcher = orderFetcher,
             resourceProvider = resourceProvider,
             wooCommerceStore = wooCommerceStore,
+            appPrefsWrapper = appPrefsWrapper,
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount
         )
