@@ -47,7 +47,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
-    private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
