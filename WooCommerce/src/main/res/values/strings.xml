@@ -396,7 +396,7 @@
     <string name="order_detail_edit_address_line2">Address 2</string>
     <string name="order_detail_edit_address_city">City</string>
     <string name="order_detail_edit_address_zip">Postal Code</string>
-    <string name="order_detail_edit_address_state">State / County</string>
+    <string name="order_detail_edit_address_state">State</string>
     <string name="order_detail_edit_address_country">Country</string>
     <string name="order_detail_address_section">Address</string>
     <string name="order_detail_shipping_address_section">Shipping Address</string>
@@ -508,9 +508,11 @@
     <string name="shipping_label_edit_address_line1">Address line 1</string>
     <string name="shipping_label_edit_address_line2">Address line 2</string>
     <string name="shipping_label_edit_address_city">City</string>
-    <string name="shipping_label_edit_address_state">State / County</string>
+    <string name="shipping_label_edit_address_state">State</string>
+    <string name="shipping_label_edit_address_state_search_hint">Filter state</string>
     <string name="shipping_label_edit_address_zip">Zip / Postal Code</string>
     <string name="shipping_label_edit_address_country">Country</string>
+    <string name="shipping_label_edit_address_country_search_hint">Filter countries</string>
     <string name="shipping_label_edit_address_use_address_as_is">Use address as entered</string>
     <string name="shipping_label_edit_data_loading_error">Unable to load the address data</string>
     <string name="shipping_label_edit_address_validation_progress_title">Address validation in progress</string>
