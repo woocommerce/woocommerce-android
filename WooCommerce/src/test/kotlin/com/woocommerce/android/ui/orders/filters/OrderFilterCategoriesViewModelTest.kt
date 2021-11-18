@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptio
 import com.woocommerce.android.ui.orders.filters.data.*
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
+import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
@@ -31,6 +32,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions = mock()
     private val getDateRangeFilterOptions: GetDateRangeFilterOptions = mock()
     private val orderFilterRepository: OrderFiltersRepository = mock()
+    private val getTrackingForFilterSelection: GetTrackingForFilterSelection = mock()
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
 
@@ -128,7 +130,8 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
             resourceProvider,
             getOrderStatusFilterOptions,
             getDateRangeFilterOptions,
-            orderFilterRepository
+            orderFilterRepository,
+            getTrackingForFilterSelection
         )
     }
 
