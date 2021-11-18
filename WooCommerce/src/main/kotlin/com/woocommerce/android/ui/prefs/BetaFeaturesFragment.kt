@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -22,6 +23,8 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     companion object {
         const val TAG = "beta-features"
     }
+
+    private val navArgs: BetaFeaturesFragmentArgs by navArgs()
 
     private val settingsListener by lazy {
         activity as? AppSettingsListener
@@ -46,7 +49,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
                 ?: binding.handleToggleChangeFailure(switch, isChecked)
         }
 
-        if (FeatureFlag.QUICK_ORDER.isEnabled()) {
+        if (FeatureFlag.QUICK_ORDER.isEnabled() && navArgs.isCardReaderOnboardingCompleted) {
             binding.switchQuickOrderToggle.show()
             binding.switchQuickOrderToggle.isChecked = AppPrefs.isQuickOrderEnabled
             binding.switchQuickOrderToggle.setOnCheckedChangeListener { switch, isChecked ->
