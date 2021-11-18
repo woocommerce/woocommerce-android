@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -8,7 +9,8 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
+import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
+import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -19,27 +21,13 @@ import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.reset
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
@@ -49,15 +37,10 @@ import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
@@ -73,7 +56,9 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
     private val orderFetcher: WCOrderFetcher = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val orderFiltersRepository: OrderFiltersRepository = mock()
+    private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
+    private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     @Before
     fun setup() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -105,7 +90,9 @@ class OrderListViewModelTest : BaseUnitTest() {
             fetcher = orderFetcher,
             resourceProvider = resourceProvider,
             wooCommerceStore = wooCommerceStore,
-            orderFiltersRepository = orderFiltersRepository
+            appPrefsWrapper = appPrefsWrapper,
+            getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
+            getSelectedOrderFiltersCount = getSelectedOrderFiltersCount
         )
     }
 

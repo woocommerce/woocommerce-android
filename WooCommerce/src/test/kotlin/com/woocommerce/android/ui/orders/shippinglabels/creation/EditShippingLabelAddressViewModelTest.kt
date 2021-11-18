@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import org.mockito.kotlin.*
 import com.woocommerce.android.R.string
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -21,15 +20,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.invocation.InvocationOnMock
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCDataStore
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     private val addressValidator = mock<ShippingLabelAddressValidator>()
     private val resourceProvider = mock<ResourceProvider>()

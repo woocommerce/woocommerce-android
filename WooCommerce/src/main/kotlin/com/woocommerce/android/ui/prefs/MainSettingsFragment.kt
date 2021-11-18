@@ -37,12 +37,16 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.util.*
+import com.woocommerce.android.util.AnalyticsUtils
+import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
+import com.woocommerce.android.util.ThemeOption
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import com.woocommerce.android.util.WooLog.T
 
 @AndroidEntryPoint
 class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSettingsContract.View {
@@ -160,7 +164,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionBetaFeatures.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
+            val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToBetaFeaturesFragment(
+                isCardReaderOnboardingCompleted = presenter.isCardReaderOnboardingCompleted()
+            )
+            findNavController().navigateSafely(action)
         }
 
         binding.optionPrivacy.setOnClickListener {
@@ -244,6 +251,13 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionWhatsNew.show()
         binding.optionWhatsNew.setOnClickListener {
             WooLog.i(T.DEVICE, "Displaying Feature Announcement from Settings menu.")
+            AnalyticsTracker.track(
+                Stat.FEATURE_ANNOUNCEMENT_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
+                        AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_SETTINGS
+                )
+            )
             findNavController()
                 .navigateSafely(
                     MainSettingsFragmentDirections.actionMainSettingsFragmentToFeatureAnnouncementDialogFragment(
@@ -261,6 +275,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun updateStoreSettings() {
         binding.storeSettingsContainer.visibility =
             if (CARD_READER.isEnabled()) View.VISIBLE else View.GONE
+        binding.optionBetaFeatures.optionValue = if (presenter.isCardReaderOnboardingCompleted()) {
+            getString(R.string.beta_features_add_ons_and_quick_order)
+        } else {
+            getString(R.string.beta_features_add_ons)
+        }
     }
 
     /**

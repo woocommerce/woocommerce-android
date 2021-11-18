@@ -60,7 +60,7 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
                 Success(continuationResult)
             } catch (e: CancellationException) {
                 WooLog.e(tag, e)
-                Cancellation<T>(e)
+                Cancellation(e)
             } finally {
                 continuation = null
             }

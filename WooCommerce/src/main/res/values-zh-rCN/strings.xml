@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-26 09:54:04+0000
+Translation-Revision-Date: 2021-11-09 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">不用了</string>
+    <string name="jetpack_benefits_modal_install_jetpack">安装 Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">支持多个用户访问 WooCommerce 移动应用程序。</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">用户个人资料</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">新的分析视图，让您可查看访客、报告等。</string>
+    <string name="jetpack_benefits_modal_analytics_title">分析</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">将新订单、评论等推送通知发送到您的设备。</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">推送通知</string>
+    <string name="jetpack_benefits_modal_subtitle">免费安装 Jetpack 插件，感受最佳移动体验。</string>
+    <string name="jetpack_benefits_modal_title">实现商店利益最大化</string>
+    <string name="settings_enable_quick_order_teaser_message">在我们准备发布时，测试如何使用最少的信息创建订单</string>
+    <string name="settings_enable_quick_order_teaser_title">快速订单</string>
+    <string name="beta_features_message">查看加载项、快速订单</string>
+    <string name="order_detail_use_as_shipping_address">用作配送地址</string>
+    <string name="order_detail_use_as_billing_address">用作账单地址</string>
+    <string name="orderfilters_filters_count_title">过滤器 (%d)</string>
+    <string name="orderfilters_filters_default_title">过滤器</string>
+    <string name="orderfilters_filter_date_range_options_title">日期范围</string>
+    <string name="orderfilters_filter_order_status_options_title">订单状态</string>
+    <string name="orderfilters_filter_option_item_selected">已选筛选选项</string>
+    <string name="orderfilters_date_range_filter">日期范围</string>
+    <string name="orderfilters_order_status_filter">订单状态</string>
+    <string name="orderfilters_default_filter_value">全部</string>
+    <string name="orderfilters_show_orders_button">显示订单</string>
+    <string name="orderlist_filters_title">已过滤的订单</string>
+    <string name="orderlist_no_filters_title">所有订单</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">了解优势</string>
     <string name="jetpack_benefits_bottom_banner_title">通过 Jetpack 获取完整体验 </string>
     <string name="product_description_hint_with_title">告知我们更多关于 %s 的信息…</string>
@@ -56,8 +82,8 @@ Language: zh_CN
     <string name="settings_enable_product_addons_teaser_title">查看插件</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">抱歉，我们现在无法更改此功能设置</string>
     <string name="product_category">类别</string>
-    <string name="notification_review_title">您有 1 条新评论！ 🌟</string>
-    <string name="notification_order_title">您有 1 个新订单！ 🎉</string>
+    <string name="notification_review_title">您有一条新评论！🌟</string>
+    <string name="notification_order_title">您有一个新订单！🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d 商品</string>
     <string name="upsell_product_count_many">%d 个追加销售产品</string>
     <string name="upsell_product_count_one">%d 个追加销售产品</string>

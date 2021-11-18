@@ -32,6 +32,5 @@ interface MainNavigationRouter {
     )
 
     fun showFeedbackSurvey()
-    fun showProductAddBottomSheet()
     fun showSettingsScreen()
 }

@@ -123,7 +123,6 @@
     <ID>MagicNumber:MyStoreStatsView.kt$MyStoreStatsView$3</ID>
     <ID>MagicNumber:MyStoreStatsView.kt$MyStoreStatsView$47</ID>
     <ID>MagicNumber:MyStoreStatsView.kt$MyStoreStatsView$59</ID>
-    <ID>MagicNumber:NotificationsUtils.kt$NotificationsUtils$4096</ID>
     <ID>MagicNumber:OfflineStatusBarView.kt$OfflineStatusBarView$2000</ID>
     <ID>MagicNumber:OrderDetailCustomerInfoView.kt$OrderDetailCustomerInfoView$180F</ID>
     <ID>MagicNumber:OrderDetailCustomerInfoView.kt$OrderDetailCustomerInfoView$200</ID>
@@ -177,7 +176,6 @@
     <ID>MemberNameEqualsClassName:CurrencyFormatter.kt$CurrencyFormatter.Companion$// Formats the value to two decimal places private val currencyFormatter: DecimalFormat by lazy { DecimalFormat("0.00") }</ID>
     <ID>MemberNameEqualsClassName:SelectedSite.kt$SelectedSite$private var selectedSite: SiteModel? = null</ID>
     <ID>MemberNameEqualsClassName:SkeletonView.kt$SkeletonView$private lateinit var skeletonView: View</ID>
-    <ID>NestedBlockDepth:NotificationsUtils.kt$NotificationsUtils$ @Synchronized fun getNotificationJsonFromBase64EncodedData(base64FullNoteData: String): JSONObject?</ID>
     <ID>NestedBlockDepth:ProductDetailViewModel.kt$ProductDetailViewModel$ private suspend fun updateProduct(product: Product)</ID>
     <ID>NestedBlockDepth:ProductImagesFragment.kt$ProductImagesFragment$override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)</ID>
     <ID>NestedBlockDepth:ProductListViewModel.kt$ProductListViewModel$private suspend fun fetchProductList( searchQuery: String? = null, loadMore: Boolean = false, scrollToTop: Boolean = false )</ID>
