@@ -7,6 +7,7 @@ import org.wordpress.android.mediapicker.source.device.DeviceMediaSource
 import org.wordpress.android.mediapicker.source.wordpress.MediaLibrarySource
 import javax.inject.Inject
 
+// A factory class responsible for building an image-loader class, which is specific to a source.
 class MediaPickerLoaderFactory @Inject constructor(
     private val deviceMediaSourceFactory: DeviceMediaSource.Factory,
     private val mediaLibrarySourceFactory: MediaLibrarySource.Factory

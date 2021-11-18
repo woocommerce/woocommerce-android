@@ -12,6 +12,7 @@ import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.util.DateTimeUtils
 import java.security.InvalidParameterException
 
+// A helper class containing the shared boilerplate code for extracting the Media picker result from an Intent
 object MediaPickerUtil {
     fun ActivityResult.processDeviceMediaResult(): List<Uri>? = processIntent()
 
