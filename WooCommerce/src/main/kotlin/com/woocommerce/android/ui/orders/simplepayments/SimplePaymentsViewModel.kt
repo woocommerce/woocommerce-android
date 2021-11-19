@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.quickorder
+package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 @OpenClassOnDebug
 @HiltViewModel
-class QuickOrderViewModel @Inject constructor(
+class SimplePaymentsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,

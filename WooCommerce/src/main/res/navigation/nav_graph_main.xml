@@ -15,7 +15,7 @@
     </fragment>
     <dialog
         android:id="@+id/quickOrderDialog"
-        android:name="com.woocommerce.android.ui.orders.quickorder.QuickOrderDialog"
+        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
         android:label="QuickOrderDialog" />
     <fragment
         android:id="@+id/orders"

@@ -49,9 +49,9 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
                 ?: binding.handleToggleChangeFailure(switch, isChecked)
         }
 
-        if (FeatureFlag.QUICK_ORDER.isEnabled() && navArgs.isCardReaderOnboardingCompleted) {
+        if (FeatureFlag.SIMPLE_PAYMENTS.isEnabled() && navArgs.isCardReaderOnboardingCompleted) {
             binding.switchQuickOrderToggle.show()
-            binding.switchQuickOrderToggle.isChecked = AppPrefs.isQuickOrderEnabled
+            binding.switchQuickOrderToggle.isChecked = AppPrefs.isSimplePaymentsEnabled
             binding.switchQuickOrderToggle.setOnCheckedChangeListener { switch, isChecked ->
                 AnalyticsTracker.track(
                     SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,

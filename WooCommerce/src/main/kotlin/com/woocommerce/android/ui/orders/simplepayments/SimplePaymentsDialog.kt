@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.quickorder
+package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
@@ -20,11 +20,11 @@ import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
+class SimplePaymentsDialog : DialogFragment(R.layout.dialog_quick_order) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: QuickOrderViewModel by viewModels()
+    private val viewModel: SimplePaymentsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
