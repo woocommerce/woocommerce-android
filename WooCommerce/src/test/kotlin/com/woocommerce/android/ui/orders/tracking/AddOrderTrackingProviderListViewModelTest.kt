@@ -1,10 +1,5 @@
 package com.woocommerce.android.ui.orders.tracking
 
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.OrderShipmentProvider
@@ -20,11 +15,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val shipmentProvidersRepository: OrderShipmentProvidersRepository = mock()

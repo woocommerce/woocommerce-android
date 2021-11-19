@@ -60,7 +60,7 @@ android {
         versionCode 260
 
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 30
 
         vectorDrawables.useSupportLibrary = true
 
@@ -245,7 +245,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-core-utils'
     })
-    testImplementation "org.robolectric:robolectric:$robolectricVersion"
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"

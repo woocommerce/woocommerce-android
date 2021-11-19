@@ -1,13 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
@@ -21,19 +13,17 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import java.util.Date
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_ORDER_ID = 1L

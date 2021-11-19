@@ -16,16 +16,27 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentEditShippingLabelAddressBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.InputField
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.Field
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
+import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -228,25 +239,31 @@ class EditShippingLabelAddressFragment :
                     findNavController().navigateSafely(action)
                 }
                 is ShowCountrySelector -> {
-                    val action = EditShippingLabelAddressFragmentDirections
-                        .actionGlobalItemSelectorDialog(
-                            event.currentCountryCode,
-                            event.locations.map { it.name }.toTypedArray(),
-                            event.locations.map { it.code }.toTypedArray(),
-                            SELECT_COUNTRY_REQUEST,
-                            getString(R.string.shipping_label_edit_address_country)
-                        )
+                    val action = EditShippingLabelAddressFragmentDirections.actionSearchFilterFragment(
+                        items = event.locations.map {
+                            SearchFilterItem(
+                                name = it.name,
+                                value = it.code
+                            )
+                        }.toTypedArray(),
+                        hint = getString(R.string.shipping_label_edit_address_country_search_hint),
+                        requestKey = SELECT_COUNTRY_REQUEST,
+                        title = getString(R.string.shipping_label_edit_address_country)
+                    )
                     findNavController().navigateSafely(action)
                 }
                 is ShowStateSelector -> {
-                    val action = EditShippingLabelAddressFragmentDirections
-                        .actionGlobalItemSelectorDialog(
-                            event.currentStateCode,
-                            event.locations.map { it.name }.toTypedArray(),
-                            event.locations.map { it.code }.toTypedArray(),
-                            SELECT_STATE_REQUEST,
-                            getString(R.string.shipping_label_edit_address_state)
-                        )
+                    val action = EditShippingLabelAddressFragmentDirections.actionSearchFilterFragment(
+                        items = event.locations.map {
+                            SearchFilterItem(
+                                name = it.name,
+                                value = it.code
+                            )
+                        }.toTypedArray(),
+                        hint = getString(R.string.shipping_label_edit_address_state_search_hint),
+                        requestKey = SELECT_STATE_REQUEST,
+                        title = getString(R.string.shipping_label_edit_address_state)
+                    )
                     findNavController().navigateSafely(action)
                 }
                 is OpenMapWithAddress -> launchMapsWithAddress(event.address)

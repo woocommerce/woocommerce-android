@@ -15,16 +15,13 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
