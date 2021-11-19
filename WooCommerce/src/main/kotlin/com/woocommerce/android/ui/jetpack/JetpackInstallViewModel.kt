@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.jetpack
 
-import android.os.Handler
-import android.os.Looper
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.*
@@ -10,6 +8,7 @@ import com.woocommerce.android.ui.mystore.PluginRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collect
 import kotlinx.parcelize.Parcelize
@@ -53,7 +52,7 @@ class JetpackInstallViewModel @Inject constructor(
                     }
 
                     is PluginActivated -> {
-                        simulateConnectingAndDoneSteps()
+                        simulateConnectingAndFinishedSteps()
                     }
 
                     is PluginActivationFailed -> {
@@ -64,12 +63,12 @@ class JetpackInstallViewModel @Inject constructor(
         }
     }
 
-    private fun simulateConnectingAndDoneSteps() {
-        viewState = viewState.copy(installStatus = Connecting)
-        Handler(Looper.getMainLooper()).postDelayed(
-            { viewState = viewState.copy(installStatus = Finished) },
-            CONNECTION_DELAY
-        )
+    private fun simulateConnectingAndFinishedSteps() {
+        launch {
+            viewState = viewState.copy(installStatus = Connecting)
+            delay(CONNECTION_DELAY)
+            viewState = viewState.copy(installStatus = Finished)
+        }
     }
 
     @Parcelize
