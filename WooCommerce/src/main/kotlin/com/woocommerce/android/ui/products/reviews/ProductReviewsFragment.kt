@@ -60,7 +60,7 @@ class ProductReviewsFragment :
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        _reviewsAdapter = ReviewListAdapter( this)
+        _reviewsAdapter = ReviewListAdapter(this)
 
         binding.reviewsList.apply {
             layoutManager = LinearLayoutManager(context)

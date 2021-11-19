@@ -88,7 +88,7 @@ class ReviewListFragment :
 
         val activity = requireActivity()
 
-        _reviewsAdapter = ReviewListAdapter( this)
+        _reviewsAdapter = ReviewListAdapter(this)
         val unreadDecoration = UnreadItemDecoration(activity as Context, this)
         binding.reviewsList.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
