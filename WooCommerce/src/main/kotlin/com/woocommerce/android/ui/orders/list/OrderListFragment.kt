@@ -673,14 +673,14 @@ class OrderListFragment :
 
         val isEnabled = AppPrefs.isSimplePaymentsEnabled
         @StringRes val messageId = if (isEnabled) {
-            R.string.orderlist_quickorder_wip_message_enabled
+            R.string.orderlist_simple_payments_wip_message_enabled
         } else {
-            R.string.orderlist_quickorder_wip_message_disabled
+            R.string.orderlist_simple_payments_wip_message_disabled
         }
 
         binding.simplePaymentsWIPcard.isVisible = true
         binding.simplePaymentsWIPcard.initView(
-            getString(R.string.orderlist_quickorder_wip_title),
+            getString(R.string.orderlist_simple_payments_wip_title),
             getString(messageId),
             onGiveFeedbackClick = { onGiveFeedbackClicked() },
             onDismissClick = { onDismissWIPCardClicked() },

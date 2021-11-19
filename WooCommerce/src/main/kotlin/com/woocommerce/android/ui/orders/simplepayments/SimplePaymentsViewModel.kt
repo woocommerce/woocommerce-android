@@ -51,10 +51,10 @@ class SimplePaymentsViewModel @Inject constructor(
         }
 
     fun onDoneButtonClicked() {
-        createQuickOrder()
+        createSimplePaymentsOrder()
     }
 
-    fun createQuickOrder() {
+    private fun createSimplePaymentsOrder() {
         if (!networkStatus.isConnected()) {
             AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
@@ -74,7 +74,7 @@ class SimplePaymentsViewModel @Inject constructor(
                 if (result.isError) {
                     WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
                     AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
-                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.quickorder_creation_error))
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.simple_payments_creation_error))
                 } else {
                     AnalyticsTracker.track(
                         AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
