@@ -46,5 +46,5 @@ wc.in_app_update_type = 0
 kapt.incremental.apt=false
 
 # Measuring build times
-tracksEnabled = true
+tracksEnabled = false
 #tracksUsername = <optional username>

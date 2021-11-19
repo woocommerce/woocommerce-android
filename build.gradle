@@ -30,7 +30,7 @@ apply plugin: BuildTimePlugin
 
 tracks {
     automatticProject.set(TracksExtension.AutomatticProject.WooCommerce)
-    enabled.set((findProperty('tracksEnabled') ?: true).toBoolean())
+    enabled.set((findProperty('tracksEnabled') ?: false).toBoolean())
     username.set(findProperty('tracksUsername'))
 }
 
