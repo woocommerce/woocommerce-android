@@ -52,22 +52,12 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.argThat
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 @InternalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
@@ -422,7 +412,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given last connected reader is matching, when reader found, then reader connecting state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
             val readerStatusStateFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connecting)
             whenever(cardReaderManager.readerStatus).thenReturn(readerStatusStateFlow)
 

@@ -21,16 +21,13 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
 
-@RunWith(RobolectricTestRunner::class)
 class VariationDetailViewModelTest : BaseUnitTest() {
     companion object {
         private val SALE_START_DATE = Date.from(
@@ -132,7 +129,6 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         doReturn(errorEvents).whenever(mediaFileUploadHandler)
             .observeCurrentUploadErrors(TEST_VARIATION.remoteVariationId)
         val errorMessage = "message"
-        doReturn(errorMessage).whenever(resourceProvider).getString(any())
         doReturn(errorMessage).whenever(resourceProvider).getString(any(), anyVararg())
 
         setup()

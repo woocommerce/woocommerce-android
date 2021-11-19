@@ -22,6 +22,7 @@ import java.util.Date
 object OrderTestUtils {
     const val TEST_LOCAL_SITE_ID = 1
     const val TEST_ORDER_STATUS_COUNT = 20
+    const val ORDER_IDENTIFIER = "1-1-1"
 
     /**
      * Generates an array containing multiple [WCOrderModel] objects.
