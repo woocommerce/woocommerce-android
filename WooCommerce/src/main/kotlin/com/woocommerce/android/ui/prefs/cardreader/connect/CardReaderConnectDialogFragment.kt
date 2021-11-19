@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
@@ -72,8 +71,9 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     private val requestEnableBluetoothPermissionsLauncher = registerForActivityResult(
         RequestPermission()
     ) { isGranted: Boolean ->
-        (viewModel.event.value as? RequestEnableBluetoothRuntimePermissions)?.onEnableBluetoothRuntimePermissionsRequestResult
-                ?.invoke(isGranted)
+        (viewModel.event.value as? RequestEnableBluetoothRuntimePermissions)
+            ?.onEnableBluetoothRuntimePermissionsRequestResult
+            ?.invoke(isGranted)
     }
 
 //    private val requestEnableBluetoothPermissionsLauncher = registerForActivityResult(
@@ -88,10 +88,12 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
 //            }
 //        }
 //        if (allPermissionsGranted.size == 2) {
-//            (viewModel.event.value as? RequestEnableBluetoothRuntimePermissions)?.onEnableBluetoothRuntimePermissionsRequestResult
+//            (viewModel.event.value as? RequestEnableBluetoothRuntimePermissions)
+//            ?.onEnableBluetoothRuntimePermissionsRequestResult
 //                ?.invoke(true)
 //        } else {
-//            (viewModel.event.value as? RequestEnableBluetoothRuntimePermissions)?.onEnableBluetoothRuntimePermissionsRequestResult
+//            (viewModel.event.value as? RequestEnableBluetoothRuntimePermissions)
+//            ?.onEnableBluetoothRuntimePermissionsRequestResult
 //                ?.invoke(false)
 //        }
 //    }
@@ -221,7 +223,11 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                     openLocationSettings()
                 }
                 is CheckBluetoothPermissionsEnabled -> {
-                    event.onBluetoothPermissionsEnabledCheckResult(WooPermissionUtils.hasBluetoothPermissions(requireContext()))
+                    event.onBluetoothPermissionsEnabledCheckResult(
+                        WooPermissionUtils.hasBluetoothPermissions(
+                            requireContext()
+                        )
+                    )
                 }
                 is RequestEnableBluetoothRuntimePermissions -> {
                     requestEnableBluetoothPermissionsLauncher.launch(
