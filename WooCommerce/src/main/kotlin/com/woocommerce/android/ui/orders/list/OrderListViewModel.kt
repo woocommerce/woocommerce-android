@@ -9,7 +9,6 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
 import com.woocommerce.android.AppPrefsWrapper
@@ -86,8 +85,7 @@ class OrderListViewModel @Inject constructor(
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
-    internal var allPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
-    internal var processingPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
+    internal var ordersPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
     private val dataSource by lazy {
@@ -113,7 +111,7 @@ class OrderListViewModel @Inject constructor(
     val isEmpty: LiveData<Boolean> = _isEmpty
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
-        ThrottleLiveData<EmptyViewType?>(
+        ThrottleLiveData(
             offset = EMPTY_VIEW_THROTTLE,
             coroutineScope = this,
             mainDispatcher = dispatchers.main,
@@ -150,51 +148,13 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Create and prefetch the two main order lists to prevent them getting out of
-     * sync when the device goes offline.
-     */
-    fun initializeListsForMainTabs() {
-        // "ALL" tab
-        if (allPagedListWrapper == null) {
-            val allDescriptor = WCOrderListDescriptor(selectedSite.get(), excludeFutureOrders = false)
-            allPagedListWrapper = listStore.getList(allDescriptor, dataSource, lifecycle)
-                .also { it.fetchFirstPage() }
-        }
-
-        // "PROCESSING" tab
-        if (processingPagedListWrapper == null) {
-            val processingDescriptor = WCOrderListDescriptor(
-                site = selectedSite.get(),
-                statusFilter = CoreOrderStatus.PROCESSING.value,
-                excludeFutureOrders = false
-            )
-            processingPagedListWrapper = listStore.getList(processingDescriptor, dataSource, lifecycle)
-                .also { it.fetchFirstPage() }
-        }
+    fun initializeOrdersList() {
+        ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
+        viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+        activatePagedListWrapper(ordersPagedListWrapper!!)
 
         // Fetch order dependencies such as order status list and payment gateways
         fetchOrdersAndOrderDependencies()
-    }
-
-    /**
-     * Loads orders for the "ALL" tab.
-     */
-    fun loadAllList() {
-        requireNotNull(allPagedListWrapper) {
-            "allPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
-        }
-        activatePagedListWrapper(allPagedListWrapper!!)
-    }
-
-    /**
-     * Loads orders for the "PROCESSING" tab.
-     */
-    fun loadProcessingList() {
-        requireNotNull(processingPagedListWrapper) {
-            "processingPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
-        }
-        activatePagedListWrapper(processingPagedListWrapper!!)
     }
 
     /**
@@ -259,16 +219,6 @@ class OrderListViewModel @Inject constructor(
     }
 
     /**
-     * Reload the orders list with the database available in the database. This is the ideal way to
-     * load changes to orders that were initiated from within this app instance. If the change was
-     * successfully pushed to the API, then the database would already be updated so there is no
-     * need to hit the API again.
-     */
-    fun reloadListFromCache() {
-        activePagedListWrapper?.invalidateData()
-    }
-
-    /**
      * Activates the provided list by first removing the LiveData sources for the active list,
      * then creating new LiveData sources for the provided [pagedListWrapper] and setting it as
      * the active list. If [isFirstInit] is true, then this [pagedListWrapper] is freshly created
@@ -299,15 +249,11 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        pagedListWrapper.listError.observe(
-            this,
-            Observer {
-                it?.let {
-                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
-                }
+        pagedListWrapper.listError.observe(this) {
+            it?.let {
+                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
             }
-        )
-
+        }
         this.activePagedListWrapper = pagedListWrapper
 
         if (isFirstInit) {
@@ -426,8 +372,7 @@ class OrderListViewModel @Inject constructor(
                 if (isSearching) {
                     activePagedListWrapper?.fetchFirstPage()
                 }
-                allPagedListWrapper?.fetchFirstPage()
-                processingPagedListWrapper?.fetchFirstPage()
+                ordersPagedListWrapper?.fetchFirstPage()
             }
         } else {
             // Invalidate the list data so that orders that have not
@@ -436,8 +381,7 @@ class OrderListViewModel @Inject constructor(
             if (isSearching) {
                 activePagedListWrapper?.invalidateData()
             }
-            allPagedListWrapper?.invalidateData()
-            processingPagedListWrapper?.invalidateData()
+            ordersPagedListWrapper?.invalidateData()
         }
     }
 
@@ -471,19 +415,25 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun updateOrdersWithFilters() {
-        if (networkStatus.isConnected()) {
-            refreshOrders()
-            viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
-        } else {
-            viewState = viewState.copy(isRefreshPending = true)
-            showOfflineSnack()
+    fun onFiltersChanged(changed: Boolean) {
+        if (changed) {
+            if (networkStatus.isConnected()) {
+                refreshOrders()
+                viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+            } else {
+                viewState = viewState.copy(isRefreshPending = true)
+                showOfflineSnack()
+            }
         }
     }
 
     private fun refreshOrders() {
         val pagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper)
+    }
+
+    fun onSearchClosed() {
+        initializeOrdersList()
     }
 
     fun isCardReaderOnboardingCompleted(): Boolean {
