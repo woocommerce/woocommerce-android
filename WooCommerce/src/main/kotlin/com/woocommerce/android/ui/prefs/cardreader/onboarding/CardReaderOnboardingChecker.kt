@@ -19,7 +19,7 @@ import javax.inject.Inject
 private val SUPPORTED_COUNTRIES = listOf("US")
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-const val SUPPORTED_WCPAY_VERSION = "2.8.2"
+const val SUPPORTED_WCPAY_VERSION = "3.2.1"
 
 class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -32,6 +32,11 @@ class CardReaderOnboardingChecker @Inject constructor(
     @Suppress("ReturnCount", "ComplexMethod")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
+
+        with(selectedSite.get()) {
+            appPrefsWrapper.resetCardReaderOnboardingCompleted(this.id, this.siteId, this.selfHostedSiteId)
+        }
+
         val countryCode = getStoreCountryCode()
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
 

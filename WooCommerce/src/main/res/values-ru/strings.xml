@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-27 13:54:04+0000
+Translation-Revision-Date: 2021-11-09 11:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Не сейчас</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Установить Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Обеспечьте возможность доступа к WooCommerce Mobile для нескольких пользователей.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Профили пользователей</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Новые аналитические виды позволяют просматривать посетителей, отчеты и многое другое.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Аналитика</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Мгновенные уведомления на устройстве для новых заказов, отзывов и других функций.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Мгновенные уведомления</string>
+    <string name="jetpack_benefits_modal_subtitle">Установите бесплатный плагин Jetpack для удобства работы на мобильном устройстве.</string>
+    <string name="jetpack_benefits_modal_title">Используйте все возможности магазина</string>
+    <string name="settings_enable_quick_order_teaser_message">Попробуйте создавать заказы с минимальной информацией, пока мы готовим запуск функции</string>
+    <string name="settings_enable_quick_order_teaser_title">Быстрые заказы</string>
+    <string name="beta_features_message">Просмотр дополнений, быстрые заказы</string>
+    <string name="order_detail_use_as_shipping_address">Это адрес доставки</string>
+    <string name="order_detail_use_as_billing_address">Это адрес для выставления счетов</string>
+    <string name="orderfilters_filters_count_title">Фильтры (%d)</string>
+    <string name="orderfilters_filters_default_title">Фильтры</string>
+    <string name="orderfilters_filter_date_range_options_title">Период</string>
+    <string name="orderfilters_filter_order_status_options_title">Статус заказа</string>
+    <string name="orderfilters_filter_option_item_selected">Выбранный вариант фильтрации</string>
+    <string name="orderfilters_date_range_filter">Период</string>
+    <string name="orderfilters_order_status_filter">Статус заказа</string>
+    <string name="orderfilters_default_filter_value">Все</string>
+    <string name="orderfilters_show_orders_button">Показать заказы</string>
+    <string name="orderlist_filters_title">Отфильтрованные заказы</string>
+    <string name="orderlist_no_filters_title">Все заказы</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Преимущества</string>
     <string name="jetpack_benefits_bottom_banner_title">Все возможности с Jetpack</string>
     <string name="product_description_hint_with_title">Расскажите нам больше о %s…</string>
@@ -56,8 +82,8 @@ Language: ru
     <string name="settings_enable_product_addons_teaser_title">Просмотреть дополнения</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">К сожалению, нам пока не удалось исправить эту настройку функции</string>
     <string name="product_category">Рубрика</string>
-    <string name="notification_review_title">У вас 1 новый отзыв! 🌟</string>
-    <string name="notification_order_title">У вас 1 новый заказ! 🎉</string>
+    <string name="notification_review_title">Появился новый отзыв! 🌟</string>
+    <string name="notification_order_title">Поступил новый заказ! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d товар</string>
     <string name="upsell_product_count_many">Продукты для апсела: %d</string>
     <string name="upsell_product_count_one">Продукт для апсела: %d</string>

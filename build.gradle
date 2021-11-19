@@ -2,8 +2,8 @@ import io.gitlab.arturbosch.detekt.Detekt
 
 buildscript {
     ext.kotlinVersion = '1.5.31'
-    ext.navigationVersion = '2.3.5'
-    ext.daggerVersion = '2.39.1'
+    ext.navigationVersion = '2.4.0-beta02'
+    ext.daggerVersion = '2.40.1'
     ext.wordPressLoginVersion = 'develop-6f134975e1aca6fe1962a112b6d91e3cd6fdd7d5'
     ext.detektVersion = '1.18.1'
 
@@ -90,30 +90,30 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'develop-6fb861bdcabdb3c56cf6c517e9fa20b5d62db866'
+    fluxCVersion = 'develop-4e694da297aa574ce1f9f8771f89ce2467566c24'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
-    mockitoKotlinVersion = '3.2.0'
-    mockitoVersion = '3.12.4'
+    mockitoKotlinVersion = '4.0.0'
+    mockitoVersion = '4.0.0'
     constraintLayoutVersion = '1.2.0'
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.2.0'
-    googlePlayCoreVersion = '1.10.0'
+    googlePlayCoreVersion = '1.10.2'
     coroutinesVersion = '1.5.2'
-    lifecycleVersion = '2.3.1'
+    lifecycleVersion = '2.4.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.116.0'
+    flipperVersion = '0.118.1'
     stateMachineVersion = '0.2.0'
-    coreKtxVersion = '1.6.0'
+    coreKtxVersion = '1.7.0'
     appCompatVersion = '1.3.1'
-    materialVersion = '1.3.0'
+    materialVersion = '1.4.0'
     jUnitVersion = '4.13.2'
-    jUnitExtVersion = '1.1.2'
-    robolectricVersion = '4.6.1'
+    jUnitExtVersion = '1.1.3'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = "develop-eebc5d8e91a1d90190919f900f924b39c861a528"
+    mediapickerVersion = 'trunk-4da42c711820c4b2e83b7735fbb39dbcf8c9176c'
 }
 
 // Onboarding and dev env setup tasks

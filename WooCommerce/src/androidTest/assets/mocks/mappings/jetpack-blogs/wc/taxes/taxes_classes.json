@@ -1,0 +1,51 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+        "queryParameters": {
+            "json": {
+                "equalTo": "true"
+            },
+            "path": {
+                "matches": "/wc/v3/taxes/classes/(.*)"
+            },                    
+            "locale": {
+                "matches": "(.*)"
+            }
+        }
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": {
+            "data": [{
+                "slug": "standard",
+                "name": "Standard rate",
+                "_links": {
+                    "collection": [{
+                        "href": "https://automatticwidgets.wpcomstaging.com/wp-json/wc/v3/taxes/classes"
+                    }]
+                }
+            }, {
+                "slug": "reduced-rate",
+                "name": "Reduced rate",
+                "_links": {
+                    "collection": [{
+                        "href": "https://automatticwidgets.wpcomstaging.com/wp-json/wc/v3/taxes/classes"
+                    }]
+                }
+            }, {
+                "slug": "zero-rate",
+                "name": "Zero rate",
+                "_links": {
+                    "collection": [{
+                        "href": "https://automatticwidgets.wpcomstaging.com/wp-json/wc/v3/taxes/classes"
+                    }]
+                }
+            }]
+        },
+        "headers": {
+            "Content-Type": "application/json",
+            "Connection": "keep-alive"
+        }
+    }
+}

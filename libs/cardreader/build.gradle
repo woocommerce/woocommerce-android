@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 21
@@ -26,7 +26,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
         freeCompilerArgs += [
-                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
+                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
         ]
     }
 }
@@ -44,7 +44,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
 
-    implementation "com.stripe:stripeterminal:1.0.22"
+    implementation "com.stripe:stripeterminal:2.5.1"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"

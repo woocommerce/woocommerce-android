@@ -23,6 +23,12 @@ class AppPrefsWrapper @Inject constructor() {
         selfHostedSiteId: Long
     ) = AppPrefs.setCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
 
+    fun resetCardReaderOnboardingCompleted(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.resetCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
+
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 
     fun getLastConnectedCardReaderId() = AppPrefs.getLastConnectedCardReaderId()
@@ -48,4 +54,11 @@ class AppPrefsWrapper @Inject constructor() {
     fun recordJetpackBenefitsDismissal() {
         AppPrefs.recordJetpackBenefitsDismissal()
     }
+
+    fun setOrderFilters(selectedSiteId: Int, filterCategory: String, filterValue: String) {
+        AppPrefs.setOrderFilters(selectedSiteId, filterCategory, filterValue)
+    }
+
+    fun getOrderFilters(selectedSiteId: Int, filterCategory: String) =
+        AppPrefs.getOrderFilters(selectedSiteId, filterCategory)
 }

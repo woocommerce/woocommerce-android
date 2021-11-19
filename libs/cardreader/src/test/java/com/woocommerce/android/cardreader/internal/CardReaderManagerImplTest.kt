@@ -1,16 +1,13 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
-import org.mockito.kotlin.any
-import org.mockito.kotlin.atLeastOnce
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import com.stripe.stripeterminal.TerminalLifecycleObserver
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
+import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
+import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.internal.wrappers.TerminalApplicationDelegateWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -20,65 +17,79 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-
+import org.mockito.kotlin.any
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class CardReaderManagerImplTest {
     private lateinit var cardReaderManager: CardReaderManagerImpl
-    private val terminalWrapper: TerminalWrapper = mock()
+    private val terminalApplicationDelegateWrapper: TerminalApplicationDelegateWrapper = mock()
+    private val terminalWrapper: TerminalWrapper = mock {
+        on { getLifecycleObserver() }.thenReturn(terminalApplicationDelegateWrapper)
+    }
     private val tokenProvider: TokenProvider = mock()
-    private val lifecycleObserver: TerminalLifecycleObserver = mock()
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
     private val connectionManager: ConnectionManager = mock()
     private val softwareUpdateManager: SoftwareUpdateManager = mock()
+    private val terminalListener: TerminalListenerImpl = mock()
+
+    private val supportedReaders =
+        CardReaderTypesToDiscover.SpecificReaders(listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2))
+
+    private val locationId = "locationId"
 
     @Before
     fun setUp() {
         cardReaderManager = CardReaderManagerImpl(
+            application,
             terminalWrapper,
             tokenProvider,
             logWrapper,
             mock(),
             connectionManager,
-            softwareUpdateManager
+            softwareUpdateManager,
+            terminalListener,
         )
-        whenever(terminalWrapper.getLifecycleObserver()).thenReturn(lifecycleObserver)
-    }
-
-    @Test
-    fun `when manager gets initialized, then terminal gets registered to activity lifecycle`() {
-        cardReaderManager.initialize(application)
-
-        verify(application, atLeastOnce()).registerActivityLifecycleCallbacks(lifecycleObserver)
     }
 
     @Test
     fun `when manager gets initialized, then terminal gets registered to components lifecycle`() {
-        cardReaderManager.initialize(application)
+        cardReaderManager.initialize()
 
         verify(application, atLeastOnce()).registerComponentCallbacks(any())
+    }
+
+    @Test
+    fun `given application delegate, when manager gets initialized, then delegate calls on create`() {
+        cardReaderManager.initialize()
+
+        verify(terminalApplicationDelegateWrapper).onCreate(application)
     }
 
     @Test
     fun `when terminal is initialized, then isInitialized returns true`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
-        assertThat(cardReaderManager.isInitialized).isTrue()
+        assertThat(cardReaderManager.initialized).isTrue()
     }
 
     @Test
     fun `when terminal is not initialized, then isInitialized returns false`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        assertThat(cardReaderManager.isInitialized).isFalse()
+        assertThat(cardReaderManager.initialized).isFalse()
     }
 
     @Test
     fun `given terminal not initialized, when init() invoked, then Terminal init() invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.initialize(application)
+        cardReaderManager.initialize()
 
         verify(terminalWrapper).initTerminal(any(), any(), any(), any())
     }
@@ -87,7 +98,7 @@ class CardReaderManagerImplTest {
     fun `given terminal initialized, when init() invoked, then Terminal init() not invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
-        cardReaderManager.initialize(application)
+        cardReaderManager.initialize()
 
         verify(terminalWrapper, never()).initTerminal(any(), any(), any(), any())
     }
@@ -96,7 +107,7 @@ class CardReaderManagerImplTest {
     fun `given terminal not initialized, when reader discovery started, then exception is thrown`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.discoverReaders(true)
+        cardReaderManager.discoverReaders(true, supportedReaders)
     }
 
     @Test(expected = IllegalStateException::class)
@@ -104,15 +115,8 @@ class CardReaderManagerImplTest {
         runBlockingTest {
             whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-            cardReaderManager.connectToReader(mock())
+            cardReaderManager.startConnectionToReader(mock(), locationId)
         }
-
-    @Test
-    fun `software update status calls software update manager`() = runBlockingTest {
-        cardReaderManager.softwareUpdateAvailability()
-
-        verify(softwareUpdateManager).softwareUpdateStatus()
-    }
 
     @Test
     fun `given terminal not initialized when disconnect from reader, then exception is thrown`() {
@@ -152,5 +156,38 @@ class CardReaderManagerImplTest {
             whenever(connectionManager.disconnectReader()).thenReturn(false)
 
             assertThat(cardReaderManager.disconnectReader()).isFalse()
+        }
+
+    @Test(expected = IllegalStateException::class)
+    fun `given terminal not initialized, when installing software update, then exception is thrown`() =
+        runBlockingTest {
+            whenever(terminalWrapper.isInitialized()).thenReturn(false)
+
+            cardReaderManager.startAsyncSoftwareUpdate()
+        }
+
+    @Test
+    fun `given terminal is initialized, when installing software update, updateSoftware is called`() =
+        runBlockingTest {
+            whenever(terminalWrapper.isInitialized()).thenReturn(true)
+
+            cardReaderManager.startAsyncSoftwareUpdate()
+
+            verify(softwareUpdateManager).startAsyncSoftwareUpdate()
+        }
+
+    @Test
+    fun `when cancel ongoing update, then update manager called`() {
+        cardReaderManager.cancelOngoingFirmwareUpdate()
+
+        verify(softwareUpdateManager).cancelOngoingFirmwareUpdate()
+    }
+
+    @Test
+    fun `when collect payment is initiated, then reset bluetooth card reader messages`() =
+        runBlockingTest {
+            cardReaderManager.collectPayment(mock())
+
+            verify(connectionManager).resetBluetoothCardReaderDisplayMessage()
         }
 }
