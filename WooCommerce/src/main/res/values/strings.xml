@@ -873,11 +873,11 @@
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
-    <string name="card_reader_connect_bluetooth_permissions_disabled_header">Bluetooth permissions are disabled</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
-    <string name="card_reader_connect_open_bluetooth_permissions_settings">Turn on bluetooth permissions</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">Missing required nearby devices permission</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">Open settings</string>
 
     <!--
         Card Reader Detail

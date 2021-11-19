@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.CardReaderConnectDialogBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
@@ -64,7 +63,6 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     val viewModel: CardReaderConnectViewModel by viewModels()
 
     @Inject lateinit var locationUtils: LocationUtils
-    @Inject lateinit var cardReaderManager: CardReaderManager
 
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         (viewModel.event.value as? RequestLocationPermissions)?.onPermissionsRequestResult?.invoke(isGranted)
