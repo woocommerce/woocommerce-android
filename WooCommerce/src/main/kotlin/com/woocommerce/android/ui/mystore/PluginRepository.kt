@@ -47,11 +47,11 @@ class PluginRepository @Inject constructor(
     // installation is successful, so when using this function, there's no need to call `activateJetpackPlugin()
     // separately.
     fun installPlugin(slug: String) = callbackFlow<PluginStatus> {
-        val payload = InstallSitePluginPayload(selectedSite.get(), slug)
-        dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
-
         val listener = PluginActionListener(this)
         dispatcher.register(listener)
+
+        val payload = InstallSitePluginPayload(selectedSite.get(), slug)
+        dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
 
         awaitClose {
             dispatcher.unregister(listener)
