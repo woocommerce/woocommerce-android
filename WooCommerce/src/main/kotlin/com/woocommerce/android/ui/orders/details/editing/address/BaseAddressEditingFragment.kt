@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
+import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
@@ -66,11 +67,11 @@ abstract class BaseAddressEditingFragment :
         )
 
         binding.countrySpinner.setClickListener {
-            showCountrySelectorDialog()
+            showCountrySearchScreen()
         }
 
         binding.stateSpinner.setClickListener {
-            showStateSelectorDialog()
+            showStateSearchScreen()
         }
 
         setupObservers()
@@ -88,6 +89,11 @@ abstract class BaseAddressEditingFragment :
             ActivityUtils.hideKeyboard(it)
         }
         super.onStop()
+    }
+
+    override fun onDetach() {
+        addressViewModel.onScreenDetached()
+        super.onDetach()
     }
 
     private fun Address.bindToView() {
@@ -133,25 +139,32 @@ abstract class BaseAddressEditingFragment :
         binding.stateEditText.isVisible = !shouldShowStateSpinner()
     }
 
-    private fun showCountrySelectorDialog() {
+    private fun showCountrySearchScreen() {
         val countries = addressViewModel.countries
-        val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
-            selectedItem = addressDraft.country,
-            keys = countries.map { it.name }.toTypedArray(),
-            values = countries.map { it.code }.toTypedArray(),
+        val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
+            items = countries.map {
+                SearchFilterItem(
+                    name = it.name,
+                    value = it.code
+                )
+            }.toTypedArray(),
+            hint = getString(R.string.shipping_label_edit_address_country_search_hint),
             requestKey = SELECT_COUNTRY_REQUEST,
             title = getString(R.string.shipping_label_edit_address_country)
         )
         findNavController().navigateSafely(action)
     }
 
-    @Suppress("UnusedPrivateMember")
-    private fun showStateSelectorDialog() {
+    private fun showStateSearchScreen() {
         val states = addressViewModel.states
-        val action = OrderDetailFragmentDirections.actionGlobalItemSelectorDialog(
-            selectedItem = addressDraft.state,
-            keys = states.map { it.name }.toTypedArray(),
-            values = states.map { it.code }.toTypedArray(),
+        val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
+            items = states.map {
+                SearchFilterItem(
+                    name = it.name,
+                    value = it.code
+                )
+            }.toTypedArray(),
+            hint = getString(R.string.shipping_label_edit_address_state_search_hint),
             requestKey = SELECT_STATE_REQUEST,
             title = getString(R.string.shipping_label_edit_address_state)
         )
@@ -175,6 +188,9 @@ abstract class BaseAddressEditingFragment :
                 if (old?.isLoading == true) {
                     updateStateViews()
                 }
+            }
+            new.isStateSelectionEnabled.takeIfNotEqualTo(old?.isStateSelectionEnabled) {
+                binding.stateSpinner.isEnabled = it
             }
         }
     }
