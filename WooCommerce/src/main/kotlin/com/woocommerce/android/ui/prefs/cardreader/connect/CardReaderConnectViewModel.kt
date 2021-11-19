@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowUpdateInProgress
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
@@ -181,6 +182,14 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onCheckBluetoothPermissionsResult(enabled: Boolean) {
+        if (enabled) {
+            triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
+        } else {
+            triggerEvent(RequestBluetoothRuntimePermissions(::onBluetoothRuntimePermissionsRequestResult))
+        }
+    }
+
+    private fun onBluetoothRuntimePermissionsRequestResult(enabled: Boolean) {
         if (enabled) {
             triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
         } else {

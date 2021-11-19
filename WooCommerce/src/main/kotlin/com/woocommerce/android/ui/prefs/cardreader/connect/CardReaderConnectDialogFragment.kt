@@ -73,7 +73,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             (viewModel.event.value as? RequestBluetoothRuntimePermissions)
-                ?.onEnableBluetoothRuntimePermissionsRequestResult
+                ?.onBluetoothRuntimePermissionsRequestResult
                 ?.invoke(permissions.all { it.value })
         }
 
