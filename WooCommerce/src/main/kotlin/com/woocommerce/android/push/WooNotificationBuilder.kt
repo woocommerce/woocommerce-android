@@ -15,6 +15,7 @@ import android.os.RemoteException
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.BuildCompat
 import com.bumptech.glide.Glide
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Notification
@@ -150,9 +151,14 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             )
             builder.setDeleteIntent(pendingDeleteIntent)
 
+            val flags = if (BuildCompat.isAtLeastS()) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
             val pendingIntent = PendingIntent.getActivity(
                 context, pushId, getResultIntent(pushId, notification),
-                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_UPDATE_CURRENT
+                flags
             )
             builder.setContentIntent(pendingIntent)
             NotificationManagerCompat.from(context).notify(pushId, builder.build())

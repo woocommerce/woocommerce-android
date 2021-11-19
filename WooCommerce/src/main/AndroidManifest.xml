@@ -13,20 +13,6 @@
     <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT"/>
     <uses-permission android:name="android.permission.NFC" />
 
-    <!-- Dangerous permissions, access must be requested at runtime -->
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <queries>
-        <!-- Required for Android 11 to allow camera access -->
-        <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE" />
-        </intent>
-        <!-- Required for Android 11 and allows for querying for installed apps -->
-        <intent>
-            <action android:name="android.intent.action.MAIN"/>
-        </intent>
-    </queries>
-
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_scheme"
@@ -45,6 +31,7 @@
 
         <activity
             android:name=".ui.main.MainActivity"
+            android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -61,7 +48,8 @@
             android:name=".ui.sitepicker.SitePickerActivity"
             android:theme="@style/LoginTheme"/>
 
-        <activity android:name=".ui.login.MagicLinkInterceptActivity">
+        <activity android:name=".ui.login.MagicLinkInterceptActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT" />
@@ -103,6 +91,9 @@
         <activity android:name="zendesk.support.requestlist.RequestListActivity"
             android:theme="@style/Theme.Woo.DayNight.Zendesk" />
 
+        <activity android:name="org.wordpress.android.mediapicker.ui.MediaPickerActivity"
+            android:theme="@style/MediaPicker.NoActionBar" />
+
         <!-- Services -->
         <service
             android:name=".push.FCMRegistrationIntentService"
@@ -110,7 +101,8 @@
             android:exported="false" />
 
         <service
-            android:name=".push.FCMMessageService">
+            android:name=".push.FCMMessageService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

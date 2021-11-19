@@ -136,9 +136,9 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
                 )
         } else {
             GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
-                viewModel.getRemoteProductId(),
-                productIds.toLongArray(),
-                groupedProductType
+                remoteProductId = viewModel.getRemoteProductId(),
+                productIds = productIds.toLongArray(),
+                groupedProductListType = groupedProductType
             )
         }
         findNavController().navigateSafely(action)

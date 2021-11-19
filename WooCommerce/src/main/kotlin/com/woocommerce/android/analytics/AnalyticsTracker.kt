@@ -11,8 +11,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.HashMap
-import java.util.UUID
+import java.util.*
 
 class AnalyticsTracker private constructor(private val context: Context) {
     // region Track Event Enums
@@ -154,6 +153,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Order filter by status dialog
         FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
         FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
+
+        // -- Simple Payments
+        SIMPLE_PAYMENTS_FLOW_STARTED,
+        SIMPLE_PAYMENTS_FLOW_COMPLETED,
+        SIMPLE_PAYMENTS_FLOW_FAILED,
+        SIMPLE_PAYMENTS_FLOW_CANCELED,
+        SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
 
         // -- Order Detail
         ORDER_OPEN,
@@ -537,9 +543,28 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL,
         ENCRYPTED_LOGGING_UPLOAD_FAILED,
 
+        // -- What's new / feature announcements
+        FEATURE_ANNOUNCEMENT_SHOWN,
+
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
-        TOP_EARNER_PRODUCT_TAPPED
+        TOP_EARNER_PRODUCT_TAPPED,
+
+        // -- Media picker
+        MEDIA_PICKER_PREVIEW_OPENED,
+        MEDIA_PICKER_RECENT_MEDIA_SELECTED,
+        MEDIA_PICKER_OPEN_GIF_LIBRARY,
+        MEDIA_PICKER_OPEN_DEVICE_LIBRARY,
+        MEDIA_PICKER_CAPTURE_PHOTO,
+        MEDIA_PICKER_SEARCH_TRIGGERED,
+        MEDIA_PICKER_SEARCH_EXPANDED,
+        MEDIA_PICKER_SEARCH_COLLAPSED,
+        MEDIA_PICKER_SHOW_PERMISSIONS_SCREEN,
+        MEDIA_PICKER_ITEM_SELECTED,
+        MEDIA_PICKER_ITEM_UNSELECTED,
+        MEDIA_PICKER_SELECTION_CLEARED,
+        MEDIA_PICKER_OPENED,
+        MEDIA_PICKER_OPEN_SYSTEM_PICKER
     }
     // endregion
 
@@ -704,6 +729,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ADDONS = "addons"
         const val KEY_SOFTWARE_UPDATE_TYPE = "software_update_type"
         const val KEY_SUBJECT = "subject"
+        const val KEY_DATE_RANGE = "date_range"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -806,6 +832,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_AMOUNT = "amount"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+
+        // -- Feature Announcement / What's New
+        const val KEY_ANNOUNCEMENT_VIEW_SOURCE = "source"
+        const val VALUE_ANNOUNCEMENT_SOURCE_UPGRADE = "app_upgrade"
+        const val VALUE_ANNOUNCEMENT_SOURCE_SETTINGS = "app_settings"
 
         var sendUsageStats: Boolean = true
             set(value) {

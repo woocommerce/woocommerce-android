@@ -15,11 +15,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class ProductImagesViewModelTest : BaseUnitTest() {
     lateinit var viewModel: ProductImagesViewModel
 

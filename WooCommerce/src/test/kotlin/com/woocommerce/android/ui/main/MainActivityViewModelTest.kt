@@ -17,14 +17,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class MainActivityViewModelTest : BaseUnitTest() {
     companion object {
         private const val TEST_REMOTE_SITE_ID_1 = 1023456789L
