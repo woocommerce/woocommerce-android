@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
+import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.Activity.RESULT_OK
@@ -13,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
@@ -31,11 +33,13 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToParentWithResult
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetoothRuntimePermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
@@ -64,6 +68,33 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         (viewModel.event.value as? RequestLocationPermissions)?.onPermissionsRequestResult?.invoke(isGranted)
     }
+
+    private val requestEnableBluetoothPermissionsLauncher = registerForActivityResult(
+        RequestPermission()
+    ) { isGranted: Boolean ->
+        (viewModel.event.value as? RequestEnableBluetoothRuntimePermissions)?.onEnableBluetoothRuntimePermissionsRequestResult
+                ?.invoke(isGranted)
+    }
+
+//    private val requestEnableBluetoothPermissionsLauncher = registerForActivityResult(
+//        ActivityResultContracts.RequestMultiplePermissions()
+//    ) { permissions ->
+//        val allPermissionsGranted = mutableListOf<Boolean>()
+//
+//        permissions.entries.forEach {
+//            val isGranted = it.value
+//            if (isGranted) {
+//                allPermissionsGranted.add(true)
+//            }
+//        }
+//        if (allPermissionsGranted.size == 2) {
+//            (viewModel.event.value as? RequestEnableBluetoothRuntimePermissions)?.onEnableBluetoothRuntimePermissionsRequestResult
+//                ?.invoke(true)
+//        } else {
+//            (viewModel.event.value as? RequestEnableBluetoothRuntimePermissions)?.onEnableBluetoothRuntimePermissionsRequestResult
+//                ?.invoke(false)
+//        }
+//    }
 
     private val requestEnableBluetoothLauncher = registerForActivityResult(StartActivityForResult()) { activityResult ->
         (viewModel.event.value as? RequestEnableBluetooth)?.onEnableBluetoothRequestResult
@@ -188,6 +219,14 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                 }
                 is OpenLocationSettings -> {
                     openLocationSettings()
+                }
+                is CheckBluetoothPermissionsEnabled -> {
+                    event.onBluetoothPermissionsEnabledCheckResult(WooPermissionUtils.hasBluetoothPermissions(requireContext()))
+                }
+                is RequestEnableBluetoothRuntimePermissions -> {
+                    requestEnableBluetoothPermissionsLauncher.launch(
+                        Manifest.permission.BLUETOOTH_SCAN
+                    )
                 }
                 is CheckBluetoothEnabled -> {
                     val btAdapter = BluetoothAdapter.getDefaultAdapter()

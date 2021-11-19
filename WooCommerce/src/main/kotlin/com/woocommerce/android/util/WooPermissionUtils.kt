@@ -30,6 +30,17 @@ object WooPermissionUtils {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    fun hasBluetoothPermissions(context: Context): Boolean {
+        return (
+            ContextCompat.checkSelfPermission(
+            context, permission.BLUETOOTH_CONNECT
+        ) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                context, permission.BLUETOOTH_SCAN
+            ) == PackageManager.PERMISSION_GRANTED
+            )
+    }
+
     fun requestFineLocationPermission(requestPermissionLauncher: ActivityResultLauncher<String>) {
         requestPermissionLauncher.launch(permission.ACCESS_FINE_LOCATION)
     }

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
+import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -28,6 +29,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
@@ -37,6 +39,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowUpdateInProgress
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
@@ -74,7 +77,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val onboardingChecker: CardReaderOnboardingChecker,
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
-    private val cardReaderManager: CardReaderManager,
+    private val cardReaderManager: CardReaderManager
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
 
@@ -118,7 +121,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     fun onScreenResumed() {
-        if (viewState.value is MissingPermissionsError) {
+        if (viewState.value is MissingPermissionsError || viewState.value is MissingBluetoothPermissionsError) {
             triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
         }
     }
@@ -170,7 +173,30 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onLocationStateVerified() {
-        triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            triggerEvent(CheckBluetoothPermissionsEnabled(::onCheckBluetoothPermissionsResult))
+        } else {
+            triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
+        }
+    }
+
+    private fun onCheckBluetoothPermissionsResult(enabled: Boolean) {
+        if (enabled) {
+            triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
+        } else {
+            viewState.value = MissingBluetoothPermissionsError(
+                onPrimaryActionClicked = ::onOpenBluetoothPermissionsSettingsClicked,
+                onSecondaryActionClicked = ::onCancelClicked
+            )
+        }
+    }
+
+    private fun onCheckBluetoothResult(enabled: Boolean) {
+        if (enabled) {
+            onBluetoothStateVerified()
+        } else {
+            triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
+        }
     }
 
     private fun onRequestEnableBluetoothResult(enabled: Boolean) {
@@ -184,12 +210,8 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun onCheckBluetoothResult(enabled: Boolean) {
-        if (enabled) {
-            onBluetoothStateVerified()
-        } else {
-            triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
-        }
+    private fun onOpenBluetoothPermissionsSettingsClicked() {
+        triggerEvent(OpenPermissionsSettings)
     }
 
     private fun onOpenBluetoothSettingsClicked() {

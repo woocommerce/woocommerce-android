@@ -113,6 +113,17 @@ sealed class CardReaderConnectViewState(
         illustrationTopMargin = R.dimen.major_150
     )
 
+    data class MissingBluetoothPermissionsError(
+        override val onPrimaryActionClicked: () -> Unit,
+        override val onSecondaryActionClicked: () -> Unit
+    ) : CardReaderConnectViewState(
+        headerLabel = UiString.UiStringRes(R.string.card_reader_connect_bluetooth_permissions_disabled_header),
+        illustration = R.drawable.img_products_error,
+        primaryActionLabel = R.string.card_reader_connect_open_bluetooth_permissions_settings,
+        secondaryActionLabel = R.string.cancel,
+        illustrationTopMargin = R.dimen.major_150
+    )
+
     data class MissingMerchantAddressError(
         override val onPrimaryActionClicked: () -> Unit,
         override val onSecondaryActionClicked: () -> Unit
