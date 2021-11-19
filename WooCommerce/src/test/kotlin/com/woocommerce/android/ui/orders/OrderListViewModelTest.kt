@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -46,7 +47,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
-    private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
@@ -54,6 +54,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -70,7 +71,6 @@ class OrderListViewModelTest : BaseUnitTest() {
                 lifecycle = any()
             )
         ).doReturn(pagedListWrapper)
-        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(SiteModel()).whenever(selectedSite).get()
 
@@ -86,6 +86,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             fetcher = orderFetcher,
             resourceProvider = resourceProvider,
             wooCommerceStore = wooCommerceStore,
+            appPrefsWrapper = appPrefsWrapper,
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount
         )
@@ -93,10 +94,6 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Request to load new list fetches order status options and payment gateways if connected`() = testBlocking {
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
-        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
-
         clearInvocations(orderListRepository)
         viewModel.submitSearchOrFilter(ANY_SEARCH_QUERY)
 
@@ -106,8 +103,6 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Load orders activates list wrapper`() = testBlocking {
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
-        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
 
         viewModel.loadOrders()
@@ -162,11 +157,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Display 'No orders yet' empty view when no orders for site for ALL tab`() = testBlocking {
         viewModel.isSearching = false
-        doReturn(true).whenever(orderListRepository).hasCachedOrdersForSite()
-
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-        whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
@@ -374,8 +366,6 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Request refresh for active list when received new order notification and is in search`() = testBlocking {
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
-        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
         viewModel.isSearching = true
 
         viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
