@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+8.1
+-----
+
+
 8.0
 -----
 - [***] In-Person Payments: Support of Stripe M2 Card Reader
