@@ -9,7 +9,8 @@
     <item
         android:id="@+id/analytics"
         android:icon="@drawable/as_menu_analytics"
-        android:title="@string/analytics" />
+        android:title="@string/analytics"
+        android:visible="false"/>
 
     <item
         android:id="@+id/orders"
