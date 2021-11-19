@@ -13,7 +13,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchFilterViewModel @Inject constructor() : ViewModel() {
-
     private val _viewStateLiveData = MutableLiveData<SearchFilterViewState>()
     val viewStateLiveData: LiveData<SearchFilterViewState>
         get() = _viewStateLiveData

@@ -60,8 +60,7 @@ class EditShippingLabelAddressFragment :
         const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
     }
 
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
 

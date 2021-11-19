@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.searchfilter.SearchFilterAdapter.SearchFilterV
 class SearchFilterAdapter(
     private val onItemSelectedListener: (SearchFilterItem) -> Unit
 ) : ListAdapter<SearchFilterItem, SearchFilterViewHolder>(SearchFilterDiffCallback) {
-
     init {
         setHasStableIds(true)
     }
@@ -30,7 +29,6 @@ class SearchFilterAdapter(
 
     inner class SearchFilterViewHolder(val viewBinding: FilterListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-
         fun bind(item: SearchFilterItem) {
             viewBinding.filterItemName.text = item.name
             viewBinding.filterItemSelection.hide()
@@ -39,7 +37,6 @@ class SearchFilterAdapter(
     }
 
     object SearchFilterDiffCallback : DiffUtil.ItemCallback<SearchFilterItem>() {
-
         override fun areItemsTheSame(
             oldSearchFilterItem: SearchFilterItem,
             newSearchFilterItem: SearchFilterItem

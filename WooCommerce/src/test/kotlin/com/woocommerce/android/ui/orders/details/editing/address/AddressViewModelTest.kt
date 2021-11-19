@@ -23,7 +23,6 @@ import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class AddressViewModelTest : BaseUnitTest() {
-
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
     private val selectedSite: SelectedSite = mock()

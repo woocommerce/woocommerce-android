@@ -12,7 +12,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
 class SearchFilterViewModelTest : BaseUnitTest() {
-
     private val viewStateObserver: Observer<SearchFilterViewState> = mock()
 
     private val eventObserver: Observer<SearchFilterEvent> = mock()
