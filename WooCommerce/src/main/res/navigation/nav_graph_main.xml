@@ -14,9 +14,9 @@
             app:destination="@id/jetpackBenefitsDialog" />
     </fragment>
     <dialog
-        android:id="@+id/quickOrderDialog"
+        android:id="@+id/simplePaymentsDialog"
         android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
-        android:label="QuickOrderDialog" />
+        android:label="SimplePaymentsDialog" />
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -42,8 +42,8 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_orderListFragment_to_quickOrderDialog"
-            app:destination="@id/quickOrderDialog"
+            android:id="@+id/action_orderListFragment_to_simplePaymentsDialog"
+            app:destination="@id/simplePaymentsDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>

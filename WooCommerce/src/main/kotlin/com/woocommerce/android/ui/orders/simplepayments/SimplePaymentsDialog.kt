@@ -8,7 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.DialogQuickOrderBinding
+import com.woocommerce.android.databinding.DialogSimplePaymentsBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -20,7 +20,7 @@ import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SimplePaymentsDialog : DialogFragment(R.layout.dialog_quick_order) {
+class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -42,7 +42,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_quick_order) {
             )
         }
 
-        val binding = DialogQuickOrderBinding.bind(view)
+        val binding = DialogSimplePaymentsBinding.bind(view)
         binding.editPrice.initView(viewModel.currencyCode, viewModel.decimals, currencyFormatter)
         binding.buttonDone.setOnClickListener {
             viewModel.onDoneButtonClicked()
@@ -55,7 +55,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_quick_order) {
         setupObservers(binding)
     }
 
-    private fun setupObservers(binding: DialogQuickOrderBinding) {
+    private fun setupObservers(binding: DialogSimplePaymentsBinding) {
         binding.editPrice.value.observe(
             this,
             {
@@ -77,7 +77,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_quick_order) {
                 binding.buttonDone.isEnabled = isEnabled
             }
             new.createdOrder.takeIfNotEqualTo(old?.createdOrder) { order ->
-                navigateBackWithResult(KEY_QUICK_ORDER_RESULT, order!!)
+                navigateBackWithResult(KEY_SIMPLE_PAYMENTS_RESULT, order!!)
             }
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
                 binding.progressBar.isVisible = show
@@ -92,7 +92,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_quick_order) {
     }
 
     companion object {
-        const val KEY_QUICK_ORDER_RESULT = "quick_order_result"
+        const val KEY_SIMPLE_PAYMENTS_RESULT = "simple_payments_result"
         private const val HEIGHT_RATIO = 0.6
         private const val WIDTH_RATIO = 0.9
     }
