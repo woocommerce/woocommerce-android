@@ -1,4 +1,1 @@
-- [***] In-Person Payments: Support of Stripe M2 Card Reader
-- [***] In-Person Payments: Some firmware updates are required and update will be started automatically
-- [**] In-Person Payments: Improved Accessibility
-
+We’ve made some updates to our in-person payments support! Your card reader might have firmware software updates – some are super important and are required to be installed immediately. With this release, you can defer the upgrade of the optional updates for a better time.
