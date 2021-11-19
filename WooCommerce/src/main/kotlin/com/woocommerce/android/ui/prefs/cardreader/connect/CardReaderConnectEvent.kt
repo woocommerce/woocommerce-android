@@ -17,7 +17,7 @@ sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
     data class RequestEnableBluetooth(val onEnableBluetoothRequestResult: (Boolean) -> Unit) :
         CardReaderConnectEvent()
 
-    data class RequestEnableBluetoothRuntimePermissions(
+    data class RequestBluetoothRuntimePermissions(
         val onEnableBluetoothRuntimePermissionsRequestResult: (Boolean) -> Unit
     ) : CardReaderConnectEvent()
 

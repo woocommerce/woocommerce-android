@@ -77,7 +77,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val onboardingChecker: CardReaderOnboardingChecker,
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
-    private val cardReaderManager: CardReaderManager
+    private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
 

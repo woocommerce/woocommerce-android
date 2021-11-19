@@ -1262,7 +1262,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             onboardingChecker,
             locationRepository,
             selectedSite,
-            cardReaderManager
+            cardReaderManager,
         )
     }
 
