@@ -252,6 +252,14 @@
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
     <!--
+        Analytics View
+    -->
+
+    <string name="analytics_date_range_from_date">%1$s (%2$s)</string>
+    <string name="analytics_date_range_to_date">Previous Period (%1$s)</string>
+    <string name="analytics_date_range_selector_description">Selector for date range filter</string>
+
+    <!--
         Order List View
     -->
     <string name="orderlist_no_orders">No Orders</string>
