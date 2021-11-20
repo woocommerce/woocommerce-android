@@ -81,10 +81,11 @@ sealed class CardReaderConnectViewState(
     )
 
     data class MissingPermissionsError(
+        @StringRes private val error: Int,
         override val onPrimaryActionClicked: () -> Unit,
         override val onSecondaryActionClicked: () -> Unit
     ) : CardReaderConnectViewState(
-        headerLabel = UiString.UiStringRes(R.string.card_reader_connect_missing_permissions_header),
+        headerLabel = UiString.UiStringRes(error),
         illustration = R.drawable.img_products_error,
         primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
         secondaryActionLabel = R.string.cancel,

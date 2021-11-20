@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
+import android.Manifest
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -131,11 +132,19 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun onRequestLocationPermissionsResult(granted: Boolean) {
-        if (granted) {
+    private fun onRequestLocationPermissionsResult(result: Map<String, Boolean>) {
+        val isGranted = result.all { it.value }
+        if (isGranted) {
             onLocationPermissionsVerified()
         } else {
+            val errorMessage = when {
+                result.all { !it.value } -> R.string.card_reader_connect_missing_permissions_header
+                result[Manifest.permission.ACCESS_FINE_LOCATION] == false ->
+                    R.string.card_reader_connect_missing_location_permission_header
+                else -> R.string.card_reader_connect_missing_bluetooth_permission_header
+            }
             viewState.value = MissingPermissionsError(
+                error = errorMessage,
                 onPrimaryActionClicked = ::onOpenPermissionsSettingsClicked,
                 onSecondaryActionClicked = ::onCancelClicked
             )

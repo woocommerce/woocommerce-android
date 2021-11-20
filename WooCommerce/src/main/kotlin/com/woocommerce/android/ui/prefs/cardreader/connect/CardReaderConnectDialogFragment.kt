@@ -62,8 +62,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     @Inject lateinit var cardReaderManager: CardReaderManager
 
     private val requestPermissionLauncher = registerForActivityResult(RequestMultiplePermissions()) { result ->
-        val isGranted = result.all { it.value }
-        (viewModel.event.value as? RequestRequiredPermissions)?.onPermissionsRequestResult?.invoke(isGranted)
+        (viewModel.event.value as? RequestRequiredPermissions)?.onPermissionsRequestResult?.invoke(result)
     }
 
     private val requestEnableBluetoothLauncher = registerForActivityResult(StartActivityForResult()) { activityResult ->
