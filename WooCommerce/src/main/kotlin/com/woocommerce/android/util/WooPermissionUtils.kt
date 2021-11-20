@@ -34,7 +34,10 @@ object WooPermissionUtils {
         }
     }
 
-    fun requestBluetoothPermissions(context: Context, requestPermissionLauncher: ActivityResultLauncher<Array<String>>) {
+    fun requestBluetoothPermissions(
+        context: Context,
+        requestPermissionLauncher: ActivityResultLauncher<Array<String>>
+    ) {
         val deniedPermissions = mutableListOf<String>()
         if (!context.isGranted(permission.ACCESS_FINE_LOCATION)) {
             deniedPermissions.add(permission.ACCESS_FINE_LOCATION)
@@ -50,6 +53,6 @@ object WooPermissionUtils {
         requestPermissionLauncher.launch(deniedPermissions.toTypedArray())
     }
 
-    private fun Context.isGranted(permission:String) =
+    private fun Context.isGranted(permission: String) =
         ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 }
