@@ -61,7 +61,7 @@ class WooCommerceGlideModule : AppGlideModule() {
      * APIs don't support getCacheQuotaBytes().
      */
     private fun initGlideCache(context: Context, builder: GlideBuilder) {
-        if (SystemVersionUtils.) {
+        if (SystemVersionUtils.isAtLeastO()) {
             val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
             try {
                 // can't do this on the main thread - docs for getCacheQuoteBytes() state:
