@@ -29,11 +29,11 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckRequiredPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestRequiredPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowUpdateInProgress
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
@@ -106,7 +106,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun startFlow() {
         viewState.value = ScanningState(::onCancelClicked)
         if (arguments.skipOnboarding) {
-            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+            triggerEvent(CheckRequiredPermissions(::onCheckLocationPermissionsResult))
         } else {
             checkOnboardingState()
         }
@@ -119,7 +119,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     fun onScreenResumed() {
         if (viewState.value is MissingPermissionsError) {
-            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+            triggerEvent(CheckRequiredPermissions(::onCheckLocationPermissionsResult))
         }
     }
 
@@ -127,7 +127,7 @@ class CardReaderConnectViewModel @Inject constructor(
         if (granted) {
             onLocationPermissionsVerified()
         } else if (viewState.value !is MissingPermissionsError) {
-            triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
+            triggerEvent(RequestRequiredPermissions(::onRequestLocationPermissionsResult))
         }
     }
 
@@ -213,7 +213,7 @@ class CardReaderConnectViewModel @Inject constructor(
                     viewState.value = ScanningFailedState(::restartFlow, ::onCancelClicked)
                 }
                 is CardReaderOnboardingState.OnboardingCompleted -> {
-                    triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
+                    triggerEvent(CheckRequiredPermissions(::onCheckLocationPermissionsResult))
                 }
                 else -> triggerEvent(CardReaderConnectEvent.NavigateToOnboardingFlow)
             }

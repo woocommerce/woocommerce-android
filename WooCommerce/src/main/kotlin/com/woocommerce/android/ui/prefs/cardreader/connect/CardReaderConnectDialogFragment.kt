@@ -13,7 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -32,11 +32,11 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToParentWithResult
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckRequiredPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestRequiredPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
 import com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment
@@ -61,8 +61,9 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     @Inject lateinit var locationUtils: LocationUtils
     @Inject lateinit var cardReaderManager: CardReaderManager
 
-    private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
-        (viewModel.event.value as? RequestLocationPermissions)?.onPermissionsRequestResult?.invoke(isGranted)
+    private val requestPermissionLauncher = registerForActivityResult(RequestMultiplePermissions()) { result ->
+        val isGranted = result.all { it.value }
+        (viewModel.event.value as? RequestRequiredPermissions)?.onPermissionsRequestResult?.invoke(isGranted)
     }
 
     private val requestEnableBluetoothLauncher = registerForActivityResult(StartActivityForResult()) { activityResult ->
@@ -174,11 +175,11 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is CheckLocationPermissions -> {
-                    event.onPermissionsCheckResult(WooPermissionUtils.hasFineLocationPermission(requireContext()))
+                is CheckRequiredPermissions -> {
+                    event.onPermissionsCheckResult(WooPermissionUtils.hasBluetoothRequiredPermissions(requireContext()))
                 }
-                is RequestLocationPermissions -> {
-                    WooPermissionUtils.requestFineLocationPermission(requestPermissionLauncher)
+                is RequestRequiredPermissions -> {
+                    WooPermissionUtils.requestBluetoothPermissions(requireContext(), requestPermissionLauncher)
                 }
                 is OpenPermissionsSettings -> {
                     WooPermissionUtils.showAppSettings(requireContext(), openInNewStack = false)

@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
-    data class CheckLocationPermissions(val onPermissionsCheckResult: (Boolean) -> Unit) : CardReaderConnectEvent()
+    data class CheckRequiredPermissions(val onPermissionsCheckResult: (Boolean) -> Unit) : CardReaderConnectEvent()
 
     data class CheckLocationEnabled(val onLocationEnabledCheckResult: (Boolean) -> Unit) : CardReaderConnectEvent()
 
@@ -13,7 +13,7 @@ sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
     data class RequestEnableBluetooth(val onEnableBluetoothRequestResult: (Boolean) -> Unit) :
         CardReaderConnectEvent()
 
-    data class RequestLocationPermissions(val onPermissionsRequestResult: (Boolean) -> Unit) :
+    data class RequestRequiredPermissions(val onPermissionsRequestResult: (Boolean) -> Unit) :
         CardReaderConnectEvent()
 
     object OpenPermissionsSettings : CardReaderConnectEvent()
