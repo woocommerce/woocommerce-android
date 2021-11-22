@@ -1112,13 +1112,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user presses back button, when payment flow is loading, then cancel event is triggered`() =
+    fun `given payment flow is loading, when user presses back button, then cancel event is tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(LoadingDataState) }
             }
-
             viewModel.start()
+
             viewModel.onBackPressed()
 
             verify(tracker).track(
@@ -1130,49 +1130,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user presses back button, when payment flow is payment failed, then cancel event is triggered`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(NoNetwork, null, "")) }
-            }
-
-            viewModel.start()
-            viewModel.onBackPressed()
-
-            verify(tracker).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                eq("User manually cancelled the payment during state $FAILED")
-            )
-        }
-
-    @Test
-    fun `given user presses back button, when payment flow is capturing state, then cancel event is triggered`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CapturingPayment) }
-            }
-
-            viewModel.start()
-            viewModel.onBackPressed()
-
-            verify(tracker).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                eq("User manually cancelled the payment during state $CAPTURING")
-            )
-        }
-
-    @Test
-    fun `given user presses back button, when payment flow is collecting state, then cancel event is triggered`() =
+    fun `given payment flow is collecting state, when user presses back button, then cancel event is tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(CollectingPayment) }
             }
-
             viewModel.start()
+
             viewModel.onBackPressed()
 
             verify(tracker).track(
@@ -1184,31 +1148,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user presses back button, when payment flow is success state, then cancel event is triggered`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentCompleted("")) }
-            }
-
-            viewModel.start()
-            viewModel.onBackPressed()
-
-            verify(tracker).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                eq("User manually cancelled the payment during state $SUCCESS")
-            )
-        }
-
-    @Test
-    fun `given user presses back button, when payment flow is processing state, then cancel event is triggered`() =
+    fun `given payment flow is processing state, when user presses back button, then cancel event is tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(ProcessingPayment) }
             }
-
             viewModel.start()
+
             viewModel.onBackPressed()
 
             verify(tracker).track(
@@ -1220,21 +1166,94 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user presses back button, when payment flow is receipt print state, then cancel event is triggered`() =
+    fun `given payment flow is capturing state, when user presses back button, then cancel event is tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentCompleted("")) }
+                flow { emit(CapturingPayment) }
             }
-
             viewModel.start()
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
             viewModel.onBackPressed()
 
             verify(tracker).track(
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment during state $RECEIPT_PRINT")
+                eq("User manually cancelled the payment during state $CAPTURING")
+            )
+        }
+
+    @Test
+    fun `given payment flow is payment failed, when user presses back button, then cancel event is not tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentFailed(NoNetwork, null, "")) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(tracker, never()).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        }
+
+    @Test
+    fun `given payment flow is success state, when user presses back button, then cancel event is not tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(tracker, never()).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        }
+
+    @Test
+    fun `given payment flow is receipt print state, when user presses back button, then cancel event is not tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+            viewModel.onBackPressed()
+
+            verify(tracker, never()).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        }
+
+    @Test
+    fun `given payment flow is refetching order, when user presses back button, then cancel event is not tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+            simulateFetchOrderJobState(inProgress = true)
+
+            viewModel.onBackPressed()
+
+            verify(tracker, never()).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
             )
         }
 

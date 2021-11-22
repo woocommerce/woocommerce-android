@@ -379,15 +379,25 @@ class CardReaderPaymentViewModel
                 exitWithSnackbar(R.string.card_reader_refetching_order_failed)
             }
         } else {
-            tracker.track(
-                AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
-                this@CardReaderPaymentViewModel.javaClass.simpleName,
-                null,
-                "User manually cancelled the payment during state ${getCurrentPaymentState()}"
-            )
+            viewState.value?.let { paymentState ->
+                if (isStateEligibleForTracking(paymentState)) {
+                    tracker.track(
+                        AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
+                        this@CardReaderPaymentViewModel.javaClass.simpleName,
+                        null,
+                        "User manually cancelled the payment during state ${getCurrentPaymentState()}"
+                    )
+                }
+            }
             triggerEvent(Exit)
         }
     }
+
+    private fun isStateEligibleForTracking(paymentState: ViewState) =
+        paymentState is LoadingDataState ||
+            paymentState is CollectPaymentState ||
+            paymentState is ProcessingPaymentState ||
+            paymentState is CapturingPaymentState
 
     private fun getCurrentPaymentState(): PaymentState? {
         return when (viewState.value) {
