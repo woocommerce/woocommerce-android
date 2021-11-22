@@ -324,10 +324,10 @@ class ProductNavigator @Inject constructor() {
 
             is AddProductAttributeTerms -> {
                 val action = NavGraphProductsDirections.actionGlobalAddVariationAttributeTermsFragment(
-                    target.attributeId,
-                    target.attributeName,
-                    target.isNewAttribute,
-                    target.isVariationCreation
+                    attributeId = target.attributeId,
+                    attributeName = target.attributeName,
+                    isNewAttribute = target.isNewAttribute,
+                    isVariationCreation = target.isVariationCreation
                 )
                 fragment.findNavController().navigate(action)
             }
@@ -348,14 +348,13 @@ class ProductNavigator @Inject constructor() {
         selectedImage: Image?,
         showChooser: Boolean
     ) {
-        val action = ProductDetailFragmentDirections
-            .actionProductDetailFragmentToNavGraphImageGallery(
-                remoteId,
-                images.toTypedArray(),
-                selectedImage,
-                showChooser,
-                RequestCodes.PRODUCT_DETAIL_IMAGES
-            )
+        val action = ProductDetailFragmentDirections.actionProductDetailFragmentToNavGraphImageGallery(
+            remoteId = remoteId,
+            images = images.toTypedArray(),
+            selectedImage = selectedImage,
+            showChooser = showChooser,
+            requestCode = RequestCodes.PRODUCT_DETAIL_IMAGES
+        )
         fragment.findNavController().navigateSafely(action)
     }
 }

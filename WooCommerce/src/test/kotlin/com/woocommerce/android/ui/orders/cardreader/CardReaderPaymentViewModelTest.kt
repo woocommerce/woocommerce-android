@@ -39,9 +39,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import java.math.BigDecimal
 import kotlin.test.assertEquals
@@ -52,7 +50,6 @@ private const val DUMMY_ORDER_NUMBER = "123"
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class CardReaderPaymentViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"
@@ -1109,6 +1106,152 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.onBackPressed()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ReFetchingOrderState::class.java)
+        }
+
+    @Test
+    fun `given payment flow is loading, when user presses back button, then cancel event is tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(LoadingDataState) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment during state Loading")
+            )
+        }
+
+    @Test
+    fun `given payment flow is collecting state, when user presses back button, then cancel event is tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment during state Collecting")
+            )
+        }
+
+    @Test
+    fun `given payment flow is processing state, when user presses back button, then cancel event is tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPayment) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment during state Processing")
+            )
+        }
+
+    @Test
+    fun `given payment flow is capturing state, when user presses back button, then cancel event is tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CapturingPayment) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(tracker).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment during state Capturing")
+            )
+        }
+
+    @Test
+    fun `given payment flow is payment failed, when user presses back button, then cancel event is not tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentFailed(NoNetwork, null, "")) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(tracker, never()).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        }
+
+    @Test
+    fun `given payment flow is success state, when user presses back button, then cancel event is not tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(tracker, never()).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        }
+
+    @Test
+    fun `given payment flow is receipt print state, when user presses back button, then cancel event is not tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+            viewModel.onBackPressed()
+
+            verify(tracker, never()).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        }
+
+    @Test
+    fun `given payment flow is refetching order, when user presses back button, then cancel event is not tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+            simulateFetchOrderJobState(inProgress = true)
+
+            viewModel.onBackPressed()
+
+            verify(tracker, never()).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
         }
 
     @Test

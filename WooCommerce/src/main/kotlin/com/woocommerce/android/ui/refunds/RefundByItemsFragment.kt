@@ -201,20 +201,20 @@ class RefundByItemsFragment :
                 when (event) {
                     is ShowNumberPicker -> {
                         val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
-                            getString(R.string.order_refunds_select_quantity),
-                            event.refundItem.orderItem.itemId,
-                            event.refundItem.availableRefundQuantity,
-                            event.refundItem.quantity
+                            title = getString(R.string.order_refunds_select_quantity),
+                            uniqueId = event.refundItem.orderItem.itemId,
+                            maxValue = event.refundItem.availableRefundQuantity,
+                            currentValue = event.refundItem.quantity
                         )
                         findNavController().navigateSafely(action)
                     }
                     is ShowRefundAmountDialog -> {
                         val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
-                            getString(R.string.order_refunds_products_refund),
-                            event.maxRefund,
-                            event.refundAmount,
-                            BigDecimal.ZERO,
-                            event.message
+                            title = getString(R.string.order_refunds_products_refund),
+                            maxValue = event.maxRefund,
+                            currentValue = event.refundAmount,
+                            minValue = BigDecimal.ZERO,
+                            message = event.message
                         )
                         findNavController().navigateSafely(action)
                     }

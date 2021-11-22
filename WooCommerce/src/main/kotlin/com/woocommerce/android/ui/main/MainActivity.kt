@@ -30,7 +30,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.navigation.KeepStateNavigator
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -181,13 +180,9 @@ class MainActivity :
         presenter.takeView(this)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
-        val navigator = KeepStateNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment_main)
         navController = navHostFragment.navController
-        with(navController) {
-            navigatorProvider.addNavigator(navigator)
-            setGraph(R.navigation.nav_graph_main)
-            addOnDestinationChangedListener(this@MainActivity)
-        }
+        navController.addOnDestinationChangedListener(this@MainActivity)
+
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
 
         binding.bottomNav.init(navController, this)
@@ -299,10 +294,8 @@ class MainActivity :
             }
             navController.navigateUp()
             return
-        } else if (binding.bottomNav.currentPosition != MY_STORE) {
-            navController.navigate(R.id.dashboard)
         } else {
-            finish()
+            super.onBackPressed()
         }
     }
 
@@ -389,8 +382,8 @@ class MainActivity :
 
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
-            if (destination.id != R.id.dashboard && destination.id != R.id.orders) {
-                // MyStoreFragment and OrderListFragment handle the elevation by themselves
+            if (destination.id != R.id.dashboard) {
+                // MyStoreFragment handle the elevation by themselves
                 binding.appBarLayout.elevation = 0f
             }
             showCrossIcon = false
@@ -750,7 +743,7 @@ class MainActivity :
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId,
+            remoteProductId = remoteProductId,
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(action)
@@ -784,10 +777,10 @@ class MainActivity :
         }
 
         val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
-            remoteReviewId,
-            tempStatus,
-            launchedFromNotification,
-            enableModeration
+            remoteReviewId = remoteReviewId,
+            tempStatus = tempStatus,
+            launchedFromNotification = launchedFromNotification,
+            enableModeration = enableModeration
         )
         navController.navigateSafely(action)
     }
@@ -800,7 +793,11 @@ class MainActivity :
         productCategoryName: String?
     ) {
         val action = ProductListFragmentDirections.actionProductListFragmentToProductFilterListFragment(
-            stockStatus, productStatus, productType, productCategory, productCategoryName
+            selectedStockStatus = stockStatus,
+            selectedProductStatus = productStatus,
+            selectedProductType = productType,
+            selectedProductCategoryId = productCategory,
+            selectedProductCategoryName = productCategoryName
         )
         navController.navigateSafely(action)
     }

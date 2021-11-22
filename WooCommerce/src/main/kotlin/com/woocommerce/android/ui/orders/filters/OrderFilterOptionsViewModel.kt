@@ -3,15 +3,18 @@ package com.woocommerce.android.ui.orders.filters
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
+import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel.Companion.DEFAULT_ALL_KEY
 import com.woocommerce.android.ui.orders.filters.model.clearAllFilterSelections
+import com.woocommerce.android.ui.orders.filters.model.isAnyFilterOptionSelected
 import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -25,7 +28,8 @@ import javax.inject.Inject
 class OrderFilterOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
-    private val orderFilterRepository: OrderFiltersRepository
+    private val orderFilterRepository: OrderFiltersRepository,
+    private val getTrackingForFilterSelection: GetTrackingForFilterSelection
 ) : ScopedViewModel(savedState) {
     private val arguments: OrderFilterOptionsFragmentArgs by savedState.navArgs()
     private val categoryKey = arguments.filterCategory.categoryKey
@@ -48,7 +52,17 @@ class OrderFilterOptionsViewModel @Inject constructor(
 
     fun onShowOrdersClicked() {
         saveFiltersSelection()
+        trackFilterSelection()
         triggerEvent(OnShowOrders)
+    }
+
+    private fun trackFilterSelection() {
+        if (_viewState.filterOptions.isAnyFilterOptionSelected()) {
+            AnalyticsTracker.track(
+                AnalyticsTracker.Stat.ORDERS_LIST_FILTER,
+                getTrackingForFilterSelection()
+            )
+        }
     }
 
     private fun saveFiltersSelection() {

@@ -48,6 +48,7 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
             viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_CANCELED)
             findNavController().navigateUp()
         }
 
