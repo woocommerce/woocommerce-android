@@ -31,7 +31,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToParentWithResult
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsEnabled
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
@@ -185,7 +185,9 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is CheckLocationPermissions -> {
-                    event.onPermissionsCheckResult(WooPermissionUtils.hasFineLocationPermission(requireContext()))
+                    event.onLocationPermissionsCheckResult(
+                        WooPermissionUtils.hasFineLocationPermission(requireContext())
+                    )
                 }
                 is RequestLocationPermissions -> {
                     WooPermissionUtils.requestFineLocationPermission(requestPermissionLauncher)
@@ -199,8 +201,8 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                 is OpenLocationSettings -> {
                     openLocationSettings()
                 }
-                is CheckBluetoothPermissionsEnabled -> {
-                    event.onBluetoothPermissionsEnabledCheckResult(
+                is CheckBluetoothPermissionsGiven -> {
+                    event.onBluetoothPermissionsGivenCheckResult(
                         WooPermissionUtils.hasBluetoothScanPermission(requireContext()) &&
                             WooPermissionUtils.hasBluetoothConnectPermission(requireContext())
                     )

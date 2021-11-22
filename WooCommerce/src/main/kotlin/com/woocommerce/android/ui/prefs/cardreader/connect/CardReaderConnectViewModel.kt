@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
-import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,13 +28,13 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowUpdateInProgress
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
@@ -152,7 +151,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCheckLocationEnabledResult(enabled: Boolean) {
         if (enabled) {
-            onLocationStateVerified()
+            triggerEvent(CheckBluetoothPermissionsGiven(::onCheckBluetoothPermissionsResult))
         } else {
             viewState.value = LocationDisabledError(
                 onPrimaryActionClicked = ::onOpenLocationProviderSettingsClicked,
@@ -171,14 +170,6 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onLocationSettingsClosed() {
         triggerEvent(CheckLocationEnabled(::onCheckLocationEnabledResult))
-    }
-
-    private fun onLocationStateVerified() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            triggerEvent(CheckBluetoothPermissionsEnabled(::onCheckBluetoothPermissionsResult))
-        } else {
-            triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
-        }
     }
 
     private fun onCheckBluetoothPermissionsResult(enabled: Boolean) {
@@ -202,7 +193,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCheckBluetoothResult(enabled: Boolean) {
         if (enabled) {
-            onBluetoothStateVerified()
+            onDeviceReaderToConnect()
         } else {
             triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
         }
@@ -210,7 +201,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onRequestEnableBluetoothResult(enabled: Boolean) {
         if (enabled) {
-            onBluetoothStateVerified()
+            onDeviceReaderToConnect()
         } else {
             viewState.value = BluetoothDisabledError(
                 onPrimaryActionClicked = ::onOpenBluetoothSettingsClicked,
@@ -227,7 +218,7 @@ class CardReaderConnectViewModel @Inject constructor(
         triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
     }
 
-    private fun onBluetoothStateVerified() {
+    private fun onDeviceReaderToConnect() {
         if (!cardReaderManager.initialized) {
             cardReaderManager.initialize()
         }
