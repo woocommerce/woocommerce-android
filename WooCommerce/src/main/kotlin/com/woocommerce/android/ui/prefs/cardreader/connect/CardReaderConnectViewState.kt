@@ -80,7 +80,7 @@ sealed class CardReaderConnectViewState(
         illustrationTopMargin = R.dimen.major_150
     )
 
-    data class MissingPermissionsError(
+    data class MissingLocationPermissionsError(
         override val onPrimaryActionClicked: () -> Unit,
         override val onSecondaryActionClicked: () -> Unit
     ) : CardReaderConnectViewState(

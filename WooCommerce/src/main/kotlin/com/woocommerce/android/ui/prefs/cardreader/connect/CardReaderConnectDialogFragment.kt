@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
-import android.Manifest.permission.BLUETOOTH_CONNECT
-import android.Manifest.permission.BLUETOOTH_SCAN
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.Activity.RESULT_OK
@@ -208,7 +206,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                     )
                 }
                 is RequestBluetoothRuntimePermissions -> {
-                    requestBluetoothPermissionsLauncher.launch(arrayOf(BLUETOOTH_SCAN, BLUETOOTH_CONNECT))
+                    WooPermissionUtils.requestScanAndConnectBluetoothPermission(requestBluetoothPermissionsLauncher)
                 }
                 is CheckBluetoothEnabled -> {
                     val btAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -275,7 +273,11 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        viewModel.onScreenResumed()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.onScreenStarted()
     }
 
     companion object {

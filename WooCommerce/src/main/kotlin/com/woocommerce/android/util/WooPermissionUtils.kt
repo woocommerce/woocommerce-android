@@ -1,6 +1,6 @@
 package com.woocommerce.android.util
 
-import android.Manifest.permission
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
 import android.content.Context
@@ -27,7 +27,7 @@ object WooPermissionUtils {
     }
 
     fun hasFineLocationPermission(context: Context) =
-        ContextCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(context, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     fun hasBluetoothScanPermission(context: Context) =
         ContextCompat.checkSelfPermission(context, BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
@@ -36,6 +36,10 @@ object WooPermissionUtils {
         ContextCompat.checkSelfPermission(context, BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
 
     fun requestFineLocationPermission(requestPermissionLauncher: ActivityResultLauncher<String>) {
-        requestPermissionLauncher.launch(permission.ACCESS_FINE_LOCATION)
+        requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
+    }
+
+    fun requestScanAndConnectBluetoothPermission(launcher: ActivityResultLauncher<Array<String>>) {
+        launcher.launch(arrayOf(BLUETOOTH_SCAN, BLUETOOTH_CONNECT))
     }
 }

@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingPermissionsError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingLocationPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
@@ -156,7 +156,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingPermissionsError::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingLocationPermissionsError::class.java)
         }
 
     @Test
@@ -165,7 +165,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
 
-            (viewModel.viewStateData.value as MissingPermissionsError).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as MissingLocationPermissionsError).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(OpenPermissionsSettings::class.java)
         }
@@ -176,7 +176,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
 
-            viewModel.onScreenResumed()
+            viewModel.onScreenStarted()
 
             assertThat(viewModel.event.value).isInstanceOf(CheckLocationPermissions::class.java)
         }
@@ -186,7 +186,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
 
-            viewModel.onScreenResumed()
+            viewModel.onScreenStarted()
 
             assertThat(viewModel.event.value).isNotInstanceOf(CheckLocationPermissions::class.java)
         }
@@ -196,7 +196,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
-            viewModel.onScreenResumed()
+            viewModel.onScreenStarted()
 
             (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
 
@@ -1135,7 +1135,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingPermissionsError::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingLocationPermissionsError::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
                 .isEqualTo(UiStringRes(R.string.card_reader_connect_missing_permissions_header))

@@ -44,7 +44,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingPermissionsError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingLocationPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
@@ -121,8 +121,8 @@ class CardReaderConnectViewModel @Inject constructor(
         startFlow()
     }
 
-    fun onScreenResumed() {
-        if (viewState.value is MissingPermissionsError || viewState.value is MissingBluetoothPermissionsError) {
+    fun onScreenStarted() {
+        if (viewState.value is MissingLocationPermissionsError || viewState.value is MissingBluetoothPermissionsError) {
             triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
         }
     }
@@ -130,7 +130,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onCheckLocationPermissionsResult(granted: Boolean) {
         if (granted) {
             onLocationPermissionsVerified()
-        } else if (viewState.value !is MissingPermissionsError) {
+        } else if (viewState.value !is MissingLocationPermissionsError) {
             triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
         }
     }
@@ -139,7 +139,7 @@ class CardReaderConnectViewModel @Inject constructor(
         if (granted) {
             onLocationPermissionsVerified()
         } else {
-            viewState.value = MissingPermissionsError(
+            viewState.value = MissingLocationPermissionsError(
                 onPrimaryActionClicked = ::onOpenPermissionsSettingsClicked,
                 onSecondaryActionClicked = ::onCancelClicked
             )
