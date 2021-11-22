@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -63,14 +64,13 @@ class OrderFilterOptionsFragment :
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OnShowOrders -> navigateBackWithResult(
-                    OrderListFragment.ORDER_FILTER_RESULT_KEY,
-                    true,
-                    R.id.orders
-                )
                 is OnFilterOptionsSelectionUpdated -> navigateBackWithResult(
                     KEY_UPDATED_FILTER_OPTIONS,
                     event.category
+                )
+                is OnShowOrders -> navigateBackWithNotice(
+                    OrderListFragment.FILTER_CHANGE_NOTICE_KEY,
+                    R.id.orders
                 )
                 else -> event.isHandled = false
             }
