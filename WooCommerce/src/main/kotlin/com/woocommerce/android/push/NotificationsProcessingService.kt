@@ -5,7 +5,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import androidx.core.os.BuildCompat
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +23,7 @@ class NotificationsProcessingService : Service() {
             intent.putExtra(ARG_ACTION_TYPE, ARG_ACTION_NOTIFICATION_DISMISS)
             intent.putExtra(ARG_PUSH_ID, pushId)
             intent.addCategory(ARG_ACTION_NOTIFICATION_DISMISS)
-            val flags = if (BuildCompat.isAtLeastS()) {
+            val flags = if (SystemVersionUtils.isAtLeastS()) {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             } else {
                 PendingIntent.FLAG_UPDATE_CURRENT
