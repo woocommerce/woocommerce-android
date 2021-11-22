@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
 import com.woocommerce.android.AppPrefsWrapper
@@ -45,16 +44,13 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
-import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.Locale
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
@@ -104,9 +100,6 @@ class OrderListViewModel @Inject constructor(
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
     val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
-    private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
-    val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
-
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
@@ -122,7 +115,6 @@ class OrderListViewModel @Inject constructor(
 
     var isSearching = false
     var searchQuery = ""
-    var orderStatusFilter = ""
 
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
@@ -132,13 +124,9 @@ class OrderListViewModel @Inject constructor(
         dispatcher.register(this)
 
         launch {
-            // Populate any cached order status options immediately since we use this
-            // value in many different places in the order list view.
-            _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
-
-            // refresh plugin information
             if (selectedSite.exists()) {
                 wooCommerceStore.fetchSitePlugins(selectedSite.get())
+                loadOrders()
             } else {
                 WooLog.w(
                     WooLog.T.ORDERS,
@@ -148,12 +136,10 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun initializeOrdersList() {
+    fun loadOrders() {
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
         viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
         activatePagedListWrapper(ordersPagedListWrapper!!)
-
-        // Fetch order dependencies such as order status list and payment gateways
         fetchOrdersAndOrderDependencies()
     }
 
@@ -164,10 +150,9 @@ class OrderListViewModel @Inject constructor(
      * NOTE: Although technically the "PROCESSING" tab is a filtered list, it should not use this method. The
      * processing list will always use the same [processingPagedListWrapper].
      */
-    fun submitSearchOrFilter(statusFilter: String? = null, searchQuery: String? = null) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
+    fun submitSearchOrFilter(searchQuery: String) {
+        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), searchQuery = searchQuery)
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
-
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
 
@@ -179,26 +164,11 @@ class OrderListViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
-                fetchOrderStatusOptions()
                 fetchPaymentGateways()
             }
         } else {
             viewState = viewState.copy(isRefreshPending = true)
             showOfflineSnack()
-        }
-    }
-
-    /**
-     * Refresh the order count by order status list with fresh data from the API
-     */
-    fun fetchOrderStatusOptions() {
-        launch(dispatchers.main) {
-            // Fetch and load order status options
-            when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
-                SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
-                else -> { /* do nothing */
-                }
-            }
         }
     }
 
@@ -291,7 +261,6 @@ class OrderListViewModel @Inject constructor(
         val isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
             wrapper.data.value == null
         val isListEmpty = wrapper.isEmpty.value ?: true
-        val hasOrders = orderListRepository.hasCachedOrdersForSite()
         val isError = wrapper.listError.value != null
 
         val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
@@ -305,21 +274,8 @@ class OrderListViewModel @Inject constructor(
                         EmptyViewType.ORDER_LIST_LOADING
                     }
                 }
-                isSearching && searchQuery.isNotEmpty() -> {
-                    EmptyViewType.SEARCH_RESULTS
-                }
-                isShowingProcessingOrders() -> {
-                    if (hasOrders) {
-                        // there are orders but none are processing
-                        EmptyViewType.ORDER_LIST_ALL_PROCESSED
-                    } else {
-                        // Waiting for orders to process
-                        EmptyViewType.ORDER_LIST
-                    }
-                }
-                orderStatusFilter.isNotEmpty() -> {
-                    EmptyViewType.ORDER_LIST_FILTERED
-                }
+                isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
+                viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
                 else -> {
                     if (networkStatus.isConnected()) {
                         EmptyViewType.ORDER_LIST
@@ -331,12 +287,8 @@ class OrderListViewModel @Inject constructor(
         } else {
             null
         }
-
         _emptyViewType.postValue(newEmptyViewType)
     }
-
-    private fun isShowingProcessingOrders() = orderStatusFilter.isNotEmpty() &&
-        orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value
 
     private fun showOfflineSnack() {
         // Network is not connected
@@ -415,25 +367,8 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun onFiltersChanged(changed: Boolean) {
-        if (changed) {
-            if (networkStatus.isConnected()) {
-                refreshOrders()
-                viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
-            } else {
-                viewState = viewState.copy(isRefreshPending = true)
-                showOfflineSnack()
-            }
-        }
-    }
-
-    private fun refreshOrders() {
-        val pagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
-        activatePagedListWrapper(pagedListWrapper)
-    }
-
     fun onSearchClosed() {
-        initializeOrdersList()
+        loadOrders()
     }
 
     fun isCardReaderOnboardingCompleted(): Boolean {

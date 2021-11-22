@@ -382,8 +382,8 @@ class MainActivity :
 
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
-            if (destination.id != R.id.dashboard && destination.id != R.id.orders) {
-                // MyStoreFragment and OrderListFragment handle the elevation by themselves
+            if (destination.id != R.id.dashboard) {
+                // MyStoreFragment handle the elevation by themselves
                 binding.appBarLayout.elevation = 0f
             }
             showCrossIcon = false

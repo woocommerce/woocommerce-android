@@ -43,6 +43,13 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection
 
 ) : ScopedViewModel(savedState) {
+    companion object {
+        const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
+    }
+
+    private var oldFilterSelection: List<OrderFilterCategoryUiModel> =
+        savedState.get(OLD_FILTER_SELECTION_KEY) ?: emptyList()
+
     val categories = LiveDataDelegate(
         savedState,
         OrderFilterCategories(emptyList())
@@ -57,6 +64,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         if (_categories.list.isEmpty()) {
             launch {
                 _categories = OrderFilterCategories(buildFilterListUiModel())
+                oldFilterSelection = _categories.list
+                savedState[OLD_FILTER_SELECTION_KEY] = oldFilterSelection
             }
         }
     }
@@ -66,7 +75,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     fun onShowOrdersClicked() {
-        saveFiltersSelection()
+        saveFiltersSelection(_categories.list)
         trackFilterSelection()
         triggerEvent(OnShowOrders)
     }
@@ -97,13 +106,11 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     fun onBackPressed(): Boolean {
-        val selectedFiltersCount = _categories.list
-            .map { it.orderFilterOptions.getNumberOfSelectedFilterOptions() }
-            .sum()
-        return if (selectedFiltersCount > 0) {
+        return if (oldFilterSelection != _categories.list) {
             triggerEvent(
                 ShowDialog.buildDiscardDialogEvent(
                     positiveBtnAction = { _, _ ->
+                        saveFiltersSelection(oldFilterSelection)
                         triggerEvent(Exit)
                     },
                     negativeButtonId = R.string.keep_changes
@@ -191,8 +198,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
         }
 
-    private fun saveFiltersSelection() {
-        _categories.list.forEach { category ->
+    private fun saveFiltersSelection(selectedFilters: List<OrderFilterCategoryUiModel>) {
+        selectedFilters.forEach { category ->
             val newSelectedFilters = category.orderFilterOptions
                 .filter { it.isSelected && it.key != OrderFilterOptionUiModel.DEFAULT_ALL_KEY }
                 .map { it.key }

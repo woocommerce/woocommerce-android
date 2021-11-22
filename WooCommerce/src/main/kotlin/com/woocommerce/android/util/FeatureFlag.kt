@@ -10,8 +10,7 @@ enum class FeatureFlag {
     ORDER_CREATION,
     SIMPLE_PAYMENTS,
     CARD_READER,
-    JETPACK_CP,
-    ORDER_FILTERS;
+    JETPACK_CP;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -22,7 +21,6 @@ enum class FeatureFlag {
             ORDER_CREATION,
             JETPACK_CP -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
             CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
-            ORDER_FILTERS -> PackageUtils.isDebugBuild()
         }
     }
 }

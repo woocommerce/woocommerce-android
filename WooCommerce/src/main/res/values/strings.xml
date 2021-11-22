@@ -870,7 +870,7 @@
     <string name="card_reader_connect_invalid_postal_code_hint">Please provide a valid postcode in your store settings and try again</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
-    <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
+    <string name="card_reader_connect_missing_permissions_header">Missing required precise location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
@@ -1314,7 +1314,7 @@
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
     <string name="orders_processed_empty_message">All orders have been processed</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
-    <string name="orders_empty_message_with_order_status_filter">We\'re sorry, we couldn\'t find any \"%s\" orders</string>
+    <string name="orders_empty_message_for_filtered_orders">We\'re sorry, we couldn\'t find any orders</string>
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
     <!--
