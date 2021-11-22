@@ -155,6 +155,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
         FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
 
+        // -- Simple Payments
+        SIMPLE_PAYMENTS_FLOW_STARTED,
+        SIMPLE_PAYMENTS_FLOW_COMPLETED,
+        SIMPLE_PAYMENTS_FLOW_FAILED,
+        SIMPLE_PAYMENTS_FLOW_CANCELED,
+        SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
+
         // -- Order Detail
         ORDER_OPEN,
         ORDER_NOTES_LOADED,
@@ -251,6 +258,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Card Present Payments - collection
         CARD_PRESENT_COLLECT_PAYMENT_TAPPED,
         CARD_PRESENT_COLLECT_PAYMENT_FAILED,
+        CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
         CARD_PRESENT_COLLECT_PAYMENT_SUCCESS,
 
         // -- Card Reader - discovery
