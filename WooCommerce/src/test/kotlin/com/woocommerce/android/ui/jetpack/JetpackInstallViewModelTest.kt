@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.jetpack
 
 import androidx.lifecycle.SavedStateHandle
 import org.mockito.kotlin.any
-import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
@@ -33,11 +32,9 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        viewModel = spy(
-            JetpackInstallViewModel(
-                savedState,
-                pluginRepository
-            )
+        viewModel = JetpackInstallViewModel(
+            savedState,
+            pluginRepository
         )
     }
 
