@@ -1,16 +1,13 @@
 package com.woocommerce.android.push
 
-import org.mockito.kotlin.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferencesWrapper
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.store.AccountStore
 
-@RunWith(RobolectricTestRunner::class)
 class NotificationRegistrationHandlerTest {
     private lateinit var notificationRegistrationHandler: NotificationRegistrationHandler
 

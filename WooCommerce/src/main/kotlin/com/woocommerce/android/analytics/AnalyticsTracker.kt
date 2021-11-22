@@ -154,6 +154,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
         FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
 
+        // -- Simple Payments
+        SIMPLE_PAYMENTS_FLOW_STARTED,
+        SIMPLE_PAYMENTS_FLOW_COMPLETED,
+        SIMPLE_PAYMENTS_FLOW_FAILED,
+        SIMPLE_PAYMENTS_FLOW_CANCELED,
+        SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
+
         // -- Order Detail
         ORDER_OPEN,
         ORDER_NOTES_LOADED,
@@ -250,6 +257,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Card Present Payments - collection
         CARD_PRESENT_COLLECT_PAYMENT_TAPPED,
         CARD_PRESENT_COLLECT_PAYMENT_FAILED,
+        CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
         CARD_PRESENT_COLLECT_PAYMENT_SUCCESS,
 
         // -- Card Reader - discovery
@@ -536,6 +544,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL,
         ENCRYPTED_LOGGING_UPLOAD_FAILED,
 
+        // -- What's new / feature announcements
+        FEATURE_ANNOUNCEMENT_SHOWN,
+
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
         TOP_EARNER_PRODUCT_TAPPED,
@@ -720,6 +731,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ADDONS = "addons"
         const val KEY_SOFTWARE_UPDATE_TYPE = "software_update_type"
         const val KEY_SUBJECT = "subject"
+        const val KEY_DATE_RANGE = "date_range"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -822,6 +834,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_AMOUNT = "amount"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+
+        // -- Feature Announcement / What's New
+        const val KEY_ANNOUNCEMENT_VIEW_SOURCE = "source"
+        const val VALUE_ANNOUNCEMENT_SOURCE_UPGRADE = "app_upgrade"
+        const val VALUE_ANNOUNCEMENT_SOURCE_SETTINGS = "app_settings"
 
         var sendUsageStats: Boolean = true
             set(value) {

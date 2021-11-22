@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-10-27 13:54:04+0000
+Translation-Revision-Date: 2021-11-11 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Inte nu</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Installera Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Tillåt flera användare att komma åt WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Användarprofiler</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Nya analysvyer gör det möjligt att se besökare, rapporter med mera.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analys</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Få push-notiser för nya beställningar, recensioner med mera levererade till din enhet.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Push-notiser</string>
+    <string name="jetpack_benefits_modal_subtitle">Installera det kostnadsfria Jetpack-tillägget för den bästa mobilupplevelsen.</string>
+    <string name="jetpack_benefits_modal_title">Få ut så mycket som möjligt av din butik</string>
+    <string name="settings_enable_quick_order_teaser_message">Testa att skapa beställningar med minimalt med information medan vi gör oss redo för lansering</string>
+    <string name="settings_enable_quick_order_teaser_title">Snabb beställning</string>
+    <string name="beta_features_message">Visa tillägg, snabb beställning</string>
+    <string name="order_detail_use_as_shipping_address">Använd som leveransadress</string>
+    <string name="order_detail_use_as_billing_address">Använd som faktureringsadress</string>
+    <string name="orderfilters_filters_count_title">Filter (%d)</string>
+    <string name="orderfilters_filters_default_title">Filter</string>
+    <string name="orderfilters_filter_date_range_options_title">Datumintervall</string>
+    <string name="orderfilters_filter_order_status_options_title">Beställningsstatus</string>
+    <string name="orderfilters_filter_option_item_selected">Valt filteralternativ</string>
+    <string name="orderfilters_date_range_filter">Datumintervall</string>
+    <string name="orderfilters_order_status_filter">Beställningsstatus</string>
+    <string name="orderfilters_default_filter_value">Alla</string>
+    <string name="orderfilters_show_orders_button">Visa beställningar</string>
+    <string name="orderlist_filters_title">Filtrerade beställningar</string>
+    <string name="orderlist_no_filters_title">Alla beställningar</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Se fördelarna</string>
     <string name="jetpack_benefits_bottom_banner_title">Få hela upplevelsen med Jetpack</string>
     <string name="product_description_hint_with_title">Berätta mer om %s …</string>
@@ -56,8 +82,8 @@ Language: sv_SE
     <string name="settings_enable_product_addons_teaser_title">Visa utökningar</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Vi kan tyvärr inte ändra den här funktionsinställningen för tillfället</string>
     <string name="product_category">Kategori</string>
-    <string name="notification_review_title">Du har 1 ny recension! 🌟</string>
-    <string name="notification_order_title">Du har 1 ny beställning! 🎉</string>
+    <string name="notification_review_title">Du har en ny recension! 🌟</string>
+    <string name="notification_order_title">Du har en ny beställning! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d artikel</string>
     <string name="upsell_product_count_many">%d merförsäljningsprodukter</string>
     <string name="upsell_product_count_one">%d merförsäljningsprodukt</string>

@@ -3,13 +3,10 @@ package com.woocommerce.android.ui.orders.filters
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptions
-import com.woocommerce.android.ui.orders.filters.data.DateRange
-import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
-import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
-import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
-import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
+import com.woocommerce.android.ui.orders.filters.data.*
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
+import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
@@ -22,22 +19,20 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val resourceProvider: ResourceProvider = mock()
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions = mock()
     private val getDateRangeFilterOptions: GetDateRangeFilterOptions = mock()
     private val orderFilterRepository: OrderFiltersRepository = mock()
+    private val getTrackingForFilterSelection: GetTrackingForFilterSelection = mock()
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
 
@@ -135,7 +130,8 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
             resourceProvider,
             getOrderStatusFilterOptions,
             getDateRangeFilterOptions,
-            orderFilterRepository
+            orderFilterRepository,
+            getTrackingForFilterSelection
         )
     }
 
@@ -167,7 +163,6 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
     private fun givenResourceProviderReturnsNonEmptyStrings() {
         whenever(resourceProvider.getString(any())).thenReturn("AnyString")
-        whenever(resourceProvider.getString(any(), any())).thenReturn("AnyString")
         whenever(resourceProvider.getString(any(), any(), any())).thenReturn("AnyString")
     }
 
