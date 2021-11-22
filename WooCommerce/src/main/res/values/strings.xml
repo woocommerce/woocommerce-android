@@ -870,7 +870,7 @@
     <string name="card_reader_connect_invalid_postal_code_hint">Please provide a valid postcode in your store settings and try again</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
-    <string name="card_reader_connect_missing_permissions_header">Missing required exact location permission</string>
+    <string name="card_reader_connect_missing_permissions_header">Missing required precise location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
