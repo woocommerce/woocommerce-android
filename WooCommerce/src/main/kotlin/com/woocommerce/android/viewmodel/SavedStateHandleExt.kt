@@ -38,7 +38,6 @@ inline fun <reified Args : NavArgs> SavedStateHandle.navArgs(): Lazy<Args> {
     }
 }
 
-
 /** cache the methods for [NavArgsLazy] to avoid depending on reflection for all invocations **/
 private val methodMap = ArrayMap<KClass<out NavArgs>, Method>()
 
