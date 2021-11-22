@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
@@ -26,14 +27,13 @@ object WooPermissionUtils {
         context.startActivity(intent)
     }
 
-    fun hasFineLocationPermission(context: Context) =
-        ContextCompat.checkSelfPermission(context, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    fun hasFineLocationPermission(context: Context) = context.checkIfPermissionGiven(ACCESS_FINE_LOCATION)
 
     fun hasBluetoothScanPermission(context: Context) =
-        ContextCompat.checkSelfPermission(context, BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+        context.checkIfPermissionGiven(BLUETOOTH_SCAN) || androidROrLower()
 
     fun hasBluetoothConnectPermission(context: Context) =
-        ContextCompat.checkSelfPermission(context, BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+        context.checkIfPermissionGiven(BLUETOOTH_CONNECT) || androidROrLower()
 
     fun requestFineLocationPermission(requestPermissionLauncher: ActivityResultLauncher<String>) {
         requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
@@ -42,4 +42,9 @@ object WooPermissionUtils {
     fun requestScanAndConnectBluetoothPermission(launcher: ActivityResultLauncher<Array<String>>) {
         launcher.launch(arrayOf(BLUETOOTH_SCAN, BLUETOOTH_CONNECT))
     }
+
+    private fun Context.checkIfPermissionGiven(permission: String) =
+        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+
+    private fun androidROrLower() = Build.VERSION.SDK_INT <= Build.VERSION_CODES.R
 }
