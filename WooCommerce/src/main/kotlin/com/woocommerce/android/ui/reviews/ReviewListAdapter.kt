@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.reviews
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,10 +23,7 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 
-class ReviewListAdapter(
-    private val context: Context,
-    private val clickListener: OnReviewClickListener
-) : SectionedRecyclerViewAdapter() {
+class ReviewListAdapter(private val clickListener: OnReviewClickListener) : SectionedRecyclerViewAdapter() {
     private val reviewList = mutableListOf<ProductReview>()
 
     // Copy of current review manually removed from the list so the action may be undone.
