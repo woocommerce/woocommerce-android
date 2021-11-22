@@ -124,6 +124,7 @@ class OrderListViewModel @Inject constructor(
         dispatcher.register(this)
 
         launch {
+            _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             // refresh plugin information
             if (selectedSite.exists()) {
                 wooCommerceStore.fetchSitePlugins(selectedSite.get())
