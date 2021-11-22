@@ -88,6 +88,6 @@ class JetpackInstallViewModel @Inject constructor(
         object Finished : InstallStatus()
 
         @Parcelize
-        data class Failed(val error: String?) : InstallStatus()
+        data class Failed(val error: String) : InstallStatus()
     }
 }
