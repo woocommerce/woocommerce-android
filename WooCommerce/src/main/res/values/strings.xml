@@ -120,6 +120,8 @@
     <string name="and">and</string>
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
+    <string name="analytics">Analytics</string>
+
     <!--
         Date/Time Labels
     -->
