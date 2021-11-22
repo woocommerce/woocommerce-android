@@ -2,9 +2,8 @@ package com.woocommerce.android.ui.jetpack
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.*
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
-import com.woocommerce.android.ui.mystore.PluginRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -6,8 +6,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
-import com.woocommerce.android.ui.mystore.PluginRepository
-import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.*
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay

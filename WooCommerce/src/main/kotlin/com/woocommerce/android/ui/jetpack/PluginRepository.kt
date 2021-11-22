@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.jetpack
 
 import android.os.Parcelable
 import com.woocommerce.android.AppConstants
@@ -12,10 +12,10 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.PluginActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
-import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginInstalled
-import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginInstallFailed
-import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginActivated
-import com.woocommerce.android.ui.mystore.PluginRepository.PluginStatus.PluginActivationFailed
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstalled
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstallFailed
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivated
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.channels.awaitClose
