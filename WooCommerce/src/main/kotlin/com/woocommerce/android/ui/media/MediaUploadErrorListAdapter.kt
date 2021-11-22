@@ -51,9 +51,7 @@ class MediaUploadErrorListAdapter : RecyclerView.Adapter<MediaUploadErrorListIte
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(model: ErrorUiModel) {
             with(model) {
-                if (fileName.isNotBlank()) {
-                    viewBinding.mediaFileName.text = fileName
-                }
+                viewBinding.mediaFileName.text = fileName
                 viewBinding.mediaFileErrorText.text = errorMessage
                 if (filePath.isNotBlank()) {
                     GlideApp.with(viewBinding.root.context)
