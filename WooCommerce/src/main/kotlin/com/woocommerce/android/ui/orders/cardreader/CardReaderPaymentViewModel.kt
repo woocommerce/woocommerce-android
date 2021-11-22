@@ -399,18 +399,14 @@ class CardReaderPaymentViewModel
             paymentState is ProcessingPaymentState ||
             paymentState is CapturingPaymentState
 
-    private fun getCurrentPaymentState(): PaymentState? {
+    private fun getCurrentPaymentState(): String? {
         return when (viewState.value) {
-            is LoadingDataState -> PaymentState.LOADING
-            is FailedPaymentState -> PaymentState.FAILED
-            is CapturingPaymentState -> PaymentState.CAPTURING
-            is CollectPaymentState -> PaymentState.COLLECTING
-            is PaymentSuccessfulState -> PaymentState.SUCCESS
-            is ViewState.PrintingReceiptState -> PaymentState.RECEIPT_PRINT
-            is ProcessingPaymentState -> PaymentState.PROCESSING
-            ReFetchingOrderState -> PaymentState.REFETCHING_ORDER
-            null -> {
-                WooLog.e(WooLog.T.CARD_READER, "null payment state received")
+            is LoadingDataState -> "Loading"
+            is CapturingPaymentState -> "Capturing"
+            is CollectPaymentState -> "Collecting"
+            is ProcessingPaymentState -> "Processing"
+            else -> {
+                WooLog.e(WooLog.T.CARD_READER, "Invalid payment state received")
                 null
             }
         }
@@ -543,17 +539,6 @@ class CardReaderPaymentViewModel
             paymentStateLabel = R.string.card_reader_payment_fetch_order_loading_payment_state,
             isProgressVisible = true
         )
-    }
-
-    enum class PaymentState {
-        LOADING,
-        FAILED,
-        CAPTURING,
-        COLLECTING,
-        SUCCESS,
-        PROCESSING,
-        RECEIPT_PRINT,
-        REFETCHING_ORDER
     }
 
     enum class PaymentFlowError(val message: Int) {

@@ -19,14 +19,11 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PaymentFlowError.*
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PaymentState.*
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.PaymentState.FAILED
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ViewState.*
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -1042,7 +1039,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when OS refuses the print request, then print failed event tracked`() {
-        viewModel.onPrintResult(PrintHtmlHelper.PrintJobResult.FAILED)
+        viewModel.onPrintResult(FAILED)
 
         verify(tracker).track(RECEIPT_PRINT_FAILED)
     }
@@ -1125,7 +1122,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment during state $LOADING")
+                eq("User manually cancelled the payment during state Loading")
             )
         }
 
@@ -1143,7 +1140,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment during state $COLLECTING")
+                eq("User manually cancelled the payment during state Collecting")
             )
         }
 
@@ -1161,7 +1158,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment during state $PROCESSING")
+                eq("User manually cancelled the payment during state Processing")
             )
         }
 
@@ -1179,7 +1176,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment during state $CAPTURING")
+                eq("User manually cancelled the payment during state Capturing")
             )
         }
 
