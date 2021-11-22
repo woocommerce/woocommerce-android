@@ -712,7 +712,6 @@ class MainActivity :
                 when (event) {
                     is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
                     is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                    is ViewStoreAnalytics -> binding.bottomNav.currentPosition = ANALYTICS
                     is ViewReviewList -> binding.bottomNav.currentPosition = REVIEWS
                     is ViewZendeskTickets -> {
                         binding.bottomNav.currentPosition = MY_STORE

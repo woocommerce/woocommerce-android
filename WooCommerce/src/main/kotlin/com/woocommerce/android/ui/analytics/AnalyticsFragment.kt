@@ -14,5 +14,8 @@ class AnalyticsFragment : TopLevelFragment(R.layout.fragment_analytics) {
 
     override fun shouldExpandToolbar(): Boolean = false
 
-    override fun scrollToTop() {}
+    override fun scrollToTop() {
+        // Nothing until https://github.com/woocommerce/woocommerce-android/issues/5237 is done
+        return
+    }
 }
