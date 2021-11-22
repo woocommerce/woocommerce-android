@@ -324,7 +324,7 @@ class MyStoreFragment :
 
     override fun getFragmentSubtitle(): String = presenter.getSelectedSiteName() ?: ""
 
-    override fun `scrollToTop() {
+    override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
     }
 
