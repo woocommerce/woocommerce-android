@@ -35,8 +35,17 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
 
         val binding = FragmentSettingsBetaBinding.bind(view)
 
-        binding.switchAddonsToggle.isChecked = AppPrefs.isProductAddonsEnabled
-        binding.switchAddonsToggle.setOnCheckedChangeListener { switch, isChecked ->
+        with(binding) {
+            bindProductAddonsToggle()
+            bindQuickOrdersToggle()
+        }
+
+
+    }
+
+    private fun FragmentSettingsBetaBinding.bindProductAddonsToggle() {
+        switchAddonsToggle.isChecked = AppPrefs.isProductAddonsEnabled
+        switchAddonsToggle.setOnCheckedChangeListener { switch, isChecked ->
             AnalyticsTracker.track(
                 PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED,
                 mapOf(
@@ -46,13 +55,15 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
             )
 
             settingsListener?.onProductAddonsOptionChanged(isChecked)
-                ?: binding.handleToggleChangeFailure(switch, isChecked)
+                ?: handleToggleChangeFailure(switch, isChecked)
         }
+    }
 
+    private fun FragmentSettingsBetaBinding.bindQuickOrdersToggle() {
         if (FeatureFlag.QUICK_ORDER.isEnabled() && navArgs.isCardReaderOnboardingCompleted) {
-            binding.switchQuickOrderToggle.show()
-            binding.switchQuickOrderToggle.isChecked = AppPrefs.isQuickOrderEnabled
-            binding.switchQuickOrderToggle.setOnCheckedChangeListener { switch, isChecked ->
+            switchQuickOrderToggle.show()
+            switchQuickOrderToggle.isChecked = AppPrefs.isQuickOrderEnabled
+            switchQuickOrderToggle.setOnCheckedChangeListener { switch, isChecked ->
                 AnalyticsTracker.track(
                     SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
                     mapOf(
@@ -61,10 +72,10 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
                     )
                 )
                 settingsListener?.onQuickOrderOptionChanged(isChecked)
-                    ?: binding.handleToggleChangeFailure(switch, isChecked)
+                    ?: handleToggleChangeFailure(switch, isChecked)
             }
         } else {
-            binding.switchQuickOrderToggle.hide()
+            switchQuickOrderToggle.hide()
         }
     }
 
