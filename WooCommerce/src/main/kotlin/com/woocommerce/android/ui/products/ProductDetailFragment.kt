@@ -76,8 +76,8 @@ class ProductDetailFragment :
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-    private lateinit var saveMenuItem: MenuItem
-    private lateinit var publishMenuItem: MenuItem
+    private var saveMenuItem: MenuItem? = null
+    private var publishMenuItem: MenuItem? = null
     private var imageUploadErrorsSnackbar: Snackbar? = null
 
     private var _binding: FragmentProductDetailBinding? = null
@@ -209,7 +209,7 @@ class ProductDetailFragment :
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
-            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showSaveMenuItem(it) }
+            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { requireActivity().invalidateOptionsMenu() }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 if (it) {
@@ -392,15 +392,15 @@ class ProductDetailFragment :
 
         menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.canBeStoredAsDraft && viewModel.hasChanges()
 
-        saveMenuItem.isVisible = viewModel.isSaveOptionNeeded
-        publishMenuItem.isVisible = viewModel.isPublishOptionNeeded
+        saveMenuItem?.isVisible = viewModel.isSaveOptionNeeded
+        publishMenuItem?.isVisible = viewModel.isPublishOptionNeeded
 
-        if (saveMenuItem.isVisible) {
-            publishMenuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
-            publishMenuItem.title = getString(R.string.product_add_tool_bar_menu_button_done)
+        if (saveMenuItem?.isVisible ?: false) {
+            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
+            publishMenuItem?.title = getString(R.string.product_add_tool_bar_menu_button_done)
         } else {
-            publishMenuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-            publishMenuItem.title =
+            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            publishMenuItem?.title =
                 getString(R.string.product_add_tool_bar_menu_button_done).uppercase(Locale.getDefault())
         }
     }
@@ -446,10 +446,6 @@ class ProductDetailFragment :
 
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun showSaveMenuItem(show: Boolean) {
-        saveMenuItem.isVisible = show
     }
 
     private fun changesMade() {
