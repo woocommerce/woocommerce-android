@@ -14,7 +14,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,8 +27,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
 
-    @Inject
-    lateinit var selectedSite: SelectedSite
+    @Inject lateinit var selectedSite: SelectedSite
 
     private val viewModel: JetpackInstallViewModel by viewModels()
 
@@ -67,9 +65,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             )
         }
 
-        // Temporary animation for testing the UI. Replace with actual animation when it's ready.
-        WooAnimUtils.rotate(binding.secondStepIcon)
-
         viewModel.installJetpackPlugin()
 
         setupObservers(binding)
@@ -94,47 +89,46 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
     }
 
     private fun updateInstallProgressUi(status: InstallStatus, binding: DialogJetpackInstallProgressBinding) {
-        val iconStart = R.drawable.ic_progress_circle_start
-        val iconComplete = R.drawable.ic_progress_circle_complete
+        val iconNotDone = R.drawable.ic_progress_circle_start
+        val iconDone = R.drawable.ic_progress_circle_complete
+        val iconStep1 = binding.firstStepIcon
+        val iconStep2 = binding.secondStepIcon
+        val iconStep3 = binding.thirdStepIcon
+        val iconStep4 = binding.fourthStepIcon
+        val progressStep1 = binding.firstStepProgressBar
+        val progressStep2 = binding.secondStepProgressBar
+        val progressStep3 = binding.thirdStepProgressBar
+
         when (status) {
             is Installing -> {
-                binding.firstStepIcon.hide()
-                setImageViews(iconStart, binding.secondStepIcon, binding.thirdStepIcon, binding.fourthStepIcon)
+                setViewsVisibility(View.INVISIBLE, iconStep1, progressStep2, progressStep3)
+                setViewsVisibility(View.VISIBLE, iconStep2, iconStep3, iconStep4, progressStep1)
+                setImageViews(iconNotDone, iconStep2, iconStep3, iconStep4)
 
-                // TODO Show loader on first step, hide all other loaders
+                binding.jetpackProgressActionButton.hide()
             }
             is Activating -> {
-                binding.firstStepIcon.show()
-                binding.secondStepIcon.hide()
-                setImageViews(iconComplete, binding.firstStepIcon)
-                setImageViews(iconStart, binding.thirdStepIcon, binding.fourthStepIcon)
+                setViewsVisibility(View.INVISIBLE, iconStep2, progressStep1, progressStep3)
+                setViewsVisibility(View.VISIBLE, iconStep1, iconStep3, iconStep4, progressStep2)
+                setImageViews(iconNotDone, iconStep3, iconStep4)
+                setImageViews(iconDone, iconStep1)
 
-                // TODO Show loader on second step, hide all other loaders
+                binding.jetpackProgressActionButton.hide()
             }
             is Connecting -> {
-                binding.firstStepIcon.show()
-                binding.secondStepIcon.show()
-                binding.thirdStepIcon.hide()
-                setImageViews(iconComplete, binding.firstStepIcon, binding.secondStepIcon)
-                setImageViews(iconStart, binding.fourthStepIcon)
+                setViewsVisibility(View.INVISIBLE, iconStep3, progressStep1, progressStep2)
+                setViewsVisibility(View.VISIBLE, iconStep1, iconStep2, iconStep4, progressStep3)
+                setImageViews(iconNotDone, iconStep4)
+                setImageViews(iconDone, iconStep1, iconStep2)
 
-                // TODO Show loader on third step, hide all other loaders
+                binding.jetpackProgressActionButton.hide()
             }
             is Finished -> {
-                binding.firstStepIcon.show()
-                binding.secondStepIcon.show()
-                binding.thirdStepIcon.show()
-                setImageViews(
-                    iconComplete,
-                    binding.firstStepIcon,
-                    binding.secondStepIcon,
-                    binding.thirdStepIcon,
-                    binding.fourthStepIcon
-                )
+                setViewsVisibility(View.INVISIBLE, progressStep1, progressStep2, progressStep3)
+                setViewsVisibility(View.VISIBLE, iconStep1, iconStep2, iconStep3, iconStep4)
+                setImageViews(iconDone, iconStep1, iconStep2, iconStep3, iconStep4)
 
-                // TODO Hide all loader
-
-                binding.jetpackProgressActionButton.isEnabled = true
+                binding.jetpackProgressActionButton.show()
             }
             is Failed -> {
                 // TODO Add error state
@@ -142,6 +136,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         }
     }
 
+    private fun setViewsVisibility(visibility: Int, vararg views: View) = views.forEach { it.visibility = visibility }
     private fun setImageViews(resId: Int, vararg views: ImageView) = views.forEach { it.setImageResource(resId) }
 
     private fun isTabletLandscape() = (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)) &&

@@ -86,7 +86,18 @@
                 android:src="@drawable/ic_progress_circle_complete"
                 android:layout_marginTop="@dimen/major_200"
                 app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/subtitle" />
+                app:layout_constraintTop_toBottomOf="@id/subtitle"
+                android:visibility="visible" />
+
+            <ProgressBar
+                android:id="@+id/first_step_progress_bar"
+                style="@style/Woo.ProgressBar"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:layout_marginTop="@dimen/major_200"
+                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
+                app:layout_constraintTop_toBottomOf="@id/subtitle"
+                android:visibility="invisible"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/first_step_message"
@@ -109,7 +120,18 @@
                 android:src="@drawable/ic_progress_circle_loading"
                 android:layout_marginTop="@dimen/major_125"
                 app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/first_step_icon" />
+                app:layout_constraintTop_toBottomOf="@id/first_step_icon"
+                android:visibility="invisible"/>
+
+            <ProgressBar
+                android:id="@+id/second_step_progress_bar"
+                style="@style/Woo.ProgressBar"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:layout_marginTop="@dimen/major_125"
+                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
+                app:layout_constraintTop_toBottomOf="@id/first_step_icon"
+                android:visibility="visible"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/second_step_message"
@@ -133,6 +155,16 @@
                 android:layout_marginTop="@dimen/major_125"
                 app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
                 app:layout_constraintTop_toBottomOf="@id/second_step_icon" />
+
+            <ProgressBar
+                android:id="@+id/third_step_progress_bar"
+                style="@style/Woo.ProgressBar"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:layout_marginTop="@dimen/major_125"
+                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
+                app:layout_constraintTop_toBottomOf="@id/second_step_icon"
+                android:visibility="invisible"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/third_step_message"
