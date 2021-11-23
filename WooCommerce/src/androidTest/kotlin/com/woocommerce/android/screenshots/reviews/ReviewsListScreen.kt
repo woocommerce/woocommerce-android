@@ -8,6 +8,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.TabNavComponent
+import com.woocommerce.android.screenshots.products.ProductListScreen
 import com.woocommerce.android.screenshots.util.CustomMatchers
 import com.woocommerce.android.screenshots.util.ReviewData
 import com.woocommerce.android.screenshots.util.Screen
@@ -24,39 +25,13 @@ class ReviewsListScreen : Screen {
 
     constructor() : super(LIST_VIEW)
 
-    fun selectReview(index: Int): SingleReviewScreen {
-        val correctedIndex = index + 1 // account for the header
-        selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, REVIEW_ICON)
-        return SingleReviewScreen()
-    }
-
     fun selectReviewByTitle(reviewTitle: String): SingleReviewScreen {
-        Espresso.onView(ViewMatchers.withId(LIST_VIEW)).perform(
-            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                ViewMatchers.hasDescendant(
-                    ViewMatchers.withText(
-                        reviewTitle
-                    )
-                ),
-                ViewActions.click()
-            )
-        )
-
+        selectListItem(reviewTitle, LIST_VIEW)
         return SingleReviewScreen()
     }
 
     fun scrollToReview(reviewTitle: String): ReviewsListScreen {
-        Espresso.onView(ViewMatchers.withId(LIST_VIEW)).perform(
-            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                ViewMatchers.hasDescendant(
-                    ViewMatchers.withText(
-                        reviewTitle
-                    )
-                ),
-                ViewActions.scrollTo()
-            )
-        )
-
+        scrollToListItem(reviewTitle, LIST_VIEW)
         return ReviewsListScreen()
     }
 

@@ -7,6 +7,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
+import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
 import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.Matchers
@@ -19,20 +20,14 @@ class ProductListScreen : Screen {
     constructor() : super(LIST_VIEW)
 
     fun scrollToProduct(productTitle: String): ProductListScreen {
-        Espresso.onView(ViewMatchers.withId(LIST_VIEW)).perform(
-            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                ViewMatchers.hasDescendant(
-                    ViewMatchers.withText(
-                        productTitle
-                    )
-                ),
-                ViewActions.scrollTo()
-            )
-        )
-
-        return this
+        scrollToListItem(productTitle, LIST_VIEW)
+        return ProductListScreen()
     }
 
+    fun selectProductByName(productName: String): SingleProductScreen {
+        selectListItem(productName, LIST_VIEW)
+        return SingleProductScreen()
+    }
     fun assertProductCard(product: ProductData): ProductListScreen {
         Espresso.onView(
             Matchers.allOf(
@@ -48,20 +43,5 @@ class ProductListScreen : Screen {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
         return this
-    }
-
-    fun selectProductByName(productName: String): SingleProductScreen {
-        Espresso.onView(ViewMatchers.withId(LIST_VIEW)).perform(
-            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                ViewMatchers.hasDescendant(
-                    ViewMatchers.withText(
-                        productName
-                    )
-                ),
-                ViewActions.click()
-            )
-        )
-
-        return SingleProductScreen()
     }
 }
