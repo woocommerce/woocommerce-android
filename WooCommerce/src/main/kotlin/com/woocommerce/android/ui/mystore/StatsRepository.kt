@@ -67,7 +67,7 @@ class StatsRepository @Inject constructor(
             wcStatsStore.fetchNewVisitorStats(visitsPayload)
         }
 
-        return if (result?.isError == false && result?.granularity == lastVisitorStatsGranularity) {
+        return if (result?.isError == false && result.granularity == lastVisitorStatsGranularity) {
             val visitorStats = wcStatsStore.getNewVisitorStats(
                 selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
             )
