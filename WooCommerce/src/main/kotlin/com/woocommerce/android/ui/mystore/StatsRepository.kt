@@ -81,16 +81,6 @@ class StatsRepository @Inject constructor(
             )
             Result.failure(Exception(errorMessage))
         }
-
-//        val result = continuationVisitorStats.callAndWait {
-//            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
-//            dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
-//        }
-//
-//        return when (result) {
-//            is Cancellation -> Result.failure(result.exception)
-//            is Success -> result.value
-//        }
     }
 
     suspend fun fetchProductLeaderboards(granularity: StatsGranularity, quantity: Int, forced: Boolean):
