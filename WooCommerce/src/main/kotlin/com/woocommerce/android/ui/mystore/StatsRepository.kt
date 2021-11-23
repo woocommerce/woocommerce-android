@@ -68,7 +68,6 @@ class StatsRepository @Inject constructor(
         }
 
         return if (result?.isError == false && result?.granularity == lastVisitorStatsGranularity) {
-            // TODO. Continue here. this needs to be suspendable as well
             val visitorStats = wcStatsStore.getNewVisitorStats(
                 selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
             )
