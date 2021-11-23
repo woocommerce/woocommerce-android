@@ -48,10 +48,10 @@ data class ProductData(
     val rating: Int
 ) {
     val stockStatus = productStatusesMap[stockStatusRaw]
-    val price = getPriceDescription(priceDiscountedRaw, priceRegularRaw)
+    val price = getPriceDescription()
     val type = productTypesMap[typeRaw]
 
-    private fun getPriceDescription(priceDiscounted: String, priceRegular: String): String {
+    private fun getPriceDescription(): String {
         var price = "Regular price: \$$priceRegularRaw.00"
 
         // Every product has a sale price and a regular price in JSON.
