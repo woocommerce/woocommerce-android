@@ -52,6 +52,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
         fun onQuickOrderOptionChanged(enabled: Boolean)
+        fun onOrderCreationOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
