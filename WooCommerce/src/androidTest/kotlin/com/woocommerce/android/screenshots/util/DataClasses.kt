@@ -21,6 +21,10 @@ val productStatusesMap = mapOf(
     "outofstock" to "Out of stock"
 )
 
+val productTypesMap = mapOf(
+    "simple" to "Physical product"
+)
+
 data class ReviewData(
     val productID: Int,
     val status: String,
@@ -37,7 +41,27 @@ data class ReviewData(
 data class ProductData(
     val id: Int,
     val name: String,
-    val stockStatusRaw: String
+    val stockStatusRaw: String,
+    val priceDiscountedRaw: String,
+    val priceRegularRaw: String,
+    val typeRaw: String
 ) {
     val stockStatus = productStatusesMap[stockStatusRaw]
+    val price = getPriceDescription(priceDiscountedRaw, priceRegularRaw)
+    val type = productTypesMap[typeRaw]
+
+    private fun getPriceDescription(priceDiscounted: String, priceRegular: String): String {
+        var price = "Regular price: \$$priceRegularRaw.00"
+
+        // Every product has a sale price and a regular price in JSON.
+        // If there is no sale, these prices will be the same,
+        // and the app will show a regular price only.
+        // If sale takes place, these two prices will be different,
+        // and there will be an additional sale price shown in the app.
+        if (priceDiscountedRaw != priceRegularRaw) {
+            price += "\nSale price: \$$priceDiscountedRaw.00"
+        }
+
+        return price
+    }
 }

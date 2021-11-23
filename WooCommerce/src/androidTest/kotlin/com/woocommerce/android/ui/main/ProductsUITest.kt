@@ -51,7 +51,7 @@ class ProductsUITest : TestBase() {
                 .scrollToProduct(productData.name)
                 .assertProductCard(productData)
                 .selectProductByName(productData.name)
-                .assertProductDetails(productData)
+                .assertSingleProductScreen(productData)
                 .goBackToProductsScreen()
         }
     }
@@ -60,7 +60,10 @@ class ProductsUITest : TestBase() {
         return ProductData(
             id = productJSON.getInt("id"),
             name = productJSON.getString("name"),
-            stockStatusRaw = productJSON.getString("stock_status")
+            stockStatusRaw = productJSON.getString("stock_status"),
+            priceDiscountedRaw = productJSON.getString("price"),
+            priceRegularRaw = productJSON.getString("regular_price"),
+            typeRaw = productJSON.getString("type")
         )
     }
 }

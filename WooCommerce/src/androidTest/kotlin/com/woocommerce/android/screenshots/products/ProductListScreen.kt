@@ -24,6 +24,7 @@ class ProductListScreen : Screen {
         selectListItem(productName, LIST_VIEW)
         return SingleProductScreen()
     }
+
     fun assertProductCard(product: ProductData): ProductListScreen {
         Espresso.onView(
             Matchers.allOf(

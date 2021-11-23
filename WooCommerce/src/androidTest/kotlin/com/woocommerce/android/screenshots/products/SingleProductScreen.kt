@@ -20,18 +20,47 @@ class SingleProductScreen : Screen {
         return ProductListScreen()
     }
 
-    fun assertProductDetails(productData: ProductData): SingleProductScreen {
-        Espresso.onView(ViewMatchers.withId(PRODUCT_DETAIL_CONTAINER)).check(
-            ViewAssertions.matches(
-                ViewMatchers.hasDescendant(
+    fun assertSingleProductScreen(product: ProductData): SingleProductScreen {
+        // Navigation bar:
+        Espresso.onView(
+            Matchers.allOf(
+                ViewMatchers.withId(R.id.toolbar),
+                ViewMatchers.withChild(ViewMatchers.withContentDescription("Navigate up")),
+                ViewMatchers.withChild(ViewMatchers.withText(product.name))
+            )
+        )
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+        // Product name:
+        Espresso.onView(Matchers.allOf(
+                ViewMatchers.withId(R.id.editText),
+                ViewMatchers.withText(product.name)
+            )
+        ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+        // Name-Value pairs:
+        assertTextNameValuePair("Price", product.price)
+        assertTextNameValuePair("Inventory", "Stock status: ${product.stockStatus}")
+        assertTextNameValuePair("Product type", product.type)
+
+        return SingleProductScreen()
+    }
+
+    // Checks that label and actual value are siblings in view hierarchy:
+    fun assertTextNameValuePair(nameText: String, valueText: String?) {
+        Espresso.onView(
+            Matchers.allOf(
+                ViewMatchers.withChild(
                     Matchers.allOf(
-                        ViewMatchers.withId(R.id.editText),
-                        ViewMatchers.withText(productData.name),
+                        ViewMatchers.withId(R.id.textPropertyName), ViewMatchers.withText(nameText)
+                    )
+                ),
+                ViewMatchers.withChild(
+                    Matchers.allOf(
+                        ViewMatchers.withId(R.id.textPropertyValue), ViewMatchers.withText(valueText)
                     )
                 )
             )
-        )
-
-        return SingleProductScreen()
+        ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 }
