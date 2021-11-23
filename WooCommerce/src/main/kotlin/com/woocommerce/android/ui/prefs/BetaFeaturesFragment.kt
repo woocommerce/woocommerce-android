@@ -35,7 +35,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
 
         with(FragmentSettingsBetaBinding.bind(view)) {
             bindProductAddonsToggle()
-            bindQuickOrdersToggle()
+            bindSimplePaymentToggle()
             bindOrderCreationToggle()
         }
     }
@@ -56,11 +56,11 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         }
     }
 
-    private fun FragmentSettingsBetaBinding.bindQuickOrdersToggle() {
-        if (FeatureFlag.QUICK_ORDER.isEnabled() && navArgs.isCardReaderOnboardingCompleted) {
-            switchQuickOrderToggle.show()
-            switchQuickOrderToggle.isChecked = AppPrefs.isQuickOrderEnabled
-            switchQuickOrderToggle.setOnCheckedChangeListener { switch, isChecked ->
+    private fun FragmentSettingsBetaBinding.bindSimplePaymentToggle() {
+        if (FeatureFlag.SIMPLE_PAYMENTS.isEnabled() && navArgs.isCardReaderOnboardingCompleted) {
+            switchSimplePaymentsToggle.show()
+            switchSimplePaymentsToggle.isChecked = AppPrefs.isSimplePaymentsEnabled
+            switchSimplePaymentsToggle.setOnCheckedChangeListener { switch, isChecked ->
                 AnalyticsTracker.track(
                     SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
                     mapOf(
@@ -68,11 +68,11 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
                             AnalyticsUtils.getToggleStateLabel(isChecked)
                     )
                 )
-                settingsListener?.onQuickOrderOptionChanged(isChecked)
+                settingsListener?.onSimplePaymentsOptionChanged(isChecked)
                     ?: handleToggleChangeFailure(switch, isChecked)
             }
         } else {
-            switchQuickOrderToggle.hide()
+            switchSimplePaymentsToggle.hide()
         }
     }
 

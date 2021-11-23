@@ -51,7 +51,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onRequestLogout()
         fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
-        fun onQuickOrderOptionChanged(enabled: Boolean)
+        fun onSimplePaymentsOptionChanged(enabled: Boolean)
         fun onOrderCreationOptionChanged(enabled: Boolean)
     }
 
@@ -273,7 +273,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             add(getString(R.string.beta_features_add_ons))
 
             if (presenter.isCardReaderOnboardingCompleted()) {
-                add(getString(R.string.beta_features_quick_order))
+                add(getString(R.string.beta_features_simple_payment))
             }
 
             if (FeatureFlag.ORDER_CREATION.isEnabled()) {

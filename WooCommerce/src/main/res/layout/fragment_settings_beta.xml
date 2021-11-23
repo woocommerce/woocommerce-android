@@ -17,11 +17,11 @@
     <View style="@style/Woo.Divider" />
 
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-        android:id="@+id/switchQuickOrderToggle"
+        android:id="@+id/switchSimplePaymentsToggle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:toggleOptionDesc="@string/settings_enable_quick_order_teaser_message"
-        app:toggleOptionTitle="@string/settings_enable_quick_order_teaser_title" />
+        app:toggleOptionDesc="@string/settings_enable_simple_payments_teaser_message"
+        app:toggleOptionTitle="@string/settings_enable_simple_payments_teaser_title" />
 
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/switchOrderCreationToggle"

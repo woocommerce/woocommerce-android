@@ -30,7 +30,7 @@ object AppUrls {
         "https://automattic.survey.fm/woo-app-feature-feedback-shipping-labels"
 
     // TODO nbradbury - change to https://automattic.survey.fm/woo-app-quick-order-production when feature is released
-    const val QUICK_ORDER_SURVEY = "https://automattic.survey.fm/woo-app-quick-order-testing"
+    const val SIMPLE_PAYMENTS_SURVEY = "https://automattic.survey.fm/woo-app-quick-order-testing"
 
     const val WOOCOMMERCE_USER_ROLES =
         "https://woocommerce.com/posts/a-guide-to-woocommerce-user-roles-permissions-and-security/"

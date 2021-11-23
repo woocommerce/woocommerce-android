@@ -126,10 +126,10 @@ class AppSettingsActivity :
         }
     }
 
-    override fun onQuickOrderOptionChanged(enabled: Boolean) {
-        if (AppPrefs.isQuickOrderEnabled != enabled) {
+    override fun onSimplePaymentsOptionChanged(enabled: Boolean) {
+        if (AppPrefs.isSimplePaymentsEnabled != enabled) {
             isBetaOptionChanged = true
-            AppPrefs.isQuickOrderEnabled = enabled
+            AppPrefs.isSimplePaymentsEnabled = enabled
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
     }
