@@ -71,7 +71,6 @@ class StatsRepository @Inject constructor(
             val visitorStats = wcStatsStore.getNewVisitorStats(
                 selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
             )
-            //val stats = result.stats
             Result.success(visitorStats)
         } else {
             val errorMessage = result?.error?.message ?: "Timeout"
