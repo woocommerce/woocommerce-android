@@ -273,7 +273,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             add(getString(R.string.beta_features_add_ons))
 
             if (presenter.isCardReaderOnboardingCompleted()) {
-                add(getString(R.string.beta_features_simple_payment))
+                add(getString(R.string.beta_features_simple_payments))
             }
 
             if (FeatureFlag.ORDER_CREATION.isEnabled()) {
