@@ -51,7 +51,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onRequestLogout()
         fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
-        fun onQuickOrderOptionChanged(enabled: Boolean)
+        fun onSimplePaymentsOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -261,7 +261,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.storeSettingsContainer.visibility =
             if (CARD_READER.isEnabled()) View.VISIBLE else View.GONE
         binding.optionBetaFeatures.optionValue = if (presenter.isCardReaderOnboardingCompleted()) {
-            getString(R.string.beta_features_add_ons_and_quick_order)
+            getString(R.string.beta_features_add_ons_and_simple_payments)
         } else {
             getString(R.string.beta_features_add_ons)
         }
