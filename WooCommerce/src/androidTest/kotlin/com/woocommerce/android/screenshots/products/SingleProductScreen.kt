@@ -4,6 +4,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
+import com.woocommerce.android.screenshots.util.CustomMatchers
 import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.Matchers
@@ -32,9 +33,9 @@ class SingleProductScreen : Screen {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
         // Product name:
-        Espresso.onView(Matchers.allOf(
-                ViewMatchers.withId(R.id.editText),
-                ViewMatchers.withText(product.name)
+        Espresso.onView(
+            Matchers.allOf(
+                ViewMatchers.withId(R.id.editText), ViewMatchers.withText(product.name)
             )
         ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
@@ -42,6 +43,24 @@ class SingleProductScreen : Screen {
         assertTextNameValuePair("Price", product.price)
         assertTextNameValuePair("Inventory", "Stock status: ${product.stockStatus}")
         assertTextNameValuePair("Product type", product.type)
+
+        // Rating is shown only if the rating is larger than zero (more than zero reviews):
+        if (product.rating > 0) {
+            Espresso.onView(
+                Matchers.allOf(
+                    ViewMatchers.withChild(
+                        Matchers.allOf(
+                            ViewMatchers.withId(R.id.textPropertyName), ViewMatchers.withText("Reviews")
+                        )
+                    ),
+                    ViewMatchers.withChild(
+                        Matchers.allOf(
+                            ViewMatchers.withId(R.id.ratingBar), CustomMatchers().withStarsNumber(product.rating)
+                        )
+                    )
+                )
+            ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        }
 
         return SingleProductScreen()
     }

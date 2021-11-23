@@ -44,7 +44,8 @@ data class ProductData(
     val stockStatusRaw: String,
     val priceDiscountedRaw: String,
     val priceRegularRaw: String,
-    val typeRaw: String
+    val typeRaw: String,
+    val rating: Int
 ) {
     val stockStatus = productStatusesMap[stockStatusRaw]
     val price = getPriceDescription(priceDiscountedRaw, priceRegularRaw)
