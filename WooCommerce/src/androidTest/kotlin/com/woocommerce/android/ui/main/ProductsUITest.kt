@@ -64,7 +64,8 @@ class ProductsUITest : TestBase() {
             priceDiscountedRaw = productJSON.getString("price"),
             priceRegularRaw = productJSON.getString("regular_price"),
             typeRaw = productJSON.getString("type"),
-            rating = productJSON.getInt("average_rating")
+            rating = productJSON.getInt("average_rating"),
+            reviewsCount = productJSON.getInt("rating_count")
         )
     }
 }

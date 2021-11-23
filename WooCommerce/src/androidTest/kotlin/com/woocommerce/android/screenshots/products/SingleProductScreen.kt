@@ -46,16 +46,26 @@ class SingleProductScreen : Screen {
 
         // Rating is shown only if the rating is larger than zero (more than zero reviews):
         if (product.rating > 0) {
+            // Check that "Review" label, actual rating (stars) and reviews count are
+            // all direct children of the same container:
             Espresso.onView(
                 Matchers.allOf(
                     ViewMatchers.withChild(
                         Matchers.allOf(
-                            ViewMatchers.withId(R.id.textPropertyName), ViewMatchers.withText("Reviews")
+                            ViewMatchers.withId(R.id.textPropertyName),
+                            ViewMatchers.withText("Reviews")
                         )
                     ),
                     ViewMatchers.withChild(
                         Matchers.allOf(
-                            ViewMatchers.withId(R.id.ratingBar), CustomMatchers().withStarsNumber(product.rating)
+                            ViewMatchers.withId(R.id.ratingBar),
+                            CustomMatchers().withStarsNumber(product.rating)
+                        )
+                    ),
+                    ViewMatchers.withChild(
+                        Matchers.allOf(
+                            ViewMatchers.withId(R.id.textPropertyValue),
+                            ViewMatchers.withText(product.reviewsCountBeautified)
                         )
                     )
                 )
