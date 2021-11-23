@@ -33,11 +33,10 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentSettingsBetaBinding.bind(view)
-
-        with(binding) {
+        with(FragmentSettingsBetaBinding.bind(view)) {
             bindProductAddonsToggle()
             bindQuickOrdersToggle()
+            bindOrderCreationToggle()
         }
 
 
@@ -76,6 +75,16 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
             }
         } else {
             switchQuickOrderToggle.hide()
+        }
+    }
+
+    private fun FragmentSettingsBetaBinding.bindOrderCreationToggle() {
+        switchOrderCreationToggle.isChecked = AppPrefs.isOrderCreationEnabled
+        switchOrderCreationToggle.setOnCheckedChangeListener { switch, isChecked ->
+            //trigger order creation tracks
+
+            settingsListener?.onOrderCreationOptionChanged(isChecked)
+                ?: handleToggleChangeFailure(switch, isChecked)
         }
     }
 
