@@ -554,6 +554,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         JETPACK_CP_SITES_FETCHED,
         FEATURE_JETPACK_BENEFITS_BANNER,
         JETPACK_INSTALL_BUTTON_TAPPED,
+        JETPACK_INSTALL_SUCCEEDED,
+        JETPACK_INSTALL_FAILED,
 
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
