@@ -9,7 +9,8 @@ enum class DateRange(val filterKey: String) {
     TODAY("Today"),
     LAST_2_DAYS("Last2Days"),
     LAST_7_DAYS("Last7Days"),
-    LAST_30_DAYS("Last8Days");
+    LAST_30_DAYS("Last30Days"),
+    CUSTOM_RANGE("CustomRange");
 
     companion object {
         private val valueMap = values().associateBy(DateRange::filterKey)
@@ -30,5 +31,7 @@ data class OrderStatusOption(
 
 data class DateRangeFilterOption(
     val dateRange: DateRange,
-    override val isSelected: Boolean
+    override val isSelected: Boolean,
+    val startDate: Long,
+    val endDate: Long,
 ) : OrderFilterOption()

@@ -56,6 +56,8 @@ object AppPrefs {
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED,
         ORDER_FILTER_PREFIX,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_START,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_END,
     }
 
     /**
@@ -463,6 +465,33 @@ object AppPrefs {
 
     private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
         "$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory"
+
+    fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> {
+        val startDateMillis = PreferenceUtils.getLong(
+            getPreferences(),
+            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
+            default = 0
+        )
+        val endDateMillis = PreferenceUtils.getLong(
+            getPreferences(),
+            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
+            default = 0
+        )
+        return Pair(startDateMillis, endDateMillis)
+    }
+
+    fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
+        PreferenceUtils.setLong(
+            getPreferences(),
+            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
+            startDateMillis
+        )
+        PreferenceUtils.setLong(
+            getPreferences(),
+            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
+            endDateMillis
+        )
+    }
 
     /**
      * Remove all user and site-related preferences.

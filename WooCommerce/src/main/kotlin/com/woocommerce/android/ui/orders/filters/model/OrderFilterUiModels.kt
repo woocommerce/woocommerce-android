@@ -14,6 +14,11 @@ sealed class OrderFilterEvent : MultiLiveEvent.Event() {
         val category: OrderFilterCategoryUiModel
     ) : OrderFilterEvent()
 
+    data class ShowCustomDateRangePicker(
+        val startDateMillis: Long,
+        val endDateMillis: Long
+    ) : OrderFilterEvent()
+
     object OnShowOrders : OrderFilterEvent()
 }
 
@@ -35,6 +40,7 @@ data class OrderFilterCategoryUiModel(
 data class OrderFilterOptionUiModel(
     val key: String,
     val displayName: String,
+    val displayValue: String? = null,
     val isSelected: Boolean = false
 ) : Parcelable {
     companion object {

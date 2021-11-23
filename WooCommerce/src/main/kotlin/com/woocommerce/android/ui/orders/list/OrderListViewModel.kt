@@ -124,6 +124,7 @@ class OrderListViewModel @Inject constructor(
         dispatcher.register(this)
 
         launch {
+            _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
                 wooCommerceStore.fetchSitePlugins(selectedSite.get())
                 loadOrders()
@@ -364,6 +365,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun onFiltersButtonTapped() {
+        AnalyticsTracker.track(Stat.ORDERS_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         triggerEvent(ShowOrderFilters)
     }
 
