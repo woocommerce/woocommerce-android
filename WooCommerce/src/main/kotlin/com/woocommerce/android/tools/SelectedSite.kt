@@ -59,7 +59,6 @@ class SelectedSite(
 
         // Notify listeners
         getEventBus().post(SelectedSiteChangedEvent(siteModel))
-        state.value = siteModel
     }
 
     fun exists(): Boolean {
