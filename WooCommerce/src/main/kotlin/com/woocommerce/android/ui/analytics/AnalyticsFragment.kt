@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.base.TopLevelFragment
  * gets finished
  */
 class AnalyticsFragment : TopLevelFragment(R.layout.fragment_analytics) {
-
     override fun getFragmentTitle() = getString(R.string.analytics)
 
     override fun shouldExpandToolbar(): Boolean = false
