@@ -14,9 +14,9 @@
             app:destination="@id/jetpackBenefitsDialog" />
     </fragment>
     <dialog
-        android:id="@+id/quickOrderDialog"
-        android:name="com.woocommerce.android.ui.orders.quickorder.QuickOrderDialog"
-        android:label="QuickOrderDialog" />
+        android:id="@+id/simplePaymentsDialog"
+        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
+        android:label="SimplePaymentsDialog" />
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -42,8 +42,8 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_orderListFragment_to_quickOrderDialog"
-            app:destination="@id/quickOrderDialog"
+            android:id="@+id/action_orderListFragment_to_simplePaymentsDialog"
+            app:destination="@id/simplePaymentsDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
@@ -100,6 +100,11 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:popExitAnim="@anim/activity_slide_out_to_right"/>
     </fragment>
+    <fragment
+        android:id="@+id/analytics"
+        android:name="com.woocommerce.android.ui.analytics.AnalyticsFragment"
+        android:label="fragment_analytics"
+        tools:layout="@layout/fragment_analytics" />
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
@@ -222,11 +227,13 @@
             app:argType="string" />
         <argument
             android:name="urlToTriggerExit"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
     </fragment>
-    <action android:id="@+id/action_global_WPComWebViewFragment" app:destination="@id/WPComWebViewFragment"/>
+    <action
+        android:id="@+id/action_global_WPComWebViewFragment"
+        app:destination="@id/WPComWebViewFragment" />
     <action
         android:id="@+id/action_global_userEligibilityErrorFragment"
         app:destination="@id/userEligibilityErrorFragment"

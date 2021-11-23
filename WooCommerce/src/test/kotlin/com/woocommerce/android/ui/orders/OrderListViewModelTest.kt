@@ -310,6 +310,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        advanceUntilIdle()
         viewModel.emptyViewType.observeForTesting {
             // Verify
             val emptyView = viewModel.emptyViewType.value

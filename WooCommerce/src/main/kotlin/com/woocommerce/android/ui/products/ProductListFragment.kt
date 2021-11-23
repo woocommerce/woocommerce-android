@@ -65,7 +65,9 @@ class ProductListFragment :
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var productAdapter: ProductListAdapter
+    private var _productAdapter: ProductListAdapter? = null
+    private val productAdapter: ProductListAdapter
+        get() = _productAdapter!!
 
     private val viewModel: ProductListViewModel by viewModels()
 
@@ -95,7 +97,7 @@ class ProductListFragment :
         setupObservers(viewModel)
         setupResultHandlers()
 
-        productAdapter = ProductListAdapter(this, this)
+        _productAdapter = ProductListAdapter(this, this)
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productAdapter
 
@@ -137,6 +139,7 @@ class ProductListFragment :
         skeletonView.hide()
         disableSearchListeners()
         searchView = null
+        _productAdapter = null
         super.onDestroyView()
         _binding = null
     }
