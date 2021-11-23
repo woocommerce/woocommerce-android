@@ -272,11 +272,13 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         mutableListOf<String>().apply {
             add(getString(R.string.beta_features_add_ons))
 
-            if (presenter.isCardReaderOnboardingCompleted())
+            if (presenter.isCardReaderOnboardingCompleted()) {
                 add(getString(R.string.beta_features_quick_order))
+            }
 
-            if (FeatureFlag.ORDER_CREATION.isEnabled())
+            if (FeatureFlag.ORDER_CREATION.isEnabled()) {
                 add(getString(R.string.beta_features_order_creation))
+            }
         }
 
     /**
