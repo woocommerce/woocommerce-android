@@ -28,4 +28,19 @@ class OrderFiltersRepository @Inject constructor(
             appSharedPrefs.getOrderFilters(it.id, filterCategory.name)
                 ?.split(",")
         } ?: emptyList()
+
+    fun getCustomDateRangeFilter(): Pair<Long, Long> =
+        selectedSite.getIfExists()?.let {
+            appSharedPrefs.getOrderFilterCustomDateRange(it.id)
+        } ?: Pair(0, 0)
+
+    fun setCustomDateRange(startDateMillis: Long, endDateMillis: Long) {
+        selectedSite.getIfExists()?.let {
+            appSharedPrefs.setOrderFilterCustomDateRange(
+                it.id,
+                startDateMillis,
+                endDateMillis
+            )
+        }
+    }
 }

@@ -5,7 +5,7 @@
     <item
         android:id="@+id/menu_add"
         android:icon="@drawable/ic_add"
-        android:title="@string/orderlist_quickorder_menu"
+        android:title="@string/orderlist_simple_payments_menu"
         android:visible="false"
         app:showAsAction="always|collapseActionView" />
 

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.prefs
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -18,17 +17,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_IMAGE_OPTIMIZATION_TOGGLED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
@@ -37,12 +26,8 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.AppThemeUtils
-import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.*
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
-import com.woocommerce.android.util.ThemeOption
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,7 +51,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onRequestLogout()
         fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
-        fun onQuickOrderOptionChanged(enabled: Boolean)
+        fun onSimplePaymentsOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -130,7 +115,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (SystemVersionUtils.isAtLeastO()) {
             binding.containerNotifsOld.visibility = View.GONE
             binding.containerNotifsNew.visibility = View.VISIBLE
             binding.optionNotifications.setOnClickListener {
@@ -239,7 +224,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
      * this on API 26+ devices (will do nothing on older devices)
      */
     override fun showDeviceAppNotificationSettings() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (SystemVersionUtils.isAtLeastO()) {
             val intent = Intent()
             intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
             intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.packageName)
@@ -276,7 +261,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.storeSettingsContainer.visibility =
             if (CARD_READER.isEnabled()) View.VISIBLE else View.GONE
         binding.optionBetaFeatures.optionValue = if (presenter.isCardReaderOnboardingCompleted()) {
-            getString(R.string.beta_features_add_ons_and_quick_order)
+            getString(R.string.beta_features_add_ons_and_simple_payments)
         } else {
             getString(R.string.beta_features_add_ons)
         }

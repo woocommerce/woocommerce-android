@@ -72,7 +72,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
             })
     }
 
-
     /**
      * HACK alert! The bottom nav's presenter stores the badges in its saved state and recreates them
      * in onRestoreInstanceState, which should be fine but instead it ends up creating duplicates
@@ -163,7 +162,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
         setOnItemSelectedListener(if (assign) this else null)
         setOnItemReselectedListener(if (assign) this else null)
     }
-
 
     private fun updateVisibilities() {
         if (FeatureFlag.ANALYTICS_HUB.isEnabled()) {

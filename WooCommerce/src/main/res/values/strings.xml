@@ -293,16 +293,16 @@
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
-    <string name="orderlist_quickorder_wip_title">Take payments from your device!</string>
-    <string name="orderlist_quickorder_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
-    <string name="orderlist_quickorder_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
-    <string name="orderlist_quickorder_menu">Quick order</string>
+    <string name="orderlist_simple_payments_wip_title">Take payments from your device!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
+    <string name="orderlist_simple_payments_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
+    <string name="orderlist_simple_payments_menu">Simple payment</string>
     <!--
-        Quick Order
+         Simple Payments
     -->
-    <string name="quickorder_dialog_title">Take payment</string>
-    <string name="quickorder_enter_amount">Enter amount</string>
-    <string name="quickorder_creation_error">Unable to create order</string>
+    <string name="simple_payments_dialog_title">Take payment</string>
+    <string name="simple_payments_enter_amount">Enter amount</string>
+    <string name="simple_payments_creation_error">Unable to create order</string>
     <!--
         Order Filters
     -->
@@ -323,6 +323,10 @@
     <string name="orderfilters_date_range_filter_last_two_days">Last 2 Days</string>
     <string name="orderfilters_date_range_filter_last_7_days">Last 7 days</string>
     <string name="orderfilters_date_range_filter_last_30_days">Last 30 days</string>
+    <string name="orderfilters_date_range_filter_custom_range">Custom Range</string>
+    <string name="orderfilters_date_range_picker_title">Select dates</string>
+    <string name="orderfilters_date_range_start_date">Start Date</string>
+    <string name="orderfilters_date_range_end_date">End Date</string>
 
     <!--
         Order Detail Views
@@ -900,7 +904,7 @@
     <string name="card_reader_connect_invalid_postal_code_hint">Please provide a valid postcode in your store settings and try again</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
-    <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
+    <string name="card_reader_connect_missing_permissions_header">Missing required precise location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
@@ -1344,7 +1348,7 @@
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
     <string name="orders_processed_empty_message">All orders have been processed</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
-    <string name="orders_empty_message_with_order_status_filter">We\'re sorry, we couldn\'t find any \"%s\" orders</string>
+    <string name="orders_empty_message_for_filtered_orders">We\'re sorry, we couldn\'t find any orders</string>
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
     <!--
@@ -1355,7 +1359,7 @@
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
     <string name="beta_features_add_ons">View Add-ons</string>
-    <string name="beta_features_add_ons_and_quick_order">View Add-ons, Quick order</string>
+    <string name="beta_features_add_ons_and_simple_payments">View Add-ons, Simple payments</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
@@ -1366,8 +1370,8 @@
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
-    <string name="settings_enable_quick_order_teaser_title">Quick order</string>
-    <string name="settings_enable_quick_order_teaser_message">Test out creating orders with minimal information as we get ready to launch</string>
+    <string name="settings_enable_simple_payments_teaser_title">Simple payments</string>
+    <string name="settings_enable_simple_payments_teaser_message">Test out creating orders with minimal information as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
