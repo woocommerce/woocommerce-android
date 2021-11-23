@@ -79,12 +79,16 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     }
 
     private fun FragmentSettingsBetaBinding.bindOrderCreationToggle() {
-        switchOrderCreationToggle.isChecked = AppPrefs.isOrderCreationEnabled
-        switchOrderCreationToggle.setOnCheckedChangeListener { switch, isChecked ->
-            //trigger order creation tracks
+        if (FeatureFlag.ORDER_CREATION.isEnabled()) {
+            switchOrderCreationToggle.isChecked = AppPrefs.isOrderCreationEnabled
+            switchOrderCreationToggle.setOnCheckedChangeListener { switch, isChecked ->
+                //trigger order creation tracks
 
-            settingsListener?.onOrderCreationOptionChanged(isChecked)
-                ?: handleToggleChangeFailure(switch, isChecked)
+                settingsListener?.onOrderCreationOptionChanged(isChecked)
+                    ?: handleToggleChangeFailure(switch, isChecked)
+            }
+        } else {
+            switchOrderCreationToggle.hide()
         }
     }
 
