@@ -15,6 +15,12 @@ val productsMap = mapOf(
     2130 to "Black Coral shades"
 )
 
+val productStatusesMap = mapOf(
+    "instock" to "In stock",
+    "onbackorder" to "On backorder",
+    "outofstock" to "Out of stock"
+)
+
 data class ReviewData(
     val productID: Int,
     val status: String,
@@ -31,4 +37,7 @@ data class ReviewData(
 data class ProductData(
     val id: Int,
     val name: String,
-)
+    val stockStatusRaw: String
+) {
+    val stockStatus = productStatusesMap[stockStatusRaw]
+}

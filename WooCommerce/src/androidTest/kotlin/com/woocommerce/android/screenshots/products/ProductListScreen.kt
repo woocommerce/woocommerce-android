@@ -33,6 +33,12 @@ class ProductListScreen : Screen {
                         ViewMatchers.withId(R.id.productName),
                         ViewMatchers.withText(product.name)
                     )
+                ),
+                ViewMatchers.withChild(
+                    Matchers.allOf(
+                        ViewMatchers.withId(R.id.productStockAndStatus),
+                        ViewMatchers.withText(product.stockStatus)
+                    )
                 )
             )
         )

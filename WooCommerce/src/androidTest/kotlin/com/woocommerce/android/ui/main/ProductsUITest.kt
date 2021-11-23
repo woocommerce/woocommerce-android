@@ -60,6 +60,7 @@ class ProductsUITest : TestBase() {
         return ProductData(
             id = productJSON.getInt("id"),
             name = productJSON.getString("name"),
+            stockStatusRaw = productJSON.getString("stock_status")
         )
     }
 }
