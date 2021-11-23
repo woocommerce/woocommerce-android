@@ -55,14 +55,14 @@ class AnalyticsViewModel @Inject constructor(
     private fun calculateToDatePeriod(analyticsSelectedDateRange: AnalyticsDateRanges) = resourceProvider.getString(
         R.string.analytics_date_range_to_date,
         dateUtils.getShortMonthDayAndYearString(
-            dateUtils.getYearMonthDayStringFromDate(dateUtils.getCurrentDateTimeMinusDays(1))
+            dateUtils.getYearMonthDayStringFromDate(Date(dateUtils.getCurrentDateTimeMinusDays(1)))
         ) ?: ""
     )
 
     private fun calculateFromDatePeriod(analyticsSelectedDateRange: AnalyticsDateRanges) = resourceProvider.getString(
         R.string.analytics_date_range_to_date,
         dateUtils.getShortMonthDayAndYearString(
-            dateUtils.getYearMonthDayStringFromDate(dateUtils.getCurrentDateTimeMinusDays(1))
+            dateUtils.getYearMonthDayStringFromDate(Date(dateUtils.getCurrentDateTimeMinusDays(1)))
         ) ?: ""
     )
 
@@ -71,7 +71,7 @@ class AnalyticsViewModel @Inject constructor(
     private fun defaultFromDatePeriod() = resourceProvider.getString(
         R.string.analytics_date_range_to_date,
         dateUtils.getShortMonthDayAndYearString(
-            dateUtils.getYearMonthDayStringFromDate(dateUtils.getCurrentDateTimeMinusDays(1))
+            dateUtils.getYearMonthDayStringFromDate(Date(dateUtils.getCurrentDateTimeMinusDays(1)))
         ) ?: ""
     )
 

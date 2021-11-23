@@ -17,8 +17,8 @@ class AnalyticsDateRange @Inject constructor(
             AnalyticsDateRanges.TODAY ->
                 DateRange(currentDate, currentDate)
             AnalyticsDateRanges.YESTERDAY ->
-                DateRange(dateUtils.getCurrentDateTimeMinusDays(1),
-                    dateUtils.getCurrentDateTimeMinusDays(1))
+                DateRange(Date(dateUtils.getCurrentDateTimeMinusDays(1)),
+                    Date(dateUtils.getCurrentDateTimeMinusDays(1)))
             AnalyticsDateRanges.LAST_WEEK ->
                 DateRange(dateUtils.getDateForFirstDayOfPreviousWeek(),
                     dateUtils.getDateTimeAppliedOperation(dateUtils.getDateForFirstDayOfPreviousWeek(), Calendar.DATE, 6))
