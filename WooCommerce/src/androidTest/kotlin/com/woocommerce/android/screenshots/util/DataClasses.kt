@@ -2,7 +2,7 @@ package com.woocommerce.android.screenshots.util
 
 // While the test data for reviews is obtained from
 // "mappings/jetpack-blogs/wc/reviews/products_reviews_all.json",
-// this file does not contain human-readable product descriptions,
+// that file does not contain human-readable product descriptions,
 // but only products ID. The perfect solution would be to
 // retrieve the human readable descriptions by product IDs from
 // "mappings/jetpack-blogs/wc/products/products.json",
