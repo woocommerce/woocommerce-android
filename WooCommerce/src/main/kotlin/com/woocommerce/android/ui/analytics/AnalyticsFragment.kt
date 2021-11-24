@@ -46,7 +46,7 @@ class AnalyticsFragment :
                                 ?: emptyArray(),
                         values = getDateRangeSelectorViewState()?.availableRangeDates?.toTypedArray()
                                 ?: emptyArray(),
-                        selectedItem = getDateRangeSelectorViewState()?.defaultSelectedPeriod
+                        selectedItem = getDateRangeSelectorViewState()?.selectedPeriod
                 ))
     }
 
@@ -63,8 +63,8 @@ class AnalyticsFragment :
     }
 
     private fun handleStateChange(): (state: AnalyticsState) -> Unit = {
-        analyticsDateRangeCardView.binding.tvFromDate.text = it.analyticsDateRangeSelectorState.toDatePeriod
-        analyticsDateRangeCardView.binding.tvToDate.text = it.analyticsDateRangeSelectorState.fromDatePeriod
+        analyticsDateRangeCardView.binding.tvFromDate.text = it.analyticsDateRangeSelectorState.fromDatePeriod
+        analyticsDateRangeCardView.binding.tvToDate.text = it.analyticsDateRangeSelectorState.toDatePeriod
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value?.analyticsDateRangeSelectorState
