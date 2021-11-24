@@ -1,10 +1,15 @@
 package com.woocommerce.android.ui.analytics
 
 
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
+import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 import org.mockito.kotlin.*
 import java.text.SimpleDateFormat
@@ -12,57 +17,92 @@ import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@ExperimentalCoroutinesApi
 class AnalyticsViewModelTest : BaseUnitTest() {
-
     companion object {
+        private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
+        private const val ANY_OTHER_DATE_TIME_VALUE = "2021-11-20 00:00:00"
 
-        private const val TODAY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
-        private const val YESTERDAY_DATE_TIME_VALUE = "2021-11-20 00:00:00"
+        private const val ANY_YEAR_VALUE = "2021-11-21"
+        private const val ANY_SORT_FORMAT_VALUE = "21 Nov, 2021"
 
-        private const val TODAY_DATE_VALUE = "2021-11-21"
-        private const val YESTERDAY_DATE_VALUE = "2021-11-20"
+        private const val ANY_VALUE = "Today"
+        private const val ANY_OTHER_VALUE = "Last year"
 
-        private const val TODAY_SHORT_MONTH_DAY_YEAR_VALUE = "21 Nov, 2021"
-        private const val YESTERDAY_SHORT_MONTH_DAY_YEAR_VALUE = "20 Nov, 2021"
-
-        private const val TODAY = "Today"
-        private const val YESTERDAY = "yesterday"
-
-        private const val RANGE_EXPECTED_DATE_MESSAGE = "$TODAY ($TODAY_SHORT_MONTH_DAY_YEAR_VALUE)"
+        private const val ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE = "$ANY_VALUE ($ANY_SORT_FORMAT_VALUE)"
+        private const val ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE = "$ANY_OTHER_VALUE ($ANY_SORT_FORMAT_VALUE)"
 
         private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        private val TODAY_DATE: Date = sdf.parse(TODAY_DATE_TIME_VALUE)!!
-        private val YESTERDAY_DATE: Date = sdf.parse(YESTERDAY_DATE_TIME_VALUE)!!
-
-        private val dateRangeSelectors = listOf(TODAY, YESTERDAY)
-    }
-
-    private val resourceProvider: ResourceProvider = mock {
-        on { getString(any()) } doAnswer { TODAY }
-        on { getString(any(), anyVararg()) } doAnswer { RANGE_EXPECTED_DATE_MESSAGE }
-        on { getStringArray(any()) } doAnswer { dateRangeSelectors.toTypedArray() }
+        private val ANY_DATE: Date = sdf.parse(ANY_DATE_TIME_VALUE)!!
+        private val ANY_OTHER_DATE: Date = sdf.parse(ANY_OTHER_DATE_TIME_VALUE)!!
+        private val dateRangeSelectors = listOf(ANY_VALUE, ANY_OTHER_VALUE)
     }
 
     private val dateUtils: DateUtils = mock {
-        on { getCurrentDate() } doReturn TODAY_DATE
-        on { getCurrentDateTimeMinusDays(1) } doReturn YESTERDAY_DATE.time
-        on { getYearMonthDayStringFromDate(TODAY_DATE) } doReturn TODAY_DATE_VALUE
-        on { getYearMonthDayStringFromDate(YESTERDAY_DATE) } doReturn YESTERDAY_DATE_VALUE
-        on { getShortMonthDayAndYearString(TODAY_DATE_VALUE) } doReturn TODAY_SHORT_MONTH_DAY_YEAR_VALUE
-        on { getShortMonthDayAndYearString(YESTERDAY_DATE_VALUE) } doReturn YESTERDAY_SHORT_MONTH_DAY_YEAR_VALUE
+        on { getCurrentDate() } doReturn ANY_DATE
+        on { getCurrentDateTimeMinusDays(1) } doReturn ANY_OTHER_DATE.time
+        on { getYearMonthDayStringFromDate(any()) } doReturn ANY_YEAR_VALUE
+        on { getShortMonthDayAndYearString(any()) } doReturn ANY_SORT_FORMAT_VALUE
     }
 
-    private val analyticsDateRangeCalculator: AnalyticsDateRangeCalculator = mock()
+    private val analyticsDateRangeCalculator: AnalyticsDateRangeCalculator = mock {
+        on { getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_YEAR) } doReturn MultipleDateRange(
+            DateRange.SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
+            DateRange.SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
+        )
+    }
+    private val savedState = SavedStateHandle()
 
-    private val sut = AnalyticsViewModel(resourceProvider, dateUtils, analyticsDateRangeCalculator)
+    private lateinit var sut: AnalyticsViewModel
 
     @Test
-    fun `analyticsDateRangeSelectorState default values are expected`() {
+    fun `analyticsDateRangeSelectorState default values are expected`() = testBlocking {
+
+        val resourceProvider: ResourceProvider = mock {
+            on { getString(any()) } doReturn ANY_VALUE
+            on { getString(any(), anyVararg()) } doReturn ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE
+            on { getStringArray(any()) } doAnswer { dateRangeSelectors.toTypedArray() }
+        }
+
+        sut = AnalyticsViewModel(coroutinesTestRule.testDispatchers,
+            resourceProvider,
+            dateUtils,
+            analyticsDateRangeCalculator,
+            savedState)
+
         with(sut.state.value?.analyticsDateRangeSelectorState) {
             assertNotNull(this)
-            assertEquals(TODAY, selectedPeriod)
-            assertEquals(RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
-            assertEquals(RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
+            assertEquals(ANY_VALUE, selectedPeriod)
+            assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
+            assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
+            assertEquals(dateRangeSelectors, availableRangeDates)
+        }
+    }
+
+    @Test
+    fun `analyticsDateRangeSelectorState onSelectedDateRangeChanged values are expected`() = testBlocking {
+
+        val resourceProvider: ResourceProvider = mock {
+            on { getString(any()) } doReturnConsecutively
+                listOf(ANY_VALUE, AnalyticsDateRanges.LAST_YEAR.description)
+            on { getString(any(), anyVararg()) } doReturnConsecutively
+                listOf(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE)
+            on { getStringArray(any()) } doAnswer { dateRangeSelectors.toTypedArray() }
+        }
+
+        sut = AnalyticsViewModel(coroutinesTestRule.testDispatchers,
+            resourceProvider,
+            dateUtils,
+            analyticsDateRangeCalculator,
+            savedState)
+
+        sut.onSelectedDateRangeChanged(AnalyticsDateRanges.LAST_YEAR.description)
+
+        with(sut.state.value?.analyticsDateRangeSelectorState) {
+            assertNotNull(this)
+            assertEquals(AnalyticsDateRanges.LAST_YEAR.description, selectedPeriod)
+            assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
+            assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
             assertEquals(dateRangeSelectors, availableRangeDates)
         }
     }

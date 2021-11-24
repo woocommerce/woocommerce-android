@@ -6,25 +6,32 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.Dispatcher
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
+    private val coroutineDispatchers: CoroutineDispatchers,
     private val resourceProvider: ResourceProvider,
     private val dateUtils: DateUtils,
-    private val analyticsDateRange: AnalyticsDateRangeCalculator
-) : ViewModel() {
+    private val analyticsDateRange: AnalyticsDateRangeCalculator,
+    savedState: SavedStateHandle
+) : ScopedViewModel(savedState) {
 
     private val defaultDateRange = SimpleDateRange(
         Date(dateUtils.getCurrentDateTimeMinusDays(1)),
@@ -47,7 +54,10 @@ class AnalyticsViewModel @Inject constructor(
     val state: LiveData<AnalyticsContract.AnalyticsState> = mutableState
     val effect: Flow<AnalyticsContract.AnalyticsEffect> = mutableEffect.receiveAsFlow()
 
-    internal fun sendEvent(event: AnalyticsContract.AnalyticsEvent) = viewModelScope.launch { mutableEvent.emit(event) }
+    internal fun sendEvent(event: AnalyticsContract.AnalyticsEvent) =
+        launch(coroutineDispatchers.main) {
+            mutableEvent.emit(event)
+        }
 
     fun onSelectedDateRangeChanged(newSelection: String) {
         val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)
@@ -63,7 +73,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun calculateToDatePeriod(analyticsDateRange: AnalyticsDateRanges, dateRange: DateRange) = when (dateRange) {
-        is DateRange.MultipleDateRange -> resourceProvider.getString(
+        is MultipleDateRange -> resourceProvider.getString(
             R.string.analytics_date_range_to_date,
             getDateSelectedMessage(analyticsDateRange),
             dateRange.to.formatDatesToFriendlyPeriod()
@@ -76,7 +86,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun calculateFromDatePeriod(dateRange: DateRange) = when (dateRange) {
-        is DateRange.MultipleDateRange -> resourceProvider.getString(
+        is MultipleDateRange -> resourceProvider.getString(
             R.string.analytics_date_range_from_date,
             dateRange.from.formatDatesToFriendlyPeriod()
         )
