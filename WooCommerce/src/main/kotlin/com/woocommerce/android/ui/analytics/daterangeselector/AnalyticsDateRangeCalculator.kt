@@ -112,8 +112,17 @@ fun SimpleDateRange.formatDatesToFriendlyPeriod(locale: Locale = Locale.getDefau
         if (isSameYearAndMonth) {
             "$month $minDay - $maxDay, $year"
         } else {
+
+            val isSameYear = calendar.get(Calendar.YEAR) == anotherCalendar.get(Calendar.YEAR)
             val anotherMonth = anotherCalendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
-            "$month $minDay - $anotherMonth $maxDay, $year"
+
+            if (isSameYear) {
+                "$month $minDay - $anotherMonth $maxDay, $year"
+            } else {
+                val anotherYear = anotherCalendar.get(Calendar.YEAR)
+                "$month $minDay, $year - $anotherMonth $maxDay, $anotherYear"
+            }
+
         }
 
     } catch (e: Exception) {
