@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.orders.quickorder.QuickOrderDialog
+import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -78,7 +78,7 @@ class OrderListFragment :
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private val searchHandler = Handler(Looper.getMainLooper())
-    private var quickOrderMenuItem: MenuItem? = null
+    private var simplePaymentMenuItem: MenuItem? = null
 
     private var _binding: FragmentOrderListBinding? = null
     private val binding get() = _binding!!
@@ -114,7 +114,7 @@ class OrderListFragment :
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
-        quickOrderMenuItem = menu.findItem(R.id.menu_add)
+        simplePaymentMenuItem = menu.findItem(R.id.menu_add)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -150,8 +150,8 @@ class OrderListFragment :
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        if (FeatureFlag.QUICK_ORDER.isEnabled()) {
-            displayQuickOrderWIPCard(true)
+        if (FeatureFlag.SIMPLE_PAYMENTS.isEnabled()) {
+            displaySimplePaymentsWIPCard(true)
         }
     }
 
@@ -172,14 +172,14 @@ class OrderListFragment :
         searchView = null
         orderListMenu = null
         searchMenuItem = null
-        quickOrderMenuItem = null
+        simplePaymentMenuItem = null
         super.onDestroyView()
         _binding = null
     }
 
-    private fun isQuickOrderAvailable(): Boolean {
-        return FeatureFlag.QUICK_ORDER.isEnabled() &&
-            AppPrefs.isQuickOrderEnabled &&
+    private fun isSimplePaymentsAvailable(): Boolean {
+        return FeatureFlag.SIMPLE_PAYMENTS.isEnabled() &&
+            AppPrefs.isSimplePaymentsEnabled &&
             viewModel.isCardReaderOnboardingCompleted()
     }
 
@@ -201,7 +201,7 @@ class OrderListFragment :
             }
         }
 
-        quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
+        simplePaymentMenuItem?.isVisible = isSimplePaymentsAvailable()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -212,7 +212,7 @@ class OrderListFragment :
                 true
             }
             R.id.menu_add -> {
-                showQuickOrderDialog()
+                showSimplePaymentsDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -297,7 +297,7 @@ class OrderListFragment :
     }
 
     private fun initializeResultHandlers() {
-        handleResult<Order>(QuickOrderDialog.KEY_QUICK_ORDER_RESULT) { order ->
+        handleResult<Order>(SimplePaymentsDialog.KEY_SIMPLE_PAYMENTS_RESULT) { order ->
             binding.orderListView.post {
                 openOrderDetail(order.localId.value, order.remoteId, order.status.value)
             }
@@ -311,9 +311,9 @@ class OrderListFragment :
         findNavController().navigate(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
-    private fun showQuickOrderDialog() {
+    private fun showSimplePaymentsDialog() {
         AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
-        findNavController().navigate(R.id.action_orderListFragment_to_quickOrderDialog)
+        findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsDialog)
     }
 
     private fun hideEmptyView() {
@@ -384,7 +384,7 @@ class OrderListFragment :
         isSearching = true
         checkOrientation()
         onSearchViewActiveChanged(isActive = true)
-        quickOrderMenuItem?.isVisible = false
+        simplePaymentMenuItem?.isVisible = false
         binding.orderFiltersCard.isVisible = false
         binding.orderListView.clearAdapterData()
         return true
@@ -394,7 +394,7 @@ class OrderListFragment :
         clearSearchResults()
         searchMenuItem?.isVisible = true
         viewModel.onSearchClosed()
-        quickOrderMenuItem?.isVisible = isQuickOrderAvailable()
+        simplePaymentMenuItem?.isVisible = isSimplePaymentsAvailable()
         binding.orderFiltersCard.isVisible = true
         onSearchViewActiveChanged(isActive = false)
         return true
@@ -490,25 +490,25 @@ class OrderListFragment :
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
     }
 
-    private fun displayQuickOrderWIPCard(show: Boolean) {
+    private fun displaySimplePaymentsWIPCard(show: Boolean) {
         if (!show ||
             feedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED ||
             !viewModel.isCardReaderOnboardingCompleted()
         ) {
-            binding.quickOrderWIPcard.isVisible = false
+            binding.simplePaymentsWIPcard.isVisible = false
             return
         }
 
-        val isEnabled = AppPrefs.isQuickOrderEnabled
+        val isEnabled = AppPrefs.isSimplePaymentsEnabled
         @StringRes val messageId = if (isEnabled) {
-            R.string.orderlist_quickorder_wip_message_enabled
+            R.string.orderlist_simple_payments_wip_message_enabled
         } else {
-            R.string.orderlist_quickorder_wip_message_disabled
+            R.string.orderlist_simple_payments_wip_message_disabled
         }
 
-        binding.quickOrderWIPcard.isVisible = true
-        binding.quickOrderWIPcard.initView(
-            getString(R.string.orderlist_quickorder_wip_title),
+        binding.simplePaymentsWIPcard.isVisible = true
+        binding.simplePaymentsWIPcard.initView(
+            getString(R.string.orderlist_simple_payments_wip_title),
             getString(messageId),
             onGiveFeedbackClick = { onGiveFeedbackClicked() },
             onDismissClick = { onDismissWIPCardClicked() },
@@ -520,13 +520,13 @@ class OrderListFragment :
         AnalyticsTracker.track(
             Stat.FEATURE_FEEDBACK_BANNER,
             mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_QUICK_ORDER_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
             )
         )
         registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
         NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.QUICK_ORDER)
+            .actionGlobalFeedbackSurveyFragment(SurveyType.SIMPLE_PAYMENTS)
             .apply { findNavController().navigateSafely(this) }
     }
 
@@ -534,17 +534,17 @@ class OrderListFragment :
         AnalyticsTracker.track(
             Stat.FEATURE_FEEDBACK_BANNER,
             mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_QUICK_ORDER_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
             )
         )
         registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-        displayQuickOrderWIPCard(false)
+        displaySimplePaymentsWIPCard(false)
     }
 
     private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
         FeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.QUICK_ORDER.name,
+            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS.name,
             state
         ).registerItselfWith(TAG)
     }

@@ -51,7 +51,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onRequestLogout()
         fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
-        fun onQuickOrderOptionChanged(enabled: Boolean)
+        fun onSimplePaymentsOptionChanged(enabled: Boolean)
+        fun onOrderCreationOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -260,12 +261,25 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun updateStoreSettings() {
         binding.storeSettingsContainer.visibility =
             if (CARD_READER.isEnabled()) View.VISIBLE else View.GONE
-        binding.optionBetaFeatures.optionValue = if (presenter.isCardReaderOnboardingCompleted()) {
-            getString(R.string.beta_features_add_ons_and_quick_order)
-        } else {
-            getString(R.string.beta_features_add_ons)
-        }
+
+        generateBetaFeaturesTitleList()
+            .joinToString(", ")
+            .takeIf { it.isNotEmpty() }
+            ?.let { binding.optionBetaFeatures.optionValue = it }
     }
+
+    private fun generateBetaFeaturesTitleList() =
+        mutableListOf<String>().apply {
+            add(getString(R.string.beta_features_add_ons))
+
+            if (presenter.isCardReaderOnboardingCompleted()) {
+                add(getString(R.string.beta_features_simple_payments))
+            }
+
+            if (FeatureFlag.ORDER_CREATION.isEnabled()) {
+                add(getString(R.string.beta_features_order_creation))
+            }
+        }
 
     /**
      * Called when a boolean setting is changed so we can track it

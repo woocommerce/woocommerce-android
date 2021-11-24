@@ -1,3 +1,5 @@
+import io.github.wzieba.tracks.plugin.BuildTimePlugin
+import io.github.wzieba.tracks.plugin.TracksExtension
 import io.gitlab.arturbosch.detekt.Detekt
 
 buildscript {
@@ -9,7 +11,7 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        gradlePluginPortal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
@@ -19,10 +21,18 @@ buildscript {
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$daggerVersion"
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detektVersion"
+        classpath "io.github.wzieba.tracks:io.github.wzieba.tracks.plugin:1.0.0"
     }
 }
 
 apply plugin: 'com.automattic.android.fetchstyle'
+apply plugin: BuildTimePlugin
+
+tracks {
+    automatticProject.set(TracksExtension.AutomatticProject.WooCommerce)
+    enabled.set((findProperty('tracksEnabled') ?: false).toBoolean())
+    username.set(findProperty('tracksUsername'))
+}
 
 allprojects {
     apply plugin: 'checkstyle'

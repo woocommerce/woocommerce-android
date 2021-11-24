@@ -316,7 +316,8 @@ class MainActivity :
             currentDestinationId == R.id.dashboard ||
                 currentDestinationId == R.id.orders ||
                 currentDestinationId == R.id.products ||
-                currentDestinationId == R.id.reviews
+                currentDestinationId == R.id.reviews ||
+                currentDestinationId == R.id.analytics
         } else {
             true
         }
@@ -640,6 +641,7 @@ class MainActivity :
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> Stat.MAIN_TAB_DASHBOARD_SELECTED
+            ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_SELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
             REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
@@ -656,6 +658,7 @@ class MainActivity :
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
+            ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_RESELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
             REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED

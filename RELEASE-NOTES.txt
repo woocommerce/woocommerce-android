@@ -2,7 +2,7 @@
 
 8.1
 -----
-
+- [***] Order list filters: Merchants can now filter orders by status or date range [https://github.com/woocommerce/woocommerce-android/issues/4934]
 
 8.0
 -----

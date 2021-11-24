@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiMode
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -33,6 +34,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     private val getDateRangeFilterOptions: GetDateRangeFilterOptions = mock()
     private val orderFilterRepository: OrderFiltersRepository = mock()
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection = mock()
+    private val dateUtils: DateUtils = mock()
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
 
@@ -131,7 +133,8 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
             getOrderStatusFilterOptions,
             getDateRangeFilterOptions,
             orderFilterRepository,
-            getTrackingForFilterSelection
+            getTrackingForFilterSelection,
+            dateUtils
         )
     }
 
@@ -155,7 +158,9 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
                 .map {
                     DateRangeFilterOption(
                         dateRange = it,
-                        isSelected = false
+                        isSelected = false,
+                        startDate = 0,
+                        endDate = 0
                     )
                 }
         )

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.quickorder
+package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 @OpenClassOnDebug
 @HiltViewModel
-class QuickOrderViewModel @Inject constructor(
+class SimplePaymentsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
@@ -51,10 +51,10 @@ class QuickOrderViewModel @Inject constructor(
         }
 
     fun onDoneButtonClicked() {
-        createQuickOrder()
+        createSimplePaymentsOrder()
     }
 
-    fun createQuickOrder() {
+    private fun createSimplePaymentsOrder() {
         if (!networkStatus.isConnected()) {
             AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
@@ -74,7 +74,7 @@ class QuickOrderViewModel @Inject constructor(
                 if (result.isError) {
                     WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
                     AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
-                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.quickorder_creation_error))
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.simple_payments_creation_error))
                 } else {
                     AnalyticsTracker.track(
                         AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
