@@ -5,7 +5,7 @@ class AnalyticsDateRangeSelectorContract {
         val toDatePeriod: String,
         val fromDatePeriod: String,
         val availableRangeDates: List<String>,
-        val defaultSelectedPeriod: String
+        val selectedPeriod: String
     )
 
     interface DateRangeEvent {
