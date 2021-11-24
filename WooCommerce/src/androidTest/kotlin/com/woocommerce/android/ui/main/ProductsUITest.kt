@@ -25,7 +25,7 @@ class ProductsUITest : TestBase() {
     @get:Rule(order = 1)
     val initRule = InitializationRule()
 
-    @get:Rule(order = 3)
+    @get:Rule(order = 2)
     var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @Before
