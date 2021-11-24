@@ -2,8 +2,12 @@ package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.*
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
+import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,8 +22,13 @@ import javax.inject.Inject
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
+    private val analyticsDateRange: AnalyticsDateRangeCalculator
 ) : ViewModel() {
+
+    private val defaultDateRange = SimpleDateRange(
+        Date(dateUtils.getCurrentDateTimeMinusDays(1)),
+        dateUtils.getCurrentDate())
 
     private val mutableEffect = Channel<AnalyticsContract.AnalyticsEffect>()
     private val mutableEvent = MutableSharedFlow<AnalyticsContract.AnalyticsEvent>()
@@ -27,10 +36,10 @@ class AnalyticsViewModel @Inject constructor(
         .apply {
             value = AnalyticsContract.AnalyticsState(
                 analyticsDateRangeSelectorState = AnalyticsDateRangeSelectorViewState(
-                    toDatePeriod = defaultToDatePeriod(),
-                    fromDatePeriod = defaultFromDatePeriod(),
+                    fromDatePeriod = calculateFromDatePeriod(defaultDateRange),
+                    toDatePeriod = calculateToDatePeriod(AnalyticsDateRanges.TODAY, defaultDateRange),
                     availableRangeDates = getAvailableDateRanges(),
-                    defaultSelectedPeriod = getDefaultSelectedPeriod()
+                    selectedPeriod = getDefaultSelectedPeriod()
                 )
             )
         }
@@ -40,50 +49,56 @@ class AnalyticsViewModel @Inject constructor(
 
     internal fun sendEvent(event: AnalyticsContract.AnalyticsEvent) = viewModelScope.launch { mutableEvent.emit(event) }
 
-    fun onSelectedDateRangeChanged(dateRange: String) {
-        val analyticsSelectedDateRange: AnalyticsDateRanges = AnalyticsDateRanges.valueOf(dateRange)
+    fun onSelectedDateRangeChanged(newSelection: String) {
+        val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)
+        val newDateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedRange)
 
         mutableState.value = state.value!!.copy(
             analyticsDateRangeSelectorState = state.value!!.analyticsDateRangeSelectorState.copy(
-                toDatePeriod = calculateToDatePeriod(analyticsSelectedDateRange),
-                fromDatePeriod = calculateFromDatePeriod(analyticsSelectedDateRange),
+                fromDatePeriod = calculateFromDatePeriod(newDateRange),
+                toDatePeriod = calculateToDatePeriod(selectedRange, newDateRange),
+                selectedPeriod = getDateSelectedMessage(selectedRange)
             )
         )
-
     }
 
-    private fun calculateToDatePeriod(analyticsSelectedDateRange: AnalyticsDateRanges) = resourceProvider.getString(
-        R.string.analytics_date_range_to_date,
-        dateUtils.getShortMonthDayAndYearString(
-            dateUtils.getYearMonthDayStringFromDate(Date(dateUtils.getCurrentDateTimeMinusDays(1)))
-        ) ?: ""
-    )
+    private fun calculateToDatePeriod(analyticsDateRange: AnalyticsDateRanges, dateRange: DateRange) = when (dateRange) {
+        is DateRange.MultipleDateRange -> resourceProvider.getString(
+            R.string.analytics_date_range_to_date,
+            getDateSelectedMessage(analyticsDateRange),
+            dateRange.to.formatDatesToFriendlyPeriod()
+        )
+        is SimpleDateRange -> resourceProvider.getString(
+            R.string.analytics_date_range_to_date,
+            getDateSelectedMessage(analyticsDateRange),
+            dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.to)).orEmpty()
+        )
+    }
 
-    private fun calculateFromDatePeriod(analyticsSelectedDateRange: AnalyticsDateRanges) = resourceProvider.getString(
-        R.string.analytics_date_range_to_date,
-        dateUtils.getShortMonthDayAndYearString(
-            dateUtils.getYearMonthDayStringFromDate(Date(dateUtils.getCurrentDateTimeMinusDays(1)))
-        ) ?: ""
-    )
+    private fun calculateFromDatePeriod(dateRange: DateRange) = when (dateRange) {
+        is DateRange.MultipleDateRange -> resourceProvider.getString(
+            R.string.analytics_date_range_from_date,
+            dateRange.from.formatDatesToFriendlyPeriod()
+        )
+        is SimpleDateRange -> resourceProvider.getString(
+            R.string.analytics_date_range_from_date,
+            dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.from)).orEmpty()
+        )
+    }
 
     private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
-    private fun getDefaultSelectedPeriod() = resourceProvider.getString(R.string.date_timeframe_today)
-    private fun defaultFromDatePeriod() = resourceProvider.getString(
-        R.string.analytics_date_range_to_date,
-        dateUtils.getShortMonthDayAndYearString(
-            dateUtils.getYearMonthDayStringFromDate(Date(dateUtils.getCurrentDateTimeMinusDays(1)))
-        ) ?: ""
-    )
-
-    private fun getAnalyticsFormatDateFor(date: Date = dateUtils.getCurrentDate()) =
-        dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(date)) ?: ""
-
-    private fun defaultToDatePeriod() =
-        resourceProvider.getString(
-            R.string.analytics_date_range_from_date,
-            resourceProvider.getString(R.string.date_timeframe_today),
-            getAnalyticsFormatDateFor(dateUtils.getCurrentDate())
-        )
-
-
+    private fun getDefaultSelectedPeriod() = getDateSelectedMessage(AnalyticsDateRanges.TODAY)
+    private fun getDateSelectedMessage(analyticsDateRange: AnalyticsDateRanges): String =
+        when (analyticsDateRange) {
+            AnalyticsDateRanges.TODAY -> resourceProvider.getString(R.string.date_timeframe_today)
+            AnalyticsDateRanges.YESTERDAY -> resourceProvider.getString(R.string.date_timeframe_yesterday)
+            AnalyticsDateRanges.LAST_WEEK -> resourceProvider.getString(R.string.date_timeframe_last_week)
+            AnalyticsDateRanges.LAST_MONTH -> resourceProvider.getString(R.string.date_timeframe_last_month)
+            AnalyticsDateRanges.LAST_QUARTER -> resourceProvider.getString(R.string.date_timeframe_last_quarter)
+            AnalyticsDateRanges.LAST_YEAR -> resourceProvider.getString(R.string.date_timeframe_last_year)
+            AnalyticsDateRanges.WEEK_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_week_to_date)
+            AnalyticsDateRanges.MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
+            AnalyticsDateRanges.QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
+            AnalyticsDateRanges.YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
+        }
 }

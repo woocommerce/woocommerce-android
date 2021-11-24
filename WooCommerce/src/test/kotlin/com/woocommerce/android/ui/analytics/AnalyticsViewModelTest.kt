@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -44,21 +45,22 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     private val dateUtils: DateUtils = mock {
         on { getCurrentDate() } doReturn TODAY_DATE
-        on { getCurrentDateTimeMinusDays(1) } doReturn YESTERDAY_DATE
+        on { getCurrentDateTimeMinusDays(1) } doReturn YESTERDAY_DATE.time
         on { getYearMonthDayStringFromDate(TODAY_DATE) } doReturn TODAY_DATE_VALUE
         on { getYearMonthDayStringFromDate(YESTERDAY_DATE) } doReturn YESTERDAY_DATE_VALUE
         on { getShortMonthDayAndYearString(TODAY_DATE_VALUE) } doReturn TODAY_SHORT_MONTH_DAY_YEAR_VALUE
         on { getShortMonthDayAndYearString(YESTERDAY_DATE_VALUE) } doReturn YESTERDAY_SHORT_MONTH_DAY_YEAR_VALUE
     }
 
+    private val analyticsDateRangeCalculator: AnalyticsDateRangeCalculator = mock()
+
+    private val sut = AnalyticsViewModel(resourceProvider, dateUtils, analyticsDateRangeCalculator)
+
     @Test
     fun `analyticsDateRangeSelectorState default values are expected`() {
-
-        val sut = AnalyticsViewModel(resourceProvider, dateUtils)
-
         with(sut.state.value?.analyticsDateRangeSelectorState) {
             assertNotNull(this)
-            assertEquals(TODAY, defaultSelectedPeriod)
+            assertEquals(TODAY, selectedPeriod)
             assertEquals(RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
             assertEquals(RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
             assertEquals(dateRangeSelectors, availableRangeDates)
