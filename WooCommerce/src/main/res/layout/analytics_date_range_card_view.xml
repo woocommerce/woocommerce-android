@@ -15,7 +15,7 @@
         android:paddingBottom="@dimen/major_85">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_fromDate"
+            android:id="@+id/tv_toDate"
             style="@style/Woo.Card.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -23,13 +23,13 @@
             android:layout_marginBottom="@dimen/major_150"
             android:maxLines="1"
             android:textSize="@dimen/text_minor_125"
-            app:layout_constraintBottom_toTopOf="@+id/tv_toDate"
+            app:layout_constraintBottom_toTopOf="@+id/tv_fromDate"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/btn_dateRangeSelector"
             tools:text="Today (11 Sept 2021)" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_toDate"
+            android:id="@+id/tv_fromDate"
             style="@style/Woo.Card.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
