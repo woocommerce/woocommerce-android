@@ -107,38 +107,38 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
 
         when (status) {
             is Installing -> {
-                setViewsVisibility(View.INVISIBLE, iconStep1, progressStep2, progressStep3)
-                setViewsVisibility(View.VISIBLE, iconStep2, iconStep3, iconStep4, progressStep1)
-                setImageViews(iconNotDone, iconStep2, iconStep3, iconStep4)
+                setViewVisibility(View.INVISIBLE, iconStep1, progressStep2, progressStep3)
+                setViewVisibility(View.VISIBLE, iconStep2, iconStep3, iconStep4, progressStep1)
+                setViewImage(iconNotDone, iconStep2, iconStep3, iconStep4)
                 setTextWeight(Typeface.BOLD, messageStep1)
                 setTextWeight(Typeface.NORMAL, messageStep2, messageStep3, messageStep4)
 
                 binding.jetpackProgressActionButton.hide()
             }
             is Activating -> {
-                setViewsVisibility(View.INVISIBLE, iconStep2, progressStep1, progressStep3)
-                setViewsVisibility(View.VISIBLE, iconStep1, iconStep3, iconStep4, progressStep2)
-                setImageViews(iconNotDone, iconStep3, iconStep4)
-                setImageViews(iconDone, iconStep1)
+                setViewVisibility(View.INVISIBLE, iconStep2, progressStep1, progressStep3)
+                setViewVisibility(View.VISIBLE, iconStep1, iconStep3, iconStep4, progressStep2)
+                setViewImage(iconNotDone, iconStep3, iconStep4)
+                setViewImage(iconDone, iconStep1)
                 setTextWeight(Typeface.BOLD, messageStep1, messageStep2)
                 setTextWeight(Typeface.NORMAL, messageStep3, messageStep4)
 
                 binding.jetpackProgressActionButton.hide()
             }
             is Connecting -> {
-                setViewsVisibility(View.INVISIBLE, iconStep3, progressStep1, progressStep2)
-                setViewsVisibility(View.VISIBLE, iconStep1, iconStep2, iconStep4, progressStep3)
-                setImageViews(iconNotDone, iconStep4)
-                setImageViews(iconDone, iconStep1, iconStep2)
+                setViewVisibility(View.INVISIBLE, iconStep3, progressStep1, progressStep2)
+                setViewVisibility(View.VISIBLE, iconStep1, iconStep2, iconStep4, progressStep3)
+                setViewImage(iconNotDone, iconStep4)
+                setViewImage(iconDone, iconStep1, iconStep2)
                 setTextWeight(Typeface.BOLD, messageStep1, messageStep2, messageStep3)
                 setTextWeight(Typeface.NORMAL, messageStep4)
 
                 binding.jetpackProgressActionButton.hide()
             }
             is Finished -> {
-                setViewsVisibility(View.INVISIBLE, progressStep1, progressStep2, progressStep3)
-                setViewsVisibility(View.VISIBLE, iconStep1, iconStep2, iconStep3, iconStep4)
-                setImageViews(iconDone, iconStep1, iconStep2, iconStep3, iconStep4)
+                setViewVisibility(View.INVISIBLE, progressStep1, progressStep2, progressStep3)
+                setViewVisibility(View.VISIBLE, iconStep1, iconStep2, iconStep3, iconStep4)
+                setViewImage(iconDone, iconStep1, iconStep2, iconStep3, iconStep4)
                 setTextWeight(Typeface.BOLD, messageStep1, messageStep2, messageStep3, messageStep4)
 
                 binding.jetpackProgressActionButton.show()
@@ -149,8 +149,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         }
     }
 
-    private fun setViewsVisibility(visibility: Int, vararg views: View) = views.forEach { it.visibility = visibility }
-    private fun setImageViews(resId: Int, vararg views: ImageView) = views.forEach { it.setImageResource(resId) }
+    private fun setViewVisibility(visibility: Int, vararg views: View) = views.forEach { it.visibility = visibility }
+    private fun setViewImage(resId: Int, vararg views: ImageView) = views.forEach { it.setImageResource(resId) }
     private fun setTextWeight(weight: Int, vararg views: TextView) = views.forEach { it.setTypeface(null, weight) }
 
     private fun isTabletLandscape() = (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)) &&
