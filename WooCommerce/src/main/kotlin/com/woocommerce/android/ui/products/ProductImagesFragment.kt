@@ -47,9 +47,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerUtils
-import org.wordpress.android.mediapicker.model.MediaTypes
-import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
-import org.wordpress.android.mediapicker.source.wordpress.MediaLibraryPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
@@ -61,6 +62,7 @@ class ProductImagesFragment :
 
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var mediaPickerUtils: MediaPickerUtils
+    @Inject lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
 
     private var _binding: FragmentProductImagesBinding? = null
     private val binding get() = _binding!!
@@ -274,10 +276,7 @@ class ProductImagesFragment :
     private fun showMediaLibraryPicker() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            MediaLibraryPickerSetup.build(
-                mediaTypes = MediaTypes.IMAGES,
-                canMultiSelect = viewModel.isMultiSelectionAllowed
-            )
+            mediaPickerSetupFactory.build(WP_MEDIA_LIBRARY, viewModel.isMultiSelectionAllowed)
         )
 
         mediaLibraryLauncher.launch(intent)
@@ -286,10 +285,7 @@ class ProductImagesFragment :
     private fun showLocalDeviceMediaPicker() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            DeviceMediaPickerSetup.buildMediaPicker(
-                mediaTypes = MediaTypes.IMAGES,
-                canMultiSelect = viewModel.isMultiSelectionAllowed
-            )
+            mediaPickerSetupFactory.build(DEVICE, viewModel.isMultiSelectionAllowed)
         )
 
         mediaDeviceMediaPickerLauncher.launch(intent)
@@ -298,7 +294,7 @@ class ProductImagesFragment :
     private fun captureProductImage() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            DeviceMediaPickerSetup.buildCameraPicker()
+            mediaPickerSetupFactory.build(CAMERA)
         )
 
         cameraLauncher.launch(intent)

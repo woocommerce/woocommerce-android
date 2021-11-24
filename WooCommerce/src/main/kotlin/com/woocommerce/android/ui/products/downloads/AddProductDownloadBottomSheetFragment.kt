@@ -22,9 +22,9 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDo
 import com.woocommerce.android.ui.products.ProductNavigator
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.*
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.mediapicker.model.MediaTypes
-import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
-import org.wordpress.android.mediapicker.source.wordpress.MediaLibraryPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
@@ -32,6 +32,7 @@ import javax.inject.Inject
 class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment() {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
 
     private val viewModel: AddProductDownloadViewModel by viewModels()
     private val parentViewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
@@ -93,10 +94,7 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment() {
     private fun showMediaLibraryPicker() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            MediaLibraryPickerSetup.build(
-                mediaTypes = MediaTypes.IMAGES,
-                canMultiSelect = false
-            )
+            mediaPickerSetupFactory.build(WP_MEDIA_LIBRARY)
         )
 
         mediaLibraryLauncher.launch(intent)
@@ -113,10 +111,7 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment() {
     private fun showLocalDeviceMediaPicker() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            DeviceMediaPickerSetup.buildMediaPicker(
-                mediaTypes = MediaTypes.IMAGES,
-                canMultiSelect = false
-            )
+            mediaPickerSetupFactory.build(DEVICE)
         )
 
         mediaDeviceMediaPickerLauncher.launch(intent)
