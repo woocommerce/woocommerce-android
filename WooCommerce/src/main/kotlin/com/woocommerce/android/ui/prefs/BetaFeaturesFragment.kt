@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED
 import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
@@ -21,6 +23,8 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     companion object {
         const val TAG = "beta-features"
     }
+
+    private val navArgs: BetaFeaturesFragmentArgs by navArgs()
 
     private val settingsListener by lazy {
         activity as? AppSettingsListener
@@ -37,7 +41,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
                 PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED,
                 mapOf(
                     AnalyticsTracker.KEY_STATE to
-                        AnalyticsUtils.getToggleStateLabel(binding.switchAddonsToggle.isChecked)
+                        AnalyticsUtils.getToggleStateLabel(isChecked)
                 )
             )
 
@@ -45,16 +49,22 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
                 ?: binding.handleToggleChangeFailure(switch, isChecked)
         }
 
-        if (FeatureFlag.QUICK_ORDER.isEnabled()) {
-            binding.switchQuickOrderToggle.show()
-            binding.switchQuickOrderToggle.isChecked = AppPrefs.isQuickOrderEnabled
-            binding.switchQuickOrderToggle.setOnCheckedChangeListener { switch, isChecked ->
-                // TODO nbradbury analytics
-                settingsListener?.onQuickOrderOptionChanged(isChecked)
+        if (FeatureFlag.SIMPLE_PAYMENTS.isEnabled() && navArgs.isCardReaderOnboardingCompleted) {
+            binding.switchSimplePaymentsToggle.show()
+            binding.switchSimplePaymentsToggle.isChecked = AppPrefs.isSimplePaymentsEnabled
+            binding.switchSimplePaymentsToggle.setOnCheckedChangeListener { switch, isChecked ->
+                AnalyticsTracker.track(
+                    SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
+                    mapOf(
+                        AnalyticsTracker.KEY_STATE to
+                            AnalyticsUtils.getToggleStateLabel(isChecked)
+                    )
+                )
+                settingsListener?.onSimplePaymentsOptionChanged(isChecked)
                     ?: binding.handleToggleChangeFailure(switch, isChecked)
             }
         } else {
-            binding.switchQuickOrderToggle.hide()
+            binding.switchSimplePaymentsToggle.hide()
         }
     }
 

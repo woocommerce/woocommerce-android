@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.quickorder
+package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
@@ -8,7 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.DialogQuickOrderBinding
+import com.woocommerce.android.databinding.DialogSimplePaymentsBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -20,11 +20,11 @@ import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
+class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: QuickOrderViewModel by viewModels()
+    private val viewModel: SimplePaymentsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,19 +42,20 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
             )
         }
 
-        val binding = DialogQuickOrderBinding.bind(view)
+        val binding = DialogSimplePaymentsBinding.bind(view)
         binding.editPrice.initView(viewModel.currencyCode, viewModel.decimals, currencyFormatter)
         binding.buttonDone.setOnClickListener {
             viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_CANCELED)
             findNavController().navigateUp()
         }
 
         setupObservers(binding)
     }
 
-    private fun setupObservers(binding: DialogQuickOrderBinding) {
+    private fun setupObservers(binding: DialogSimplePaymentsBinding) {
         binding.editPrice.value.observe(
             this,
             {
@@ -76,7 +77,7 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
                 binding.buttonDone.isEnabled = isEnabled
             }
             new.createdOrder.takeIfNotEqualTo(old?.createdOrder) { order ->
-                navigateBackWithResult(KEY_QUICK_ORDER_RESULT, order!!)
+                navigateBackWithResult(KEY_SIMPLE_PAYMENTS_RESULT, order!!)
             }
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
                 binding.progressBar.isVisible = show
@@ -91,7 +92,7 @@ class QuickOrderDialog : DialogFragment(R.layout.dialog_quick_order) {
     }
 
     companion object {
-        const val KEY_QUICK_ORDER_RESULT = "quick_order_result"
+        const val KEY_SIMPLE_PAYMENTS_RESULT = "simple_payments_result"
         private const val HEIGHT_RATIO = 0.6
         private const val WIDTH_RATIO = 0.9
     }

@@ -42,7 +42,7 @@ object AppPrefs {
         DATABASE_DOWNGRADED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
-        IS_QUICK_ORDER_ENABLED,
+        IS_SIMPLE_PAYMENTS_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
@@ -56,6 +56,8 @@ object AppPrefs {
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED,
         ORDER_FILTER_PREFIX,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_START,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_END,
     }
 
     /**
@@ -149,9 +151,9 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
 
-    var isQuickOrderEnabled: Boolean
-        get() = getBoolean(DeletablePrefKey.IS_QUICK_ORDER_ENABLED, false)
-        set(value) = setBoolean(DeletablePrefKey.IS_QUICK_ORDER_ENABLED, value)
+    var isSimplePaymentsEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_SIMPLE_PAYMENTS_ENABLED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_SIMPLE_PAYMENTS_ENABLED, value)
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
@@ -421,6 +423,13 @@ object AppPrefs {
             true
         )
 
+    fun resetCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        PreferenceUtils.setBoolean(
+            getPreferences(),
+            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            false
+        )
+
     fun getJetpackBenefitsDismissalDate(): Long {
         return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)
     }
@@ -456,6 +465,33 @@ object AppPrefs {
 
     private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
         "$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory"
+
+    fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> {
+        val startDateMillis = PreferenceUtils.getLong(
+            getPreferences(),
+            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
+            default = 0
+        )
+        val endDateMillis = PreferenceUtils.getLong(
+            getPreferences(),
+            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
+            default = 0
+        )
+        return Pair(startDateMillis, endDateMillis)
+    }
+
+    fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
+        PreferenceUtils.setLong(
+            getPreferences(),
+            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
+            startDateMillis
+        )
+        PreferenceUtils.setLong(
+            getPreferences(),
+            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
+            endDateMillis
+        )
+    }
 
     /**
      * Remove all user and site-related preferences.

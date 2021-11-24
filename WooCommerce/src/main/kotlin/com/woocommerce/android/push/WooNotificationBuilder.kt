@@ -10,7 +10,6 @@ import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.net.Uri
-import android.os.Build
 import android.os.RemoteException
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -19,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.util.ImageUtils
 import org.wordpress.android.util.PhotonUtils
@@ -150,9 +150,14 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             )
             builder.setDeleteIntent(pendingDeleteIntent)
 
+            val flags = if (SystemVersionUtils.isAtLeastS()) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
             val pendingIntent = PendingIntent.getActivity(
                 context, pushId, getResultIntent(pushId, notification),
-                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_UPDATE_CURRENT
+                flags
             )
             builder.setContentIntent(pendingIntent)
             NotificationManagerCompat.from(context).notify(pushId, builder.build())
@@ -177,7 +182,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
      * channels weren't added until API 26
      */
     private fun createNotificationChannel(channelId: String, channelName: String, addChaChingSound: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (SystemVersionUtils.isAtLeastO()) {
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             // check for existing channel first

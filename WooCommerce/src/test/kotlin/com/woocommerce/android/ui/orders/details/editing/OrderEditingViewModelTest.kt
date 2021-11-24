@@ -14,15 +14,12 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderEditingViewModelTest : BaseUnitTest() {
     private lateinit var sut: OrderEditingViewModel
 
@@ -95,16 +92,6 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should NOT replicate shipping to billing when toggle is deactivated`() {
         var eventWasCalled = false
 
-        orderEditingRepository.stub {
-            onBlocking {
-                updateBothOrderAddresses(any(), any(), any())
-            } doReturn flowOf(
-                UpdateOrderResult.OptimisticUpdateResult(
-                    OnOrderChanged(0)
-                )
-            )
-        }
-
         sut.apply {
             start()
             onReplicateAddressSwitchChanged(false)
@@ -124,16 +111,6 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     @Test
     fun `should NOT replicate billing to shipping when toggle is deactivated`() {
         var eventWasCalled = false
-
-        orderEditingRepository.stub {
-            onBlocking {
-                updateBothOrderAddresses(any(), any(), any())
-            } doReturn flowOf(
-                UpdateOrderResult.OptimisticUpdateResult(
-                    OnOrderChanged(0)
-                )
-            )
-        }
 
         sut.apply {
             start()
@@ -189,16 +166,6 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             on { isConnected() } doReturn false
         }
 
-        orderEditingRepository.stub {
-            onBlocking {
-                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
-            } doReturn flowOf(
-                UpdateOrderResult.OptimisticUpdateResult(
-                    OnOrderChanged(0)
-                )
-            )
-        }
-
         sut.apply {
             start()
             updateBillingAddress(addressToUpdate)
@@ -221,16 +188,6 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             on { isConnected() } doReturn false
         }
 
-        orderEditingRepository.stub {
-            onBlocking {
-                updateOrderAddress(testOrder.localId, addressToUpdate.toShippingAddressModel())
-            } doReturn flowOf(
-                UpdateOrderResult.OptimisticUpdateResult(
-                    OnOrderChanged(0)
-                )
-            )
-        }
-
         sut.apply {
             start()
             updateShippingAddress(addressToUpdate)
@@ -251,16 +208,6 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         var eventWasCalled = false
         networkStatus.stub {
             on { isConnected() } doReturn false
-        }
-
-        orderEditingRepository.stub {
-            onBlocking {
-                updateCustomerOrderNote(testOrder.localId, "test note")
-            } doReturn flowOf(
-                UpdateOrderResult.OptimisticUpdateResult(
-                    OnOrderChanged(0)
-                )
-            )
         }
 
         sut.apply {

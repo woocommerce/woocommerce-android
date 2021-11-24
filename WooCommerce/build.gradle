@@ -28,6 +28,7 @@ repositories {
             includeGroup "org.wordpress"
             includeGroup "org.wordpress.fluxc"
             includeGroup "org.wordpress.fluxc.plugins"
+            includeGroup "org.wordpress.mediapicker"
         }
     }
     maven {
@@ -54,11 +55,14 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "7.9"
+            versionName "8.0-rc-1"
         }
-        versionCode 260
+        versionCode 261
 
         minSdkVersion 21
+        // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
+        // and thoroughly testing the app. Consider publishing a p2 post to inform the team about the upcoming change.
+        // P.S. Update the targetSdkVersion in all the modules, otherwise static analysis tools won't give you a heads-up about potential issues.
         targetSdkVersion 30
 
         vectorDrawables.useSupportLibrary = true
@@ -68,6 +72,11 @@ android {
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
         buildConfigField "boolean", "USE_SIMULATED_READER", project.hasProperty("useSimulatedReader").toString()
+
+        packagingOptions {
+            exclude 'META-INF/gradle/incremental.annotation.processors'
+            exclude("META-INF/*.kotlin_module")
+        }
     }
 
     buildFeatures {
@@ -240,7 +249,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-core-utils'
     })
-    testImplementation "org.robolectric:robolectric:$robolectricVersion"
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
@@ -286,6 +294,9 @@ dependencies {
     implementation "commons-io:commons-io:2.11.0"
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
+
+    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

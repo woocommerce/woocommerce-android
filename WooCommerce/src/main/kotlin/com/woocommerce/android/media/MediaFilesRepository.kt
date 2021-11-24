@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.*
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import java.io.File
 import javax.inject.Inject
 
@@ -30,7 +31,8 @@ class MediaFilesRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val mediaStore: MediaStore,
     private val dispatchers: CoroutineDispatchers,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val mediaPickerUtils: MediaPickerUtils
 ) {
     suspend fun fetchMedia(localUri: String): MediaModel? {
         return withContext(dispatchers.io) {
@@ -38,7 +40,8 @@ class MediaFilesRepository @Inject constructor(
                 context,
                 selectedSite.get().id,
                 Uri.parse(localUri),
-                mediaStore
+                mediaStore,
+                mediaPickerUtils
             )
 
             if (mediaModel == null) {
