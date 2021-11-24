@@ -58,12 +58,10 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Result<Map<String, Int>> {
-        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
-            wcStatsStore.fetchNewVisitorStats(visitsPayload)
-        }
+        val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
+        val result = wcStatsStore.fetchNewVisitorStats(visitsPayload)
 
-        return if (result?.isError == false) {
+        return if (!result.isError) {
             val visitorStats = wcStatsStore.getNewVisitorStats(
                 selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
             )
