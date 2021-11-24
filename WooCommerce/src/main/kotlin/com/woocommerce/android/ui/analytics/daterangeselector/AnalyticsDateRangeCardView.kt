@@ -14,11 +14,9 @@ class AnalyticsDateRangeCardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-
     val binding = AnalyticsDateRangeCardViewBinding.inflate(LayoutInflater.from(ctx), this)
 
     internal fun initView(dateRangeEvent: DateRangeEvent) {
         binding.btnDateRangeSelector.setOnClickListener { dateRangeEvent.onDateRangeCalendarClickEvent() }
     }
-
 }

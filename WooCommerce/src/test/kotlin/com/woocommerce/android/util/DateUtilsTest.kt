@@ -68,7 +68,6 @@ class DateUtilsTest {
         assertEquals("Jul 3, 2018", dateUtilsUnderTest.getShortMonthDayAndYearString("2018-07-03"))
         assertEquals("Jul 28, 2018", dateUtilsUnderTest.getShortMonthDayAndYearString("2018-07-28"))
 
-
         // Test for invalid value handling
         assertNull(dateUtilsUnderTest.getShortMonthDayString("22"))
 
@@ -452,7 +451,6 @@ class DateUtilsTest {
 
     @Test
     fun `getDateForFirstDayOfCurrentWeek() returns correct values`() {
-
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val todayCalendar = Calendar.getInstance().apply {
             time = sdf.parse("2021-11-21 00:00:00")!!
@@ -467,7 +465,6 @@ class DateUtilsTest {
 
     @Test
     fun `getDateForFirstDayOfCurrentMonth() returns correct values`() {
-
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val todayCalendar = Calendar.getInstance().apply {
             time = sdf.parse("2021-11-21 00:00:00")!!
@@ -482,7 +479,6 @@ class DateUtilsTest {
 
     @Test
     fun `getDateForFirstDayOfCurrentQuarter() returns correct values`() {
-
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val todayCalendar = Calendar.getInstance().apply {
             time = sdf.parse("2021-11-21 00:00:00")!!
@@ -497,7 +493,6 @@ class DateUtilsTest {
 
     @Test
     fun `getDateForFirstDayOfCurrentYear() returns correct values`() {
-
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val todayCalendar = Calendar.getInstance().apply {
             time = sdf.parse("2021-11-21 00:00:00")!!
@@ -512,7 +507,6 @@ class DateUtilsTest {
 
     @Test
     fun `getDateForFirstDayOfPreviousWeek() returns correct values`() {
-
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val todayCalendar = Calendar.getInstance().apply {
             time = sdf.parse("2021-11-22 00:00:00")!!
@@ -527,9 +521,8 @@ class DateUtilsTest {
 
     @Test
     fun `getDateForFirstDayOfPreviousMonth() returns correct values`() {
-
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        val todayCalendar = Calendar.getInstance().apply {
+        val today = Calendar.getInstance().apply {
             time = sdf.parse("2021-11-21 00:00:00")!!
         }
 
@@ -537,14 +530,13 @@ class DateUtilsTest {
             time = sdf.parse("2021-10-1 00:00:00")!!
         }
 
-        assertEquals(firstDayOfPreviousMonth.time, dateUtilsUnderTest.getDateForFirstDayOfPreviousMonth(1, todayCalendar))
+        assertEquals(firstDayOfPreviousMonth.time, dateUtilsUnderTest.getDateForFirstDayOfPreviousMonth(1, today))
     }
 
     @Test
     fun `getDateForFirstDayOfPreviousQuarter() returns correct values`() {
-
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        val todayCalendar = Calendar.getInstance().apply {
+        val today = Calendar.getInstance().apply {
             time = sdf.parse("2021-11-21 00:00:00")!!
         }
 
@@ -552,13 +544,11 @@ class DateUtilsTest {
             time = sdf.parse("2021-7-1 00:00:00")!!
         }
 
-        assertEquals(firstDayOfPreviousQuarter.time, dateUtilsUnderTest.getDateForFirstDayOfPreviousQuarter(1, todayCalendar))
+        assertEquals(firstDayOfPreviousQuarter.time, dateUtilsUnderTest.getDateForFirstDayOfPreviousQuarter(1, today))
     }
-
 
     @Test
     fun `getDateForFirstDayOfPreviousYear() returns correct values`() {
-
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val todayCalendar = Calendar.getInstance().apply {
             time = sdf.parse("2021-11-21 00:00:00")!!
@@ -573,7 +563,6 @@ class DateUtilsTest {
 
     @Test
     fun `getDateForLastDayOfPreviousMonth() returns correct values`() {
-
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val todayCalendar = Calendar.getInstance().apply {
             time = sdf.parse("2021-11-21 00:00:00")!!
@@ -588,9 +577,8 @@ class DateUtilsTest {
 
     @Test
     fun `getDateForLastDayOfPreviousQuarter() returns correct values`() {
-
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        val todayCalendar = Calendar.getInstance().apply {
+        val today = Calendar.getInstance().apply {
             time = sdf.parse("2021-11-21 00:00:00")!!
         }
 
@@ -598,7 +586,6 @@ class DateUtilsTest {
             time = sdf.parse("2021-9-30 00:00:00")!!
         }
 
-        assertEquals(lastDayOfPreviousQuarter.time, dateUtilsUnderTest.getDateForLastDayOfPreviousQuarter(1, todayCalendar))
+        assertEquals(lastDayOfPreviousQuarter.time, dateUtilsUnderTest.getDateForLastDayOfPreviousQuarter(1, today))
     }
-
 }

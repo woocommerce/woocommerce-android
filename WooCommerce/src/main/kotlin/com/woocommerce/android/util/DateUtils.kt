@@ -400,8 +400,7 @@ class DateUtils @Inject constructor(
      * Returns a date object with the date for the first day of the previous N minusWeeks argument or 1 week
      * of calendar argument or current calendar
      */
-    fun getDateForFirstDayOfPreviousWeek(minusWeeks: Int = 1,
-                                         calendar: Calendar = Calendar.getInstance()): Date =
+    fun getDateForFirstDayOfPreviousWeek(minusWeeks: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
         calendar.apply {
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
@@ -415,8 +414,7 @@ class DateUtils @Inject constructor(
      * Returns a date object with the date for the first day of the previous N minusMonths argument or 1 month
      * of calendar argument or current calendar
      */
-    fun getDateForFirstDayOfPreviousMonth(minusMonths: Int = 1,
-                                          calendar: Calendar = Calendar.getInstance()): Date =
+    fun getDateForFirstDayOfPreviousMonth(minusMonths: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
         calendar.apply {
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
@@ -430,8 +428,7 @@ class DateUtils @Inject constructor(
      * Returns a date object with the date for the first day of the previous N minusQuarter argument or 1 quarter
      * of calendar argument or current calendar
      */
-    fun getDateForFirstDayOfPreviousQuarter(minusQuarter: Int = 1,
-                                            calendar: Calendar = Calendar.getInstance()): Date =
+    fun getDateForFirstDayOfPreviousQuarter(minusQuarter: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
         calendar.apply {
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
@@ -446,8 +443,7 @@ class DateUtils @Inject constructor(
      * Returns a date object with the date for the first day of N minusQuarter argument years or the previous year
      * of calendar argument or current calendar
      */
-    fun getDateForFirstDayOfPreviousYear(minusYears: Int = 1,
-                                         calendar: Calendar = Calendar.getInstance()): Date =
+    fun getDateForFirstDayOfPreviousYear(minusYears: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
         calendar.apply {
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
@@ -462,8 +458,7 @@ class DateUtils @Inject constructor(
      * Returns a date object with the date for the last day of the previous N minusWeeks argument or 1 week
      *  of calendar argument or current calendar
      */
-    fun getDateForLastDayOfPreviousWeek(minusWeeks: Int = 1,
-                                        calendar: Calendar = Calendar.getInstance()): Date =
+    fun getDateForLastDayOfPreviousWeek(minusWeeks: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
         calendar.apply {
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
@@ -477,8 +472,7 @@ class DateUtils @Inject constructor(
      * Returns a date object with the date for the last day of the previous N minusMonths argument or 1 month
      *  of calendar argument or current calendar
      */
-    fun getDateForLastDayOfPreviousMonth(minusMonths: Int = 1,
-                                         calendar: Calendar = Calendar.getInstance()): Date =
+    fun getDateForLastDayOfPreviousMonth(minusMonths: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
         calendar.apply {
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
@@ -492,8 +486,7 @@ class DateUtils @Inject constructor(
      * Returns a date object with the date for the last day of the previous quarter
      * of calendar argument or current calendar
      */
-    fun getDateForLastDayOfPreviousQuarter(minusQuarter: Int = 1,
-                                           calendar: Calendar = Calendar.getInstance()): Date =
+    fun getDateForLastDayOfPreviousQuarter(minusQuarter: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
         calendar.apply {
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
@@ -505,8 +498,7 @@ class DateUtils @Inject constructor(
             set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
         }.time
 
-    fun getDateForLastDayOfPreviousYear(minusYears: Int = 1,
-                                        calendar: Calendar = Calendar.getInstance()): Date =
+    fun getDateForLastDayOfPreviousYear(minusYears: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
         calendar.apply {
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
@@ -526,12 +518,10 @@ class DateUtils @Inject constructor(
             add(Calendar.DATE, -days)
         }.timeInMillis
 
-
     /**
      * Returns current date
      */
     fun getCurrentDate() = Date()
-
 
     /**
      * Returns a Calendar object with argument date applied argument operation
@@ -563,7 +553,6 @@ class DateUtils @Inject constructor(
             "Date string argument is not a valid date".reportAsError(e)
             null
         }
-
 
     companion object {
         /**

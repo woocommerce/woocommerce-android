@@ -15,9 +15,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AnalyticsFragment :
-        TopLevelFragment(R.layout.fragment_analytics),
-        AnalyticsDateRangeSelectorContract.DateRangeEvent {
-
+    TopLevelFragment(R.layout.fragment_analytics),
+    AnalyticsDateRangeSelectorContract.DateRangeEvent {
     companion object {
         const val KEY_DATE_RANGE_SELECTOR_RESULT = "key_order_status_result"
     }
@@ -36,24 +35,23 @@ class AnalyticsFragment :
 
     override fun shouldExpandToolbar(): Boolean = true
 
-    override fun scrollToTop() {}
+    override fun scrollToTop() {
+        return
+    }
 
     override fun onDateRangeCalendarClickEvent() {
-        findNavController()
-                .navigateSafely(AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
-                        requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
-                        keys = getDateRangeSelectorViewState()?.availableRangeDates?.toTypedArray()
-                                ?: emptyArray(),
-                        values = getDateRangeSelectorViewState()?.availableRangeDates?.toTypedArray()
-                                ?: emptyArray(),
-                        selectedItem = getDateRangeSelectorViewState()?.selectedPeriod
-                ))
+        findNavController().navigateSafely(AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
+            requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
+            keys = getDateRangeSelectorViewState()?.availableRangeDates?.toTypedArray() ?: emptyArray(),
+            values = getDateRangeSelectorViewState()?.availableRangeDates?.toTypedArray() ?: emptyArray(),
+            selectedItem = getDateRangeSelectorViewState()?.selectedPeriod
+        ))
     }
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
         handleDialogResult<String>(
-                key = KEY_DATE_RANGE_SELECTOR_RESULT,
-                entryId = R.id.analytics
+            key = KEY_DATE_RANGE_SELECTOR_RESULT,
+            entryId = R.id.analytics
         ) { dateRange -> viewModel.onSelectedDateRangeChanged(dateRange) }
     }
 
