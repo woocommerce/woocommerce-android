@@ -30,10 +30,10 @@ object WooPermissionUtils {
     fun hasFineLocationPermission(context: Context) = context.checkIfPermissionGiven(ACCESS_FINE_LOCATION)
 
     fun hasBluetoothScanPermission(context: Context) =
-        context.checkIfPermissionGiven(BLUETOOTH_SCAN) || androidROrLower()
+        androidROrLower() || context.checkIfPermissionGiven(BLUETOOTH_SCAN)
 
     fun hasBluetoothConnectPermission(context: Context) =
-        context.checkIfPermissionGiven(BLUETOOTH_CONNECT) || androidROrLower()
+        androidROrLower() || context.checkIfPermissionGiven(BLUETOOTH_CONNECT)
 
     fun requestFineLocationPermission(requestPermissionLauncher: ActivityResultLauncher<String>) {
         requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
