@@ -57,5 +57,6 @@
     <color name="woo_black_900">#272727</color>
     <color name="woo_black_80">#363636</color>
 
+    <color name="jetpack_green_40">#069e08</color>
     <color name="jetpack_black">#0B2621</color>
 </resources>

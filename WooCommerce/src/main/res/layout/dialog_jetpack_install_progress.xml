@@ -91,7 +91,7 @@
 
             <ProgressBar
                 android:id="@+id/first_step_progress_bar"
-                style="@style/Woo.ProgressBar"
+                style="@style/Woo.JetpackProgressBar"
                 android:layout_width="@dimen/image_minor_60"
                 android:layout_height="@dimen/image_minor_60"
                 android:layout_marginTop="@dimen/major_200"
@@ -125,7 +125,7 @@
 
             <ProgressBar
                 android:id="@+id/second_step_progress_bar"
-                style="@style/Woo.ProgressBar"
+                style="@style/Woo.JetpackProgressBar"
                 android:layout_width="@dimen/image_minor_60"
                 android:layout_height="@dimen/image_minor_60"
                 android:layout_marginTop="@dimen/major_125"
@@ -158,7 +158,7 @@
 
             <ProgressBar
                 android:id="@+id/third_step_progress_bar"
-                style="@style/Woo.ProgressBar"
+                style="@style/Woo.JetpackProgressBar"
                 android:layout_width="@dimen/image_minor_60"
                 android:layout_height="@dimen/image_minor_60"
                 android:layout_marginTop="@dimen/major_125"
