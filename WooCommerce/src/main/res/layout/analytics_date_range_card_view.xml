@@ -9,9 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface"
-        android:paddingStart="@dimen/major_75"
         android:paddingTop="@dimen/major_125"
-        android:paddingEnd="@dimen/major_100"
         android:paddingBottom="@dimen/major_85">
 
         <com.google.android.material.textview.MaterialTextView
@@ -46,6 +44,7 @@
             android:id="@+id/btn_dateRangeSelector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/major_100"
             android:background="@android:color/transparent"
             android:contentDescription="@string/analytics_date_range_selector_description"
             app:layout_constraintBottom_toBottomOf="parent"
