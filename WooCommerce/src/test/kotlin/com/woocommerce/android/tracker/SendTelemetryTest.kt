@@ -115,7 +115,7 @@ class SendTelemetryTest : BaseUnitTest() {
         advanceTimeBy(SendTelemetry.UPDATE_INTERVAL.toLong() * 3)
 
         // then
-        assertThat(results).containsExactly(SENT, SENT, SENT, SENT)
+        assertThat(results).containsExactly(SENT, NOT_SENT, SENT, NOT_SENT, SENT, NOT_SENT, SENT)
 
         job.cancel()
     }

@@ -48,7 +48,7 @@ class SendTelemetry @Inject constructor(
         private val ticker = flow {
             while (true) {
                 emit(Unit)
-                delay(UPDATE_INTERVAL.toLong())
+                delay(UPDATE_INTERVAL.toLong() / 2)
             }
         }
     }
