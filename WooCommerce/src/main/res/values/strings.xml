@@ -882,6 +882,8 @@
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">Missing required nearby devices permission</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">Open settings</string>
 
     <!--
         Card Reader Detail
