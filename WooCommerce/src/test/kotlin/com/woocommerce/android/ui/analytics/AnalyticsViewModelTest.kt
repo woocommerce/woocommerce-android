@@ -62,7 +62,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             on { getStringArray(any()) } doAnswer { dateRangeSelectors.toTypedArray() }
         }
 
-        sut = AnalyticsViewModel(coroutinesTestRule.testDispatchers, resourceProvider, dateUtil, calculator, savedState)
+        sut = AnalyticsViewModel(resourceProvider, dateUtil, calculator, savedState)
 
         with(sut.state.value.analyticsDateRangeSelectorState) {
             assertNotNull(this)
@@ -83,7 +83,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             on { getStringArray(any()) } doAnswer { dateRangeSelectors.toTypedArray() }
         }
 
-        sut = AnalyticsViewModel(coroutinesTestRule.testDispatchers, resourceProvider, dateUtil, calculator, savedState)
+        sut = AnalyticsViewModel(resourceProvider, dateUtil, calculator, savedState)
 
         sut.onSelectedDateRangeChanged(AnalyticsDateRanges.LAST_YEAR.description)
 
