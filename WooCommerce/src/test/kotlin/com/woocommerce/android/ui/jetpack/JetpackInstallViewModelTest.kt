@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.jetpack
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
@@ -13,6 +12,7 @@ import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -40,7 +40,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when installation is successful, then set proper install states`() = testBlocking {
-        whenever(pluginRepository.installPlugin(any()))
+        whenever(pluginRepository.installPlugin(any(), any()))
             .thenReturn(
                 flow {
                     emit(PluginInstalled(EXAMPLE_SLUG, siteModel))
@@ -67,7 +67,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when installation is failed, then set failed state`() = testBlocking {
-        whenever(pluginRepository.installPlugin(any()))
+        whenever(pluginRepository.installPlugin(any(), any()))
             .thenReturn(
                 flow {
                     emit(PluginInstallFailed(EXAMPLE_ERROR))
@@ -87,7 +87,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when activation is failed, then set failed state`() = testBlocking {
-        whenever(pluginRepository.installPlugin(any()))
+        whenever(pluginRepository.installPlugin(any(), any()))
             .thenReturn(
                 flow {
                     emit(PluginInstalled(EXAMPLE_SLUG, siteModel))

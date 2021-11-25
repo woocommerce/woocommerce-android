@@ -46,19 +46,26 @@ class PluginRepository @Inject constructor(
     // Note that the `newInstallSitePluginAction` action automatically tries to activate the plugin after
     // installation is successful, so when using this function, there's no need to call `activateJetpackPlugin()
     // separately.
-    fun installPlugin(slug: String) = callbackFlow<PluginStatus> {
+    fun installPlugin(slug: String, name: String) = callbackFlow<PluginStatus> {
         val listener = PluginActionListener(this)
         dispatcher.register(listener)
 
-        val payload = InstallSitePluginPayload(selectedSite.get(), slug)
-        dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
+        // Check whether plugin exists first, in which case we just need to activate it.
+        val plugin = fetchJetpackSitePlugin(name)
+        if (plugin != null) {
+            trySend(PluginInstalled(slug, selectedSite.get()))
+            activatePlugin(name, slug, true)
+        } else {
+            val payload = InstallSitePluginPayload(selectedSite.get(), slug)
+            dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
+        }
 
         awaitClose {
             dispatcher.unregister(listener)
         }
     }
 
-    suspend fun fetchJetpackSitePlugin(name: String): SitePluginModel? {
+    private suspend fun fetchJetpackSitePlugin(name: String): SitePluginModel? {
         return if (selectedSite.exists()) {
             val result = continuationFetchJetpackSitePlugin.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
                 val payload = FetchJetpackSitePluginPayload(selectedSite.get(), name)

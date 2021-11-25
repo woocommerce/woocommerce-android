@@ -21,6 +21,7 @@ class JetpackInstallViewModel @Inject constructor(
     companion object {
         const val CONNECTION_DELAY = 1000L
         const val JETPACK_SLUG = "jetpack"
+        const val JETPACK_NAME = "jetpack/jetpack"
     }
 
     val viewStateLiveData = LiveDataDelegate(savedState, JetpackInstallProgressViewState())
@@ -39,7 +40,7 @@ class JetpackInstallViewModel @Inject constructor(
 
     fun installJetpackPlugin() {
         launch {
-            repository.installPlugin(JETPACK_SLUG).collect {
+            repository.installPlugin(JETPACK_SLUG, JETPACK_NAME).collect {
                 when (it) {
                     is PluginInstalled -> {
                         viewState = viewState.copy(installStatus = Activating)
