@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.analytics.AnalyticsContract.AnalyticsState
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
@@ -26,16 +27,18 @@ class AnalyticsViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val dateRange = SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(1)), dateUtils.getCurrentDate())
-    private val mutableState = MutableStateFlow(AnalyticsContract.AnalyticsState(
-        analyticsDateRangeSelectorState = AnalyticsDateRangeSelectorViewState(
-            fromDatePeriod = calculateFromDatePeriod(dateRange),
-            toDatePeriod = calculateToDatePeriod(AnalyticsDateRanges.TODAY, dateRange),
-            availableRangeDates = getAvailableDateRanges(),
-            selectedPeriod = getDefaultSelectedPeriod()
+    private val mutableState = MutableStateFlow(
+        AnalyticsState(
+            AnalyticsDateRangeSelectorViewState(
+                fromDatePeriod = calculateFromDatePeriod(dateRange),
+                toDatePeriod = calculateToDatePeriod(AnalyticsDateRanges.TODAY, dateRange),
+                availableRangeDates = getAvailableDateRanges(),
+                selectedPeriod = getDefaultSelectedPeriod()
+            )
         )
-    ))
+    )
 
-    val state: StateFlow<AnalyticsContract.AnalyticsState> = mutableState
+    val state: StateFlow<AnalyticsState> = mutableState
 
     fun onSelectedDateRangeChanged(newSelection: String) {
         val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)
