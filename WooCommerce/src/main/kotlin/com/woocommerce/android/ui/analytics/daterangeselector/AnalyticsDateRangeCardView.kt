@@ -8,7 +8,6 @@ import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract.DateRangeEvent
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class AnalyticsDateRangeCardView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
