@@ -1,0 +1,61 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.analytics.daterangeselector.AnalyticsDateRangeCardView">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:paddingTop="@dimen/major_125">
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="395dp"
+            app:layout_constraintBottom_toTopOf="@+id/divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/divider"
+            style="@style/Woo.Divider"
+            android:layout_marginBottom="7dp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_seeReport"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_seeReport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/major_100"
+            android:contentDescription="@string/analytics_see_report_button_content_description"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_seeReport"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_seeReport"
+            app:srcCompat="@drawable/ic_arrow_right" />
+
+        <TextView
+            android:id="@+id/tv_seeReport"
+            style="@style/Woo.Card.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/analytics_see_report_button_text"
+            android:textSize="@dimen/text_minor_125"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="See Report" />
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>
+
