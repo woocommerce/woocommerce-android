@@ -33,10 +33,16 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentSettingsBetaBinding.bind(view)
+        with(FragmentSettingsBetaBinding.bind(view)) {
+            bindProductAddonsToggle()
+            bindSimplePaymentToggle()
+            bindOrderCreationToggle()
+        }
+    }
 
-        binding.switchAddonsToggle.isChecked = AppPrefs.isProductAddonsEnabled
-        binding.switchAddonsToggle.setOnCheckedChangeListener { switch, isChecked ->
+    private fun FragmentSettingsBetaBinding.bindProductAddonsToggle() {
+        switchAddonsToggle.isChecked = AppPrefs.isProductAddonsEnabled
+        switchAddonsToggle.setOnCheckedChangeListener { switch, isChecked ->
             AnalyticsTracker.track(
                 PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED,
                 mapOf(
@@ -46,13 +52,15 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
             )
 
             settingsListener?.onProductAddonsOptionChanged(isChecked)
-                ?: binding.handleToggleChangeFailure(switch, isChecked)
+                ?: handleToggleChangeFailure(switch, isChecked)
         }
+    }
 
+    private fun FragmentSettingsBetaBinding.bindSimplePaymentToggle() {
         if (FeatureFlag.SIMPLE_PAYMENTS.isEnabled() && navArgs.isCardReaderOnboardingCompleted) {
-            binding.switchSimplePaymentsToggle.show()
-            binding.switchSimplePaymentsToggle.isChecked = AppPrefs.isSimplePaymentsEnabled
-            binding.switchSimplePaymentsToggle.setOnCheckedChangeListener { switch, isChecked ->
+            switchSimplePaymentsToggle.show()
+            switchSimplePaymentsToggle.isChecked = AppPrefs.isSimplePaymentsEnabled
+            switchSimplePaymentsToggle.setOnCheckedChangeListener { switch, isChecked ->
                 AnalyticsTracker.track(
                     SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
                     mapOf(
@@ -61,10 +69,24 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
                     )
                 )
                 settingsListener?.onSimplePaymentsOptionChanged(isChecked)
-                    ?: binding.handleToggleChangeFailure(switch, isChecked)
+                    ?: handleToggleChangeFailure(switch, isChecked)
             }
         } else {
-            binding.switchSimplePaymentsToggle.hide()
+            switchSimplePaymentsToggle.hide()
+        }
+    }
+
+    private fun FragmentSettingsBetaBinding.bindOrderCreationToggle() {
+        if (FeatureFlag.ORDER_CREATION.isEnabled()) {
+            switchOrderCreationToggle.isChecked = AppPrefs.isOrderCreationEnabled
+            switchOrderCreationToggle.setOnCheckedChangeListener { switch, isChecked ->
+                // trigger order creation tracks
+
+                settingsListener?.onOrderCreationOptionChanged(isChecked)
+                    ?: handleToggleChangeFailure(switch, isChecked)
+            }
+        } else {
+            switchOrderCreationToggle.hide()
         }
     }
 

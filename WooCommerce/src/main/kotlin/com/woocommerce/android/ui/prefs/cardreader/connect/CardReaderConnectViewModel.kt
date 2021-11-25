@@ -34,13 +34,16 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowUpdateInProgress
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingPermissionsError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingLocationPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
@@ -117,8 +120,8 @@ class CardReaderConnectViewModel @Inject constructor(
         startFlow()
     }
 
-    fun onScreenResumed() {
-        if (viewState.value is MissingPermissionsError) {
+    fun onScreenStarted() {
+        if (viewState.value is MissingLocationPermissionsError || viewState.value is MissingBluetoothPermissionsError) {
             triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
         }
     }
@@ -126,7 +129,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onCheckLocationPermissionsResult(granted: Boolean) {
         if (granted) {
             onLocationPermissionsVerified()
-        } else if (viewState.value !is MissingPermissionsError) {
+        } else if (viewState.value !is MissingLocationPermissionsError) {
             triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
         }
     }
@@ -135,7 +138,7 @@ class CardReaderConnectViewModel @Inject constructor(
         if (granted) {
             onLocationPermissionsVerified()
         } else {
-            viewState.value = MissingPermissionsError(
+            viewState.value = MissingLocationPermissionsError(
                 onPrimaryActionClicked = ::onOpenPermissionsSettingsClicked,
                 onSecondaryActionClicked = ::onCancelClicked
             )
@@ -148,7 +151,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCheckLocationEnabledResult(enabled: Boolean) {
         if (enabled) {
-            onLocationStateVerified()
+            triggerEvent(CheckBluetoothPermissionsGiven(::onCheckBluetoothPermissionsResult))
         } else {
             viewState.value = LocationDisabledError(
                 onPrimaryActionClicked = ::onOpenLocationProviderSettingsClicked,
@@ -169,13 +172,36 @@ class CardReaderConnectViewModel @Inject constructor(
         triggerEvent(CheckLocationEnabled(::onCheckLocationEnabledResult))
     }
 
-    private fun onLocationStateVerified() {
-        triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
+    private fun onCheckBluetoothPermissionsResult(enabled: Boolean) {
+        if (enabled) {
+            triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
+        } else {
+            triggerEvent(RequestBluetoothRuntimePermissions(::onBluetoothRuntimePermissionsRequestResult))
+        }
+    }
+
+    private fun onBluetoothRuntimePermissionsRequestResult(enabled: Boolean) {
+        if (enabled) {
+            triggerEvent(CheckBluetoothEnabled(::onCheckBluetoothResult))
+        } else {
+            viewState.value = MissingBluetoothPermissionsError(
+                onPrimaryActionClicked = ::onOpenBluetoothPermissionsSettingsClicked,
+                onSecondaryActionClicked = ::onCancelClicked
+            )
+        }
+    }
+
+    private fun onCheckBluetoothResult(enabled: Boolean) {
+        if (enabled) {
+            onReadyToStartScanning()
+        } else {
+            triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
+        }
     }
 
     private fun onRequestEnableBluetoothResult(enabled: Boolean) {
         if (enabled) {
-            onBluetoothStateVerified()
+            onReadyToStartScanning()
         } else {
             viewState.value = BluetoothDisabledError(
                 onPrimaryActionClicked = ::onOpenBluetoothSettingsClicked,
@@ -184,19 +210,15 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun onCheckBluetoothResult(enabled: Boolean) {
-        if (enabled) {
-            onBluetoothStateVerified()
-        } else {
-            triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
-        }
+    private fun onOpenBluetoothPermissionsSettingsClicked() {
+        triggerEvent(OpenPermissionsSettings)
     }
 
     private fun onOpenBluetoothSettingsClicked() {
         triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
     }
 
-    private fun onBluetoothStateVerified() {
+    private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
             cardReaderManager.initialize()
         }
