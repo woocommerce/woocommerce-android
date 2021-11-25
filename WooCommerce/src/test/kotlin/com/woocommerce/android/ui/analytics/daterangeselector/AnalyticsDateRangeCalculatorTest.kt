@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.daterangeselector
 
+import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.junit.Test
@@ -32,35 +33,29 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
 
     @Test
     fun `should return expected date calculating range for today`() {
-
         whenever(dateUtils.getCurrentDateTimeMinusDays(1)).thenReturn(DATE_ZERO)
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
 
-
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.TODAY)
 
-        assertTrue(result is DateRange.SimpleDateRange)
+        assertTrue(result is SimpleDateRange)
         assertEquals(date, result.from)
         assertEquals(date, result.to)
     }
 
-
     @Test
     fun `should return expected date calculating range for yesterday`() {
-
         whenever(dateUtils.getCurrentDateTimeMinusDays(any())).thenReturn(DATE_ZERO)
 
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.YESTERDAY)
 
-        assertTrue(result is DateRange.SimpleDateRange)
+        assertTrue(result is SimpleDateRange)
         assertEquals(date, result.from)
         assertEquals(date, result.to)
     }
 
-
     @Test
     fun `should return expected date calculating range for last week`() {
-
         whenever(dateUtils.getDateForFirstDayOfPreviousWeek(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousWeek(any(), any())).thenReturn(date)
 
@@ -76,7 +71,6 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
 
     @Test
     fun `should return expected date calculating range for last month`() {
-
         whenever(dateUtils.getDateForFirstDayOfPreviousMonth(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousMonth(any(), any())).thenReturn(date)
 
@@ -92,7 +86,6 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
 
     @Test
     fun `should return expected date calculating range for last quarter`() {
-
         whenever(dateUtils.getDateForFirstDayOfPreviousQuarter(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousQuarter(any(), any())).thenReturn(date)
 
@@ -106,10 +99,8 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         assertEquals(date, result.to.to)
     }
 
-
     @Test
     fun `should return expected date calculating range for last year`() {
-
         whenever(dateUtils.getDateForFirstDayOfPreviousYear(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousYear(any(), any())).thenReturn(date)
 
@@ -123,10 +114,8 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         assertEquals(date, result.to.to)
     }
 
-
     @Test
     fun `should return expected date calculating range for week to date`() {
-
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.DAY_OF_YEAR, -7)).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfPreviousWeek(any(), any())).thenReturn(date)
@@ -144,7 +133,6 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
 
     @Test
     fun `should return expected date calculating range for month to date`() {
-
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.MONTH, -1)).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfPreviousMonth(any(), any())).thenReturn(date)
@@ -162,7 +150,6 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
 
     @Test
     fun `should return expected date calculating range for quarter to date`() {
-
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.MONTH, -3)).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfPreviousQuarter(any(), any())).thenReturn(date)
@@ -180,7 +167,6 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
 
     @Test
     fun `should return expected date calculating range for year to date`() {
-
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.YEAR, -1)).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfPreviousYear(any(), any())).thenReturn(date)
@@ -198,13 +184,16 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
 
     @Test
     fun `should return expected formatted date to friendly period`() {
-        val sameYearAndMonthFriendlyFormattedDate = DateRange.SimpleDateRange(date, threeJan1970).formatDatesToFriendlyPeriod()
+        val sameYearAndMonthFriendlyFormattedDate = SimpleDateRange(date, threeJan1970)
+            .formatDatesToFriendlyPeriod()
         assertEquals(SAME_YEAR_SAME_MONTH_EXPECTED, sameYearAndMonthFriendlyFormattedDate)
 
-        val sameYearAndDifferentMonthFriendlyFormattedDate = DateRange.SimpleDateRange(threeJan1970, threeFeb1970).formatDatesToFriendlyPeriod()
+        val sameYearAndDifferentMonthFriendlyFormattedDate = SimpleDateRange(threeJan1970, threeFeb1970)
+            .formatDatesToFriendlyPeriod()
         assertEquals(SAME_YEAR_DIFFERENT_MONTH_EXPECTED, sameYearAndDifferentMonthFriendlyFormattedDate)
 
-        val differentYearAndDifferentMonthFriendlyFormattedDate = DateRange.SimpleDateRange(threeJan1970, twtyFourNov2021).formatDatesToFriendlyPeriod()
+        val differentYearAndDifferentMonthFriendlyFormattedDate = SimpleDateRange(threeJan1970, twtyFourNov2021)
+            .formatDatesToFriendlyPeriod()
         assertEquals(DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED, differentYearAndDifferentMonthFriendlyFormattedDate)
     }
 }

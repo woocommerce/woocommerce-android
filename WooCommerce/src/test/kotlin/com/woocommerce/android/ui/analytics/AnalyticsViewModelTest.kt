@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.analytics
 
-
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
@@ -38,14 +37,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         private val dateRangeSelectors = listOf(ANY_VALUE, ANY_OTHER_VALUE)
     }
 
-    private val dateUtils: DateUtils = mock {
+    private val dateUtil: DateUtils = mock {
         on { getCurrentDate() } doReturn ANY_DATE
         on { getCurrentDateTimeMinusDays(1) } doReturn ANY_OTHER_DATE.time
         on { getYearMonthDayStringFromDate(any()) } doReturn ANY_YEAR_VALUE
         on { getShortMonthDayAndYearString(any()) } doReturn ANY_SORT_FORMAT_VALUE
     }
 
-    private val analyticsDateRangeCalculator: AnalyticsDateRangeCalculator = mock {
+    private val calculator: AnalyticsDateRangeCalculator = mock {
         on { getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_YEAR) } doReturn MultipleDateRange(
             DateRange.SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
             DateRange.SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
@@ -57,18 +56,13 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `analyticsDateRangeSelectorState default values are expected`() = testBlocking {
-
         val resourceProvider: ResourceProvider = mock {
             on { getString(any()) } doReturn ANY_VALUE
             on { getString(any(), anyVararg()) } doReturn ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE
             on { getStringArray(any()) } doAnswer { dateRangeSelectors.toTypedArray() }
         }
 
-        sut = AnalyticsViewModel(coroutinesTestRule.testDispatchers,
-            resourceProvider,
-            dateUtils,
-            analyticsDateRangeCalculator,
-            savedState)
+        sut = AnalyticsViewModel(coroutinesTestRule.testDispatchers, resourceProvider, dateUtil, calculator, savedState)
 
         with(sut.state.value?.analyticsDateRangeSelectorState) {
             assertNotNull(this)
@@ -81,7 +75,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `analyticsDateRangeSelectorState onSelectedDateRangeChanged values are expected`() = testBlocking {
-
         val resourceProvider: ResourceProvider = mock {
             on { getString(any()) } doReturnConsecutively
                 listOf(ANY_VALUE, AnalyticsDateRanges.LAST_YEAR.description)
@@ -90,11 +83,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             on { getStringArray(any()) } doAnswer { dateRangeSelectors.toTypedArray() }
         }
 
-        sut = AnalyticsViewModel(coroutinesTestRule.testDispatchers,
-            resourceProvider,
-            dateUtils,
-            analyticsDateRangeCalculator,
-            savedState)
+        sut = AnalyticsViewModel(coroutinesTestRule.testDispatchers, resourceProvider, dateUtil, calculator, savedState)
 
         sut.onSelectedDateRangeChanged(AnalyticsDateRanges.LAST_YEAR.description)
 
@@ -106,5 +95,4 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             assertEquals(dateRangeSelectors, availableRangeDates)
         }
     }
-
 }

@@ -28,63 +28,91 @@ class AnalyticsDateRangeCalculator @Inject constructor(
     }
 
     private fun getYearToDateRange() = MultipleDateRange(
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(), dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.YEAR, MINUS_ONE)), SimpleDateRange(dateUtils.getDateForFirstDayOfYear()
-        , dateUtils.getCurrentDate())
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(), getMinusOneYearDate()),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfYear(), dateUtils.getCurrentDate())
     )
 
     private fun getQuarterToRangeDate() = MultipleDateRange(
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousQuarter(),
-            dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH,
-                MONTHS_IN_QUARTER)),
+        SimpleDateRange(getDateOfFirstDayPreviousQuarter(), getDateMinusQuarter()),
         SimpleDateRange(dateUtils.getDateForFirstDayOfQuarter(), dateUtils.getCurrentDate())
     )
 
     private fun getMonthToDateRange() = MultipleDateRange(
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousMonth(),
-            dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, MINUS_ONE)),
+        SimpleDateRange(getDateFirstDayPreviousMonth(), getDateMinusOneMonth()),
         SimpleDateRange(dateUtils.getDateForFirstDayOfMonth(), dateUtils.getCurrentDate())
     )
 
     private fun getWeekToDateRange() = MultipleDateRange(
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousWeek(),
-            dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.DAY_OF_YEAR,
-                DAYS_IN_WEEK)),
+        SimpleDateRange(getDateFirstDayOneWeekAgo(), getDateSevenDaysAgo()),
         SimpleDateRange(dateUtils.getDateForFirstDayOfWeek(), dateUtils.getCurrentDate())
     )
 
     private fun getLastYearRange() = MultipleDateRange(
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(TWO),
-            dateUtils.getDateForLastDayOfPreviousYear(TWO)),
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(),
-            dateUtils.getDateForLastDayOfPreviousYear()),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(TWO), getDateForLastDayOfTwoYearsAgo()),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(), dateUtils.getDateForLastDayOfPreviousYear()),
     )
 
     private fun getLastQuarterRange() = MultipleDateRange(
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousQuarter(TWO),
-            dateUtils.getDateForLastDayOfPreviousQuarter(TWO)),
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousQuarter(),
-            dateUtils.getDateForLastDayOfPreviousQuarter()),
+        SimpleDateRange(getDateOFirstDayTwoQuartersAgo(), getDateOfLastDayTwoQuartersAgo()),
+        SimpleDateRange(getDateOfFirstDayPreviousQuarter(), getDateOfLastDayPreviousQuarter()),
     )
 
-    private fun getYesterdayRange() = SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(TWO)),
-        Date(dateUtils.getCurrentDateTimeMinusDays(ONE)))
+    private fun getDateOfLastDayPreviousQuarter() = dateUtils.getDateForLastDayOfPreviousQuarter()
 
-    private fun getTodayRange() =
-        SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(ONE)), dateUtils.getCurrentDate())
+    private fun getDateOfFirstDayPreviousQuarter() = dateUtils.getDateForFirstDayOfPreviousQuarter()
 
-    private fun getLastMonthRange() = MultipleDateRange(
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousMonth(TWO),
-            dateUtils.getDateForLastDayOfPreviousMonth(TWO)),
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousMonth(),
-            dateUtils.getDateForLastDayOfPreviousMonth()),
-    )
+    private fun getDateOFirstDayTwoQuartersAgo() = dateUtils.getDateForFirstDayOfPreviousQuarter(TWO)
+
+    private fun getDateOfLastDayTwoQuartersAgo() = dateUtils.getDateForLastDayOfPreviousQuarter(TWO)
+
+    private fun getYesterdayRange() = SimpleDateRange(getDateForTwoDaysAgo(), getDateForYesterday())
+
+    private fun getDateForTwoDaysAgo() = Date(dateUtils.getCurrentDateTimeMinusDays(TWO))
+
+    private fun getTodayRange() = SimpleDateRange(getDateForYesterday(), dateUtils.getCurrentDate())
+
+    private fun getDateForYesterday() = Date(dateUtils.getCurrentDateTimeMinusDays(ONE))
+
+    private fun getLastMonthRange() =
+        MultipleDateRange(
+            SimpleDateRange(getDateOfFirstDayTwoMonthsAgo(), getDateLastDayTwoMonthsAgo()),
+            SimpleDateRange(getDateFirstDayPreviousMonth(), getDateForLastDayPreviousMonth()),
+        )
+
+    private fun getDateForLastDayPreviousMonth() = dateUtils.getDateForLastDayOfPreviousMonth()
+
+    private fun getDateFirstDayPreviousMonth() = dateUtils.getDateForFirstDayOfPreviousMonth()
+
+    private fun getDateLastDayTwoMonthsAgo() = dateUtils.getDateForLastDayOfPreviousMonth(TWO)
+
+    private fun getDateOfFirstDayTwoMonthsAgo() = dateUtils.getDateForFirstDayOfPreviousMonth(TWO)
 
     private fun getLastWeekRange() = MultipleDateRange(
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousWeek(TWO),
-            dateUtils.getDateForLastDayOfPreviousWeek(TWO)),
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousWeek(),
-            dateUtils.getDateForLastDayOfPreviousWeek()),
+        SimpleDateRange(getDateOfFirstDayTwoWeeksAgo(), getDateOfLastDayTwoWeeksAgo()),
+        SimpleDateRange(getDateFirstDayOneWeekAgo(), getDateLastDayOneWeekAgo()),
     )
+
+    private fun getDateLastDayOneWeekAgo() = dateUtils.getDateForLastDayOfPreviousWeek()
+
+    private fun getDateFirstDayOneWeekAgo() = dateUtils.getDateForFirstDayOfPreviousWeek()
+
+    private fun getDateOfLastDayTwoWeeksAgo() = dateUtils.getDateForLastDayOfPreviousWeek(TWO)
+
+    private fun getDateOfFirstDayTwoWeeksAgo() = dateUtils.getDateForFirstDayOfPreviousWeek(TWO)
+
+    private fun getMinusOneYearDate() =
+        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.YEAR, MINUS_ONE)
+
+    private fun getDateMinusQuarter() =
+        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, MONTHS_IN_QUARTER)
+
+    private fun getDateSevenDaysAgo() =
+        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.DAY_OF_YEAR, DAYS_IN_WEEK)
+
+    private fun getDateMinusOneMonth() =
+        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, MINUS_ONE)
+
+    private fun getDateForLastDayOfTwoYearsAgo() = dateUtils.getDateForLastDayOfPreviousYear(TWO)
 
     companion object {
         const val DAYS_IN_WEEK = -7

@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.analytics
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract.AnalyticsDateRangeSelectorViewState
@@ -19,8 +21,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.Dispatcher
 import java.util.*
 import javax.inject.Inject
 
@@ -32,10 +32,7 @@ class AnalyticsViewModel @Inject constructor(
     private val analyticsDateRange: AnalyticsDateRangeCalculator,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-
-    private val defaultDateRange = SimpleDateRange(
-        Date(dateUtils.getCurrentDateTimeMinusDays(1)),
-        dateUtils.getCurrentDate())
+    private val dateRange = SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(1)), dateUtils.getCurrentDate())
 
     private val mutableEffect = Channel<AnalyticsContract.AnalyticsEffect>()
     private val mutableEvent = MutableSharedFlow<AnalyticsContract.AnalyticsEvent>()
@@ -43,8 +40,8 @@ class AnalyticsViewModel @Inject constructor(
         .apply {
             value = AnalyticsContract.AnalyticsState(
                 analyticsDateRangeSelectorState = AnalyticsDateRangeSelectorViewState(
-                    fromDatePeriod = calculateFromDatePeriod(defaultDateRange),
-                    toDatePeriod = calculateToDatePeriod(AnalyticsDateRanges.TODAY, defaultDateRange),
+                    fromDatePeriod = calculateFromDatePeriod(dateRange),
+                    toDatePeriod = calculateToDatePeriod(AnalyticsDateRanges.TODAY, dateRange),
                     availableRangeDates = getAvailableDateRanges(),
                     selectedPeriod = getDefaultSelectedPeriod()
                 )
@@ -72,18 +69,19 @@ class AnalyticsViewModel @Inject constructor(
         )
     }
 
-    private fun calculateToDatePeriod(analyticsDateRange: AnalyticsDateRanges, dateRange: DateRange) = when (dateRange) {
-        is MultipleDateRange -> resourceProvider.getString(
-            R.string.analytics_date_range_to_date,
-            getDateSelectedMessage(analyticsDateRange),
-            dateRange.to.formatDatesToFriendlyPeriod()
-        )
-        is SimpleDateRange -> resourceProvider.getString(
-            R.string.analytics_date_range_to_date,
-            getDateSelectedMessage(analyticsDateRange),
-            dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.to)).orEmpty()
-        )
-    }
+    private fun calculateToDatePeriod(analyticsDateRange: AnalyticsDateRanges, dateRange: DateRange) =
+        when (dateRange) {
+            is MultipleDateRange -> resourceProvider.getString(
+                R.string.analytics_date_range_to_date,
+                getDateSelectedMessage(analyticsDateRange),
+                dateRange.to.formatDatesToFriendlyPeriod()
+            )
+            is SimpleDateRange -> resourceProvider.getString(
+                R.string.analytics_date_range_to_date,
+                getDateSelectedMessage(analyticsDateRange),
+                dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.to)).orEmpty()
+            )
+        }
 
     private fun calculateFromDatePeriod(dateRange: DateRange) = when (dateRange) {
         is MultipleDateRange -> resourceProvider.getString(
