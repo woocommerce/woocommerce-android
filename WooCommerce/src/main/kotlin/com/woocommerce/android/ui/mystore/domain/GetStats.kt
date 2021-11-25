@@ -28,7 +28,7 @@ class GetStats @Inject constructor(
         flow {
             coroutineScope {
                 if (forceRefresh) {
-                    emit(IsLoading(true))
+                    emit(IsLoadingStats(true))
                 }
 
                 val hasNoOrdersTask = async {
@@ -53,7 +53,7 @@ class GetStats @Inject constructor(
                     val revenueStatsResult = revenueStatsTask.await()
                     val visitorStatsResult = visitorStatsTask.await()
 
-                    emit(IsLoading(false))
+                    emit(IsLoadingStats(false))
                     handle(revenueStatsResult, granularity)
                     visitorStatsResult?.let {
                         it.fold(
@@ -115,7 +115,7 @@ class GetStats @Inject constructor(
             val hasOrder: Boolean
         ) : LoadStatsResult()
 
-        data class IsLoading(
+        data class IsLoadingStats(
             val isLoading: Boolean
         ) : LoadStatsResult()
 
