@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationSectionViewBinding
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionContract.ViewState
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
 
@@ -17,7 +18,7 @@ class AnalyticsInformationSectionView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     val binding = AnalyticsInformationSectionViewBinding.inflate(LayoutInflater.from(ctx), this)
 
-    internal fun initView(viewState: AnalyticsInformationSectionContract.ViewState) {
+    internal fun initView(viewState: ViewState) {
         binding.tvSectionCardTitle.text = viewState.title
         binding.tvSectionCardValue.text = viewState.value
         binding.tvSectionCardDeltaValue.text =
@@ -27,7 +28,7 @@ class AnalyticsInformationSectionView @JvmOverloads constructor(
         )
     }
 
-    private fun getDeltaTagText(viewState: AnalyticsInformationSectionContract.ViewState) =
+    private fun getDeltaTagText(viewState: ViewState) =
         ctx.resources.getString(R.string.analytics_information_card_delta, viewState.getSign(), viewState.delta)
 }
 
