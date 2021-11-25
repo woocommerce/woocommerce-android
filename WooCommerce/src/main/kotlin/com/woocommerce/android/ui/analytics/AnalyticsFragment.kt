@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleDialogResult
@@ -33,7 +34,9 @@ class AnalyticsFragment :
         super.onViewCreated(view, savedInstanceState)
         bind(view)
         setupResultHandlers(viewModel)
-        viewModel.state.observe(viewLifecycleOwner, handleStateChange())
+        lifecycleScope.launchWhenStarted {
+            viewModel.state.collect { newState -> handleStateChange(newState) }
+        }
     }
 
     override fun shouldExpandToolbar(): Boolean = true
@@ -51,9 +54,9 @@ class AnalyticsFragment :
     private fun buildDialogDateRangeSelectorArguments() =
         AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
-            keys = getDateRangeSelectorViewState()?.availableRangeDates?.toTypedArray() ?: emptyArray(),
-            values = getDateRangeSelectorViewState()?.availableRangeDates?.toTypedArray() ?: emptyArray(),
-            selectedItem = getDateRangeSelectorViewState()?.selectedPeriod
+            keys = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
+            values = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
+            selectedItem = getDateRangeSelectorViewState().selectedPeriod
         )
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
@@ -76,5 +79,5 @@ class AnalyticsFragment :
         revenueSectionView.setViewState(it.revenueCardState)
     }
 
-    private fun getDateRangeSelectorViewState() = viewModel.state.value?.analyticsDateRangeSelectorState
+    private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
 }
