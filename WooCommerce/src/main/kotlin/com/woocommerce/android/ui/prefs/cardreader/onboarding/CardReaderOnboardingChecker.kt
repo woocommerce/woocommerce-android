@@ -49,9 +49,16 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (fetchSitePluginsResult.isError) return GenericError
         val pluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
 
-        if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
-        if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
-        if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+        if (stripeExtensionFeatureFlag.isEnabled()) {
+           // TODO cardreader Add support for Stripe Extension
+            if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
+            if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
+            if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+        } else {
+            if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
+            if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
+            if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+        }
 
         val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GenericError
 
