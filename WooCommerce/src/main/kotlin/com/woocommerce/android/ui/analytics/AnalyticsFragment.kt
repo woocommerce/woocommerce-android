@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleDialogResult
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract
 import com.woocommerce.android.ui.base.TopLevelFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class AnalyticsFragment :
@@ -30,7 +32,9 @@ class AnalyticsFragment :
         super.onViewCreated(view, savedInstanceState)
         bind(view)
         setupResultHandlers(viewModel)
-        viewModel.state.observe(viewLifecycleOwner, handleStateChange())
+        lifecycleScope.launchWhenStarted {
+            viewModel.state.collect { newState -> handleStateChange(newState) }
+        }
     }
 
     override fun shouldExpandToolbar(): Boolean = true
@@ -48,9 +52,9 @@ class AnalyticsFragment :
     private fun buildDialogDateRangeSelectorArguments() =
         AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
-            keys = getDateRangeSelectorViewState()?.availableRangeDates?.toTypedArray() ?: emptyArray(),
-            values = getDateRangeSelectorViewState()?.availableRangeDates?.toTypedArray() ?: emptyArray(),
-            selectedItem = getDateRangeSelectorViewState()?.selectedPeriod
+            keys = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
+            values = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
+            selectedItem = getDateRangeSelectorViewState().selectedPeriod
         )
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
@@ -65,10 +69,10 @@ class AnalyticsFragment :
         analyticsDateRangeCardView.initView(this)
     }
 
-    private fun handleStateChange(): (state: AnalyticsState) -> Unit = {
-        analyticsDateRangeCardView.binding.tvFromDate.text = it.analyticsDateRangeSelectorState.fromDatePeriod
-        analyticsDateRangeCardView.binding.tvToDate.text = it.analyticsDateRangeSelectorState.toDatePeriod
+    private fun handleStateChange(state: AnalyticsState) {
+        analyticsDateRangeCardView.binding.tvFromDate.text = state.analyticsDateRangeSelectorState.fromDatePeriod
+        analyticsDateRangeCardView.binding.tvToDate.text = state.analyticsDateRangeSelectorState.toDatePeriod
     }
 
-    private fun getDateRangeSelectorViewState() = viewModel.state.value?.analyticsDateRangeSelectorState
+    private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
 }
