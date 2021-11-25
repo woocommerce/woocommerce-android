@@ -297,9 +297,7 @@ dependencies {
     implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion") {
         exclude group: "org.wordpress", module: "utils"
     }
-    implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion") {
-        exclude group: "org.wordpress", module: "utils"
-    }
+    implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
