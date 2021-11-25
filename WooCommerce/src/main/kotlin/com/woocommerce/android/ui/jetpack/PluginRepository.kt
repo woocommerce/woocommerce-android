@@ -19,10 +19,14 @@ import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginAc
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.PluginStore
 import org.wordpress.android.fluxc.store.PluginStore.*
+import org.wordpress.android.fluxc.store.Store
+import java.lang.Exception
 
 class PluginRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -31,6 +35,7 @@ class PluginRepository @Inject constructor(
 ) {
     companion object {
         const val GENERIC_ERROR = "Unknown issue."
+        const val ATTEMPT_LIMIT = 3
     }
 
     init {
@@ -62,6 +67,16 @@ class PluginRepository @Inject constructor(
 
         awaitClose {
             dispatcher.unregister(listener)
+        }
+    }.retryWhen { cause, attempt ->
+        cause is PluginException && attempt < ATTEMPT_LIMIT
+    }.catch { cause ->
+        if (cause is PluginException) {
+            if (cause.errorType is InstallSitePluginError) {
+                emit(PluginInstallFailed(error = cause.errorMessage))
+            } else if (cause.errorType is ConfigureSitePluginError) {
+                emit(PluginActivationFailed(error = cause.errorMessage))
+            }
         }
     }
 
@@ -98,8 +113,11 @@ class PluginRepository @Inject constructor(
                     PluginInstalled(event.slug, event.site)
                 )
             } else {
-                producerScope.trySendBlocking(
-                    PluginInstallFailed(event.error.message ?: GENERIC_ERROR)
+                producerScope.close(
+                    PluginException(
+                        event.error,
+                        event.error.message ?: GENERIC_ERROR
+                    )
                 )
             }
         }
@@ -113,8 +131,11 @@ class PluginRepository @Inject constructor(
                     PluginActivated(event.pluginName, event.site)
                 )
             } else {
-                producerScope.trySendBlocking(
-                    PluginActivationFailed(event.error.message ?: GENERIC_ERROR)
+                producerScope.close(
+                    PluginException(
+                        event.error,
+                        event.error.message ?: GENERIC_ERROR
+                    )
                 )
             }
         }
@@ -143,4 +164,6 @@ class PluginRepository @Inject constructor(
         @Parcelize
         data class PluginActivationFailed(val error: String) : PluginStatus()
     }
+
+    private class PluginException(val errorType: Store.OnChangedError, val errorMessage: String) : Exception()
 }
