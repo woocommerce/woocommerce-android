@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationCardView
 import com.woocommerce.android.ui.base.TopLevelFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class AnalyticsFragment :
@@ -73,10 +74,10 @@ class AnalyticsFragment :
         revenueSectionView = rootView.findViewById(R.id.analyticsRevenueCard)
     }
 
-    private fun handleStateChange(): (state: AnalyticsState) -> Unit = {
-        analyticsDateRangeCardView.binding.tvFromDate.text = it.analyticsDateRangeSelectorState.fromDatePeriod
-        analyticsDateRangeCardView.binding.tvToDate.text = it.analyticsDateRangeSelectorState.toDatePeriod
-        revenueSectionView.setViewState(it.revenueCardState)
+    private fun handleStateChange(state: AnalyticsState) {
+        analyticsDateRangeCardView.binding.tvFromDate.text = state.analyticsDateRangeSelectorState.fromDatePeriod
+        analyticsDateRangeCardView.binding.tvToDate.text = state.analyticsDateRangeSelectorState.toDatePeriod
+        revenueSectionView.setViewState(state.revenueCardState)
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState

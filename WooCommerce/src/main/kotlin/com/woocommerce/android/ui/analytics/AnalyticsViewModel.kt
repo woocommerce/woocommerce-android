@@ -49,61 +49,60 @@ class AnalyticsViewModel @Inject constructor(
             )
         )
     )
-}
 
-val state: StateFlow<AnalyticsState> = mutableState
+    val state: StateFlow<AnalyticsState> = mutableState
 
-fun onSelectedDateRangeChanged(newSelection: String) {
-    val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)
-    val newDateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedRange)
+    fun onSelectedDateRangeChanged(newSelection: String) {
+        val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)
+        val newDateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedRange)
 
-    mutableState.value = state.value.copy(
-        analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
-            fromDatePeriod = calculateFromDatePeriod(newDateRange),
-            toDatePeriod = calculateToDatePeriod(selectedRange, newDateRange),
-            selectedPeriod = getDateSelectedMessage(selectedRange)
+        mutableState.value = state.value.copy(
+            analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
+                fromDatePeriod = calculateFromDatePeriod(newDateRange),
+                toDatePeriod = calculateToDatePeriod(selectedRange, newDateRange),
+                selectedPeriod = getDateSelectedMessage(selectedRange)
+            )
         )
-    )
-}
+    }
 
-private fun calculateToDatePeriod(analyticsDateRange: AnalyticsDateRanges, dateRange: DateRange) =
-    when (dateRange) {
+    private fun calculateToDatePeriod(analyticsDateRange: AnalyticsDateRanges, dateRange: DateRange) =
+        when (dateRange) {
+            is MultipleDateRange -> resourceProvider.getString(
+                R.string.analytics_date_range_to_date,
+                getDateSelectedMessage(analyticsDateRange),
+                dateRange.to.formatDatesToFriendlyPeriod()
+            )
+            is SimpleDateRange -> resourceProvider.getString(
+                R.string.analytics_date_range_to_date,
+                getDateSelectedMessage(analyticsDateRange),
+                dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.to)).orEmpty()
+            )
+        }
+
+    private fun calculateFromDatePeriod(dateRange: DateRange) = when (dateRange) {
         is MultipleDateRange -> resourceProvider.getString(
-            R.string.analytics_date_range_to_date,
-            getDateSelectedMessage(analyticsDateRange),
-            dateRange.to.formatDatesToFriendlyPeriod()
+            R.string.analytics_date_range_from_date,
+            dateRange.from.formatDatesToFriendlyPeriod()
         )
         is SimpleDateRange -> resourceProvider.getString(
-            R.string.analytics_date_range_to_date,
-            getDateSelectedMessage(analyticsDateRange),
-            dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.to)).orEmpty()
+            R.string.analytics_date_range_from_date,
+            dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.from)).orEmpty()
         )
     }
 
-private fun calculateFromDatePeriod(dateRange: DateRange) = when (dateRange) {
-    is MultipleDateRange -> resourceProvider.getString(
-        R.string.analytics_date_range_from_date,
-        dateRange.from.formatDatesToFriendlyPeriod()
-    )
-    is SimpleDateRange -> resourceProvider.getString(
-        R.string.analytics_date_range_from_date,
-        dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.from)).orEmpty()
-    )
-}
-
-private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
-private fun getDefaultSelectedPeriod() = getDateSelectedMessage(AnalyticsDateRanges.TODAY)
-private fun getDateSelectedMessage(analyticsDateRange: AnalyticsDateRanges): String =
-    when (analyticsDateRange) {
-        AnalyticsDateRanges.TODAY -> resourceProvider.getString(R.string.date_timeframe_today)
-        AnalyticsDateRanges.YESTERDAY -> resourceProvider.getString(R.string.date_timeframe_yesterday)
-        AnalyticsDateRanges.LAST_WEEK -> resourceProvider.getString(R.string.date_timeframe_last_week)
-        AnalyticsDateRanges.LAST_MONTH -> resourceProvider.getString(R.string.date_timeframe_last_month)
-        AnalyticsDateRanges.LAST_QUARTER -> resourceProvider.getString(R.string.date_timeframe_last_quarter)
-        AnalyticsDateRanges.LAST_YEAR -> resourceProvider.getString(R.string.date_timeframe_last_year)
-        AnalyticsDateRanges.WEEK_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_week_to_date)
-        AnalyticsDateRanges.MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
-        AnalyticsDateRanges.QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
-        AnalyticsDateRanges.YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
-    }
+    private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
+    private fun getDefaultSelectedPeriod() = getDateSelectedMessage(AnalyticsDateRanges.TODAY)
+    private fun getDateSelectedMessage(analyticsDateRange: AnalyticsDateRanges): String =
+        when (analyticsDateRange) {
+            AnalyticsDateRanges.TODAY -> resourceProvider.getString(R.string.date_timeframe_today)
+            AnalyticsDateRanges.YESTERDAY -> resourceProvider.getString(R.string.date_timeframe_yesterday)
+            AnalyticsDateRanges.LAST_WEEK -> resourceProvider.getString(R.string.date_timeframe_last_week)
+            AnalyticsDateRanges.LAST_MONTH -> resourceProvider.getString(R.string.date_timeframe_last_month)
+            AnalyticsDateRanges.LAST_QUARTER -> resourceProvider.getString(R.string.date_timeframe_last_quarter)
+            AnalyticsDateRanges.LAST_YEAR -> resourceProvider.getString(R.string.date_timeframe_last_year)
+            AnalyticsDateRanges.WEEK_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_week_to_date)
+            AnalyticsDateRanges.MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
+            AnalyticsDateRanges.QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
+            AnalyticsDateRanges.YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
+        }
 }
