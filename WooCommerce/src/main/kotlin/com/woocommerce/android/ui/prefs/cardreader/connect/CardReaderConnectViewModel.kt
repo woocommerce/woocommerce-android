@@ -193,7 +193,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCheckBluetoothResult(enabled: Boolean) {
         if (enabled) {
-            onCardReaderReadyToConnect()
+            onReadyToStartScanning()
         } else {
             triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
         }
@@ -201,7 +201,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onRequestEnableBluetoothResult(enabled: Boolean) {
         if (enabled) {
-            onCardReaderReadyToConnect()
+            onReadyToStartScanning()
         } else {
             viewState.value = BluetoothDisabledError(
                 onPrimaryActionClicked = ::onOpenBluetoothSettingsClicked,
@@ -218,7 +218,7 @@ class CardReaderConnectViewModel @Inject constructor(
         triggerEvent(RequestEnableBluetooth(::onRequestEnableBluetoothResult))
     }
 
-    private fun onCardReaderReadyToConnect() {
+    private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
             cardReaderManager.initialize()
         }
