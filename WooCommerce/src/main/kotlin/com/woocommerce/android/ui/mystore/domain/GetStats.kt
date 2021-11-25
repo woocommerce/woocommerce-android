@@ -18,10 +18,10 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
 class GetStats @Inject constructor(
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val statsRepository: StatsRepository
 ) {
     operator fun invoke(
-        statsRepository: StatsRepository,
         forceRefresh: Boolean,
         granularity: StatsGranularity
     ): Flow<LoadStatsResult> =

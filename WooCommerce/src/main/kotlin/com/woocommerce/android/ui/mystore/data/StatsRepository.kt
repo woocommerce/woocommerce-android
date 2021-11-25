@@ -21,7 +21,9 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton //TODO REMOVE SINGLETON AFTER REFACTOR IS COMPLETED jorgemucientes
 class StatsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dispatcher: Dispatcher,

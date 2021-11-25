@@ -88,7 +88,7 @@ class MyStorePresenter @Inject constructor(
         }
 
         coroutineScope.launch {
-            getStats(statsRepository, forced, granularity)
+            getStats(forced, granularity)
                 .flowOn(Dispatchers.Default)
                 .collect {
                     when (it) {
