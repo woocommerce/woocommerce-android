@@ -11,17 +11,17 @@ import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInforma
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationContract.AnalyticsCardInformationViewState.HiddenCardViewState
 
 class AnalyticsInformationCardView @JvmOverloads constructor(
-    val ctx: Context,
+    ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     val binding = AnalyticsInformationCardViewBinding.inflate(LayoutInflater.from(ctx), this)
 
     internal fun setViewState(viewState: AnalyticsCardInformationViewState) {
-
         when (viewState) {
             is HiddenCardViewState -> visibility = View.INVISIBLE
             is CardDataViewState -> {
+                visibility = View.VISIBLE
                 binding.tvAnalyticsCardTitle.text = viewState.title
                 binding.vSectionTotalSales.setViewState(viewState.totalValues)
                 binding.vSectionNetSales.setViewState(viewState.netValues)

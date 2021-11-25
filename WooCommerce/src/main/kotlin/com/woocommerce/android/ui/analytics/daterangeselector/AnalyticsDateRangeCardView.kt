@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract.DateRangeEvent
-import dagger.hilt.android.AndroidEntryPoint
 
 class AnalyticsDateRangeCardView @JvmOverloads constructor(
     ctx: Context,

@@ -41,10 +41,10 @@ class AnalyticsViewModel @Inject constructor(
             revenueCardState = AnalyticsCardInformationViewState.CardDataViewState(
                 title = "Revenue",
                 totalValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
-                    "2323,22", 33
+                    "$2323,22", 33
                 ),
                 netValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
-                    "2323,22", 33
+                    "$111", -33
                 )
             )
         )
