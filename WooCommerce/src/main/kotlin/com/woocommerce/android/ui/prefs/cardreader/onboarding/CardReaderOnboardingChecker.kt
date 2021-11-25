@@ -29,7 +29,6 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
 ) {
-    @Suppress("ReturnCount", "ComplexMethod")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
 
@@ -39,6 +38,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             }
     }
 
+    @Suppress("ReturnCount", "ComplexMethod")
     private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)

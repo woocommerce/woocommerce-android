@@ -408,7 +408,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             anyInt(),
             anyLong(),
             anyLong(),
-            isCompleted = eq(true))
+            isCompleted = eq(true)
+        )
     }
 
     @Test
