@@ -278,6 +278,11 @@
         <item translatable="false">@string/date_timeframe_quarter_to_date</item>
         <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
+    <string name="analytics_see_report_button_text">See report</string>e
+    <string name="analytics_see_report_button_content_description">See more report details</string>
+    <string name="analytics_total_sales_title">Total sales</string>
+    <string name="analytics_net_sales_title">Net sales</string>
+    <string name="analytics_information_card_delta" translatable="false">%1$s %2$d%%</string>
 
     <!--
         Order List View

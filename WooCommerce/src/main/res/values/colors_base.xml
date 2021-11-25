@@ -177,4 +177,10 @@
     <color name="reader_update_progress_color">@color/woo_purple_50</color>
     <color name="reader_update_rest_color">@color/woo_purple_30</color>
     <color name="reader_update_border_color">#533582</color>
+
+    <!--
+    Analytics
+    -->
+    <color name="analytics_delta_positive_color">#69B56E</color>
+    <color name="analytics_delta_tag_negative_color">#C95854</color>
 </resources>
