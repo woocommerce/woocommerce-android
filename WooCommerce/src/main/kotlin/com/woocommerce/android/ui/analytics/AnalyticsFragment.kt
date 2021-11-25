@@ -10,6 +10,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.analytics.AnalyticsContract.AnalyticsState
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCardView
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationCardView
 import com.woocommerce.android.ui.base.TopLevelFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,6 +23,8 @@ class AnalyticsFragment :
     }
 
     private lateinit var analyticsDateRangeCardView: AnalyticsDateRangeCardView
+    private lateinit var revenueSectionView: AnalyticsInformationCardView
+
     private val viewModel: AnalyticsViewModel by viewModels()
 
     override fun getFragmentTitle() = getString(R.string.analytics)
@@ -63,11 +66,14 @@ class AnalyticsFragment :
     private fun bind(rootView: View) {
         analyticsDateRangeCardView = rootView.findViewById(R.id.analyticsDateSelectorCard)
         analyticsDateRangeCardView.initView(this)
+
+        revenueSectionView = rootView.findViewById(R.id.analyticsRevenueCard)
     }
 
     private fun handleStateChange(): (state: AnalyticsState) -> Unit = {
         analyticsDateRangeCardView.binding.tvFromDate.text = it.analyticsDateRangeSelectorState.fromDatePeriod
         analyticsDateRangeCardView.binding.tvToDate.text = it.analyticsDateRangeSelectorState.toDatePeriod
+        revenueSectionView.setViewState(it.revenueCardState)
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value?.analyticsDateRangeSelectorState

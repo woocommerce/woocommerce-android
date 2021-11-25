@@ -11,6 +11,8 @@ import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationContract.AnalyticsCardInformationViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionContract.SectionViewState.SectionDataViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -44,6 +46,15 @@ class AnalyticsViewModel @Inject constructor(
                     toDatePeriod = calculateToDatePeriod(AnalyticsDateRanges.TODAY, dateRange),
                     availableRangeDates = getAvailableDateRanges(),
                     selectedPeriod = getDefaultSelectedPeriod()
+                ),
+                revenueCardState = AnalyticsCardInformationViewState.CardDataViewState(
+                    title = "Revenue",
+                    totalValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
+                        "2323,22", 33
+                    ),
+                    netValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
+                        "2323,22", 33
+                    )
                 )
             )
         }
