@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.tools.SelectedSite
@@ -31,7 +31,7 @@ class StatsRepository @Inject constructor(
     private val wcLeaderboardsStore: WCLeaderboardsStore
 ) {
     companion object {
-        private val TAG = MyStorePresenter::class.java
+        private val TAG = StatsRepository::class.java
     }
 
     private val continuationRevenueStats = ContinuationWrapper<Result<WCRevenueStatsModel?>>(DASHBOARD)

@@ -7,7 +7,8 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.mystore.StatsRepository.StatsException
+import com.woocommerce.android.ui.mystore.data.StatsRepository
+import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
