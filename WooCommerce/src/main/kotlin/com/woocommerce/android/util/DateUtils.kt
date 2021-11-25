@@ -339,7 +339,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
         }.timeInMillis
 
     /**
@@ -351,7 +351,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
             set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
         }.time
 
@@ -364,8 +364,8 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.DAY_OF_MONTH, 1)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            set(Calendar.DAY_OF_MONTH, ONE)
         }.time
 
     /**
@@ -377,9 +377,9 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.DAY_OF_MONTH, 1)
-            set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) / 3 * 3)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            set(Calendar.DAY_OF_MONTH, ONE)
+            set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) / MONTHS_QUARTER_CALCULATION)
         }.time
 
     /**
@@ -391,9 +391,9 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.DAY_OF_MONTH, 1)
-            set(Calendar.MONTH, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            set(Calendar.DAY_OF_MONTH, ONE)
+            set(Calendar.MONTH, ZERO)
         }.time
 
     /**
@@ -406,7 +406,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
             add(Calendar.WEEK_OF_YEAR, -minusWeeks)
             set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
         }.time
@@ -421,9 +421,9 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
             add(Calendar.MONTH, -minusMonths)
-            set(Calendar.DAY_OF_MONTH, 1)
+            set(Calendar.DAY_OF_MONTH, ONE)
         }.time
 
     /**
@@ -436,10 +436,10 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
             set(Calendar.DAY_OF_MONTH, 1)
-            set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) / 3 * 3)
-            add(Calendar.MONTH, -minusQuarter * 3)
+            set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) / MONTHS_QUARTER_CALCULATION)
+            add(Calendar.MONTH, -minusQuarter * THREE)
         }.time
 
     /**
@@ -452,10 +452,10 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
             add(Calendar.YEAR, -minusYears)
-            set(Calendar.DAY_OF_MONTH, 1)
-            set(Calendar.MONTH, 0)
+            set(Calendar.DAY_OF_MONTH, ONE)
+            set(Calendar.MONTH, ZERO)
         }.time
 
     /**
@@ -468,9 +468,9 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
             add(Calendar.WEEK_OF_YEAR, -minusWeeks)
-            set(Calendar.DAY_OF_WEEK, firstDayOfWeek + 6)
+            set(Calendar.DAY_OF_WEEK, firstDayOfWeek + DAYS_TAIL_IN_WEEK)
         }.time
 
     /**
@@ -483,7 +483,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
             add(Calendar.MONTH, -minusMonths)
             set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
         }.time
@@ -498,10 +498,10 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
-            add(Calendar.DAY_OF_YEAR, -90 * minusQuarter)
-            set(Calendar.DAY_OF_MONTH, 1)
-            set(Calendar.MONTH, get(Calendar.MONTH) / 3 * 3 + 2)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            add(Calendar.DAY_OF_YEAR, -DAYS_IN_QUARTER * minusQuarter)
+            set(Calendar.DAY_OF_MONTH, ONE)
+            set(Calendar.MONTH, get(Calendar.MONTH) / MONTHS_QUARTER_CALCULATION + 2)
             set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
         }.time
 
@@ -511,7 +511,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
             set(Calendar.MONTH, getActualMaximum(Calendar.MONTH))
             set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
             add(Calendar.YEAR, -minusYears)
@@ -522,7 +522,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
             add(Calendar.DATE, -days)
         }.timeInMillis
 
@@ -542,7 +542,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, ZERO)
             add(operationOver, number)
         }.time
 
@@ -566,6 +566,14 @@ class DateUtils @Inject constructor(
 
 
     companion object {
+        const val MONTHS_QUARTER_CALCULATION = 3 * 3
+        const val DAYS_IN_QUARTER = 90
+        const val DAYS_TAIL_IN_WEEK = 6
+
+        const val ZERO = 0
+        const val ONE = 1
+        const val THREE = 3
+
         /**
          * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT
          *

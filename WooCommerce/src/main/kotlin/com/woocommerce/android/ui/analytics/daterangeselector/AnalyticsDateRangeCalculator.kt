@@ -15,50 +15,83 @@ class AnalyticsDateRangeCalculator @Inject constructor(
     val dateUtils: DateUtils
 ) {
     fun getAnalyticsDateRangeFrom(selectionRange: AnalyticsDateRanges): DateRange = when (selectionRange) {
-        AnalyticsDateRanges.TODAY ->
-            SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(1)), dateUtils.getCurrentDate())
-        AnalyticsDateRanges.YESTERDAY ->
-            SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(2)), Date(dateUtils.getCurrentDateTimeMinusDays(1)))
-        AnalyticsDateRanges.LAST_WEEK ->
-            MultipleDateRange(
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousWeek(2), dateUtils.getDateForLastDayOfPreviousWeek(2)),
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousWeek(), dateUtils.getDateForLastDayOfPreviousWeek()),
-            )
-        AnalyticsDateRanges.LAST_MONTH ->
-            MultipleDateRange(
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousMonth(2), dateUtils.getDateForLastDayOfPreviousMonth(2)),
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousMonth(), dateUtils.getDateForLastDayOfPreviousMonth()),
-            )
-        AnalyticsDateRanges.LAST_QUARTER ->
-            MultipleDateRange(
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousQuarter(2), dateUtils.getDateForLastDayOfPreviousQuarter(2)),
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousQuarter(), dateUtils.getDateForLastDayOfPreviousQuarter()),
-            )
-        AnalyticsDateRanges.LAST_YEAR ->
-            MultipleDateRange(
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(2), dateUtils.getDateForLastDayOfPreviousYear(2)),
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(), dateUtils.getDateForLastDayOfPreviousYear()),
-            )
-        AnalyticsDateRanges.WEEK_TO_DATE ->
-            MultipleDateRange(
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousWeek(), dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.DAY_OF_YEAR, -7)),
-                SimpleDateRange(dateUtils.getDateForFirstDayOfWeek(), dateUtils.getCurrentDate())
-            )
-        AnalyticsDateRanges.MONTH_TO_DATE ->
-            MultipleDateRange(
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousMonth(), dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, -1)),
-                SimpleDateRange(dateUtils.getDateForFirstDayOfMonth(), dateUtils.getCurrentDate())
-            )
-        AnalyticsDateRanges.QUARTER_TO_DATE ->
-            MultipleDateRange(
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousQuarter(), dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, -3)),
-                SimpleDateRange(dateUtils.getDateForFirstDayOfQuarter(), dateUtils.getCurrentDate())
-            )
-        AnalyticsDateRanges.YEAR_TO_DATE ->
-            MultipleDateRange(
-                SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(), dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.YEAR, -1)),
-                SimpleDateRange(dateUtils.getDateForFirstDayOfYear(), dateUtils.getCurrentDate())
-            )
+        AnalyticsDateRanges.TODAY -> getTodayRange()
+        AnalyticsDateRanges.YESTERDAY -> getYesterdayRange()
+        AnalyticsDateRanges.LAST_WEEK -> getLastWeekRange()
+        AnalyticsDateRanges.LAST_MONTH -> getLastMonthRange()
+        AnalyticsDateRanges.LAST_QUARTER -> getLastQuarterRange()
+        AnalyticsDateRanges.LAST_YEAR -> getLastYearRange()
+        AnalyticsDateRanges.WEEK_TO_DATE -> getWeekToDateRange()
+        AnalyticsDateRanges.MONTH_TO_DATE -> getMonthToDateRange()
+        AnalyticsDateRanges.QUARTER_TO_DATE -> getQuarterToRangeDate()
+        AnalyticsDateRanges.YEAR_TO_DATE -> getYearToDateRange()
+    }
+
+    private fun getYearToDateRange() = MultipleDateRange(
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(), dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.YEAR, MINUS_ONE)), SimpleDateRange(dateUtils.getDateForFirstDayOfYear()
+        , dateUtils.getCurrentDate())
+    )
+
+    private fun getQuarterToRangeDate() = MultipleDateRange(
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousQuarter(),
+            dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH,
+                MONTHS_IN_QUARTER)),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfQuarter(), dateUtils.getCurrentDate())
+    )
+
+    private fun getMonthToDateRange() = MultipleDateRange(
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousMonth(),
+            dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, MINUS_ONE)),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfMonth(), dateUtils.getCurrentDate())
+    )
+
+    private fun getWeekToDateRange() = MultipleDateRange(
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousWeek(),
+            dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.DAY_OF_YEAR,
+                DAYS_IN_WEEK)),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfWeek(), dateUtils.getCurrentDate())
+    )
+
+    private fun getLastYearRange() = MultipleDateRange(
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(TWO),
+            dateUtils.getDateForLastDayOfPreviousYear(TWO)),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(),
+            dateUtils.getDateForLastDayOfPreviousYear()),
+    )
+
+    private fun getLastQuarterRange() = MultipleDateRange(
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousQuarter(TWO),
+            dateUtils.getDateForLastDayOfPreviousQuarter(TWO)),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousQuarter(),
+            dateUtils.getDateForLastDayOfPreviousQuarter()),
+    )
+
+    private fun getYesterdayRange() = SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(TWO)),
+        Date(dateUtils.getCurrentDateTimeMinusDays(ONE)))
+
+    private fun getTodayRange() =
+        SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(ONE)), dateUtils.getCurrentDate())
+
+    private fun getLastMonthRange() = MultipleDateRange(
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousMonth(TWO),
+            dateUtils.getDateForLastDayOfPreviousMonth(TWO)),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousMonth(),
+            dateUtils.getDateForLastDayOfPreviousMonth()),
+    )
+
+    private fun getLastWeekRange() = MultipleDateRange(
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousWeek(TWO),
+            dateUtils.getDateForLastDayOfPreviousWeek(TWO)),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousWeek(),
+            dateUtils.getDateForLastDayOfPreviousWeek()),
+    )
+
+    companion object {
+        const val DAYS_IN_WEEK = -7
+        const val MONTHS_IN_QUARTER = -3
+        const val MINUS_ONE = -1
+        const val TWO = 2
+        const val ONE = 1
     }
 }
 
@@ -86,49 +119,38 @@ enum class AnalyticsDateRanges(val description: String) {
  */
 @Throws(IllegalArgumentException::class)
 fun SimpleDateRange.formatDatesToFriendlyPeriod(locale: Locale = Locale.getDefault()): String {
-    return try {
-
-        val calendar: Calendar = let {
-            Calendar.getInstance().apply {
-                time = it.from
-            }
+    val calendar: Calendar = let {
+        Calendar.getInstance().apply {
+            time = it.from
         }
+    }
 
-        val anotherCalendar: Calendar = let {
-            Calendar.getInstance().apply {
-                time = it.to
-            }
+    val anotherCalendar: Calendar = let {
+        Calendar.getInstance().apply {
+            time = it.to
         }
+    }
 
-        val isSameYearAndMonth =
-            calendar.get(Calendar.YEAR) == anotherCalendar.get(Calendar.YEAR) &&
-                calendar.get(Calendar.MONTH) == anotherCalendar.get(Calendar.MONTH)
+    val isSameYearAndMonth =
+        calendar.get(Calendar.YEAR) == anotherCalendar.get(Calendar.YEAR) &&
+            calendar.get(Calendar.MONTH) == anotherCalendar.get(Calendar.MONTH)
 
-        val minDay = kotlin.math.min(calendar.get(Calendar.DAY_OF_MONTH), anotherCalendar.get(Calendar.DAY_OF_MONTH))
-        val maxDay = kotlin.math.max(calendar.get(Calendar.DAY_OF_MONTH), anotherCalendar.get(Calendar.DAY_OF_MONTH))
-        val month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
-        val year = calendar.get(Calendar.YEAR)
+    val minDay = kotlin.math.min(calendar.get(Calendar.DAY_OF_MONTH), anotherCalendar.get(Calendar.DAY_OF_MONTH))
+    val maxDay = kotlin.math.max(calendar.get(Calendar.DAY_OF_MONTH), anotherCalendar.get(Calendar.DAY_OF_MONTH))
+    val month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
+    val year = calendar.get(Calendar.YEAR)
 
-        if (isSameYearAndMonth) {
-            "$month $minDay - $maxDay, $year"
+    return if (isSameYearAndMonth) {
+        "$month $minDay - $maxDay, $year"
+    } else {
+        val isSameYear = calendar.get(Calendar.YEAR) == anotherCalendar.get(Calendar.YEAR)
+        val anotherMonth = anotherCalendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
+
+        if (isSameYear) {
+            "$month $minDay - $anotherMonth $maxDay, $year"
         } else {
-
-            val isSameYear = calendar.get(Calendar.YEAR) == anotherCalendar.get(Calendar.YEAR)
-            val anotherMonth = anotherCalendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
-
-            if (isSameYear) {
-                "$month $minDay - $anotherMonth $maxDay, $year"
-            } else {
-                val anotherYear = anotherCalendar.get(Calendar.YEAR)
-                "$month $minDay, $year - $anotherMonth $maxDay, $anotherYear"
-            }
-
+            val anotherYear = anotherCalendar.get(Calendar.YEAR)
+            "$month $minDay, $year - $anotherMonth $maxDay, $anotherYear"
         }
-
-    } catch (e: Exception) {
-        throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
     }
 }
-
-
-
