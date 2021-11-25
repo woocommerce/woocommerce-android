@@ -61,7 +61,7 @@ class AnalyticsFragment :
     }
 
     private fun bind(rootView: View) {
-        analyticsDateRangeCardView = rootView.findViewById(R.id.analytics_date_selector_card)
+        analyticsDateRangeCardView = rootView.findViewById(R.id.analyticsDateSelectorCard)
         analyticsDateRangeCardView.initView(this)
     }
 
