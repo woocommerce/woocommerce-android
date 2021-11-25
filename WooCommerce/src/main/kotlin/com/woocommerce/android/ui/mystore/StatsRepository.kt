@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.mystore
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.withTimeoutOrNull
@@ -25,13 +24,11 @@ class StatsRepository @Inject constructor(
         private val TAG = MyStorePresenter::class.java
     }
 
-    private val continuationRevenueStats = ContinuationWrapper<Result<WCRevenueStatsModel?>>(DASHBOARD)
-
     suspend fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean): Result<WCRevenueStatsModel?> {
         val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, forced = forced)
         val result = wcStatsStore.fetchRevenueStats(statsPayload)
 
-        return if(!result.isError) {
+        return if (!result.isError) {
             val revenueStatsModel = wcStatsStore.getRawRevenueStats(
                 selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
             )
