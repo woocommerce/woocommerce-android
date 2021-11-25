@@ -33,10 +33,13 @@ class CardReaderOnboardingChecker @Inject constructor(
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
 
-        with(selectedSite.get()) {
-            appPrefsWrapper.resetCardReaderOnboardingCompleted(this.id, this.siteId, this.selfHostedSiteId)
-        }
+        return fetchOnboardingState()
+            .also {
+                updateOnboardingCompletedFlag(isCompleted = it is OnboardingCompleted)
+            }
+    }
 
+    private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
 
@@ -60,10 +63,6 @@ class CardReaderOnboardingChecker @Inject constructor(
         )
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected
         if (isInUndefinedState(paymentAccount)) return GenericError
-
-        with(selectedSite.get()) {
-            appPrefsWrapper.setCardReaderOnboardingCompleted(this.id, this.siteId, this.selfHostedSiteId)
-        }
 
         return OnboardingCompleted
     }
@@ -113,10 +112,20 @@ class CardReaderOnboardingChecker @Inject constructor(
             paymentAccount.status == REJECTED_LISTED ||
             paymentAccount.status == REJECTED_TERMS_OF_SERVICE ||
             paymentAccount.status == REJECTED_OTHER
-}
 
-private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
-    paymentAccount.status != COMPLETE
+    private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status != COMPLETE
+
+    private fun updateOnboardingCompletedFlag(isCompleted: Boolean) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderOnboardingCompleted(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+            isCompleted = isCompleted
+        )
+    }
+}
 
 sealed class CardReaderOnboardingState {
     object OnboardingCompleted : CardReaderOnboardingState()
