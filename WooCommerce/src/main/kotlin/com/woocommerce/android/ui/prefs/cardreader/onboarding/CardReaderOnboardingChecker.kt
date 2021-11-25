@@ -5,6 +5,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -28,6 +29,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val wcPayStore: WCPayStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
+    private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag,
 ) {
     @Suppress("ReturnCount", "ComplexMethod")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
