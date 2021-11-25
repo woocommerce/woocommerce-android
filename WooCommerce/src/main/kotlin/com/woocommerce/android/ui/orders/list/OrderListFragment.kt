@@ -13,8 +13,11 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.FeedbackPrefs
@@ -26,6 +29,7 @@ import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -42,8 +46,11 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
+import kotlin.math.abs
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
@@ -146,6 +153,7 @@ class OrderListFragment :
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
         }
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
+        initCreateOrderFAB(binding.createOrderButton)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -217,6 +225,22 @@ class OrderListFragment :
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
+        fabButton.visibility = View.VISIBLE
+        fabButton.setOnClickListener {
+            showSimplePaymentsDialog()
+        }
+
+        // Adjust translationY to keep the FAB always above the bottom nav
+        val appBarLayout = (requireActivity().findViewById<View>(R.id.app_bar_layout) as AppBarLayout)
+        appBarLayout.verticalOffsetChanges()
+            .onEach { verticalOffset ->
+                fabButton.translationY =
+                    (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
+            }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     private fun isChildFragmentShowing() = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
