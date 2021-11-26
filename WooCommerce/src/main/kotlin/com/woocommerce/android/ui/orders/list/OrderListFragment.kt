@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
-import com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment.CreationAction
+import com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment.OrderCreationAction
 import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -326,13 +326,13 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
-        handleResult<CreationAction>(KEY_ORDER_CREATION_ACTION_RESULT) {
+        handleResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT) {
             binding.orderListView.post {
                 when (it) {
-                    CreationAction.CREATE_ORDER -> {
+                    OrderCreationAction.CREATE_ORDER -> {
                         // TODO trigger Order Creation form
                     }
-                    CreationAction.SIMPLE_PAYMENT -> showSimplePaymentsDialog()
+                    OrderCreationAction.SIMPLE_PAYMENT -> showSimplePaymentsDialog()
                 }
             }
         }

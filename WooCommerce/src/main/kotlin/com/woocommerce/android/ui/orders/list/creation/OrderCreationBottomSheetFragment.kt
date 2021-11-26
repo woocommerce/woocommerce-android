@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.databinding.DialogOrderCreationBottomSheetBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment.CreationAction.CREATE_ORDER
-import com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment.CreationAction.SIMPLE_PAYMENT
+import com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment.OrderCreationAction.CREATE_ORDER
+import com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment.OrderCreationAction.SIMPLE_PAYMENT
 
 class OrderCreationBottomSheetFragment : BottomSheetDialogFragment() {
     companion object {
@@ -35,7 +35,7 @@ class OrderCreationBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
-    enum class CreationAction {
+    enum class OrderCreationAction {
         CREATE_ORDER,
         SIMPLE_PAYMENT
     }
