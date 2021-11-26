@@ -52,6 +52,7 @@ class CardReaderHubViewModel @Inject constructor(
         triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.BBPOS_MANUAL_CARD_READER))
     }
 
+    @Suppress("unused")
     private fun onM2ManualCardReaderClicked() {
         triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.M2_MANUAL_CARD_READER))
     }
