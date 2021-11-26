@@ -50,7 +50,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         val pluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
 
         if (stripeExtensionFeatureFlag.isEnabled()) {
-           // TODO cardreader Add support for Stripe Extension
+            // TODO cardreader Add support for Stripe Extension
             if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
             if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
             if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
