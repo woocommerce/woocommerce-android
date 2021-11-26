@@ -279,6 +279,10 @@
          Order Creation
     -->
     <string name="orderlist_create_order_button_description">Create order</string>
+    <string name="orderlist_bottom_sheet_create_order_action">Create order</string>
+    <string name="orderlist_bottom_sheet_create_order_description">Create a new manual order</string>
+    <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
+    <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
     <!--
         Order Filters
     -->
