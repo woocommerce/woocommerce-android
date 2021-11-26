@@ -89,6 +89,10 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showWCPayErrorState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WCStripeError ->
                 showWCStripeError(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError.StripeTerminalNotActivatedState -> TODO()
+            is CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError.StripeTerminalNotInstalledState -> TODO()
+            is CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError.StripeTerminalNotSetupState -> TODO()
+            is CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState -> TODO()
         }.exhaustive
     }
 
