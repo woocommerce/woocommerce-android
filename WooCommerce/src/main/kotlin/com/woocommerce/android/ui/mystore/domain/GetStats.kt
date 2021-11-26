@@ -2,16 +2,19 @@ package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.di.DefaultDispatcher
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.util.FeatureFlag
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -19,7 +22,8 @@ import javax.inject.Inject
 
 class GetStats @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val statsRepository: StatsRepository
+    private val statsRepository: StatsRepository,
+    @DefaultDispatcher private val dispatcher: CoroutineDispatcher
 ) {
     operator fun invoke(
         forceRefresh: Boolean,
@@ -72,7 +76,7 @@ class GetStats @Inject constructor(
                     }
                 }
             }
-        }
+        }.flowOn(dispatcher)
 
     private suspend fun FlowCollector<LoadStatsResult>.handle(
         revenueStatsResult: Result<WCRevenueStatsModel?>,
