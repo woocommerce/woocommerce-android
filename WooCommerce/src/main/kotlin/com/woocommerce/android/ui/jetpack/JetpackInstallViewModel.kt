@@ -31,6 +31,8 @@ class JetpackInstallViewModel @Inject constructor(
         viewState = viewState.copy(
             installStatus = Installing
         )
+
+        installJetpackPlugin()
     }
 
     override fun onCleared() {
@@ -38,7 +40,7 @@ class JetpackInstallViewModel @Inject constructor(
         repository.onCleanup()
     }
 
-    fun installJetpackPlugin() {
+    private fun installJetpackPlugin() {
         launch {
             repository.installPlugin(JETPACK_SLUG, JETPACK_NAME).collect {
                 when (it) {

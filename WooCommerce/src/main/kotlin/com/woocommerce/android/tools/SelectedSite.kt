@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.PreferenceUtils
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
@@ -14,27 +16,31 @@ import javax.inject.Singleton
  * Persists and restores the selected site to/from the app preferences.
  */
 @Singleton
-class SelectedSite(private var context: Context, private var siteStore: SiteStore) {
+class SelectedSite(
+    private val context: Context,
+    private val siteStore: SiteStore,
+) {
     companion object {
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"
 
-        fun getEventBus() = EventBus.getDefault()
+        fun getEventBus(): EventBus = EventBus.getDefault()
     }
 
-    private var selectedSite: SiteModel? = null
+    private val state: MutableStateFlow<SiteModel?> = MutableStateFlow(getSelectedSiteFromPersistance())
+
+    fun observe(): Flow<SiteModel?> = state
 
     fun get(): SiteModel {
-        selectedSite?.let { return it }
+        state.value?.let { return it }
 
-        val localSiteId = getSelctedSiteId()
-        val siteModel = siteStore.getSiteByLocalId(localSiteId)
-        siteModel?.let {
-            selectedSite = it
+        getSelectedSiteFromPersistance()?.let {
+            state.value = it
             return it
         }
 
         // if the selected site id is valid but the site isn't in the site store, reset the
         // preference. this can happen if the user has been removed from the active site.
+        val localSiteId = getSelectedSiteId()
         if (localSiteId > -1) {
             getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
         }
@@ -46,7 +52,7 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
     }
 
     fun set(siteModel: SiteModel) {
-        selectedSite = siteModel
+        state.value = siteModel
         PreferenceUtils.setInt(getPreferences(), SELECTED_SITE_LOCAL_ID, siteModel.id)
 
         AnalyticsTracker.refreshSiteMetadata(siteModel)
@@ -56,20 +62,26 @@ class SelectedSite(private var context: Context, private var siteStore: SiteStor
     }
 
     fun exists(): Boolean {
-        val siteModel = siteStore.getSiteByLocalId(getSelctedSiteId())
+        val siteModel = siteStore.getSiteByLocalId(getSelectedSiteId())
         return siteModel != null
     }
 
     fun getIfExists(): SiteModel? = if (exists()) get() else null
 
-    fun getSelctedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
+    fun getSelectedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
 
     fun reset() {
-        selectedSite = null
+        state.value = null
         getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
     }
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
+    private fun getSelectedSiteFromPersistance(): SiteModel? {
+        val localSiteId = getSelectedSiteId()
+        return siteStore.getSiteByLocalId(localSiteId)
+    }
+
+    @Deprecated("Event bus is considered deprecated.", ReplaceWith("observe()"))
     class SelectedSiteChangedEvent(val site: SiteModel)
 }

@@ -25,7 +25,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATIONS
-import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_REVIEW_STATUS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
@@ -54,7 +53,6 @@ class ReviewListRepository @Inject constructor(
 
     private var continuationProduct = ContinuationWrapper<Boolean>(REVIEWS)
     private var continuationNotification = ContinuationWrapper<Boolean>(REVIEWS)
-    private var continuationMarkAllRead = ContinuationWrapper<RequestResult>(REVIEWS)
 
     private var offset = 0
     private var isFetchingProductReviews = false
@@ -126,21 +124,38 @@ class ReviewListRepository @Inject constructor(
                 site = selectedSite.get(),
                 filterBySubtype = listOf(STORE_REVIEW.toString())
             )
-            val result = continuationMarkAllRead.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-                val payload = MarkNotificationsReadPayload(unreadProductReviews)
-                dispatcher.dispatch(
-                    NotificationActionBuilder.newMarkNotificationsReadAction(payload)
-                )
-
-                AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ)
-            }
-            return when (result) {
-                is Cancellation -> ERROR
-                is Success -> result.value
-            }
+            trackMarkAllProductReviewsAsReadStarted()
+            val result = notificationStore.markNotificationsRead(MarkNotificationsReadPayload(unreadProductReviews))
+            trackMarkAllProductReviewsAsReadResult(result)
+            if (result.isError) ERROR else SUCCESS
         } else {
             WooLog.d(REVIEWS, "Mark all as read: No unread product reviews found. Exiting...")
             NO_ACTION_NEEDED
+        }
+    }
+
+    private fun trackMarkAllProductReviewsAsReadStarted() {
+        AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ)
+    }
+
+    private fun trackMarkAllProductReviewsAsReadResult(result: OnNotificationChanged) {
+        if (result.isError) {
+            AnalyticsTracker.track(
+                Stat.REVIEWS_MARK_ALL_READ_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
+                )
+            )
+
+            WooLog.e(
+                REVIEWS,
+                "Error marking all reviews as read: " +
+                    "${result.error?.type} - ${result.error?.message}"
+            )
+        } else {
+            AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_SUCCESS)
         }
     }
 
@@ -367,31 +382,6 @@ class ReviewListRepository @Inject constructor(
                 AnalyticsTracker.track(Stat.NOTIFICATIONS_LOADED)
 
                 continuationNotification.continueWith(true)
-            }
-        } else if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
-            // Since this can be called from other places, only process this event if we were the
-            // one who submitted the request.
-            if (continuationMarkAllRead.isWaiting) {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.REVIEWS_MARK_ALL_READ_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                        )
-                    )
-
-                    WooLog.e(
-                        REVIEWS,
-                        "Error marking all reviews as read: " +
-                            "${event.error?.type} - ${event.error?.message}"
-                    )
-                    continuationMarkAllRead.continueWith(ERROR)
-                } else {
-                    AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_SUCCESS)
-                    continuationMarkAllRead.continueWith(SUCCESS)
-                }
             }
         }
     }
