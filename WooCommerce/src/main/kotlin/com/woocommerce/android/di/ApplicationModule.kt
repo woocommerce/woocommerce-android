@@ -1,6 +1,8 @@
 package com.woocommerce.android.di
 
 import android.content.Context
+import com.woocommerce.android.tracker.TrackerRepository
+import com.woocommerce.android.tracker.DataStoreTrackerRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -30,6 +32,9 @@ abstract class ApplicationModule {
 
     @Binds
     abstract fun bindCoroutineScope(@AppCoroutineScope scope: CoroutineScope): CoroutineScope
+
+    @Binds
+    abstract fun bindTrackerRepository(repository: DataStoreTrackerRepository): TrackerRepository
 
     companion object {
         @Provides
