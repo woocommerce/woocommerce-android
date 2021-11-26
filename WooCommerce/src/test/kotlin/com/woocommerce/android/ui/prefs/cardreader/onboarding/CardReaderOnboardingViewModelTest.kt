@@ -209,6 +209,19 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when unsupported stripe terminal installed, then unsupported stripe terminal state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.StripeTerminal.UnsupportedVersion
+            )
+
+            val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState::class.java)
+        }
+
+    @Test
     fun `when account rejected, then account rejected state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())

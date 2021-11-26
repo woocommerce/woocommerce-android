@@ -123,7 +123,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
                             ::refreshState, ::onLearnMoreClicked
                         )
                 CardReaderOnboardingState.StripeTerminal.SetupNotCompleted -> TODO()
-                CardReaderOnboardingState.StripeTerminal.UnsupportedVersion -> TODO()
+                CardReaderOnboardingState.StripeTerminal.UnsupportedVersion ->
+                    viewState.value =
+                        OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState(
+                            ::refreshState, ::onLearnMoreClicked
+                        )
                 CardReaderOnboardingState.WcpayAndStripeActivated -> TODO()
             }.exhaustive
         }
