@@ -16,16 +16,12 @@ import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cance
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
-import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
@@ -50,7 +46,6 @@ class ReviewDetailRepository @Inject constructor(
 
     private var remoteReviewId: Long = 0L
     private var remoteProductId: Long = 0L
-    private var localNoteId: Int = 0
 
     private var continuationProduct = ContinuationWrapper<Boolean>(REVIEWS)
 
@@ -93,25 +88,41 @@ class ReviewDetailRepository @Inject constructor(
 
     suspend fun markNotificationAsRead(notification: NotificationModel) {
         if (!notification.read) {
-            try {
-                localNoteId = notification.noteId
+            notification.read = true
+            trackMarkNotificationAsReadStarted(notification)
+            val result = notificationStore.markNotificationsRead(MarkNotificationsReadPayload(listOf(notification)))
+            trackMarkNotificationReadResult(result)
+        }
+    }
 
-                suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
-                    notification.read = true
-                    val payload = MarkNotificationsReadPayload(listOf(notification))
-                    dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
+    private fun trackMarkNotificationAsReadStarted(notification: NotificationModel) {
+        AnalyticsTracker.track(
+            Stat.REVIEW_MARK_READ,
+            mapOf(
+                AnalyticsTracker.KEY_ID to remoteReviewId,
+                AnalyticsTracker.KEY_NOTE_ID to notification.remoteNoteId
+            )
+        )
+    }
 
-                    AnalyticsTracker.track(
-                        Stat.REVIEW_MARK_READ,
-                        mapOf(
-                            AnalyticsTracker.KEY_ID to remoteReviewId,
-                            AnalyticsTracker.KEY_NOTE_ID to notification.remoteNoteId
-                        )
-                    )
-                }
-            } catch (e: CancellationException) {
-                WooLog.e(REVIEWS, "Exception encountered while marking notification as read", e)
-            }
+    private fun trackMarkNotificationReadResult(result: OnNotificationChanged) {
+        if (result.isError) {
+            AnalyticsTracker.track(
+                Stat.REVIEW_MARK_READ_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
+                )
+            )
+
+            WooLog.e(
+                REVIEWS,
+                "$TAG - Error marking review notification as read: " +
+                    "${result.error?.type} - ${result.error?.message}"
+            )
+        } else {
+            AnalyticsTracker.track(Stat.REVIEW_MARK_READ_SUCCESS)
         }
     }
 
@@ -194,36 +205,6 @@ class ReviewDetailRepository @Inject constructor(
                     )
                     continuationProduct.continueWith(true)
                 }
-            }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onNotificationChanged(event: OnNotificationChanged) {
-        if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
-            // Since this can be called from other places, only process this event if we were the
-            // one who submitted the request.
-            if (event.changedNotificationLocalIds.contains(localNoteId)) {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.REVIEW_MARK_READ_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                        )
-                    )
-
-                    WooLog.e(
-                        REVIEWS,
-                        "$TAG - Error marking review notification as read: " +
-                            "${event.error?.type} - ${event.error?.message}"
-                    )
-                } else {
-                    AnalyticsTracker.track(Stat.REVIEW_MARK_READ_SUCCESS)
-                }
-                localNoteId = 0
             }
         }
     }
