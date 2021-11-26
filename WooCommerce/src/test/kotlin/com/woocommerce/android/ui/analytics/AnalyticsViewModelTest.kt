@@ -55,7 +55,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private lateinit var sut: AnalyticsViewModel
 
     @Test
-    fun `analyticsDateRangeSelectorState default values are expected`() = testBlocking {
+    fun `given an init viewState when ViewModel is created we have the expected viewState values`() = testBlocking {
         val resourceProvider: ResourceProvider = mock {
             on { getString(any()) } doReturn ANY_VALUE
             on { getString(any(), anyVararg()) } doReturn ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE
@@ -64,7 +64,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         sut = AnalyticsViewModel(resourceProvider, dateUtil, calculator, savedState)
 
-        with(sut.state.value.analyticsDateRangeSelectorState) {
+        with(sut.viewState.value.analyticsDateRangeSelectorState) {
             assertNotNull(this)
             assertEquals(ANY_VALUE, selectedPeriod)
             assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
@@ -74,7 +74,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `analyticsDateRangeSelectorState onSelectedDateRangeChanged values are expected`() = testBlocking {
+    fun `given a view model when selected date range changes we have the expected viewState values`() = testBlocking {
         val resourceProvider: ResourceProvider = mock {
             on { getString(any()) } doReturnConsecutively
                 listOf(ANY_VALUE, AnalyticsDateRanges.LAST_YEAR.description)
@@ -87,7 +87,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         sut.onSelectedDateRangeChanged(AnalyticsDateRanges.LAST_YEAR.description)
 
-        with(sut.state.value.analyticsDateRangeSelectorState) {
+        with(sut.viewState.value.analyticsDateRangeSelectorState) {
             assertNotNull(this)
             assertEquals(AnalyticsDateRanges.LAST_YEAR.description, selectedPeriod)
             assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
