@@ -67,8 +67,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             )
         }
 
-        viewModel.installJetpackPlugin()
-
         setupObservers(binding)
     }
 
