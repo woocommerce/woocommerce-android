@@ -86,7 +86,7 @@ class MyStorePresenter @Inject constructor(
         if (forceRefresh) {
             statsForceRefresh[granularity.ordinal] = false
         }
-
+        myStoreView?.showChartSkeleton(true)
         coroutineScope.launch {
             getStats(forced, granularity)
                 .collect {
@@ -115,9 +115,9 @@ class MyStorePresenter @Inject constructor(
         val forceRefresh = forced || topPerformersForceRefresh[granularity.ordinal]
         if (forceRefresh) {
             topPerformersForceRefresh[granularity.ordinal] = false
-            myStoreView?.showTopPerformersSkeleton(true)
         }
 
+        myStoreView?.showTopPerformersSkeleton(true)
         coroutineScope.launch {
             getTopPerformers(forceRefresh, granularity, NUM_TOP_PERFORMERS)
                 .collect {

@@ -31,10 +31,6 @@ class GetStats @Inject constructor(
     ): Flow<LoadStatsResult> =
         flow {
             coroutineScope {
-                if (forceRefresh) {
-                    emit(IsLoadingStats(true))
-                }
-
                 val hasNoOrdersTask = async {
                     statsRepository.checkIfStoreHasNoOrders()
                 }
