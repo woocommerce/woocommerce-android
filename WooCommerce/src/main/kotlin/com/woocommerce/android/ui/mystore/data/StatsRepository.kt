@@ -7,6 +7,8 @@ import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cance
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeoutOrNull
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -75,9 +77,9 @@ class StatsRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchProductLeaderboards(granularity: StatsGranularity, quantity: Int, forced: Boolean):
-        Result<List<WCTopPerformerProductModel>> {
-        return when (forced) {
+    suspend fun fetchProductLeaderboards(forced: Boolean, granularity: StatsGranularity, quantity: Int):
+        Flow<Result<List<WCTopPerformerProductModel>>> = flow {
+        when (forced) {
             true -> wcLeaderboardsStore.fetchProductLeaderboards(
                 site = selectedSite.get(),
                 unit = granularity,
@@ -90,9 +92,12 @@ class StatsRepository @Inject constructor(
         }.let { result ->
             val model = result.model
             if (result.isError || model == null) {
-                Result.failure(Exception(result.error?.message.orEmpty()))
+                val resultError: Result<List<WCTopPerformerProductModel>> = Result.failure(
+                    Exception(result.error?.message.orEmpty())
+                )
+                emit(resultError)
             } else {
-                Result.success(model)
+                emit(Result.success(model))
             }
         }
     }

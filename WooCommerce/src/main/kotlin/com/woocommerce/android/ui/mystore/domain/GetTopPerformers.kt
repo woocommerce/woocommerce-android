@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerform
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedError
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore
 import javax.inject.Inject
@@ -14,33 +14,33 @@ import javax.inject.Inject
 class GetTopPerformers @Inject constructor(
     private val statsRepository: StatsRepository
 ) {
-    operator fun invoke(
+    suspend operator fun invoke(
         forceRefresh: Boolean,
         granularity: WCStatsStore.StatsGranularity,
         topPerformersCount: Int
-    ): Flow<LoadTopPerformersResult> = flow {
-        val result = statsRepository.fetchProductLeaderboards(granularity, topPerformersCount, forceRefresh)
-        emit(IsLoadingTopPerformers(false))
-        result.fold(
-            onSuccess = { topPerformers ->
-                topPerformers
-                    .sortedWith(
-                        compareByDescending(WCTopPerformerProductModel::quantity)
-                            .thenByDescending(WCTopPerformerProductModel::total)
-                    ).let {
-                        // Track fresh data loaded
-                        AnalyticsTracker.track(
-                            AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
-                            mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
-                        )
-                        emit(TopPerformersLoadedSuccess(it))
+    ): Flow<LoadTopPerformersResult> =
+        statsRepository.fetchProductLeaderboards(forceRefresh, granularity, topPerformersCount)
+            .transform { result ->
+                emit(IsLoadingTopPerformers(false))
+                result.fold(
+                    onSuccess = { topPerformers ->
+                        topPerformers
+                            .sortedWith(
+                                compareByDescending(WCTopPerformerProductModel::quantity)
+                                    .thenByDescending(WCTopPerformerProductModel::total)
+                            ).let {
+                                AnalyticsTracker.track(
+                                    AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
+                                    mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
+                                )
+                                emit(TopPerformersLoadedSuccess(it))
+                            }
+                    },
+                    onFailure = {
+                        emit(TopPerformersLoadedError)
                     }
-            },
-            onFailure = {
-                emit(TopPerformersLoadedError)
+                )
             }
-        )
-    }
 
     sealed class LoadTopPerformersResult {
         data class TopPerformersLoadedSuccess(
