@@ -67,6 +67,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    @Ignore
     fun `when screen shown, then m2 manual card reader row present`() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
