@@ -54,9 +54,9 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
 
             // adjust the view sizes based on orientation
             val ratio = if (isLandscape) {
-                (DisplayUtils.getDisplayPixelWidth() * RATIO_LANDSCAPE).toInt()
+                (DisplayUtils.getWindowPixelWidth(requireContext()) * RATIO_LANDSCAPE).toInt()
             } else {
-                (DisplayUtils.getDisplayPixelWidth() * RATIO_PORTRAIT).toInt()
+                (DisplayUtils.getWindowPixelWidth(requireContext()) * RATIO_PORTRAIT).toInt()
             }
             binding.textView.layoutParams.width = ratio
             binding.imageView.layoutParams.width = ratio
