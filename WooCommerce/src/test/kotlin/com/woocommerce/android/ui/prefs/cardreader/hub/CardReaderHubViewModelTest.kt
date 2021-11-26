@@ -91,6 +91,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    @Ignore("Row with M2 reader is temporarily hidden")
     fun `when screen shown, then m2 manual card reader row present at fourth last`() {
         val rows = (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
         assertThat(rows[3].label).isEqualTo(UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader))
