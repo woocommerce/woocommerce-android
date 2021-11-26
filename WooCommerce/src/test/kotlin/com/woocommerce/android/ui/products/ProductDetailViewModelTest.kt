@@ -210,6 +210,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        doReturn("").whenever(prefs).getSelectedProductType()
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
