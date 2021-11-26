@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.list.creation
+package com.woocommerce.android.ui.orders.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.databinding.DialogOrderCreationBottomSheetBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment.OrderCreationAction.CREATE_ORDER
-import com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment.OrderCreationAction.SIMPLE_PAYMENT
+import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction.CREATE_ORDER
+import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction.SIMPLE_PAYMENT
 
 class OrderCreationBottomSheetFragment : BottomSheetDialogFragment() {
     companion object {

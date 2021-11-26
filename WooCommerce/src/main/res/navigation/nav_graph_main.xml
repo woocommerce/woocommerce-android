@@ -305,6 +305,6 @@
     </dialog>
     <dialog
         android:id="@+id/orderCreationBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
         tools:layout="@layout/dialog_order_creation_bottom_sheet"/>
 </navigation>
