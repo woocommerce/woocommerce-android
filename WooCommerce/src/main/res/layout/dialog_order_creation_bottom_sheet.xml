@@ -86,7 +86,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_125"
             android:contentDescription="@string/orderlist_bottom_sheet_simple_payment_description"
-            android:src="@drawable/ic_offline"
+            android:src="@drawable/ic_bolt"
             app:layout_constraintBottom_toTopOf="@+id/simplePaymentInfoItem_divider"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
