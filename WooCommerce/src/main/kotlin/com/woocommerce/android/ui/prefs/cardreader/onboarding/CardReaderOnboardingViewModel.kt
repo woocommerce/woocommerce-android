@@ -112,8 +112,16 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         ::onContactSupportClicked,
                         ::onLearnMoreClicked
                     )
-                CardReaderOnboardingState.StripeTerminal.NotActivated -> TODO()
-                CardReaderOnboardingState.StripeTerminal.NotInstalled -> TODO()
+                CardReaderOnboardingState.StripeTerminal.NotActivated ->
+                    viewState.value =
+                        OnboardingViewState.StripeTerminalError.StripeTerminalNotActivatedState(
+                            ::refreshState, ::onLearnMoreClicked
+                        )
+                CardReaderOnboardingState.StripeTerminal.NotInstalled ->
+                    viewState.value =
+                        OnboardingViewState.StripeTerminalError.StripeTerminalNotInstalledState(
+                            ::refreshState, ::onLearnMoreClicked
+                        )
                 CardReaderOnboardingState.StripeTerminal.SetupNotCompleted -> TODO()
                 CardReaderOnboardingState.StripeTerminal.UnsupportedVersion -> TODO()
                 CardReaderOnboardingState.WcpayAndStripeActivated -> TODO()
