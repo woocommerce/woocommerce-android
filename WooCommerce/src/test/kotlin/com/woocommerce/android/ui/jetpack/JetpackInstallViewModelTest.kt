@@ -21,7 +21,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val installationStateFlow = MutableSharedFlow<PluginStatus>(extraBufferCapacity = Int.MAX_VALUE)
     private val pluginRepository: PluginRepository = mock {
-        on { installPlugin(any()) } doReturn installationStateFlow
+        on { installPlugin(any(), any()) } doReturn installationStateFlow
     }
     private val siteModel: SiteModel = mock()
     private lateinit var viewModel: JetpackInstallViewModel
