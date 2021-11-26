@@ -297,7 +297,9 @@ dependencies {
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 
-    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion") {
+        exclude group: "org.wordpress", module: "utils"
+    }
     implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
 }
 
