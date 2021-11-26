@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -22,10 +21,10 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_125"
             android:contentDescription="@string/orderlist_bottom_sheet_create_order_description"
+            android:src="@drawable/ic_gridicons_pages"
             app:layout_constraintBottom_toTopOf="@+id/orderCreationInfoItem_divider"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_gridicons_pages" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderCreationInfoItem_name"
@@ -80,15 +79,15 @@
             android:id="@+id/simplePaymentInfoItem_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_125"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
             android:contentDescription="@string/orderlist_bottom_sheet_simple_payment_description"
-            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/ic_offline"
             app:layout_constraintBottom_toTopOf="@+id/simplePaymentInfoItem_divider"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_offline" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/simplePaymentInfoItem_name"
