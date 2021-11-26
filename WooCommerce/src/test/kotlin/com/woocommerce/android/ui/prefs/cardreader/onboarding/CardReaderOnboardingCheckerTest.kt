@@ -160,6 +160,94 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when stripe terminal plugin not active, then NOT_ACTIVATED returned`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeTerminalPluginInfo(isActive = false))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS)).thenReturn(null)
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeTerminal.NotActivated)
+        }
+
+    @Test
+    fun `when stripe terminal plugin outdated, then UNSUPPORTED_VERSION returned`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeTerminalPluginInfo(version = "2.8.1"))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS)).thenReturn(null)
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeTerminal.UnsupportedVersion)
+        }
+
+    @Test
+    fun `given wcpay and stripe are installed, when stripe is not activated, then onboarding complete with wcpay`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeTerminalPluginInfo(isActive = false))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.OnboardingCompleted)
+        }
+
+    @Test
+    fun `given wcpay and stripe are installed, when both not activated, then wcpay NOT_ACTIVATED returned`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeTerminalPluginInfo(isActive = false))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = false))
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayNotActivated)
+        }
+
+    @Test
+    fun `given wcpay and stripe are installed, when stripe is activated, then onboarding complete with stripe`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = false))
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.OnboardingCompleted)
+        }
+
+    @Test
+    fun `given wcpay and stripe are installed, when both are activated, then WCPAY_AND_STRIPE_ACTIVATED returned`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayAndStripeActivated)
+        }
+
+    @Test
     fun `when woocommerce payments plugin not installed, then WCPAY_NOT_INSTALLED returned`() =
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
@@ -472,6 +560,11 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     )
 
     private fun buildWCPayPluginInfo(
+        isActive: Boolean = true,
+        version: String = SUPPORTED_WCPAY_VERSION
+    ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)
+
+    private fun buildStripeTerminalPluginInfo(
         isActive: Boolean = true,
         version: String = SUPPORTED_WCPAY_VERSION
     ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)

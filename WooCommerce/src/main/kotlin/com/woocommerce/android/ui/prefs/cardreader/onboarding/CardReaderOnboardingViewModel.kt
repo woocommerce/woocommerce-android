@@ -112,6 +112,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         ::onContactSupportClicked,
                         ::onLearnMoreClicked
                     )
+                CardReaderOnboardingState.StripeTerminal.NotActivated -> TODO()
+                CardReaderOnboardingState.StripeTerminal.NotInstalled -> TODO()
+                CardReaderOnboardingState.StripeTerminal.SetupNotCompleted -> TODO()
+                CardReaderOnboardingState.StripeTerminal.UnsupportedVersion -> TODO()
+                CardReaderOnboardingState.WcpayAndStripeActivated -> TODO()
             }.exhaustive
         }
     }
@@ -139,6 +144,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
             CardReaderOnboardingState.WcpayUnsupportedVersion -> "wcpay_unsupported_version"
             CardReaderOnboardingState.GenericError -> "generic_error"
             CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
+            CardReaderOnboardingState.StripeTerminal.NotActivated -> TODO()
+            CardReaderOnboardingState.StripeTerminal.NotInstalled -> TODO()
+            CardReaderOnboardingState.StripeTerminal.SetupNotCompleted -> TODO()
+            CardReaderOnboardingState.StripeTerminal.UnsupportedVersion -> TODO()
+            CardReaderOnboardingState.WcpayAndStripeActivated -> TODO()
         }
 
     fun onCancelClicked() {

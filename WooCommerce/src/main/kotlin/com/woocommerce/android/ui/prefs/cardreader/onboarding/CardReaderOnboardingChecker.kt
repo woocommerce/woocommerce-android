@@ -22,6 +22,9 @@ private val SUPPORTED_COUNTRIES = listOf("US")
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 const val SUPPORTED_WCPAY_VERSION = "3.2.1"
 
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+const val SUPPORTED_STRIPE_TERMINAL_VERSION = "5.8.1"
+
 class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
@@ -47,17 +50,39 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
-        val pluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
+        val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
+        val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)
 
         if (stripeExtensionFeatureFlag.isEnabled()) {
-           // TODO cardreader Add support for Stripe Extension
-            if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
-            if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
-            if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+            if (isWCPayInstalled(wcPayPluginInfo) && isStripePluginInstalled(stripePluginInfo)) {
+                // merchant has both the plugin installed!
+                // Check if both the plugins are activated
+                // if both are activated, then show popup to turn off any one
+                if (
+                    isStripeTerminalActivated(requireNotNull(stripePluginInfo)) &&
+                    isWCPayActivated(requireNotNull(wcPayPluginInfo))
+                ) {
+                    return WcpayAndStripeActivated
+                }
+                if (!isStripeTerminalActivated(requireNotNull(stripePluginInfo))) {
+                    if (!isWCPayVersionSupported(requireNotNull(wcPayPluginInfo))) return WcpayUnsupportedVersion
+                    if (!isWCPayActivated(wcPayPluginInfo)) return WcpayNotActivated
+                }
+            } else if (isWCPayInstalled(wcPayPluginInfo)) {
+                if (!isWCPayVersionSupported(requireNotNull(wcPayPluginInfo))) return WcpayUnsupportedVersion
+                if (!isWCPayActivated(wcPayPluginInfo)) return WcpayNotActivated
+            } else if (isStripePluginInstalled(stripePluginInfo)) {
+                if (!isStripeTerminalActivated(requireNotNull(stripePluginInfo))) return StripeTerminal.NotActivated
+                if (!isStripeTerminalVersionSupported(stripePluginInfo)) return StripeTerminal.UnsupportedVersion
+            } else if (!isWCPayInstalled(wcPayPluginInfo)) {
+                if (!isWCPayInstalled(wcPayPluginInfo)) return WcpayNotInstalled
+            } else {
+                if (!isStripePluginInstalled(stripePluginInfo)) return StripeTerminal.NotInstalled
+            }
         } else {
-            if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
-            if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
-            if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+            if (!isWCPayInstalled(wcPayPluginInfo)) return WcpayNotInstalled
+            if (!isWCPayVersionSupported(requireNotNull(wcPayPluginInfo))) return WcpayUnsupportedVersion
+            if (!isWCPayActivated(wcPayPluginInfo)) return WcpayNotActivated
         }
 
         val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GenericError
@@ -92,10 +117,17 @@ class CardReaderOnboardingChecker @Inject constructor(
 
     private fun isWCPayInstalled(pluginInfo: WCPluginSqlUtils.WCPluginModel?): Boolean = pluginInfo != null
 
+    private fun isStripePluginInstalled(pluginInfo: WCPluginSqlUtils.WCPluginModel?): Boolean = pluginInfo != null
+
     private fun isWCPayVersionSupported(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean =
         (pluginInfo.version).semverCompareTo(SUPPORTED_WCPAY_VERSION) >= 0
 
+    private fun isStripeTerminalVersionSupported(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean =
+        (pluginInfo.version).semverCompareTo(SUPPORTED_STRIPE_TERMINAL_VERSION) >= 0
+
     private fun isWCPayActivated(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean = pluginInfo.active
+
+    private fun isStripeTerminalActivated(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean = pluginInfo.active
 
     private fun isWCPaySetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != NO_ACCOUNT
@@ -149,6 +181,30 @@ sealed class CardReaderOnboardingState {
      */
     object WcpayNotInstalled : CardReaderOnboardingState()
 
+    sealed class StripeTerminal : CardReaderOnboardingState() {
+
+        /**
+         * stripe terminal plugin is not installed on the store.
+         */
+        object NotInstalled : CardReaderOnboardingState()
+
+        /**
+         * stripe terminal plugin is installed on the store, but the version is out-dated and doesn't
+         * contain required APIs for card present payments.
+         */
+        object UnsupportedVersion : CardReaderOnboardingState()
+
+        /**
+         * stripe terminal is installed on the store but is not activated.
+         */
+        object NotActivated : CardReaderOnboardingState()
+
+        /**
+         * stripe terminal is installed and activated but requires to be setup first.
+         */
+        object SetupNotCompleted : CardReaderOnboardingState()
+    }
+
     /**
      * WCPay plugin is installed on the store, but the version is out-dated and doesn't contain required APIs
      * for card present payments.
@@ -164,6 +220,12 @@ sealed class CardReaderOnboardingState {
      * WCPay is installed and activated but requires to be setup first.
      */
     object WcpaySetupNotCompleted : CardReaderOnboardingState()
+
+    /**
+     * The connected Stripe account has not been reviewed by Stripe yet. This is a temporary state and
+     * the user needs to wait.
+     */
+    object WcpayAndStripeActivated : CardReaderOnboardingState()
 
     /**
      * This is a bit special case: WCPay is set to "dev mode" but the connected Stripe account is in live mode.
