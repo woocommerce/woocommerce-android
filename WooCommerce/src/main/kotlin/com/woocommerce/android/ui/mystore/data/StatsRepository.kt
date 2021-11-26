@@ -120,6 +120,23 @@ class StatsRepository @Inject constructor(
         }
     }
 
+    suspend fun checkIfStoreHasNoOrdersFlow(): Flow<Result<Boolean>> = flow {
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            wcOrderStore.fetchHasOrders(selectedSite.get(), status = null)
+        }
+        if (result?.isError == false) {
+            val hasNoOrders = result.rowsAffected == 0
+            emit(Result.success(hasNoOrders))
+        } else {
+            val errorMessage = result?.error?.message ?: "Timeout"
+            WooLog.e(
+                DASHBOARD,
+                "$TAG - Error fetching whether orders exist: $errorMessage"
+            )
+            emit(Result.failure(Exception(errorMessage)))
+        }
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCRevenueStatsChanged(event: OnWCRevenueStatsChanged) {

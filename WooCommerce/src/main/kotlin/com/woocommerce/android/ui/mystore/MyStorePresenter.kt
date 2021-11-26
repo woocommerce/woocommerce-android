@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.mystore
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -11,9 +12,10 @@ import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult
+import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.IsLoadingTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedError
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
@@ -24,6 +26,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 class MyStorePresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!
@@ -91,14 +94,20 @@ class MyStorePresenter @Inject constructor(
             getStats(forced, granularity)
                 .collect {
                     when (it) {
-                        is RevenueStatsSuccess -> myStoreView?.showStats(it.stats, granularity)
+                        is RevenueStatsSuccess -> {
+                            myStoreView?.showStats(it.stats, granularity)
+                            AnalyticsTracker.track(
+                                AnalyticsTracker.Stat.DASHBOARD_MAIN_STATS_LOADED,
+                                mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
+                            )
+                        }
                         is GenericError -> myStoreView?.showStatsError(granularity)
                         is HasOrders -> myStoreView?.showEmptyView(!it.hasOrder)
                         is VisitorsStatsError -> myStoreView?.showVisitorStatsError(granularity)
                         is VisitorsStatsSuccess -> myStoreView?.showVisitorStats(it.stats, granularity)
+                        is IsLoadingStats -> myStoreView?.showChartSkeleton(it.isLoading)
                         PluginNotActive -> myStoreView?.updateStatsAvailabilityError()
                         IsJetPackCPEnabled -> myStoreView?.showEmptyVisitorStatsForJetpackCP()
-                        is IsLoadingStats -> myStoreView?.showChartSkeleton(it.isLoading)
                     }
                 }
         }
@@ -122,14 +131,15 @@ class MyStorePresenter @Inject constructor(
             getTopPerformers(forceRefresh, granularity, NUM_TOP_PERFORMERS)
                 .collect {
                     when (it) {
-                        is LoadTopPerformersResult.IsLoadingTopPerformers -> myStoreView?.showTopPerformersSkeleton(it.isLoading)
-                        TopPerformersLoadedError -> myStoreView?.showTopPerformersError(
-                            granularity
-                        )
-                        is TopPerformersLoadedSuccess -> myStoreView?.showTopPerformers(
-                            it.topPerformers,
-                            granularity
-                        )
+                        is IsLoadingTopPerformers -> myStoreView?.showTopPerformersSkeleton(it.isLoading)
+                        is TopPerformersLoadedSuccess -> {
+                            myStoreView?.showTopPerformers(it.topPerformers, granularity)
+                            AnalyticsTracker.track(
+                                AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
+                                mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
+                            )
+                        }
+                        TopPerformersLoadedError -> myStoreView?.showTopPerformersError(granularity)
                     }
                 }
         }

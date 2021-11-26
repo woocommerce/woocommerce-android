@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.mystore.domain
 
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.DefaultDispatcher
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.IsLoadingTopPerformers
@@ -33,10 +32,6 @@ class GetTopPerformers @Inject constructor(
                                 compareByDescending(WCTopPerformerProductModel::quantity)
                                     .thenByDescending(WCTopPerformerProductModel::total)
                             ).let {
-                                AnalyticsTracker.track(
-                                    AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
-                                    mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
-                                )
                                 emit(TopPerformersLoadedSuccess(it))
                             }
                     },
