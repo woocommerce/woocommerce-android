@@ -128,7 +128,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState(
                             ::refreshState, ::onLearnMoreClicked
                         )
-                CardReaderOnboardingState.WcpayAndStripeActivated -> TODO()
+                CardReaderOnboardingState.WcpayAndStripeActivated ->
+                    viewState.value =
+                        OnboardingViewState.WcPayAndStripeInstalledState(
+                            ::onContactSupportClicked,
+                            ::onLearnMoreClicked
+                        )
             }.exhaustive
         }
     }
@@ -214,6 +219,21 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         class GenericErrorState(
             val onContactSupportActionClicked: (() -> Unit),
+            val onLearnMoreActionClicked: (() -> Unit)
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_generic_error) {
+            val contactSupportLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,
+                containsHtml = true
+            )
+            val learnMoreLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
+                containsHtml = true
+            )
+            val illustration = R.drawable.img_products_error
+        }
+
+        data class WcPayAndStripeInstalledState(
+            val refreshButtonAction: () -> Unit,
             val onLearnMoreActionClicked: (() -> Unit)
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_generic_error) {
             val contactSupportLabel = UiString.UiStringRes(

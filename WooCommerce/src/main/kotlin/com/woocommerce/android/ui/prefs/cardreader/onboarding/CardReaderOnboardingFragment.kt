@@ -93,6 +93,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             is CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError.StripeTerminalNotInstalledState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError.StripeTerminalNotSetupState -> TODO()
             is CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState -> TODO()
+            is CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState -> TODO()
         }.exhaustive
     }
 
