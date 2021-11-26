@@ -132,10 +132,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         glideTransform = RequestOptions.bitmapTransform(RoundedCorners(borderRadius))
 
         imageSize = if (isGridView) {
-            val screenWidth = DisplayUtils.getWindowPixelWidth(context)
+            val windowWidth = DisplayUtils.getWindowPixelWidth(context)
             val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
             val deleteIconsSpace = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
-            ((screenWidth - margin * NUM_GRID_MARGINS) / 2) - deleteIconsSpace
+            ((windowWidth - margin * NUM_GRID_MARGINS) / 2) - deleteIconsSpace
         } else {
             context.resources.getDimensionPixelSize(R.dimen.image_major_120)
         }
