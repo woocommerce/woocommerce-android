@@ -220,12 +220,22 @@ class OrderListFragment :
     }
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
-        fabButton.visibility = View.VISIBLE
-        fabButton.setOnClickListener {
-            showSimplePaymentsDialog()
-        }
+        val isSimplePaymentAvailable = isSimplePaymentsAvailable()
+        val isOrderCreationAvailable = FeatureFlag.ORDER_CREATION.isEnabled() && AppPrefs.isOrderCreationEnabled
 
-        pinFabAboveBottomNavigationBar(fabButton)
+        if (isSimplePaymentAvailable || isOrderCreationAvailable) {
+            fabButton.visibility = View.VISIBLE
+            fabButton.setOnClickListener {
+                when {
+                    isSimplePaymentAvailable && isOrderCreationAvailable -> showOrderCreationBottomSheet()
+                    isSimplePaymentAvailable -> showSimplePaymentsDialog()
+                    isOrderCreationAvailable -> {
+                        // trigger Order Creation form
+                    }
+                }
+            }
+            pinFabAboveBottomNavigationBar(fabButton)
+        }
     }
 
     private fun isChildFragmentShowing() = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
@@ -323,6 +333,11 @@ class OrderListFragment :
     private fun showSimplePaymentsDialog() {
         AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
         findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsDialog)
+    }
+
+    private fun showOrderCreationBottomSheet() {
+        OrderListFragmentDirections.actionOrderListFragmentToOrderCreationBottomSheet()
+            .let { findNavController().navigateSafely(it) }
     }
 
     private fun hideEmptyView() {
