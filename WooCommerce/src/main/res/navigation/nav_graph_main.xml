@@ -46,6 +46,11 @@
             app:destination="@id/simplePaymentsDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_orderListFragment_to_orderCreationBottomSheet"
+            app:destination="@id/orderCreationBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/products"
@@ -298,4 +303,8 @@
             android:id="@+id/action_jetpackInstallProgressDialog_to_dashboard"
             app:destination="@id/dashboard" />
     </dialog>
+    <dialog
+        android:id="@+id/orderCreationBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.list.creation.OrderCreationBottomSheetFragment"
+        tools:layout="@layout/dialog_order_creation_bottom_sheet"/>
 </navigation>
