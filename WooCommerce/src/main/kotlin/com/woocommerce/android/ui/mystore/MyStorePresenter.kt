@@ -14,9 +14,7 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedError
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -75,6 +73,7 @@ class MyStorePresenter @Inject constructor(
         statsRepository.onCleanup()
         dispatcher.unregister(this)
         ConnectionChangeReceiver.getEventBus().unregister(this)
+        super.dropView()
     }
 
     override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
@@ -90,7 +89,6 @@ class MyStorePresenter @Inject constructor(
 
         coroutineScope.launch {
             getStats(forced, granularity)
-                .flowOn(Dispatchers.Default)
                 .collect {
                     when (it) {
                         is RevenueStatsSuccess -> myStoreView?.showStats(it.stats, granularity)
@@ -122,7 +120,6 @@ class MyStorePresenter @Inject constructor(
 
         coroutineScope.launch {
             getTopPerformers(forceRefresh, granularity, NUM_TOP_PERFORMERS)
-                .flowOn(Dispatchers.Default)
                 .collect {
                     when (it) {
                         is LoadTopPerformersResult.IsLoadingTopPerformers -> myStoreView?.showTopPerformersSkeleton(it.isLoading)
