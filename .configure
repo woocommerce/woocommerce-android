@@ -1,7 +1,7 @@
 {
   "project_name": "woocommerce-android",
   "branch": "trunk",
-  "pinned_hash": "ba57ca96a6e05372476cc6dd8ba9722fe34e3b16",
+  "pinned_hash": "00dcdd5394cd26d918852323c3af5295efaedb9d",
   "files_to_copy": [
     {
       "file": "android/WCAndroid/gradle.properties",

@@ -34,9 +34,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -47,7 +45,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
@@ -374,7 +371,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         assertThat(isProgressDialogShown).containsExactly(true, false)
     }
@@ -394,7 +391,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         verify(productRepository, times(0)).updateProduct(any())
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
@@ -416,7 +413,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         verify(productRepository, times(1)).updateProduct(any())
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_error))
@@ -440,7 +437,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         verify(productRepository, times(1)).updateProduct(any())
         verify(productRepository, times(2)).getProduct(PRODUCT_REMOTE_ID)
@@ -652,7 +649,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).fetchProduct(any())
         doReturn(product).whenever(productRepository).getProduct(any())
         val errorMessage = "message"
-        doReturn(errorMessage).whenever(resources).getString(any())
         doReturn(errorMessage).whenever(resources).getString(any(), anyVararg())
 
         viewModel.start()
@@ -686,6 +682,68 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         errorEvents.emit(emptyList())
 
         assertThat(viewModel.event.value).isEqualTo(HideImageUploadErrorSnackbar)
+    }
+
+    @Test
+    fun `Publish option not shown when product is published except addProduct flow`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
+        assertThat(viewModel.isPublishOptionNeeded).isFalse()
+    }
+
+    @Test
+    fun `Publish option not shown when product is published privately except addProduct flow`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(false).whenever(viewModel).isAddFlowEntryPoint
+        doReturn(false).whenever(viewModel).isProductUnderCreation
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.PRIVATE)
+        assertThat(viewModel.isPublishOptionNeeded).isFalse()
+    }
+
+    @Test
+    fun `Publish option shown when product is published and from addProduct flow and is under product creation`() {
+        doReturn(true).whenever(viewModel).isAddFlowEntryPoint
+        doReturn(true).whenever(viewModel).isProductUnderCreation
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
+        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+    }
+
+    @Test
+    fun `Publish option shown when product is Draft`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
+        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+    }
+
+    @Test
+    fun `Publish option shown when product is Pending Review`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.PENDING)
+        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+    }
+
+    @Test
+    fun `Save option shown when product has changes except add product flow irrespective of product statuses`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(false).whenever(viewModel).isAddFlowEntryPoint
+        doReturn(false).whenever(viewModel).isProductUnderCreation
+        doReturn(true).whenever(viewModel).hasChanges()
+        viewModel.start()
+        assertThat(viewModel.isSaveOptionNeeded).isTrue()
+    }
+
+    @Test
+    fun `Save option not shown when product has changes but in add product flow`() {
+        doReturn(true).whenever(viewModel).isAddFlowEntryPoint
+        doReturn(true).whenever(viewModel).isProductUnderCreation
+        doReturn(true).whenever(viewModel).hasChanges()
+        viewModel.start()
+        assertThat(viewModel.isSaveOptionNeeded).isFalse()
     }
 
     private val productsDraft

@@ -20,7 +20,7 @@ data class FeatureFeedbackSettings(
         SHIPPING_LABELS_M4("shipping_labels_m4"),
         PRODUCTS_VARIATIONS("products_variations"),
         PRODUCT_ADDONS("product_addons"),
-        QUICK_ORDER("quick_order")
+        SIMPLE_PAYMENTS("simple_payments")
     }
 
     fun registerItselfWith(featureKey: String) {

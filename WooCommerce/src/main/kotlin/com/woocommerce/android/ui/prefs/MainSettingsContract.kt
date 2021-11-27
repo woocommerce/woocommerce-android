@@ -9,6 +9,7 @@ interface MainSettingsContract {
         fun getUserDisplayName(): String
         fun getStoreDomainName(): String
         fun hasMultipleStores(): Boolean
+        fun isCardReaderOnboardingCompleted(): Boolean
         fun setupAnnouncementOption()
     }
 

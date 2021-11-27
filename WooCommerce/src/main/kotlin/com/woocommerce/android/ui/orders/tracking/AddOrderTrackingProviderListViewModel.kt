@@ -107,11 +107,6 @@ class AddOrderTrackingProviderListViewModel @Inject constructor(
         triggerEvent(ExitWithResult(carrier))
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        shipmentProvidersRepository.onCleanup()
-    }
-
     @Parcelize
     data class ViewState(
         val showSkeleton: Boolean = false,

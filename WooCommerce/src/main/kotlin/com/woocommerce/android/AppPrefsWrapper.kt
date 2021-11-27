@@ -23,6 +23,12 @@ class AppPrefsWrapper @Inject constructor() {
         selfHostedSiteId: Long
     ) = AppPrefs.setCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
 
+    fun resetCardReaderOnboardingCompleted(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.resetCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
+
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 
     fun getLastConnectedCardReaderId() = AppPrefs.getLastConnectedCardReaderId()
@@ -55,4 +61,11 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getOrderFilters(selectedSiteId: Int, filterCategory: String) =
         AppPrefs.getOrderFilters(selectedSiteId, filterCategory)
+
+    fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
+        AppPrefs.setOrderFilterCustomDateRange(selectedSiteId, startDateMillis, endDateMillis)
+    }
+
+    fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> =
+        AppPrefs.getOrderFilterCustomDateRange(selectedSiteId)
 }

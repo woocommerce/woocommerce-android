@@ -313,34 +313,40 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Returns a date object with the date for today at 00:00:00
+     * Returns a date time in millis with the date for current day at 00:00:00
      */
-    fun getDateForTodayAtTheStartOfTheDay(): Date =
+    fun getDateForTodayAtTheStartOfTheDay(): Long =
         Calendar.getInstance().apply {
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
             set(Calendar.HOUR_OF_DAY, 0)
-        }.time
+        }.timeInMillis
 
-    /**
-     * Returns a Date object with current date minus N days
-     */
-    fun getCurrentDateTimeMinusDays(days: Int): Date =
+    fun getCurrentDateTimeMinusDays(days: Int): Long =
         Calendar.getInstance().apply {
             clear(Calendar.MILLISECOND)
             clear(Calendar.SECOND)
             clear(Calendar.MINUTE)
             set(Calendar.HOUR_OF_DAY, 0)
             add(Calendar.DATE, -days)
-        }.time
+        }.timeInMillis
 
-    fun toIso8601Format(date: Date): String? =
+    fun toIso8601Format(dateMillis: Long): String? =
         try {
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-                .format(date)
+                .format(Date(dateMillis))
         } catch (e: Exception) {
-            "Error while parsing $date to Iso8601 string format".reportAsError(e)
+            "Error while parsing date in millis to Iso8601 string format".reportAsError(e)
+            null
+        }
+
+    fun toDisplayMMMddYYYYDate(dateMillis: Long): String? =
+        try {
+            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                .format(Date(dateMillis))
+        } catch (e: Exception) {
+            "Date string argument is not a valid date".reportAsError(e)
             null
         }
 

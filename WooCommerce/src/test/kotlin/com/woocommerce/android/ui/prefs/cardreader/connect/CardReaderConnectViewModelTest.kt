@@ -17,10 +17,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.NavigateToOnboardingFlow
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
@@ -34,11 +36,12 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingPermissionsError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingLocationPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
@@ -52,22 +55,12 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.argThat
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 @InternalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
@@ -136,7 +129,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given permissions enabled, when connection flow started, then location enabled check emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
 
             assertThat(viewModel.event.value).isInstanceOf(CheckLocationEnabled::class.java)
         }
@@ -144,7 +137,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given permissions not enabled, when connection flow started, then permissions requested`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false)
 
             assertThat(viewModel.event.value).isInstanceOf(RequestLocationPermissions::class.java)
         }
@@ -152,7 +145,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given permissions granted, when permissions requested, then location enabled check emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false)
 
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(true)
 
@@ -162,20 +155,20 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given permissions not granted, when permissions requested, then missing permissions error shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false)
 
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingPermissionsError::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingLocationPermissionsError::class.java)
         }
 
     @Test
     fun `when Open app settings button clicked, then user redirected to app settings`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false)
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
 
-            (viewModel.viewStateData.value as MissingPermissionsError).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as MissingLocationPermissionsError).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(OpenPermissionsSettings::class.java)
         }
@@ -183,10 +176,24 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given app on missing permissions error screen, when apps comes to foreground, then permissions re-checked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false)
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
 
-            viewModel.onScreenResumed()
+            viewModel.onScreenStarted()
+
+            assertThat(viewModel.event.value).isInstanceOf(CheckLocationPermissions::class.java)
+        }
+
+    @Test
+    fun `given app on missing bt permissions screen, when apps comes to foreground, then permissions re-checked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
+            (viewModel.event.value as RequestBluetoothRuntimePermissions)
+                .onBluetoothRuntimePermissionsRequestResult(false)
+
+            viewModel.onScreenStarted()
 
             assertThat(viewModel.event.value).isInstanceOf(CheckLocationPermissions::class.java)
         }
@@ -194,21 +201,33 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given NOT on missing permissions screen, when apps comes to foreground, then permissions not re-checked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
 
-            viewModel.onScreenResumed()
+            viewModel.onScreenStarted()
 
             assertThat(viewModel.event.value).isNotInstanceOf(CheckLocationPermissions::class.java)
         }
 
     @Test
+    fun `given NOT on bt missing permissions screen, when apps comes to foreground, then permissions not re-checked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
+
+            viewModel.onScreenStarted()
+
+            assertThat(viewModel.event.value).isNotInstanceOf(CheckBluetoothPermissionsGiven::class.java)
+        }
+
+    @Test
     fun `given app on missing permissions, when apps comes to foreground, then permissions not re-requested`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false)
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
-            viewModel.onScreenResumed()
+            viewModel.onScreenStarted()
 
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false)
 
             assertThat(viewModel.event.value).isNotInstanceOf(RequestLocationPermissions::class.java)
         }
@@ -216,25 +235,25 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given location disabled, when connection flow started, then location disabled error shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(false)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(LocationDisabledError::class.java)
         }
 
     @Test
-    fun `given location enabled, when connection flow started, then check bluetooth emitted`() =
+    fun `given location enabled, when connection flow started, then check bluetooth permission emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
 
-            assertThat(viewModel.event.value).isInstanceOf(CheckBluetoothEnabled::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(CheckBluetoothPermissionsGiven::class.java)
         }
 
     @Test
     fun `when user clicks on open location settings, then openLocationSettings emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(false)
 
             (viewModel.viewStateData.value as? LocationDisabledError)?.let {
@@ -247,7 +266,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when location settings closed, then checkLocationEnabled emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(false)
             (viewModel.viewStateData.value as? LocationDisabledError)?.let {
                 it.onPrimaryActionClicked.invoke()
@@ -261,8 +280,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given bluetooth disabled, when connection flow started, then enable-bluetooth request emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
 
             assertThat(viewModel.event.value).isInstanceOf(RequestEnableBluetooth::class.java)
@@ -271,8 +291,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request rejected, when enable-bluetooth requested, then bluetooth disabled error shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
 
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(false)
@@ -283,21 +304,47 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted, when enable-bluetooth requested, then card manager initialized`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
-
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
             verify(cardReaderManager).initialize()
         }
 
     @Test
+    fun `given request accepted, when bt permissions requested, then card manager initialized`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
+            (viewModel.event.value as RequestBluetoothRuntimePermissions)
+                .onBluetoothRuntimePermissionsRequestResult(true)
+            (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
+
+            verify(cardReaderManager).initialize()
+        }
+
+    @Test
+    fun `given request not accepted, when bt permissions requested, then card manager not initialized`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
+            (viewModel.event.value as RequestBluetoothRuntimePermissions)
+                .onBluetoothRuntimePermissionsRequestResult(false)
+
+            verify(cardReaderManager, never()).initialize()
+        }
+
+    @Test
     fun `given request accepted and manager init, when enable-bluetooth requested, then manager is not initialized`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.initialized).thenReturn(true)
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
 
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
@@ -308,8 +355,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks on open bluetooth settings, then enable-bluetooth request emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(false)
 
@@ -422,7 +470,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given last connected reader is matching, when reader found, then reader connecting state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(appPrefs.getLastConnectedCardReaderId()).thenReturn("Dummy1")
             val readerStatusStateFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connecting)
             whenever(cardReaderManager.readerStatus).thenReturn(readerStatusStateFlow)
 
@@ -1143,10 +1190,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when app in missing location permissions state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(false)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false)
             (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingPermissionsError::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingLocationPermissionsError::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
                 .isEqualTo(UiStringRes(R.string.card_reader_connect_missing_permissions_header))
@@ -1170,7 +1217,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when app in location disabled state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(false)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(LocationDisabledError::class.java)
@@ -1197,8 +1244,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when app in bluetooth disabled state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(false)
 
@@ -1220,6 +1268,29 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.drawable.img_products_error)
             assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
                 .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_150)
+        }
+
+    @Test
+    fun `when app bluetooth permission not given state, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
+            (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+            (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
+            (viewModel.event.value as RequestBluetoothRuntimePermissions)
+                .onBluetoothRuntimePermissionsRequestResult(false)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MissingBluetoothPermissionsError::class.java)
+            assertThat(viewModel.viewStateData.value!!.headerLabel)
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_missing_bluetooth_permissions_header))
+            assertThat(viewModel.viewStateData.value!!.hintLabel).isNull()
+            assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
+                .isEqualTo(R.string.card_reader_connect_missing_bluetooth_permission_button)
+            assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
+                .isEqualTo(R.string.cancel)
+            assertThat(viewModel.viewStateData.value!!.illustration)
+                .isEqualTo(R.drawable.img_products_error)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
                 .isEqualTo(R.dimen.major_150)
         }
 
@@ -1256,7 +1327,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
         viewModel.onUpdateReaderResult(result)
 
-        (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+        (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
     }
 
     private suspend fun initVM(
@@ -1292,8 +1363,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         whenever(locationRepository.getDefaultLocationId()).thenReturn(
             CardReaderLocationRepository.LocationIdFetchingResult.Success(locationId)
         )
-        (viewModel.event.value as CheckLocationPermissions).onPermissionsCheckResult(true)
+        (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
+        (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
     }
 
