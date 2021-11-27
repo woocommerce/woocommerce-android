@@ -9,9 +9,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.analytics.AnalyticsContract.AnalyticsState
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCardView
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationCardView
 import com.woocommerce.android.ui.base.TopLevelFragment
 import dagger.hilt.android.AndroidEntryPoint

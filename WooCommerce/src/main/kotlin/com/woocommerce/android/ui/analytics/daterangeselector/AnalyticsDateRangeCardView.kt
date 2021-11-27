@@ -3,10 +3,9 @@ package com.woocommerce.android.ui.analytics.daterangeselector
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract.DateRangeEvent
-import dagger.hilt.android.AndroidEntryPoint
 
 class AnalyticsDateRangeCardView @JvmOverloads constructor(
     ctx: Context,

@@ -2,12 +2,7 @@ package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.analytics.AnalyticsContract.AnalyticsState
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract.AnalyticsDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationContract
