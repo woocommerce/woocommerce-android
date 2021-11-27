@@ -625,6 +625,12 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:indeterminateTintMode">src_in</item>
     </style>
 
+    <style name="Woo.JetpackProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@color/jetpack_install_progressbar</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
+
+
     <!--
         TagView Style
     -->

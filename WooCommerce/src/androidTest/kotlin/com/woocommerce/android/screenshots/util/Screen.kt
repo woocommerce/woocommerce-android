@@ -14,6 +14,7 @@ import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers
@@ -106,6 +107,32 @@ open class Screen {
         // Need to use the NestedScrollViewExtension because Espresso doesn't natively support it:
         // https://medium.com/@devasierra/espresso-nestedscrollview-scrolling-via-kotlin-delegation-5e7f0aa64c09
         onView(withId(elementID)).perform(NestedScrollViewExtension())
+    }
+
+    fun scrollToListItem(itemTitle: String, listID: Int) {
+        Espresso.onView(ViewMatchers.withId(listID)).perform(
+            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
+                ViewMatchers.hasDescendant(
+                    ViewMatchers.withText(
+                        itemTitle
+                    )
+                ),
+                ViewActions.scrollTo()
+            )
+        )
+    }
+
+    fun selectListItem(itemTitle: String, listID: Int) {
+        Espresso.onView(ViewMatchers.withId(listID)).perform(
+            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
+                ViewMatchers.hasDescendant(
+                    ViewMatchers.withText(
+                        itemTitle
+                    )
+                ),
+                ViewActions.click()
+            )
+        )
     }
 
     private fun clickOn(viewInteraction: ViewInteraction) {

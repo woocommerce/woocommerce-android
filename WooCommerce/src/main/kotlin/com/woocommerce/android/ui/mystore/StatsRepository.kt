@@ -11,7 +11,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_NEW_VISITOR_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -35,9 +34,7 @@ class StatsRepository @Inject constructor(
     }
 
     private val continuationRevenueStats = ContinuationWrapper<Result<WCRevenueStatsModel?>>(DASHBOARD)
-    private val continuationVisitorStats = ContinuationWrapper<Result<Map<String, Int>>>(DASHBOARD)
     private lateinit var lastRevenueStatsGranularity: StatsGranularity
-    private lateinit var lastVisitorStatsGranularity: StatsGranularity
 
     fun init() {
         dispatcher.register(this)
@@ -61,15 +58,21 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Result<Map<String, Int>> {
-        lastVisitorStatsGranularity = granularity
-        val result = continuationVisitorStats.callAndWait {
-            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
-            dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
-        }
+        val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
+        val result = wcStatsStore.fetchNewVisitorStats(visitsPayload)
 
-        return when (result) {
-            is Cancellation -> Result.failure(result.exception)
-            is Success -> result.value
+        return if (!result.isError) {
+            val visitorStats = wcStatsStore.getNewVisitorStats(
+                selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
+            )
+            Result.success(visitorStats)
+        } else {
+            val errorMessage = result?.error?.message ?: "Timeout"
+            WooLog.e(
+                DASHBOARD,
+                "$TAG - Error fetching visitor stats: $errorMessage"
+            )
+            Result.failure(Exception(errorMessage))
         }
     }
 
@@ -131,23 +134,6 @@ class StatsRepository @Inject constructor(
                 )
                 continuationRevenueStats.continueWith(Result.success(revenueStatsModel))
             }
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onWCStatsChanged(event: OnWCStatsChanged) {
-        if (event.causeOfChange == FETCH_NEW_VISITOR_STATS && event.granularity == lastVisitorStatsGranularity) {
-            if (event.isError) {
-                WooLog.e(DASHBOARD, "$TAG - Error fetching visitor stats: ${event.error.message}")
-                continuationVisitorStats.continueWith(Result.failure(StatsException(event.error)))
-                return
-            }
-
-            val visitorStats = wcStatsStore.getNewVisitorStats(
-                selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField
-            )
-            continuationVisitorStats.continueWith(Result.success(visitorStats))
         }
     }
 
