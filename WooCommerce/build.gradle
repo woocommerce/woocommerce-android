@@ -168,6 +168,7 @@ dependencies {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
     implementation "androidx.preference:preference:1.1.1"
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
@@ -287,6 +288,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
+    testImplementation 'app.cash.turbine:turbine:0.7.0'
+
     // Use caution when updating these, as commons-text 1.9 caused the reviews tab to crash on API 21
     implementation "org.apache.commons:commons-lang3:3.9"
     implementation "org.apache.commons:commons-text:1.8"
@@ -294,7 +297,9 @@ dependencies {
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 
-    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion") {
+        exclude group: "org.wordpress", module: "utils"
+    }
     implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
 }
 

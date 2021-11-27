@@ -39,7 +39,9 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
     var currentPosition: BottomNavigationPosition
         get() = findNavigationPositionById(selectedItemId)
-        set(value) = navController.navigate(value.id)
+        set(value) {
+            selectedItemId = value.id
+        }
 
     fun init(navController: NavController, listener: MainNavigationListener) {
         this.listener = listener
