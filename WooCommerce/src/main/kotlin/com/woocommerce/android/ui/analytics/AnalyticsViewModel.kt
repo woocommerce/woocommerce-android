@@ -5,13 +5,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.AnalyticsContract.AnalyticsState
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorContract.AnalyticsDateRangeSelectorViewState
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationContract.AnalyticsCardInformationViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionContract.SectionViewState.SectionDataViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationContract
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionContract
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -31,26 +31,26 @@ class AnalyticsViewModel @Inject constructor(
     private val dateRange = SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(1)), dateUtils.getCurrentDate())
 
     private val mutableState = MutableStateFlow(
-        AnalyticsState(
-            analyticsDateRangeSelectorState = AnalyticsDateRangeSelectorViewState(
+        AnalyticsViewState(
+            AnalyticsDateRangeSelectorViewState(
                 fromDatePeriod = calculateFromDatePeriod(dateRange),
                 toDatePeriod = calculateToDatePeriod(AnalyticsDateRanges.TODAY, dateRange),
                 availableRangeDates = getAvailableDateRanges(),
                 selectedPeriod = getDefaultSelectedPeriod()
             ),
-            revenueCardState = AnalyticsCardInformationViewState.CardDataViewState(
+            revenueCardState = AnalyticsCardInformationContract.AnalyticsCardInformationViewState.CardDataViewState(
                 title = "Revenue",
-                totalValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
+                totalValues = AnalyticsInformationSectionContract.SectionViewState.SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
                     "$2323,22", 33
                 ),
-                netValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
+                netValues = AnalyticsInformationSectionContract.SectionViewState.SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
                     "$111", -33
                 )
             )
         )
     )
 
-    val state: StateFlow<AnalyticsState> = mutableState
+    val state: StateFlow<AnalyticsViewState> = mutableState
 
     fun onSelectedDateRangeChanged(newSelection: String) {
         val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)

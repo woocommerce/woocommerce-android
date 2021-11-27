@@ -44,8 +44,8 @@ class JetpackBenefitsDialog : DialogFragment(R.layout.dialog_jetpack_benefits) {
         super.onStart()
         if (isTabletLandscape()) {
             requireDialog().window!!.setLayout(
-                (DisplayUtils.getDisplayPixelWidth() * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getDisplayPixelHeight(context) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
+                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
+                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
             )
         }
     }

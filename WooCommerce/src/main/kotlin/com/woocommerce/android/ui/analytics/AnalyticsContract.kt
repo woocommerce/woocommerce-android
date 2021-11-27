@@ -10,5 +10,3 @@ class AnalyticsContract {
     sealed class AnalyticsEvent
     sealed class AnalyticsEffect
 }
-
-

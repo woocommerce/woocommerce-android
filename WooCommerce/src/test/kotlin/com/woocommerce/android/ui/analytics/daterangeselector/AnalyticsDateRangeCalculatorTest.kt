@@ -32,148 +32,171 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should return expected date calculating range for today`() {
+    fun `given current date  and and current date minus 1 when get date range from today is the expected date`() {
+        // Given
         whenever(dateUtils.getCurrentDateTimeMinusDays(1)).thenReturn(DATE_ZERO)
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
 
+        //When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.TODAY)
 
+        //Then
         assertTrue(result is SimpleDateRange)
         assertEquals(date, result.from)
         assertEquals(date, result.to)
     }
 
     @Test
-    fun `should return expected date calculating range for yesterday`() {
+    fun `given a current date minus any days when get date for yesterday is the expected date`() {
+        // Given
         whenever(dateUtils.getCurrentDateTimeMinusDays(any())).thenReturn(DATE_ZERO)
 
+        //When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.YESTERDAY)
 
+        //Then
         assertTrue(result is SimpleDateRange)
         assertEquals(date, result.from)
         assertEquals(date, result.to)
     }
 
     @Test
-    fun `should return expected date calculating range for last week`() {
+    fun `given a dates for any any weeks when get the date range for last week is the expected date`() {
+        // Given
         whenever(dateUtils.getDateForFirstDayOfPreviousWeek(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousWeek(any(), any())).thenReturn(date)
 
+        //When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_WEEK)
 
+        //Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
-
         assertEquals(date, result.to.from)
         assertEquals(date, result.to.to)
     }
 
     @Test
-    fun `should return expected date calculating range for last month`() {
+    fun `given a dates for any previous months when get date range for previous month is the expected date`() {
+        // Given
         whenever(dateUtils.getDateForFirstDayOfPreviousMonth(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousMonth(any(), any())).thenReturn(date)
 
+        //When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_MONTH)
 
+        //Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
-
         assertEquals(date, result.to.from)
         assertEquals(date, result.to.to)
     }
 
     @Test
-    fun `should return expected date calculating range for last quarter`() {
+    fun `given dates for any previous quarters when get date range for last quarter is the expected date`() {
+        // Given
         whenever(dateUtils.getDateForFirstDayOfPreviousQuarter(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousQuarter(any(), any())).thenReturn(date)
 
+        //When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_QUARTER)
 
+        //Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
-
         assertEquals(date, result.to.from)
         assertEquals(date, result.to.to)
     }
 
     @Test
-    fun `should return expected date calculating range for last year`() {
+    fun `given dates for any previous years when get date range for last year is the expected date`() {
+        // Given
         whenever(dateUtils.getDateForFirstDayOfPreviousYear(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousYear(any(), any())).thenReturn(date)
 
+        //When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_YEAR)
 
+        //Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
-
         assertEquals(date, result.to.from)
         assertEquals(date, result.to.to)
     }
 
     @Test
-    fun `should return expected date calculating range for week to date`() {
+    fun `given current date and date for any week when get date range for week to date is the expected date`() {
+        // Given
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.DAY_OF_YEAR, -7)).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfPreviousWeek(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfWeek(any())).thenReturn(date)
 
+        //When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.WEEK_TO_DATE)
 
+        //Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
-
         assertEquals(date, result.to.from)
         assertEquals(date, result.to.to)
     }
 
     @Test
-    fun `should return expected date calculating range for month to date`() {
+    fun `given current date and date for any month when get date range for month to date is the expected date`() {
+        // Given
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.MONTH, -1)).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfPreviousMonth(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfMonth(any())).thenReturn(date)
 
+        // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.MONTH_TO_DATE)
 
+        //Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
-
         assertEquals(date, result.to.from)
         assertEquals(date, result.to.to)
     }
 
     @Test
-    fun `should return expected date calculating range for quarter to date`() {
+    fun `given current date and date for any quarter when get date range for quarter to date is the expected date`() {
+        // Given
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.MONTH, -3)).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfPreviousQuarter(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfQuarter(any())).thenReturn(date)
 
+        // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.QUARTER_TO_DATE)
 
+        // Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
-
         assertEquals(date, result.to.from)
         assertEquals(date, result.to.to)
     }
 
     @Test
-    fun `should return expected date calculating range for year to date`() {
+    fun `given current date and date for any year when get date range for year to date is the expected date`() {
+        // Given
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.YEAR, -1)).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfPreviousYear(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfYear(any())).thenReturn(date)
 
+        // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.YEAR_TO_DATE)
 
+        // Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
@@ -183,7 +206,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should return expected formatted date to friendly period`() {
+    fun `when get friendly date any date is the expected string`() {
         val sameYearAndMonthFriendlyFormattedDate = SimpleDateRange(date, threeJan1970)
             .formatDatesToFriendlyPeriod()
         assertEquals(SAME_YEAR_SAME_MONTH_EXPECTED, sameYearAndMonthFriendlyFormattedDate)
