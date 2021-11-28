@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDa
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.zendesk.util.DateUtils.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,27 +51,46 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun calculateToDatePeriod(analyticsDateRange: AnalyticsDateRanges, dateRange: DateRange) =
         when (dateRange) {
-            is MultipleDateRange -> resourceProvider.getString(
-                R.string.analytics_date_range_to_date,
-                getDateSelectedMessage(analyticsDateRange),
-                dateRange.to.formatDatesToFriendlyPeriod()
-            )
             is SimpleDateRange -> resourceProvider.getString(
                 R.string.analytics_date_range_to_date,
                 getDateSelectedMessage(analyticsDateRange),
-                dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.to)).orEmpty()
+                dateUtils.getShortMonthDayAndYearString(
+                    dateUtils.getYearMonthDayStringFromDate(dateRange.to)
+                ).orEmpty()
             )
+            is MultipleDateRange -> when {
+                isSameDay(dateRange.to.from, dateRange.to.to) -> resourceProvider.getString(
+                    R.string.analytics_date_range_to_date,
+                    getDateSelectedMessage(analyticsDateRange),
+                    dateUtils.getShortMonthDayAndYearString(
+                        dateUtils.getYearMonthDayStringFromDate(dateRange.to.from)
+                    ).orEmpty()
+                )
+                else -> resourceProvider.getString(
+                    R.string.analytics_date_range_to_date,
+                    getDateSelectedMessage(analyticsDateRange),
+                    dateRange.to.formatDatesToFriendlyPeriod()
+                )
+            }
         }
 
     private fun calculateFromDatePeriod(dateRange: DateRange) = when (dateRange) {
-        is MultipleDateRange -> resourceProvider.getString(
-            R.string.analytics_date_range_from_date,
-            dateRange.from.formatDatesToFriendlyPeriod()
-        )
         is SimpleDateRange -> resourceProvider.getString(
             R.string.analytics_date_range_from_date,
             dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.from)).orEmpty()
         )
+        is MultipleDateRange -> when {
+            isSameDay(dateRange.from.from, dateRange.from.to) -> resourceProvider.getString(
+                R.string.analytics_date_range_from_date,
+                dateUtils.getShortMonthDayAndYearString(
+                    dateUtils.getYearMonthDayStringFromDate(dateRange.from.from)
+                ).orEmpty()
+            )
+            else -> resourceProvider.getString(
+                R.string.analytics_date_range_from_date,
+                dateRange.from.formatDatesToFriendlyPeriod()
+            )
+        }
     }
 
     private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()

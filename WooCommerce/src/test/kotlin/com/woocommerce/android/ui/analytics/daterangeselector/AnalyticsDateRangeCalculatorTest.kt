@@ -37,10 +37,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getCurrentDateTimeMinusDays(1)).thenReturn(DATE_ZERO)
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
 
-        //When
+        // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.TODAY)
 
-        //Then
+        // Then
         assertTrue(result is SimpleDateRange)
         assertEquals(date, result.from)
         assertEquals(date, result.to)
@@ -51,10 +51,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         // Given
         whenever(dateUtils.getCurrentDateTimeMinusDays(any())).thenReturn(DATE_ZERO)
 
-        //When
+        // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.YESTERDAY)
 
-        //Then
+        // Then
         assertTrue(result is SimpleDateRange)
         assertEquals(date, result.from)
         assertEquals(date, result.to)
@@ -66,10 +66,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForFirstDayOfPreviousWeek(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousWeek(any(), any())).thenReturn(date)
 
-        //When
+        // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_WEEK)
 
-        //Then
+        // Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
@@ -83,10 +83,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForFirstDayOfPreviousMonth(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousMonth(any(), any())).thenReturn(date)
 
-        //When
+        // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_MONTH)
 
-        //Then
+        // Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
@@ -100,10 +100,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForFirstDayOfPreviousQuarter(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousQuarter(any(), any())).thenReturn(date)
 
-        //When
+        // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_QUARTER)
 
-        //Then
+        // Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
@@ -117,10 +117,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForFirstDayOfPreviousYear(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousYear(any(), any())).thenReturn(date)
 
-        //When
+        // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_YEAR)
 
-        //Then
+        // Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
@@ -136,10 +136,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForFirstDayOfPreviousWeek(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForFirstDayOfWeek(any())).thenReturn(date)
 
-        //When
+        // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.WEEK_TO_DATE)
 
-        //Then
+        // Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
@@ -158,7 +158,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.MONTH_TO_DATE)
 
-        //Then
+        // Then
         assertTrue(result is DateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
