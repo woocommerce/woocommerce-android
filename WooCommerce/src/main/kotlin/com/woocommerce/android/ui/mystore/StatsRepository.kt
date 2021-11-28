@@ -47,8 +47,10 @@ class StatsRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean,
-                                  startDate: String, endDate: String): Result<WCRevenueStatsModel?> {
+    suspend fun fetchRevenueStats(granularity: StatsGranularity,
+                                  forced: Boolean,
+                                  startDate: String = "",
+                                  endDate: String = ""): Result<WCRevenueStatsModel?> {
         lastRevenueStatsGranularity = granularity
         val result = continuationRevenueStats.callAndWait {
             val statsPayload = FetchRevenueStatsPayload(selectedSite.get(),
