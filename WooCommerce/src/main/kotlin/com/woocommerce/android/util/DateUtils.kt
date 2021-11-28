@@ -379,7 +379,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MINUTE)
             set(Calendar.HOUR_OF_DAY, ZERO)
             set(Calendar.DAY_OF_MONTH, ONE)
-            set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) / MONTHS_QUARTER_CALCULATION)
+            set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) / THREE * THREE)
         }.time
 
     /**
@@ -435,7 +435,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MINUTE)
             set(Calendar.HOUR_OF_DAY, ZERO)
             set(Calendar.DAY_OF_MONTH, 1)
-            set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) / MONTHS_QUARTER_CALCULATION)
+            set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) / THREE * THREE)
             add(Calendar.MONTH, -minusQuarter * THREE)
         }.time
 
@@ -494,7 +494,7 @@ class DateUtils @Inject constructor(
             set(Calendar.HOUR_OF_DAY, ZERO)
             add(Calendar.DAY_OF_YEAR, -DAYS_IN_QUARTER * minusQuarter)
             set(Calendar.DAY_OF_MONTH, ONE)
-            set(Calendar.MONTH, get(Calendar.MONTH) / MONTHS_QUARTER_CALCULATION + 2)
+            set(Calendar.MONTH, get(Calendar.MONTH) / THREE * THREE + 2)
             set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
         }.time
 
@@ -555,7 +555,6 @@ class DateUtils @Inject constructor(
         }
 
     companion object {
-        const val MONTHS_QUARTER_CALCULATION = 3 * 3
         const val DAYS_IN_QUARTER = 90
         const val DAYS_TAIL_IN_WEEK = 6
 
