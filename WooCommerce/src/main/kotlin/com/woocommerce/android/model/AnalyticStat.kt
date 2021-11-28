@@ -2,9 +2,10 @@ package com.woocommerce.android.model
 
 sealed class AnalyticStat {
     data class RevenueStat(
-        val total: Double,
+        val totalValue: Double,
         val totalDelta: Int,
-        val net: Double,
-        val netDelta: Int
+        val netValue: Double,
+        val netDelta: Int,
+        val currencyCode: String?
     ) : AnalyticStat()
 }
