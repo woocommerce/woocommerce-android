@@ -6,9 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationContract.AnalyticsCardInformationViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationContract.AnalyticsCardInformationViewState.CardDataViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationContract.AnalyticsCardInformationViewState.HiddenCardViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationViewState.HiddenViewState
 
 class AnalyticsInformationCardView @JvmOverloads constructor(
     ctx: Context,
@@ -19,8 +18,8 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
 
     internal fun setViewState(viewState: AnalyticsCardInformationViewState) {
         when (viewState) {
-            is HiddenCardViewState -> visibility = View.INVISIBLE
-            is CardDataViewState -> {
+            is HiddenViewState -> visibility = View.INVISIBLE
+            is DataViewState -> {
                 visibility = View.VISIBLE
                 binding.tvAnalyticsCardTitle.text = viewState.title
                 binding.vSectionTotalSales.setViewState(viewState.totalValues)
