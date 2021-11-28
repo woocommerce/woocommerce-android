@@ -9,7 +9,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationCardView
 import com.woocommerce.android.ui.base.TopLevelFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -20,8 +19,6 @@ class AnalyticsFragment :
     companion object {
         const val KEY_DATE_RANGE_SELECTOR_RESULT = "key_order_status_result"
     }
-
-    private lateinit var revenueSectionView: AnalyticsInformationCardView
 
     private val viewModel: AnalyticsViewModel by viewModels()
     private var _binding: FragmentAnalyticsBinding? = null
@@ -75,7 +72,7 @@ class AnalyticsFragment :
     private fun handleStateChange(viewState: AnalyticsViewState) {
         binding.analyticsDateSelectorCard.updateFromText(viewState.analyticsDateRangeSelectorState.fromDatePeriod)
         binding.analyticsDateSelectorCard.updateToText(viewState.analyticsDateRangeSelectorState.toDatePeriod)
-        revenueSectionView.setViewState(viewState.revenueCardState)
+        binding.analyticsRevenueCard.setViewState(viewState.revenueCardState)
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
