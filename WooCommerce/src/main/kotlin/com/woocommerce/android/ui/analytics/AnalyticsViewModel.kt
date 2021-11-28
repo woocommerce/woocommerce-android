@@ -5,8 +5,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationViewState
-import com.woocommerce.android.ui.analytics.informationcard.SectionViewState.SectionDataViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionDataViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -37,7 +37,7 @@ class AnalyticsViewModel @Inject constructor(
             availableRangeDates = getAvailableDateRanges(),
             selectedPeriod = getDefaultSelectedPeriod()
         ),
-        revenueCardState = AnalyticsCardInformationViewState.DataViewState(
+        revenueState = AnalyticsInformationViewState.DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
             totalValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
                 "$2323,22", 33
@@ -62,7 +62,7 @@ class AnalyticsViewModel @Inject constructor(
             val revenueData = analyticsRepository.fetchRevenueData(dateRange, range)
             if (revenueData != null) {
                 mutableState.value = state.value.copy(
-                    revenueCardState = AnalyticsCardInformationViewState.DataViewState(
+                    revenueState = AnalyticsInformationViewState.DataViewState(
                         title = resourceProvider.getString(R.string.analytics_revenue_card_title),
                         totalValues = SectionDataViewState(
                             resourceProvider.getString(R.string.analytics_total_sales_title),

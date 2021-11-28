@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationViewState.DataViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsCardInformationViewState.HiddenViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.HiddenViewState
 
 class AnalyticsInformationCardView @JvmOverloads constructor(
     ctx: Context,
@@ -16,7 +16,7 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     val binding = AnalyticsInformationCardViewBinding.inflate(LayoutInflater.from(ctx), this)
 
-    internal fun setViewState(viewState: AnalyticsCardInformationViewState) {
+    internal fun updateInformation(viewState: AnalyticsInformationViewState) {
         when (viewState) {
             is HiddenViewState -> visibility = View.INVISIBLE
             is DataViewState -> {

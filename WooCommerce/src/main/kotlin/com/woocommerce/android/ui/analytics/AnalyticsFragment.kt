@@ -72,7 +72,7 @@ class AnalyticsFragment :
     private fun handleStateChange(viewState: AnalyticsViewState) {
         binding.analyticsDateSelectorCard.updateFromText(viewState.analyticsDateRangeSelectorState.fromDatePeriod)
         binding.analyticsDateSelectorCard.updateToText(viewState.analyticsDateRangeSelectorState.toDatePeriod)
-        binding.analyticsRevenueCard.setViewState(viewState.revenueCardState)
+        binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
