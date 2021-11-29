@@ -58,34 +58,38 @@ class CardReaderOnboardingChecker @Inject constructor(
         var pluginType = PluginType.WOOCOMMERCE_PAYMENTS
 
         if (stripeExtensionFeatureFlag.isEnabled()) {
-            if (isWCPayInstalled(wcPayPluginInfo) && isStripePluginInstalled(stripePluginInfo)) {
-                // merchant has both the plugin installed!
-                // Check if both the plugins are activated
-                // if both are activated, then show popup to turn off any one
-                if (
-                    isStripeTerminalActivated(requireNotNull(stripePluginInfo)) &&
-                    isWCPayActivated(requireNotNull(wcPayPluginInfo))
-                ) {
-                    return WcpayAndStripeActivated
+            when {
+                isWCPayInstalled(wcPayPluginInfo) && isStripePluginInstalled(stripePluginInfo) -> {
+                    if (
+                        isStripeTerminalActivated(requireNotNull(stripePluginInfo)) &&
+                        isWCPayActivated(requireNotNull(wcPayPluginInfo))
+                    ) {
+                        return WcpayAndStripeActivated
+                    }
+                    if (!isStripeTerminalActivated(requireNotNull(stripePluginInfo))) {
+                        pluginType = PluginType.WOOCOMMERCE_PAYMENTS
+                        if (!isWCPayVersionSupported(requireNotNull(wcPayPluginInfo))) return WcpayUnsupportedVersion
+                        if (!isWCPayActivated(wcPayPluginInfo)) return WcpayNotActivated
+                    } else {
+                        pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
+                    }
                 }
-                if (!isStripeTerminalActivated(requireNotNull(stripePluginInfo))) {
+
+                isWCPayInstalled(wcPayPluginInfo) -> {
                     pluginType = PluginType.WOOCOMMERCE_PAYMENTS
                     if (!isWCPayVersionSupported(requireNotNull(wcPayPluginInfo))) return WcpayUnsupportedVersion
                     if (!isWCPayActivated(wcPayPluginInfo)) return WcpayNotActivated
-                } else {
-                    pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
                 }
-            } else if (isWCPayInstalled(wcPayPluginInfo)) {
-                pluginType = PluginType.WOOCOMMERCE_PAYMENTS
-                if (!isWCPayVersionSupported(requireNotNull(wcPayPluginInfo))) return WcpayUnsupportedVersion
-                if (!isWCPayActivated(wcPayPluginInfo)) return WcpayNotActivated
-            } else if (
-                isStripePluginInstalled(stripePluginInfo) && isStripeTerminalActivated(requireNotNull(stripePluginInfo))
-            ) {
-                pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
-                if (!isStripeTerminalVersionSupported(stripePluginInfo)) return StripeTerminal.UnsupportedVersion
-            } else {
-                return WcpayNotInstalled
+
+                isStripePluginInstalled(stripePluginInfo) &&
+                    isStripeTerminalActivated(requireNotNull(stripePluginInfo)) -> {
+                    pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
+                    if (!isStripeTerminalVersionSupported(stripePluginInfo)) return StripeTerminal.UnsupportedVersion
+                }
+
+                else -> {
+                    return WcpayNotInstalled
+                }
             }
         } else {
             if (!isWCPayInstalled(wcPayPluginInfo)) return WcpayNotInstalled
@@ -96,7 +100,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GenericError
 
         if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
-        if (!isWCPaySetupCompleted(paymentAccount)) return SetupNotCompleted(pluginType)
+        if (!isPluginSetupCompleted(paymentAccount)) return SetupNotCompleted(pluginType)
         if (isWCPayInTestModeWithLiveStripeAccount(paymentAccount)) return WcpayInTestModeWithLiveStripeAccount
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
         if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
@@ -137,7 +141,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
     private fun isStripeTerminalActivated(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean = pluginInfo.active
 
-    private fun isWCPaySetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
+    private fun isPluginSetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != NO_ACCOUNT
 
     private fun isWCPayInTestModeWithLiveStripeAccount(account: WCPaymentAccountResult): Boolean =
