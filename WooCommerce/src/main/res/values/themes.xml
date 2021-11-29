@@ -149,4 +149,6 @@
         <item name="colorAccent">@color/color_primary</item>
         <item name="android:colorForeground">@color/woo_black_90</item>
     </style>
+
+    <style name="MediaPicker.Button.Colored" parent="Woo.Button.Colored" />
 </resources>

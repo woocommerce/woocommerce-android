@@ -181,6 +181,6 @@
     <!--
     Media picker colors
     -->
-    <color name="color_media_picker_toolbar_background">@color/color_surface</color>
+    <color name="color_media_picker_toolbar_background">@color/color_toolbar</color>
     <color name="color_media_picker_toolbar_foreground">@color/color_on_surface</color>
 </resources>
