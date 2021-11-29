@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -90,7 +91,12 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given onboarding not completed, when flow started, then app starts onboarding flow`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val vm = initVM(CardReaderOnboardingState.WcpaySetupNotCompleted, skipOnboarding = false)
+            val vm = initVM(
+                CardReaderOnboardingState.SetupNotCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS
+                ),
+                skipOnboarding = false
+            )
 
             assertThat(vm.event.value)
                 .isInstanceOf(NavigateToOnboardingFlow::class.java)
@@ -99,7 +105,12 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when skip onboarding flag is true, then onboarding state ignored`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val vm = initVM(CardReaderOnboardingState.WcpaySetupNotCompleted, skipOnboarding = true)
+            val vm = initVM(
+                CardReaderOnboardingState.SetupNotCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS
+                ),
+                skipOnboarding = true
+            )
 
             assertThat(vm.event.value).isNotInstanceOf(NavigateToOnboardingFlow::class.java)
         }

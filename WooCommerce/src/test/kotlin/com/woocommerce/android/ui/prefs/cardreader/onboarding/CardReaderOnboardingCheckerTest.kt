@@ -188,6 +188,28 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given stripe terminal plugin, when stripe account not connected, then SETUP_NOT_COMPLETED returned`() =
+        testBlocking {
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS)).thenReturn(null)
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(wcPayStore.loadAccount(site)).thenReturn(
+                buildPaymentAccountResult(
+                    WCPaymentAccountResult.WCPayAccountStatusEnum.NO_ACCOUNT
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.SetupNotCompleted(
+                    PluginType.STRIPE_TERMINAL_GATEWAY
+                )
+            )
+        }
+
+    @Test
     fun `given wcpay and stripe are installed, when stripe is not activated, then onboarding complete with wcpay`() =
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
@@ -293,7 +315,11 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpaySetupNotCompleted)
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.SetupNotCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS
+                )
+            )
         }
 
     @Test
@@ -566,6 +592,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     private fun buildStripeTerminalPluginInfo(
         isActive: Boolean = true,
-        version: String = SUPPORTED_WCPAY_VERSION
+        version: String = SUPPORTED_STRIPE_TERMINAL_VERSION
     ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)
 }

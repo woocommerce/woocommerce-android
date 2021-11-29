@@ -66,7 +66,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 CardReaderOnboardingState.WcpayNotActivated ->
                     viewState.value =
                         OnboardingViewState.WCPayError.WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
-                CardReaderOnboardingState.WcpaySetupNotCompleted ->
+                is CardReaderOnboardingState.SetupNotCompleted ->
                     viewState.value =
                         OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
                 CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount ->
@@ -157,7 +157,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
             CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
             CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
-            CardReaderOnboardingState.WcpaySetupNotCompleted -> "wcpay_not_setup"
+            is CardReaderOnboardingState.SetupNotCompleted -> "wcpay_not_setup"
             CardReaderOnboardingState.WcpayUnsupportedVersion -> "wcpay_unsupported_version"
             CardReaderOnboardingState.GenericError -> "generic_error"
             CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
@@ -415,9 +415,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 override val refreshButtonAction: () -> Unit,
                 override val onLearnMoreActionClicked: (() -> Unit)
             ) : StripeTerminalError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_terminal_not_installed_header),
+                headerLabel = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_stripe_terminal_not_installed_header
+                ),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_terminal_not_installed_hint),
-                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                learnMoreLabel = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_learn_more, containsHtml = true
+                ),
                 refreshButtonLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_refresh_button)
             )
@@ -426,9 +430,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 override val refreshButtonAction: () -> Unit,
                 override val onLearnMoreActionClicked: (() -> Unit)
             ) : StripeTerminalError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_terminal_not_activated_header),
+                headerLabel = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_stripe_terminal_not_activated_header
+                ),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_terminal_not_activated_hint),
-                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                learnMoreLabel = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_learn_more, containsHtml = true
+                ),
                 refreshButtonLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_refresh_button)
             )
@@ -448,9 +456,15 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 override val refreshButtonAction: () -> Unit,
                 override val onLearnMoreActionClicked: (() -> Unit)
             ) : StripeTerminalError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_terminal_unsupported_version_header),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_terminal_unsupported_version_hint),
-                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                headerLabel = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_stripe_terminal_unsupported_version_header
+                ),
+                hintLabel = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_stripe_terminal_unsupported_version_hint
+                ),
+                learnMoreLabel = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_learn_more, containsHtml = true
+                ),
                 refreshButtonLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
             )
