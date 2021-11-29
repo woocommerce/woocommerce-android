@@ -1,2 +1,0 @@
-7.9:
-Sappiamo che i tuoi clienti non sempre inseriscono gli indirizzi in modo corretto quando effettuano i loro ordini. Scoprirai che ora puoi modificare l'indirizzo di fatturazione e spedizione insieme alle note fornite dal cliente.
