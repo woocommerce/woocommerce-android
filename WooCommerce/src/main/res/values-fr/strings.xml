@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-11-09 15:54:04+0000
+Translation-Revision-Date: 2021-11-19 20:50:13+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
@@ -16,7 +16,7 @@ Language: fr
     <string name="jetpack_benefits_modal_push_notifications_title">Notifications en push</string>
     <string name="jetpack_benefits_modal_subtitle">Installez la nouvelle extension Jetpack gratuite pour profiter de la meilleure expérience mobile qui soit.</string>
     <string name="jetpack_benefits_modal_title">Exploitez au mieux votre boutique</string>
-    <string name="settings_enable_quick_order_teaser_message">Essayez de créer des commandes avec un minimum d’informations alors que nous nous préparons à lancer</string>
+    <string name="settings_enable_quick_order_teaser_message">Vous pourrez bientôt créer des commandes avec un minimum d’informations grâce à la nouvelle fonctionnalité</string>
     <string name="settings_enable_quick_order_teaser_title">Commande rapide</string>
     <string name="beta_features_message">Voir les modules, commande rapide</string>
     <string name="order_detail_use_as_shipping_address">Utiliser comme adresse de livraison</string>

@@ -32,7 +32,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given current date  and and current date minus 1 when get date range from today is the expected date`() {
+    fun `when the current date is given then get the date range for today is the expected`() {
         // Given
         whenever(dateUtils.getCurrentDateTimeMinusDays(1)).thenReturn(DATE_ZERO)
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
@@ -47,7 +47,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a current date minus any days when get date for yesterday is the expected date`() {
+    fun `when a any previous days date is given then get the date range for yesterday is the expected`() {
         // Given
         whenever(dateUtils.getCurrentDateTimeMinusDays(any())).thenReturn(DATE_ZERO)
 
@@ -61,7 +61,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a dates for any any weeks when get the date range for last week is the expected date`() {
+    fun `when a previous week date is given then get the date range for last week is the expected`() {
         // Given
         whenever(dateUtils.getDateForFirstDayOfPreviousWeek(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousWeek(any(), any())).thenReturn(date)
@@ -78,7 +78,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a dates for any previous months when get date range for previous month is the expected date`() {
+    fun `when a previous month date is given then get the date range for last month is the expected`() {
         // Given
         whenever(dateUtils.getDateForFirstDayOfPreviousMonth(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousMonth(any(), any())).thenReturn(date)
@@ -95,7 +95,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given dates for any previous quarters when get date range for last quarter is the expected date`() {
+    fun `when a previous quarter date is given then get the date range for last quarter is the expected`() {
         // Given
         whenever(dateUtils.getDateForFirstDayOfPreviousQuarter(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousQuarter(any(), any())).thenReturn(date)
@@ -112,7 +112,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given dates for any previous years when get date range for last year is the expected date`() {
+    fun `when a previous year date is given then get the date range for last quarter is the expected`() {
         // Given
         whenever(dateUtils.getDateForFirstDayOfPreviousYear(any(), any())).thenReturn(date)
         whenever(dateUtils.getDateForLastDayOfPreviousYear(any(), any())).thenReturn(date)
@@ -129,7 +129,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given current date and date for any week when get date range for week to date is the expected date`() {
+    fun `when current date and previous week date is given then get the date range for week to date is the expected`() {
         // Given
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.DAY_OF_YEAR, -7)).thenReturn(date)
@@ -148,7 +148,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given current date and date for any month when get date range for month to date is the expected date`() {
+    fun `when current date and previous month date is given then get the range for month to date is the expected`() {
         // Given
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.MONTH, -1)).thenReturn(date)
@@ -167,7 +167,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given current date and date for any quarter when get date range for quarter to date is the expected date`() {
+    fun `when current date and quarter week date is given then get the range for quarter to date is the expected`() {
         // Given
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.MONTH, -3)).thenReturn(date)
@@ -186,7 +186,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given current date and date for any year when get date range for year to date is the expected date`() {
+    fun `when current date and previous year date is given then get the date range for year to date is the expected`() {
         // Given
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
         whenever(dateUtils.getDateTimeAppliedOperation(date, Calendar.YEAR, -1)).thenReturn(date)
@@ -206,7 +206,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when get friendly date any date is the expected string`() {
+    fun `get the friendly period date range is the expected`() {
         val sameYearAndMonthFriendlyFormattedDate = SimpleDateRange(date, threeJan1970)
             .formatDatesToFriendlyPeriod()
         assertEquals(SAME_YEAR_SAME_MONTH_EXPECTED, sameYearAndMonthFriendlyFormattedDate)
