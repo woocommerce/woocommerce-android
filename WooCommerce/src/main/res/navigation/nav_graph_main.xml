@@ -24,9 +24,7 @@
         tools:layout="@layout/fragment_order_list">
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
-            app:destination="@id/nav_graph_orders"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/nav_graph_orders">
             <argument
                 android:name="orderId"
                 android:defaultValue='""'
@@ -101,9 +99,7 @@
         tools:layout="@layout/fragment_reviews_list" >
         <action
             android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
-            app:destination="@id/reviewDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:destination="@id/reviewDetailFragment"/>
     </fragment>
     <fragment
         android:id="@+id/analytics"
@@ -121,20 +117,12 @@
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/feedbackSurveyFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <action
         android:id="@+id/action_global_feedbackSurveyFragment"
-        app:destination="@id/feedbackSurveyFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/feedbackSurveyFragment" />
     <fragment
         android:id="@+id/feedbackCompletedFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackCompletedFragment"
@@ -146,9 +134,7 @@
 
     <action
         android:id="@+id/action_global_productDetailFragment"
-        app:destination="@id/nav_graph_products"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right">
+        app:destination="@id/nav_graph_products">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
@@ -241,9 +227,7 @@
         app:destination="@id/WPComWebViewFragment" />
     <action
         android:id="@+id/action_global_userEligibilityErrorFragment"
-        app:destination="@id/userEligibilityErrorFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/userEligibilityErrorFragment" />
 
     <action
         android:id="@+id/action_global_infoScreenFragment"
