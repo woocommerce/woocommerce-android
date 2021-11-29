@@ -14,11 +14,8 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     private val enteredAddress = CreateShippingLabelTestUtils.generateAddress()
     private val suggestedAddress = enteredAddress.copy(company = "McDonald's")

@@ -168,4 +168,13 @@
         Payment reader
     -->
     <color name="disconnected_state_number_background_color">@color/woo_gray_0</color>
+
+    <!--
+    Jetpack plugin installation dialog
+    -->
+    <color name="jetpack_button_color">@color/color_secondary</color>
+
+    <color name="reader_update_progress_color">@color/woo_purple_50</color>
+    <color name="reader_update_rest_color">@color/woo_purple_30</color>
+    <color name="reader_update_border_color">#533582</color>
 </resources>

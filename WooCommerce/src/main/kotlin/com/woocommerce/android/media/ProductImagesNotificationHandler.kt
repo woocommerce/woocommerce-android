@@ -3,7 +3,6 @@ package com.woocommerce.android.media
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavDeepLinkBuilder
@@ -13,6 +12,7 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploa
 import com.woocommerce.android.ui.media.MediaUploadErrorListFragmentArgs
 import com.woocommerce.android.ui.products.ProductDetailFragmentArgs
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.SystemVersionUtils
 import org.wordpress.android.util.SystemServiceFactory
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -72,7 +72,14 @@ class ProductImagesNotificationHandler @Inject constructor(
 
         notificationBuilder.apply {
             setContentTitle(title)
-            setProgress(0, 0, true)
+            setProgress(100, 0, false)
+        }
+        notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
+    }
+
+    fun setProgress(progress: Float) {
+        notificationBuilder.apply {
+            setProgress(100, (progress * 100).toInt(), false)
         }
         notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notificationBuilder.build())
     }
@@ -176,7 +183,7 @@ class ProductImagesNotificationHandler @Inject constructor(
      * Ensures the notification channel for image uploads is created - only required for Android O+
      */
     private fun createChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (SystemVersionUtils.isAtLeastO()) {
             // first check if the channel already exists
             notificationManager.getNotificationChannel(CHANNEL_ID)?.let {
                 return

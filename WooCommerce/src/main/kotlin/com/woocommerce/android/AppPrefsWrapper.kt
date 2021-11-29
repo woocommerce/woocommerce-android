@@ -1,7 +1,7 @@
 package com.woocommerce.android
 
 import javax.inject.Inject
-@Suppress("TooManyFunctions")
+
 class AppPrefsWrapper @Inject constructor() {
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)
@@ -23,6 +23,12 @@ class AppPrefsWrapper @Inject constructor() {
         selfHostedSiteId: Long
     ) = AppPrefs.setCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
 
+    fun resetCardReaderOnboardingCompleted(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.resetCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
+
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 
     fun getLastConnectedCardReaderId() = AppPrefs.getLastConnectedCardReaderId()
@@ -40,4 +46,26 @@ class AppPrefsWrapper @Inject constructor() {
     fun setHasUnseenReviews(hasUnseen: Boolean) {
         AppPrefs.setHasUnseenReviews(hasUnseen)
     }
+
+    fun getJetpackBenefitsDismissalDate(): Long {
+        return AppPrefs.getJetpackBenefitsDismissalDate()
+    }
+
+    fun recordJetpackBenefitsDismissal() {
+        AppPrefs.recordJetpackBenefitsDismissal()
+    }
+
+    fun setOrderFilters(selectedSiteId: Int, filterCategory: String, filterValue: String) {
+        AppPrefs.setOrderFilters(selectedSiteId, filterCategory, filterValue)
+    }
+
+    fun getOrderFilters(selectedSiteId: Int, filterCategory: String) =
+        AppPrefs.getOrderFilters(selectedSiteId, filterCategory)
+
+    fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
+        AppPrefs.setOrderFilterCustomDateRange(selectedSiteId, startDateMillis, endDateMillis)
+    }
+
+    fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> =
+        AppPrefs.getOrderFilterCustomDateRange(selectedSiteId)
 }

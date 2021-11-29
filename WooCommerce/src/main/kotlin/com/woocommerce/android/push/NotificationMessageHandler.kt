@@ -1,5 +1,6 @@
 package com.woocommerce.android.push
 
+import android.content.Context
 import android.os.Build
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -10,7 +11,8 @@ import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.util.NotificationsUtils
+import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -29,7 +31,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
 
-@Suppress("TooManyFunctions")
 @Singleton
 class NotificationMessageHandler @Inject constructor(
     private val accountStore: AccountStore,
@@ -39,10 +40,13 @@ class NotificationMessageHandler @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
     private val notificationBuilder: WooNotificationBuilder,
-    private val analyticsTracker: NotificationAnalyticsTracker
+    private val analyticsTracker: NotificationAnalyticsTracker,
+    private val zendeskHelper: ZendeskHelper,
+    private val notificationsParser: NotificationsParser
 ) {
     companion object {
-        private const val PUSH_TYPE_ZENDESK = "zendesk"
+        private const val KEY_PUSH_TYPE_ZENDESK = "zendesk"
+        private const val KEY_ZENDESK_REQUEST_ID = "zendesk_sdk_request_id"
         // All Zendesk push notifications will show the same notification, so hopefully this will be a unique ID
         private const val ZENDESK_PUSH_NOTIFICATION_ID = 1999999999
 
@@ -60,7 +64,7 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     @Suppress("ReturnCount", "ComplexMethod")
-    fun onNewMessageReceived(messageData: Map<String, String>) {
+    fun onNewMessageReceived(messageData: Map<String, String>, appContext: Context) {
         if (!accountStore.hasAccessToken()) {
             wooLogWrapper.e(NOTIFS, "User is not logged in!")
             return
@@ -71,7 +75,9 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
-        if (messageData["type"] == PUSH_TYPE_ZENDESK) {
+        if (messageData["type"] == KEY_PUSH_TYPE_ZENDESK) {
+            // Make sure the UI gets refreshed so the user can see the reply
+            zendeskHelper.refreshRequest(appContext, messageData[KEY_ZENDESK_REQUEST_ID])
             val zendeskNote = NotificationModel(
                 noteId = ZENDESK_PUSH_NOTIFICATION_ID,
                 remoteNoteId = ZENDESK_PUSH_NOTIFICATION_ID.toLong()
@@ -90,7 +96,7 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
-        val notificationModel = NotificationsUtils.buildNotificationModelFromPayloadMap(messageData)
+        val notificationModel = notificationsParser.buildNotificationModelFromPayloadMap(messageData)
         if (notificationModel == null) {
             wooLogWrapper.e(NOTIFS, "Notification data is empty!")
             return

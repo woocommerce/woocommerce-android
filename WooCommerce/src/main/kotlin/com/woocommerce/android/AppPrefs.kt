@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
@@ -41,6 +42,8 @@ object AppPrefs {
         DATABASE_DOWNGRADED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
+        IS_SIMPLE_PAYMENTS_ENABLED,
+        IS_ORDER_CREATION_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
@@ -52,14 +55,18 @@ object AppPrefs {
         IS_USER_ELIGIBLE,
         USER_EMAIL,
         RECEIPT_PREFIX,
-        CARD_READER_ONBOARDING_COMPLETED
+        CARD_READER_ONBOARDING_COMPLETED,
+        ORDER_FILTER_PREFIX,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_START,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_END,
     }
 
     /**
      * Application related preferences. When the user changes a site, these preferences are erased.
      */
     private enum class DeletableSitePrefKey : PrefKey {
-        TRACKING_EXTENSION_AVAILABLE
+        TRACKING_EXTENSION_AVAILABLE,
+        JETPACK_BENEFITS_BANNER_DISMISSAL_DATE
     }
 
     /**
@@ -99,6 +106,9 @@ object AppPrefs {
 
         // show card reader tutorial after a reader is connected
         SHOW_CARD_READER_CONNECTED_TUTORIAL,
+
+        // The last version of the app where an announcement was shown,
+        LAST_VERSION_WITH_ANNOUNCEMENT,
     }
 
     fun init(context: Context) {
@@ -141,6 +151,14 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
+
+    var isSimplePaymentsEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_SIMPLE_PAYMENTS_ENABLED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_SIMPLE_PAYMENTS_ENABLED, value)
+
+    var isOrderCreationEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_ORDER_CREATION_ENABLED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_ORDER_CREATION_ENABLED, value)
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
@@ -225,6 +243,12 @@ object AppPrefs {
 
     fun setShowCardReaderConnectedTutorial(show: Boolean) =
         setBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, show)
+
+    fun getLastVersionWithAnnouncement() =
+        getString(UndeletablePrefKey.LAST_VERSION_WITH_ANNOUNCEMENT, "0")
+
+    fun setLastVersionWithAnnouncement(version: String) =
+        setString(UndeletablePrefKey.LAST_VERSION_WITH_ANNOUNCEMENT, version)
 
     /**
      * Flag to check products features are enabled
@@ -404,6 +428,21 @@ object AppPrefs {
             true
         )
 
+    fun resetCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        PreferenceUtils.setBoolean(
+            getPreferences(),
+            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            false
+        )
+
+    fun getJetpackBenefitsDismissalDate(): Long {
+        return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)
+    }
+
+    fun recordJetpackBenefitsDismissal() {
+        return setLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, System.currentTimeMillis())
+    }
+
     private fun getCardReaderOnboardingCompletedKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
         "${DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
@@ -413,6 +452,50 @@ object AppPrefs {
 
     fun setTrackingExtensionAvailable(isAvailable: Boolean) {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
+    }
+
+    fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) =
+        PreferenceUtils.setString(
+            getPreferences(),
+            getOrderFilterKey(currentSiteId, filterCategory),
+            filterValue
+        )
+
+    fun getOrderFilters(currentSiteId: Int, filterCategory: String) =
+        PreferenceUtils.getString(
+            getPreferences(),
+            getOrderFilterKey(currentSiteId, filterCategory),
+            null
+        )
+
+    private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
+        "$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory"
+
+    fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> {
+        val startDateMillis = PreferenceUtils.getLong(
+            getPreferences(),
+            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
+            default = 0
+        )
+        val endDateMillis = PreferenceUtils.getLong(
+            getPreferences(),
+            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
+            default = 0
+        )
+        return Pair(startDateMillis, endDateMillis)
+    }
+
+    fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
+        PreferenceUtils.setLong(
+            getPreferences(),
+            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
+            startDateMillis
+        )
+        PreferenceUtils.setLong(
+            getPreferences(),
+            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
+            endDateMillis
+        )
     }
 
     /**
@@ -457,6 +540,12 @@ object AppPrefs {
 
     private fun setInt(key: PrefKey, value: Int) =
         PreferenceUtils.setInt(getPreferences(), key.toString(), value)
+
+    private fun getLong(key: PrefKey, default: Long = 0L) =
+        PreferenceUtils.getLong(getPreferences(), key.toString(), default)
+
+    private fun setLong(key: PrefKey, value: Long) =
+        PreferenceUtils.setLong(getPreferences(), key.toString(), value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
         return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue) ?: defaultValue

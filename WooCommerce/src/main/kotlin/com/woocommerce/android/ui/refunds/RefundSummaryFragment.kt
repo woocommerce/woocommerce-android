@@ -66,7 +66,9 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                     is ShowRefundConfirmation -> {
                         val action =
                             RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
-                                event.title, event.message, event.confirmButtonTitle
+                                title = event.title,
+                                message = event.message,
+                                positiveButtonTitle = event.confirmButtonTitle
                             )
                         findNavController().navigateSafely(action)
                     }

@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 11:54:48+0000
+Translation-Revision-Date: 2021-11-09 17:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">ليس الآن</string>
+    <string name="jetpack_benefits_modal_install_jetpack">تثبيت Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">اسمح لعدة مستخدمين بالوصول إلى تطبيق WooCommerce للهاتف المحمول.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">ملفات المستخدم الشخصية</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">تسمح لك مشاهدات التحليلات الجديدة بالاطلاع على الزائرين والتقريرات والمزيد.</string>
+    <string name="jetpack_benefits_modal_analytics_title">التحليلات</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">احصل على تنبيهات مباشرة للطلبات والمراجعات الجديدة وغير ذلك، يتم توصيلها إلى جهازك.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">دفع التنبيهات</string>
+    <string name="jetpack_benefits_modal_subtitle">قم بتثبيت إضافة Jetpack المجانية للاستمتاع بأفضل تجربة على الهاتف المحمول.</string>
+    <string name="jetpack_benefits_modal_title">الاستفادة من مخزنك إلى أقصى حد</string>
+    <string name="settings_enable_quick_order_teaser_message">اختبر إنشاء الطلبات من خلال أقل قدر من المعلومات بينما نستعد لإطلاقها</string>
+    <string name="settings_enable_quick_order_teaser_title">الطلب السريع</string>
+    <string name="beta_features_message">عرض الوظائف الإضافية والطلب السريع</string>
+    <string name="order_detail_use_as_shipping_address">استخدام عنوان الشحن</string>
+    <string name="order_detail_use_as_billing_address">استخدام عنوان الفوترة</string>
+    <string name="orderfilters_filters_count_title">عوامل التصفية (%d)</string>
+    <string name="orderfilters_filters_default_title">عوامل التصفية</string>
+    <string name="orderfilters_filter_date_range_options_title">نطاق التاريخ</string>
+    <string name="orderfilters_filter_order_status_options_title">حالة الطلب</string>
+    <string name="orderfilters_filter_option_item_selected">خيار التصفية المُحدَّد</string>
+    <string name="orderfilters_date_range_filter">نطاق التاريخ</string>
+    <string name="orderfilters_order_status_filter">حالة الطلب</string>
+    <string name="orderfilters_default_filter_value">الكل</string>
+    <string name="orderfilters_show_orders_button">إظهار الطلبات</string>
+    <string name="orderlist_filters_title">الطلبات التي تمت تصفيتها</string>
+    <string name="orderlist_no_filters_title">جميع الطلبات</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">الاطلاع على المزايا</string>
+    <string name="jetpack_benefits_bottom_banner_title">الحصول على التجربة الكاملة باستخدام Jetpack</string>
+    <string name="product_description_hint_with_title">إخبارنا بالمزيد حول %s…</string>
+    <string name="product_description_hint_no_title">صِف منتجك لعملائك في المستقبل…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">تم نسخ الرقم التسلسلي للقارئ إلى الحافظة</string>
+    <string name="card_reader_manual_card_reader">دليل قارئ البطاقة</string>
+    <string name="order_detail_add_billing_address">إضافة عنوان الفوترة</string>
+    <string name="order_detail_add_shipping_address">إضافة عنوان الشحن</string>
+    <string name="order_detail_add_customer_note">إضافة ملحوظة العميل</string>
+    <string name="order_detail_billing_address_section">عنوان الفوترة</string>
+    <string name="order_detail_shipping_address_section">عنوان الشحن</string>
+    <string name="order_detail_address_section">العنوان</string>
+    <string name="order_detail_edit_address_country">البلد</string>
+    <string name="order_detail_edit_address_state">المنطقة</string>
+    <string name="order_detail_edit_address_zip">الرمز البريدي</string>
+    <string name="order_detail_edit_address_city">المدينة</string>
+    <string name="order_detail_edit_address_line2">العنوان 2</string>
+    <string name="order_detail_edit_address_line1">العنوان 1</string>
+    <string name="order_detail_edit_address_company">الشركة</string>
+    <string name="order_detail_edit_address_details_phone">الهاتف</string>
+    <string name="order_detail_edit_address_details_email">البريد الإلكتروني</string>
+    <string name="order_detail_edit_address_details_last_name">اسم العائلة</string>
+    <string name="order_detail_edit_address_details_first_name">الاسم الأول</string>
+    <string name="orderdetail_customer_note_hint">تحرير ملحوظة طلب العميل</string>
+    <string name="support_system_status_report_fetch_error">خطأ في أثناء إحضار تقرير حالة النظام. يرجى التحقُّق من WooCommerce -&gt; الحالة في مسؤول ووردبريس.</string>
+    <string name="support_system_status_report_share_error">تتعذر مشاركة تقرير حالة النظام</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">خطأ في أثناء نسخ  تقرير حالة النظام إلى الحافظة</string>
+    <string name="support_system_status_report_copied_to_clipboard">تم نسخ تقرير حالة النظام إلى الحافظة</string>
+    <string name="support_system_status_report_detail">معلومات النظام المتنوعة حول موقعك</string>
+    <string name="support_system_status_report_clipboard_label">تقرير حالة النظام الخاص بـ WooCommerce</string>
+    <string name="support_system_status_report">تقرير حالة النظام</string>
+    <string name="card_reader_welcome_dialog_text">تهانينا، أصبحتَ الآن قادرًا على قبول مدفوعات بطاقات السحب والائتمان باستخدام مدفوعات WooCommerce!</string>
+    <string name="card_reader_welcome_dialog_header">جمع المدفوعات باستخدام قارئ البطاقة</string>
+    <string name="card_reader_payment_failed_amount_too_small">يجب أن يكون المبلغ 0.50 دولار أمريكي على الأقل</string>
+    <string name="card_reader_payment_payment_failed_ok">موافق</string>
     <string name="settings_whats_new_icon_description">صورة أيقونة الميزة الجديدة</string>
     <string name="settings_switch_store">تبديل المخزن</string>
     <string name="product_update_failure_notification">فشل تحديث المنتج ⁦%1$s⁩</string>
@@ -21,8 +82,8 @@ Language: ar
     <string name="settings_enable_product_addons_teaser_title">عرض الوظائف الإضافية</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">عذرًا، تعذر علينا تغيير إعداد هذه الميزة الآن</string>
     <string name="product_category">التصنيف</string>
-    <string name="notification_review_title">لديك مراجعة واحدة جديدة! 🌟</string>
-    <string name="notification_order_title">لديك طلب جديد واحد! 🎉</string>
+    <string name="notification_review_title">لديك مراجعة جديدة! 🌟</string>
+    <string name="notification_order_title">لديك طلب جديد! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d العنصر</string>
     <string name="upsell_product_count_many">%d من المنتجات الموصى بها</string>
     <string name="upsell_product_count_one">%d منتج موصى به</string>
@@ -820,7 +881,6 @@ Language: ar
     <string name="product_description_empty">وصف منتجك</string>
     <string name="product_description">الوصف</string>
     <string name="product_edit_description">تحرير الوصف</string>
-    <string name="product_description_hint">جارٍ بدء الكتابة…</string>
     <string name="discard_message">هل ترغب في تجاهل تغييراتك؟</string>
     <string name="update">تحديث</string>
     <string name="done">تم</string>
@@ -957,7 +1017,7 @@ Language: ar
     <string name="login_refresh_app_progress">جارٍ التحقُّق من WooCommerce…</string>
     <string name="login_refresh_app">تحديث التطبيق</string>
     <string name="login_not_woo_store">يبدو أنَّ %1$s ليس موقع WooCommerce. ثبِّت إضافة WooCommerce على موقعك ثم %2$s</string>
-    <string name="orderdetail_empty_shipping_address">لا يوجد عنوان محدَّد.</string>
+    <string name="orderdetail_empty_address">لم يتم تحديد أي عنوان</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
     <string name="enter_email_for_site">تسجيل الدخول باستخدام ووردبريس للاتصال بـ &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>

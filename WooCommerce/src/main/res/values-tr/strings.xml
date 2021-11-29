@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 21:54:04+0000
+Translation-Revision-Date: 2021-11-09 13:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Şimdi değil</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Jetpack\'i Kur</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Birden fazla kullanıcının WooCommerce Mobile\'a erişmesine izin verin.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Kullanıcı Profilleri</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Yeni analiz görünümleri, ziyaretçileri, raporları ve daha fazlasını görmenizi sağlar.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analiz</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Yeni siparişler, yorumlar vb. ile ilgili anlık bildirimlerin cihazına gelmesini sağlayın.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Uzaktan bildirimler</string>
+    <string name="jetpack_benefits_modal_subtitle">En iyi mobil deneyimi yaşamak için ücretsiz Jetpack eklentisini yükleyin.</string>
+    <string name="jetpack_benefits_modal_title">Mağazanızdan en iyi şekilde yararlanın</string>
+    <string name="settings_enable_quick_order_teaser_message">Biz lansmana hazırlanırken, minimum bilgi ile sipariş oluşturmayı test edin</string>
+    <string name="settings_enable_quick_order_teaser_title">Hızlı sipariş</string>
+    <string name="beta_features_message">Eklentileri Görüntüle, hızlı sipariş</string>
+    <string name="order_detail_use_as_shipping_address">Gönderim Adresi olarak kullan</string>
+    <string name="order_detail_use_as_billing_address">Fatura Adresi olarak kullan</string>
+    <string name="orderfilters_filters_count_title">Filtreler%d</string>
+    <string name="orderfilters_filters_default_title">Filtreler</string>
+    <string name="orderfilters_filter_date_range_options_title">Tarih aralığı</string>
+    <string name="orderfilters_filter_order_status_options_title">Sipariş durumu</string>
+    <string name="orderfilters_filter_option_item_selected">Seçilen filtre seçeneği</string>
+    <string name="orderfilters_date_range_filter">Tarih aralığı</string>
+    <string name="orderfilters_order_status_filter">Sipariş durumu</string>
+    <string name="orderfilters_default_filter_value">Tümü</string>
+    <string name="orderfilters_show_orders_button">Siparişleri Göster</string>
+    <string name="orderlist_filters_title">Filtrelenmiş Siparişler</string>
+    <string name="orderlist_no_filters_title">Tüm Siparişler</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Avantajları görün</string>
+    <string name="jetpack_benefits_bottom_banner_title">Jetpack ile tam deneyimi yaşayın</string>
+    <string name="product_description_hint_with_title">Bize %s hakkında daha fazla bilgi verin…</string>
+    <string name="product_description_hint_no_title">Ürününüzü gelecekteki müşterilerinize anlatın…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Okuyucunun seri numarası panoya kopyalandı</string>
+    <string name="card_reader_manual_card_reader">Kart Okuyucu Kılavuzu </string>
+    <string name="order_detail_add_billing_address">Fatura adresi ekle</string>
+    <string name="order_detail_add_shipping_address">Teslimat adresi ekle</string>
+    <string name="order_detail_add_customer_note">Müşteri notu ekle</string>
+    <string name="order_detail_billing_address_section">Fatura adresi</string>
+    <string name="order_detail_shipping_address_section">Gönderim adresi</string>
+    <string name="order_detail_address_section">Adres</string>
+    <string name="order_detail_edit_address_country">Ülke</string>
+    <string name="order_detail_edit_address_state">Şehir</string>
+    <string name="order_detail_edit_address_zip">Posta kodu</string>
+    <string name="order_detail_edit_address_city">Şehir</string>
+    <string name="order_detail_edit_address_line2">Adres 2</string>
+    <string name="order_detail_edit_address_line1">Adres 1</string>
+    <string name="order_detail_edit_address_company">Firma</string>
+    <string name="order_detail_edit_address_details_phone">Telefon</string>
+    <string name="order_detail_edit_address_details_email">E-posta</string>
+    <string name="order_detail_edit_address_details_last_name">Soyad</string>
+    <string name="order_detail_edit_address_details_first_name">İsim</string>
+    <string name="orderdetail_customer_note_hint">Bir müşterinin sipariş notunu düzenleyin</string>
+    <string name="support_system_status_report_fetch_error">SSR alınırken hata oluştu. Lütfen wp-admin\'de WooCommerce -&gt; Durum bölümünü kontrol edin.</string>
+    <string name="support_system_status_report_share_error">Sistem Durum Raporu paylaşılamıyor</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">SSR panoya kopyalanırken hata oluştu</string>
+    <string name="support_system_status_report_copied_to_clipboard">Sistem durum raporu panoya kopyalandı</string>
+    <string name="support_system_status_report_detail">Sitenizle ilgili çeşitli sistem bilgileri</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">Sistem durum raporu</string>
+    <string name="card_reader_welcome_dialog_text">Tebrikler, artık WooCommerce Payments ile banka ve kredi kartı ödemelerini kabul edebilirsiniz!</string>
+    <string name="card_reader_welcome_dialog_header">Ödeme bir kart okuyucu ile alın</string>
+    <string name="card_reader_payment_failed_amount_too_small">Tutar en az 0,50 ABD doları olmalıdır</string>
+    <string name="card_reader_payment_payment_failed_ok">Tamam</string>
     <string name="settings_whats_new_icon_description">Yeni özellik simgesinin görseli</string>
     <string name="settings_switch_store">Mağaza değiştir</string>
     <string name="product_update_failure_notification">%1$s ürünü güncellenemedi</string>
@@ -21,8 +82,8 @@ Language: tr
     <string name="settings_enable_product_addons_teaser_title">Eklentileri Görüntüle</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Maalesef şu anda bu özellik ayarını değiştiremedik</string>
     <string name="product_category">Kategori</string>
-    <string name="notification_review_title">1 yeni yorumunuz var. 🌟</string>
-    <string name="notification_order_title">1 yeni siparişiniz var! 🎉</string>
+    <string name="notification_review_title">Yeni bir yorumunuz var! 🌟</string>
+    <string name="notification_order_title">Yeni bir siparişiniz var! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d ürün</string>
     <string name="upsell_product_count_many">%d yukarı satış ürünü</string>
     <string name="upsell_product_count_one">%d yukarı satış ürünü</string>
@@ -820,7 +881,6 @@ Language: tr
     <string name="product_description_empty">Ürününüzü tanımlayın</string>
     <string name="product_description">Tanım</string>
     <string name="product_edit_description">Tanımı düzenle</string>
-    <string name="product_description_hint">Yazmaya başlayın…</string>
     <string name="discard_message">Değişikliklerinizi iptal etmek mi istiyorsunuz?</string>
     <string name="update">Güncelle</string>
     <string name="done">Bitti</string>
@@ -957,7 +1017,7 @@ Language: tr
     <string name="login_refresh_app_progress">WooCommerce kontrol ediliyor…</string>
     <string name="login_refresh_app">uygulamayı yenile</string>
     <string name="login_not_woo_store">Görünüşe göre %1$s bir WooCommerce sitesi değil. Sitenize WooCommerce eklentisini yükleyin ve daha sonra %2$s</string>
-    <string name="orderdetail_empty_shipping_address">Adres belirtilmedi.</string>
+    <string name="orderdetail_empty_address">Adres belirtilmedi</string>
     <string name="login_need_help_finding_connected_email">Bağlanırken kullandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="enter_wordpress_site">Bu adresteki web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
     <string name="enter_email_for_site">&lt;b&gt;%1$s&lt;/b&gt; ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>

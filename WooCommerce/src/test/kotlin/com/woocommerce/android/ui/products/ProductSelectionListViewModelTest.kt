@@ -1,10 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
@@ -18,19 +13,19 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import kotlin.test.assertFalse
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ProductSelectionListViewModelTest : BaseUnitTest() {
     companion object {
-        private const val PRODUCT_REMOTE_ID = 10L
+        private const val PRODUCT_REMOTE_ID = 1L
+        private const val EXCLUDED_PRODUCT_REMOTE_ID = 3L
     }
 
     private val productList = ProductTestUtils.generateProductList()
-    private val excludedProductIds = listOf(PRODUCT_REMOTE_ID)
+    private val excludedProductIdsNavArgs = listOf(EXCLUDED_PRODUCT_REMOTE_ID)
+    private val excludedProductIds = excludedProductIdsNavArgs.toMutableList().apply { add(PRODUCT_REMOTE_ID) }
 
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
@@ -39,7 +34,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     private val savedState = ProductSelectionListFragmentArgs(
         remoteProductId = PRODUCT_REMOTE_ID,
         groupedProductListType = GroupedProductListType.GROUPED,
-        excludedProductIds = excludedProductIds.toLongArray()
+        excludedProductIds = excludedProductIdsNavArgs.toLongArray()
     ).initSavedStateHandle()
 
     private lateinit var viewModel: ProductSelectionListViewModel
@@ -54,7 +49,12 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the product list view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(productList).whenever(productRepository).fetchProductList(
+        val expectedProductList = productList.toMutableList().apply {
+            excludedProductIds.forEach { excludedIds ->
+                this.removeIf { it.remoteId == excludedIds }
+            }
+        }
+        doReturn(expectedProductList).whenever(productRepository).fetchProductList(
             excludedProductIds = excludedProductIds
         )
 
@@ -65,10 +65,10 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
             it?.let { products.addAll(it) }
         }
 
-        assertThat(products).isEqualTo(productList)
+        assertThat(products).isEqualTo(expectedProductList)
 
         val remoteProductIds = products.map { it.remoteId }
-        assertFalse(remoteProductIds.contains(PRODUCT_REMOTE_ID))
+        assertFalse(remoteProductIds.contains(EXCLUDED_PRODUCT_REMOTE_ID))
     }
 
     @Test
@@ -139,4 +139,30 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
         assertThat(event).isInstanceOf(ExitWithResult::class.java)
         assertThat(((event as ExitWithResult<*>).data as List<*>).size).isEqualTo(listAdded.size)
     }
+
+    @Test
+    fun `Should exclude the current product from product selection list`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val expectedProductList = productList.toMutableList().apply {
+                excludedProductIds.forEach { excludedIds ->
+                    this.removeIf { it.remoteId == excludedIds }
+                }
+            }
+
+            doReturn(expectedProductList).whenever(productRepository).fetchProductList(
+                excludedProductIds = excludedProductIds
+            )
+
+            createViewModel()
+
+            val products = ArrayList<Product>()
+            viewModel.productList.observeForever {
+                it?.let { products.addAll(it) }
+            }
+
+            assertThat(products).isEqualTo(expectedProductList)
+
+            val remoteProductIds = products.map { it.remoteId }
+            assertFalse(remoteProductIds.contains(PRODUCT_REMOTE_ID))
+        }
 }

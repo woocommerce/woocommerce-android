@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 11:54:49+0000
+Translation-Revision-Date: 2021-11-11 16:54:13+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">לא עכשיו</string>
+    <string name="jetpack_benefits_modal_install_jetpack">להתקין את Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">לאפשר למספר משתמשים לגשת אל WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">פרופילי משתמשים</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">להשתמש בתצוגה של נתונים אנליטיים כדי לראות את המבקרים, הדוחות ועוד.</string>
+    <string name="jetpack_benefits_modal_analytics_title">נתונים אנליטיים</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">לקבל הודעות דחיפה לגבי הזמנות חדשות, ביקורות וכו\' במכשיר שלך.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">הודעות דחיפה</string>
+    <string name="jetpack_benefits_modal_subtitle">להתקין את התוסף החינמי של Jetpack בשביל חוויית השימוש הטובה ביותר בנייד.</string>
+    <string name="jetpack_benefits_modal_title">לנצל את מלוא הפוטנציאל של החנות שלך</string>
+    <string name="settings_enable_quick_order_teaser_message">כדאי לבדוק את האפשרות ליצור הזמנות עם מידע חיוני בלבד בזמן שאנחנו מתכוננים להשקה</string>
+    <string name="settings_enable_quick_order_teaser_title">הזמנה מהירה</string>
+    <string name="beta_features_message">להציג הרחבות, הזמנה מהירה</string>
+    <string name="order_detail_use_as_shipping_address">להשתמש בתור כתובת למשלוח</string>
+    <string name="order_detail_use_as_billing_address">להשתמש בתור כתובת לחיוב</string>
+    <string name="orderfilters_filters_count_title">מסננים (%d)</string>
+    <string name="orderfilters_filters_default_title">מסננים</string>
+    <string name="orderfilters_filter_date_range_options_title">טווח תאריכים</string>
+    <string name="orderfilters_filter_order_status_options_title">סטטוס הזמנה</string>
+    <string name="orderfilters_filter_option_item_selected">אפשרות הסינון שנבחרה</string>
+    <string name="orderfilters_date_range_filter">טווח תאריכים</string>
+    <string name="orderfilters_order_status_filter">סטטוס הזמנה</string>
+    <string name="orderfilters_default_filter_value">הכול</string>
+    <string name="orderfilters_show_orders_button">להציג הזמנות</string>
+    <string name="orderlist_filters_title">הזמנות שסוננו</string>
+    <string name="orderlist_no_filters_title">כל ההזמנות</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">לצפייה בהטבות</string>
+    <string name="jetpack_benefits_bottom_banner_title">אפשר ליהנות מהחוויה המלאה עם Jetpack</string>
+    <string name="product_description_hint_with_title">נשמח לשמוע פרטים נוספים על %s…</string>
+    <string name="product_description_hint_no_title">לתאר את המוצר שלך ללקוחות עתידיים…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">המספר הסידורי של הקורא הועתק ללקוח</string>
+    <string name="card_reader_manual_card_reader">מדריך לקורא הכרטיסים</string>
+    <string name="order_detail_add_billing_address">להוסיף כתובת לחיוב</string>
+    <string name="order_detail_add_shipping_address">להוסיף כתובת למשלוח</string>
+    <string name="order_detail_add_customer_note">להוסיף הערת לקוח</string>
+    <string name="order_detail_billing_address_section">כתובת לחיוב</string>
+    <string name="order_detail_shipping_address_section">כתובת משלוח</string>
+    <string name="order_detail_address_section">כתובת</string>
+    <string name="order_detail_edit_address_country">ארץ</string>
+    <string name="order_detail_edit_address_state">מדינה / מחוז</string>
+    <string name="order_detail_edit_address_zip">מיקוד</string>
+    <string name="order_detail_edit_address_city">עיר</string>
+    <string name="order_detail_edit_address_line2">שורת כתובת 2</string>
+    <string name="order_detail_edit_address_line1">שורת כתובת 1</string>
+    <string name="order_detail_edit_address_company">חברה</string>
+    <string name="order_detail_edit_address_details_phone">טלפון</string>
+    <string name="order_detail_edit_address_details_email">אימייל</string>
+    <string name="order_detail_edit_address_details_last_name">שם משפחה</string>
+    <string name="order_detail_edit_address_details_first_name">שם פרטי</string>
+    <string name="orderdetail_customer_note_hint">לערוך את הפתק בהזמנת הלקוח</string>
+    <string name="support_system_status_report_fetch_error">שגיאה בהבאת SSR. יש לבדוק את המקטע \'WooCommerce\' -&gt; \'סטטוס\' באזור wp-admin.</string>
+    <string name="support_system_status_report_share_error">אין אפשרות לשתף את \'דוח מצב המערכת\'.</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">שגיאה בעת העתקה של SSR ללוח</string>
+    <string name="support_system_status_report_copied_to_clipboard">דוח מצב המערכת הועתק ללוח</string>
+    <string name="support_system_status_report_detail">פרטי מערכת שונים לגבי האתר שלך</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">דוח מצב המערכת</string>
+    <string name="card_reader_welcome_dialog_text">ברכותינו, כעת באפשרותך לקבל תשלומים בכרטיס אשראי ובכרטיס חיוב עם WooCommerce Payments!</string>
+    <string name="card_reader_welcome_dialog_header">לגבות תשלומים באמצעות קורא כרטיסים</string>
+    <string name="card_reader_payment_failed_amount_too_small">הסכום חייב להיות לפחות 0.50 $</string>
+    <string name="card_reader_payment_payment_failed_ok">אישור</string>
     <string name="settings_whats_new_icon_description">תמונת הסמל של האפשרות החדשה</string>
     <string name="settings_switch_store">להחליף חנות</string>
     <string name="product_update_failure_notification">עדכון המוצר ⁦%1$s⁩ נכשל</string>
@@ -21,8 +82,8 @@ Language: he_IL
     <string name="settings_enable_product_addons_teaser_title">להציג הרחבות</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">מצטערים, לא הצלחנו לשנות את הגדרות האפשרות כעת</string>
     <string name="product_category">קטגוריה</string>
-    <string name="notification_review_title">יש לך ביקורת אחת חדשה! 🌟</string>
-    <string name="notification_order_title">יש לך הזמנה אחת חדשה! 🎉</string>
+    <string name="notification_review_title">יש לך ביקורת חדשה! 🌟</string>
+    <string name="notification_order_title">יש לך הזמנה חדשה! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">פריט %d</string>
     <string name="upsell_product_count_many">%d מוצרים של שדרוגי מכירות</string>
     <string name="upsell_product_count_one">מוצר %d של שדרוגי מכירות</string>
@@ -820,7 +881,6 @@ Language: he_IL
     <string name="product_description_empty">יש לתאר את המוצר שלך</string>
     <string name="product_description">תיאור</string>
     <string name="product_edit_description">לערוך את התיאור</string>
-    <string name="product_description_hint">להתחיל לכתוב…</string>
     <string name="discard_message">האם למחוק את השינויים שביצעת?</string>
     <string name="update">לעדכן</string>
     <string name="done">בוצע</string>
@@ -957,7 +1017,7 @@ Language: he_IL
     <string name="login_refresh_app_progress">מנסה לאתר את WooCommerce…</string>
     <string name="login_refresh_app">יש לרענן את האפליקציה</string>
     <string name="login_not_woo_store">נראה שהאתר %1$s אינו אתר של WooCommerce. יש להתקין את התוסף של Woocommerce באתר שלך ולאחר מכן %2$s</string>
-    <string name="orderdetail_empty_shipping_address">לא צוינה כתובת.</string>
+    <string name="orderdetail_empty_address">לא צוינה כתובת</string>
     <string name="login_need_help_finding_connected_email">נדרשת לך עזרה במציאת האימייל שבעזרתו התחברת?</string>
     <string name="enter_wordpress_site">האתר בכתובת זו אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>
     <string name="enter_email_for_site">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>

@@ -2,61 +2,43 @@ package com.woocommerce.android.ui.mystore
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.mockito.kotlin.KArgumentCaptor
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.mystore.StatsRepository.StatsException
+import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_HAS_ORDERS
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
-import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
-import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_NEW_VISITOR_STATS
-import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.store.WCLeaderboardsStore
-import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
-import org.wordpress.android.fluxc.store.WCStatsStore
-import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
-import org.wordpress.android.fluxc.store.WCStatsStore.OnWCRevenueStatsChanged
-import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
+import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
-import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import kotlin.test.assertEquals
+import java.util.concurrent.TimeUnit
 
-class MyStorePresenterTest {
+class MyStorePresenterTest : BaseUnitTest() {
     private val myStoreView: MyStoreContract.View = mock()
     private val dispatcher: Dispatcher = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val wcLeaderboardsStore: WCLeaderboardsStore = mock()
-    private val wcStatsStore: WCStatsStore = mock()
-    private val wcOrderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val statsRepository: StatsRepository = mock {
+        onBlocking { it.fetchProductLeaderboards(any(), any(), any()) } doReturn Result.success(emptyList())
+        onBlocking { it.fetchRevenueStats(any(), any()) } doReturn Result.success(WCRevenueStatsModel())
+        onBlocking { it.fetchVisitorStats(any(), any()) } doReturn Result.success(emptyMap())
+        onBlocking { it.checkIfStoreHasNoOrders() } doReturn Result.success(false)
+    }
+
     private val networkStatus: NetworkStatus = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private lateinit var presenter: MyStorePresenter
 
@@ -67,18 +49,16 @@ class MyStorePresenterTest {
     fun setup() {
         presenter = spy(
             MyStorePresenter(
-                dispatcher,
-                wooCommerceStore,
-                wcLeaderboardsStore,
-                wcStatsStore,
-                wcOrderStore,
-                selectedSite,
-                networkStatus
+                dispatcher = dispatcher,
+                wooCommerceStore = wooCommerceStore,
+                statsRepository = statsRepository,
+                selectedSite = selectedSite,
+                networkStatus = networkStatus,
+                appPrefsWrapper = appPrefsWrapper
             )
         )
 
         // Use a dummy selected site
-        doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()
         actionCaptor = argumentCaptor()
         Dispatchers.setMain(Dispatchers.Unconfined)
@@ -93,79 +73,47 @@ class MyStorePresenterTest {
     }
 
     @Test
-    fun `Requests revenue stats data correctly`() {
-        presenter.takeView(myStoreView)
-        presenter.loadStats(StatsGranularity.DAYS)
-
-        // note that we expect two dispatches because there's one to get stats and another to get visitors
-        verify(dispatcher, times(2)).dispatch(actionCaptor.capture())
-        assertEquals(FETCH_REVENUE_STATS, actionCaptor.firstValue.type)
-
-        val payload = actionCaptor.firstValue.payload as FetchRevenueStatsPayload
-        assertEquals(StatsGranularity.DAYS, payload.granularity)
-    }
-
-    @Test
-    fun `Handles stats OnChanged result correctly`() {
-        presenter.takeView(myStoreView)
-
-        // Simulate OnChanged event from FluxC
-        val onChanged = OnWCRevenueStatsChanged(
-            1, StatsGranularity.DAYS, "2019-07-30", "2019-07-30"
+    fun `when the stats screen loads, then fetch the revenue stats`() = testBlocking {
+        whenever(statsRepository.fetchRevenueStats(any(), any())).thenReturn(
+            Result.success(WCRevenueStatsModel())
         )
-        onChanged.causeOfChange = FETCH_REVENUE_STATS
-        presenter.onWCRevenueStatsChanged(onChanged)
+        presenter.takeView(myStoreView)
+        presenter.loadStats(DAYS)
 
-        verify(myStoreView).showStats(anyOrNull(), eq(StatsGranularity.DAYS))
+        verify(statsRepository).fetchRevenueStats(DAYS, false)
+
+        verify(myStoreView).showStats(anyOrNull(), eq(DAYS))
     }
 
     @Test
-    fun `Handles stats OnChanged error result correctly`() {
-        presenter.takeView(myStoreView)
-
-        // Simulate OnChanged event from FluxC
-        val onChanged = OnWCRevenueStatsChanged(1, granularity = DAYS).apply {
-            causeOfChange = FETCH_REVENUE_STATS
-            error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
-        }
-        presenter.onWCRevenueStatsChanged(onChanged)
-        verify(myStoreView, times(1)).showStatsError(StatsGranularity.DAYS)
-    }
-
-    @Test
-    fun `Handles FETCH-ORDERS order event correctly`() {
-        presenter.takeView(myStoreView)
-
-        // Simulate onOrderChanged event: FETCH-ORDERS - My Store TAB should refresh
-        presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_ORDERS })
-        verify(myStoreView, times(0)).refreshMyStoreStats(forced = any())
-    }
-
-    @Test
-    fun `Handles UPDATE-ORDER-STATUS order event correctly`() {
-        presenter.takeView(myStoreView)
-
-        // Simulate onOrderChanged event: UPDATE-ORDER-STATUS - My Store TAB should refresh
-        presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = UPDATE_ORDER_STATUS })
-        verify(myStoreView, times(0)).refreshMyStoreStats(forced = any())
-    }
-
-    @Test
-    fun `Handles FETCH-ORDERS order event with error correctly`() {
-        presenter.takeView(myStoreView)
-
-        // Simulate onOrderChanged event: FETCH-ORDERS w/error - My Store TAB should ignore
-        presenter.onOrderChanged(
-            OnOrderChanged(0).apply {
-                causeOfChange = FETCH_ORDERS
-                error = OrderError()
-            }
+    fun `when fetching the stats revenue fails, then show an error`() = testBlocking {
+        whenever(statsRepository.fetchRevenueStats(any(), any())).thenReturn(
+            Result.failure(Exception())
         )
-        verify(myStoreView, times(0)).refreshMyStoreStats(forced = any())
+
+        presenter.takeView(myStoreView)
+        presenter.loadStats(DAYS)
+
+        verify(myStoreView, times(1)).showStatsError(DAYS)
     }
 
     @Test
-    fun `Refreshes my store on network connected event if needed`() {
+    fun `when v4 stats are not available, then show appropriate error`() = testBlocking {
+        whenever(statsRepository.fetchRevenueStats(any(), any())).thenReturn(
+            Result.failure(
+                StatsException(
+                    error = OrderStatsError(type = PLUGIN_NOT_ACTIVE)
+                )
+            )
+        )
+        presenter.takeView(myStoreView)
+        presenter.loadStats(DAYS)
+
+        verify(myStoreView).updateStatsAvailabilityError()
+    }
+
+    @Test
+    fun `given there is a pending refresh, when connection is restored, then refresh my store`() {
         presenter.takeView(myStoreView)
         doReturn(true).whenever(myStoreView).isRefreshPending
 
@@ -175,7 +123,7 @@ class MyStorePresenterTest {
     }
 
     @Test
-    fun `Does not refresh my store on network connected event if not needed`() {
+    fun `given there is a pending refresh, when connection is restored, then don't refresh my store`() {
         presenter.takeView(myStoreView)
         doReturn(false).whenever(myStoreView).isRefreshPending
 
@@ -185,7 +133,7 @@ class MyStorePresenterTest {
     }
 
     @Test
-    fun `Ignores network disconnected event correctly`() {
+    fun `when network is disconnected, then ignore the event`() {
         presenter.takeView(myStoreView)
 
         // Simulate the network disconnected event
@@ -194,139 +142,166 @@ class MyStorePresenterTest {
     }
 
     @Test
-    fun `Requests top performers stats data correctly - forced`() {
-        runBlocking {
-            whenever(
-                wcLeaderboardsStore.fetchProductLeaderboards(
-                    site = selectedSite.get(),
-                    unit = DAYS,
-                    quantity = 3
-                )
-            )
-                .thenReturn(WooResult(emptyList()))
+    fun `when loading top performers, then show their data`() = testBlocking {
+        presenter.takeView(myStoreView)
+        presenter.loadTopPerformersStats(DAYS, false)
+
+        verify(statsRepository).fetchProductLeaderboards(DAYS, MyStorePresenter.NUM_TOP_PERFORMERS, false)
+        verify(myStoreView).showTopPerformers(emptyList(), DAYS)
+    }
+
+    @Test
+    fun `when force refreshing the top performers, then force fetch from repository`() = testBlocking {
+        presenter.takeView(myStoreView)
+        presenter.loadTopPerformersStats(DAYS, true)
+
+        verify(statsRepository).fetchProductLeaderboards(DAYS, MyStorePresenter.NUM_TOP_PERFORMERS, true)
+    }
+
+    @Test
+    fun `when fetching top performers fail, then show error`() = testBlocking {
+        whenever(statsRepository.fetchProductLeaderboards(any(), any(), any()))
+            .thenReturn(Result.failure(Exception()))
+
+        presenter.takeView(myStoreView)
+        presenter.loadTopPerformersStats(DAYS)
+
+        verify(myStoreView).showTopPerformersError(DAYS)
+    }
+
+    @Test
+    fun `when the store has no orders, then show empty view`() = testBlocking {
+        whenever(statsRepository.checkIfStoreHasNoOrders()).thenReturn(Result.success(true))
+        presenter.takeView(myStoreView)
+        presenter.loadStats(DAYS)
+        verify(myStoreView).showEmptyView(true)
+    }
+
+    @Test
+    fun `when the store has orders, then hide empty view`() = testBlocking {
+        whenever(statsRepository.checkIfStoreHasNoOrders()).thenReturn(Result.success(false))
+        presenter.takeView(myStoreView)
+        presenter.loadStats(DAYS)
+        verify(myStoreView).showEmptyView(false)
+    }
+
+    @Test
+    fun `when screen starts, then fetch visitor stats`() = testBlocking {
+        whenever(statsRepository.fetchVisitorStats(any(), any()))
+            .thenReturn(Result.success(emptyMap()))
+
+        presenter.takeView(myStoreView)
+        presenter.loadStats(DAYS)
+
+        verify(statsRepository).fetchVisitorStats(DAYS, false)
+        verify(myStoreView).showVisitorStats(any(), eq(DAYS))
+    }
+
+    @Test
+    fun `give the site is using jetpack cp, when the stats are loaded, then show an empty view for visitor stats`() =
+        testBlocking {
+            val site = SiteModel().apply {
+                setIsJetpackCPConnected(true)
+            }
+            whenever(selectedSite.getIfExists()).thenReturn(site)
 
             presenter.takeView(myStoreView)
-            presenter.loadTopPerformersStats(StatsGranularity.DAYS, true)
-            verify(wcLeaderboardsStore, times(1))
-                .fetchProductLeaderboards(
-                    site = selectedSite.get(),
-                    unit = DAYS,
-                    quantity = 3
-                )
-            verify(wcLeaderboardsStore, times(0))
-                .fetchCachedProductLeaderboards(selectedSite.get(), DAYS)
+            presenter.loadStats(DAYS)
+
+            verify(statsRepository, never()).fetchVisitorStats(DAYS, false)
+            verify(myStoreView).showEmptyVisitorStatsForJetpackCP()
         }
-    }
 
     @Test
-    fun `Requests top performers stats data correctly - not forced`() {
-        runBlocking {
-            whenever(
-                wcLeaderboardsStore.fetchProductLeaderboards(
-                    site = selectedSite.get(),
-                    unit = DAYS,
-                    quantity = 3
-                )
-            )
-                .thenReturn(WooResult(emptyList()))
-            presenter.takeView(myStoreView)
-            presenter.loadTopPerformersStats(StatsGranularity.DAYS, false)
-            verify(wcLeaderboardsStore, times(1))
-                .fetchProductLeaderboards(
-                    site = selectedSite.get(),
-                    unit = DAYS,
-                    quantity = 3
-                )
-            verify(wcLeaderboardsStore, times(0))
-                .fetchCachedProductLeaderboards(selectedSite.get(), DAYS)
-        }
-    }
+    fun `when fetching visitor stats fails, then show visitor stats error`() = testBlocking {
+        whenever(statsRepository.fetchVisitorStats(any(), any()))
+            .thenReturn(Result.failure(Exception()))
 
-    @Test
-    fun `Handles FETCH_TOP_EARNERS_STATS event correctly`() {
         presenter.takeView(myStoreView)
+        presenter.loadStats(DAYS)
 
-        val topPerformers = ArrayList<WCTopPerformerProductModel>()
-        topPerformers.add(WCTopPerformerProductModel())
-        presenter.onWCTopPerformersChanged(topPerformers, DAYS)
-        verify(myStoreView, times(1)).showTopPerformers(topPerformers, StatsGranularity.DAYS)
+        verify(myStoreView).showVisitorStatsError(DAYS)
     }
 
     @Test
-    fun `Handles FETCH_TOP_EARNERS_STATS error event correctly`() {
+    fun `when force fetching stats, then show skeleton`() {
         presenter.takeView(myStoreView)
-
-        presenter.onWCTopPerformersChanged(null, StatsGranularity.DAYS)
-        verify(myStoreView, times(1)).showTopPerformersError(StatsGranularity.DAYS)
-    }
-
-    @Test
-    fun `Handles FETCH_HAS_ORDERS when there aren't any orders`() {
-        presenter.takeView(myStoreView)
-        presenter.onOrderChanged(OnOrderChanged(0).apply { causeOfChange = FETCH_HAS_ORDERS })
-        verify(myStoreView, times(1)).showEmptyView(true)
-    }
-
-    @Test
-    fun `Handles FETCH_HAS_ORDERS when there are orders`() {
-        presenter.takeView(myStoreView)
-        presenter.onOrderChanged(OnOrderChanged(1).apply { causeOfChange = FETCH_HAS_ORDERS })
-        verify(myStoreView, times(1)).showEmptyView(false)
-    }
-
-    @Test
-    fun `Handles FETCH_NEW_VISITOR_STATS event correctly`() {
-        presenter.takeView(myStoreView)
-
-        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
-        onChanged.causeOfChange = FETCH_NEW_VISITOR_STATS
-
-        presenter.onWCStatsChanged(onChanged)
-        verify(myStoreView, times(1)).showVisitorStats(mapOf(), StatsGranularity.DAYS)
-    }
-
-    @Test
-    fun `Handles FETCH_NEW_VISITOR_STATS error event correctly`() {
-        presenter.takeView(myStoreView)
-
-        val onChanged = OnWCStatsChanged(1, granularity = StatsGranularity.DAYS)
-        onChanged.causeOfChange = FETCH_NEW_VISITOR_STATS
-        onChanged.error = OrderStatsError(OrderStatsErrorType.INVALID_PARAM)
-
-        presenter.onWCStatsChanged(onChanged)
-        verify(myStoreView, times(1)).showVisitorStatsError(StatsGranularity.DAYS)
-    }
-
-    @Test
-    fun `Show and hide stats skeleton correctly`() {
-        presenter.takeView(myStoreView)
-        presenter.loadStats(StatsGranularity.DAYS, forced = true)
+        presenter.loadStats(DAYS, forced = true)
         verify(myStoreView, times(1)).showChartSkeleton(true)
-
-        val onChanged = OnWCRevenueStatsChanged(
-            1, granularity = StatsGranularity.DAYS, startDate = "2019-07-30", endDate = "2019-07-30"
-        )
-
-        onChanged.causeOfChange = FETCH_REVENUE_STATS
-        presenter.onWCRevenueStatsChanged(onChanged)
-        verify(myStoreView, times(1)).showChartSkeleton(false)
     }
 
     @Test
-    fun `Show and hide top performers skeleton correctly`() {
-        runBlocking {
-            whenever(
-                wcLeaderboardsStore.fetchProductLeaderboards(
-                    site = selectedSite.get(),
-                    unit = DAYS,
-                    quantity = 3
-                )
-            )
-                .thenReturn(WooResult(emptyList()))
-            presenter.takeView(myStoreView)
-            presenter.loadTopPerformersStats(StatsGranularity.DAYS, forced = true)
-            verify(myStoreView, times(1)).showTopPerformersSkeleton(true)
-            verify(myStoreView, times(1)).showTopPerformersSkeleton(false)
+    fun `when data loads, then hide skeleton`() = testBlocking {
+        presenter.takeView(myStoreView)
+        presenter.loadStats(DAYS, forced = true)
+
+        verify(myStoreView).showChartSkeleton(false)
+    }
+
+    @Test
+    fun `when force refreshing top performers, then show skeleton`() = testBlocking {
+        presenter.takeView(myStoreView)
+        presenter.loadTopPerformersStats(DAYS, forced = true)
+        verify(myStoreView).showTopPerformersSkeleton(true)
+    }
+
+    @Test
+    fun `when top performers data loads, then hide skeleton`() = testBlocking {
+        presenter.takeView(myStoreView)
+        presenter.loadTopPerformersStats(DAYS, forced = true)
+        verify(myStoreView).showTopPerformersSkeleton(false)
+    }
+
+    @Test
+    fun `given jetpack cp and the banner not dismissed, when the screen loads, then show the banner`() {
+        whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(0L)
+        val site = SiteModel().apply {
+            setIsJetpackCPConnected(true)
         }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
+
+        presenter.takeView(myStoreView)
+
+        verify(myStoreView).showJetpackBenefitsBanner(true)
+    }
+
+    @Test
+    fun `given jetpack cp and the banner dismissed recently, when the screen loads, then don't show the banner`() {
+        val nowPlus2Days = System.currentTimeMillis() + TimeUnit.DAYS.toMillis(2)
+        whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(nowPlus2Days)
+        val site = SiteModel().apply {
+            setIsJetpackCPConnected(true)
+        }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
+
+        presenter.takeView(myStoreView)
+
+        verify(myStoreView).showJetpackBenefitsBanner(false)
+    }
+
+    @Test
+    fun `given jetpack cp and the banner dismissed 5 days ago, when the screen loads, then show the banner`() {
+        val nowPlus5Days = System.currentTimeMillis() + TimeUnit.DAYS.toMillis(5)
+        whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(nowPlus5Days)
+        val site = SiteModel().apply {
+            setIsJetpackCPConnected(true)
+        }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
+
+        presenter.takeView(myStoreView)
+
+        verify(myStoreView).showJetpackBenefitsBanner(false)
+    }
+
+    @Test
+    fun `given the site is not using jetpack cp, when the screen loads, then don't show the benefits banner`() {
+        val site = SiteModel().apply {
+            setIsJetpackCPConnected(false)
+        }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
+
+        presenter.takeView(myStoreView)
+
+        verify(myStoreView).showJetpackBenefitsBanner(false)
     }
 }

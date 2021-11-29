@@ -1,21 +1,20 @@
 package com.woocommerce.android.ui.prefs.cardreader.detail
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
-import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
@@ -27,15 +26,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 private const val DUMMY_FIRMWARE_VERSION = "1.0.0.123-abcd-test-3000"
-private const val DUMMY_FIRMWARE_VERSION_SIMPLIFIED = "1.0.0.123"
 
 @ExperimentalCoroutinesApi
 class CardReaderDetailViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock {
-        onBlocking { softwareUpdateAvailability() }
-            .thenReturn(MutableStateFlow(SoftwareUpdateAvailability.Initializing))
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
 
@@ -84,7 +83,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
                 UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION))
                 ),
                 updateAvailable = false
             )
@@ -106,7 +105,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("33"))),
                 UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION))
                 ),
                 updateAvailable = false
             )
@@ -129,7 +128,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 null,
                 UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION))
                 ),
                 updateAvailable = false
             )
@@ -185,14 +184,14 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             createViewModel()
 
             // THEN
-            verify(cardReaderManager).softwareUpdateAvailability()
+            verify(cardReaderManager).softwareUpdateAvailability
         }
 
     @Test
     fun `when view model init with connected state and update available should emit connected state with update`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.Available)
 
             // WHEN
             val viewModel = createViewModel()
@@ -204,46 +203,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
                 UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION))
                 ),
                 updateAvailable = true
             )
-        }
-
-    @Test
-    fun `when view model init with connected state and check failed should emit connected state without update`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.CheckForUpdatesFailed)
-
-            // WHEN
-            val viewModel = createViewModel()
-
-            // THEN
-            verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
-                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
-                    R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
-                ),
-                updateAvailable = false
-            )
-            assertThat(viewModel.event.value)
-                .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_check_failed))
-        }
-
-    @Test
-    fun `when view model init with connected state and update available should send card reader update screen event`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
-
-            // WHEN
-            val viewModel = createViewModel()
-
-            assertThat(viewModel.event.value).isEqualTo(CardReaderUpdateScreen(startedByUser = false))
         }
 
     @Test
@@ -276,9 +239,31 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
                 UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION))
                 ),
                 updateAvailable = false
+            )
+        }
+    }
+
+    @Test
+    fun `given connected state, when click on reader name, then copy and snackbar event triggers`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState()
+            val viewModel = createViewModel()
+
+            // WHEN
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever { events.add(it) }
+            (viewModel.viewStateData.value as ConnectedState).onReaderNameLongClick.invoke()
+
+            // THEN
+            assertThat(events[1]).isEqualTo(CopyReadersNameToClipboard(READER_NAME))
+            assertThat(events[2]).isEqualTo(
+                Event.ShowSnackbar(
+                    R.string.card_reader_detail_connected_readers_name_clipboard
+                )
             )
         }
     }
@@ -288,7 +273,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val viewModel = createViewModel()
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.UpdateAvailable)
+            initConnectedState(updateAvailable = SoftwareUpdateAvailability.Available)
 
             // WHEN
             viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
@@ -300,38 +285,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
                 UiStringRes(
                     R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION))
                 ),
                 updateAvailable = false
             )
-        }
-    }
-
-    @Test
-    fun `given software update check failed, when on update result successful, then connected state with snackbar`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            val viewModel = createViewModel()
-            initConnectedState(updateAvailable = SoftwareUpdateAvailability.CheckForUpdatesFailed)
-
-            // WHEN
-            val events = mutableListOf<Event>()
-            viewModel.event.observeForever { events.add(it) }
-            viewModel.onUpdateReaderResult(UpdateResult.SUCCESS)
-
-            // THEN
-            verifyConnectedState(
-                viewModel,
-                UiStringText(READER_NAME),
-                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("65"))),
-                UiStringRes(
-                    R.string.card_reader_detail_connected_firmware_version,
-                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION_SIMPLIFIED))
-                ),
-                updateAvailable = false
-            )
-            assertThat(events[0])
-                .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
         }
     }
 
@@ -346,18 +303,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         // THEN
         assertThat(viewModel.event.value)
             .isEqualTo(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
-    }
-
-    @Test
-    fun `when on update result with skipped should do nothing`() {
-        // GIVEN
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUpdateReaderResult(UpdateResult.SKIPPED)
-
-        // THEN
-        assertThat(viewModel.event.value).isNull()
     }
 
     @Test
@@ -420,6 +365,74 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
         }
 
+    @Test
+    fun `when card reader disconnected successfully, then trigger accessibility announcement`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(
+                    CardReaderDisconnected(R.string.card_reader_accessibility_reader_is_disconnected)
+                )
+        }
+
+    @Test
+    fun `when card reader disconnection fails, then do not trigger accessibility announcement`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isNotEqualTo(
+                    CardReaderDisconnected(R.string.card_reader_accessibility_reader_is_disconnected)
+                )
+        }
+
+    @Test
+    fun `when card reader connected successfully, then trigger accessibility announcement`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isEqualTo(
+                    CardReaderConnected(R.string.card_reader_accessibility_reader_is_connected)
+                )
+        }
+
+    @Test
+    fun `when card reader connection fails, then do not trigger accessibility announcement`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = MutableStateFlow(CardReaderStatus.Connecting)
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.event.value)
+                .isNotEqualTo(
+                    CardReaderConnected(R.string.card_reader_accessibility_reader_is_connected)
+                )
+        }
+
     private fun verifyNotConnectedState(viewModel: CardReaderDetailViewModel) {
         val state = viewModel.viewStateData.value as NotConnectedState
         assertThat(state.headerLabel)
@@ -472,7 +485,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         readersName: String? = READER_NAME,
         batteryLevel: Float? = 0.65F,
         firmwareVersion: String = DUMMY_FIRMWARE_VERSION,
-        updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.UpToDate
+        updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.NotAvailable
     ) = coroutinesTestRule.testDispatcher.runBlockingTest {
         val reader: CardReader = mock {
             on { this.id }.thenReturn(readersName)
@@ -481,7 +494,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
         val status = MutableStateFlow(CardReaderStatus.Connected(reader))
         whenever(cardReaderManager.readerStatus).thenReturn(status)
-        whenever(cardReaderManager.softwareUpdateAvailability()).thenReturn(MutableStateFlow(updateAvailable))
+        whenever(cardReaderManager.softwareUpdateAvailability).thenReturn(MutableStateFlow(updateAvailable))
     }
 
     private fun createViewModel() = CardReaderDetailViewModel(

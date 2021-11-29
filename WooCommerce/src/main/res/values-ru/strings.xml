@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 15:54:04+0000
+Translation-Revision-Date: 2021-11-09 11:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Не сейчас</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Установить Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Обеспечьте возможность доступа к WooCommerce Mobile для нескольких пользователей.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Профили пользователей</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Новые аналитические виды позволяют просматривать посетителей, отчеты и многое другое.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Аналитика</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Мгновенные уведомления на устройстве для новых заказов, отзывов и других функций.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Мгновенные уведомления</string>
+    <string name="jetpack_benefits_modal_subtitle">Установите бесплатный плагин Jetpack для удобства работы на мобильном устройстве.</string>
+    <string name="jetpack_benefits_modal_title">Используйте все возможности магазина</string>
+    <string name="settings_enable_quick_order_teaser_message">Попробуйте создавать заказы с минимальной информацией, пока мы готовим запуск функции</string>
+    <string name="settings_enable_quick_order_teaser_title">Быстрые заказы</string>
+    <string name="beta_features_message">Просмотр дополнений, быстрые заказы</string>
+    <string name="order_detail_use_as_shipping_address">Это адрес доставки</string>
+    <string name="order_detail_use_as_billing_address">Это адрес для выставления счетов</string>
+    <string name="orderfilters_filters_count_title">Фильтры (%d)</string>
+    <string name="orderfilters_filters_default_title">Фильтры</string>
+    <string name="orderfilters_filter_date_range_options_title">Период</string>
+    <string name="orderfilters_filter_order_status_options_title">Статус заказа</string>
+    <string name="orderfilters_filter_option_item_selected">Выбранный вариант фильтрации</string>
+    <string name="orderfilters_date_range_filter">Период</string>
+    <string name="orderfilters_order_status_filter">Статус заказа</string>
+    <string name="orderfilters_default_filter_value">Все</string>
+    <string name="orderfilters_show_orders_button">Показать заказы</string>
+    <string name="orderlist_filters_title">Отфильтрованные заказы</string>
+    <string name="orderlist_no_filters_title">Все заказы</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Преимущества</string>
+    <string name="jetpack_benefits_bottom_banner_title">Все возможности с Jetpack</string>
+    <string name="product_description_hint_with_title">Расскажите нам больше о %s…</string>
+    <string name="product_description_hint_no_title">Опишите товар для потенциальных покупателей…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Серийный номер терминала, скопированный в буфер обмена</string>
+    <string name="card_reader_manual_card_reader">Руководство по работе с платёжным терминалом</string>
+    <string name="order_detail_add_billing_address">Добавить платёжный адрес</string>
+    <string name="order_detail_add_shipping_address">Добавить адрес доставки</string>
+    <string name="order_detail_add_customer_note">Добавить примечание для клиента</string>
+    <string name="order_detail_billing_address_section">Платёжный адрес</string>
+    <string name="order_detail_shipping_address_section">Адрес доставки</string>
+    <string name="order_detail_address_section">Адрес</string>
+    <string name="order_detail_edit_address_country">Страна</string>
+    <string name="order_detail_edit_address_state">Область/район</string>
+    <string name="order_detail_edit_address_zip">Почтовый индекс</string>
+    <string name="order_detail_edit_address_city">Город</string>
+    <string name="order_detail_edit_address_line2">Адрес 2</string>
+    <string name="order_detail_edit_address_line1">Адрес 1</string>
+    <string name="order_detail_edit_address_company">Компания</string>
+    <string name="order_detail_edit_address_details_phone">Телефон</string>
+    <string name="order_detail_edit_address_details_email">E-mail</string>
+    <string name="order_detail_edit_address_details_last_name">Фамилия</string>
+    <string name="order_detail_edit_address_details_first_name">Имя</string>
+    <string name="orderdetail_customer_note_hint">Изменить примечание к заказу клиента</string>
+    <string name="support_system_status_report_fetch_error">Не удалось получить данные о состоянии системы. Войдите в панель управления и выберите \"WooCommerce -&gt; Статус\".</string>
+    <string name="support_system_status_report_share_error">Не удалось отправить данные о состоянии системы</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Не удалось скопировать данные о состоянии системы в буфер обмена</string>
+    <string name="support_system_status_report_copied_to_clipboard">Данные о состоянии системы скопированы в буфер обмена</string>
+    <string name="support_system_status_report_detail">Различная системная информация о вашем сайте</string>
+    <string name="support_system_status_report_clipboard_label">Данные о состоянии системы WooCommerce</string>
+    <string name="support_system_status_report">Данные о состоянии системы</string>
+    <string name="card_reader_welcome_dialog_text">Теперь вы можете получать платежи с банковских карт через WooCommerce Payments!</string>
+    <string name="card_reader_welcome_dialog_header">Принимайте платежи с помощью устройств чтения карт</string>
+    <string name="card_reader_payment_failed_amount_too_small">Должно быть не менее 0,5 доллара США</string>
+    <string name="card_reader_payment_payment_failed_ok">ОК</string>
     <string name="settings_whats_new_icon_description">Новое изображение значка функции</string>
     <string name="settings_switch_store">Переключиться на другой магазин</string>
     <string name="product_update_failure_notification">Сбой при обновлении продукта %1$s</string>
@@ -21,8 +82,8 @@ Language: ru
     <string name="settings_enable_product_addons_teaser_title">Просмотреть дополнения</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">К сожалению, нам пока не удалось исправить эту настройку функции</string>
     <string name="product_category">Рубрика</string>
-    <string name="notification_review_title">У вас 1 новый отзыв! 🌟</string>
-    <string name="notification_order_title">У вас 1 новый заказ! 🎉</string>
+    <string name="notification_review_title">Появился новый отзыв! 🌟</string>
+    <string name="notification_order_title">Поступил новый заказ! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d товар</string>
     <string name="upsell_product_count_many">Продукты для апсела: %d</string>
     <string name="upsell_product_count_one">Продукт для апсела: %d</string>
@@ -820,7 +881,6 @@ Language: ru
     <string name="product_description_empty">Опишите продукт</string>
     <string name="product_description">Описание</string>
     <string name="product_edit_description">Редактировать описание</string>
-    <string name="product_description_hint">Начните писать…</string>
     <string name="discard_message">Отменить изменения?</string>
     <string name="update">Обновить</string>
     <string name="done">Готово</string>
@@ -957,7 +1017,7 @@ Language: ru
     <string name="login_refresh_app_progress">Поиск WooCommerce…</string>
     <string name="login_refresh_app">обновите приложение</string>
     <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce. Установите плагин WooCommerce на свой сайт, а затем %2$s.</string>
-    <string name="orderdetail_empty_shipping_address">Адрес не указан.</string>
+    <string name="orderdetail_empty_address">Адрес не указан</string>
     <string name="login_need_help_finding_connected_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="enter_wordpress_site">Расположенный по этому адресу веб-сайт не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>
     <string name="enter_email_for_site">Войдите на WordPress.com, чтобы подключиться к &lt;b&gt;%1$s&lt;/b&gt;</string>

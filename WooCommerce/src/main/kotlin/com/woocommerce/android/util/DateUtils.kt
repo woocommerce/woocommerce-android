@@ -312,6 +312,44 @@ class DateUtils @Inject constructor(
         crashLogger.sendReport(exception = exception)
     }
 
+    /**
+     * Returns a date time in millis with the date for current day at 00:00:00
+     */
+    fun getDateForTodayAtTheStartOfTheDay(): Long =
+        Calendar.getInstance().apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, 0)
+        }.timeInMillis
+
+    fun getCurrentDateTimeMinusDays(days: Int): Long =
+        Calendar.getInstance().apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, 0)
+            add(Calendar.DATE, -days)
+        }.timeInMillis
+
+    fun toIso8601Format(dateMillis: Long): String? =
+        try {
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+                .format(Date(dateMillis))
+        } catch (e: Exception) {
+            "Error while parsing date in millis to Iso8601 string format".reportAsError(e)
+            null
+        }
+
+    fun toDisplayMMMddYYYYDate(dateMillis: Long): String? =
+        try {
+            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                .format(Date(dateMillis))
+        } catch (e: Exception) {
+            "Date string argument is not a valid date".reportAsError(e)
+            null
+        }
+
     companion object {
         /**
          * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT

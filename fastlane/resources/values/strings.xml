@@ -261,6 +261,39 @@
     <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_loading">Looking up your orders…</string>
+    <string name="orderlist_no_filters_title">All Orders</string>
+    <string name="orderlist_filters_title">Filtered Orders</string>
+    <string name="orderlist_quickorder_wip_title">Take payments from your device!</string>
+    <string name="orderlist_quickorder_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
+    <string name="orderlist_quickorder_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
+    <string name="orderlist_quickorder_menu">Quick order</string>
+    <!--
+        Quick Order
+    -->
+    <string name="quickorder_dialog_title">Take payment</string>
+    <string name="quickorder_enter_amount">Enter amount</string>
+    <string name="quickorder_creation_error">Unable to create order</string>
+    <!--
+        Order Filters
+    -->
+    <string name="orderfilters_show_orders_button">Show Orders</string>
+    <string name="orderfilters_default_filter_value">All</string>
+    <string name="orderfilters_order_status_filter">Order Status</string>
+    <string name="orderfilters_date_range_filter">Date Range</string>
+    <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
+    <string name="orderfilters_filter_order_status_options_title">Order Status</string>
+    <string name="orderfilters_filter_date_range_options_title">Date Range</string>
+    <string name="orderfilters_filter_card_title_all_orders">All orders</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">Filtered orders</string>
+    <string name="orderfilters_filters_default_title">Filters</string>
+    <string name="orderfilters_filters_count_title">Filters (%d)</string>
+    <string name="orderfilters_default_filter_option">All</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
+    <string name="orderfilters_date_range_filter_today">Today</string>
+    <string name="orderfilters_date_range_filter_last_two_days">Last 2 Days</string>
+    <string name="orderfilters_date_range_filter_last_7_days">Last 7 days</string>
+    <string name="orderfilters_date_range_filter_last_30_days">Last 30 days</string>
+
     <!--
         Order Detail Views
     -->
@@ -305,6 +338,7 @@
     <string name="orderdetail_note_public">To customer</string>
     <string name="orderdetail_note_system">System</string>
     <string name="orderdetail_order_notes">Order notes</string>
+    <string name="orderdetail_customer_note_hint">Edit a customer order note</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
     <string name="orderdetail_hide_billing">Hide Billing</string>
@@ -314,7 +348,6 @@
     <string name="orderdetail_track_shipment">Track shipment</string>
     <string name="orderdetail_copy_tracking_number">Copy tracking number</string>
     <string name="orderdetail_delete_tracking">Delete tracking</string>
-    <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="orderdetail_collect_payment_button">Collect Payment</string>
@@ -354,6 +387,7 @@
     <string name="order_status_updated">Order status updated</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
+    <string name="order_error_update_empty_mail">Unable to update address with empty email. Make sure you are running the latest version of WooCommerce.</string>
     <string name="order_error_fetch_generic">Error fetching order</string>
     <string name="order_shipment_tracking">Tracking</string>
     <string name="order_shipment_tracking_number">Tracking Number</string>
@@ -372,6 +406,26 @@
     <string name="ordered_add_ons_loading_failed_dialog_title">Something went wrong</string>
     <string name="ordered_add_ons_loading_failed_dialog_message">Sorry, we couldn\'t load the Order Add-ons right now</string>
     <string name="ordered_add_ons_loading_failed_dialog_ok_action">OK</string>
+    <string name="order_detail_edit_address_details_first_name">First name</string>
+    <string name="order_detail_edit_address_details_last_name">Last name</string>
+    <string name="order_detail_edit_address_details_email">Email</string>
+    <string name="order_detail_edit_address_details_phone">Phone</string>
+    <string name="order_detail_edit_address_company">Company</string>
+    <string name="order_detail_edit_address_line1">Address 1</string>
+    <string name="order_detail_edit_address_line2">Address 2</string>
+    <string name="order_detail_edit_address_city">City</string>
+    <string name="order_detail_edit_address_zip">Postal Code</string>
+    <string name="order_detail_edit_address_state">State / County</string>
+    <string name="order_detail_edit_address_country">Country</string>
+    <string name="order_detail_address_section">Address</string>
+    <string name="order_detail_shipping_address_section">Shipping Address</string>
+    <string name="order_detail_billing_address_section">Billing Address</string>
+    <string name="order_detail_add_customer_note">Add customer note</string>
+    <string name="order_detail_add_shipping_address">Add shipping address</string>
+    <string name="order_detail_add_billing_address">Add billing address</string>
+    <string name="orderdetail_empty_address">No address specified</string>
+    <string name="order_detail_use_as_billing_address">Use as Billing Address</string>
+    <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
 
     <!--
         Shipping label Refunds
@@ -738,13 +792,15 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
+    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
+    <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
     <!--
         Card Reader Payments
     -->
     <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
     <string name="card_reader_payment_collect_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
-    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/card_reader_payment_remove_card_prompt</string>
-    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/card_reader_payment_remove_card_prompt</string>
+    <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
+    <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
 
     <string name="card_reader_payment_collect_payment_loading_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_payment_collect_payment_loading_header">Getting ready to collect payment</string>
@@ -760,6 +816,7 @@
     <string name="card_reader_payment_capturing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_completed_payment_header">Payment successful</string>
     <string name="card_reader_payment_payment_failed_header">Payment failed</string>
+    <string name="card_reader_payment_payment_failed_ok">OK</string>
 
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
@@ -769,12 +826,14 @@
     <string name="card_reader_payment_failed_card_declined_state">Card declined</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
+    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50 usd</string>
 
     <string name="card_reader_payment_retry_card_prompt">Retry with the same card</string>
     <string name="card_reader_payment_remove_card_prompt">Remove the card</string>
     <string name="card_reader_payment_multiple_contactless_cards_detected_prompt">Multiple cards detected. Try again with a single card</string>
     <string name="card_reader_payment_try_another_read_method_prompt">Retry tapping, inserting or swiping your card</string>
     <string name="card_reader_payment_try_another_card_prompt">Retry with another card</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">Check your mobile device</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
@@ -787,6 +846,9 @@
     <string name="card_reader_refetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <string name="card_reader_payment_reader_not_connected">Please make sure that the card reader is connected.</string>
+
+    <string name="card_reader_welcome_dialog_header">Collect payments with a card reader</string>
+    <string name="card_reader_welcome_dialog_text">Congrats, you are now able to accept debit and credit card payments with WooCommerce Payments!</string>
     <!--
             Card Reader Connection
         -->
@@ -800,6 +862,10 @@
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
+    <string name="card_reader_connect_missing_address">Please provide your store address in order to proceed</string>
+    <string name="card_reader_connect_missing_address_button">Enter address</string>
+    <string name="card_reader_connect_invalid_postal_code_header">Store address postcode is invalid</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">Please provide a valid postcode in your store settings and try again</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
     <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
@@ -829,19 +895,23 @@
     <string name="card_reader_detail_connected_update_check_failed">Software version update check has failed</string>
     <string name="card_reader_detail_connected_update_success">Reader\’s software updated</string>
     <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Reader\'s serial number copied to the clipboard</string>
 
     <!--
         Card Reader Software update
     -->
     <string name="card_reader_software_update_update" translatable="false">@string/update</string>
-    <string name="card_reader_software_update_skip" translatable="false">@string/skip</string>
     <string name="card_reader_software_update_cancel" translatable="false">@string/cancel</string>
-    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly. Do you want to update it now?</string>
+    <string name="card_reader_software_update_description">Your card reader’s software needs to be updated to keep running smoothly</string>
     <string name="card_reader_software_update_title">Software update</string>
+    <string name="card_reader_software_update_title_battery_low">Please charge reader</string>
     <string name="card_reader_software_update_in_progress_title">Updating your reader\'s software</string>
     <string name="card_reader_software_update_progress_description" translatable="false">@string/please_wait</string>
+    <string name="card_reader_software_update_progress_description_low_battery">Updating the reader software failed because the reader\’s battery is %1$s%% charged. Please charge the reader above 50%% before trying again.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">Updating the reader software failed because the reader\’s battery is insufficiently charged. Please charge the reader above 50%% before trying again.</string>
     <string name="card_reader_software_update_progress_cancel_warning">Canceling an ongoing software update is not recommended</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">Canceling an ongoing software update is not recommended. Cancelling will block your reader connection.</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% complete</string>
 
     <!--
         Card Reader Onboarding
@@ -905,12 +975,18 @@
     <string name="card_reader_tutorial_charged_detail">Your reader takes about three hours to fully charge</string>
 
     <!--
+        Card reader Accessibility
+    -->
+    <string name="card_reader_accessibility_reader_is_connected">Reader is connected</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">Reader is disconnected</string>
+
+    <!--
         Notifications
     -->
     <string name="new_notifications">%d new notifications</string>
     <string name="more_notifications">and %d more.</string>
-    <string name="notification_order_title">You have 1 new order! 🎉</string>
-    <string name="notification_review_title">You have 1 new review! 🌟</string>
+    <string name="notification_order_title">You have a new order! 🎉</string>
+    <string name="notification_review_title">You have a new review! 🌟</string>
     <!--
         Product Review Detail
     -->
@@ -934,6 +1010,7 @@
     <string name="wc_mark_all_read">Mark all as read</string>
     <string name="wc_mark_all_read_success">All reviews marked as read</string>
     <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
+    <string name="product_review_list_fetching_failed">Error fetching product reviews</string>
     <string name="pending_review_label">Pending Review</string>
     <!--
         Products
@@ -1053,7 +1130,8 @@
     <string name="product_variant_list_empty">Adding options like size and color is currently available only on the web. These will show up as options on the product page of your site.</string>
     <string name="product_variant_list_add_first_variation">Add your first variation</string>
     <string name="product_variant_list_empty_action">Add Variation</string>
-    <string name="product_description_hint">Start writing…</string>
+    <string name="product_description_hint_no_title">Describe your product to your future customers…</string>
+    <string name="product_description_hint_with_title">Tell us more about %s…</string>
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
     <string name="product_description_empty">Describe your product</string>
@@ -1244,6 +1322,7 @@
     <string name="privacy_settings">Privacy settings</string>
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
+    <string name="beta_features_message">View Add-ons, quick order</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
@@ -1254,6 +1333,8 @@
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
+    <string name="settings_enable_quick_order_teaser_title">Quick order</string>
+    <string name="settings_enable_quick_order_teaser_message">Test out creating orders with minimal information as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
@@ -1323,6 +1404,13 @@
     <string name="support_contact_payments_detail">Reach our happiness engineers who can help answer payments related questions</string>
     <string name="support_application_log">Application log</string>
     <string name="support_application_log_detail">Advanced tool to review the app status</string>
+    <string name="support_system_status_report">System status report</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report_detail">Various system information about your site</string>
+    <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
+    <string name="support_system_status_report_share_error">Unable to share System Status Report</string>
+    <string name="support_system_status_report_fetch_error">Error fetching SSR. Please check WooCommerce -&gt; Status in wp-admin.</string>
     <string name="help">Help</string>
     <string name="support_contact_email">Contact email</string>
     <string name="support_contact_email_not_set">Not set</string>
@@ -1555,6 +1643,31 @@
     <string name="permissions_denied_message">It looks like you turned off permissions required for this feature.&lt;br/&gt;&lt;br/&gt;To change this, edit your permissions and make sure &lt;strong&gt;%s&lt;/strong&gt; is enabled.</string>
     <string name="permission_camera">Camera</string>
     <string name="button_edit_permissions">Edit permissions</string>
+
+    <!-- Jetpack Connection Package -->
+    <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">See the benefits</string>
+    <string name="jetpack_benefits_modal_title">Get the most out of your store</string>
+    <string name="jetpack_benefits_modal_subtitle">Install the free Jetpack plugin to experience the best mobile experience.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Push Notifications</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Get push notifications for new orders, reviews, etc. delivered to your device.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analytics</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">New analytics views, let you see visitors, reports and more.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">User Profiles</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Allow multiple users to access WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Install Jetpack</string>
+    <string name="jetpack_benefits_modal_dismiss">Not Now</string>
+
+    <string name="jetpack_install_start_title">Install Jetpack</string>
+    <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
+    <string name="jetpack_install_start_default_name">your site</string>
+
+    <string name="jetpack_install_progress_title">Installing\nJetpack</string>
+    <string name="jetpack_install_progress_subtitle">Please wait while we connect %s with Jetpack.</string>
+    <string name="jetpack_install_progress_step_one_message">Installing Jetpack</string>
+    <string name="jetpack_install_progress_step_two_message">Activating</string>
+    <string name="jetpack_install_progress_step_three_message">Connecting your store</string>
+    <string name="jetpack_install_progress_step_four_message">All done</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

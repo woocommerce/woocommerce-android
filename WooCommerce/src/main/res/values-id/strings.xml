@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-28 11:54:04+0000
+Translation-Revision-Date: 2021-11-09 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Lain Kali</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Menginstal Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Izinkan banyak pengguna untuk mengakses WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Profil Pengguna</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Tampilan analitik baru memungkinkan Anda melihat pengunjung, laporan, dan lain sebagainya.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analytics</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Aktifkan notifikasi otomatis untuk pesanan, ulasan baru, dsb. di perangkat Anda.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Notifikasi Otomatis</string>
+    <string name="jetpack_benefits_modal_subtitle">Instal plugin Jetpack gratis untuk mendapatkan pengalaman seluler terbaik.</string>
+    <string name="jetpack_benefits_modal_title">Dapatkan hasil maksimal dari toko Anda</string>
+    <string name="settings_enable_quick_order_teaser_message">Coba buat pesanan dengan informasi minimal sembari kami bersiap untuk meluncurkan</string>
+    <string name="settings_enable_quick_order_teaser_title">Pesan cepat</string>
+    <string name="beta_features_message">Lihat Add-on, pesan cepat</string>
+    <string name="order_detail_use_as_shipping_address">Gunakan sebagai Alamat Pengiriman</string>
+    <string name="order_detail_use_as_billing_address">Gunakan sebagai Alamat Penagihan</string>
+    <string name="orderfilters_filters_count_title">Penyaring (%d)</string>
+    <string name="orderfilters_filters_default_title">Penyaring</string>
+    <string name="orderfilters_filter_date_range_options_title">Rentang Tanggal</string>
+    <string name="orderfilters_filter_order_status_options_title">Status pesanan</string>
+    <string name="orderfilters_filter_option_item_selected">Pilihan penyaring yang dipilih</string>
+    <string name="orderfilters_date_range_filter">Rentang Tanggal</string>
+    <string name="orderfilters_order_status_filter">Status pesanan</string>
+    <string name="orderfilters_default_filter_value">Semua</string>
+    <string name="orderfilters_show_orders_button">Tampilkan Pesanan</string>
+    <string name="orderlist_filters_title">Pesanan Disaring</string>
+    <string name="orderlist_no_filters_title">Semua Pesanan</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Lihat manfaatnya</string>
+    <string name="jetpack_benefits_bottom_banner_title">Dapatkan pengalaman penuh menggunakan Jetpack</string>
+    <string name="product_description_hint_with_title">Beri tahu kami lebih banyak tentang %s…</string>
+    <string name="product_description_hint_no_title">Jelaskan produk Anda ke calon pelanggan…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Nomor seri pembaca disalin ke clipboard</string>
+    <string name="card_reader_manual_card_reader">Panduan Pembaca Kartu</string>
+    <string name="order_detail_add_billing_address">Tambahkan alamat penagihan</string>
+    <string name="order_detail_add_shipping_address">Tambahkan alamat pengiriman</string>
+    <string name="order_detail_add_customer_note">Tambahkan catatan pelanggan</string>
+    <string name="order_detail_billing_address_section">Alamat Penagihan</string>
+    <string name="order_detail_shipping_address_section">Alamat Pengiriman</string>
+    <string name="order_detail_address_section">Alamat</string>
+    <string name="order_detail_edit_address_country">Negara</string>
+    <string name="order_detail_edit_address_state">Provinsi</string>
+    <string name="order_detail_edit_address_zip">Kode Pos</string>
+    <string name="order_detail_edit_address_city">Kota</string>
+    <string name="order_detail_edit_address_line2">Alamat 2</string>
+    <string name="order_detail_edit_address_line1">Alamat 1</string>
+    <string name="order_detail_edit_address_company">Perusahaan</string>
+    <string name="order_detail_edit_address_details_phone">Telepon</string>
+    <string name="order_detail_edit_address_details_email">Surel</string>
+    <string name="order_detail_edit_address_details_last_name">Nama belakang</string>
+    <string name="order_detail_edit_address_details_first_name">Nama depan</string>
+    <string name="orderdetail_customer_note_hint">Sunting catatan pesanan pelanggan</string>
+    <string name="support_system_status_report_fetch_error">Error saat mengambil LSS. Harap periksa WooCommerce -&gt; Status di wp-admin.</string>
+    <string name="support_system_status_report_share_error">Tidak dapat membagikan Laporan Status Sistem</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Error saat menyalin LSS ke clipboard</string>
+    <string name="support_system_status_report_copied_to_clipboard">Laporan status sistem disalin ke clipboard</string>
+    <string name="support_system_status_report_detail">Berbagai informasi sistem terkait situs Anda</string>
+    <string name="support_system_status_report_clipboard_label">LSS WooCommerce</string>
+    <string name="support_system_status_report">Laporan status sistem</string>
+    <string name="card_reader_welcome_dialog_text">Selamat, Anda sekarang dapat menerima pembayaran kartu debit dan kredit menggunakan WooCommerce Payments!</string>
+    <string name="card_reader_welcome_dialog_header">Kumpulkan pembayaran dengan pembaca kartu</string>
+    <string name="card_reader_payment_failed_amount_too_small">Jumlah minimal $0,50 dolar AS</string>
+    <string name="card_reader_payment_payment_failed_ok">Oke</string>
     <string name="settings_whats_new_icon_description">Gambar ikon fitur baru</string>
     <string name="settings_switch_store">Beralih toko</string>
     <string name="product_update_failure_notification">Gagal memperbarui produk %1$s</string>
@@ -21,8 +82,8 @@ Language: id
     <string name="settings_enable_product_addons_teaser_title">Lihat Add-on</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Maaf, saat ini kami tidak dapat mengubah pengaturan fitur ini</string>
     <string name="product_category">Kategori</string>
-    <string name="notification_review_title">Anda mendapat 1 ulasan baru! 🌟</string>
-    <string name="notification_order_title">Anda mendapat 1 pesanan baru! 🎉</string>
+    <string name="notification_review_title">Ada ulasan baru! 🌟</string>
+    <string name="notification_order_title">Ada pesanan baru! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d Item</string>
     <string name="upsell_product_count_many">%d produk upsell</string>
     <string name="upsell_product_count_one">%d produk upsell</string>
@@ -820,7 +881,6 @@ Language: id
     <string name="product_description_empty">Deskripsikan produk Anda</string>
     <string name="product_description">Deskripsi</string>
     <string name="product_edit_description">Sunting deskripsi</string>
-    <string name="product_description_hint">Mulai menulis…</string>
     <string name="discard_message">Ingin membuang perubahan?</string>
     <string name="update">Perbarui</string>
     <string name="done">Selesai</string>
@@ -957,7 +1017,7 @@ Language: id
     <string name="login_refresh_app_progress">Memeriksa WooCommerce…</string>
     <string name="login_refresh_app">segarkan aplikasi</string>
     <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu %2$s</string>
-    <string name="orderdetail_empty_shipping_address">Tidak ada alamat yang dicantumkan.</string>
+    <string name="orderdetail_empty_address">Tidak ada alamat yang dicantumkan</string>
     <string name="login_need_help_finding_connected_email">Perlu bantuan untuk menemukan email yang terhubung dengan Anda?</string>
     <string name="enter_wordpress_site">Situs web di alamat ini bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>
     <string name="enter_email_for_site">Login dengan WordPress.com untuk terhubung ke &lt;b&gt;%1$s&lt;/b&gt;</string>

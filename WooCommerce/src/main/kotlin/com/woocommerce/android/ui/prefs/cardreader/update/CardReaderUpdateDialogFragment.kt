@@ -12,6 +12,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderUpdateDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateAboutToStart
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateProgress
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -54,6 +57,10 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
                         KEY_READER_UPDATE_RESULT,
                         event.data as UpdateResult
                     )
+                    is SoftwareUpdateProgress ->
+                        announceSoftwareUpdateProgress(event.progress, binding)
+                    is SoftwareUpdateAboutToStart ->
+                        binding.root.announceForAccessibility(getString(event.accessibilityText))
                     else -> event.isHandled = false
                 }
             }
@@ -63,23 +70,27 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
             viewLifecycleOwner,
             { state ->
                 with(binding) {
-                    UiHelpers.setTextOrHide(updateReaderTitleTv, state.title)
-                    UiHelpers.setTextOrHide(updateReaderDescriptionTv, state.description)
-                    UiHelpers.setTextOrHide(updateReaderProgressWarningTv, state.cancelWarning)
-                    UiHelpers.setTextOrHide(updateReaderProgressDescriptionTv, state.progressText)
-                    UiHelpers.updateVisibility(updateReaderProgressGroup, state.progress != null)
-                    UiHelpers.setTextOrHide(updateReaderPrimaryActionBtn, state.primaryButton?.text)
-                    updateReaderPrimaryActionBtn.setOnClickListener { state.primaryButton?.onActionClicked?.invoke() }
-                    UiHelpers.setTextOrHide(updateReaderSecondaryActionBtn, state.secondaryButton?.text)
-                    updateReaderSecondaryActionBtn.setOnClickListener {
-                        state.secondaryButton?.onActionClicked?.invoke()
+                    UiHelpers.setTextOrHide(titleTextView, state.title)
+                    UiHelpers.setTextOrHide(descriptionTextView, state.description)
+                    UiHelpers.setTextOrHide(progressTextView, state.progressText)
+                    UiHelpers.setTextOrHide(actionButton, state.button?.text)
+                    with(progressCircleProgressOverlayView) {
+                        UiHelpers.updateVisibility(this, state.progress != null)
+                        currentProgressPercentage = state.progress ?: 0
                     }
-                    state.progress?.let {
-                        updateReaderPb.progress = it
-                    }
+                    UiHelpers.setImageOrHideInLandscape(progressImageView, state.illustration)
+                    actionButton.setOnClickListener { state.button?.onActionClicked?.invoke() }
                 }
             }
         )
+    }
+
+    private fun announceSoftwareUpdateProgress(
+        progressText: UiString,
+        binding: CardReaderUpdateDialogBinding
+    ) {
+        val progress = UiHelpers.getTextOfUiString(requireActivity(), progressText)
+        binding.progressTextView.announceForAccessibility(progress)
     }
 
     override fun onResume() {

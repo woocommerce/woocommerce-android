@@ -50,7 +50,7 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
 
         if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
             (savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password)?.let { password ->
-                binding.editPassword.setText(password)
+                binding.editPassword.text = password
                 showPassword(password.isNotBlank())
             }
         }
@@ -141,7 +141,7 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
         }
     }
 
-    private fun getPassword() = binding.editPassword.getText()
+    private fun getPassword() = binding.editPassword.text
 }
 
 @Parcelize

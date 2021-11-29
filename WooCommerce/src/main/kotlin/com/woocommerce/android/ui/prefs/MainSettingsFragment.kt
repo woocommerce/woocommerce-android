@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.prefs
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -18,30 +17,18 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_IMAGE_OPTIMIZATION_TOGGLED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_LOGOUT_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
-import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.AppThemeUtils
-import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.*
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
-import com.woocommerce.android.util.ThemeOption
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -64,6 +51,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onRequestLogout()
         fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
+        fun onSimplePaymentsOptionChanged(enabled: Boolean)
+        fun onOrderCreationOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -72,6 +61,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentSettingsMainBinding.bind(view)
+
+        presenter.takeView(this)
 
         if (activity is AppSettingsListener) {
             settingsListener = activity as AppSettingsListener
@@ -125,7 +116,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (SystemVersionUtils.isAtLeastO()) {
             binding.containerNotifsOld.visibility = View.GONE
             binding.containerNotifsNew.visibility = View.VISIBLE
             binding.optionNotifications.setOnClickListener {
@@ -159,10 +150,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionBetaFeatures.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
+            val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToBetaFeaturesFragment(
+                isCardReaderOnboardingCompleted = presenter.isCardReaderOnboardingCompleted()
+            )
+            findNavController().navigateSafely(action)
         }
-
-        binding.optionBetaFeatures.optionValue = getString(R.string.settings_enable_product_addons_teaser_title)
 
         binding.optionPrivacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
@@ -177,14 +169,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionAbout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_aboutFragment)
-        }
-
-        if (FeatureFlag.WHATS_NEW.isEnabled()) {
-            binding.optionWhatsNew.show()
-            binding.optionWhatsNew.setOnClickListener {
-                findNavController()
-                    .navigateSafely(R.id.action_mainSettingsFragment_to_featureAnnouncementDialogFragment)
-            }
         }
 
         binding.optionLicenses.setOnClickListener {
@@ -208,6 +192,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             // FIXME AMANDA tracks event
             showThemeChooser()
         }
+
+        presenter.setupAnnouncementOption()
     }
 
     override fun onResume() {
@@ -239,11 +225,31 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
      * this on API 26+ devices (will do nothing on older devices)
      */
     override fun showDeviceAppNotificationSettings() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (SystemVersionUtils.isAtLeastO()) {
             val intent = Intent()
             intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
             intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.packageName)
             activity?.startActivity(intent)
+        }
+    }
+
+    override fun showLatestAnnouncementOption(announcement: FeatureAnnouncement) {
+        binding.optionWhatsNew.show()
+        binding.optionWhatsNew.setOnClickListener {
+            WooLog.i(T.DEVICE, "Displaying Feature Announcement from Settings menu.")
+            AnalyticsTracker.track(
+                Stat.FEATURE_ANNOUNCEMENT_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
+                        AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_SETTINGS
+                )
+            )
+            findNavController()
+                .navigateSafely(
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToFeatureAnnouncementDialogFragment(
+                        announcement
+                    )
+                )
         }
     }
 
@@ -255,7 +261,25 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun updateStoreSettings() {
         binding.storeSettingsContainer.visibility =
             if (CARD_READER.isEnabled()) View.VISIBLE else View.GONE
+
+        generateBetaFeaturesTitleList()
+            .joinToString(", ")
+            .takeIf { it.isNotEmpty() }
+            ?.let { binding.optionBetaFeatures.optionValue = it }
     }
+
+    private fun generateBetaFeaturesTitleList() =
+        mutableListOf<String>().apply {
+            add(getString(R.string.beta_features_add_ons))
+
+            if (presenter.isCardReaderOnboardingCompleted()) {
+                add(getString(R.string.beta_features_simple_payments))
+            }
+
+            if (FeatureFlag.ORDER_CREATION.isEnabled()) {
+                add(getString(R.string.beta_features_order_creation))
+            }
+        }
 
     /**
      * Called when a boolean setting is changed so we can track it

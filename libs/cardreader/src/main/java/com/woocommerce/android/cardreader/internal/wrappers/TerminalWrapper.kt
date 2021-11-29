@@ -2,36 +2,35 @@ package com.woocommerce.android.cardreader.internal.wrappers
 
 import android.app.Application
 import com.stripe.stripeterminal.Terminal
-import com.stripe.stripeterminal.TerminalLifecycleObserver
-import com.stripe.stripeterminal.callable.Callback
-import com.stripe.stripeterminal.callable.Cancelable
-import com.stripe.stripeterminal.callable.DiscoveryListener
-import com.stripe.stripeterminal.callable.PaymentIntentCallback
-import com.stripe.stripeterminal.callable.ReaderCallback
-import com.stripe.stripeterminal.callable.ReaderDisplayListener
-import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateCallback
-import com.stripe.stripeterminal.callable.ReaderSoftwareUpdateListener
-import com.stripe.stripeterminal.callable.TerminalListener
+import com.stripe.stripeterminal.external.callable.BluetoothReaderListener
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.Cancelable
+import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
+import com.stripe.stripeterminal.external.callable.DiscoveryListener
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
+import com.stripe.stripeterminal.external.callable.ReaderCallback
+import com.stripe.stripeterminal.external.callable.TerminalListener
+import com.stripe.stripeterminal.external.models.ConnectionConfiguration
+import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
+import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.PaymentIntentParameters
+import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
+import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.log.LogLevel
-import com.stripe.stripeterminal.model.external.DiscoveryConfiguration
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.stripe.stripeterminal.model.external.PaymentIntentParameters
-import com.stripe.stripeterminal.model.external.Reader
-import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
-import com.woocommerce.android.cardreader.internal.TokenProvider
 
 /**
  * Injectable wrapper for Stripe's Terminal object.
  */
 internal class TerminalWrapper {
     fun isInitialized() = Terminal.isInitialized()
-    fun getLifecycleObserver() = TerminalLifecycleObserver.getInstance()
+    fun getLifecycleObserver() = TerminalApplicationDelegateWrapper()
     fun initTerminal(
         application: Application,
         logLevel: LogLevel,
-        tokenProvider: TokenProvider,
+        tokenProvider: ConnectionTokenProvider,
         listener: TerminalListener
     ) = Terminal.initTerminal(application, logLevel, tokenProvider, listener)
 
@@ -39,10 +38,15 @@ internal class TerminalWrapper {
         config: DiscoveryConfiguration,
         discoveryListener: DiscoveryListener,
         callback: Callback
-    ): Cancelable = Terminal.getInstance().discoverReaders(config, discoveryListener, callback)
+    ): Cancelable =
+        Terminal.getInstance().discoverReaders(config, discoveryListener, callback)
 
-    fun connectToReader(reader: Reader, callback: ReaderCallback) =
-        Terminal.getInstance().connectReader(reader, callback)
+    fun connectToReader(
+        reader: Reader,
+        configuration: ConnectionConfiguration.BluetoothConnectionConfiguration,
+        callback: ReaderCallback,
+        listener: BluetoothReaderListener
+    ) = Terminal.getInstance().connectBluetoothReader(reader, configuration, listener, callback)
 
     fun disconnectReader(callback: Callback) =
         Terminal.getInstance().disconnectReader(callback)
@@ -54,9 +58,8 @@ internal class TerminalWrapper {
 
     fun collectPaymentMethod(
         paymentIntent: PaymentIntent,
-        listener: ReaderDisplayListener,
         callback: PaymentIntentCallback
-    ): Cancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent, listener, callback)
+    ): Cancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent, callback)
 
     fun processPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
         Terminal.getInstance().processPayment(paymentIntent, callback)
@@ -64,12 +67,13 @@ internal class TerminalWrapper {
     fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
         Terminal.getInstance().cancelPaymentIntent(paymentIntent, callback)
 
-    fun checkForUpdate(callback: ReaderSoftwareUpdateCallback) = Terminal.getInstance().checkForUpdate(callback)
-    fun installSoftwareUpdate(
-        updateData: ReaderSoftwareUpdate,
-        listener: ReaderSoftwareUpdateListener,
-        callback: Callback
-    ) = Terminal.getInstance().installUpdate(updateData, listener, callback)
+    fun installSoftwareUpdate() = Terminal.getInstance().installAvailableUpdate()
 
     fun getConnectedReader(): CardReader? = Terminal.getInstance().connectedReader?.let { CardReaderImpl(it) }
+
+    fun setupSimulator() {
+        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
+            update = SimulateReaderUpdate.RANDOM
+        )
+    }
 }

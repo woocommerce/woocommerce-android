@@ -6,62 +6,27 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.WooPlugin
-import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
-import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
-import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
-import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
-import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
-import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
-import org.wordpress.android.fluxc.store.WCRefundStore
-import org.wordpress.android.fluxc.store.WCShippingLabelStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.*
+import org.wordpress.android.fluxc.store.WCOrderStore.*
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import javax.inject.Inject
 
-/*
-ViewModelScope fixes a memory leak related to EventBus subscription. See PR-4780 for details.
-Can be safely removed as soon as we remove EventBus from here.
- */
-@ViewModelScoped
 class OrderDetailRepository @Inject constructor(
-    private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
     private val refundStore: WCRefundStore,
@@ -69,19 +34,6 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    private val continuationUpdateOrderStatus = ContinuationWrapper<Boolean>(ORDERS)
-    private val continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
-    private val continuationAddShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
-    private val continuationDeleteShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
-
-    init {
-        dispatcher.register(this)
-    }
-
-    fun onCleanup() {
-        dispatcher.unregister(this)
-    }
-
     suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
             orderStore.fetchSingleOrder(
@@ -144,74 +96,59 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun updateOrderStatus(
-        orderModel: WCOrderModel,
+        orderLocalId: LocalId,
         newStatus: String
-    ): ContinuationResult<Boolean> {
-        return continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = UpdateOrderStatusPayload(
-                orderModel, selectedSite.get(), newStatus
-            )
-            dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
-        }
+    ): Flow<UpdateOrderResult> {
+        return orderStore.updateOrderStatus(
+            orderLocalId,
+            selectedSite.get(),
+            newStatus
+        )
     }
 
     suspend fun addOrderNote(
         orderIdentifier: OrderIdentifier,
         remoteOrderId: Long,
         noteModel: OrderNote
-    ): Boolean {
+    ): OnOrderChanged {
         val order = orderStore.getOrderByIdentifier(orderIdentifier)
         if (order == null) {
             WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
-            return false
+            return OnOrderChanged(0).also {
+                it.error = OrderError(GENERIC_ERROR, "Can't find order with identifier $orderIdentifier")
+            }
         }
-        val result = continuationAddOrderNote.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val dataModel = noteModel.toDataModel()
-            val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
-            dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        val dataModel = noteModel.toDataModel()
+        val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
+        return orderStore.postOrderNote(payload)
     }
 
     suspend fun addOrderShipmentTracking(
         orderIdentifier: OrderIdentifier,
         shipmentTrackingModel: OrderShipmentTracking
-    ): Boolean {
+    ): OnOrderChanged {
         val orderIdSet = orderIdentifier.toIdSet()
-        val result = continuationAddShipmentTracking.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = AddOrderShipmentTrackingPayload(
+        return orderStore.addOrderShipmentTracking(
+            AddOrderShipmentTrackingPayload(
                 selectedSite.get(),
                 orderIdSet.id,
                 orderIdSet.remoteOrderId,
                 shipmentTrackingModel.toDataModel(),
                 shipmentTrackingModel.isCustomProvider
             )
-            dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        )
     }
 
     suspend fun deleteOrderShipmentTracking(
         localOrderId: Int,
         remoteOrderId: Long,
         shipmentTrackingModel: WCOrderShipmentTrackingModel
-    ): Boolean {
-        val result = continuationDeleteShipmentTracking.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = DeleteOrderShipmentTrackingPayload(
+    ): OnOrderChanged {
+        return orderStore.deleteOrderShipmentTracking(
+            DeleteOrderShipmentTrackingPayload(
                 selectedSite.get(), localOrderId, remoteOrderId, shipmentTrackingModel
             )
-            dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        )
     }
 
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
@@ -315,38 +252,6 @@ class OrderDetailRepository @Inject constructor(
             canCreatePaymentMethod = true,
             canCreateCustomsForm = true
         )?.isEligible ?: false
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onOrderChanged(event: OnOrderChanged) {
-        when (event.causeOfChange) {
-            WCOrderAction.UPDATE_ORDER_STATUS ->
-                continuationUpdateOrderStatus.continueWith(event.isError.not())
-            WCOrderAction.POST_ORDER_NOTE ->
-                continuationAddOrderNote.continueWith(event.isError.not())
-            WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING ->
-                continuationAddShipmentTracking.continueWith(event.isError.not())
-            WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING ->
-                continuationDeleteShipmentTracking.continueWith(event.isError.not())
-            else -> {
-                // no-op
-            }
-        }
-    }
-
-    class OnProductImageChanged(val remoteProductId: Long)
-
-    /**
-     * This will be triggered if we fetched a product via ProduictImageMap so we could get its image.
-     * Here we fire an event that tells the fragment to update that product in the order product list.
-     */
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
-            EventBus.getDefault().post(OnProductImageChanged(event.remoteProductId))
-        }
     }
 
     companion object {

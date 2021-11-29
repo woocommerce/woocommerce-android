@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_surface"
+    android:orientation="vertical"
+    android:padding="@dimen/major_100">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/major_200">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_350"
+                android:layout_marginEnd="@dimen/major_100"
+                android:text="@string/jetpack_benefits_modal_title"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceHeadline4"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/subtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_100"
+                android:text="@string/jetpack_benefits_modal_subtitle"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintEnd_toEndOf="@id/title"
+                app:layout_constraintStart_toStartOf="@id/title"
+                app:layout_constraintTop_toBottomOf="@id/title" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/benefits_guideline_start"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/major_200" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/benefits_guideline_end"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="@dimen/major_200" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/push_notifications_icon"
+                android:layout_width="@dimen/image_minor_100"
+                android:layout_height="@dimen/image_minor_100"
+                android:background="@drawable/bg_gray_circle"
+                android:scaleType="center"
+                android:src="@drawable/ic_alarm_bell_ring"
+                app:layout_constraintBottom_toBottomOf="@id/push_notifications_subtitle"
+                app:layout_constraintStart_toStartOf="@id/benefits_guideline_start"
+                app:layout_constraintTop_toTopOf="@id/push_notifications_title" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/push_notifications_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_200"
+                android:text="@string/jetpack_benefits_modal_push_notifications_title"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintEnd_toEndOf="@id/benefits_guideline_end"
+                app:layout_constraintStart_toEndOf="@id/push_notifications_icon"
+                app:layout_constraintTop_toBottomOf="@id/subtitle" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/push_notifications_subtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_25"
+                android:text="@string/jetpack_benefits_modal_push_notifications_subtitle"
+                android:textAppearance="?attr/textAppearanceBody2"
+                app:layout_constraintEnd_toEndOf="@id/push_notifications_title"
+                app:layout_constraintStart_toStartOf="@id/push_notifications_title"
+                app:layout_constraintTop_toBottomOf="@id/push_notifications_title" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/analytics_icon"
+                android:layout_width="@dimen/image_minor_100"
+                android:layout_height="@dimen/image_minor_100"
+                android:background="@drawable/bg_gray_circle"
+                android:scaleType="center"
+                android:src="@drawable/ic_phone_analytics"
+                app:layout_constraintBottom_toBottomOf="@id/analytics_subtitle"
+                app:layout_constraintStart_toStartOf="@id/benefits_guideline_start"
+                app:layout_constraintTop_toTopOf="@id/analytics_title" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/analytics_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                android:text="@string/jetpack_benefits_modal_analytics_title"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintEnd_toEndOf="@id/benefits_guideline_end"
+                app:layout_constraintStart_toEndOf="@id/analytics_icon"
+                app:layout_constraintTop_toBottomOf="@id/push_notifications_subtitle" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/analytics_subtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_25"
+                android:text="@string/jetpack_benefits_modal_analytics_subtitle"
+                android:textAppearance="?attr/textAppearanceBody2"
+                app:layout_constraintEnd_toEndOf="@id/analytics_title"
+                app:layout_constraintStart_toStartOf="@id/analytics_title"
+                app:layout_constraintTop_toBottomOf="@id/analytics_title" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/user_profiles_icon"
+                android:layout_width="@dimen/image_minor_100"
+                android:layout_height="@dimen/image_minor_100"
+                android:background="@drawable/bg_gray_circle"
+                android:scaleType="center"
+                android:src="@drawable/ic_users"
+                app:layout_constraintBottom_toBottomOf="@id/user_profiles_subtitle"
+                app:layout_constraintStart_toStartOf="@id/benefits_guideline_start"
+                app:layout_constraintTop_toTopOf="@id/user_profiles_title" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/user_profiles_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                android:text="@string/jetpack_benefits_modal_user_profiles_title"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintEnd_toEndOf="@id/benefits_guideline_end"
+                app:layout_constraintStart_toEndOf="@id/user_profiles_icon"
+                app:layout_constraintTop_toBottomOf="@id/analytics_subtitle" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/user_profiles_subtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_25"
+                android:text="@string/jetpack_benefits_modal_user_profiles_subtitle"
+                android:textAppearance="?attr/textAppearanceBody2"
+                app:layout_constraintEnd_toEndOf="@id/user_profiles_title"
+                app:layout_constraintStart_toStartOf="@id/user_profiles_title"
+                app:layout_constraintTop_toBottomOf="@id/user_profiles_title" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/install_jetpack_button"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/jetpack_benefits_modal_install_jetpack" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/dismiss_button"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/jetpack_benefits_modal_dismiss" />
+
+</LinearLayout>

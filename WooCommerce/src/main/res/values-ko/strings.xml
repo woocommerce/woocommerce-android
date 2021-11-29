@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 11:54:51+0000
+Translation-Revision-Date: 2021-11-09 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">나중에</string>
+    <string name="jetpack_benefits_modal_install_jetpack">젯팩 설정</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">여러 사용자에게 우커머스 모바일 접근을 허용하세요.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">사용자 프로필</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">새로운 분석 보기에서 방문자, 보고서 등을 확인할 수 있습니다.</string>
+    <string name="jetpack_benefits_modal_analytics_title">분석</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">신규 주문, 리뷰 등에 대한 푸시 알림이 기기로 전달되도록 하세요.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">푸시 알림</string>
+    <string name="jetpack_benefits_modal_subtitle">무료 젯팩 플러그인을 설치하여 최상의 모바일 환경을 경험하세요.</string>
+    <string name="jetpack_benefits_modal_title">스토어 최대한 활용하기</string>
+    <string name="settings_enable_quick_order_teaser_message">출시 준비가 되면 최소한의 정보로 주문 생성해 보기</string>
+    <string name="settings_enable_quick_order_teaser_title">빠른 주문</string>
+    <string name="beta_features_message">애드온 기능, 빠른 주문 보기</string>
+    <string name="order_detail_use_as_shipping_address">배송 주소로 사용</string>
+    <string name="order_detail_use_as_billing_address">청구 주소로 사용</string>
+    <string name="orderfilters_filters_count_title">필터(%d)</string>
+    <string name="orderfilters_filters_default_title">필터</string>
+    <string name="orderfilters_filter_date_range_options_title">날짜 범위</string>
+    <string name="orderfilters_filter_order_status_options_title">주문 상태</string>
+    <string name="orderfilters_filter_option_item_selected">선택한 필터 옵션</string>
+    <string name="orderfilters_date_range_filter">날짜 범위</string>
+    <string name="orderfilters_order_status_filter">주문 상태</string>
+    <string name="orderfilters_default_filter_value">전체</string>
+    <string name="orderfilters_show_orders_button">주문 표시</string>
+    <string name="orderlist_filters_title">필터링한 주문</string>
+    <string name="orderlist_no_filters_title">모든 주문</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">혜택 보기</string>
+    <string name="jetpack_benefits_bottom_banner_title">젯팩 최대한 활용하기</string>
+    <string name="product_description_hint_with_title">%s에 대해 자세히 알려주세요…</string>
+    <string name="product_description_hint_no_title">미래 고객에게 제품 설명…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">클립보드에 복사된 리더의 일련번호</string>
+    <string name="card_reader_manual_card_reader">카드 리더 사용설명서</string>
+    <string name="order_detail_add_billing_address">청구 주소 추가</string>
+    <string name="order_detail_add_shipping_address">배송 주소 추가</string>
+    <string name="order_detail_add_customer_note">고객 메모 추가</string>
+    <string name="order_detail_billing_address_section">청구 주소</string>
+    <string name="order_detail_shipping_address_section">배송 주소</string>
+    <string name="order_detail_address_section">주소</string>
+    <string name="order_detail_edit_address_country">국가</string>
+    <string name="order_detail_edit_address_state">광역시/도</string>
+    <string name="order_detail_edit_address_zip">우편번호</string>
+    <string name="order_detail_edit_address_city">도시</string>
+    <string name="order_detail_edit_address_line2">주소 2</string>
+    <string name="order_detail_edit_address_line1">주소 1</string>
+    <string name="order_detail_edit_address_company">회사</string>
+    <string name="order_detail_edit_address_details_phone">전화</string>
+    <string name="order_detail_edit_address_details_email">이메일</string>
+    <string name="order_detail_edit_address_details_last_name">성</string>
+    <string name="order_detail_edit_address_details_first_name">이름</string>
+    <string name="orderdetail_customer_note_hint">고객 주문 메모 편집</string>
+    <string name="support_system_status_report_fetch_error">SSR를 가져오는 중 오류가 발생했습니다. wp-admin에서 우커머스 -&gt; 상태를 확인하세요.</string>
+    <string name="support_system_status_report_share_error">시스템 상태 보고서를 공유할 수 없음</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">클립보드에 SSR 복사 중 오류 발생</string>
+    <string name="support_system_status_report_copied_to_clipboard">클립보드에 시스템 상태 보고서 복사됨</string>
+    <string name="support_system_status_report_detail">사이트에 대한 다양한 시스템 정보</string>
+    <string name="support_system_status_report_clipboard_label">우커머스 SSR</string>
+    <string name="support_system_status_report">시스템 상태 보고서</string>
+    <string name="card_reader_welcome_dialog_text">축하합니다! 이제 우커머스 결제를 통해 직불카드 또는 신용카드 결제를 수락할 수 있습니다.</string>
+    <string name="card_reader_welcome_dialog_header">카드 리더로 결제받기</string>
+    <string name="card_reader_payment_failed_amount_too_small">금액이 $0.50 USD 이상이어야 함</string>
+    <string name="card_reader_payment_payment_failed_ok">확인</string>
     <string name="settings_whats_new_icon_description">새 기능 아이콘 이미지</string>
     <string name="settings_switch_store">스토어 전환</string>
     <string name="product_update_failure_notification">상품 %1$s 업데이트 실패</string>
@@ -21,8 +82,8 @@ Language: ko_KR
     <string name="settings_enable_product_addons_teaser_title">애드온 보기</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">죄송합니다. 지금은 이 기능 설정을 변경할 수 없습니다.</string>
     <string name="product_category">카테고리</string>
-    <string name="notification_review_title">새 리뷰 1개가 있습니다! 🌟</string>
-    <string name="notification_order_title">새 주문 1개가 있습니다! 🎉</string>
+    <string name="notification_review_title">새 리뷰가 있습니다! 🌟</string>
+    <string name="notification_order_title">새 주문이 있습니다! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d개 아이템</string>
     <string name="upsell_product_count_many">상향 판매 상품 %d개</string>
     <string name="upsell_product_count_one">상향 판매 상품 %d개</string>
@@ -820,7 +881,6 @@ Language: ko_KR
     <string name="product_description_empty">제품 설명</string>
     <string name="product_description">설명</string>
     <string name="product_edit_description">설명 수정</string>
-    <string name="product_description_hint">글쓰기 시작…</string>
     <string name="discard_message">변경 사항을 삭제하시겠습니까?</string>
     <string name="update">업데이트</string>
     <string name="done">완료</string>
@@ -957,7 +1017,7 @@ Language: ko_KR
     <string name="login_refresh_app_progress">WooCommerce 확인 중…</string>
     <string name="login_refresh_app">앱 새로 고침</string>
     <string name="login_not_woo_store">%1$s은(는) WooCommerce 사이트가 아닌 것 같습니다. 사이트에 WooCommerce 플러그인을 설치한 다음 %2$s하세요.</string>
-    <string name="orderdetail_empty_shipping_address">주소가 지정되지 않았습니다.</string>
+    <string name="orderdetail_empty_address">지정된 주소 없음</string>
     <string name="login_need_help_finding_connected_email">연결한 이메일을 찾는 데 도움이 필요하신가요?</string>
     <string name="enter_wordpress_site">이 주소의 웹사이트는 워드프레스 사이트가 아닙니다. 워드프레스에서 연결하려면 사이트에 워드프레스가 설치되어 있어야 합니다.</string>
     <string name="enter_email_for_site">워드프레스닷컴으로 로그인하여 &lt;b&gt;%1$s&lt;/b&gt;에 연결</string>

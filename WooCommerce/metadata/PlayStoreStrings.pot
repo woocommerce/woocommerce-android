@@ -11,20 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_076"
+msgctxt "release_note_080"
 msgid ""
-"7.6:\n"
-"We know that adding images to your products is one of the features you love using in the app! We’ve improved the experience to upload in the background while you continue on other tasks.\n"
-"\n"
-"If you’re managing multiple stores in the app, you’ll be happy to hear this news. You’ll now receive push notifications for all of your stores, not just the current one! Surprise!\n"
+"8.0:\n"
+"We’ve made some updates to our in-person payments support! Your card reader might have firmware software updates – some are super important and are required to be installed immediately. With this release, you can defer the upgrade of the optional updates for a better time.\n"
 msgstr ""
 
-msgctxt "release_note_075"
+msgctxt "release_note_079"
 msgid ""
-"7.5:\n"
-"Viewing orders with products using WooCommerce’s Product Add-Ons Extension is a new feature! Head over to your store’s settings in the app on the My store tab and turn this on under Beta features. Be sure to send us feedback about the experience!\n"
-"\n"
-"You’ll also find that you can filter the product list by category. You asked, and we delivered!\n"
+"7.9:\n"
+"We know that your customers don’t always enter their addresses correctly when they place their orders. You’ll find that you can now edit the billing and shipping address along with customer-provided notes.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

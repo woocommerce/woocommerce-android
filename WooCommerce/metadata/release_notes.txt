@@ -1,3 +1,1 @@
-We know that adding images to your products is one of the features you love using in the app! We’ve improved the experience to upload in the background while you continue on other tasks.
-
-If you’re managing multiple stores in the app, you’ll be happy to hear this news. You’ll now receive push notifications for all of your stores, not just the current one! Surprise!
+We’ve made some updates to our in-person payments support! Your card reader might have firmware software updates – some are super important and are required to be installed immediately. With this release, you can defer the upgrade of the optional updates for a better time.

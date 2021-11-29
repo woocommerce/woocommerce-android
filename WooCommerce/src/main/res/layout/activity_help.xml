@@ -84,7 +84,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:optionTitle="@string/support_system_status_report"
-                app:optionValue="@string/support_system_status_report_detail"/>
+                app:optionValue="@string/support_system_status_report_detail"
+                android:visibility="gone" />
 
         </LinearLayout>
     </ScrollView>

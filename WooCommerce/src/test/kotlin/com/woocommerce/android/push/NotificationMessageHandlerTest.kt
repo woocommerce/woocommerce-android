@@ -8,16 +8,16 @@ import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_D
 import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_SITE_2
-import com.woocommerce.android.util.NotificationsUtils
+import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.util.Base64Decoder
+import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.AccountModel
@@ -29,7 +29,6 @@ import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayl
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 
-@RunWith(RobolectricTestRunner::class)
 class NotificationMessageHandlerTest {
     private lateinit var notificationMessageHandler: NotificationMessageHandler
 
@@ -41,6 +40,7 @@ class NotificationMessageHandlerTest {
         on { getSiteBySiteId(any()) } doReturn SiteModel()
     }
     private val dispatcher: Dispatcher = mock()
+    private val zendeskHelper: ZendeskHelper = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
     private val wooLogWrapper: WooLogWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
@@ -50,18 +50,24 @@ class NotificationMessageHandlerTest {
     }
     private val notificationBuilder: WooNotificationBuilder = mock()
     private val notificationAnalyticsTracker: NotificationAnalyticsTracker = mock()
+    private val jvmBase64Decoder: Base64Decoder = mock {
+        on { decode(any<String>(), any()) } doAnswer {
+            java.util.Base64.getDecoder().decode(it.arguments.first() as String)
+        }
+    }
+    private val notificationsParser: NotificationsParser = NotificationsParser(jvmBase64Decoder)
 
     private val orderNotificationPayload = NotificationTestUtils.generateTestNewOrderNotificationPayload(
         userId = accountModel.userId
     )
-    private val orderNotification = NotificationsUtils
+    private val orderNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(orderNotificationPayload)!!.toAppModel(resourceProvider)
 
     private val reviewNotificationPayload = NotificationTestUtils.generateTestNewReviewNotificationPayload(
         userId = accountModel.userId
     )
 
-    private val reviewNotification = NotificationsUtils
+    private val reviewNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(reviewNotificationPayload)!!.toAppModel(resourceProvider)
 
     @Before
@@ -74,7 +80,9 @@ class NotificationMessageHandlerTest {
             appPrefsWrapper = appPrefsWrapper,
             resourceProvider = resourceProvider,
             notificationBuilder = notificationBuilder,
-            analyticsTracker = notificationAnalyticsTracker
+            analyticsTracker = notificationAnalyticsTracker,
+            zendeskHelper = zendeskHelper,
+            notificationsParser = notificationsParser
         )
 
         doReturn(true).whenever(accountStore).hasAccessToken()
@@ -90,14 +98,14 @@ class NotificationMessageHandlerTest {
     fun `when the user is not logged in, then do not process the incoming notification`() {
         doReturn(false).whenever(accountStore).hasAccessToken()
 
-        notificationMessageHandler.onNewMessageReceived(emptyMap())
+        notificationMessageHandler.onNewMessageReceived(emptyMap(), mock())
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLogWrapper, only()).e(eq(WooLog.T.NOTIFS), eq("User is not logged in!"))
     }
 
     @Test
     fun `when the notification payload data is empty, then do not process the notification`() {
-        notificationMessageHandler.onNewMessageReceived(emptyMap())
+        notificationMessageHandler.onNewMessageReceived(emptyMap(), mock())
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLogWrapper, only()).e(
             eq(WooLog.T.NOTIFS),
@@ -107,7 +115,7 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `when the user id does not match, then do not process the notification`() {
-        notificationMessageHandler.onNewMessageReceived(mapOf("type" to "new_order", "user" to "67890"))
+        notificationMessageHandler.onNewMessageReceived(mapOf("type" to "new_order", "user" to "67890"), mock())
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLogWrapper, only()).e(
             eq(WooLog.T.NOTIFS),
@@ -121,7 +129,8 @@ class NotificationMessageHandlerTest {
             mapOf(
                 "type" to "new_order",
                 "user" to accountModel.userId.toString()
-            )
+            ),
+            mock()
         )
 
         verify(wooLogWrapper, only()).e(eq(WooLog.T.NOTIFS), eq("Notification data is empty!"))
@@ -129,7 +138,7 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `when an incoming notification is received, then we should update that notification to local cache`() {
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
 
@@ -141,7 +150,7 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `when an incoming notification is received, then we should request the notification fetch from api`() {
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
 
@@ -153,7 +162,7 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `when review notifications are received, then do not request all orders diff fetch from api`() {
-        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload, mock())
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
 
@@ -165,7 +174,7 @@ class NotificationMessageHandlerTest {
     @Test
     fun `when order notification is received for a non existent site, then do not request all orders diff fetch`() {
         doReturn(null).whenever(siteStore).getSiteBySiteId(any())
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
 
@@ -180,7 +189,7 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `when order notifications are received, then we should request all orders diff fetch from api`() {
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
 
@@ -192,7 +201,7 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `when order notifications are received, then we should request processing orders diff fetch from api`() {
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
 
         verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
 
@@ -207,7 +216,7 @@ class NotificationMessageHandlerTest {
     fun `when order notification is received but not enabled, then do not display notification`() {
         doReturn(false).whenever(appPrefsWrapper).isOrderNotificationsEnabled()
 
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
         verify(wooLogWrapper, only()).i(
             eq(WooLog.T.NOTIFS),
             eq("Skipped ${orderNotification.noteType.name} notification")
@@ -218,7 +227,7 @@ class NotificationMessageHandlerTest {
     fun `when review notification is received but not enabled, then do not display notification`() {
         doReturn(false).whenever(appPrefsWrapper).isReviewNotificationsEnabled()
 
-        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload, mock())
         verify(wooLogWrapper, only()).i(
             eq(WooLog.T.NOTIFS),
             eq("Skipped ${reviewNotification.noteType.name} notification")
@@ -230,7 +239,7 @@ class NotificationMessageHandlerTest {
         val notificationPayload = mapOf("type" to "zendesk")
         val zendeskNote = NotificationModel(noteId = 1999999999, remoteNoteId = 1999999999).toAppModel(resourceProvider)
 
-        notificationMessageHandler.onNewMessageReceived(notificationPayload)
+        notificationMessageHandler.onNewMessageReceived(notificationPayload, mock())
 
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayZendeskNotification(
             channelId = eq(resourceProvider.getString(NotificationChannelType.OTHER.getChannelId())),
@@ -239,11 +248,21 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
+    fun `when zendesk notification is received, then refresh zendesk UI`() {
+        val dummyRequestId = "dummy"
+        val notificationPayload = mapOf("type" to "zendesk", "zendesk_sdk_request_id" to dummyRequestId)
+
+        notificationMessageHandler.onNewMessageReceived(notificationPayload, mock())
+
+        verify(zendeskHelper).refreshRequest(any(), eq(dummyRequestId))
+    }
+
+    @Test
     fun `when order and review notifications are received together, then display notification details correctly`() {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
 
         val orderDefaults = orderNotification.channelType.getDefaults(appPrefsWrapper)
         val orderChannelId = resourceProvider.getString(orderNotification.channelType.getChannelId())
@@ -263,7 +282,7 @@ class NotificationMessageHandlerTest {
         )
 
         // new incoming review notification
-        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload, mock())
 
         val reviewDefaults = reviewNotification.channelType.getDefaults(appPrefsWrapper)
         val reviewChannelId = resourceProvider.getString(reviewNotification.channelType.getChannelId())
@@ -297,7 +316,7 @@ class NotificationMessageHandlerTest {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
 
         val orderDefaults = orderNotification.channelType.getDefaults(appPrefsWrapper)
         val orderChannelId = resourceProvider.getString(orderNotification.channelType.getChannelId())
@@ -320,10 +339,10 @@ class NotificationMessageHandlerTest {
         val orderNotificationPayload2 = NotificationTestUtils.generateTestNewOrderNotificationPayload(
             userId = accountModel.userId, noteData = TEST_ORDER_NOTE_FULL_DATA_2
         )
-        val orderNotification2 = NotificationsUtils.buildNotificationModelFromPayloadMap(
+        val orderNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             orderNotificationPayload2
         )!!.toAppModel(resourceProvider)
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload2)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload2, mock())
 
         // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
@@ -354,7 +373,7 @@ class NotificationMessageHandlerTest {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
-        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload, mock())
 
         val reviewDefaults = reviewNotification.channelType.getDefaults(appPrefsWrapper)
         val reviewChannelId = resourceProvider.getString(reviewNotification.channelType.getChannelId())
@@ -377,10 +396,10 @@ class NotificationMessageHandlerTest {
         val reviewNotificationPayload2 = NotificationTestUtils.generateTestNewReviewNotificationPayload(
             userId = accountModel.userId, noteData = TEST_REVIEW_NOTE_FULL_DATA_2
         )
-        val reviewNotification2 = NotificationsUtils.buildNotificationModelFromPayloadMap(
+        val reviewNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             reviewNotificationPayload2
         )!!.toAppModel(resourceProvider)
-        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload2)
+        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload2, mock())
 
         // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
@@ -411,7 +430,7 @@ class NotificationMessageHandlerTest {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
 
         val orderDefaults = orderNotification.channelType.getDefaults(appPrefsWrapper)
         val orderChannelId = resourceProvider.getString(orderNotification.channelType.getChannelId())
@@ -434,10 +453,10 @@ class NotificationMessageHandlerTest {
         val orderNotificationPayload2 = NotificationTestUtils.generateTestNewOrderNotificationPayload(
             userId = accountModel.userId, noteData = TEST_ORDER_NOTE_FULL_DATA_SITE_2
         )
-        val orderNotification2 = NotificationsUtils.buildNotificationModelFromPayloadMap(
+        val orderNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             orderNotificationPayload2
         )!!.toAppModel(resourceProvider)
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload2)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload2, mock())
 
         // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
@@ -468,7 +487,7 @@ class NotificationMessageHandlerTest {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
-        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload, mock())
 
         val reviewDefaults = reviewNotification.channelType.getDefaults(appPrefsWrapper)
         val reviewChannelId = resourceProvider.getString(reviewNotification.channelType.getChannelId())
@@ -491,10 +510,10 @@ class NotificationMessageHandlerTest {
         val reviewNotificationPayload2 = NotificationTestUtils.generateTestNewReviewNotificationPayload(
             userId = accountModel.userId, noteData = TEST_REVIEW_NOTE_FULL_DATA_SITE_2
         )
-        val reviewNotification2 = NotificationsUtils.buildNotificationModelFromPayloadMap(
+        val reviewNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             reviewNotificationPayload2
         )!!.toAppModel(resourceProvider)
-        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload2)
+        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload2, mock())
 
         // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
@@ -522,7 +541,7 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `when notification is clicked, then mark new notification as tapped correctly`() {
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
         notificationMessageHandler.markNotificationTapped(orderNotification.remoteNoteId)
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
@@ -533,7 +552,7 @@ class NotificationMessageHandlerTest {
     @Test
     fun `when new order notification is clicked, then mark only new order notification as tapped correctly`() {
         doReturn(true).whenever(notificationBuilder).isNotificationsEnabled()
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
         notificationMessageHandler.markNotificationsOfTypeTapped(orderNotification.channelType)
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(

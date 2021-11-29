@@ -131,7 +131,7 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
     private fun showValue(view: WCMaterialOutlinedEditTextView, @StringRes hintRes: Int, value: Float?, unit: String?) {
         if (value != editableToFloat(view.editText?.text)) {
             val valStr = if (value != 0.0f) (value?.toString() ?: "") else ""
-            view.setText(valStr)
+            view.text = valStr
         }
         view.hint = if (unit != null) {
             getString(hintRes) + " ($unit)"

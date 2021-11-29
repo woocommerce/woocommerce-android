@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 13:54:04+0000
+Translation-Revision-Date: 2021-11-09 11:54:13+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Nicht jetzt</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Jetpack installieren</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Erlaube mehreren Benutzen, auf WooCommerce Mobile zuzugreifen. </string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Benutzerprofile</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Mit den neuen Statistikanzeigen siehst du Besucher, Berichte und mehr.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Statistiken</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Erhalte Push-Benachrichtigungen zu neuen Bestellungen, Bewertungen usw. direkt auf dein Gerät.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Push-Benachrichtigungen</string>
+    <string name="jetpack_benefits_modal_subtitle">Installiere das kostenlose Jetpack-Plugin, um auf deinem Mobilgerät die bestmögliche Erfahrung zu haben.</string>
+    <string name="jetpack_benefits_modal_title">Hole das Maximum aus deinem Store heraus</string>
+    <string name="settings_enable_quick_order_teaser_message">Versuche, Bestellungen mit nur wenigen Informationen zu erstellen, während wir uns auf den Launch vorbereiten</string>
+    <string name="settings_enable_quick_order_teaser_title">Quick Order</string>
+    <string name="beta_features_message">Add-ons anzeigen, quick order</string>
+    <string name="order_detail_use_as_shipping_address">Als Lieferadresse verwenden</string>
+    <string name="order_detail_use_as_billing_address">Als Rechnungsadresse verwenden</string>
+    <string name="orderfilters_filters_count_title">Filter (%d)</string>
+    <string name="orderfilters_filters_default_title">Filter</string>
+    <string name="orderfilters_filter_date_range_options_title">Zeitraum</string>
+    <string name="orderfilters_filter_order_status_options_title">Bestellstatus</string>
+    <string name="orderfilters_filter_option_item_selected">Ausgewählte Filteroption</string>
+    <string name="orderfilters_date_range_filter">Zeitraum</string>
+    <string name="orderfilters_order_status_filter">Bestellstatus</string>
+    <string name="orderfilters_default_filter_value">Alle</string>
+    <string name="orderfilters_show_orders_button">Bestellungen anzeigen</string>
+    <string name="orderlist_filters_title">Gefilterte Bestellungen</string>
+    <string name="orderlist_no_filters_title">Alle Bestellungen</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Die Vorteile</string>
+    <string name="jetpack_benefits_bottom_banner_title">Mit Jetpack sämtliche Optionen erhalten</string>
+    <string name="product_description_hint_with_title">Erzähle uns mehr über %s …</string>
+    <string name="product_description_hint_no_title">Beschreibe deinen zukünftigen Kunden dein Produkt …</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Seriennummer des Lesegeräts in die Zwischenablage kopiert</string>
+    <string name="card_reader_manual_card_reader">Handbuch für Kartenlesegerät</string>
+    <string name="order_detail_add_billing_address">Rechnungsadresse hinzufügen</string>
+    <string name="order_detail_add_shipping_address">Versandadresse hinzufügen</string>
+    <string name="order_detail_add_customer_note">Anmerkung des Kunden hinzufügen</string>
+    <string name="order_detail_billing_address_section">Rechnungsadresse</string>
+    <string name="order_detail_shipping_address_section">Lieferadresse</string>
+    <string name="order_detail_address_section">Adresse</string>
+    <string name="order_detail_edit_address_country">Land</string>
+    <string name="order_detail_edit_address_state">Bundesland/Landkreis</string>
+    <string name="order_detail_edit_address_zip">Postleitzahl</string>
+    <string name="order_detail_edit_address_city">Stadt</string>
+    <string name="order_detail_edit_address_line2">Adresse 2</string>
+    <string name="order_detail_edit_address_line1">Adresse 1</string>
+    <string name="order_detail_edit_address_company">Unternehmen</string>
+    <string name="order_detail_edit_address_details_phone">Telefon</string>
+    <string name="order_detail_edit_address_details_email">E-Mail-Adresse</string>
+    <string name="order_detail_edit_address_details_last_name">Nachname</string>
+    <string name="order_detail_edit_address_details_first_name">Vorname</string>
+    <string name="orderdetail_customer_note_hint">Kundenhinweis zu Bestellung bearbeiten</string>
+    <string name="support_system_status_report_fetch_error">Fehler beim Abrufen des Berichts zum Systemstatus (System Status Report, SSR). Bitte überprüfe WooCommerce -&gt; Status in wp-admin.</string>
+    <string name="support_system_status_report_share_error">Bericht zum Systemstatus kann nicht geteilt werden</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Fehler beim Kopieren des SSR in die Zwischenablage</string>
+    <string name="support_system_status_report_copied_to_clipboard">Bericht zum Systemstatus in die Zwischenablage kopiert</string>
+    <string name="support_system_status_report_detail">Verschiedene Systeminformationen zu deiner Website</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">Bericht zum Systemstatus</string>
+    <string name="card_reader_welcome_dialog_text">Herzlichen Glückwunsch, du kannst jetzt Zahlungen mit Kredit- und Debitkarten mit WooCommerce Payments annehmen!</string>
+    <string name="card_reader_welcome_dialog_header">Zahlungen mit Kartenleser empfangen</string>
+    <string name="card_reader_payment_failed_amount_too_small">Betrag muss sich mindestens auf 0,50 USD belaufen</string>
+    <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Icon-Bild für neue Funktion</string>
     <string name="settings_switch_store">Shop wechseln</string>
     <string name="product_update_failure_notification">Aktualisieren des Produkts %1$s fehlgeschlagen</string>
@@ -21,8 +82,8 @@ Language: de
     <string name="settings_enable_product_addons_teaser_title">Add-ons anzeigen</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Diese Feature-Einstellung konnten wir leider gerade nicht ändern</string>
     <string name="product_category">Kategorie</string>
-    <string name="notification_review_title">Du hast 1 neue Bewertung! 🌟</string>
-    <string name="notification_order_title">Du hast 1 neue Bestellung! 🎉</string>
+    <string name="notification_review_title">Du hast eine neue Bewertung! 🌟</string>
+    <string name="notification_order_title">Du hast eine neue Bestellung! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d Artikel</string>
     <string name="upsell_product_count_many">%d Verkaufe zusätzliche Produkte</string>
     <string name="upsell_product_count_one">%d Verkaufe ein zusätzliches Produkt</string>
@@ -820,7 +881,6 @@ Language: de
     <string name="product_description_empty">Produkt beschreiben</string>
     <string name="product_description">Beschreibung</string>
     <string name="product_edit_description">Beschreibung bearbeiten</string>
-    <string name="product_description_hint">Beginne zu schreiben …</string>
     <string name="discard_message">Möchtest du deine Änderungen verwerfen?</string>
     <string name="update">Aktualisieren</string>
     <string name="done">Fertig</string>
@@ -957,7 +1017,7 @@ Language: de
     <string name="login_refresh_app_progress">WooCommerce wird gesucht …</string>
     <string name="login_refresh_app">App aktualisieren</string>
     <string name="login_not_woo_store">%1$s ist offenbar keine WooCommerce-Website. Installiere das WooCommerce-Plugin auf deiner Website und %2$s</string>
-    <string name="orderdetail_empty_shipping_address">Keine Adresse angegeben.</string>
+    <string name="orderdetail_empty_address">Keine Adresse angegeben</string>
     <string name="login_need_help_finding_connected_email">Benötigst du Hilfe bei der Suche nach der E-Mail-Adresse, mit der du dich verbunden hast?</string>
     <string name="enter_wordpress_site">Die Website mit dieser Adresse ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss WordPress auf der Website installiert sein.</string>
     <string name="enter_email_for_site">Melde dich mit WordPress.com an, um dich mit &lt;b&gt;%1$s&lt;/b&gt; zu verbinden</string>

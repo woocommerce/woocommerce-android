@@ -2,36 +2,15 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.atLeastOnce
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.Status
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
@@ -39,9 +18,8 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibil
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -49,24 +27,24 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"
@@ -77,10 +55,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
         on(it.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenAnswer { true }
     }
-    private val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+    private val editor = mock<SharedPreferences.Editor>()
     private val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
+    private val addonsRepository: AddonRepository = mock()
     private val cardReaderManager: CardReaderManager = mock()
     private val resources: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
@@ -137,7 +116,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 networkStatus,
                 resources,
                 repository,
-                mock(),
+                addonsRepository,
                 selectedSite,
                 paymentCollectibilityChecker
             )
@@ -176,6 +155,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var orderData: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> orderData = new }
@@ -239,6 +219,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             // WHEN
             viewModel.start()
@@ -255,6 +236,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             // WHEN
             viewModel.start()
@@ -321,6 +303,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             viewModel.start()
 
@@ -360,6 +343,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             viewModel.start()
 
@@ -416,6 +400,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -449,6 +434,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             doReturn(
                 WooPlugin(
@@ -495,6 +481,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             doReturn(
                 WooPlugin(
@@ -542,6 +529,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             var orderData: ViewState? = null
             viewModel.viewStateData.observeForever { _, new -> orderData = new }
@@ -574,6 +562,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             doReturn(
                 WooPlugin(
@@ -675,6 +664,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var snackbar: ShowUndoSnackbar? = null
         viewModel.event.observeForever {
@@ -700,7 +690,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         snackbar?.undoAction?.onClick(mock())
         assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
-        verify(repository, times(2)).updateOrderStatus(eq(order.toDataModel()), statusChangeCaptor.capture())
+        verify(repository, times(2)).updateOrderStatus(eq(order.localId), statusChangeCaptor.capture())
 
         assertThat(listOf(initialStatus) + statusChangeCaptor.allValues).containsExactly(
             initialStatus, newStatus, initialStatus
@@ -726,6 +716,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var newOrder: Order? = null
         viewModel.viewStateData.observeForever { old, new ->
@@ -788,6 +779,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var orderShipmentTrackings = emptyList<OrderShipmentTracking>()
         viewModel.shipmentTrackings.observeForever {
@@ -816,6 +808,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
         doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
         doReturn(emptyList<Product>()).whenever(repository).fetchProductsByRemoteIds(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var isCreateShippingLabelButtonVisible: Boolean? = null
         viewModel.viewStateData.observeForever { _, new ->
@@ -841,6 +834,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(repository).fetchProductsByRemoteIds(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             var isCreateShippingLabelButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -859,6 +853,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             doReturn(
                 WooPlugin(
@@ -904,6 +899,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(repository).fetchProductsByRemoteIds(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             var isCreateShippingLabelButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -922,6 +918,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
         val orderAfterPayment = order.copy(status = Status.fromDataModel(CoreOrderStatus.COMPLETED)!!)
         doReturn(orderAfterPayment).whenever(repository).getOrder(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         viewModel.onCardReaderPaymentCompleted()
 
@@ -933,6 +930,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             var snackbar: ShowUndoSnackbar? = null
             viewModel.event.observeForever {
                 if (it is ShowUndoSnackbar) snackbar = it
@@ -954,6 +952,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             var snackbar: ShowUndoSnackbar? = null
             viewModel.event.observeForever {
                 if (it is ShowUndoSnackbar) snackbar = it
@@ -975,6 +974,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             var snackbar: ShowUndoSnackbar? = null
             viewModel.event.observeForever {
                 if (it is ShowUndoSnackbar) snackbar = it
@@ -991,8 +991,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
-            doReturn(ContinuationWrapper.ContinuationResult.Success(false)).whenever(repository)
-                .updateOrderStatus(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            whenever(repository.updateOrderStatus(any(), any()))
+                .thenReturn(
+                    flow {
+                        val event = OnOrderChanged(0).apply { this.error = OrderError() }
+                        emit(UpdateOrderResult.RemoteUpdateResult(event))
+                    }
+                )
             var snackbar: ShowSnackbar? = null
             viewModel.event.observeForever {
                 if (it is ShowSnackbar) snackbar = it
@@ -1009,6 +1015,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             doReturn(ContinuationWrapper.ContinuationResult.Cancellation<Boolean>(CancellationException())).whenever(
                 repository
             ).updateOrderStatus(any(), any())
@@ -1028,6 +1035,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             doReturn(ContinuationWrapper.ContinuationResult.Success<Boolean>(true)).whenever(repository)
                 .updateOrderStatus(any(), any())
             var snackbar: ShowSnackbar? = null
@@ -1049,6 +1057,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
             doReturn("testing url")
                 .whenever(appPrefsWrapper).getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
             viewModel.onSeeReceiptClicked()
@@ -1063,6 +1072,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
             viewModel.start()
 
@@ -1080,6 +1090,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
             viewModel.start()
 
@@ -1097,6 +1108,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
             viewModel.start()
 
@@ -1114,6 +1126,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
             whenever(appPrefsWrapper.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenReturn(false)
             viewModel.start()
@@ -1133,6 +1146,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
             viewModel.start()
 
@@ -1150,6 +1164,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
             viewModel.start()
 
@@ -1167,6 +1182,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
             viewModel.start()
 
@@ -1184,6 +1200,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
             // When
@@ -1201,6 +1218,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
             // When
@@ -1218,6 +1236,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
             // When

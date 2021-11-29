@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 15:54:03+0000
+Translation-Revision-Date: 2021-11-09 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Niet nu</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Jetpack installeren</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Meerdere gebruikers kunnen gebruikmaken van WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Gebruikersprofielen</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Nieuwe analytische weergaven: bekijk bezoekers, rapporten en meer.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analytische gegevens</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Ontvang pushberichten voor nieuwe bestellingen, beoordelingen, enz. op je apparaat.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Pushberichten</string>
+    <string name="jetpack_benefits_modal_subtitle">Installeer de gratis Jetpack-plugin voor de beste mobiele ervaring.</string>
+    <string name="jetpack_benefits_modal_title">Haal het optimale uit je winkel</string>
+    <string name="settings_enable_quick_order_teaser_message">Probeer eens wat bestellingen aan te maken met minimale gegevens terwijl wij ons voorbereiden op de lancering</string>
+    <string name="settings_enable_quick_order_teaser_title">Snelle bestelling</string>
+    <string name="beta_features_message">Bekijk add-ons, snelle bestelling</string>
+    <string name="order_detail_use_as_shipping_address">Gebruiken als verzendadres</string>
+    <string name="order_detail_use_as_billing_address">Gebruiken als factuuradres</string>
+    <string name="orderfilters_filters_count_title">Filters (%d)</string>
+    <string name="orderfilters_filters_default_title">Filters</string>
+    <string name="orderfilters_filter_date_range_options_title">Datumbereik</string>
+    <string name="orderfilters_filter_order_status_options_title">Bestelstatus</string>
+    <string name="orderfilters_filter_option_item_selected">Geselecteerde filteroptie</string>
+    <string name="orderfilters_date_range_filter">Datumbereik</string>
+    <string name="orderfilters_order_status_filter">Bestelstatus</string>
+    <string name="orderfilters_default_filter_value">Alles</string>
+    <string name="orderfilters_show_orders_button">Bestellingen weergeven</string>
+    <string name="orderlist_filters_title">Gefilterde bestellingen</string>
+    <string name="orderlist_no_filters_title">Alle bestellingen</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Bekijk de voordelen</string>
+    <string name="jetpack_benefits_bottom_banner_title">Profiteer van de volledige ervaring met Jetpack</string>
+    <string name="product_description_hint_with_title">Vertel ons meer over %s…</string>
+    <string name="product_description_hint_no_title">Beschrijf je product voor je toekomstige klanten…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Serienummer lezer gekopieerd naar klembord</string>
+    <string name="card_reader_manual_card_reader">Handleiding kaartlezer</string>
+    <string name="order_detail_add_billing_address">Factuuradres toevoegen</string>
+    <string name="order_detail_add_shipping_address">Verzendadres toevoegen</string>
+    <string name="order_detail_add_customer_note">Notitie voor klant toevoegen</string>
+    <string name="order_detail_billing_address_section">Factuuradres</string>
+    <string name="order_detail_shipping_address_section">Verzendadres</string>
+    <string name="order_detail_address_section">Adres</string>
+    <string name="order_detail_edit_address_country">Land</string>
+    <string name="order_detail_edit_address_state">Staat/county</string>
+    <string name="order_detail_edit_address_zip">Postcode</string>
+    <string name="order_detail_edit_address_city">Plaats</string>
+    <string name="order_detail_edit_address_line2">Adres 2</string>
+    <string name="order_detail_edit_address_line1">Adres 1</string>
+    <string name="order_detail_edit_address_company">Onderneming</string>
+    <string name="order_detail_edit_address_details_phone">Telefoon</string>
+    <string name="order_detail_edit_address_details_email">E-mailadres</string>
+    <string name="order_detail_edit_address_details_last_name">Achternaam</string>
+    <string name="order_detail_edit_address_details_first_name">Voornaam</string>
+    <string name="orderdetail_customer_note_hint">Notitie voor klantbestelling bewerken</string>
+    <string name="support_system_status_report_fetch_error">Fout bij ophalen SSR. Controleer WooCommerce -&gt; Status bij wp-admin.</string>
+    <string name="support_system_status_report_share_error">Kan systeemstatusrapport niet delen</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Fout bij kopiëren SSR naar klembord</string>
+    <string name="support_system_status_report_copied_to_clipboard">Systeemstatusrapport gekopieerd naar klembord</string>
+    <string name="support_system_status_report_detail">Verschillende systeemgegevens over je site</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">Systeemstatusrapport</string>
+    <string name="card_reader_welcome_dialog_text">Gefeliciteerd, je kunt nu betalingen van creditcards en betaalpassen aannemen met WooCommerce Payments!</string>
+    <string name="card_reader_welcome_dialog_header">Ontvang betalingen met een kaartlezer</string>
+    <string name="card_reader_payment_failed_amount_too_small">Bedrag moet minstens 0,50 Amerikaanse dollar bedragen.</string>
+    <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Nieuwe afbeelding van functiepictogram</string>
     <string name="settings_switch_store">Winkel wijzigen</string>
     <string name="product_update_failure_notification">Het is niet gelukt om product %1$s bij te werken</string>
@@ -21,8 +82,8 @@ Language: nl
     <string name="settings_enable_product_addons_teaser_title">Add-ons bekijken</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">We kunnen deze functie-instelling momenteel niet wijzigen</string>
     <string name="product_category">Categorie</string>
-    <string name="notification_review_title">Je hebt 1 nieuwe beoordeling! 🌟</string>
-    <string name="notification_order_title">Je hebt 1 nieuwe bestelling! 🎉</string>
+    <string name="notification_review_title">Je hebt een nieuwe beoordeling!</string>
+    <string name="notification_order_title">Je hebt een nieuwe bestelling!</string>
     <string name="shipping_label_package_details_items_count_one">%d artikel</string>
     <string name="upsell_product_count_many">%d upsell-producten</string>
     <string name="upsell_product_count_one">%d upsell-product</string>
@@ -820,7 +881,6 @@ Language: nl
     <string name="product_description_empty">Beschrijf je product</string>
     <string name="product_description">Beschrijving</string>
     <string name="product_edit_description">Beschrijving bewerken</string>
-    <string name="product_description_hint">Begin met schrijven …</string>
     <string name="discard_message">Wil je de wijzigingen ongedaan maken?</string>
     <string name="update">Bijwerken</string>
     <string name="done">Klaar</string>
@@ -957,7 +1017,7 @@ Language: nl
     <string name="login_refresh_app_progress">Controleert op WooCommerce…</string>
     <string name="login_refresh_app">de app vernieuwen</string>
     <string name="login_not_woo_store">Het lijkt erop dat %1$s geen WooCommerce-site is. Installeer de WooCommerce-plug-in op je site en %2$s</string>
-    <string name="orderdetail_empty_shipping_address">Geen adres opgegeven.</string>
+    <string name="orderdetail_empty_address">Geen adres opgegeven.</string>
     <string name="login_need_help_finding_connected_email">Heb je hulp nodig bij het vinden van de e-mail waarmee je hebt ingelogd?</string>
     <string name="enter_wordpress_site">De website op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>
     <string name="enter_email_for_site">Log in met WordPress.com om verbinding te maken met &lt;b&gt;%1$s&lt;/b&gt;</string>

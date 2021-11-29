@@ -6,10 +6,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class CardReaderWelcomeViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderWelcomeViewModel
 

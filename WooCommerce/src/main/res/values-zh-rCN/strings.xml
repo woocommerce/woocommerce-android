@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 09:54:04+0000
+Translation-Revision-Date: 2021-11-09 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">不用了</string>
+    <string name="jetpack_benefits_modal_install_jetpack">安装 Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">支持多个用户访问 WooCommerce 移动应用程序。</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">用户个人资料</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">新的分析视图，让您可查看访客、报告等。</string>
+    <string name="jetpack_benefits_modal_analytics_title">分析</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">将新订单、评论等推送通知发送到您的设备。</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">推送通知</string>
+    <string name="jetpack_benefits_modal_subtitle">免费安装 Jetpack 插件，感受最佳移动体验。</string>
+    <string name="jetpack_benefits_modal_title">实现商店利益最大化</string>
+    <string name="settings_enable_quick_order_teaser_message">在我们准备发布时，测试如何使用最少的信息创建订单</string>
+    <string name="settings_enable_quick_order_teaser_title">快速订单</string>
+    <string name="beta_features_message">查看加载项、快速订单</string>
+    <string name="order_detail_use_as_shipping_address">用作配送地址</string>
+    <string name="order_detail_use_as_billing_address">用作账单地址</string>
+    <string name="orderfilters_filters_count_title">过滤器 (%d)</string>
+    <string name="orderfilters_filters_default_title">过滤器</string>
+    <string name="orderfilters_filter_date_range_options_title">日期范围</string>
+    <string name="orderfilters_filter_order_status_options_title">订单状态</string>
+    <string name="orderfilters_filter_option_item_selected">已选筛选选项</string>
+    <string name="orderfilters_date_range_filter">日期范围</string>
+    <string name="orderfilters_order_status_filter">订单状态</string>
+    <string name="orderfilters_default_filter_value">全部</string>
+    <string name="orderfilters_show_orders_button">显示订单</string>
+    <string name="orderlist_filters_title">已过滤的订单</string>
+    <string name="orderlist_no_filters_title">所有订单</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">了解优势</string>
+    <string name="jetpack_benefits_bottom_banner_title">通过 Jetpack 获取完整体验 </string>
+    <string name="product_description_hint_with_title">告知我们更多关于 %s 的信息…</string>
+    <string name="product_description_hint_no_title">向您的潜在客户描述您的产品…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">将读卡器的序列号复制到剪贴板</string>
+    <string name="card_reader_manual_card_reader">读卡器手册</string>
+    <string name="order_detail_add_billing_address">添加账单地址</string>
+    <string name="order_detail_add_shipping_address">添加配送地址</string>
+    <string name="order_detail_add_customer_note">添加客户备注</string>
+    <string name="order_detail_billing_address_section">账单地址</string>
+    <string name="order_detail_shipping_address_section">配送地址</string>
+    <string name="order_detail_address_section">地址</string>
+    <string name="order_detail_edit_address_country">国家/地区</string>
+    <string name="order_detail_edit_address_state">地区/县</string>
+    <string name="order_detail_edit_address_zip">邮政编码</string>
+    <string name="order_detail_edit_address_city">都市</string>
+    <string name="order_detail_edit_address_line2">地址 2</string>
+    <string name="order_detail_edit_address_line1">地址 1</string>
+    <string name="order_detail_edit_address_company">公司</string>
+    <string name="order_detail_edit_address_details_phone">电话</string>
+    <string name="order_detail_edit_address_details_email">电子邮件</string>
+    <string name="order_detail_edit_address_details_last_name">姓氏</string>
+    <string name="order_detail_edit_address_details_first_name">名字</string>
+    <string name="orderdetail_customer_note_hint">编辑客户订单备注</string>
+    <string name="support_system_status_report_fetch_error">获取 SSR 时出错。 请检查 wp-admin 中的“WooCommerce -&gt; 状态”。</string>
+    <string name="support_system_status_report_share_error">无法共享系统状态报告</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">将 SSR 复制到剪贴板时出错</string>
+    <string name="support_system_status_report_copied_to_clipboard">已将系统状态报告复制到剪切板</string>
+    <string name="support_system_status_report_detail">有关您站点的各种系统信息</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">系统状态报告</string>
+    <string name="card_reader_welcome_dialog_text">恭喜，您现在可以使用 WooCommerce Payments 接受借记卡和信用卡付款了！</string>
+    <string name="card_reader_welcome_dialog_header">使用读卡器收款</string>
+    <string name="card_reader_payment_failed_amount_too_small">金额不得少于 0.50 美元</string>
+    <string name="card_reader_payment_payment_failed_ok">确定</string>
     <string name="settings_whats_new_icon_description">新功能图标图像</string>
     <string name="settings_switch_store">切换商店</string>
     <string name="product_update_failure_notification">产品 %1$s 更新失败</string>
@@ -21,8 +82,8 @@ Language: zh_CN
     <string name="settings_enable_product_addons_teaser_title">查看插件</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">抱歉，我们现在无法更改此功能设置</string>
     <string name="product_category">类别</string>
-    <string name="notification_review_title">您有 1 条新评论！ 🌟</string>
-    <string name="notification_order_title">您有 1 个新订单！ 🎉</string>
+    <string name="notification_review_title">您有一条新评论！🌟</string>
+    <string name="notification_order_title">您有一个新订单！🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d 商品</string>
     <string name="upsell_product_count_many">%d 个追加销售产品</string>
     <string name="upsell_product_count_one">%d 个追加销售产品</string>
@@ -820,7 +881,6 @@ Language: zh_CN
     <string name="product_description_empty">描述您的产品</string>
     <string name="product_description">描述</string>
     <string name="product_edit_description">编辑描述</string>
-    <string name="product_description_hint">开始撰写…</string>
     <string name="discard_message">要放弃您所做的更改吗？</string>
     <string name="update">更新</string>
     <string name="done">完成</string>
@@ -957,7 +1017,7 @@ Language: zh_CN
     <string name="login_refresh_app_progress">正在检查 WooCommerce…</string>
     <string name="login_refresh_app">刷新应用程序</string>
     <string name="login_not_woo_store">%1$s似乎不是 WooCommerce 站点。请在您的站点上安装 WooCommerce 插件，然后 %2$s</string>
-    <string name="orderdetail_empty_shipping_address">未指定地址。</string>
+    <string name="orderdetail_empty_address">未指定地址</string>
     <string name="login_need_help_finding_connected_email">需要帮助查找您连接的电子邮件？</string>
     <string name="enter_wordpress_site">此地址下的网站不是 WordPress 站点。站点必须安装 WordPress，我们才能建立连接。</string>
     <string name="enter_email_for_site">登录 WordPress.com 来连接 &lt;b&gt;%1$s&lt;/b&gt;</string>

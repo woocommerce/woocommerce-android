@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-30 09:54:04+0000
+Translation-Revision-Date: 2021-11-11 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="jetpack_benefits_modal_dismiss">Inte nu</string>
+    <string name="jetpack_benefits_modal_install_jetpack">Installera Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">Tillåt flera användare att komma åt WooCommerce Mobile.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">Användarprofiler</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">Nya analysvyer gör det möjligt att se besökare, rapporter med mera.</string>
+    <string name="jetpack_benefits_modal_analytics_title">Analys</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">Få push-notiser för nya beställningar, recensioner med mera levererade till din enhet.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">Push-notiser</string>
+    <string name="jetpack_benefits_modal_subtitle">Installera det kostnadsfria Jetpack-tillägget för den bästa mobilupplevelsen.</string>
+    <string name="jetpack_benefits_modal_title">Få ut så mycket som möjligt av din butik</string>
+    <string name="settings_enable_quick_order_teaser_message">Testa att skapa beställningar med minimalt med information medan vi gör oss redo för lansering</string>
+    <string name="settings_enable_quick_order_teaser_title">Snabb beställning</string>
+    <string name="beta_features_message">Visa tillägg, snabb beställning</string>
+    <string name="order_detail_use_as_shipping_address">Använd som leveransadress</string>
+    <string name="order_detail_use_as_billing_address">Använd som faktureringsadress</string>
+    <string name="orderfilters_filters_count_title">Filter (%d)</string>
+    <string name="orderfilters_filters_default_title">Filter</string>
+    <string name="orderfilters_filter_date_range_options_title">Datumintervall</string>
+    <string name="orderfilters_filter_order_status_options_title">Beställningsstatus</string>
+    <string name="orderfilters_filter_option_item_selected">Valt filteralternativ</string>
+    <string name="orderfilters_date_range_filter">Datumintervall</string>
+    <string name="orderfilters_order_status_filter">Beställningsstatus</string>
+    <string name="orderfilters_default_filter_value">Alla</string>
+    <string name="orderfilters_show_orders_button">Visa beställningar</string>
+    <string name="orderlist_filters_title">Filtrerade beställningar</string>
+    <string name="orderlist_no_filters_title">Alla beställningar</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Se fördelarna</string>
+    <string name="jetpack_benefits_bottom_banner_title">Få hela upplevelsen med Jetpack</string>
+    <string name="product_description_hint_with_title">Berätta mer om %s …</string>
+    <string name="product_description_hint_no_title">Beskriv din produkt för dina framtida kunder…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">Läsarens serienummer kopierad till urklipp</string>
+    <string name="card_reader_manual_card_reader">Kortläsarmanual</string>
+    <string name="order_detail_add_billing_address">Lägg till faktureringsadress</string>
+    <string name="order_detail_add_shipping_address">Lägg till leveransadress</string>
+    <string name="order_detail_add_customer_note">Lägg till kundanteckning</string>
+    <string name="order_detail_billing_address_section">Faktureringsadress</string>
+    <string name="order_detail_shipping_address_section">Leveransadress</string>
+    <string name="order_detail_address_section">Adress</string>
+    <string name="order_detail_edit_address_country">Land</string>
+    <string name="order_detail_edit_address_state">Delstat/län</string>
+    <string name="order_detail_edit_address_zip">Postnummer</string>
+    <string name="order_detail_edit_address_city">Ort</string>
+    <string name="order_detail_edit_address_line2">Adress 2</string>
+    <string name="order_detail_edit_address_line1">Adress 1</string>
+    <string name="order_detail_edit_address_company">Företag</string>
+    <string name="order_detail_edit_address_details_phone">Telefon</string>
+    <string name="order_detail_edit_address_details_email">E-post</string>
+    <string name="order_detail_edit_address_details_last_name">Efternamn</string>
+    <string name="order_detail_edit_address_details_first_name">Förnamn</string>
+    <string name="orderdetail_customer_note_hint">Redigera en kundbeställningsanteckning</string>
+    <string name="support_system_status_report_fetch_error">Det gick inte att hämta SSR. Kontrollera WooCommerce -&gt; Status i WP-admin.</string>
+    <string name="support_system_status_report_share_error">Det gick inte att dela systemstatusrapporten</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">Det gick inte att kopiera SSR till urklipp</string>
+    <string name="support_system_status_report_copied_to_clipboard">Systemstatusrapport kopierad till urklipp</string>
+    <string name="support_system_status_report_detail">Diverse systeminformation om din webbplats</string>
+    <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
+    <string name="support_system_status_report">Systemstatusrapport</string>
+    <string name="card_reader_welcome_dialog_text">Grattis, du kan nu ta emot kredit- och betalkortsbetalningar med WooCommerce Payments!</string>
+    <string name="card_reader_welcome_dialog_header">Ta emot betalningar med en kortläsare</string>
+    <string name="card_reader_payment_failed_amount_too_small">Beloppet måste vara minst 0,50 USD</string>
+    <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Bild på ny funktionsikon</string>
     <string name="settings_switch_store">Växla butik</string>
     <string name="product_update_failure_notification">Uppdatering av produkt %1$s misslyckades</string>
@@ -21,8 +82,8 @@ Language: sv_SE
     <string name="settings_enable_product_addons_teaser_title">Visa utökningar</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Vi kan tyvärr inte ändra den här funktionsinställningen för tillfället</string>
     <string name="product_category">Kategori</string>
-    <string name="notification_review_title">Du har 1 ny recension! 🌟</string>
-    <string name="notification_order_title">Du har 1 ny beställning! 🎉</string>
+    <string name="notification_review_title">Du har en ny recension! 🌟</string>
+    <string name="notification_order_title">Du har en ny beställning! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d artikel</string>
     <string name="upsell_product_count_many">%d merförsäljningsprodukter</string>
     <string name="upsell_product_count_one">%d merförsäljningsprodukt</string>
@@ -820,7 +881,6 @@ Language: sv_SE
     <string name="product_description_empty">Beskriv din produkt</string>
     <string name="product_description">Beskrivning</string>
     <string name="product_edit_description">Redigera beskrivning</string>
-    <string name="product_description_hint">Börja skriva…</string>
     <string name="discard_message">Vill du ignorera dina ändringar?</string>
     <string name="update">Uppdatera</string>
     <string name="done">Klart</string>
@@ -957,7 +1017,7 @@ Language: sv_SE
     <string name="login_refresh_app_progress">Kollar efter WooCommerce …</string>
     <string name="login_refresh_app">uppdatera appen</string>
     <string name="login_not_woo_store">Det ser ut som att %1$s inte är en WooCommerce-webbplats. Installera WooCommerce-pluginet på din webbplats och därefter %2$s</string>
-    <string name="orderdetail_empty_shipping_address">Ingen adress angiven.</string>
+    <string name="orderdetail_empty_address">Ingen adress specificerad</string>
     <string name="login_need_help_finding_connected_email">Behöver du hjälp med att hitta e-postadressen som du använde för att ansluta?</string>
     <string name="enter_wordpress_site">Webbplatsen på den här adressen är inte en WordPress-webbplats. Webbplatsen måste använda WordPress för att vi ska kunna ansluta till den.</string>
     <string name="enter_email_for_site"> Logga in med WordPress.com för att ansluta till &lt;b&gt;%1$s&lt;/b&gt;</string>

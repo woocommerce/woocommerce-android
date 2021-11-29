@@ -6,8 +6,6 @@ import android.content.Intent
 import android.content.res.Resources.Theme
 import android.net.Uri
 import android.os.Bundle
-import android.util.LayoutDirection
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -18,7 +16,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.text.layoutDirection
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
@@ -33,7 +30,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.navigation.KeepStateNavigator
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -61,8 +57,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
-// TODO Extract logic out of MainActivity to reduce size and remove this @Suppress("TooManyFunctions")
-@Suppress("TooManyFunctions")
+// TODO Extract logic out of MainActivity to reduce size
 @AndroidEntryPoint
 class MainActivity :
     AppUpgradeActivity(),
@@ -182,22 +177,12 @@ class MainActivity :
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
-        // workaround for ensuring collapsing toolbar appears correct in RTL - note that Gravity.START doesn't work
-        if (Locale.getDefault().layoutDirection == LayoutDirection.RTL) {
-            binding.collapsingToolbar.collapsedTitleGravity = Gravity.RIGHT
-            binding.collapsingToolbar.expandedTitleGravity = Gravity.RIGHT
-        }
-
         presenter.takeView(this)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
-        val navigator = KeepStateNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment_main)
         navController = navHostFragment.navController
-        with(navController) {
-            navigatorProvider.addNavigator(navigator)
-            setGraph(R.navigation.nav_graph_main)
-            addOnDestinationChangedListener(this@MainActivity)
-        }
+        navController.addOnDestinationChangedListener(this@MainActivity)
+
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
 
         binding.bottomNav.init(navController, this)
@@ -258,6 +243,7 @@ class MainActivity :
         updateOrderBadge(false)
 
         checkConnection()
+        viewModel.showFeatureAnnouncementIfNeeded()
     }
 
     override fun onPause() {
@@ -308,10 +294,8 @@ class MainActivity :
             }
             navController.navigateUp()
             return
-        } else if (binding.bottomNav.currentPosition != MY_STORE) {
-            navController.navigate(R.id.dashboard)
         } else {
-            finish()
+            super.onBackPressed()
         }
     }
 
@@ -334,7 +318,8 @@ class MainActivity :
             currentDestinationId == R.id.dashboard ||
                 currentDestinationId == R.id.orders ||
                 currentDestinationId == R.id.products ||
-                currentDestinationId == R.id.reviews
+                currentDestinationId == R.id.reviews ||
+                currentDestinationId == R.id.analytics
         } else {
             true
         }
@@ -398,8 +383,8 @@ class MainActivity :
 
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
-            if (destination.id != R.id.dashboard && destination.id != R.id.orders) {
-                // MyStoreFragment and OrderListFragment handle the elevation by themselves
+            if (destination.id != R.id.dashboard) {
+                // MyStoreFragment handle the elevation by themselves
                 binding.appBarLayout.elevation = 0f
             }
             showCrossIcon = false
@@ -414,7 +399,11 @@ class MainActivity :
                 R.id.addOrderNoteFragment,
                 R.id.printShippingLabelInfoFragment,
                 R.id.shippingLabelFormatOptionsFragment,
-                R.id.printingInstructionsFragment -> {
+                R.id.printingInstructionsFragment,
+                R.id.editCustomerOrderNoteFragment,
+                R.id.shippingAddressEditingFragment,
+                R.id.billingAddressEditingFragment,
+                R.id.orderFilterCategoriesFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -655,6 +644,7 @@ class MainActivity :
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> Stat.MAIN_TAB_DASHBOARD_SELECTED
+            ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_SELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
             REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
@@ -671,6 +661,7 @@ class MainActivity :
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
+            ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_RESELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
             REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
@@ -744,6 +735,10 @@ class MainActivity :
                         intent.putExtra(FIELD_PUSH_ID, event.pushId)
                         restart()
                     }
+                    is ShowFeatureAnnouncement -> {
+                        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+                        navController.navigateSafely(action)
+                    }
                 }
             }
         )
@@ -751,7 +746,7 @@ class MainActivity :
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId,
+            remoteProductId = remoteProductId,
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(action)
@@ -785,10 +780,10 @@ class MainActivity :
         }
 
         val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
-            remoteReviewId,
-            tempStatus,
-            launchedFromNotification,
-            enableModeration
+            remoteReviewId = remoteReviewId,
+            tempStatus = tempStatus,
+            launchedFromNotification = launchedFromNotification,
+            enableModeration = enableModeration
         )
         navController.navigateSafely(action)
     }
@@ -801,14 +796,11 @@ class MainActivity :
         productCategoryName: String?
     ) {
         val action = ProductListFragmentDirections.actionProductListFragmentToProductFilterListFragment(
-            stockStatus, productStatus, productType, productCategory, productCategoryName
-        )
-        navController.navigateSafely(action)
-    }
-
-    override fun showProductAddBottomSheet() {
-        val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
-            isAddProduct = true
+            selectedStockStatus = stockStatus,
+            selectedProductStatus = productStatus,
+            selectedProductType = productType,
+            selectedProductCategoryId = productCategory,
+            selectedProductCategoryName = productCategoryName
         )
         navController.navigateSafely(action)
     }

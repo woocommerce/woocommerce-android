@@ -29,6 +29,9 @@ object AppUrls {
     const val CROWDSIGNAL_SHIPPING_LABELS_SURVEY =
         "https://automattic.survey.fm/woo-app-feature-feedback-shipping-labels"
 
+    // TODO nbradbury - change to https://automattic.survey.fm/woo-app-quick-order-production when feature is released
+    const val SIMPLE_PAYMENTS_SURVEY = "https://automattic.survey.fm/woo-app-quick-order-testing"
+
     const val WOOCOMMERCE_USER_ROLES =
         "https://woocommerce.com/posts/a-guide-to-woocommerce-user-roles-permissions-and-security/"
     const val SHIPPING_LABEL_CUSTOMS_ITN = "https://pe.usps.com/text/imm/immc5_010.htm"
@@ -38,5 +41,8 @@ object AppUrls {
     const val WPCOM_ADD_PAYMENT_METHOD = "https://wordpress.com/me/purchases/add-payment-method"
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS =
         "https://docs.woocommerce.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/"
-    const val WOOCOMMERCE_PURCHASE_CARD_READER = "https://woocommerce.com/products/bbpos-chipper2xbt-card-reader"
+    const val WOOCOMMERCE_PURCHASE_CARD_READER = "https://woocommerce.com/in-person-payments/"
+    const val BBPOS_MANUAL_CARD_READER =
+        "https://developer.bbpos.com/quick_start_guide/Chipper%202X%20BT%20Quick%20Start%20Guide.pdf"
+    const val M2_MANUAL_CARD_READER = "https://stripe.com/files/docs/terminal/m2_product_sheet.pdf"
 }

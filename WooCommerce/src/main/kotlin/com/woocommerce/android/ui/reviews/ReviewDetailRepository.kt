@@ -25,7 +25,6 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_REVIEW
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -37,7 +36,6 @@ import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsRead
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
 
 class ReviewDetailRepository @Inject constructor(
@@ -54,7 +52,6 @@ class ReviewDetailRepository @Inject constructor(
     private var remoteProductId: Long = 0L
     private var localNoteId: Int = 0
 
-    private var continuationReview = ContinuationWrapper<Boolean>(REVIEWS)
     private var continuationProduct = ContinuationWrapper<Boolean>(REVIEWS)
 
     init {
@@ -131,14 +128,27 @@ class ReviewDetailRepository @Inject constructor(
     }
 
     private suspend fun fetchProductReviewFromApi(remoteId: Long): Boolean {
-        val result = continuationReview.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = WCProductStore.FetchSingleProductReviewPayload(selectedSite.get(), remoteId)
-            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductReviewAction(payload))
+        val payload = WCProductStore.FetchSingleProductReviewPayload(selectedSite.get(), remoteId)
+        val result = productStore.fetchSingleProductReview(payload)
+        if (result.isError) {
+            AnalyticsTracker.track(
+                Stat.REVIEW_LOAD_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
+                )
+            )
+
+            WooLog.e(
+                REVIEWS,
+                "Error fetching product review: " +
+                    "${result.error?.type} - ${result.error?.message}"
+            )
+        } else {
+            AnalyticsTracker.track(Stat.REVIEW_LOADED, mapOf(AnalyticsTracker.KEY_ID to remoteReviewId))
         }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        return !result.isError
     }
 
     private suspend fun getProductReviewFromDb(remoteId: Long): WCProductReviewModel? {
@@ -150,35 +160,6 @@ class ReviewDetailRepository @Inject constructor(
     private suspend fun getProductFromDb(remoteProductId: Long): WCProductModel? {
         return withContext(Dispatchers.IO) {
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onProductReviewChanged(event: OnProductReviewChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT_REVIEW) {
-            if (continuationReview.isWaiting) {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.REVIEW_LOAD_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                        )
-                    )
-
-                    WooLog.e(
-                        REVIEWS,
-                        "Error fetching product review: " +
-                            "${event.error?.type} - ${event.error?.message}"
-                    )
-                    continuationReview.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(Stat.REVIEW_LOADED, mapOf(AnalyticsTracker.KEY_ID to remoteReviewId))
-                    continuationReview.continueWith(true)
-                }
-            }
         }
     }
 

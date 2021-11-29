@@ -79,7 +79,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has empty payment method, then it is not collectable`() =
+    fun `when order has empty payment method, then it is collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = getOrder(paymentMethod = "")
 
@@ -221,8 +221,6 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    // TODO cardreader remove the following test when the backend issue is fixed
-    // https://github.com/Automattic/woocommerce-payments/issues/2390
     fun `when order has been refunded, then hide collect button `() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = getOrder(refundTotal = 99)
@@ -230,6 +228,19 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order)
 
             assertThat(isCollectable).isFalse()
+        }
+
+    @Test
+    fun `when order has "woocommerce_payments" payment method then it is collectable`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val order = getOrder(paymentMethod = "woocommerce_payments")
+
+            // WHEN
+            val isCollectable = checker.isCollectable(order)
+
+            // THEN
+            assertThat(isCollectable).isTrue()
         }
 
     private fun getOrder(

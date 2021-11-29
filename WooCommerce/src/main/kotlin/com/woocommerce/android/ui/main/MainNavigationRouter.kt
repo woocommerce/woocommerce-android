@@ -14,6 +14,7 @@ interface MainNavigationRouter {
         remoteNoteId: Long = 0,
         launchedFromNotification: Boolean = false
     )
+
     fun showAddProduct()
     fun showReviewDetail(
         remoteReviewId: Long,
@@ -31,6 +32,5 @@ interface MainNavigationRouter {
     )
 
     fun showFeedbackSurvey()
-    fun showProductAddBottomSheet()
     fun showSettingsScreen()
 }

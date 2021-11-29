@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -162,6 +163,8 @@ class SitePickerActivity :
             bundle.getString(KEY_LOGIN_SITE_URL)?.let { url ->
                 deferLoadingSitesIntoView = true
                 loginSiteUrl = url
+                // hide the sites list
+                binding.siteListContainer.isVisible = false
             }
 
             val ids = bundle.getIntArray(STATE_KEY_SITE_ID_LIST) ?: IntArray(0)
@@ -191,17 +194,11 @@ class SitePickerActivity :
             AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }?.let { url ->
                 deferLoadingSitesIntoView = true
                 loginSiteUrl = url
+                // hide the sites list
+                binding.siteListContainer.isVisible = false
             }
 
-            // Signin M1: We still want the presenter to go out and fetch sites so we
-            // know whether or not to show the "view connected stores" button.
-            if (calledFromLogin) {
-                // Sites have already been fetched as part of the login process. Just load them
-                // from the db.
-                presenter.loadSites()
-            } else {
-                presenter.loadAndFetchSites()
-            }
+            presenter.loadAndFetchSites()
         }
     }
 
@@ -303,11 +300,14 @@ class SitePickerActivity :
     }
 
     override fun showStoreList(wcSites: List<SiteModel>) {
+        val sites = wcSites.filter {
+            FeatureFlag.JETPACK_CP.isEnabled() || !it.isJetpackCPConnected
+        }
         hideProgressDialog()
         showUserInfo(centered = false)
 
         if (deferLoadingSitesIntoView) {
-            if (wcSites.isNotEmpty()) {
+            if (sites.isNotEmpty()) {
                 hasConnectedStores = true
 
                 // Make "show connected stores" visible to the user
@@ -321,9 +321,6 @@ class SitePickerActivity :
             }
 
             loginSiteUrl?.let {
-                // hide the site list and validate the url if we already know the connected store, which will happen
-                // if the user logged in by entering their store address
-                binding.siteListContainer.visibility = View.GONE
                 processLoginSite(it)
             }
             return
@@ -356,7 +353,7 @@ class SitePickerActivity :
 
         binding.sitePickerRoot.visibility = View.VISIBLE
 
-        if (wcSites.isEmpty()) {
+        if (sites.isEmpty()) {
             showNoStoresView()
             return
         }
@@ -365,16 +362,16 @@ class SitePickerActivity :
         binding.siteListContainer.visibility = View.VISIBLE
 
         binding.siteListLabel.text = when {
-            wcSites.size == 1 -> getString(R.string.login_connected_store)
+            sites.size == 1 -> getString(R.string.login_connected_store)
             calledFromLogin -> getString(R.string.login_pick_store)
             else -> getString(R.string.site_picker_title)
         }
 
-        siteAdapter.siteList = wcSites
+        siteAdapter.siteList = sites
         siteAdapter.selectedSiteId = if (clickedSiteId > 0) {
             clickedSiteId
         } else {
-            selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
+            selectedSite.getIfExists()?.siteId ?: sites[0].siteId
         }
 
         with(binding.loginEpilogueButtonBar.buttonPrimary) {
@@ -539,14 +536,21 @@ class SitePickerActivity :
         }
     }
 
-    override fun showSkeleton(show: Boolean) {
-        if (deferLoadingSitesIntoView) {
-            return
-        }
-
+    override fun showLoadingView(show: Boolean) {
         when (show) {
-            true -> skeletonView.show(binding.sitesRecycler, R.layout.skeleton_site_picker, delayed = true)
-            false -> skeletonView.hide()
+            true -> {
+                if (loginSiteUrl.isNullOrEmpty()) {
+                    skeletonView.show(binding.sitesRecycler, R.layout.skeleton_site_picker, delayed = true)
+                } else {
+                    binding.progressBar.isVisible = true
+                }
+                binding.loginEpilogueButtonBar.root.isVisible = false
+            }
+            false -> {
+                skeletonView.hide()
+                binding.progressBar.isVisible = false
+                binding.loginEpilogueButtonBar.root.isVisible = true
+            }
         }
     }
 
