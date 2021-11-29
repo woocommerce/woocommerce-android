@@ -123,7 +123,7 @@ ext {
     jUnitExtVersion = '1.1.3'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = "develop-eebc5d8e91a1d90190919f900f924b39c861a528"
-    mediapickerVersion = 'trunk-a4f2504db526b0494ccca82028f6b32c8207dc33'
+    mediapickerVersion = 'trunk-4879e78590dbc617de7c94a256986261a915ac8f'
 }
 
 // Onboarding and dev env setup tasks
