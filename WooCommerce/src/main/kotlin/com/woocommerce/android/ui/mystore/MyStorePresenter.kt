@@ -8,7 +8,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
-import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
@@ -29,7 +28,6 @@ import javax.inject.Inject
 class MyStorePresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!
-    private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
     private val appPrefsWrapper: AppPrefsWrapper,
