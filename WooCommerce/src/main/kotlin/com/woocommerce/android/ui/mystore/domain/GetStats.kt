@@ -1,13 +1,12 @@
 package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.di.DefaultDispatcher
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -19,7 +18,7 @@ class GetStats @Inject constructor(
     private val selectedSite: SelectedSite,
     private val statsRepository: StatsRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
-    @DefaultDispatcher private val dispatcher: CoroutineDispatcher
+    private val coroutineDispatchers: CoroutineDispatchers
 ) {
 
     @ExperimentalCoroutinesApi
@@ -28,7 +27,7 @@ class GetStats @Inject constructor(
             hasOrders(),
             revenueStats(refresh, granularity),
             visitorStats(refresh, granularity)
-        ).flowOn(dispatcher)
+        ).flowOn(coroutineDispatchers.computation)
 
     private suspend fun hasOrders(): Flow<HasOrders> =
         statsRepository.checkIfStoreHasNoOrdersFlow()

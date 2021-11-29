@@ -4,11 +4,9 @@ import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedError
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
@@ -22,11 +20,10 @@ import org.wordpress.android.fluxc.store.WCStatsStore
 @ExperimentalCoroutinesApi
 class GetTopPerformersTest : BaseUnitTest() {
     private val statsRepository: StatsRepository = mock()
-    private val dispatcher: CoroutineDispatcher = TestCoroutineDispatcher()
 
     private val getTopPerformers = GetTopPerformers(
         statsRepository,
-        dispatcher
+        coroutinesTestRule.testDispatchers
     )
 
     @Test

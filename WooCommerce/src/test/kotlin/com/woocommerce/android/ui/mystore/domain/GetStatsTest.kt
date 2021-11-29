@@ -6,13 +6,11 @@ import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -32,14 +30,13 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN
 class GetStatsTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val statsRepository: StatsRepository = mock()
-    private val dispatcher: CoroutineDispatcher = TestCoroutineDispatcher()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private val getStats = GetStats(
         selectedSite,
         statsRepository,
         appPrefsWrapper,
-        dispatcher
+        coroutinesTestRule.testDispatchers
     )
 
     @Before
