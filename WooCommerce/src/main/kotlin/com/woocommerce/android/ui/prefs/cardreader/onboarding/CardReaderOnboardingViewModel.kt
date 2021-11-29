@@ -112,7 +112,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         ::onContactSupportClicked,
                         ::onLearnMoreClicked
                     )
-                CardReaderOnboardingState.StripeTerminal.SetupNotCompleted -> TODO()
                 CardReaderOnboardingState.StripeTerminal.UnsupportedVersion ->
                     viewState.value =
                         OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState(
@@ -147,11 +146,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
             CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
             CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
             CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
-            is CardReaderOnboardingState.SetupNotCompleted -> "wcpay_not_setup"
+            is CardReaderOnboardingState.SetupNotCompleted -> "${state.pluginType}_not_setup"
             CardReaderOnboardingState.WcpayUnsupportedVersion -> "wcpay_unsupported_version"
             CardReaderOnboardingState.GenericError -> "generic_error"
             CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
-            CardReaderOnboardingState.StripeTerminal.SetupNotCompleted -> "stripe_not_setup"
             CardReaderOnboardingState.StripeTerminal.UnsupportedVersion -> "stripe_unsupported_version"
             CardReaderOnboardingState.WcpayAndStripeActivated -> "wcpay_and_stripe_installed_and_activated"
         }

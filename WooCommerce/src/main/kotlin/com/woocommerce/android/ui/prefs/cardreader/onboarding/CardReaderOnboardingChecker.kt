@@ -215,11 +215,6 @@ sealed class CardReaderOnboardingState {
          * contain required APIs for card present payments.
          */
         object UnsupportedVersion : CardReaderOnboardingState()
-
-        /**
-         * stripe terminal is installed and activated but requires to be setup first.
-         */
-        object SetupNotCompleted : CardReaderOnboardingState()
     }
 
     /**
