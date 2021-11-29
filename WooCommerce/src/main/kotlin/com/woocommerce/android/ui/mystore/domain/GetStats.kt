@@ -55,7 +55,6 @@ class GetStats @Inject constructor(
                 }
             }
         )
-        emit(IsLoadingStats(false))
     }
 
     private fun visitorStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> = flow {
@@ -92,10 +91,6 @@ class GetStats @Inject constructor(
 
         data class HasOrders(
             val hasOrder: Boolean
-        ) : LoadStatsResult()
-
-        data class IsLoadingStats(
-            val isLoading: Boolean
         ) : LoadStatsResult()
 
         object GenericError : LoadStatsResult()

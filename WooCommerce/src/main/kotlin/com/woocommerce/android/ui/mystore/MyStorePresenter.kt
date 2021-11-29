@@ -104,9 +104,11 @@ class MyStorePresenter @Inject constructor(
                         is HasOrders -> myStoreView?.showEmptyView(!it.hasOrder)
                         is VisitorsStatsError -> myStoreView?.showVisitorStatsError(granularity)
                         is VisitorsStatsSuccess -> myStoreView?.showVisitorStats(it.stats, granularity)
-                        is IsLoadingStats -> myStoreView?.showChartSkeleton(it.isLoading)
                         PluginNotActive -> myStoreView?.updateStatsAvailabilityError()
                         IsJetPackCPEnabled -> myStoreView?.showEmptyVisitorStatsForJetpackCP()
+                    }
+                    if (it is RevenueStatsSuccess || it is PluginNotActive || it is GenericError) {
+                        myStoreView?.showChartSkeleton(false)
                     }
                 }
         }
