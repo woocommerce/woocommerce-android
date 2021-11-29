@@ -835,6 +835,22 @@
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
     <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50 usd</string>
+    <string name="card_reader_payment_failed_temporary">Trying again may succeed</string>
+    <string name="card_reader_payment_failed_fraud">Try another means of payment</string>
+    <string name="card_reader_payment_failed_generic">Payment was declined for an unspecified reason</string>
+    <string name="card_reader_payment_failed_invalid_account">The card or card account is invalid</string>
+    <string name="card_reader_payment_failed_card_not_supported">The card does not support this type of purchase</string>
+    <string name="card_reader_payment_failed_currency_not_supported">The card does not support this currency</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">An identical transaction was submitted recently</string>
+    <string name="card_reader_payment_failed_expired_card">The card has expired</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">The transaction postal code and card postal code do not match</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Payment declined due to insufficient funds</string>
+    <string name="card_reader_payment_failed_invalid_amount">The payment amount is not allowed for the card presented</string>
+    <string name="card_reader_payment_failed_pin_required">This card requires a PIN code and thus cannot be processed</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">An incorrect PIN has been entered too many times</string>
+    <string name="card_reader_payment_failed_test_card">System test cards are not permitted for payment</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">A live card was used on a site in test mode</string>
+    <string name="card_reader_payment_failed_unknown">Payment was declined for an unknown reason</string>
 
     <string name="card_reader_payment_retry_card_prompt">Retry with the same card</string>
     <string name="card_reader_payment_remove_card_prompt">Remove the card</string>

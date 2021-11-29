@@ -68,7 +68,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(GenericError, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(GenericError, mock(), "dummy msg")
     private val paymentFailedWithNoNetwork = PaymentFailed(NoNetwork, mock(), "dummy msg")
-    private val paymentFailedWithPaymentDeclined = PaymentFailed(PaymentDeclined.Declined, mock(), "dummy msg")
+    private val paymentFailedWithPaymentDeclined = PaymentFailed(PaymentDeclined.Unknown, mock(), "dummy msg")
     private val paymentFailedWithCardReadTimeOut = PaymentFailed(GenericError, mock(), "dummy msg")
     private val paymentFailedWithServerError = PaymentFailed(ServerError, mock(), "dummy msg")
     private val paymentFailedWithAmountTooSmall = PaymentFailed(PaymentDeclined.AmountTooSmall, mock(), "dummy msg")
@@ -456,7 +456,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertEquals((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel, NO_NETWORK.message)
+            assertEquals((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel, NoNetwork.message)
         }
 
     @Test
@@ -469,7 +469,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel, PAYMENT_DECLINED.message
+                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel, PaymentDeclined.message
             )
         }
 
@@ -482,7 +482,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertEquals((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel, GENERIC_ERROR.message)
+            assertEquals((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel, GenericError.message)
         }
 
     @Test
@@ -508,7 +508,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                NO_NETWORK.message
+                NoNetwork.message
             )
         }
 
@@ -523,7 +523,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                PAYMENT_DECLINED.message
+                PaymentDeclined.message
             )
         }
 
@@ -538,7 +538,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                GENERIC_ERROR.message
+                GenericError.message
             )
         }
 
@@ -553,7 +553,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                GENERIC_ERROR.message
+                GenericError.message
             )
         }
 
@@ -568,7 +568,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                SERVER_ERROR.message
+                ServerError.message
             )
         }
 
@@ -583,7 +583,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertEquals(
                 (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
-                AMOUNT_TOO_SMALL.message
+                AmountTooSmall.message
             )
         }
 
@@ -867,7 +867,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when payment fails with payment declined error, then correct paymentStateLabel is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(PaymentDeclined.Declined, null, "")) }
+                flow { emit(PaymentFailed(PaymentDeclined.Unknown, null, "")) }
             }
 
             viewModel.start()

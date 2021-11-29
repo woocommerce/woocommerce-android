@@ -8,7 +8,6 @@ import com.stripe.stripeterminal.external.models.TerminalException.TerminalError
 import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode.DECLINED_BY_READER
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.*
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
-import com.woocommerce.android.cardreader.internal.payments.PaymentErrorMapper.DeclinedPayment.AMOUNT_TOO_SMALL
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -66,7 +65,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(PaymentDeclined.Declined)
+        assertThat(result.type).isEqualTo(PaymentDeclined.Unknown)
     }
 
     @Test
@@ -91,9 +90,7 @@ class PaymentErrorMapperTest {
     fun `when PAYMENT_DECLINED with amount_too_small code is thrown, then AmountTooSmall type returned`() {
         whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
         whenever(terminalException.apiError).thenReturn(mock())
-        whenever(terminalException.apiError?.code).thenReturn(
-            AMOUNT_TOO_SMALL.message
-        )
+        whenever(terminalException.apiError?.code).thenReturn("amount_too_small")
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
@@ -108,7 +105,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(PaymentDeclined.Declined)
+        assertThat(result.type).isEqualTo(PaymentDeclined.Unknown)
     }
 
     @Test
@@ -165,6 +162,6 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(PaymentDeclined.Declined)
+        assertThat(result.type).isEqualTo(PaymentDeclined.Unknown)
     }
 }

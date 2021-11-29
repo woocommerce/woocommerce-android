@@ -3,12 +3,15 @@ package com.woocommerce.android.cardreader.internal.payments
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.*
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.NetworkError
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.ServerError
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.GenericError
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
 
 internal class PaymentErrorMapper {
     fun mapTerminalError(
@@ -28,12 +31,12 @@ internal class PaymentErrorMapper {
         return PaymentFailed(type, paymentData, exception.errorMessage)
     }
 
-    private fun mapStripeDeclinedError(exception: TerminalException): PaymentDeclined {
-        return when (exception.apiError?.code) {
-            DeclinedPayment.AMOUNT_TOO_SMALL.message -> PaymentDeclined.AmountTooSmall
-            else -> PaymentDeclined.Declined
-        }
-    }
+    private fun mapStripeDeclinedError(exception: TerminalException) =
+        PaymentDeclined::class.sealedSubclasses
+            .map { it.objectInstance as PaymentDeclined }
+            .firstOrNull {
+                it.errorCodes.contains(exception.apiError?.code)
+            } ?: PaymentDeclined.Unknown
 
     fun mapCapturePaymentError(
         originalPaymentIntent: PaymentIntent,
@@ -55,9 +58,5 @@ internal class PaymentErrorMapper {
     ): PaymentFailed {
         val paymentData = originalPaymentIntent?.let { PaymentDataImpl(originalPaymentIntent) }
         return PaymentFailed(GenericError, paymentData, errorMessage)
-    }
-
-    enum class DeclinedPayment(val message: String) {
-        AMOUNT_TOO_SMALL("amount_too_small")
     }
 }
