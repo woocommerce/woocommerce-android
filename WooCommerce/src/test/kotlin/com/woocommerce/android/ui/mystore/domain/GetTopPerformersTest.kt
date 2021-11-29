@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedError
+import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +30,7 @@ class GetTopPerformersTest : BaseUnitTest() {
     )
 
     @Test
-    fun `Given fetch product leader boards success, when result available, then emits sorted top performers`() =
+    fun `Given fetch product leader boards success, when get top performers, then emits sorted top performers`() =
         testBlocking {
             givenFetchProductLeaderboardsResult(Result.success(UNORDERED_PERFORMERS_PRODUCT_LIST))
 
@@ -38,12 +39,12 @@ class GetTopPerformersTest : BaseUnitTest() {
             ).first()
 
             assertThat(result).isEqualTo(
-                GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess(SORTED_PERFORMERS_PRODUCT_LIST)
+                TopPerformersLoadedSuccess(SORTED_PERFORMERS_PRODUCT_LIST)
             )
         }
 
     @Test
-    fun `Given error loading top performers, when result is available, then emits top performers error`() =
+    fun `Given fetch product leader boards error, when get top performers, then emits top performers error`() =
         testBlocking {
             givenFetchProductLeaderboardsResult(REPOSITORY_ERROR_RESULT)
 
