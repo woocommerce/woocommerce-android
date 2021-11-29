@@ -101,30 +101,36 @@ sealed class ViewState(
 }
 
 sealed class PaymentFlowError(@StringRes val message: Int) {
-    object FetchingOrderFailed : PaymentFlowError(R.string.order_error_fetch_generic), RetryableError
-    object NoNetwork : PaymentFlowError(R.string.card_reader_payment_failed_no_network_state), RetryableError
-    object ServerError : PaymentFlowError(R.string.card_reader_payment_failed_server_error_state), RetryableError
-    object GenericError : PaymentFlowError(R.string.card_reader_payment_failed_unexpected_error_state), RetryableError
+    object FetchingOrderFailed : PaymentFlowError(R.string.order_error_fetch_generic)
+    object NoNetwork : PaymentFlowError(R.string.card_reader_payment_failed_no_network_state)
+    object ServerError : PaymentFlowError(R.string.card_reader_payment_failed_server_error_state)
+    object GenericError : PaymentFlowError(R.string.card_reader_payment_failed_unexpected_error_state)
     sealed class Declined(message: Int) : PaymentFlowError(message) {
-        object Temporary : Declined(R.string.card_reader_payment_failed_temporary), RetryableError
-        object Fraud : Declined(R.string.card_reader_payment_failed_fraud)
-        object Generic : Declined(R.string.card_reader_payment_failed_generic), RetryableError
-        object InvalidAccount : Declined(R.string.card_reader_payment_failed_invalid_account)
-        object CardNotSupported : Declined(R.string.card_reader_payment_failed_card_not_supported), RetryableError
-        object CurrencyNotSupported : Declined(R.string.card_reader_payment_failed_currency_not_supported)
-        object DuplicateTransaction : Declined(R.string.card_reader_payment_failed_duplicate_transaction)
-        object ExpiredCard : Declined(R.string.card_reader_payment_failed_expired_card), RetryableError
-        object IncorrectPostalCode : Declined(R.string.card_reader_payment_failed_incorrect_postal_code)
-        object InsufficientFunds : Declined(R.string.card_reader_payment_failed_insufficient_funds), RetryableError
-        object InvalidAmount : Declined(R.string.card_reader_payment_failed_invalid_amount)
-        object PinRequired : Declined(R.string.card_reader_payment_failed_pin_required), RetryableError
-        object TooManyPinTries : Declined(R.string.card_reader_payment_failed_too_many_pin_tries), RetryableError
-        object TestCard : Declined(R.string.card_reader_payment_failed_test_card), RetryableError
-        object TestModeLiveCard : Declined(R.string.card_reader_payment_failed_test_card), RetryableError
+        object Temporary : Declined(R.string.card_reader_payment_failed_temporary)
+        object Fraud : Declined(R.string.card_reader_payment_failed_fraud), NonRetryableError
+        object Generic : Declined(R.string.card_reader_payment_failed_generic)
+        object InvalidAccount : Declined(R.string.card_reader_payment_failed_invalid_account), NonRetryableError
+        object CardNotSupported : Declined(R.string.card_reader_payment_failed_card_not_supported)
+        object CurrencyNotSupported :
+            Declined(R.string.card_reader_payment_failed_currency_not_supported), NonRetryableError
+
+        object DuplicateTransaction :
+            Declined(R.string.card_reader_payment_failed_duplicate_transaction), NonRetryableError
+
+        object ExpiredCard : Declined(R.string.card_reader_payment_failed_expired_card)
+        object IncorrectPostalCode :
+            Declined(R.string.card_reader_payment_failed_incorrect_postal_code), NonRetryableError
+
+        object InsufficientFunds : Declined(R.string.card_reader_payment_failed_insufficient_funds)
+        object InvalidAmount : Declined(R.string.card_reader_payment_failed_invalid_amount), NonRetryableError
+        object PinRequired : Declined(R.string.card_reader_payment_failed_pin_required)
+        object TooManyPinTries : Declined(R.string.card_reader_payment_failed_too_many_pin_tries)
+        object TestCard : Declined(R.string.card_reader_payment_failed_test_card)
+        object TestModeLiveCard : Declined(R.string.card_reader_payment_failed_test_card)
 
         object AmountTooSmall : Declined(R.string.card_reader_payment_failed_amount_too_small)
-        object Unknown : Declined(R.string.card_reader_payment_failed_unknown), RetryableError
+        object Unknown : Declined(R.string.card_reader_payment_failed_unknown), NonRetryableError
     }
 
-    sealed interface RetryableError
+    sealed interface NonRetryableError
 }

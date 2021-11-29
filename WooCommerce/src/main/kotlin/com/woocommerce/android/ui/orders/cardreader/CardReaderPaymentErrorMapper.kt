@@ -1,13 +1,15 @@
 package com.woocommerce.android.ui.orders.cardreader
 
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined
 import javax.inject.Inject
 
 class CardReaderPaymentErrorMapper @Inject constructor() {
     fun mapToUiError(errorType: CardPaymentStatus.CardPaymentStatusErrorType): PaymentFlowError =
         when (errorType) {
             CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork -> PaymentFlowError.NoNetwork
-            is CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined ->
+            is CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError ->
                 mapPaymentDeclinedErrorType(errorType)
             CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut,
             CardPaymentStatus.CardPaymentStatusErrorType.GenericError -> PaymentFlowError.GenericError
@@ -17,41 +19,26 @@ class CardReaderPaymentErrorMapper @Inject constructor() {
 
     @Suppress("ComplexMethod")
     private fun mapPaymentDeclinedErrorType(
-        cardPaymentStatusErrorType: CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined
+        cardPaymentStatusErrorType: CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError
     ) = when (cardPaymentStatusErrorType) {
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.AmountTooSmall ->
-            PaymentFlowError.Declined.AmountTooSmall
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.CardNotSupported ->
-            PaymentFlowError.Declined.CardNotSupported
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.CurrencyNotSupported ->
-            PaymentFlowError.Declined.CurrencyNotSupported
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.DuplicateTransaction ->
-            PaymentFlowError.Declined.DuplicateTransaction
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.ExpiredCard ->
-            PaymentFlowError.Declined.ExpiredCard
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.Fraud ->
-            PaymentFlowError.Declined.Fraud
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.Generic ->
-            PaymentFlowError.Declined.Generic
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.IncorrectPostalCode ->
-            PaymentFlowError.Declined.IncorrectPostalCode
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.InsufficientFunds ->
-            PaymentFlowError.Declined.InsufficientFunds
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.InvalidAccount ->
-            PaymentFlowError.Declined.InvalidAccount
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.InvalidAmount ->
-            PaymentFlowError.Declined.InvalidAmount
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.PinRequired ->
-            PaymentFlowError.Declined.PinRequired
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.Temporary ->
-            PaymentFlowError.Declined.Temporary
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.TestCard ->
-            PaymentFlowError.Declined.TestCard
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.TestModeLiveCard ->
-            PaymentFlowError.Declined.TestModeLiveCard
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.TooManyPinTries ->
-            PaymentFlowError.Declined.TooManyPinTries
-        CardPaymentStatus.CardPaymentStatusErrorType.PaymentDeclined.Unknown ->
-            PaymentFlowError.Declined.Unknown
+        AmountTooSmall -> PaymentFlowError.Declined.AmountTooSmall
+        Unknown -> PaymentFlowError.Declined.Unknown
+
+        CardDeclined.CardNotSupported -> PaymentFlowError.Declined.CardNotSupported
+        CardDeclined.CurrencyNotSupported -> PaymentFlowError.Declined.CurrencyNotSupported
+        CardDeclined.DuplicateTransaction -> PaymentFlowError.Declined.DuplicateTransaction
+        CardDeclined.ExpiredCard -> PaymentFlowError.Declined.ExpiredCard
+        CardDeclined.Fraud -> PaymentFlowError.Declined.Fraud
+        CardDeclined.Generic -> PaymentFlowError.Declined.Generic
+        CardDeclined.IncorrectPostalCode -> PaymentFlowError.Declined.IncorrectPostalCode
+        CardDeclined.InsufficientFunds -> PaymentFlowError.Declined.InsufficientFunds
+        CardDeclined.InvalidAccount -> PaymentFlowError.Declined.InvalidAccount
+        CardDeclined.InvalidAmount -> PaymentFlowError.Declined.InvalidAmount
+        CardDeclined.PinRequired -> PaymentFlowError.Declined.PinRequired
+        CardDeclined.Temporary -> PaymentFlowError.Declined.Temporary
+        CardDeclined.TestCard -> PaymentFlowError.Declined.TestCard
+        CardDeclined.TestModeLiveCard -> PaymentFlowError.Declined.TestModeLiveCard
+        CardDeclined.TooManyPinTries -> PaymentFlowError.Declined.TooManyPinTries
+        CardDeclined.Unknown -> PaymentFlowError.Declined.Unknown
     }
 }

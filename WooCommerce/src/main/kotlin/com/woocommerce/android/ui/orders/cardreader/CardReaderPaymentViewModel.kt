@@ -249,15 +249,7 @@ class CardReaderPaymentViewModel
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
         val errorType = errorMapper.mapToUiError(error.type)
-        if (errorType is PaymentFlowError.RetryableError) {
-            viewState.postValue(
-                FailedPaymentState(
-                    errorType,
-                    amountLabel,
-                    onPrimaryActionClicked = onRetryClicked
-                )
-            )
-        } else {
+        if (errorType is PaymentFlowError.NonRetryableError) {
             viewState.postValue(
                 FailedPaymentState(
                     errorType,
@@ -266,7 +258,15 @@ class CardReaderPaymentViewModel
                     onPrimaryActionClicked = { onBackPressed() }
                 )
             )
-        }.exhaustive
+        } else {
+            viewState.postValue(
+                FailedPaymentState(
+                    errorType,
+                    amountLabel,
+                    onPrimaryActionClicked = onRetryClicked
+                )
+            )
+        }
     }
 
     private fun showPaymentSuccessfulState() {
