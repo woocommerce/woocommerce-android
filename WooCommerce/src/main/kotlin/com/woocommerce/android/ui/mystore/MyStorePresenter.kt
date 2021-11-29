@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.IsLoadingTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedError
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -130,8 +129,8 @@ class MyStorePresenter @Inject constructor(
         coroutineScope.launch {
             getTopPerformers(forceRefresh, granularity, NUM_TOP_PERFORMERS)
                 .collect {
+                    myStoreView?.showTopPerformersSkeleton(false)
                     when (it) {
-                        is IsLoadingTopPerformers -> myStoreView?.showTopPerformersSkeleton(it.isLoading)
                         is TopPerformersLoadedSuccess -> {
                             myStoreView?.showTopPerformers(it.topPerformers, granularity)
                             AnalyticsTracker.track(

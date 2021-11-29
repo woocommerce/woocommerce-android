@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.di.DefaultDispatcher
 import com.woocommerce.android.ui.mystore.data.StatsRepository
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.IsLoadingTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedError
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,16 +23,10 @@ class GetTopPerformers @Inject constructor(
     ): Flow<LoadTopPerformersResult> =
         statsRepository.fetchProductLeaderboards(forceRefresh, granularity, topPerformersCount)
             .transform { result ->
-                emit(IsLoadingTopPerformers(false))
                 result.fold(
                     onSuccess = { topPerformers ->
-                        topPerformers
-                            .sortedWith(
-                                compareByDescending(WCTopPerformerProductModel::quantity)
-                                    .thenByDescending(WCTopPerformerProductModel::total)
-                            ).let {
-                                emit(TopPerformersLoadedSuccess(it))
-                            }
+                        val sortedTopPerformers = sortTopPerformers(topPerformers)
+                        emit(TopPerformersLoadedSuccess(sortedTopPerformers))
                     },
                     onFailure = {
                         emit(TopPerformersLoadedError)
@@ -41,13 +34,15 @@ class GetTopPerformers @Inject constructor(
                 )
             }.flowOn(dispatcher)
 
+    private fun sortTopPerformers(topPerformers: List<WCTopPerformerProductModel>) =
+        topPerformers.sortedWith(
+            compareByDescending(WCTopPerformerProductModel::quantity)
+                .thenByDescending(WCTopPerformerProductModel::total)
+        )
+
     sealed class LoadTopPerformersResult {
         data class TopPerformersLoadedSuccess(
             val topPerformers: List<WCTopPerformerProductModel>
-        ) : LoadTopPerformersResult()
-
-        data class IsLoadingTopPerformers(
-            val isLoading: Boolean
         ) : LoadTopPerformersResult()
 
         object TopPerformersLoadedError : LoadTopPerformersResult()
