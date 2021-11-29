@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.mystore.domain
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.di.DefaultDispatcher
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.StatsRepository
@@ -18,6 +18,7 @@ import javax.inject.Inject
 class GetStats @Inject constructor(
     private val selectedSite: SelectedSite,
     private val statsRepository: StatsRepository,
+    private val appPrefsWrapper: AppPrefsWrapper,
     @DefaultDispatcher private val dispatcher: CoroutineDispatcher
 ) {
 
@@ -43,12 +44,12 @@ class GetStats @Inject constructor(
         val revenueStatsResult = statsRepository.fetchRevenueStats(granularity, forceRefresh)
         revenueStatsResult.fold(
             onSuccess = { stats ->
-                AppPrefs.setV4StatsSupported(true)
+                appPrefsWrapper.setV4StatsSupported(true)
                 emit(RevenueStatsSuccess(stats))
             },
             onFailure = {
                 if (isPluginNotActiveError(it)) {
-                    AppPrefs.setV4StatsSupported(false)
+                    appPrefsWrapper.setV4StatsSupported(false)
                     emit(PluginNotActive)
                 } else {
                     emit(GenericError)
