@@ -421,19 +421,16 @@ object AppPrefs {
             false
         )
 
-    fun setCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        PreferenceUtils.setBoolean(
-            getPreferences(),
-            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            true
-        )
-
-    fun resetCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        PreferenceUtils.setBoolean(
-            getPreferences(),
-            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            false
-        )
+    fun setCardReaderOnboardingCompleted(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isCompleted: Boolean
+    ) = PreferenceUtils.setBoolean(
+        getPreferences(),
+        getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+        isCompleted
+    )
 
     fun getJetpackBenefitsDismissalDate(): Long {
         return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/order_creation_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:id="@+id/orderCreationInfoItem_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_125"
+            android:contentDescription="@string/orderlist_bottom_sheet_create_order_description"
+            android:src="@drawable/ic_gridicons_pages"
+            app:layout_constraintBottom_toTopOf="@+id/orderCreationInfoItem_divider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orderCreationInfoItem_name"
+            style="@style/Woo.ListItem.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/orderlist_bottom_sheet_create_order_action"
+            android:textColor="@color/color_on_surface_high_selector"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/orderCreationInfoItem_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginStart="@dimen/major_100" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orderCreationInfoItem_desc"
+            style="@style/Woo.Card.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:ellipsize="end"
+            android:lineSpacingExtra="@dimen/minor_25"
+            android:paddingTop="@dimen/minor_50"
+            android:text="@string/orderlist_bottom_sheet_create_order_description"
+            android:textColor="@color/color_on_surface_medium_selector"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/orderCreationInfoItem_icon"
+            app:layout_constraintTop_toBottomOf="@+id/orderCreationInfoItem_name" />
+
+        <View
+            android:id="@+id/orderCreationInfoItem_divider"
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_75"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orderCreationInfoItem_desc" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/simple_payment_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:id="@+id/simplePaymentInfoItem_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_125"
+            android:contentDescription="@string/orderlist_bottom_sheet_simple_payment_description"
+            android:src="@drawable/ic_bolt"
+            app:layout_constraintBottom_toTopOf="@+id/simplePaymentInfoItem_divider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/simplePaymentInfoItem_name"
+            style="@style/Woo.ListItem.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/orderlist_bottom_sheet_simple_payment_action"
+            android:textColor="@color/color_on_surface_high_selector"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/simplePaymentInfoItem_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginStart="@dimen/major_100" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/simplePaymentInfoItem_desc"
+            style="@style/Woo.Card.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:ellipsize="end"
+            android:lineSpacingExtra="@dimen/minor_25"
+            android:paddingTop="@dimen/minor_50"
+            android:text="@string/orderlist_bottom_sheet_simple_payment_description"
+            android:textColor="@color/color_on_surface_medium_selector"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/simplePaymentInfoItem_icon"
+            app:layout_constraintTop_toBottomOf="@+id/simplePaymentInfoItem_name" />
+
+        <View
+            android:id="@+id/simplePaymentInfoItem_divider"
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_75"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/simplePaymentInfoItem_desc" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</LinearLayout>

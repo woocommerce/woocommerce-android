@@ -11,10 +11,8 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
@@ -24,10 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.databinding.FragmentProductListBinding
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.extensions.verticalOffsetChanges
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.*
@@ -44,10 +39,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
-import kotlin.math.abs
 
 @AndroidEntryPoint
 class ProductListFragment :
@@ -125,14 +117,7 @@ class ProductListFragment :
             viewModel.onAddProductButtonClicked()
         }
 
-        // Adjust translationY to keep the FAB always above the bottom nav
-        val appBarLayout = (requireActivity().findViewById<View>(R.id.app_bar_layout) as AppBarLayout)
-        appBarLayout.verticalOffsetChanges()
-            .onEach { verticalOffset ->
-                fabButton.translationY =
-                    (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
-            }
-            .launchIn(viewLifecycleOwner.lifecycleScope)
+        pinFabAboveBottomNavigationBar(fabButton)
     }
 
     override fun onDestroyView() {
