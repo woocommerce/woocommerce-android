@@ -40,10 +40,13 @@ class CardReaderOnboardingChecker @Inject constructor(
         return fetchOnboardingState()
             .also {
                 updateOnboardingCompletedFlag(isCompleted = it is OnboardingCompleted)
+                if (it is OnboardingCompleted) {
+                    updateOnboardingCompletedPluginType(it.pluginType)
+                }
             }
     }
 
-    @Suppress("ReturnCount", "ComplexMethod")
+    @Suppress("ReturnCount", "ComplexMethod", "NestedBlockDepth")
     private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
@@ -76,14 +79,13 @@ class CardReaderOnboardingChecker @Inject constructor(
                 pluginType = PluginType.WOOCOMMERCE_PAYMENTS
                 if (!isWCPayVersionSupported(requireNotNull(wcPayPluginInfo))) return WcpayUnsupportedVersion
                 if (!isWCPayActivated(wcPayPluginInfo)) return WcpayNotActivated
-            } else if (isStripePluginInstalled(stripePluginInfo)) {
+            } else if (
+                isStripePluginInstalled(stripePluginInfo) && isStripeTerminalActivated(requireNotNull(stripePluginInfo))
+            ) {
                 pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
-                if (!isStripeTerminalActivated(requireNotNull(stripePluginInfo))) return StripeTerminal.NotActivated
                 if (!isStripeTerminalVersionSupported(stripePluginInfo)) return StripeTerminal.UnsupportedVersion
-            } else if (!isWCPayInstalled(wcPayPluginInfo)) {
-                if (!isWCPayInstalled(wcPayPluginInfo)) return WcpayNotInstalled
             } else {
-                if (!isStripePluginInstalled(stripePluginInfo)) return StripeTerminal.NotInstalled
+                return WcpayNotInstalled
             }
         } else {
             if (!isWCPayInstalled(wcPayPluginInfo)) return WcpayNotInstalled
@@ -172,6 +174,16 @@ class CardReaderOnboardingChecker @Inject constructor(
             isCompleted = isCompleted
         )
     }
+
+    private fun updateOnboardingCompletedPluginType(pluginType: PluginType) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderOnboardingCompletedPluginType(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+            pluginType
+        )
+    }
 }
 
 enum class PluginType {
@@ -195,20 +207,10 @@ sealed class CardReaderOnboardingState {
     sealed class StripeTerminal : CardReaderOnboardingState() {
 
         /**
-         * stripe terminal plugin is not installed on the store.
-         */
-        object NotInstalled : CardReaderOnboardingState()
-
-        /**
          * stripe terminal plugin is installed on the store, but the version is out-dated and doesn't
          * contain required APIs for card present payments.
          */
         object UnsupportedVersion : CardReaderOnboardingState()
-
-        /**
-         * stripe terminal is installed on the store but is not activated.
-         */
-        object NotActivated : CardReaderOnboardingState()
 
         /**
          * stripe terminal is installed and activated but requires to be setup first.

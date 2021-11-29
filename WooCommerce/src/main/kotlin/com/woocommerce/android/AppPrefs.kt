@@ -7,11 +7,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_WITH_PLUGIN_TYPE
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
@@ -56,6 +58,7 @@ object AppPrefs {
         USER_EMAIL,
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED,
+        CARD_READER_ONBOARDING_COMPLETED_WITH_PLUGIN_TYPE,
         ORDER_FILTER_PREFIX,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
@@ -432,6 +435,17 @@ object AppPrefs {
         isCompleted
     )
 
+    fun setCardReaderOnboardingCompletedPluginType(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        pluginType: PluginType
+    ) = PreferenceUtils.setString(
+        getPreferences(),
+        getCardReaderOnboardingCompletedPluginTypeKey(localSiteId, remoteSiteId, selfHostedSiteId),
+        pluginType.name
+    )
+
     fun getJetpackBenefitsDismissalDate(): Long {
         return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)
     }
@@ -442,6 +456,13 @@ object AppPrefs {
 
     private fun getCardReaderOnboardingCompletedKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
         "${DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+
+    private fun getCardReaderOnboardingCompletedPluginTypeKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) =
+        "$CARD_READER_ONBOARDING_COMPLETED_WITH_PLUGIN_TYPE:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
     fun isTrackingExtensionAvailable(): Boolean {
         return getBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, false)

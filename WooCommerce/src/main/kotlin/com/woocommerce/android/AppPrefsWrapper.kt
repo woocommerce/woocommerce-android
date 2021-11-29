@@ -1,5 +1,6 @@
 package com.woocommerce.android
 
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
@@ -23,6 +24,13 @@ class AppPrefsWrapper @Inject constructor() {
         selfHostedSiteId: Long,
         isCompleted: Boolean
     ) = AppPrefs.setCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId, isCompleted)
+
+    fun setCardReaderOnboardingCompletedPluginType(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        pluginType: PluginType
+    ) = AppPrefs.setCardReaderOnboardingCompletedPluginType(localSiteId, remoteSiteId, selfHostedSiteId, pluginType)
 
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 

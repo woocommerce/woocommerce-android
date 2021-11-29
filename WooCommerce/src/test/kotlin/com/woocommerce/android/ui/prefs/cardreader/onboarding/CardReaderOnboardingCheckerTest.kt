@@ -194,20 +194,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when stripe terminal plugin not active, then NOT_ACTIVATED returned`() =
-        testBlocking {
-            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(isActive = false))
-            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS)).thenReturn(null)
-            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
-
-            val result = checker.getOnboardingState()
-
-            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeTerminal.NotActivated)
-        }
-
-    @Test
     fun `when stripe terminal plugin outdated, then UNSUPPORTED_VERSION returned`() =
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
@@ -629,6 +615,44 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             anyLong(),
             anyLong(),
             isCompleted = eq(false)
+        )
+    }
+
+    @Test
+    fun `when onboarding completed using wcpay, then onboarding completed plugin type saved`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(null)
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingCompletedPluginType(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            eq(PluginType.WOOCOMMERCE_PAYMENTS)
+        )
+    }
+
+    @Test
+    fun `when onboarding completed using stripe, then onboarding completed plugin type saved`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(null)
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingCompletedPluginType(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            eq(PluginType.STRIPE_TERMINAL_GATEWAY)
         )
     }
 

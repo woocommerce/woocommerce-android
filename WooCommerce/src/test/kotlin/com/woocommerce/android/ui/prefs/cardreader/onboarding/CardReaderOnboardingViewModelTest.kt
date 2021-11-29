@@ -185,34 +185,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when stripe terminal not installed, then stripe terminal not installed state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.StripeTerminal.NotInstalled
-            )
-
-            val viewModel = createVM()
-
-            assertThat(viewModel.viewStateData.value).isInstanceOf(
-                OnboardingViewState.StripeTerminalError.StripeTerminalNotInstalledState::class.java
-            )
-        }
-
-    @Test
-    fun `when stripe terminal not activated, then stripe terminal not activated state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.StripeTerminal.NotActivated
-            )
-
-            val viewModel = createVM()
-
-            assertThat(viewModel.viewStateData.value).isInstanceOf(
-                OnboardingViewState.StripeTerminalError.StripeTerminalNotActivatedState::class.java
-            )
-        }
-
-    @Test
     fun `when unsupported stripe terminal installed, then unsupported stripe terminal state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
