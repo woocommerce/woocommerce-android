@@ -85,7 +85,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        viewModel = initVM(CardReaderOnboardingState.OnboardingCompleted)
+        viewModel = initVM(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
     }
 
     @Test

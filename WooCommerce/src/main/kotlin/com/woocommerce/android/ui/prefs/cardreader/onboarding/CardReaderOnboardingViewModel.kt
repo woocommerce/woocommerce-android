@@ -46,7 +46,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val state = cardReaderChecker.getOnboardingState()
             trackState(state)
             when (state) {
-                CardReaderOnboardingState.OnboardingCompleted ->
+                is CardReaderOnboardingState.OnboardingCompleted ->
                     triggerEvent(OnboardingEvent.Continue)
                 is CardReaderOnboardingState.StoreCountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedCountryState(
@@ -147,7 +147,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     @Suppress("ComplexMethod")
     private fun getTrackingReason(state: CardReaderOnboardingState): String? =
         when (state) {
-            CardReaderOnboardingState.OnboardingCompleted -> null
+            is CardReaderOnboardingState.OnboardingCompleted -> null
             is CardReaderOnboardingState.StoreCountryNotSupported -> "country_not_supported"
             CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
             is CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"

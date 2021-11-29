@@ -69,6 +69,8 @@ class CardReaderOnboardingChecker @Inject constructor(
                     pluginType = PluginType.WOOCOMMERCE_PAYMENTS
                     if (!isWCPayVersionSupported(requireNotNull(wcPayPluginInfo))) return WcpayUnsupportedVersion
                     if (!isWCPayActivated(wcPayPluginInfo)) return WcpayNotActivated
+                } else {
+                    pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
                 }
             } else if (isWCPayInstalled(wcPayPluginInfo)) {
                 pluginType = PluginType.WOOCOMMERCE_PAYMENTS
@@ -102,7 +104,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected
         if (isInUndefinedState(paymentAccount)) return GenericError
 
-        return OnboardingCompleted
+        return OnboardingCompleted(pluginType)
     }
 
     private suspend fun getStoreCountryCode(): String? {
@@ -178,7 +180,7 @@ enum class PluginType {
 }
 
 sealed class CardReaderOnboardingState {
-    object OnboardingCompleted : CardReaderOnboardingState()
+    data class OnboardingCompleted(val pluginType: PluginType) : CardReaderOnboardingState()
 
     /**
      * Store is not located in one of the supported countries.
