@@ -64,7 +64,6 @@ class MyStorePresenter @Inject constructor(
 
     override fun takeView(view: View) {
         myStoreView = view
-        statsRepository.init()
         dispatcher.register(this)
         ConnectionChangeReceiver.getEventBus().register(this)
         showJetpackBenefitsIfNeeded()
@@ -72,7 +71,6 @@ class MyStorePresenter @Inject constructor(
 
     override fun dropView() {
         myStoreView = null
-        statsRepository.onCleanup()
         dispatcher.unregister(this)
         ConnectionChangeReceiver.getEventBus().unregister(this)
         super.dropView()
