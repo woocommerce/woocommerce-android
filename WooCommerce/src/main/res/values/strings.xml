@@ -882,6 +882,8 @@
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">Missing required nearby devices permission</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">Open settings</string>
 
     <!--
         Card Reader Detail
@@ -1627,7 +1629,7 @@
 
     <!-- New Product screen -->
     <string name="product_add_tool_bar_title">New Product</string>
-    <string name="product_add_tool_bar_menu_button_done">PUBLISH</string>
+    <string name="product_add_tool_bar_menu_button_done">Publish</string>
     <string name="product_publish_dialog_title">Publishing product</string>
     <string name="product_publish_draft_dialog_title">Saving draft</string>
     <string name="product_publish_dialog_message" translatable="false">@string/product_update_dialog_message</string>

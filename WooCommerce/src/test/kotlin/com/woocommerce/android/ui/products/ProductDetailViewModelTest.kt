@@ -210,6 +210,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        doReturn("").whenever(prefs).getSelectedProductType()
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
@@ -370,7 +371,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         assertThat(isProgressDialogShown).containsExactly(true, false)
     }
@@ -390,7 +391,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         verify(productRepository, times(0)).updateProduct(any())
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
@@ -412,7 +413,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         verify(productRepository, times(1)).updateProduct(any())
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_error))
@@ -436,7 +437,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         verify(productRepository, times(1)).updateProduct(any())
         verify(productRepository, times(2)).getProduct(PRODUCT_REMOTE_ID)
@@ -681,6 +682,68 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         errorEvents.emit(emptyList())
 
         assertThat(viewModel.event.value).isEqualTo(HideImageUploadErrorSnackbar)
+    }
+
+    @Test
+    fun `Publish option not shown when product is published except addProduct flow`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
+        assertThat(viewModel.isPublishOptionNeeded).isFalse()
+    }
+
+    @Test
+    fun `Publish option not shown when product is published privately except addProduct flow`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(false).whenever(viewModel).isAddFlowEntryPoint
+        doReturn(false).whenever(viewModel).isProductUnderCreation
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.PRIVATE)
+        assertThat(viewModel.isPublishOptionNeeded).isFalse()
+    }
+
+    @Test
+    fun `Publish option shown when product is published and from addProduct flow and is under product creation`() {
+        doReturn(true).whenever(viewModel).isAddFlowEntryPoint
+        doReturn(true).whenever(viewModel).isProductUnderCreation
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
+        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+    }
+
+    @Test
+    fun `Publish option shown when product is Draft`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
+        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+    }
+
+    @Test
+    fun `Publish option shown when product is Pending Review`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.PENDING)
+        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+    }
+
+    @Test
+    fun `Save option shown when product has changes except add product flow irrespective of product statuses`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(false).whenever(viewModel).isAddFlowEntryPoint
+        doReturn(false).whenever(viewModel).isProductUnderCreation
+        doReturn(true).whenever(viewModel).hasChanges()
+        viewModel.start()
+        assertThat(viewModel.isSaveOptionNeeded).isTrue()
+    }
+
+    @Test
+    fun `Save option not shown when product has changes but in add product flow`() {
+        doReturn(true).whenever(viewModel).isAddFlowEntryPoint
+        doReturn(true).whenever(viewModel).isProductUnderCreation
+        doReturn(true).whenever(viewModel).hasChanges()
+        viewModel.start()
+        assertThat(viewModel.isSaveOptionNeeded).isFalse()
     }
 
     private val productsDraft
