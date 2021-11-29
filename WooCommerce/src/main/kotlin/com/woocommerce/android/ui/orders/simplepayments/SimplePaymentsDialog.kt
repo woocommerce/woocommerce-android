@@ -36,9 +36,13 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
 
         requireDialog().window?.let { window ->
             window.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
+            val isLandscape = DisplayUtils.isLandscape(requireContext())
+            val widthRatio = if (isLandscape) WIDTH_RATIO_LANDSCAPE else WIDTH_RATIO
+            val heightRatio = if (isLandscape) HEIGHT_RATIO_LANDSCAPE else HEIGHT_RATIO
+
             window.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * HEIGHT_RATIO).toInt()
+                (DisplayUtils.getWindowPixelWidth(requireContext()) * widthRatio).toInt(),
+                (DisplayUtils.getWindowPixelHeight(requireContext()) * heightRatio).toInt()
             )
         }
 
@@ -51,7 +55,6 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_CANCELED)
             findNavController().navigateUp()
         }
-        binding.captionText.isVisible = !DisplayUtils.isLandscape(requireContext())
 
         setupObservers(binding)
     }
@@ -96,5 +99,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         const val KEY_SIMPLE_PAYMENTS_RESULT = "simple_payments_result"
         private const val HEIGHT_RATIO = 0.6
         private const val WIDTH_RATIO = 0.9
+        private const val HEIGHT_RATIO_LANDSCAPE = 0.9
+        private const val WIDTH_RATIO_LANDSCAPE = 0.6
     }
 }
