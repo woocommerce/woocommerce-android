@@ -11,47 +11,23 @@
         android:label="MainSettingsFragment">
         <action
             android:id="@+id/action_mainSettingsFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/cardReaderOnboardingFragment" />
         <action
             android:id="@+id/action_mainSettingsFragment_to_privacySettingsFragment"
-            app:destination="@id/privacySettingsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/privacySettingsFragment" />
         <action
             android:id="@+id/action_mainSettingsFragment_to_licensesFragment"
-            app:destination="@id/licensesFragment2"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/licensesFragment2" />
         <action
             android:id="@+id/action_mainSettingsFragment_to_aboutFragment"
-            app:destination="@id/aboutFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/aboutFragment" />
         <action
             android:id="@+id/action_mainSettingsFragment_to_betaFeaturesFragment"
-            app:destination="@id/betaFeaturesFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/betaFeaturesFragment" />
 
         <action
             android:id="@+id/action_mainSettingsFragment_feedbackSurveyFragment"
-            app:destination="@id/feedbackSurveyFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/feedbackSurveyFragment" />
         <action
             android:id="@+id/action_mainSettingsFragment_to_featureAnnouncementDialogFragment"
             app:destination="@id/featureAnnouncementDialogFragment" />
@@ -110,10 +86,6 @@
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
             app:destination="@id/cardReaderHubFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@+id/mainSettingsFragment"
             app:popUpToInclusive="false" />
     </fragment>
@@ -123,11 +95,7 @@
         android:label="CardReaderHubFragment">
         <action
             android:id="@+id/action_cardReaderHubFragment_to_cardReaderDetailFragment"
-            app:destination="@id/cardReaderDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/cardReaderDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -160,10 +128,6 @@
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/mainSettingsFragment"
             app:popUpToInclusive="true" />
     </fragment>
