@@ -20,7 +20,6 @@ class GetStats @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val coroutineDispatchers: CoroutineDispatchers
 ) {
-
     @ExperimentalCoroutinesApi
     suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> =
         merge(
@@ -79,7 +78,6 @@ class GetStats @Inject constructor(
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 
     sealed class LoadStatsResult {
-
         data class RevenueStatsSuccess(
             val stats: WCRevenueStatsModel?
         ) : LoadStatsResult()

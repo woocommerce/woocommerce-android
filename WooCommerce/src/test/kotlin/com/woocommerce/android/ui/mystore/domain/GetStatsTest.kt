@@ -166,16 +166,12 @@ class GetStatsTest : BaseUnitTest() {
     private suspend fun givenCheckIfStoreHasNoOrdersFlow(result: Result<Boolean>) {
         whenever(
             statsRepository.checkIfStoreHasNoOrders()
-        ).thenReturn(flow {
-            emit(result)
-        })
+        ).thenReturn(flow { emit(result) })
     }
 
-    private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?> = Result.success(ANY_REVENUE_STATS)) {
+    private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?>) {
         whenever(statsRepository.fetchRevenueStats(any(), anyBoolean()))
-            .thenReturn(flow {
-                emit(result)
-            })
+            .thenReturn(flow { emit(result) })
     }
 
     private fun givenIsJetpackConnected(isJetPackConnected: Boolean) {
@@ -186,9 +182,7 @@ class GetStatsTest : BaseUnitTest() {
 
     private suspend fun givenFetchVisitorStats(result: Result<Map<String, Int>>) {
         whenever(statsRepository.fetchVisitorStats(any(), anyBoolean()))
-            .thenReturn(flow {
-                emit(result)
-            })
+            .thenReturn(flow { emit(result) })
     }
 
     private companion object {

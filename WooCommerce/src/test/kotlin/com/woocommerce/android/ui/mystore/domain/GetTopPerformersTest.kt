@@ -59,9 +59,7 @@ class GetTopPerformersTest : BaseUnitTest() {
                 any(),
                 anyInt()
             )
-        ).thenReturn(flow {
-            emit(result)
-        })
+        ).thenReturn(flow { emit(result) })
     }
 
     private companion object {
