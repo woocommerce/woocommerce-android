@@ -7,11 +7,13 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.View.OnClickListener
+import androidx.core.view.ViewGroupCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -77,6 +79,11 @@ class ReviewListFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
+        enterTransition = fadeThroughTransition
+        exitTransition = fadeThroughTransition
+        reenterTransition = fadeThroughTransition
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -87,7 +94,7 @@ class ReviewListFragment :
         _binding = FragmentReviewsListBinding.bind(view)
 
         val activity = requireActivity()
-
+        ViewGroupCompat.setTransitionGroup(binding.notifsRefreshLayout, true)
         _reviewsAdapter = ReviewListAdapter(this)
         val unreadDecoration = UnreadItemDecoration(activity as Context, this)
         binding.reviewsList.apply {

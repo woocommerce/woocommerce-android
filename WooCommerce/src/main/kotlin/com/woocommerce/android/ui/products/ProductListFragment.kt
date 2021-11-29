@@ -8,6 +8,7 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.ViewGroupCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -15,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
@@ -88,7 +90,7 @@ class ProductListFragment :
         _binding = FragmentProductListBinding.bind(view)
         setupObservers(viewModel)
         setupResultHandlers()
-
+        ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
         _productAdapter = ProductListAdapter(this, this)
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productAdapter
@@ -137,6 +139,15 @@ class ProductListFragment :
     override fun onStop() {
         super.onStop()
         trashProductUndoSnack?.dismiss()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
+        enterTransition = fadeThroughTransition
+        exitTransition = fadeThroughTransition
+        reenterTransition = fadeThroughTransition
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

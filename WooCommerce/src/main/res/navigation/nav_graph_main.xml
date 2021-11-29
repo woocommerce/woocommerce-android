@@ -104,9 +104,7 @@
         tools:layout="@layout/fragment_reviews_list">
         <action
             android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
-            app:destination="@id/reviewDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/reviewDetailFragment"/>
     </fragment>
     <fragment
         android:id="@+id/analytics"
@@ -180,9 +178,7 @@
 
     <action
         android:id="@+id/action_global_productDetailFragment"
-        app:destination="@id/nav_graph_products"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right">
+        app:destination="@id/nav_graph_products">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
