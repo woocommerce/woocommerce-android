@@ -51,6 +51,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_CANCELED)
             findNavController().navigateUp()
         }
+        binding.captionText.isVisible = !DisplayUtils.isLandscape(requireContext())
 
         setupObservers(binding)
     }
