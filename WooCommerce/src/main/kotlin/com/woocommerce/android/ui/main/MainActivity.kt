@@ -239,7 +239,6 @@ class MainActivity :
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
 
-        updateReviewsBadge()
         updateOrderBadge(false)
 
         checkConnection()
@@ -606,24 +605,6 @@ class MainActivity :
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
-    // region Bottom Navigation
-    override fun updateReviewsBadge() {
-        if (AppPrefs.getHasUnseenReviews()) {
-            showReviewsBadge()
-        } else {
-            hideReviewsBadge()
-        }
-    }
-
-    override fun hideReviewsBadge() {
-        binding.bottomNav.showReviewsBadge(false)
-        viewModel.removeReviewNotifications()
-    }
-
-    override fun showReviewsBadge() {
-        binding.bottomNav.showReviewsBadge(true)
-    }
-
     override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
         if (hideCountUntilComplete) {
             binding.bottomNav.clearOrderBadgeCount()
@@ -710,7 +691,6 @@ class MainActivity :
                 when (event) {
                     is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
                     is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                    is ViewReviewList -> binding.bottomNav.currentPosition = REVIEWS
                     is ViewZendeskTickets -> {
                         binding.bottomNav.currentPosition = MY_STORE
                         startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
@@ -770,13 +750,6 @@ class MainActivity :
         enableModeration: Boolean,
         tempStatus: String?
     ) {
-        // make sure the review tab is active if the user came here from a notification
-        if (launchedFromNotification) {
-            showBottomNav()
-            binding.bottomNav.currentPosition = REVIEWS
-            binding.bottomNav.active(REVIEWS.position)
-        }
-
         val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
