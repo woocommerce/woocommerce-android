@@ -61,7 +61,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
                 {
                     ActivityUtils.showKeyboard(binding.editPrice)
                 },
-                100
+                KEYBOARD_DELAY
             )
         }
 
@@ -110,5 +110,6 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         private const val WIDTH_RATIO = 0.9
         private const val HEIGHT_RATIO_LANDSCAPE = 0.9
         private const val WIDTH_RATIO_LANDSCAPE = 0.6
+        private const val KEYBOARD_DELAY = 100L
     }
 }
