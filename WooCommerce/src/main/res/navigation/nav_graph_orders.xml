@@ -50,8 +50,7 @@
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_printShippingLabelFragment_to_printShippingLabelInfoFragment"
-            app:destination="@id/printShippingLabelInfoFragment"
-             />
+            app:destination="@id/printShippingLabelInfoFragment" />
         <action
             android:id="@+id/action_printShippingLabelFragment_to_labelFormatOptionsFragment"
             app:destination="@id/shippingLabelFormatOptionsFragment" />
