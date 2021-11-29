@@ -67,8 +67,14 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value =
                         OnboardingViewState.WCPayError.WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
                 is CardReaderOnboardingState.SetupNotCompleted ->
-                    viewState.value =
-                        OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
+                    viewState.value = when (state.pluginType) {
+                        PluginType.WOOCOMMERCE_PAYMENTS ->
+                            OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
+                        PluginType.STRIPE_TERMINAL_GATEWAY ->
+                            OnboardingViewState.StripeTerminalError.StripeTerminalNotSetupState(
+                                ::refreshState, ::onLearnMoreClicked
+                            )
+                    }
                 CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount ->
                     viewState.value = OnboardingViewState.WCStripeError.WCPayInTestModeWithLiveAccountState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
@@ -146,13 +152,21 @@ class CardReaderOnboardingViewModel @Inject constructor(
             CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
             CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
             CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
-            is CardReaderOnboardingState.SetupNotCompleted -> "${state.pluginType}_not_setup"
+            is CardReaderOnboardingState.SetupNotCompleted ->
+                "${getPluginNameForAnalyticsFrom(state.pluginType)}_not_setup"
             CardReaderOnboardingState.WcpayUnsupportedVersion -> "wcpay_unsupported_version"
             CardReaderOnboardingState.GenericError -> "generic_error"
             CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
             CardReaderOnboardingState.StripeTerminal.UnsupportedVersion -> "stripe_unsupported_version"
             CardReaderOnboardingState.WcpayAndStripeActivated -> "wcpay_and_stripe_installed_and_activated"
         }
+
+    private fun getPluginNameForAnalyticsFrom(pluginType: PluginType): String {
+        return when (pluginType) {
+            PluginType.WOOCOMMERCE_PAYMENTS -> "wcpay"
+            PluginType.STRIPE_TERMINAL_GATEWAY -> "stripe"
+        }
+    }
 
     fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Onboarding flow interrupted by the user.")
@@ -396,36 +410,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
             @DrawableRes
             val illustration = R.drawable.img_woo_payments
-
-            data class StripeTerminalNotInstalledState(
-                override val refreshButtonAction: () -> Unit,
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : StripeTerminalError(
-                headerLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_stripe_terminal_not_installed_header
-                ),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_terminal_not_installed_hint),
-                learnMoreLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_learn_more, containsHtml = true
-                ),
-                refreshButtonLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_refresh_button)
-            )
-
-            data class StripeTerminalNotActivatedState(
-                override val refreshButtonAction: () -> Unit,
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : StripeTerminalError(
-                headerLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_stripe_terminal_not_activated_header
-                ),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_terminal_not_activated_hint),
-                learnMoreLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_learn_more, containsHtml = true
-                ),
-                refreshButtonLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_refresh_button)
-            )
 
             data class StripeTerminalNotSetupState(
                 override val refreshButtonAction: () -> Unit,

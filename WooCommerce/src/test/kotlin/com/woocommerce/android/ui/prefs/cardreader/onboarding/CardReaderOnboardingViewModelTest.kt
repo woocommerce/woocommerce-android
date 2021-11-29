@@ -161,6 +161,19 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when stripe terminal not setup, then stripe terminal not setup state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(PluginType.STRIPE_TERMINAL_GATEWAY))
+
+            val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                OnboardingViewState.StripeTerminalError.StripeTerminalNotSetupState::class.java
+            )
+        }
+
+    @Test
     fun `when unsupported wcpay version installed, then unsupported wcpay version state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
