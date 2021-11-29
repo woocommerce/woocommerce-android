@@ -15,16 +15,14 @@ class OrderCreationBottomSheetFragment : BottomSheetDialogFragment() {
         const val KEY_ORDER_CREATION_ACTION_RESULT = "key_order_creation_action_result"
     }
 
-    private var _binding: DialogOrderCreationBottomSheetBinding? = null
-    private val binding get() = _binding!!
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = DialogOrderCreationBottomSheetBinding.inflate(inflater)
-        return binding.root
+        return DialogOrderCreationBottomSheetBinding.inflate(inflater, container, false).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val binding = DialogOrderCreationBottomSheetBinding.bind(view)
 
         binding.orderCreationButton.setOnClickListener {
             navigateBackWithResult(KEY_ORDER_CREATION_ACTION_RESULT, CREATE_ORDER)
