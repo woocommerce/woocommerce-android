@@ -59,7 +59,7 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateRevenueForPeriod(range: AnalyticsDateRanges, dateRange: DateRange) =
         launch {
-            val revenueData = analyticsRepository.fetchRevenueData(dateRange, range)
+            val revenueData = analyticsRepository.fetchRevenueStatData(dateRange, range)
             if (revenueData != null) {
                 mutableState.value = state.value.copy(
                     revenueState = AnalyticsInformationViewState.DataViewState(

@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -50,6 +51,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             DateRange.SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
         )
     }
+
+    private val currencyFormatter: CurrencyFormatter = mock()
+    private val analyticsRepository: AnalyticsRepository = mock()
+
     private val savedState = SavedStateHandle()
 
     private lateinit var sut: AnalyticsViewModel
@@ -62,7 +67,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             on { getStringArray(any()) } doAnswer { dateRangeSelectors.toTypedArray() }
         }
 
-        sut = AnalyticsViewModel(resourceProvider, dateUtil, calculator, savedState)
+        sut = givenAViewModel(resourceProvider)
 
         with(sut.state.value.analyticsDateRangeSelectorState) {
             assertNotNull(this)
@@ -83,7 +88,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             on { getStringArray(any()) } doAnswer { dateRangeSelectors.toTypedArray() }
         }
 
-        sut = AnalyticsViewModel(resourceProvider, dateUtil, calculator, savedState)
+        sut = givenAViewModel(resourceProvider)
 
         sut.onSelectedDateRangeChanged(AnalyticsDateRanges.LAST_YEAR.description)
 
@@ -95,4 +100,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             assertEquals(dateRangeSelectors, availableRangeDates)
         }
     }
+
+    private fun givenAViewModel(resourceProvider: ResourceProvider) =
+        AnalyticsViewModel(resourceProvider, dateUtil, calculator, currencyFormatter, analyticsRepository, savedState)
 }

@@ -21,14 +21,10 @@ class AnalyticsRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) {
 
-    init {
-        statsRepository.init()
-    }
-
-    suspend fun fetchRevenueData(dateRange: DateRange, selectedRange: AnalyticsDateRanges): RevenueStat? {
+    suspend fun fetchRevenueStatData(dateRange: DateRange, selectedRange: AnalyticsDateRanges): RevenueStat? {
         val granularity = getGranularity(selectedRange)
-        val previousPeriodRevenue: WCRevenueStatsModel.Total? = getPreviousPeriodRevenue(dateRange, granularity)
-        val currentPeriodRevenue: WCRevenueStatsModel.Total? = getCurrentPeriodRevenue(dateRange, granularity)
+        val previousPeriodRevenue = getPreviousPeriodRevenue(dateRange, granularity)
+        val currentPeriodRevenue = getCurrentPeriodRevenue(dateRange, granularity)
 
         if (previousPeriodRevenue == null || currentPeriodRevenue == null ||
             currentPeriodRevenue.totalSales == null || currentPeriodRevenue.netRevenue == null) {
@@ -90,6 +86,6 @@ class AnalyticsRepository @Inject constructor(
                 .fold({ it?.parseTotal() }, { null })
         }
 
-    fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+    private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
 }
