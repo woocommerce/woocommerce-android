@@ -26,6 +26,7 @@ import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
