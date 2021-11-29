@@ -21,6 +21,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.*
@@ -818,6 +819,21 @@ class MainActivity :
         val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
         navController.navigateSafely(action)
+    }
+
+    override fun showOrderDetailWithSharedTransition(
+        localSiteId: Int,
+        localOrderId: Int,
+        remoteOrderId: Long,
+        remoteNoteId: Long,
+        sharedView: View
+    ) {
+        val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
+        val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
+
+        val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        navController.navigateSafely(directions = action, extras = extras)
     }
 
     override fun showFeedbackSurvey() {

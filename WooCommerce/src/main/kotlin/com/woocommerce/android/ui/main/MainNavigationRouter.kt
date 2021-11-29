@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.main
 
+import android.view.View
+
 interface MainNavigationRouter {
     fun isAtNavigationRoot(): Boolean
     fun isChildFragmentShowing(): Boolean
@@ -13,6 +15,14 @@ interface MainNavigationRouter {
         remoteOrderId: Long,
         remoteNoteId: Long = 0,
         launchedFromNotification: Boolean = false
+    )
+
+    fun showOrderDetailWithSharedTransition(
+        localSiteId: Int,
+        localOrderId: Int = 0,
+        remoteOrderId: Long,
+        remoteNoteId: Long = 0,
+        sharedView: View
     )
 
     fun showAddProduct()
