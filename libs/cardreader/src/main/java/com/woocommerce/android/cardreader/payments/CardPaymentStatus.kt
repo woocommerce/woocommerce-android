@@ -218,12 +218,6 @@ sealed class CardPaymentStatus {
                         "test_mode_live_card"
                     )
                 )
-
-                /**
-                 * The card was declined for an unknown reason. Tell the user this and
-                 * ask them to try another payment method.
-                 */
-                object Unknown : CardDeclined(emptyArray())
             }
         }
     }

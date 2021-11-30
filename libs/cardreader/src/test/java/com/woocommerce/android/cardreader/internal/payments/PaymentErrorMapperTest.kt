@@ -519,21 +519,21 @@ class PaymentErrorMapperTest {
     }
 
     @Test
-    fun `given card_declined with random_string, when terminal exception thrown, then unknonw type returned`() {
+    fun `given card_declined with random_string, when terminal exception thrown, then unknown type returned`() {
         setupStripeApiCardDeclined("random_string")
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Unknown)
+        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.Unknown)
     }
 
     @Test
-    fun `given card_declined with null, when terminal exception thrown, then unknonw type returned`() {
+    fun `given card_declined with null, when terminal exception thrown, then unknown type returned`() {
         setupStripeApiCardDeclined(null)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Unknown)
+        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.Unknown)
     }
 
     private fun setupStripeApiCardDeclined(declineCode: String?) {

@@ -39,6 +39,5 @@ class CardReaderPaymentErrorMapper @Inject constructor() {
         CardDeclined.TestCard -> PaymentFlowError.Declined.TestCard
         CardDeclined.TestModeLiveCard -> PaymentFlowError.Declined.TestModeLiveCard
         CardDeclined.TooManyPinTries -> PaymentFlowError.Declined.TooManyPinTries
-        CardDeclined.Unknown -> PaymentFlowError.Unknown
     }
 }

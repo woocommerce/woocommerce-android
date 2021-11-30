@@ -275,20 +275,6 @@ class CardReaderPaymentErrorMapperTest {
     }
 
     @Test
-    fun `given card declined Unknown error, when map to ui error, then Unknown error returned`() {
-        // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.Unknown
-
-        // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error)
-
-        // THEN
-        assertThat(result).isEqualTo(PaymentFlowError.Unknown)
-        assertThat((result as PaymentFlowError.Unknown).message)
-            .isEqualTo(R.string.card_reader_payment_failed_unknown)
-    }
-
-    @Test
     fun `given Unknown error, when map to ui error, then Unknown error returned`() {
         // GIVEN
         val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.Unknown
