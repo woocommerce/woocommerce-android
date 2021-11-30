@@ -55,9 +55,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.0-rc-1"
+            versionName "8.0"
         }
-        versionCode 261
+        versionCode 262
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -297,7 +297,9 @@ dependencies {
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 
-    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion") {
+        exclude group: "org.wordpress", module: "utils"
+    }
     implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
 }
 
