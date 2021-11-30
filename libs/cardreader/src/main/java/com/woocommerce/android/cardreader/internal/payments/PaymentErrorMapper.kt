@@ -32,17 +32,16 @@ internal class PaymentErrorMapper {
     }
 
     private fun mapDeclinedByStripeApiError(exception: TerminalException): DeclinedByStripeApiError =
+        // https://stripe.com/docs/error-codes#card-declined
         if (exception.apiError?.code == DeclinedByStripeApiError.CardDeclined.ERROR_CODE) {
             DeclinedByStripeApiError.CardDeclined::class.sealedSubclasses
-                .map { it.objectInstance }
-                .mapNotNull { it as DeclinedByStripeApiError.CardDeclined }
+                .mapNotNull { it.objectInstance }
                 .firstOrNull {
                     it.declineErrorCodes.contains(exception.apiError?.declineCode)
                 } ?: DeclinedByStripeApiError.CardDeclined.Unknown
         } else {
             DeclinedByStripeApiError::class.sealedSubclasses
-                .map { it.objectInstance }
-                .mapNotNull { it as DeclinedByStripeApiError }
+                .mapNotNull { it.objectInstance }
                 .firstOrNull {
                     it.errorCodes.contains(exception.apiError?.code)
                 } ?: DeclinedByStripeApiError.Unknown
