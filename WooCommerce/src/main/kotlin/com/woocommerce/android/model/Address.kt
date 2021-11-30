@@ -166,4 +166,20 @@ data class Address(
             .appendWithIfNotEmpty(getCountryLabelByCountryCode(), "\n")
             .toString()
     }
+
+    companion object {
+        fun empty() = Address(
+            company = "",
+            firstName = "",
+            lastName = "",
+            phone = "",
+            country = "",
+            state = "",
+            address1 = "",
+            address2 = "",
+            city = "",
+            postcode = "",
+            email = ""
+        )
+    }
 }
