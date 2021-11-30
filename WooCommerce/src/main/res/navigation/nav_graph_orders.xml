@@ -47,6 +47,8 @@
             android:id="@+id/action_printShippingLabelFragment_to_shippingLabelPaperSizeSelectorDialog"
             app:destination="@id/shippingLabelPaperSizeSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_printShippingLabelFragment_to_printShippingLabelInfoFragment"
@@ -92,6 +94,8 @@
             android:id="@+id/action_editShippingLabelAddressFragment_to_shippingLabelAddressSuggestionFragment"
             app:destination="@id/shippingLabelAddressSuggestionFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
@@ -193,6 +197,8 @@
             android:id="@+id/action_orderDetailFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_createShippingLabelFragment"
@@ -201,16 +207,22 @@
             android:id="@+id/action_orderDetailFragment_to_cardReaderPaymentDialog"
             app:destination="@id/cardReaderPaymentDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderWelcomeDialog"
             app:destination="@id/cardReaderWelcomeDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderConnectDialog"
             app:destination="@id/cardReaderConnectDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_receiptPreviewFragment"
@@ -277,26 +289,36 @@
             android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelAddressFragment"
             app:destination="@id/editShippingLabelAddressFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_shippingLabelAddressSuggestionFragment"
             app:destination="@id/shippingLabelAddressSuggestionFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelPackagesFragment"
             app:destination="@id/editShippingLabelPackagesFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelPaymentFragment"
             app:destination="@id/editShippingLabelPaymentFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_shippingCarrierRatesFragment"
             app:destination="@id/shippingCarrierRatesFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_printShippingLabelFragment"
@@ -441,11 +463,15 @@
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
             app:destination="@id/cardReaderTutorialDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
             app:destination="@id/cardReaderUpdateDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment"

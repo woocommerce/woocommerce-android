@@ -44,11 +44,15 @@
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
             app:destination="@id/cardReaderTutorialDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
             app:destination="@id/cardReaderUpdateDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
     </dialog>
     <dialog
@@ -72,11 +76,15 @@
             android:id="@+id/action_cardReaderDetailFragment_to_cardReaderConnectFragment"
             app:destination="@id/cardReaderConnectDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_cardReaderDetailFragment_to_cardReaderUpdateDialogFragment"
             app:destination="@id/cardReaderUpdateDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment

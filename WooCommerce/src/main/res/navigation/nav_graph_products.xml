@@ -71,6 +71,8 @@
             android:id="@+id/action_productDetailFragment_to_productDownloadsFragment"
             app:destination="@id/productDownloadsFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_productDetailFragment_to_addAttributeFragment"
@@ -310,7 +312,9 @@
             android:id="@+id/action_productDownloadsFragment_to_productDownloadsSettingsFragment"
             app:destination="@id/productDownloadsSettingsFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@anim/activity_fade_out" />
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
 
     <fragment
@@ -457,6 +461,8 @@
         android:id="@+id/action_global_productDetailBottomSheetFragment"
         app:destination="@id/productDetailBottomSheetFragment"
         app:enterAnim="@anim/activity_fade_in"
+        app:exitAnim="@null"
+        app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
     <action
         android:id="@+id/action_global_productShippingFragment"
