@@ -34,7 +34,7 @@ internal class PaymentErrorMapper {
     private fun mapDeclinedByStripeApiError(exception: TerminalException): DeclinedByStripeApiError =
         // https://stripe.com/docs/error-codes#card-declined
         // Apparently the implementation is contradict with the doc
-        // Some declines code comes without "card_declined" in "exception.apiError?.code"
+        // Some decline codes come without "card_declined" in "exception.apiError?.code"
         DeclinedByStripeApiError.CardDeclined::class.sealedSubclasses
             .mapNotNull { it.objectInstance }
             .firstOrNull {
