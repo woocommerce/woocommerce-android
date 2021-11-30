@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import org.mockito.kotlin.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -27,6 +28,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val wcPayStore: WCPayStore = mock()
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag = mock()
 
     private val site = SiteModel()
 
@@ -38,7 +40,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             wooStore,
             wcPayStore,
             coroutinesTestRule.testDispatchers,
-            networkStatus
+            networkStatus,
+            stripeExtensionFeatureFlag,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
@@ -47,6 +50,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(buildWCPayPluginInfo())
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(false)
     }
 
     @Test
@@ -404,7 +408,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     fun `when onboarding completed, then onboarding completed flag saved`() = testBlocking {
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())
+        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            isCompleted = eq(true)
+        )
     }
 
     @Test
@@ -416,7 +425,29 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         )
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper, never()).setCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())
+        verify(appPrefsWrapper, never()).setCardReaderOnboardingCompleted(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            isCompleted = eq(true)
+        )
+    }
+
+    @Test
+    fun `when onboarding NOT completed, then onboarding completed flag cleared`() = testBlocking {
+        whenever(wcPayStore.loadAccount(site)).thenReturn(
+            buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE,
+            )
+        )
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            isCompleted = eq(false)
+        )
     }
 
     private fun buildPaymentAccountResult(

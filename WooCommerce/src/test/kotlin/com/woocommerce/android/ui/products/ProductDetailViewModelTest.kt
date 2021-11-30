@@ -210,6 +210,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        doReturn("").whenever(prefs).getSelectedProductType()
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
@@ -686,7 +687,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Publish option not shown when product is published except addProduct flow`() {
         doReturn(product).whenever(productRepository).getProduct(any())
-        doReturn(product).whenever(productRepository).getProduct(any())
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
         assertThat(viewModel.isPublishOptionNeeded).isFalse()
@@ -704,7 +704,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Publish option shown when product is published and from addProduct flow and is under product creation`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(true).whenever(viewModel).isAddFlowEntryPoint
         doReturn(true).whenever(viewModel).isProductUnderCreation
         viewModel.start()
@@ -740,7 +739,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Save option not shown when product has changes but in add product flow`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(true).whenever(viewModel).isAddFlowEntryPoint
         doReturn(true).whenever(viewModel).isProductUnderCreation
         doReturn(true).whenever(viewModel).hasChanges()

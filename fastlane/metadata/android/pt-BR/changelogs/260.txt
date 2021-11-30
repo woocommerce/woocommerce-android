@@ -1,2 +1,0 @@
-7.9:
-Sabemos que seus clientes nem sempre inserem o endereço correto ao fazer pedidos. Por isso, agora você pode editar o endereço de entrega e cobrança com as anotações fornecidas pelo cliente.

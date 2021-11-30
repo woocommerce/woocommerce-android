@@ -15,6 +15,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.FeedbackPrefs
@@ -23,9 +24,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -36,7 +35,9 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog
+import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
+import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
+import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog.Companion.KEY_SIMPLE_PAYMENTS_RESULT
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -78,7 +79,6 @@ class OrderListFragment :
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
     private val searchHandler = Handler(Looper.getMainLooper())
-    private var simplePaymentMenuItem: MenuItem? = null
 
     private var _binding: FragmentOrderListBinding? = null
     private val binding get() = _binding!!
@@ -114,8 +114,6 @@ class OrderListFragment :
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.orderlist_search_hint)
 
-        simplePaymentMenuItem = menu.findItem(R.id.menu_add)
-
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -146,6 +144,7 @@ class OrderListFragment :
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
         }
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
+        initCreateOrderFAB(binding.createOrderButton)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -172,7 +171,6 @@ class OrderListFragment :
         searchView = null
         orderListMenu = null
         searchMenuItem = null
-        simplePaymentMenuItem = null
         super.onDestroyView()
         _binding = null
     }
@@ -200,8 +198,6 @@ class OrderListFragment :
                 if (it.isVisible != showSearch) it.isVisible = showSearch
             }
         }
-
-        simplePaymentMenuItem?.isVisible = isSimplePaymentsAvailable()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -211,11 +207,26 @@ class OrderListFragment :
                 enableSearchListeners()
                 true
             }
-            R.id.menu_add -> {
-                showSimplePaymentsDialog()
-                true
-            }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
+        val isSimplePaymentAvailable = isSimplePaymentsAvailable()
+        val isOrderCreationAvailable = FeatureFlag.ORDER_CREATION.isEnabled() && AppPrefs.isOrderCreationEnabled
+
+        if (isSimplePaymentAvailable || isOrderCreationAvailable) {
+            fabButton.visibility = View.VISIBLE
+            fabButton.setOnClickListener {
+                when {
+                    isSimplePaymentAvailable && isOrderCreationAvailable -> showOrderCreationBottomSheet()
+                    isSimplePaymentAvailable -> showSimplePaymentsDialog()
+                    isOrderCreationAvailable -> {
+                        // TODO trigger Order Creation form
+                    }
+                }
+            }
+            pinFabAboveBottomNavigationBar(fabButton)
         }
     }
 
@@ -297,13 +308,23 @@ class OrderListFragment :
     }
 
     private fun initializeResultHandlers() {
-        handleResult<Order>(SimplePaymentsDialog.KEY_SIMPLE_PAYMENTS_RESULT) { order ->
+        handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
+            viewModel.loadOrders()
+        }
+        handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
             binding.orderListView.post {
                 openOrderDetail(order.localId.value, order.remoteId, order.status.value)
             }
         }
-        handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
-            viewModel.loadOrders()
+        handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
+            binding.orderListView.post {
+                when (it) {
+                    OrderCreationAction.CREATE_ORDER -> {
+                        // TODO trigger Order Creation form
+                    }
+                    OrderCreationAction.SIMPLE_PAYMENT -> showSimplePaymentsDialog()
+                }
+            }
         }
     }
 
@@ -314,6 +335,11 @@ class OrderListFragment :
     private fun showSimplePaymentsDialog() {
         AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
         findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsDialog)
+    }
+
+    private fun showOrderCreationBottomSheet() {
+        OrderListFragmentDirections.actionOrderListFragmentToOrderCreationBottomSheet()
+            .let { findNavController().navigateSafely(it) }
     }
 
     private fun hideEmptyView() {
@@ -384,7 +410,6 @@ class OrderListFragment :
         isSearching = true
         checkOrientation()
         onSearchViewActiveChanged(isActive = true)
-        simplePaymentMenuItem?.isVisible = false
         binding.orderFiltersCard.isVisible = false
         binding.orderListView.clearAdapterData()
         return true
@@ -394,7 +419,6 @@ class OrderListFragment :
         clearSearchResults()
         searchMenuItem?.isVisible = true
         viewModel.onSearchClosed()
-        simplePaymentMenuItem?.isVisible = isSimplePaymentsAvailable()
         binding.orderFiltersCard.isVisible = true
         onSearchViewActiveChanged(isActive = false)
         return true

@@ -33,10 +33,8 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_REVIEW_STATUS
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatusPayload
 import javax.inject.Inject
@@ -237,17 +235,6 @@ class ReviewListViewModel @Inject constructor(
         } else {
             // Network not connected
             showOfflineSnack()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onNotificationChanged(event: OnNotificationChanged) {
-        if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
-            if (!event.isError) {
-                reloadReviewsFromCache()
-                checkForUnreadReviews()
-            }
         }
     }
 

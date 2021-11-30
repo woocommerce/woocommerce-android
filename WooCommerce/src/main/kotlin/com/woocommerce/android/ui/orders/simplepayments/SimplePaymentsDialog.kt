@@ -37,8 +37,8 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         requireDialog().window?.let { window ->
             window.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
             window.setLayout(
-                (DisplayUtils.getDisplayPixelWidth() * WIDTH_RATIO).toInt(),
-                (DisplayUtils.getDisplayPixelHeight(context) * HEIGHT_RATIO).toInt()
+                (DisplayUtils.getWindowPixelWidth(requireContext()) * WIDTH_RATIO).toInt(),
+                (DisplayUtils.getWindowPixelHeight(requireContext()) * HEIGHT_RATIO).toInt()
             )
         }
 
