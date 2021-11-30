@@ -452,12 +452,12 @@ class DateUtilsTest {
     @Test
     fun `getDateForFirstDayOfCurrentWeek() returns correct values`() {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        val todayCalendar = Calendar.getInstance().apply {
+        val todayCalendar = Calendar.getInstance(Locale.US).apply {
             time = sdf.parse("2021-11-21 00:00:00")!!
         }
 
-        val firstDayOfWeekCalendar = Calendar.getInstance().apply {
-            time = sdf.parse("2021-11-15 00:00:00")!!
+        val firstDayOfWeekCalendar = Calendar.getInstance(Locale.US).apply {
+            time = sdf.parse("2021-11-21 00:00:00")!!
         }
 
         assertEquals(firstDayOfWeekCalendar.time, dateUtilsUnderTest.getDateForFirstDayOfWeek(todayCalendar))
@@ -508,12 +508,12 @@ class DateUtilsTest {
     @Test
     fun `getDateForFirstDayOfPreviousWeek() returns correct values`() {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        val todayCalendar = Calendar.getInstance().apply {
+        val todayCalendar = Calendar.getInstance(Locale.US).apply {
             time = sdf.parse("2021-11-22 00:00:00")!!
         }
 
-        val firstDayOfPreviousWeek = Calendar.getInstance().apply {
-            time = sdf.parse("2021-11-15 00:00:00")!!
+        val firstDayOfPreviousWeek = Calendar.getInstance(Locale.US).apply {
+            time = sdf.parse("2021-11-14 00:00:00")!!
         }
 
         assertEquals(firstDayOfPreviousWeek.time, dateUtilsUnderTest.getDateForFirstDayOfPreviousWeek(1, todayCalendar))
