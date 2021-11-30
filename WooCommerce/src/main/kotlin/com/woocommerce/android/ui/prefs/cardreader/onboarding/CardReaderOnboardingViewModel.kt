@@ -57,18 +57,19 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 CardReaderOnboardingState.WcpayNotInstalled ->
                     viewState.value =
                         OnboardingViewState.WCPayError.WCPayNotInstalledState(::refreshState, ::onLearnMoreClicked)
-                is CardReaderOnboardingState.UnsupportedVersion ->
-                    viewState.value = when (state.pluginType) {
+                is CardReaderOnboardingState.PluginUnsupportedVersion ->
+                    when (state.pluginType) {
                         PluginType.WOOCOMMERCE_PAYMENTS ->
-                            OnboardingViewState.WCPayError.WCPayUnsupportedVersionState(
-                                ::refreshState,
-                                ::onLearnMoreClicked
-                            )
+                            viewState.value =
+                                OnboardingViewState.WCPayError.WCPayUnsupportedVersionState(
+                                    ::refreshState,
+                                    ::onLearnMoreClicked
+                                )
                         PluginType.STRIPE_TERMINAL_GATEWAY ->
-                            OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState(
-                                ::refreshState,
-                                ::onLearnMoreClicked
-                            )
+                            viewState.value =
+                                OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState(
+                                    ::refreshState, ::onLearnMoreClicked
+                                )
                     }
                 CardReaderOnboardingState.WcpayNotActivated ->
                     viewState.value =
@@ -156,7 +157,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
             is CardReaderOnboardingState.SetupNotCompleted ->
                 "${getPluginNameForAnalyticsFrom(state.pluginType)}_not_setup"
-            is CardReaderOnboardingState.UnsupportedVersion ->
+            is CardReaderOnboardingState.PluginUnsupportedVersion ->
                 "${getPluginNameForAnalyticsFrom(state.pluginType)}_unsupported_version"
             CardReaderOnboardingState.GenericError -> "generic_error"
             CardReaderOnboardingState.NoConnectionError -> "no_connection_error"

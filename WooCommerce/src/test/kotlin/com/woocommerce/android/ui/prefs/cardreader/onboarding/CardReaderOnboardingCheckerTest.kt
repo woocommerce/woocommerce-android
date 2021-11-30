@@ -237,9 +237,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             val result = checker.getOnboardingState()
 
             assertThat(result).isEqualTo(
-                CardReaderOnboardingState.UnsupportedVersion(
-                    PluginType.STRIPE_TERMINAL_GATEWAY
-                )
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_TERMINAL_GATEWAY)
             )
         }
 
@@ -379,7 +377,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.UnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS))
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS)
+            )
         }
 
     @Test
