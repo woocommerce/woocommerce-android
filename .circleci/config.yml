@@ -4,6 +4,9 @@ commands:
       - run:
           name: Setup gradle.properties
           command: cp gradle.properties-example gradle.properties
+      - run:
+          name: Enable build time reporting
+          command: sed -i "s/tracksEnabled = false/tracksEnabled = true/" gradle.properties
   update-gradle-memory:
       parameters:
         jvmargs:
