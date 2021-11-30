@@ -63,4 +63,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> =
         AppPrefs.getOrderFilterCustomDateRange(selectedSiteId)
+
+    fun setV4StatsSupported(supported: Boolean) {
+        AppPrefs.setV4StatsSupported(supported)
+    }
 }
