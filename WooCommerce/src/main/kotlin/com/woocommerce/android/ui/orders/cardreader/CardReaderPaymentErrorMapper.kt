@@ -6,23 +6,23 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import javax.inject.Inject
 
 class CardReaderPaymentErrorMapper @Inject constructor() {
-    fun mapToUiError(errorType: CardPaymentStatus.CardPaymentStatusErrorType): PaymentFlowError =
+    fun mapPaymentErrorToUiError(errorType: CardPaymentStatus.CardPaymentStatusErrorType): PaymentFlowError =
         when (errorType) {
             CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork -> PaymentFlowError.NoNetwork
             is CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError ->
                 mapPaymentDeclinedErrorType(errorType)
             CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut,
-            CardPaymentStatus.CardPaymentStatusErrorType.GenericError -> PaymentFlowError.GenericError
-            CardPaymentStatus.CardPaymentStatusErrorType.ServerError -> PaymentFlowError.ServerError
-            else -> PaymentFlowError.GenericError
+            CardPaymentStatus.CardPaymentStatusErrorType.Generic -> PaymentFlowError.Generic
+            CardPaymentStatus.CardPaymentStatusErrorType.Server -> PaymentFlowError.Server
+            else -> PaymentFlowError.Generic
         }
 
     @Suppress("ComplexMethod")
     private fun mapPaymentDeclinedErrorType(
         cardPaymentStatusErrorType: CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError
     ) = when (cardPaymentStatusErrorType) {
-        AmountTooSmall -> PaymentFlowError.Declined.AmountTooSmall
-        Unknown -> PaymentFlowError.Declined.Unknown
+        AmountTooSmall -> PaymentFlowError.AmountTooSmall
+        Unknown -> PaymentFlowError.Unknown
 
         CardDeclined.CardNotSupported -> PaymentFlowError.Declined.CardNotSupported
         CardDeclined.CurrencyNotSupported -> PaymentFlowError.Declined.CurrencyNotSupported
@@ -39,6 +39,6 @@ class CardReaderPaymentErrorMapper @Inject constructor() {
         CardDeclined.TestCard -> PaymentFlowError.Declined.TestCard
         CardDeclined.TestModeLiveCard -> PaymentFlowError.Declined.TestModeLiveCard
         CardDeclined.TooManyPinTries -> PaymentFlowError.Declined.TooManyPinTries
-        CardDeclined.Unknown -> PaymentFlowError.Declined.Unknown
+        CardDeclined.Unknown -> PaymentFlowError.Unknown
     }
 }

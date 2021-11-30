@@ -248,7 +248,7 @@ class CardReaderPaymentViewModel
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
-        val errorType = errorMapper.mapToUiError(error.type)
+        val errorType = errorMapper.mapPaymentErrorToUiError(error.type)
         if (errorType is PaymentFlowError.NonRetryableError) {
             viewState.postValue(
                 FailedPaymentState(

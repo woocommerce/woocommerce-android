@@ -103,8 +103,10 @@ sealed class ViewState(
 sealed class PaymentFlowError(@StringRes val message: Int) {
     object FetchingOrderFailed : PaymentFlowError(R.string.order_error_fetch_generic)
     object NoNetwork : PaymentFlowError(R.string.card_reader_payment_failed_no_network_state)
-    object ServerError : PaymentFlowError(R.string.card_reader_payment_failed_server_error_state)
-    object GenericError : PaymentFlowError(R.string.card_reader_payment_failed_unexpected_error_state)
+    object Server : PaymentFlowError(R.string.card_reader_payment_failed_server_error_state)
+    object Generic : PaymentFlowError(R.string.card_reader_payment_failed_unexpected_error_state)
+    object AmountTooSmall : Declined(R.string.card_reader_payment_failed_amount_too_small), NonRetryableError
+    object Unknown : Declined(R.string.card_reader_payment_failed_unknown)
     sealed class Declined(message: Int) : PaymentFlowError(message) {
         object Temporary : Declined(R.string.card_reader_payment_failed_temporary)
         object Fraud : Declined(R.string.card_reader_payment_failed_fraud), NonRetryableError
@@ -127,9 +129,6 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
         object TooManyPinTries : Declined(R.string.card_reader_payment_failed_too_many_pin_tries)
         object TestCard : Declined(R.string.card_reader_payment_failed_test_card)
         object TestModeLiveCard : Declined(R.string.card_reader_payment_failed_test_card)
-
-        object AmountTooSmall : Declined(R.string.card_reader_payment_failed_amount_too_small)
-        object Unknown : Declined(R.string.card_reader_payment_failed_unknown), NonRetryableError
     }
 
     sealed interface NonRetryableError

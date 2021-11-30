@@ -7,9 +7,9 @@ import com.stripe.stripeterminal.external.models.TerminalException.TerminalError
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.GenericError
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.ServerError
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Server
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -87,7 +87,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(GenericError)
+        assertThat(result.type).isEqualTo(Generic)
     }
 
     @Test
@@ -101,28 +101,28 @@ class PaymentErrorMapperTest {
     fun `when GENERIC_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
         val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.GenericError)
 
-        assertThat(result.type).isEqualTo(GenericError)
+        assertThat(result.type).isEqualTo(Generic)
     }
 
     @Test
     fun `when MISSING_ORDER capture payment exception thrown, then NO_NETWORK type returned`() {
         val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.MissingOrder)
 
-        assertThat(result.type).isEqualTo(GenericError)
+        assertThat(result.type).isEqualTo(Generic)
     }
 
     @Test
     fun `when CAPTURE_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
         val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.CaptureError)
 
-        assertThat(result.type).isEqualTo(GenericError)
+        assertThat(result.type).isEqualTo(Generic)
     }
 
     @Test
     fun `when SERVER_ERROR capture payment exception thrown, then SERVER_ERROR type returned`() {
         val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.ServerError)
 
-        assertThat(result.type).isEqualTo(ServerError)
+        assertThat(result.type).isEqualTo(Server)
     }
 
     @Test

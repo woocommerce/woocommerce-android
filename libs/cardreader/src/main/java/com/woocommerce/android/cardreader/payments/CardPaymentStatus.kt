@@ -17,8 +17,8 @@ sealed class CardPaymentStatus {
     sealed class CardPaymentStatusErrorType {
         object CardReadTimeOut : CardPaymentStatusErrorType()
         object NoNetwork : CardPaymentStatusErrorType()
-        object ServerError : CardPaymentStatusErrorType()
-        object GenericError : CardPaymentStatusErrorType()
+        object Server : CardPaymentStatusErrorType()
+        object Generic : CardPaymentStatusErrorType()
 
         sealed class DeclinedByStripeApiError(val errorCodes: Array<String>) : CardPaymentStatusErrorType() {
             /**

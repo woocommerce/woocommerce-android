@@ -9,7 +9,7 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.GenericError
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
 
@@ -26,7 +26,7 @@ internal class PaymentErrorMapper {
             TerminalErrorCode.CARD_READ_TIMED_OUT -> CardReadTimeOut
             TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapDeclinedByStripeApiError(exception)
             TerminalErrorCode.REQUEST_TIMED_OUT -> NoNetwork
-            else -> GenericError
+            else -> Generic
         }
         return PaymentFailed(type, paymentData, exception.errorMessage)
     }
@@ -55,8 +55,8 @@ internal class PaymentErrorMapper {
         val message = "Capturing payment failed: $capturePaymentResponse"
         val type = when (capturePaymentResponse) {
             NetworkError -> NoNetwork
-            ServerError -> CardPaymentStatusErrorType.ServerError
-            else -> GenericError
+            ServerError -> CardPaymentStatusErrorType.Server
+            else -> Generic
         }
         return PaymentFailed(type, paymentData, message)
     }
@@ -66,6 +66,6 @@ internal class PaymentErrorMapper {
         errorMessage: String
     ): PaymentFailed {
         val paymentData = originalPaymentIntent?.let { PaymentDataImpl(originalPaymentIntent) }
-        return PaymentFailed(GenericError, paymentData, errorMessage)
+        return PaymentFailed(Generic, paymentData, errorMessage)
     }
 }
