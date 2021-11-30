@@ -1,1 +1,2 @@
-We’ve made some updates to our in-person payments support! Your card reader might have firmware software updates – some are super important and are required to be installed immediately. With this release, you can defer the upgrade of the optional updates for a better time.
+- [***] Order list filters: Merchants can now filter orders by status or date range [https://github.com/woocommerce/woocommerce-android/issues/4934]
+

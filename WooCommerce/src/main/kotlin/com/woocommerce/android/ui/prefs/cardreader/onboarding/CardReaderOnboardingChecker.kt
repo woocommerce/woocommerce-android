@@ -5,6 +5,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -28,15 +29,19 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val inPersonPaymentsStore: WCInPersonPaymentsStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
+    private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag,
 ) {
-    @Suppress("ReturnCount", "ComplexMethod")
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
 
-        with(selectedSite.get()) {
-            appPrefsWrapper.resetCardReaderOnboardingCompleted(this.id, this.siteId, this.selfHostedSiteId)
-        }
+        return fetchOnboardingState()
+            .also {
+                updateOnboardingCompletedFlag(isCompleted = it is OnboardingCompleted)
+            }
+    }
 
+    @Suppress("ReturnCount", "ComplexMethod")
+    private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
 
@@ -44,9 +49,16 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (fetchSitePluginsResult.isError) return GenericError
         val pluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
 
-        if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
-        if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
-        if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+        if (stripeExtensionFeatureFlag.isEnabled()) {
+            // TODO cardreader Add support for Stripe Extension
+            if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
+            if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
+            if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+        } else {
+            if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
+            if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
+            if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+        }
 
         val paymentAccount = inPersonPaymentsStore.loadAccount(selectedSite.get()).model ?: return GenericError
 
@@ -60,10 +72,6 @@ class CardReaderOnboardingChecker @Inject constructor(
         )
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected
         if (isInUndefinedState(paymentAccount)) return GenericError
-
-        with(selectedSite.get()) {
-            appPrefsWrapper.setCardReaderOnboardingCompleted(this.id, this.siteId, this.selfHostedSiteId)
-        }
 
         return OnboardingCompleted
     }
@@ -113,10 +121,20 @@ class CardReaderOnboardingChecker @Inject constructor(
             paymentAccount.status == REJECTED_LISTED ||
             paymentAccount.status == REJECTED_TERMS_OF_SERVICE ||
             paymentAccount.status == REJECTED_OTHER
-}
 
-private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
-    paymentAccount.status != COMPLETE
+    private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status != COMPLETE
+
+    private fun updateOnboardingCompletedFlag(isCompleted: Boolean) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderOnboardingCompleted(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+            isCompleted = isCompleted
+        )
+    }
+}
 
 sealed class CardReaderOnboardingState {
     object OnboardingCompleted : CardReaderOnboardingState()
