@@ -51,6 +51,11 @@
             app:destination="@id/orderCreationBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"/>
+        <action
+            android:id="@+id/action_orderListFragment_to_orderCreationFragment"
+            app:destination="@id/nav_graph_order_creations"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/products"
@@ -186,6 +191,7 @@
     <include app:graph="@navigation/nav_graph_order_filters" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
+    <include app:graph="@navigation/nav_graph_order_creations" />
 
     <fragment
         android:id="@+id/infoScreenFragment"

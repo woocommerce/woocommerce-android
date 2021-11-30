@@ -335,8 +335,7 @@ class OrderListFragment :
     }
 
     private fun openOrderCreationFragment() {
-        NavGraphOrdersDirections.actionCreateOrder()
-            .let { findNavController().navigateSafely(it) }
+        findNavController().navigate(R.id.action_orderListFragment_to_orderCreationFragment)
     }
 
     private fun hideEmptyView() {

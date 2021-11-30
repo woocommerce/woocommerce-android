@@ -696,16 +696,4 @@
             android:name="requestKey"
             app:argType="string" />
     </fragment>
-    <fragment
-        android:id="@+id/orderCreationFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationFragment"
-        android:label="orderCreationFragment"
-        tools:layout="@layout/fragment_order_creation" />
-    <action
-        android:id="@+id/action_create_order"
-        app:destination="@id/orderCreationFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
 </navigation>
