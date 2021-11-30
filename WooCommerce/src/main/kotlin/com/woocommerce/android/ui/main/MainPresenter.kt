@@ -38,7 +38,7 @@ class MainPresenter @Inject constructor(
     private val notificationStore: NotificationStore,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 

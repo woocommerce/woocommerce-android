@@ -94,10 +94,10 @@ class WPMediaGalleryView @JvmOverloads constructor(
         val borderRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_small)
         glideTransform = RequestOptions.bitmapTransform(RoundedCorners(borderRadius))
 
-        // base the image size on the screen width divided by columns, taking margin into account
-        val screenWidth = DisplayUtils.getDisplayPixelWidth(context)
+        // base the image size on the app's window width divided by columns, taking margin into account
+        val windowWidth = DisplayUtils.getWindowPixelWidth(context)
         val margin = context.resources.getDimensionPixelSize(R.dimen.minor_25)
-        imageSize = (screenWidth / NUM_COLUMNS) - (margin * NUM_COLUMNS)
+        imageSize = (windowWidth / NUM_COLUMNS) - (margin * NUM_COLUMNS)
     }
 
     fun showImages(images: List<Product.Image>, listener: WPMediaGalleryListener, isMultiSelectionAllowed: Boolean) {

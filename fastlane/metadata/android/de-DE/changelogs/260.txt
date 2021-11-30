@@ -1,2 +1,0 @@
-7.9:
-Wir wissen, dass deine Kunden ihre Adresse zum Zeitpunkt ihrer Bestellung nicht immer korrekt angeben. Du kannst jetzt sowohl die Rechnungs- und Lieferadresse als auch die vom Kunden bereitgestellten Anmerkungen bearbeiten.

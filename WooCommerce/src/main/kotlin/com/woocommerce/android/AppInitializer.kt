@@ -20,17 +20,20 @@ import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.*
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -68,6 +71,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
     @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
+    @Inject lateinit var sendTelemetry: SendTelemetry
+    @Inject lateinit var wooLog: WooLogWrapper
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -128,6 +133,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         observeEncryptedLogsUploadResults()
         uploadEncryptedLogs()
+
+        appCoroutineScope.launch {
+            sendTelemetry(BuildConfig.VERSION_NAME).collect { result ->
+                wooLog.i(UTILS, "WCTracker telemetry result: $result")
+            }
+        }
     }
 
     override fun onAppComesFromBackground() {
