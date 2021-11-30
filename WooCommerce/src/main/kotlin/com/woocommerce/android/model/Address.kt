@@ -168,18 +168,20 @@ data class Address(
     }
 
     companion object {
-        fun empty() = Address(
-            company = "",
-            firstName = "",
-            lastName = "",
-            phone = "",
-            country = "",
-            state = "",
-            address1 = "",
-            address2 = "",
-            city = "",
-            postcode = "",
-            email = ""
-        )
+        val empty by lazy {
+            Address(
+                company = "",
+                firstName = "",
+                lastName = "",
+                phone = "",
+                country = "",
+                state = "",
+                address1 = "",
+                address2 = "",
+                city = "",
+                postcode = "",
+                email = ""
+            )
+        }
     }
 }
