@@ -1,14 +1,11 @@
 package com.woocommerce.android.ui.orders.creation
 
-import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.parcelize.Parcelize
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
