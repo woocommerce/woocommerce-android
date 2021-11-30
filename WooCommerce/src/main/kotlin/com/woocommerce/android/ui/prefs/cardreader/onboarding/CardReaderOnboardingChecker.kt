@@ -209,7 +209,6 @@ sealed class CardReaderOnboardingState {
     object WcpayNotInstalled : CardReaderOnboardingState()
 
     sealed class StripeTerminal : CardReaderOnboardingState() {
-
         /**
          * stripe terminal plugin is installed on the store, but the version is out-dated and doesn't
          * contain required APIs for card present payments.
