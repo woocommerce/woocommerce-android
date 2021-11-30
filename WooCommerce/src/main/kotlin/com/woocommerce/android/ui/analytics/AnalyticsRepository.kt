@@ -23,11 +23,10 @@ class AnalyticsRepository @Inject constructor(
 
     suspend fun fetchRevenueStatData(dateRange: DateRange, selectedRange: AnalyticsDateRanges): RevenueStat? {
         val granularity = getGranularity(selectedRange)
-        val previousPeriodRevenue = getPreviousPeriodRevenue(dateRange, granularity)
-        val currentPeriodRevenue = getCurrentPeriodRevenue(dateRange, granularity)
+        val previousPeriodRevenue = getPreviousPeriodRevenue(dateRange, granularity) ?: return null
 
-        if (previousPeriodRevenue == null || currentPeriodRevenue == null ||
-            currentPeriodRevenue.totalSales == null || currentPeriodRevenue.netRevenue == null) {
+        val currentPeriodRevenue = getCurrentPeriodRevenue(dateRange, granularity)
+        if (currentPeriodRevenue?.totalSales == null || currentPeriodRevenue.netRevenue == null) {
             return null
         }
 

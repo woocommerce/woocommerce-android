@@ -24,8 +24,10 @@ class StatsRepository @Inject constructor(
         private val TAG = MyStorePresenter::class.java
     }
 
-    suspend fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean): Result<WCRevenueStatsModel?> {
-        val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, forced = forced)
+    suspend fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean,
+                                  startDate: String = "", endDate: String = ""): Result<WCRevenueStatsModel?> {
+        val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity,
+            startDate, endDate, forced = forced)
         val result = wcStatsStore.fetchRevenueStats(statsPayload)
 
         return if (!result.isError) {
@@ -34,14 +36,9 @@ class StatsRepository @Inject constructor(
             )
             Result.success(revenueStatsModel)
         } else {
-            val errorMessage = result?.error?.message ?: "Timeout"
-            WooLog.e(
-                DASHBOARD,
-                "$TAG - Error fetching revenue stats: $errorMessage"
-            )
-            var exception = StatsException(
-                error = result.error
-            )
+            val errorMessage = result.error?.message ?: "Timeout"
+            WooLog.e(DASHBOARD, "$TAG - Error fetching revenue stats: $errorMessage")
+            val exception = StatsException(error = result.error)
             Result.failure(exception)
         }
     }
