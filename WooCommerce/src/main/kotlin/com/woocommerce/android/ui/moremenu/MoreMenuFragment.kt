@@ -13,4 +13,3 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_analytics) {
         return
     }
 }
-    
