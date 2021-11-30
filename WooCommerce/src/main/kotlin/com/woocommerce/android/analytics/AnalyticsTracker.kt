@@ -11,8 +11,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.HashMap
-import java.util.UUID
+import java.util.*
 
 class AnalyticsTracker private constructor(private val context: Context) {
     // region Track Event Enums
@@ -302,8 +301,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MAIN_TAB_ORDERS_RESELECTED,
         MAIN_TAB_PRODUCTS_SELECTED,
         MAIN_TAB_PRODUCTS_RESELECTED,
-        MAIN_TAB_NOTIFICATIONS_SELECTED,
-        MAIN_TAB_NOTIFICATIONS_RESELECTED,
+        MAIN_TAB_MORE_MENU_SELECTED,
+        MAIN_TAB_MORE_MENU_RESELECTED,
 
         // -- Settings
         SETTING_CHANGE,

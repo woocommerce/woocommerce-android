@@ -239,7 +239,6 @@ class MainActivity :
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
 
-        updateReviewsBadge()
         updateOrderBadge(false)
 
         checkConnection()
@@ -318,7 +317,7 @@ class MainActivity :
             currentDestinationId == R.id.dashboard ||
                 currentDestinationId == R.id.orders ||
                 currentDestinationId == R.id.products ||
-                currentDestinationId == R.id.reviews ||
+                currentDestinationId == R.id.more_menu ||
                 currentDestinationId == R.id.analytics
         } else {
             true
@@ -606,24 +605,6 @@ class MainActivity :
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
-    // region Bottom Navigation
-    override fun updateReviewsBadge() {
-        if (AppPrefs.getHasUnseenReviews()) {
-            showReviewsBadge()
-        } else {
-            hideReviewsBadge()
-        }
-    }
-
-    override fun hideReviewsBadge() {
-        binding.bottomNav.showReviewsBadge(false)
-        viewModel.removeReviewNotifications()
-    }
-
-    override fun showReviewsBadge() {
-        binding.bottomNav.showReviewsBadge(true)
-    }
-
     override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
         if (hideCountUntilComplete) {
             binding.bottomNav.clearOrderBadgeCount()
@@ -647,13 +628,11 @@ class MainActivity :
             ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_SELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
-            REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
+            MORE -> Stat.MAIN_TAB_MORE_MENU_SELECTED
         }
         AnalyticsTracker.track(stat)
 
-        if (navPos == REVIEWS) {
-            viewModel.removeReviewNotifications()
-        } else if (navPos == ORDERS) {
+        if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
         }
     }
@@ -664,7 +643,7 @@ class MainActivity :
             ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_RESELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
-            REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
+            MORE -> Stat.MAIN_TAB_MORE_MENU_RESELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -712,7 +691,6 @@ class MainActivity :
                 when (event) {
                     is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
                     is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                    is ViewReviewList -> binding.bottomNav.currentPosition = REVIEWS
                     is ViewZendeskTickets -> {
                         binding.bottomNav.currentPosition = MY_STORE
                         startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
@@ -772,13 +750,6 @@ class MainActivity :
         enableModeration: Boolean,
         tempStatus: String?
     ) {
-        // make sure the review tab is active if the user came here from a notification
-        if (launchedFromNotification) {
-            showBottomNav()
-            binding.bottomNav.currentPosition = REVIEWS
-            binding.bottomNav.active(REVIEWS.position)
-        }
-
         val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
