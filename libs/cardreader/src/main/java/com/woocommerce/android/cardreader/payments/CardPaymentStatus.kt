@@ -88,7 +88,7 @@ sealed class CardPaymentStatus {
                         "no_action_taken",
                         "not_permitted",
                         "service_not_allowed",
-                        "transaction_not_allowed"
+                        "transaction_not_allowed",
                     )
                 )
 
