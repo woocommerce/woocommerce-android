@@ -13,7 +13,12 @@ class OrderCreationFragment : BaseFragment(R.layout.fragment_order_creation) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(FragmentOrderCreationBinding.bind(view)) {
-
+            setupObserversWith(this)
         }
+        viewModel.start()
+    }
+
+    private fun setupObserversWith(binding: FragmentOrderCreationBinding) {
+
     }
 }
