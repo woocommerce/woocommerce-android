@@ -128,7 +128,7 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
         object PinRequired : Declined(R.string.card_reader_payment_failed_pin_required)
         object TooManyPinTries : Declined(R.string.card_reader_payment_failed_too_many_pin_tries)
         object TestCard : Declined(R.string.card_reader_payment_failed_test_card)
-        object TestModeLiveCard : Declined(R.string.card_reader_payment_failed_test_card)
+        object TestModeLiveCard : Declined(R.string.card_reader_payment_failed_test_mode_live_card)
     }
 
     sealed interface NonRetryableError
