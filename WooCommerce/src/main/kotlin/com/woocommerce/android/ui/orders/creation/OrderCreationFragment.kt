@@ -23,4 +23,6 @@ class OrderCreationFragment : BaseFragment(R.layout.fragment_order_creation) {
             binding.orderStatusView.updateOrder(it)
         }
     }
+
+    override fun getFragmentTitle() = getString(R.string.order_creation_fragment_title)
 }
