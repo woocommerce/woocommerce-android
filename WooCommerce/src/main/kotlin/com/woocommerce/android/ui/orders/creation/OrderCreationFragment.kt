@@ -19,6 +19,8 @@ class OrderCreationFragment : BaseFragment(R.layout.fragment_order_creation) {
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationBinding) {
-
+        viewModel.orderDraft.observe(viewLifecycleOwner) {
+            binding.orderStatusView.updateOrder(it)
+        }
     }
 }
