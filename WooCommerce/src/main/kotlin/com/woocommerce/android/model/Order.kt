@@ -19,7 +19,7 @@ import java.util.*
 
 @Parcelize
 data class Order(
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
+    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val identifier: OrderIdentifier,
     private val rawLocalOrderId: Int,
     private val rawRemoteOrderId: Long,
@@ -51,7 +51,7 @@ data class Order(
     val shippingLines: List<ShippingLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
-    @Deprecated(message = "")
+    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val localId
         get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
 
