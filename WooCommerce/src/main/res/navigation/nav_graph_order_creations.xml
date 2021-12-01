@@ -6,7 +6,7 @@
     app:startDestination="@id/orderCreationFragment">
     <fragment
         android:id="@+id/orderCreationFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationFormFragment"
         android:label="orderCreationFragment"
-        tools:layout="@layout/fragment_order_creation" />
+        tools:layout="@layout/fragment_order_creation_form" />
 </navigation>

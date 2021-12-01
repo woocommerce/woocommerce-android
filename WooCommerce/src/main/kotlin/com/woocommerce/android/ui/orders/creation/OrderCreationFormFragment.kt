@@ -7,7 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationBinding
 import com.woocommerce.android.ui.base.BaseFragment
 
-class OrderCreationFragment : BaseFragment(R.layout.fragment_order_creation) {
+class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form) {
     private val navigationViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
