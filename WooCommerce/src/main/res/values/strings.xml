@@ -311,6 +311,7 @@
     <string name="orderlist_bottom_sheet_create_order_description">Create a new manual order</string>
     <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
     <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
+    <string name="order_creation_fragment_title">New Order</string>
     <!--
         Order Filters
     -->
