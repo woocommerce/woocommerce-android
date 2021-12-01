@@ -435,9 +435,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding NOT completed, then onboarding completed flag cleared`() = testBlocking {
-        whenever(wcPayStore.loadAccount(site)).thenReturn(
+        whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
             buildPaymentAccountResult(
-                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE,
+                WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_TERMS_OF_SERVICE,
             )
         )
         checker.getOnboardingState()
