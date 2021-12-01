@@ -238,15 +238,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val refreshButtonAction: () -> Unit,
             val onLearnMoreActionClicked: (() -> Unit)
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_generic_error) {
-            val contactSupportLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,
-                containsHtml = true
-            )
-            val learnMoreLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
-                containsHtml = true
-            )
-            val illustration = R.drawable.img_products_error
+            val contactSupportLabel: Nothing = TODO("Add proper logic after designs are ready")
+            val learnMoreLabel: Nothing = TODO("Add proper logic after designs are ready")
+            val illustration: Nothing = TODO("Add proper logic after designs are ready")
         }
 
         class NoConnectionErrorState(
