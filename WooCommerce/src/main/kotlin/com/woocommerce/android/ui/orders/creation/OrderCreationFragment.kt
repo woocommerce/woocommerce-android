@@ -15,12 +15,11 @@ class OrderCreationFragment : BaseFragment(R.layout.fragment_order_creation) {
         with(FragmentOrderCreationBinding.bind(view)) {
             setupObserversWith(this)
         }
-        viewModel.start()
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationBinding) {
-        viewModel.orderDraft.observe(viewLifecycleOwner) {
-            binding.orderStatusView.updateOrder(it)
+        viewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
+            binding.orderStatusView.updateOrder(newOrderData)
         }
     }
 
