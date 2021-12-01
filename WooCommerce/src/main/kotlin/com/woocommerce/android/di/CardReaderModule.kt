@@ -12,7 +12,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.wordpress.android.fluxc.store.WCPayStore
+import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -27,22 +27,22 @@ class CardReaderModule {
     ) = CardReaderManagerFactory.createCardReaderManager(application, cardReaderStore, logWrapper)
 
     @Provides
-    fun provideCardReaderStore(
+    fun provideInPersonPaymentsStore(
         selectedSite: SelectedSite,
-        payStore: WCPayStore,
+        inPersonPaymentsStore: WCInPersonPaymentsStore,
         responseMapper: CapturePaymentResponseMapper
     ) = object : CardReaderStore {
         override suspend fun fetchCustomerIdByOrderId(orderId: Long): String? {
-            return payStore.createCustomerByOrderId(selectedSite.get(), orderId).model?.customerId
+            return inPersonPaymentsStore.createCustomerByOrderId(selectedSite.get(), orderId).model?.customerId
         }
 
         override suspend fun fetchConnectionToken(): String {
-            val result = payStore.fetchConnectionToken(selectedSite.get())
+            val result = inPersonPaymentsStore.fetchConnectionToken(selectedSite.get())
             return result.model?.token.orEmpty()
         }
 
         override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): CapturePaymentResponse {
-            val response = payStore.capturePayment(selectedSite.get(), paymentId, orderId)
+            val response = inPersonPaymentsStore.capturePayment(selectedSite.get(), paymentId, orderId)
             return responseMapper.mapResponse(response)
         }
     }

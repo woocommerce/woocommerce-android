@@ -1,0 +1,57 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.analytics.daterangeselector.AnalyticsDateRangeCardView">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:paddingTop="@dimen/minor_100"
+        android:paddingBottom="@dimen/minor_100">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_toDate"
+            style="@style/Woo.Card.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_150"
+            android:maxLines="1"
+            android:textSize="@dimen/text_minor_125"
+            app:layout_constraintBottom_toTopOf="@+id/tv_fromDate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btn_dateRangeSelector"
+            tools:text="Today (11 Sept 2021)" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_fromDate"
+            style="@style/Woo.Card.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:maxLines="1"
+            android:textSize="@dimen/text_minor_80"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_dateRangeSelector"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_dateRangeSelector"
+            app:layout_constraintVertical_bias="0.01999998"
+            tools:text="vs Previous Period (10 Sept 2021)" />
+
+        <ImageButton
+            android:id="@+id/btn_dateRangeSelector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/major_100"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/analytics_date_range_selector_description"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_analytics_calendar" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>
+

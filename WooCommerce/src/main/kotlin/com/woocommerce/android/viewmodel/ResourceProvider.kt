@@ -1,10 +1,7 @@
 package com.woocommerce.android.viewmodel
 
 import android.content.Context
-import androidx.annotation.ColorRes
-import androidx.annotation.DimenRes
-import androidx.annotation.RawRes
-import androidx.annotation.StringRes
+import androidx.annotation.*
 import androidx.core.content.ContextCompat
 import java.io.InputStream
 import javax.inject.Inject
@@ -16,6 +13,10 @@ class ResourceProvider @Inject constructor(private val context: Context) {
 
     fun getString(@StringRes resourceId: Int, vararg formatArgs: Any): String {
         return context.getString(resourceId, *formatArgs)
+    }
+
+    fun getStringArray(@ArrayRes resourceId: Int): Array<String> {
+        return context.resources.getStringArray(resourceId)
     }
 
     fun getColor(@ColorRes resourceId: Int): Int {
