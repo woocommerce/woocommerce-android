@@ -10,10 +10,10 @@ import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardi
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
-import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult.WCPayAccountStatusEnum.*
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.*
 import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils
-import org.wordpress.android.fluxc.store.WCPayStore
+import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wooStore: WooCommerceStore,
-    private val wcPayStore: WCPayStore,
+    private val inPersonPaymentsStore: WCInPersonPaymentsStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
     private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag,
@@ -60,7 +60,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
         }
 
-        val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GenericError
+        val paymentAccount = inPersonPaymentsStore.loadAccount(selectedSite.get()).model ?: return GenericError
 
         if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
         if (!isWCPaySetupCompleted(paymentAccount)) return WcpaySetupNotCompleted
