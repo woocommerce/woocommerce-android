@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentOrderCreationBinding
+import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.ui.base.BaseFragment
 
 class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form) {
@@ -12,12 +12,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(FragmentOrderCreationBinding.bind(view)) {
+        with(FragmentOrderCreationFormBinding.bind(view)) {
             setupObserversWith(this)
         }
     }
 
-    private fun setupObserversWith(binding: FragmentOrderCreationBinding) {
+    private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
         navigationViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
             binding.orderStatusView.updateOrder(newOrderData)
         }
