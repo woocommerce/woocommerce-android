@@ -57,12 +57,19 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 CardReaderOnboardingState.WcpayNotInstalled ->
                     viewState.value =
                         OnboardingViewState.WCPayError.WCPayNotInstalledState(::refreshState, ::onLearnMoreClicked)
-                CardReaderOnboardingState.WcpayUnsupportedVersion ->
-                    viewState.value =
-                        OnboardingViewState.WCPayError.WCPayUnsupportedVersionState(
-                            ::refreshState,
-                            ::onLearnMoreClicked
-                        )
+                is CardReaderOnboardingState.UnsupportedVersion ->
+                    viewState.value = when (state.pluginType) {
+                        PluginType.WOOCOMMERCE_PAYMENTS ->
+                            OnboardingViewState.WCPayError.WCPayUnsupportedVersionState(
+                                ::refreshState,
+                                ::onLearnMoreClicked
+                            )
+                        PluginType.STRIPE_TERMINAL_GATEWAY ->
+                            OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState(
+                                ::refreshState,
+                                ::onLearnMoreClicked
+                            )
+                    }
                 CardReaderOnboardingState.WcpayNotActivated ->
                     viewState.value =
                         OnboardingViewState.WCPayError.WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
@@ -118,11 +125,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         ::onContactSupportClicked,
                         ::onLearnMoreClicked
                     )
-                CardReaderOnboardingState.StripeTerminal.UnsupportedVersion ->
-                    viewState.value =
-                        OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState(
-                            ::refreshState, ::onLearnMoreClicked
-                        )
                 CardReaderOnboardingState.WcpayAndStripeActivated ->
                     viewState.value =
                         OnboardingViewState.WcPayAndStripeInstalledState(
@@ -154,17 +156,17 @@ class CardReaderOnboardingViewModel @Inject constructor(
             CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
             is CardReaderOnboardingState.SetupNotCompleted ->
                 "${getPluginNameForAnalyticsFrom(state.pluginType)}_not_setup"
-            CardReaderOnboardingState.WcpayUnsupportedVersion -> "wcpay_unsupported_version"
+            is CardReaderOnboardingState.UnsupportedVersion ->
+                "${getPluginNameForAnalyticsFrom(state.pluginType)}_unsupported_version"
             CardReaderOnboardingState.GenericError -> "generic_error"
             CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
-            CardReaderOnboardingState.StripeTerminal.UnsupportedVersion -> "stripe_unsupported_version"
             CardReaderOnboardingState.WcpayAndStripeActivated -> "wcpay_and_stripe_installed_and_activated"
         }
 
     private fun getPluginNameForAnalyticsFrom(pluginType: PluginType): String {
         return when (pluginType) {
             PluginType.WOOCOMMERCE_PAYMENTS -> "wcpay"
-            PluginType.STRIPE_TERMINAL_GATEWAY -> "stripe"
+            PluginType.STRIPE_TERMINAL_GATEWAY -> "stripe_extension"
         }
     }
 

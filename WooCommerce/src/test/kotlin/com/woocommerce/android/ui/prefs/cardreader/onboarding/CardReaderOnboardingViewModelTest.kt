@@ -177,7 +177,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when unsupported wcpay version installed, then unsupported wcpay version state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WcpayUnsupportedVersion)
+                .thenReturn(CardReaderOnboardingState.UnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS))
 
             val viewModel = createVM()
 
@@ -201,7 +201,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when unsupported stripe terminal installed, then unsupported stripe terminal state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.StripeTerminal.UnsupportedVersion
+                CardReaderOnboardingState.UnsupportedVersion(PluginType.STRIPE_TERMINAL_GATEWAY)
             )
 
             val viewModel = createVM()
@@ -392,7 +392,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay unsupported version, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WcpayUnsupportedVersion)
+                .thenReturn(CardReaderOnboardingState.UnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS))
 
             createVM()
 
