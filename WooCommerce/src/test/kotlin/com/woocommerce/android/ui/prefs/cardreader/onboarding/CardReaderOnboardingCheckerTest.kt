@@ -234,7 +234,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given wcpay and stripe are installed, when stripe is not activated, then onboarding complete triggered`() =
+    fun `given wcpay and stripe are installed, when stripe is not activated, then onboarding complete returned`() =
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
@@ -279,7 +279,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given wcpay and stripe are installed, when stripe is activated, then onboarding complete triggered`() =
+    fun `given wcpay and stripe are installed, when stripe is activated, then onboarding complete returned`() =
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
