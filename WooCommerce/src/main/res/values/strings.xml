@@ -128,6 +128,14 @@
     <string name="date_timeframe_future">Upcoming</string>
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
+    <string name="date_timeframe_last_week">Last Week</string>
+    <string name="date_timeframe_last_month">Last Month</string>
+    <string name="date_timeframe_last_quarter">Last Quarter</string>
+    <string name="date_timeframe_last_year">Last Year</string>
+    <string name="date_timeframe_week_to_date">Week to Date</string>
+    <string name="date_timeframe_month_to_date">Month to Date</string>
+    <string name="date_timeframe_quarter_to_date">Quarter to Date</string>
+    <string name="date_timeframe_year_to_date">Year to Date</string>
     <string name="date_timeframe_older_two_days">Older than 2 days</string>
     <string name="date_timeframe_older_week">Older than a week</string>
     <string name="date_timeframe_older_month">Older than a month</string>
@@ -251,6 +259,26 @@
     <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
+
+    <!--
+        Analytics View
+    -->
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
+    <string name="analytics_date_range_selector_description">Selector for date range filter</string>
+    <string-array name="date_range_selectors">
+        <item translatable="false">@string/date_timeframe_today</item>
+        <item translatable="false">@string/date_timeframe_yesterday</item>
+        <item translatable="false">@string/date_timeframe_last_week</item>
+        <item translatable="false">@string/date_timeframe_last_month</item>
+        <item translatable="false">@string/date_timeframe_last_quarter</item>
+        <item translatable="false">@string/date_timeframe_last_year</item>
+        <item translatable="false">@string/date_timeframe_week_to_date</item>
+        <item translatable="false">@string/date_timeframe_month_to_date</item>
+        <item translatable="false">@string/date_timeframe_quarter_to_date</item>
+        <item translatable="false">@string/date_timeframe_year_to_date</item>
+    </string-array>
+
     <!--
         Order List View
     -->
