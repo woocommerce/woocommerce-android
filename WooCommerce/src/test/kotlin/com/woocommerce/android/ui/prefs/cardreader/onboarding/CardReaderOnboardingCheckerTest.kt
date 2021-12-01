@@ -688,6 +688,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     private fun buildStripeTerminalPluginInfo(
         isActive: Boolean = true,
-        version: String = SUPPORTED_STRIPE_TERMINAL_VERSION
+        version: String = SUPPORTED_STRIPE_EXTENSION_VERSION
     ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)
 }

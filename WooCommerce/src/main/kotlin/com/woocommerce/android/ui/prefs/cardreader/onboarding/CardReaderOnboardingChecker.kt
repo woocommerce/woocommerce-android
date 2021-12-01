@@ -23,7 +23,7 @@ private val SUPPORTED_COUNTRIES = listOf("US")
 const val SUPPORTED_WCPAY_VERSION = "3.2.1"
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-const val SUPPORTED_STRIPE_TERMINAL_VERSION = "5.8.1"
+const val SUPPORTED_STRIPE_EXTENSION_VERSION = "5.8.1"
 
 class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -136,7 +136,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         (pluginInfo.version).semverCompareTo(SUPPORTED_WCPAY_VERSION) >= 0
 
     private fun isStripeTerminalVersionSupported(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean =
-        (pluginInfo.version).semverCompareTo(SUPPORTED_STRIPE_TERMINAL_VERSION) >= 0
+        (pluginInfo.version).semverCompareTo(SUPPORTED_STRIPE_EXTENSION_VERSION) >= 0
 
     private fun isWCPayActivated(pluginInfo: WCPluginSqlUtils.WCPluginModel): Boolean = pluginInfo.active
 
