@@ -13,6 +13,6 @@ import javax.inject.Inject
 class OrderCreationViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val orderDraftData = LiveDataDelegate(savedState, Order.EMPTY)
-    val orderDraft by orderDraftData
+    val orderDraftData = LiveDataDelegate(savedState, Order.EMPTY)
+    private var orderDraft by orderDraftData
 }
