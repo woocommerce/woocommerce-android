@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import org.mockito.kotlin.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -12,10 +13,10 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils
-import org.wordpress.android.fluxc.store.WCPayStore
+import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -24,9 +25,10 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     private val selectedSite: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
-    private val wcPayStore: WCPayStore = mock()
+    private val wcInPersonPaymentsStore: WCInPersonPaymentsStore = mock()
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag = mock()
 
     private val site = SiteModel()
 
@@ -36,17 +38,19 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             selectedSite,
             appPrefsWrapper,
             wooStore,
-            wcPayStore,
+            wcInPersonPaymentsStore,
             coroutinesTestRule.testDispatchers,
-            networkStatus
+            networkStatus,
+            stripeExtensionFeatureFlag,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
-        whenever(wcPayStore.loadAccount(site)).thenReturn(buildPaymentAccountResult())
+        whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(buildPaymentAccountResult())
         whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(buildWCPayPluginInfo())
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(false)
     }
 
     @Test
@@ -112,12 +116,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             checker.getOnboardingState()
 
-            verify(wcPayStore, never()).loadAccount(anyOrNull())
+            verify(wcInPersonPaymentsStore, never()).loadAccount(anyOrNull())
         }
 
     @Test
     fun `when account country not supported, then STRIPE_COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
-        whenever(wcPayStore.loadAccount(site)).thenReturn(
+        whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
             buildPaymentAccountResult(
                 countryCode = "unsupported country abc"
             )
@@ -130,7 +134,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when account country supported, then ACCOUNT_COUNTRY_NOT_SUPPORTED not returned`() = testBlocking {
-        whenever(wcPayStore.loadAccount(site)).thenReturn(
+        whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
             buildPaymentAccountResult(
                 countryCode = "US"
             )
@@ -144,7 +148,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `given country in lower case, when country supported, then ACCOUNT_COUNTRY_NOT_SUPPORTED not returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
                     countryCode = "us"
                 )
@@ -193,9 +197,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when stripe account not connected, then WCPAY_SETUP_NOT_COMPLETED returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.NO_ACCOUNT
+                    WCPaymentAccountResult.WCPaymentAccountStatus.NO_ACCOUNT
                 )
             )
 
@@ -207,9 +211,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when stripe account under review, then WCPAY_SETUP_NOT_COMPLETED returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED,
+                    WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED,
                     hasPendingRequirements = false,
                     hadOverdueRequirements = false
                 )
@@ -223,9 +227,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when stripe account pending requirements, then STRIPE_ACCOUNT_PENDING_REQUIREMENT returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED,
+                    WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED,
                     hasPendingRequirements = true,
                     hadOverdueRequirements = false
                 )
@@ -239,9 +243,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when stripe account restricted soon, then STRIPE_ACCOUNT_PENDING_REQUIREMENT returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED_SOON,
+                    WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED_SOON,
                     hasPendingRequirements = false,
                     hadOverdueRequirements = false
                 )
@@ -255,9 +259,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when stripe account has overdue requirements, then STRIPE_ACCOUNT_OVERDUE_REQUIREMENT returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED,
+                    WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED,
                     hasPendingRequirements = false,
                     hadOverdueRequirements = true
                 )
@@ -271,9 +275,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when stripe account has both pending and overdue requirements, then OVERDUE_REQUIREMENT returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.RESTRICTED,
+                    WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED,
                     hasPendingRequirements = true,
                     hadOverdueRequirements = true
                 )
@@ -287,9 +291,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when stripe account marked as fraud, then STRIPE_ACCOUNT_REJECTED returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_FRAUD,
+                    WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_FRAUD,
                 )
             )
 
@@ -301,9 +305,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when stripe account listed, then STRIPE_ACCOUNT_REJECTED returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_LISTED,
+                    WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_LISTED,
                 )
             )
 
@@ -315,9 +319,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when stripe account violates terms of service, then STRIPE_ACCOUNT_REJECTED returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE,
+                    WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_TERMS_OF_SERVICE,
                 )
             )
 
@@ -329,9 +333,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when stripe account rejected for other reasons, then STRIPE_ACCOUNT_REJECTED returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_OTHER,
+                    WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_OTHER,
                 )
             )
 
@@ -343,7 +347,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when test mode enabled on site with live account, then WcpayInTestModeWithLiveStripeAccount returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(liveAccount = true, testModeEnabled = true)
             )
 
@@ -355,7 +359,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when test mode disabled on site with live account, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(liveAccount = true, testModeEnabled = false)
             )
 
@@ -367,7 +371,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when test mode disabled on site with test account, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(liveAccount = false, testModeEnabled = false)
             )
 
@@ -379,7 +383,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when test mode enabled on site with test account, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(liveAccount = false, testModeEnabled = true)
             )
 
@@ -391,7 +395,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `when test mode flag not supported, then WcpayInTestModeWithLiveStripeAccount NOT returned`() =
         testBlocking {
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(testModeEnabled = null)
             )
 
@@ -414,9 +418,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding NOT completed, then onboarding completed NOT saved`() = testBlocking {
-        whenever(wcPayStore.loadAccount(site)).thenReturn(
+        whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
             buildPaymentAccountResult(
-                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE,
+                WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_TERMS_OF_SERVICE,
             )
         )
         checker.getOnboardingState()
@@ -431,9 +435,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding NOT completed, then onboarding completed flag cleared`() = testBlocking {
-        whenever(wcPayStore.loadAccount(site)).thenReturn(
+        whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
             buildPaymentAccountResult(
-                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE,
+                WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_TERMS_OF_SERVICE,
             )
         )
         checker.getOnboardingState()
@@ -447,7 +451,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     }
 
     private fun buildPaymentAccountResult(
-        status: WCPaymentAccountResult.WCPayAccountStatusEnum = WCPaymentAccountResult.WCPayAccountStatusEnum.COMPLETE,
+        status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
         hasPendingRequirements: Boolean = false,
         hadOverdueRequirements: Boolean = false,
         liveAccount: Boolean = true,
@@ -460,7 +464,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             hasOverdueRequirements = hadOverdueRequirements,
             currentDeadline = null,
             statementDescriptor = "",
-            storeCurrencies = WCPaymentAccountResult.WCPayAccountStatusEnum.StoreCurrencies("", listOf()),
+            storeCurrencies = WCPaymentAccountResult.WCPaymentAccountStatus.StoreCurrencies("", listOf()),
             country = countryCode,
             isLive = liveAccount,
             testMode = testModeEnabled

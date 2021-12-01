@@ -5,14 +5,15 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult
-import org.wordpress.android.fluxc.model.pay.WCPaymentAccountResult.WCPayAccountStatusEnum.*
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.*
 import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils
-import org.wordpress.android.fluxc.store.WCPayStore
+import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -25,9 +26,10 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wooStore: WooCommerceStore,
-    private val wcPayStore: WCPayStore,
+    private val inPersonPaymentsStore: WCInPersonPaymentsStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
+    private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag,
 ) {
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
@@ -47,11 +49,18 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (fetchSitePluginsResult.isError) return GenericError
         val pluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
 
-        if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
-        if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
-        if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+        if (stripeExtensionFeatureFlag.isEnabled()) {
+            // TODO cardreader Add support for Stripe Extension
+            if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
+            if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
+            if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+        } else {
+            if (!isWCPayInstalled(pluginInfo)) return WcpayNotInstalled
+            if (!isWCPayVersionSupported(requireNotNull(pluginInfo))) return WcpayUnsupportedVersion
+            if (!isWCPayActivated(pluginInfo)) return WcpayNotActivated
+        }
 
-        val paymentAccount = wcPayStore.loadAccount(selectedSite.get()).model ?: return GenericError
+        val paymentAccount = inPersonPaymentsStore.loadAccount(selectedSite.get()).model ?: return GenericError
 
         if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
         if (!isWCPaySetupCompleted(paymentAccount)) return WcpaySetupNotCompleted
