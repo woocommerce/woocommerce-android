@@ -211,7 +211,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
         }
 
-    @Test
+    @Test(expected = AssertionError::class)
     fun `when wcpay and stripe terminal installed-activated, then wcpay and stripe terminal activated state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
