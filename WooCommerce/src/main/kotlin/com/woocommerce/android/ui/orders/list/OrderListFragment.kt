@@ -33,7 +33,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
-import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog
+import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog.Companion.KEY_SIMPLE_PAYMENTS_RESULT
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -302,15 +302,15 @@ class OrderListFragment :
     }
 
     private fun initializeResultHandlers() {
-        handleResult<Order>(SimplePaymentsDialog.KEY_SIMPLE_PAYMENTS_RESULT) { order ->
+        handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
+            viewModel.loadOrders()
+        }
+        handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
             binding.orderListView.post {
                 openOrderDetail(order.localId.value, order.remoteId, order.status.value)
             }
         }
-        handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
-            viewModel.loadOrders()
-        }
-        handleResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT) {
+        handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
             binding.orderListView.post {
                 when (it) {
                     OrderCreationAction.CREATE_ORDER -> openOrderCreationFragment()
