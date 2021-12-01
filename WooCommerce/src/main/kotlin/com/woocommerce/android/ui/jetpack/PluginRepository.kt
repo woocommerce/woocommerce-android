@@ -35,7 +35,7 @@ class PluginRepository @Inject constructor(
 ) {
     companion object {
         const val GENERIC_ERROR = "Unknown issue."
-        const val ATTEMPT_LIMIT = 3
+        const val ATTEMPT_LIMIT = 2
     }
 
     init {
