@@ -16,6 +16,6 @@ class OrderCreationViewModel @Inject constructor(
     val orderDraft = _orderDraft as LiveData<Order>
 
     fun start() {
-        _orderDraft.value = Order.empty
+        _orderDraft.value = Order.EMPTY
     }
 }

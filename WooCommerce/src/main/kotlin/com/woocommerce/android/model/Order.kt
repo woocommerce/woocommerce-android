@@ -239,7 +239,7 @@ data class Order(
     }
 
     companion object {
-        val empty by lazy {
+        val EMPTY by lazy {
             Order(
                 identifier = OrderIdentifier(),
                 rawLocalOrderId = 0,
@@ -265,8 +265,8 @@ data class Order(
                 isCashPayment = false,
                 pricesIncludeTax = false,
                 multiShippingLinesAvailable = false,
-                billingAddress = Address.empty,
-                shippingAddress = Address.empty,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY,
                 shippingMethods = emptyList(),
                 items = emptyList(),
                 shippingLines = emptyList(),

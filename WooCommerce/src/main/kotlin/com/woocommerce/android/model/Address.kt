@@ -168,7 +168,7 @@ data class Address(
     }
 
     companion object {
-        val empty by lazy {
+        val EMPTY by lazy {
             Address(
                 company = "",
                 firstName = "",
