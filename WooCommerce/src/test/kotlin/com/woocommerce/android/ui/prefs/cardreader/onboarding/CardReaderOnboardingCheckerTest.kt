@@ -609,14 +609,40 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when onboarding completed, then onboarding completed flag saved`() = testBlocking {
+    fun `given wcpay installed, when onboarding completed, then onboarding completed status saved`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(null)
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
         checker.getOnboardingState()
 
         verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
             anyInt(),
             anyLong(),
             anyLong(),
-            isCompleted = eq(true)
+            eq(PluginType.WOOCOMMERCE_PAYMENTS)
+        )
+    }
+
+    @Test
+    fun `given stripe ext installed, when onboarding completed, then onboarding status saved`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(null)
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            eq(PluginType.STRIPE_TERMINAL_GATEWAY)
         )
     }
 
@@ -633,24 +659,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             anyInt(),
             anyLong(),
             anyLong(),
-            isCompleted = eq(true)
-        )
-    }
-
-    @Test
-    fun `when onboarding NOT completed, then onboarding completed flag cleared`() = testBlocking {
-        whenever(wcPayStore.loadAccount(site)).thenReturn(
-            buildPaymentAccountResult(
-                WCPaymentAccountResult.WCPayAccountStatusEnum.REJECTED_TERMS_OF_SERVICE,
-            )
-        )
-        checker.getOnboardingState()
-
-        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
-            anyInt(),
-            anyLong(),
-            anyLong(),
-            isCompleted = eq(false)
+            any()
         )
     }
 
@@ -665,7 +674,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingCompletedPluginType(
+        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
             anyInt(),
             anyLong(),
             anyLong(),
@@ -684,7 +693,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingCompletedPluginType(
+        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
             anyInt(),
             anyLong(),
             anyLong(),
