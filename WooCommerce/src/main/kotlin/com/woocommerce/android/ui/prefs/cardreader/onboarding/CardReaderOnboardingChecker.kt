@@ -68,8 +68,9 @@ class CardReaderOnboardingChecker @Inject constructor(
                     }
                     if (!isStripeTerminalActivated(requireNotNull(stripePluginInfo))) {
                         pluginType = PluginType.WOOCOMMERCE_PAYMENTS
-                        if (!isWCPayVersionSupported(requireNotNull(wcPayPluginInfo)))
-                            return UnsupportedVersion(pluginType)
+                        if (
+                            !isWCPayVersionSupported(requireNotNull(wcPayPluginInfo))
+                        ) return UnsupportedVersion(pluginType)
                         if (!isWCPayActivated(wcPayPluginInfo)) return WcpayNotActivated
                     } else {
                         pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
@@ -210,8 +211,8 @@ sealed class CardReaderOnboardingState {
     object WcpayNotInstalled : CardReaderOnboardingState()
 
     /**
-     * plugin (WCPay or Stripe extension) is installed on the store, but the version is out-dated and doesn't contain required APIs
-     * for card present payments.
+     * plugin (WCPay or Stripe extension) is installed on the store, but the version is out-dated and doesn't
+     * contain required APIs for card present payments.
      */
     data class UnsupportedVersion(val pluginType: PluginType) : CardReaderOnboardingState()
 
