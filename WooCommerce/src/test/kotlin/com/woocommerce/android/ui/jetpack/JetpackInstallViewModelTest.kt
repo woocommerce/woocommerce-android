@@ -81,10 +81,13 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME, siteModel))
         installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).contains(
+            Installing,
+            Activating,
             Failed(EXAMPLE_ERROR)
         )
     }
@@ -102,60 +105,6 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
         Assertions.assertThat(installStates).containsExactly(
             Installing,
             Activating
-        )
-    }
-
-    @Test
-    fun `given failed plugin install, when install succeeds after retry, then set success state`() = testBlocking {
-        val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
-        viewModel.viewStateLiveData.observeForever { old, new ->
-            new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
-        }
-
-        // Assuming successful retry, the install flow does not return any failed state, so the emitted values are
-        // similar to successful install without retry.
-        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_SLUG, siteModel))
-        installationStateFlow.tryEmit(PluginActivated(EXAMPLE_NAME, siteModel))
-        advanceUntilIdle()
-
-        Assertions.assertThat(installStates).containsExactly(
-            Installing,
-            Activating,
-            Connecting,
-            Finished
-        )
-    }
-
-    @Test
-    fun `given failed plugin install, when install fails after retries, then set failed state`() = testBlocking {
-        val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
-        viewModel.viewStateLiveData.observeForever { old, new ->
-            new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
-        }
-
-        // If installation fails after multiple retry, the install flow only outputs PluginInstallFailed
-        installationStateFlow.tryEmit(PluginInstallFailed(EXAMPLE_ERROR))
-        advanceUntilIdle()
-
-        Assertions.assertThat(installStates).contains(
-            Failed(EXAMPLE_ERROR)
-        )
-    }
-
-    @Test
-    fun `given failed plugin activation, when activation fails after retries, then set failed state`() = testBlocking {
-        val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
-        viewModel.viewStateLiveData.observeForever { old, new ->
-            new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
-        }
-        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME, siteModel))
-        installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR))
-        advanceUntilIdle()
-
-        Assertions.assertThat(installStates).containsExactly(
-            Installing,
-            Activating,
-            Failed(EXAMPLE_ERROR)
         )
     }
 }
