@@ -35,6 +35,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         formViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) {
                 binding.orderStatusView.updateStatus(it) {
+                    formViewModel.onEditOrderStatusSelected()
                 }
             }
         }
