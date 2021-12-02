@@ -8,6 +8,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import org.wordpress.android.util.AppLog as WordPressAppLog
 
 typealias LogListener = (T, LogLevel, String) -> Unit
@@ -42,7 +43,7 @@ object WooLog {
     const val TAG = "WooCommerce"
     private const val MAX_ENTRIES = 99
     private val logEntries = LogEntryList()
-    private val listeners = ArrayList<LogListener>(0)
+    private val listeners = mutableListOf<LogListener>()
 
     init {
         // add listener for WP app log so we can capture login & FluxC logs
@@ -198,12 +199,12 @@ object WooLog {
     /**
      * Individual log entry
      */
-    private class LogEntry internal constructor(
-        internal val tag: T,
-        internal val level: LogLevel,
-        internal val text: String?
+    private class LogEntry(
+        val tag: T,
+        val level: LogLevel,
+        val text: String?
     ) {
-        internal val logDate: java.util.Date = DateTimeUtils.nowUTC()
+        val logDate: Date = DateTimeUtils.nowUTC()
 
         override fun toString(): String {
             val logText = if (text.isNullOrEmpty()) "null" else text
@@ -218,7 +219,7 @@ object WooLog {
     private class LogEntryList : ArrayList<LogEntry>() {
         @Synchronized
         fun addEntry(entry: LogEntry): Boolean {
-            if (LogEntryList::class.java.methods.find { it.name == "size" }?.invoke(this) as Int >= MAX_ENTRIES) {
+            if (size >= MAX_ENTRIES) {
                 removeFirstEntry()
             }
             return add(entry)
