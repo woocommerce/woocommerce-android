@@ -23,6 +23,8 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailOrderStatusBinding.inflate(LayoutInflater.from(ctx), this)
 
+    private var shouldDisplayOrderNumber = false
+
     fun updateStatus(orderStatus: OrderStatus, onTap: ((view: View) -> Unit)) {
         binding.orderStatusOrderTags.removeAllViews()
         binding.orderStatusOrderTags.addView(getTagView(orderStatus))
@@ -36,11 +38,16 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 false -> getMediumDate(context)
                 null -> ""
             }.let { dateStr ->
-                binding.orderStatusDateAndOrderNum.text = context.getString(
-                    R.string.orderdetail_orderstatus_date_and_ordernum,
-                    dateStr,
-                    order.number
-                )
+                binding.orderStatusDateAndOrderNum.text =
+                    when (shouldDisplayOrderNumber) {
+                        true -> context.getString(
+                            R.string.orderdetail_orderstatus_date_and_ordernum,
+                            dateStr,
+                            order.number
+                        )
+                        false -> dateStr
+                    }
+
             }
         }
 
@@ -58,5 +65,16 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
             tagView.focusable = View.FOCUSABLE
         }
         return tagView
+    }
+
+    fun overrideViewConfiguration(
+        displayOrderNumber: Boolean,
+        editActionAsText: Boolean
+    ) {
+        shouldDisplayOrderNumber = displayOrderNumber
+        if (editActionAsText) {
+           binding.orderStatusEditAction.text = context.getString(R.string.edit)
+           binding.orderStatusEditAction.background = null
+        }
     }
 }
