@@ -14,4 +14,8 @@ class OrderCreationViewModel @Inject constructor(
     val orderDraftData = LiveDataDelegate(savedState, Order.EMPTY)
     @Suppress("UnusedPrivateMember")
     private var orderDraft by orderDraftData
+
+    fun onOrderStatusChanged(status: Order.Status) {
+        orderDraft = orderDraft.copy(status = status)
+    }
 }

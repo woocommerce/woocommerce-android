@@ -18,6 +18,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(FragmentOrderCreationFormBinding.bind(view)) {
+            orderStatusView.adjustViewPresentation(
+                displayOrderNumber = false,
+                editActionAsText = true
+            )
             setupObserversWith(this)
         }
     }
