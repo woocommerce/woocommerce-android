@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,8 @@ class OrderDetailRepository @Inject constructor(
     private val refundStore: WCRefundStore,
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val dispatchers: CoroutineDispatchers
 ) {
     suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -99,10 +101,14 @@ class OrderDetailRepository @Inject constructor(
         orderLocalId: LocalId,
         newStatus: String
     ): Flow<UpdateOrderResult> {
+        val status = withContext(dispatchers.io) {
+            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), newStatus)
+                ?: error("Couldn't find the a status with key $newStatus")
+        }
         return orderStore.updateOrderStatus(
             orderLocalId,
             selectedSite.get(),
-            newStatus
+            status
         )
     }
 
