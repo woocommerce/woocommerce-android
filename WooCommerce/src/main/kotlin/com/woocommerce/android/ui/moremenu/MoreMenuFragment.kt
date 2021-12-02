@@ -32,7 +32,6 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         _binding = FragmentMoreMenuBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // TODO: This is temporary, it will be moved to a ViewModel
         val buttons = listOf(
             MenuButton(R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin),
             MenuButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
