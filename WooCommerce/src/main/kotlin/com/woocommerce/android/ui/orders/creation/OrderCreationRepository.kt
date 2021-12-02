@@ -16,9 +16,7 @@ class OrderCreationRepository @Inject constructor(
 ) {
     suspend fun createOrder(order: Order): Result<Order> {
         val status = orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), order.status.value)
-            ?: WCOrderStatusModel().apply {
-                statusKey = order.status.value
-            }
+            ?: error("Couldn't find the a status with key ${order.status.value}")
         val request = CreateOrderRequest(
             status = status,
             lineItems = order.items.map {
