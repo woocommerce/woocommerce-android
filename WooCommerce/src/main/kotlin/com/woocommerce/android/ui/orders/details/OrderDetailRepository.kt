@@ -103,7 +103,7 @@ class OrderDetailRepository @Inject constructor(
     ): Flow<UpdateOrderResult> {
         val status = withContext(dispatchers.io) {
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), newStatus)
-                ?: error("Couldn't find the a status with key $newStatus")
+                ?: error("Couldn't find a status with key $newStatus")
         }
         return orderStore.updateOrderStatus(
             orderLocalId,

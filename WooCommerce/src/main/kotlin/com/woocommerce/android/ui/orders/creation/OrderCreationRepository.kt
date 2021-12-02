@@ -20,7 +20,7 @@ class OrderCreationRepository @Inject constructor(
         val status = withContext(dispatchers.io) {
             // Currently this query will run on the current thread, so forcing the usage of IO dispatcher
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), order.status.value)
-                ?: error("Couldn't find the a status with key ${order.status.value}")
+                ?: error("Couldn't find a status with key ${order.status.value}")
         }
         val request = CreateOrderRequest(
             status = status,
