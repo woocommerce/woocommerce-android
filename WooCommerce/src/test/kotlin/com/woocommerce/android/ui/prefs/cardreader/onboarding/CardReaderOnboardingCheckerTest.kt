@@ -701,6 +701,24 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `when onboarding failed due to error, then onboarding completed plugin type is reset`() = testBlocking {
+        whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
+            buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_OTHER,
+            )
+        )
+
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            eq(null)
+        )
+    }
+
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
         hasPendingRequirements: Boolean = false,

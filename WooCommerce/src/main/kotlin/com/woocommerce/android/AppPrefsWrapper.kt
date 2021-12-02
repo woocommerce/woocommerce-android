@@ -22,7 +22,7 @@ class AppPrefsWrapper @Inject constructor() {
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long,
-        pluginType: PluginType
+        pluginType: PluginType?
     ) = AppPrefs.setCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId, pluginType)
 
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
