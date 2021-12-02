@@ -47,7 +47,6 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                         )
                         false -> dateStr
                     }
-
             }
         }
 
@@ -67,14 +66,14 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         return tagView
     }
 
-    fun overrideViewConfiguration(
+    fun adjustViewPresentation(
         displayOrderNumber: Boolean,
         editActionAsText: Boolean
     ) {
         shouldDisplayOrderNumber = displayOrderNumber
         if (editActionAsText) {
-           binding.orderStatusEditAction.text = context.getString(R.string.edit)
-           binding.orderStatusEditAction.background = null
+            binding.orderStatusEditAction.text = context.getString(R.string.edit)
+            binding.orderStatusEditAction.background = null
         }
     }
 }
