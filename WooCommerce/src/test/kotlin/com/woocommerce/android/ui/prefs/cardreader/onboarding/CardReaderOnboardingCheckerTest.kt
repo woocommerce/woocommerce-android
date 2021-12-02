@@ -248,9 +248,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
                 .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS)).thenReturn(null)
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
-            whenever(wcPayStore.loadAccount(site)).thenReturn(
+            whenever(wcInPersonPaymentsStore.loadAccount(site)).thenReturn(
                 buildPaymentAccountResult(
-                    WCPaymentAccountResult.WCPayAccountStatusEnum.NO_ACCOUNT
+                    WCPaymentAccountResult.WCPaymentAccountStatus.NO_ACCOUNT
                 )
             )
 
@@ -665,10 +665,10 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding completed using wcpay, then onboarding completed plugin type saved`() = testBlocking {
-        whenever(wcInPersonPaymentsStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-        whenever(wcInPersonPaymentsStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
             .thenReturn(null)
-        whenever(wcInPersonPaymentsStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(buildWCPayPluginInfo(isActive = true))
         whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
 

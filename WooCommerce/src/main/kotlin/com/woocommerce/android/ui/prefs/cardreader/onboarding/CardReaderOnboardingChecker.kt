@@ -14,10 +14,10 @@ import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.*
-import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils.WCPluginModel
 
 private val SUPPORTED_COUNTRIES = listOf("US")
 
