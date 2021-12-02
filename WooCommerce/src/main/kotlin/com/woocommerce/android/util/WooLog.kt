@@ -8,7 +8,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
+import kotlin.collections.MutableMap.MutableEntry
 import org.wordpress.android.util.AppLog as WordPressAppLog
 
 typealias LogListener = (T, LogLevel, String) -> Unit
@@ -172,7 +172,7 @@ object WooLog {
     private fun addEntry(tag: T, level: LogLevel, text: String) {
         // add to list of entries
         val entry = LogEntry(tag, level, text)
-        logEntries.addEntry(entry)
+        logEntries.add(entry)
 
         // Call our listeners if any
         for (listener in listeners) {
@@ -216,60 +216,43 @@ object WooLog {
     /**
      * Fix-sized list of log entries
      */
-    private class LogEntryList : ArrayList<LogEntry>() {
-        @Synchronized
-        fun addEntry(entry: LogEntry): Boolean {
-            if (size >= MAX_ENTRIES) {
-                removeFirstEntry()
-            }
-            return add(entry)
+    private class LogEntryList : LinkedHashMap<Int, LogEntry>() {
+        override fun removeEldestEntry(eldest: MutableEntry<Int, LogEntry>?): Boolean {
+            return size > MAX_ENTRIES
         }
 
-        private fun removeFirstEntry() {
-            val it = iterator()
-            if (it.hasNext()) {
-                try {
-                    remove(it.next())
-                } catch (e: NoSuchElementException) {
-                    // ignore
-                }
-            }
+        @Synchronized
+        fun add(element: LogEntry) {
+            put(size, element)
         }
 
         /**
          * Returns the log entries as an array of html-formatted strings - this enables us to display
          * a formatted log in [com.woocommerce.android.support.WooLogViewerActivity]
          */
-        fun toHtmlList(isDarkTheme: Boolean): ArrayList<String> {
-            val list = ArrayList<String>()
-            // work with a copy of the log entries in case they're modified while traversing them
-            val entries = mutableListOf<LogEntry>().also { it.addAll(this) }
-            for (entry in entries) {
-                // same colors as WPAndroid
-                val color = if (isDarkTheme) {
+        fun toHtmlList(isDarkTheme: Boolean): List<String> {
+            fun LogEntry.getColor(): String {
+                return if (isDarkTheme) {
                     "white"
-                } else when (entry.level) {
+                } else when (level) {
                     LogLevel.v -> "grey"
                     LogLevel.d -> "teal"
                     LogLevel.i -> "black"
                     LogLevel.w -> "purple"
                     LogLevel.e -> "red"
                 }
-                list.add("<font color='$color'>$entry</font>")
             }
-            return list
+
+            // work with a copy of the log entries in case they're modified while traversing them
+            return values.toList().map { entry ->
+                "<font color='${entry.getColor()}'>$entry</font>"
+            }
         }
 
         /**
-         * Returns the log entries as a single string with each entry on a new line
+         * Returns the log entries as a single string with each entry on a new line. Works with a copy of the log
+         * entries in case they're modified while traversing them.
          */
-        override fun toString(): String {
-            val sb = StringBuilder()
-            val entries = mutableListOf<LogEntry>().also { it.addAll(this) }
-            for (entry in entries) {
-                sb.append("${entry}\n")
-            }
-            return sb.toString()
-        }
+        override fun toString() = values.toList().joinToString("\n")
     }
 }
