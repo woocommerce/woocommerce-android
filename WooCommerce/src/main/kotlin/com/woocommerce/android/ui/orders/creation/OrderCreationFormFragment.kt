@@ -6,8 +6,15 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog
+import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,6 +31,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             )
             setupObserversWith(this)
         }
+        setupHandleResults()
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
@@ -38,6 +46,24 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     formViewModel.onEditOrderStatusSelected()
                 }
             }
+        }
+        formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
+    }
+
+    private fun setupHandleResults() {
+        handleDialogResult<OrderStatusUpdateSource>(
+            key = KEY_ORDER_STATUS_RESULT,
+            entryId = R.id.orderCreationFragment
+        ) { sharedViewModel.onOrderStatusChanged(Order.Status.fromValue(it.newStatus)) }
+    }
+
+    private fun handleViewModelEvents(event: Event) {
+        when (event) {
+            is ViewOrderStatusSelector -> OrderCreationFormFragmentDirections
+                .actionOrderCreationFragmentToOrderStatusSelectorDialog(
+                    currentStatus = event.currentStatus,
+                    orderStatusList = event.orderStatusList
+                )
         }
     }
 
