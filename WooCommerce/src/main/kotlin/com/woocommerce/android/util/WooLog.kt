@@ -7,9 +7,7 @@ import org.wordpress.android.util.DateTimeUtils
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.text.SimpleDateFormat
-import java.util.ArrayList
-import java.util.Locale
-import java.util.NoSuchElementException
+import java.util.*
 import org.wordpress.android.util.AppLog as WordPressAppLog
 
 typealias LogListener = (T, LogLevel, String) -> Unit
@@ -220,7 +218,7 @@ object WooLog {
     private class LogEntryList : ArrayList<LogEntry>() {
         @Synchronized
         fun addEntry(entry: LogEntry): Boolean {
-            if (size >= MAX_ENTRIES) {
+            if (LogEntryList::class.java.methods.find { it.name == "size" }?.invoke(this) as Int >= MAX_ENTRIES) {
                 removeFirstEntry()
             }
             return add(entry)
