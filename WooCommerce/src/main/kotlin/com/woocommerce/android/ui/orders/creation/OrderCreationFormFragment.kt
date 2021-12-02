@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form) {
-    private val navigationViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val formViewModel by viewModels<OrderCreationFormViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -27,7 +27,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
-        navigationViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
+        sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
             binding.orderStatusView.updateOrder(newOrderData)
             formViewModel.onOrderStatusSelected(newOrderData.status)
         }
