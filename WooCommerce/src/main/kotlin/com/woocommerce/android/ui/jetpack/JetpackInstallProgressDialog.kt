@@ -142,7 +142,13 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.jetpackProgressActionButton.show()
             }
             is Failed -> {
-                // TODO Add error state
+                val context = binding.root.context
+                binding.title.text = context.getString(R.string.jetpack_install_progress_failed_title)
+                binding.subtitle.text = context.getString(R.string.jetpack_install_progress_failed_subtitle)
+
+                setViewVisibility(View.GONE, iconStep1, iconStep2, iconStep3, iconStep4)
+                setViewVisibility(View.GONE, progressStep1, progressStep2, progressStep3)
+                binding.jetpackProgressActionButton.hide()
             }
         }
     }

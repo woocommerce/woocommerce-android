@@ -1721,7 +1721,7 @@
     <string name="jetpack_install_progress_step_four_message">All done</string>
     <string name ="jetpack_install_progress_failed_title">Sorry, something went wrong during installation</string>
     <string name ="jetpack_install_progress_failed_subtitle">Please try again. Alternatively, you can install jetpack through your WP Admin.</string>
-    <string name ="jetpack_install_progress_failed_option_wp_admin">Install jetpack in WP Admin</string>
+    <string name ="jetpack_install_progress_failed_option_wp_admin">Install Jetpack in WP Admin</string>
     <string name ="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
 
     <!-- Other -->
