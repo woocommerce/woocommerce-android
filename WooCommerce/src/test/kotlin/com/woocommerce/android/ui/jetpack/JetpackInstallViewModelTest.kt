@@ -66,7 +66,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstallFailed(EXAMPLE_ERROR))
+        installationStateFlow.tryEmit(PluginInstallFailed(EXAMPLE_ERROR, EXAMPLE_ERROR))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).contains(
@@ -82,7 +82,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
         }
 
         installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME, siteModel))
-        installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR))
+        installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR, EXAMPLE_ERROR))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).contains(
