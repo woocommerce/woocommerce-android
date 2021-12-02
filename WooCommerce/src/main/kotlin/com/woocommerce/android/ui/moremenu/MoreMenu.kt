@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.moremenu
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,7 +46,8 @@ fun MoreMenu(buttons: List<MenuButton>) {
         itemsIndexed(buttons) { _, item ->
             MoreMenuButton(
                 text = item.text,
-                iconDrawable = item.icon
+                iconDrawable = item.icon,
+                onClick = item.onClick
             )
         }
     }
@@ -52,11 +55,12 @@ fun MoreMenu(buttons: List<MenuButton>) {
 
 @Composable
 private fun MoreMenuButton(
-    text: String,
-    @DrawableRes iconDrawable: Int
+    @StringRes text: Int,
+    @DrawableRes iconDrawable: Int,
+    onClick: () -> Unit
 ) {
     Button(
-        onClick = { /* ... */ },
+        onClick = onClick,
         contentPadding = PaddingValues(20.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(id = color.color_surface)
@@ -78,7 +82,7 @@ private fun MoreMenuButton(
             ) {
                 Image(
                     painter = painterResource(id = iconDrawable),
-                    contentDescription = text,
+                    contentDescription = stringResource(id = text),
                     modifier = Modifier
                         .size(35.dp)
                         .align(Alignment.Center)
@@ -86,7 +90,7 @@ private fun MoreMenuButton(
             }
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(
-                text,
+                text = stringResource(id = text),
                 fontSize = 13.sp,
                 textAlign = TextAlign.Center,
                 color = colorResource(id = color.color_on_surface)
