@@ -147,7 +147,11 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.subtitle.text = context.getString(R.string.jetpack_install_progress_failed_subtitle)
 
                 setViewVisibility(View.GONE, iconStep1, iconStep2, iconStep3, iconStep4)
+                setViewVisibility(View.GONE, messageStep1, messageStep2, messageStep3, messageStep4)
                 setViewVisibility(View.GONE, progressStep1, progressStep2, progressStep3)
+
+                binding.contactButton.show()
+                binding.openAdminButton.show()
                 binding.jetpackProgressActionButton.hide()
             }
         }
