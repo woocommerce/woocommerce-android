@@ -449,11 +449,12 @@ object AppPrefs {
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long,
-        pluginType: PluginType
+        pluginType: PluginType?
     ) {
         val pluginName = when (pluginType) {
             PluginType.WOOCOMMERCE_PAYMENTS -> CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
             PluginType.STRIPE_TERMINAL_GATEWAY -> CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
+            null -> CARD_READER_ONBOARDING_NOT_COMPLETED
         }
         PreferenceUtils.setString(
             getPreferences(),

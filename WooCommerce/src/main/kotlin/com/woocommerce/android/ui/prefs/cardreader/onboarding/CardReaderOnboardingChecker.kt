@@ -42,8 +42,9 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         return fetchOnboardingState()
             .also {
-                if (it is OnboardingCompleted) {
-                    updateOnboardingCompletedStatus(it.pluginType)
+                when (it) {
+                    is OnboardingCompleted -> updateOnboardingCompletedStatus(it.pluginType)
+                    else -> updateOnboardingCompletedStatus(null)
                 }
             }
     }
@@ -162,7 +163,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != COMPLETE
 
-    private fun updateOnboardingCompletedStatus(pluginType: PluginType) {
+    private fun updateOnboardingCompletedStatus(pluginType: PluginType?) {
         val site = selectedSite.get()
         appPrefsWrapper.setCardReaderOnboardingCompleted(
             localSiteId = site.id,

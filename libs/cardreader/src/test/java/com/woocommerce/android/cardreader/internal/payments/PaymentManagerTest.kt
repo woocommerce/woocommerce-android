@@ -115,11 +115,11 @@ class PaymentManagerTest {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Successful.Success)
         whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull<TerminalException>()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GenericError, null, ""))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GenericError, null, ""))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GenericError, null, ""))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(true)
     }
 

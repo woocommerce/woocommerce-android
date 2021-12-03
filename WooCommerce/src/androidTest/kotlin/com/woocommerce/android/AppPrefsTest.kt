@@ -125,4 +125,22 @@ class AppPrefsTest {
             )
         ).isFalse
     }
+
+    @Test
+    fun whenCardReaderOnboardingNotCompletedThenCorrectOnboardingStatusIsReturned() {
+        AppPrefs.setCardReaderOnboardingCompleted(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            pluginType = null
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderOnboardingCompleted(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isFalse
+    }
 }
