@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.widget.doAfterTextChanged
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -18,6 +19,8 @@ class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_cu
     val binding
         get() = _binding!!
 
+    private lateinit var doneMenuItem: MenuItem
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -26,12 +29,17 @@ class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_cu
         if (savedInstanceState == null) {
             binding.customerOrderNoteEditor.setText(sharedViewModel.currentDraft.customerNote)
         }
+        binding.customerOrderNoteEditor.doAfterTextChanged {
+            doneMenuItem.isVisible = hasChanges()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
+        doneMenuItem = menu.findItem(R.id.menu_done)
+        doneMenuItem.isVisible = hasChanges()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -49,4 +57,7 @@ class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_cu
         super.onDestroyView()
         _binding = null
     }
+
+    private fun hasChanges() =
+        binding.customerOrderNoteEditor.text.toString() != sharedViewModel.currentDraft.customerNote
 }
