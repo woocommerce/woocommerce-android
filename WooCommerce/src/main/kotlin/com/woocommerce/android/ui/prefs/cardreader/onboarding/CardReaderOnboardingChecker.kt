@@ -41,10 +41,9 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         return fetchOnboardingState()
             .also {
-                if (it is OnboardingCompleted) {
-                    updateOnboardingCompletedStatus(it.pluginType)
-                } else {
-                    updateOnboardingCompletedStatus(null)
+                when (it) {
+                    is OnboardingCompleted -> updateOnboardingCompletedStatus(it.pluginType)
+                    else -> updateOnboardingCompletedStatus(null)
                 }
             }
     }
