@@ -18,6 +18,7 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils.WCPluginModel
+import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType
 
 private val SUPPORTED_COUNTRIES = listOf("US")
 
@@ -74,7 +75,10 @@ class CardReaderOnboardingChecker @Inject constructor(
             STRIPE_TERMINAL_GATEWAY -> throw IllegalStateException("Developer error: `preferredPlugin` should be WCPay")
         }
 
-        val paymentAccount = inPersonPaymentsStore.loadAccount(selectedSite.get()).model ?: return GenericError
+        val fluxCPluginType = preferredPlugin.type.toInPersonPaymentsPluginType()
+
+        val paymentAccount =
+            inPersonPaymentsStore.loadAccount(fluxCPluginType, selectedSite.get()).model ?: return GenericError
 
         if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
         if (!isPluginSetupCompleted(paymentAccount)) return SetupNotCompleted(preferredPlugin.type)
@@ -168,6 +172,11 @@ class CardReaderOnboardingChecker @Inject constructor(
             pluginType
         )
     }
+}
+
+private fun PluginType.toInPersonPaymentsPluginType(): InPersonPaymentsPluginType = when (this) {
+    WOOCOMMERCE_PAYMENTS -> InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+    STRIPE_TERMINAL_GATEWAY -> InPersonPaymentsPluginType.STRIPE
 }
 
 private data class PluginWrapper(val type: PluginType, val info: WCPluginModel?)
