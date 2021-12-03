@@ -34,9 +34,9 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val isLandscape = DisplayUtils.isLandscape(requireContext())
         requireDialog().window?.let { window ->
             window.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
-            val isLandscape = DisplayUtils.isLandscape(requireContext())
             val widthRatio = if (isLandscape) WIDTH_RATIO_LANDSCAPE else WIDTH_RATIO
             val heightRatio = if (isLandscape) HEIGHT_RATIO_LANDSCAPE else HEIGHT_RATIO
 
@@ -54,6 +54,15 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         binding.imageClose.setOnClickListener {
             AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_CANCELED)
             findNavController().navigateUp()
+        }
+
+        if (!isLandscape && binding.editPrice.requestFocus()) {
+            binding.editPrice.postDelayed(
+                {
+                    ActivityUtils.showKeyboard(binding.editPrice)
+                },
+                KEYBOARD_DELAY
+            )
         }
 
         setupObservers(binding)
@@ -101,5 +110,6 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         private const val WIDTH_RATIO = 0.9
         private const val HEIGHT_RATIO_LANDSCAPE = 0.9
         private const val WIDTH_RATIO_LANDSCAPE = 0.6
+        private const val KEYBOARD_DELAY = 100L
     }
 }
