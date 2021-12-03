@@ -17,18 +17,20 @@ class OrderCreationViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState) {
-    val orderDraftData = LiveDataDelegate(savedState, Order.EMPTY) { old, new ->
-        if (old?.status != new.status) {
-            updateOrderStatus(new.status)
-        }
-    }
+    val orderDraftData = LiveDataDelegate(savedState, Order.EMPTY, onChange = ::onOrderDraftChange)
     private var orderDraft by orderDraftData
 
-    private var _orderStatus = MutableLiveData<OrderStatus>()
+    private val _orderStatus = MutableLiveData<OrderStatus>()
     val orderStatus: LiveData<OrderStatus> = _orderStatus
 
     fun onOrderStatusChanged(status: Order.Status) {
         orderDraft = orderDraft.copy(status = status)
+    }
+
+    private fun onOrderDraftChange(old: Order?, new: Order) {
+        if (old?.status != new.status) {
+            updateOrderStatus(new.status)
+        }
     }
 
     private fun updateOrderStatus(status: Order.Status) {
