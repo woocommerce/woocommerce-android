@@ -1,8 +1,6 @@
 package com.woocommerce.android.util
 
 import android.util.Log
-import com.woocommerce.android.util.WooLog.LogLevel
-import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.DateTimeUtils
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -10,8 +8,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.MutableMap.MutableEntry
 import org.wordpress.android.util.AppLog as WordPressAppLog
-
-typealias LogListener = (T, LogLevel, String) -> Unit
 
 /**
  * Simple wrapper for Android log calls, enables registering listeners for log events.
@@ -43,7 +39,6 @@ object WooLog {
     const val TAG = "WooCommerce"
     private const val MAX_ENTRIES = 99
     private val logEntries = LogEntryList()
-    private val listeners = mutableListOf<LogListener>()
 
     init {
         // add listener for WP app log so we can capture login & FluxC logs
@@ -62,10 +57,6 @@ object WooLog {
         }
 
         addEntry(T.WP, wooLogLevel, wpTag.name + " " + wpMessage)
-    }
-
-    fun addListener(listener: LogListener) {
-        listeners.add(listener)
     }
 
     /**
@@ -173,11 +164,6 @@ object WooLog {
         // add to list of entries
         val entry = LogEntry(tag, level, text)
         logEntries.add(entry)
-
-        // Call our listeners if any
-        for (listener in listeners) {
-            listener(tag, level, text)
-        }
     }
 
     fun addDeviceInfoEntry(tag: T, level: LogLevel = LogLevel.i) {
