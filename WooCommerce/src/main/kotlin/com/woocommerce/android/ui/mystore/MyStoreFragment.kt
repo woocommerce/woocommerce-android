@@ -7,7 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
-import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
@@ -31,6 +31,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformerProductUiModel
 import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -38,7 +40,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
@@ -60,6 +61,8 @@ class MyStoreFragment :
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
     }
+
+    private val viewModel: MyStoreViewModel by viewModels()
 
     @Inject lateinit var presenter: MyStoreContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
@@ -102,6 +105,7 @@ class MyStoreFragment :
             myStoreDateBar.clearDateRangeValues()
             binding.myStoreStats.loadDashboardStats(activeGranularity)
             binding.myStoreTopPerformers.loadTopPerformerStats(activeGranularity)
+            viewModel.onStatsGranularityChanged(activeGranularity)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -179,6 +183,23 @@ class MyStoreFragment :
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
         refreshMyStoreStats(forced = this.isRefreshPending)
+
+
+        //NEW VIEWMODEL CODE
+
+        viewModel.viewState.observe(viewLifecycleOwner) { _, newValue ->
+            binding.myStoreTopPerformers.showSkeleton(newValue.isLoadingTopPerformers)
+            when {
+                newValue.topPerformersError -> showTopPerformersError(newValue.activeStatsGranularity)
+                else -> showTopPerformers(newValue.topPerformers, newValue.activeStatsGranularity)
+            }
+        }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OpenTopPerformer -> mainNavigationRouter?.showProductDetail(event.productId)
+                else -> event.isHandled = false
+            }
+        }
     }
 
     private fun prepareJetpackBenefitsBanner() {
@@ -274,7 +295,10 @@ class MyStoreFragment :
         removeTabLayoutFromAppBar()
     }
 
-    override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
+    override fun showTopPerformers(
+        topPerformers: List<TopPerformerProductUiModel>,
+        granularity: StatsGranularity
+    ) {
         if (activeGranularity == granularity) {
             binding.myStoreTopPerformers.showErrorView(false)
             binding.myStoreTopPerformers.updateView(topPerformers)
@@ -337,7 +361,6 @@ class MyStoreFragment :
         }
         presenter.run {
             loadStats(activeGranularity, forced)
-            loadTopPerformersStats(activeGranularity, forced)
         }
     }
 
@@ -345,22 +368,9 @@ class MyStoreFragment :
         binding.myStoreStats.showSkeleton(show)
     }
 
-    override fun showTopPerformersSkeleton(show: Boolean) {
-        binding.myStoreTopPerformers.showSkeleton(show)
-    }
-
     override fun onRequestLoadStats(period: StatsGranularity) {
         binding.myStoreStats.showErrorView(false)
         presenter.loadStats(period)
-    }
-
-    override fun onRequestLoadTopPerformersStats(period: StatsGranularity) {
-        binding.myStoreTopPerformers.showErrorView(false)
-        presenter.loadTopPerformersStats(period)
-    }
-
-    override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {
-        mainNavigationRouter?.showProductDetail(topPerformer.product.remoteProductId)
     }
 
     override fun onChartValueSelected(dateString: String, period: StatsGranularity) {

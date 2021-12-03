@@ -10,9 +10,6 @@ import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedError
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -31,11 +28,9 @@ class MyStorePresenter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val getStats: GetStats,
-    private val getTopPerformers: GetTopPerformers
+    private val getStats: GetStats
 ) : Presenter {
     companion object {
-        const val NUM_TOP_PERFORMERS = 3
         const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
         private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
         private val topPerformersForceRefresh = BooleanArray(StatsGranularity.values().size)
@@ -110,37 +105,37 @@ class MyStorePresenter @Inject constructor(
         }
     }
 
-    override fun loadTopPerformersStats(
-        granularity: StatsGranularity,
-        forced: Boolean
-    ) {
-        if (!networkStatus.isConnected()) {
-            myStoreView?.isRefreshPending = true
-        }
-
-        val forceRefresh = forced || topPerformersForceRefresh[granularity.ordinal]
-        if (forceRefresh) {
-            topPerformersForceRefresh[granularity.ordinal] = false
-        }
-
-        myStoreView?.showTopPerformersSkeleton(true)
-        coroutineScope.launch {
-            getTopPerformers(forceRefresh, granularity, NUM_TOP_PERFORMERS)
-                .collect {
-                    myStoreView?.showTopPerformersSkeleton(false)
-                    when (it) {
-                        is TopPerformersLoadedSuccess -> {
-                            myStoreView?.showTopPerformers(it.topPerformers, granularity)
-                            AnalyticsTracker.track(
-                                AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
-                                mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
-                            )
-                        }
-                        TopPerformersLoadedError -> myStoreView?.showTopPerformersError(granularity)
-                    }
-                }
-        }
-    }
+//    override fun loadTopPerformersStats(
+//        granularity: StatsGranularity,
+//        forced: Boolean
+//    ) {
+//        if (!networkStatus.isConnected()) {
+//            myStoreView?.isRefreshPending = true
+//        }
+//
+//        val forceRefresh = forced || topPerformersForceRefresh[granularity.ordinal]
+//        if (forceRefresh) {
+//            topPerformersForceRefresh[granularity.ordinal] = false
+//        }
+//
+//        myStoreView?.showTopPerformersSkeleton(true)
+//        coroutineScope.launch {
+//            getTopPerformers(forceRefresh, granularity, NUM_TOP_PERFORMERS)
+//                .collect {
+//                    myStoreView?.showTopPerformersSkeleton(false)
+//                    when (it) {
+//                        is TopPerformersSuccess -> {
+//                            myStoreView?.showTopPerformers(it.topPerformers, granularity)
+//                            AnalyticsTracker.track(
+//                                AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
+//                                mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
+//                            )
+//                        }
+//                        TopPerformersError -> myStoreView?.showTopPerformersError(granularity)
+//                    }
+//                }
+//        }
+//    }
 
     override fun getSelectedSiteName(): String? =
         selectedSite.getIfExists()?.let { site ->
