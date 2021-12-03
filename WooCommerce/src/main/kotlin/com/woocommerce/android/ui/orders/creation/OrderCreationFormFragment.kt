@@ -9,7 +9,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -31,23 +30,22 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 editActionAsText = true
             )
             setupObserversWith(this)
+            setupHandleResults()
+            initView()
         }
-        setupHandleResults()
+    }
+
+    private fun FragmentOrderCreationFormBinding.initView() {
+        orderStatusView.setOnClickListener {
+            formViewModel.onEditOrderStatusSelected(sharedViewModel.currentStatus)
+        }
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
         sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
             binding.orderStatusView.updateOrder(newOrderData)
-            formViewModel.onOrderStatusSelected(newOrderData.status)
         }
 
-        formViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) {
-                binding.orderStatusView.updateStatus(it) {
-                    formViewModel.onEditOrderStatusSelected()
-                }
-            }
-        }
         formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 

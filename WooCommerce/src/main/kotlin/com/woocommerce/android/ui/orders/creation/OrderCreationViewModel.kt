@@ -15,6 +15,9 @@ class OrderCreationViewModel @Inject constructor(
     val orderDraftData = LiveDataDelegate(savedState, Order.EMPTY)
     private var orderDraft by orderDraftData
 
+    val currentStatus
+        get() = orderDraft.status
+
     init {
         orderDraft = orderDraft.copy(
             dateCreated = Date()
