@@ -1,7 +1,7 @@
 package com.woocommerce.android.util
 
 import android.util.Log
-import com.woocommerce.android.util.LogEntryList.LogEntry
+import com.woocommerce.android.util.RollingLogEntries.LogEntry
 import java.io.PrintWriter
 import java.io.StringWriter
 import org.wordpress.android.util.AppLog as WordPressAppLog
@@ -35,7 +35,7 @@ object WooLog {
 
     const val TAG = "WooCommerce"
     private const val MAX_ENTRIES = 99
-    private val logEntries = LogEntryList(MAX_ENTRIES)
+    private val logEntries = RollingLogEntries(MAX_ENTRIES)
 
     init {
         // add listener for WP app log so we can capture login & FluxC logs

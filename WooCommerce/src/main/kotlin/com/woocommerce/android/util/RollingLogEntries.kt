@@ -1,6 +1,6 @@
 package com.woocommerce.android.util
 
-import com.woocommerce.android.util.LogEntryList.LogEntry
+import com.woocommerce.android.util.RollingLogEntries.LogEntry
 import com.woocommerce.android.util.WooLog.LogLevel
 import com.woocommerce.android.util.WooLog.LogLevel.d
 import com.woocommerce.android.util.WooLog.LogLevel.e
@@ -9,16 +9,21 @@ import com.woocommerce.android.util.WooLog.LogLevel.v
 import com.woocommerce.android.util.WooLog.LogLevel.w
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.DateTimeUtils
+import java.security.InvalidParameterException
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
  * Fix-sized list of log entries
  */
-class LogEntryList(private val maxEntries: Int) : LinkedList<LogEntry>() {
+class RollingLogEntries(private val limit: Int) : LinkedList<LogEntry>() {
+    init {
+        if (limit <= 0) throw InvalidParameterException("The limit must be greater than 0")
+    }
+
     @Synchronized
     override fun add(element: LogEntry): Boolean {
-        if (size == maxEntries) {
+        if (size == limit) {
             removeFirst()
         }
         return super.add(element)
