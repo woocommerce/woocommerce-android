@@ -5,6 +5,7 @@ import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -41,6 +42,10 @@ class OrderCreationFormViewModel @Inject constructor(
             ShowStatusTag(orderDetailRepository.getOrderStatus(status.value))
                 .runWithContext(dispatchers.main) { triggerEvent(it) }
         }
+    }
+
+    fun onCustomerNoteClicked() {
+        triggerEvent(EditCustomerNote)
     }
 
     data class ShowStatusTag(val orderStatus: OrderStatus) : Event()

@@ -14,10 +14,14 @@ class OrderCreationViewModel @Inject constructor(
     val orderDraftData = LiveDataDelegate(savedState, Order.EMPTY)
     private var orderDraft by orderDraftData
 
-    val currentStatus
-        get() = orderDraft.status
+    val currentDraft
+        get() = orderDraft
 
     fun onOrderStatusChanged(status: Order.Status) {
         orderDraft = orderDraft.copy(status = status)
+    }
+
+    fun onCustomerNoteEdited(newNote: String) {
+        orderDraft = orderDraft.copy(customerNote = newNote)
     }
 }
