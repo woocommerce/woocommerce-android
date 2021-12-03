@@ -27,10 +27,10 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
 
     private var shouldDisplayOrderNumber = false
 
-    fun updateStatus(orderStatus: OrderStatus, onTap: EditStatusClickListener? = null) {
+    fun updateStatus(orderStatus: OrderStatus, onEditClickListener: EditStatusClickListener? = null) {
         binding.orderStatusOrderTags.removeAllViews()
         binding.orderStatusOrderTags.addView(getTagView(orderStatus))
-        onTap?.let { binding.orderStatusEdit.setOnClickListener(it) }
+        onEditClickListener?.let { binding.orderStatusEdit.setOnClickListener(it) }
     }
 
     fun updateOrder(order: Order) {
