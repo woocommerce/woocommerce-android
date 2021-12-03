@@ -1,15 +1,16 @@
 package com.woocommerce.android.ui.orders.creation
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,9 +21,10 @@ class OrderCreationFormViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     fun onEditOrderStatusSelected(currentStatus: Order.Status) {
         launch(dispatchers.io) {
-            val statusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
-            orderDetailRepository.getOrderStatus(currentStatus.value).let {
-                withContext(dispatchers.main) { displayOrderStatusSelector(it, statusList) }
+            orderDetailRepository.getOrderStatusOptions().toTypedArray().let { statusList ->
+                orderDetailRepository
+                    .getOrderStatus(currentStatus.value)
+                    .runWithContext(dispatchers.main) { displayOrderStatusSelector(it, statusList) }
             }
         }
     }
@@ -33,4 +35,13 @@ class OrderCreationFormViewModel @Inject constructor(
             orderStatusList = statusList
         ).let { triggerEvent(it) }
     }
+
+    fun requestOrderStatusFrom(status: Order.Status) {
+        launch(dispatchers.io) {
+            ShowStatusTag(orderDetailRepository.getOrderStatus(status.value))
+                .runWithContext(dispatchers.main) { triggerEvent(it) }
+        }
+    }
+
+    data class ShowStatusTag(val orderStatus: OrderStatus) : Event()
 }
