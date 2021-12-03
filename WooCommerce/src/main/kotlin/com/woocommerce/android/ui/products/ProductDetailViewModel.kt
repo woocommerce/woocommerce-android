@@ -23,8 +23,7 @@ import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.*
 import com.woocommerce.android.ui.products.ProductNavigationTarget.*
-import com.woocommerce.android.ui.products.ProductStatus.DRAFT
-import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
+import com.woocommerce.android.ui.products.ProductStatus.*
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -166,6 +165,15 @@ class ProductDetailViewModel @Inject constructor(
 
     val isProductPublished: Boolean
         get() = viewState.productDraft?.status == PUBLISH
+
+    private val isProductPublishedOrPrivate: Boolean
+        get() = viewState.productDraft?.let { it.status == PUBLISH || it.status == PRIVATE } ?: false
+
+    val isSaveOptionNeeded: Boolean
+        get() = hasChanges() and (isAddFlowEntryPoint and isProductUnderCreation).not()
+
+    val isPublishOptionNeeded: Boolean
+        get() = isProductPublishedOrPrivate.not() or (isAddFlowEntryPoint and isProductUnderCreation)
 
     /**
      * Validates if the product exists at the Store or if it's currently defined only inside the app
@@ -604,10 +612,10 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the UPDATE/PUBLISH menu button is clicked in the product detail screen.
      * Displays a progress dialog and updates/publishes the product
      */
-    fun onUpdateButtonClicked() {
+    fun onUpdateButtonClicked(isPublish: Boolean) {
         when (isProductUnderCreation) {
             true -> startPublishProduct()
-            else -> startUpdateProduct()
+            else -> startUpdateProduct(isPublish)
         }
     }
 
@@ -645,37 +653,36 @@ class ProductDetailViewModel @Inject constructor(
             ?: AnalyticsTracker.track(ADD_PRODUCT_FAILED)
     }
 
-    private fun startUpdateProduct() {
+    private fun startUpdateProduct(isPublish: Boolean) {
         AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
-        if (isAddFlowEntryPoint) updateProductDraft(productStatus = PUBLISH)
         viewState.productDraft?.let {
+            val product = if (isPublish) it.copy(status = PUBLISH) else it
             viewState = viewState.copy(isProgressDialogShown = true)
-            launch { updateProduct(it) }
+            launch { updateProduct(isPublish, product) }
         }
     }
 
     private fun startPublishProduct(productStatus: ProductStatus = PUBLISH, exitWhenDone: Boolean = false) {
-        updateProductDraft(productStatus = productStatus)
-
         viewState.productDraft?.let {
-            trackPublishing(it)
+            val product = it.copy(status = productStatus)
+            trackPublishing(product)
 
             viewState = viewState.copy(isProgressDialogShown = true)
 
             launch {
-                val (isSuccess, newProductId) = addProduct(it)
+                val (isSuccess, newProductId) = addProduct(product)
                 viewState = viewState.copy(isProgressDialogShown = false)
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
                     AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
-                    if (it.remoteId != newProductId) {
+                    if (product.remoteId != newProductId) {
                         // Assign the current uploads to the new product id
                         mediaFileUploadHandler.assignUploadsToCreatedProduct(newProductId)
                     }
                     if (exitWhenDone) {
                         triggerEvent(ExitProduct)
-                    } else if (it.remoteId != newProductId) {
+                    } else if (product.remoteId != newProductId) {
                         // Restart observing image uploads using the new product id
                         observeImageUploadEvents()
                     }
@@ -696,8 +703,8 @@ class ProductDetailViewModel @Inject constructor(
      * the `PUBLISH` menu button will execute a update instead of repost the same product to the site
      * so we also should handle the Snackbar text prompt to follow this rule
      */
-    private fun pickProductUpdateSuccessText() =
-        if (isAddFlowEntryPoint) string.product_detail_publish_product_success
+    private fun pickProductUpdateSuccessText(isProductPublishedOrSaved: Boolean) =
+        if (isProductPublishedOrSaved) string.product_detail_publish_product_success
         else string.product_detail_save_product_success
 
     private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean, requestedProductStatus: ProductStatus) =
@@ -928,7 +935,6 @@ class ProductDetailViewModel @Inject constructor(
         productRepository.onCleanup()
         productCategoriesRepository.onCleanup()
         productTagsRepository.onCleanup()
-        mediaFilesRepository.onCleanup()
         if (isProductUnderCreation) {
             // cancel uploads for the default ID, since we can't assign the uploads to it
             mediaFileUploadHandler.cancelUpload(DEFAULT_ADD_NEW_PRODUCT_ID)
@@ -1483,29 +1489,32 @@ class ProductDetailViewModel @Inject constructor(
      * Updates the product to the backend only if network is connected.
      * Otherwise, an offline snackbar is displayed.
      */
-    private suspend fun updateProduct(product: Product) {
-        if (checkConnection()) {
-            if (productRepository.updateProduct(product)) {
-                if (viewState.isPasswordChanged) {
-                    val password = viewState.draftPassword
-                    if (productRepository.updateProductPassword(product.remoteId, password)) {
-                        viewState = viewState.copy(storedPassword = password)
-                        triggerEvent(ShowSnackbar(pickProductUpdateSuccessText()))
-                    } else {
-                        triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
-                    }
+    private suspend fun updateProduct(isPublish: Boolean, product: Product) {
+        if (!checkConnection()) {
+            viewState = viewState.copy(isProgressDialogShown = false)
+            return
+        }
+        if (productRepository.updateProduct(product)) {
+            val successMsg = pickProductUpdateSuccessText(isPublish)
+            if (viewState.isPasswordChanged) {
+                val password = viewState.draftPassword
+                if (productRepository.updateProductPassword(product.remoteId, password)) {
+                    viewState = viewState.copy(storedPassword = password)
+                    triggerEvent(ShowSnackbar(successMsg))
                 } else {
-                    triggerEvent(ShowSnackbar(pickProductUpdateSuccessText()))
+                    triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
                 }
-                viewState = viewState.copy(
-                    productDraft = null,
-                    productBeforeEnteringFragment = getProduct().storedProduct,
-                    isProductUpdated = false
-                )
-                loadRemoteProduct(product.remoteId)
             } else {
-                triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
+                triggerEvent(ShowSnackbar(successMsg))
             }
+            viewState = viewState.copy(
+                productDraft = null,
+                productBeforeEnteringFragment = getProduct().storedProduct,
+                isProductUpdated = false
+            )
+            loadRemoteProduct(product.remoteId)
+        } else {
+            triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)

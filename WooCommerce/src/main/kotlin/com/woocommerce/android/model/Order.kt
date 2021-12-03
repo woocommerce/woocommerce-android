@@ -240,6 +240,43 @@ data class Order(
         @Parcelize
         data class Custom(private val customValue: String) : Status(customValue)
     }
+
+    companion object {
+        val EMPTY by lazy {
+            Order(
+                identifier = OrderIdentifier(),
+                rawLocalOrderId = 0,
+                remoteId = 0,
+                number = "",
+                dateCreated = Date(),
+                dateModified = Date(),
+                datePaid = null,
+                status = Status.Pending,
+                total = BigDecimal(0),
+                productsTotal = BigDecimal(0),
+                totalTax = BigDecimal(0),
+                shippingTotal = BigDecimal(0),
+                discountTotal = BigDecimal(0),
+                refundTotal = BigDecimal(0),
+                feesTotal = BigDecimal(0),
+                currency = "",
+                orderKey = "",
+                customerNote = "",
+                discountCodes = "",
+                paymentMethod = "",
+                paymentMethodTitle = "",
+                isCashPayment = false,
+                pricesIncludeTax = false,
+                multiShippingLinesAvailable = false,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY,
+                shippingMethods = emptyList(),
+                items = emptyList(),
+                shippingLines = emptyList(),
+                metaData = emptyList()
+            )
+        }
+    }
 }
 
 fun WCOrderModel.toAppModel(): Order {

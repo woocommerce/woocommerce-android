@@ -4,7 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.JobIntentService
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import com.woocommerce.android.JobServiceIds.JOB_FCM_REGISTRATION_SERVICE_ID
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +29,7 @@ class FCMRegistrationIntentService : JobIntentService() {
     }
 
     override fun onHandleWork(intent: Intent) {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+        Firebase.messaging.token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 val message = "Fetching FCM registration token failed"
                 val exception = task.exception

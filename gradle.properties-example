@@ -44,3 +44,7 @@ wc.in_app_update_type = 0
 
 # Necessary for gradle 5
 kapt.incremental.apt=false
+
+# Measuring build times
+tracksEnabled = false
+#tracksUsername = <optional username>

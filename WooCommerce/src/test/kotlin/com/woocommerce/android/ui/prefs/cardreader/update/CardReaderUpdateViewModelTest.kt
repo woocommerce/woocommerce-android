@@ -2,27 +2,20 @@ package com.woocommerce.android.ui.prefs.cardreader.update
 
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_STARTED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.*
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateAboutToStart
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateProgress
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateFailedBatteryLow
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
-import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
+import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,14 +23,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
-import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class CardReaderUpdateViewModelTest : BaseUnitTest() {
     private val softwareStatus = MutableStateFlow<SoftwareUpdateStatus>(Unknown)
     private val cardReaderManager: CardReaderManager = mock {
@@ -93,6 +83,46 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
             assertThat(state.progress).isEqualTo(0)
             assertThat(state.illustration).isEqualTo(R.drawable.img_card_reader_update_progress)
             assertThat(state.button?.text).isEqualTo(null)
+        }
+
+    @Test
+    fun `given installation about to start, when view model created, then announce for accessibility`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = InstallationStarted
+
+            // WHEN
+            val viewModel = createViewModel()
+            softwareStatus.value = status
+            viewModel.viewStateData.value as UpdateAboutToStart
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                SoftwareUpdateAboutToStart(
+                    R.string.card_reader_software_update_description
+                )
+            )
+        }
+
+    @Test
+    fun `given installation 10 status, when view model created, then announce update progress for accessibility`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = Installing(.1f)
+
+            // WHEN
+            val viewModel = createViewModel()
+            softwareStatus.value = status
+
+            // THEN
+            val uiString = UiStringRes(
+                R.string.card_reader_software_update_progress_indicator,
+                params = listOf(
+                    UiString.UiStringText(text = "10", containsHtml = false)
+                ),
+                containsHtml = false
+            )
+            assertThat(viewModel.event.value).isEqualTo(SoftwareUpdateProgress(uiString))
         }
 
     @Test

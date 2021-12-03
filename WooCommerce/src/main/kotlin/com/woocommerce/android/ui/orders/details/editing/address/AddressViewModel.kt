@@ -34,7 +34,20 @@ class AddressViewModel @Inject constructor(
     val stateLocation: Location
         get() = viewState.stateLocation
 
+    private var hasStarted = false
+
+    /**
+     * The start method is called when the view is created. When the view is recreated (e.g. navigating to country
+     * search and back) we don't want this method to be called again, otherwise the ViewModel will replace the newly
+     * selected country or state with the previously saved values.
+     *
+     * @see applyCountryStateChangesSafely
+     */
     fun start(countryCode: String, stateCode: String) {
+        if (hasStarted) {
+            return
+        }
+        hasStarted = true
         loadCountriesAndStates(countryCode, stateCode)
         viewState.applyCountryStateChangesSafely(countryCode, stateCode)
     }
@@ -56,6 +69,18 @@ class AddressViewModel @Inject constructor(
 
     fun hasStates() = states.isNotEmpty()
 
+    /**
+     * Even when the [BaseAddressEditingFragment] instance is destroyed the instance of [AddressViewModel] will still
+     * be alive. That means if the user have selected a country or state, discarded the change and navigated again to
+     * [BaseAddressEditingFragment] the discarded values of country and state will be used. Because of that, when the
+     * Fragment is detached we must clear these values from the ViewModel. We should also allow the [start] method
+     * to be called again.
+     */
+    fun onScreenDetached() {
+        hasStarted = false
+        viewState = ViewState()
+    }
+
     private fun getCountryNameFromCode(countryCode: String): String {
         return countries.find { it.code == countryCode }?.name ?: countryCode
     }
@@ -76,7 +101,8 @@ class AddressViewModel @Inject constructor(
         if (countryCode != viewState.countryLocation.code) {
             viewState = viewState.copy(
                 countryLocation = getCountryLocationFromCode(countryCode),
-                stateLocation = Location("", "")
+                stateLocation = Location("", ""),
+                isStateSelectionEnabled = true
             )
         }
     }
@@ -95,15 +121,13 @@ class AddressViewModel @Inject constructor(
      * looking into a outdated state information
      */
     private fun ViewState.applyCountryStateChangesSafely(countryCode: String, stateCode: String) {
-        val countryLocation = getCountryLocationFromCode(countryCode)
-
-        viewState = viewState.copy(
-            countryLocation = countryLocation
+        viewState = this.copy(
+            countryLocation = getCountryLocationFromCode(countryCode)
         )
 
-        viewState = this.copy(
-            countryLocation = countryLocation,
-            stateLocation = getStateLocationFromCode(stateCode)
+        viewState = viewState.copy(
+            stateLocation = getStateLocationFromCode(stateCode),
+            isStateSelectionEnabled = countryCode.isNotEmpty()
         )
     }
 
@@ -111,6 +135,7 @@ class AddressViewModel @Inject constructor(
     data class ViewState(
         val countryLocation: Location = Location("", ""),
         val stateLocation: Location = Location("", ""),
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
+        val isStateSelectionEnabled: Boolean = false
     ) : Parcelable
 }

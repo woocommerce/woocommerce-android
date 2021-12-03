@@ -1,6 +1,5 @@
 package com.woocommerce.android.cardreader
 
-import android.app.Application
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -25,7 +24,7 @@ interface CardReaderManager {
     val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability>
     val displayBluetoothCardReaderMessages: Flow<BluetoothCardReaderMessages>
 
-    fun initialize(app: Application)
+    fun initialize()
     fun discoverReaders(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,

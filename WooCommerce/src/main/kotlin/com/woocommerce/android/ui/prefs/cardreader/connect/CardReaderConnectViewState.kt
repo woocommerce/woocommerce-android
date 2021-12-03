@@ -80,7 +80,7 @@ sealed class CardReaderConnectViewState(
         illustrationTopMargin = R.dimen.major_150
     )
 
-    data class MissingPermissionsError(
+    data class MissingLocationPermissionsError(
         override val onPrimaryActionClicked: () -> Unit,
         override val onSecondaryActionClicked: () -> Unit
     ) : CardReaderConnectViewState(
@@ -113,6 +113,17 @@ sealed class CardReaderConnectViewState(
         illustrationTopMargin = R.dimen.major_150
     )
 
+    data class MissingBluetoothPermissionsError(
+        override val onPrimaryActionClicked: () -> Unit,
+        override val onSecondaryActionClicked: () -> Unit
+    ) : CardReaderConnectViewState(
+        headerLabel = UiString.UiStringRes(R.string.card_reader_connect_missing_bluetooth_permissions_header),
+        illustration = R.drawable.img_products_error,
+        primaryActionLabel = R.string.card_reader_connect_missing_bluetooth_permission_button,
+        secondaryActionLabel = R.string.cancel,
+        illustrationTopMargin = R.dimen.major_150
+    )
+
     data class MissingMerchantAddressError(
         override val onPrimaryActionClicked: () -> Unit,
         override val onSecondaryActionClicked: () -> Unit
@@ -122,5 +133,15 @@ sealed class CardReaderConnectViewState(
         primaryActionLabel = R.string.card_reader_connect_missing_address_button,
         secondaryActionLabel = R.string.cancel,
         illustrationTopMargin = R.dimen.major_150
+    )
+
+    data class InvalidMerchantAddressPostCodeError(
+        override val onPrimaryActionClicked: () -> Unit,
+    ) : CardReaderConnectViewState(
+        headerLabel = UiString.UiStringRes(R.string.card_reader_connect_invalid_postal_code_header),
+        hintLabel = R.string.card_reader_connect_invalid_postal_code_hint,
+        illustration = R.drawable.img_products_error,
+        primaryActionLabel = R.string.try_again,
+        illustrationTopMargin = R.dimen.major_150,
     )
 }

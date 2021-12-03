@@ -120,12 +120,22 @@
     <string name="and">and</string>
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
+    <string name="analytics">Analytics</string>
+
     <!--
         Date/Time Labels
     -->
     <string name="date_timeframe_future">Upcoming</string>
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
+    <string name="date_timeframe_last_week">Last Week</string>
+    <string name="date_timeframe_last_month">Last Month</string>
+    <string name="date_timeframe_last_quarter">Last Quarter</string>
+    <string name="date_timeframe_last_year">Last Year</string>
+    <string name="date_timeframe_week_to_date">Week to Date</string>
+    <string name="date_timeframe_month_to_date">Month to Date</string>
+    <string name="date_timeframe_quarter_to_date">Quarter to Date</string>
+    <string name="date_timeframe_year_to_date">Year to Date</string>
     <string name="date_timeframe_older_two_days">Older than 2 days</string>
     <string name="date_timeframe_older_week">Older than a week</string>
     <string name="date_timeframe_older_month">Older than a month</string>
@@ -249,6 +259,26 @@
     <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
+
+    <!--
+        Analytics View
+    -->
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
+    <string name="analytics_date_range_selector_description">Selector for date range filter</string>
+    <string-array name="date_range_selectors">
+        <item translatable="false">@string/date_timeframe_today</item>
+        <item translatable="false">@string/date_timeframe_yesterday</item>
+        <item translatable="false">@string/date_timeframe_last_week</item>
+        <item translatable="false">@string/date_timeframe_last_month</item>
+        <item translatable="false">@string/date_timeframe_last_quarter</item>
+        <item translatable="false">@string/date_timeframe_last_year</item>
+        <item translatable="false">@string/date_timeframe_week_to_date</item>
+        <item translatable="false">@string/date_timeframe_month_to_date</item>
+        <item translatable="false">@string/date_timeframe_quarter_to_date</item>
+        <item translatable="false">@string/date_timeframe_year_to_date</item>
+    </string-array>
+
     <!--
         Order List View
     -->
@@ -263,9 +293,25 @@
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
-    <string name="orderlist_quickorder_wip_title">Take payments from your device!</string>
-    <string name="orderlist_quickorder_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
-    <string name="orderlist_quickorder_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
+    <string name="orderlist_simple_payments_wip_title">Take payments from your device!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
+    <string name="orderlist_simple_payments_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
+    <string name="orderlist_simple_payments_menu">Simple payment</string>
+    <!--
+         Simple Payments
+    -->
+    <string name="simple_payments_dialog_title">Take payment</string>
+    <string name="simple_payments_enter_amount">Enter amount</string>
+    <string name="simple_payments_creation_error">Unable to create order</string>
+    <!--
+         Order Creation
+    -->
+    <string name="orderlist_create_order_button_description">Create order</string>
+    <string name="orderlist_bottom_sheet_create_order_action">Create order</string>
+    <string name="orderlist_bottom_sheet_create_order_description">Create a new manual order</string>
+    <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
+    <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
+    <string name="order_creation_fragment_title">New Order</string>
     <!--
         Order Filters
     -->
@@ -282,6 +328,14 @@
     <string name="orderfilters_filters_count_title">Filters (%d)</string>
     <string name="orderfilters_default_filter_option">All</string>
     <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
+    <string name="orderfilters_date_range_filter_today">Today</string>
+    <string name="orderfilters_date_range_filter_last_two_days">Last 2 Days</string>
+    <string name="orderfilters_date_range_filter_last_7_days">Last 7 days</string>
+    <string name="orderfilters_date_range_filter_last_30_days">Last 30 days</string>
+    <string name="orderfilters_date_range_filter_custom_range">Custom Range</string>
+    <string name="orderfilters_date_range_picker_title">Select dates</string>
+    <string name="orderfilters_date_range_start_date">Start Date</string>
+    <string name="orderfilters_date_range_end_date">End Date</string>
 
     <!--
         Order Detail Views
@@ -404,7 +458,7 @@
     <string name="order_detail_edit_address_line2">Address 2</string>
     <string name="order_detail_edit_address_city">City</string>
     <string name="order_detail_edit_address_zip">Postal Code</string>
-    <string name="order_detail_edit_address_state">State / County</string>
+    <string name="order_detail_edit_address_state">State</string>
     <string name="order_detail_edit_address_country">Country</string>
     <string name="order_detail_address_section">Address</string>
     <string name="order_detail_shipping_address_section">Shipping Address</string>
@@ -516,9 +570,11 @@
     <string name="shipping_label_edit_address_line1">Address line 1</string>
     <string name="shipping_label_edit_address_line2">Address line 2</string>
     <string name="shipping_label_edit_address_city">City</string>
-    <string name="shipping_label_edit_address_state">State / County</string>
+    <string name="shipping_label_edit_address_state">State</string>
+    <string name="shipping_label_edit_address_state_search_hint">Filter state</string>
     <string name="shipping_label_edit_address_zip">Zip / Postal Code</string>
     <string name="shipping_label_edit_address_country">Country</string>
+    <string name="shipping_label_edit_address_country_search_hint">Filter countries</string>
     <string name="shipping_label_edit_address_use_address_as_is">Use address as entered</string>
     <string name="shipping_label_edit_data_loading_error">Unable to load the address data</string>
     <string name="shipping_label_edit_address_validation_progress_title">Address validation in progress</string>
@@ -812,10 +868,25 @@
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
     <string name="card_reader_payment_failed_no_network_state">No internet connection</string>
     <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
-    <string name="card_reader_payment_failed_card_declined_state">Card declined</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
     <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50 usd</string>
+    <string name="card_reader_payment_failed_temporary">Trying again may succeed</string>
+    <string name="card_reader_payment_failed_fraud">Try another means of payment</string>
+    <string name="card_reader_payment_failed_generic">Payment was declined for an unspecified reason</string>
+    <string name="card_reader_payment_failed_invalid_account">The card or card account is invalid</string>
+    <string name="card_reader_payment_failed_card_not_supported">The card does not support this type of purchase</string>
+    <string name="card_reader_payment_failed_currency_not_supported">The card does not support this currency</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">An identical transaction was submitted recently</string>
+    <string name="card_reader_payment_failed_expired_card">The card has expired</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">The transaction postal code and card postal code do not match</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Payment declined due to insufficient funds</string>
+    <string name="card_reader_payment_failed_invalid_amount">The payment amount is not allowed for the card presented</string>
+    <string name="card_reader_payment_failed_pin_required">This card requires a PIN code and thus cannot be processed</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">An incorrect PIN has been entered too many times</string>
+    <string name="card_reader_payment_failed_test_card">System test cards are not permitted for payment</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">A live card was used on a site in test mode</string>
+    <string name="card_reader_payment_failed_unknown">Payment was declined for an unknown reason</string>
 
     <string name="card_reader_payment_retry_card_prompt">Retry with the same card</string>
     <string name="card_reader_payment_remove_card_prompt">Remove the card</string>
@@ -853,14 +924,18 @@
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
     <string name="card_reader_connect_missing_address">Please provide your store address in order to proceed</string>
     <string name="card_reader_connect_missing_address_button">Enter address</string>
+    <string name="card_reader_connect_invalid_postal_code_header">Store address postcode is invalid</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">Please provide a valid postcode in your store settings and try again</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
     <string name="card_reader_connect_connecting_failed_hint">We couldn\'t connect to the reader.</string>
-    <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
+    <string name="card_reader_connect_missing_permissions_header">Missing required precise location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">Missing required nearby devices permission</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">Open settings</string>
 
     <!--
         Card Reader Detail
@@ -920,12 +995,21 @@
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Refresh after activating</string>
 
     <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting Card-Present Payments.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refresh</string>
 
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Update WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Refresh after updating</string>
+
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Finish setup WooCommerce Stripe Payment Gateway in your store admin</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Stripe Payment Gateway to start accepting In-Person Payments.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Refresh</string>
+
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Update WooCommerce Stripe Payment Gateway</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Outdated version of the WooCommerce Stripe Payment Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Refresh after updating</string>
+
 
     <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
     <string name="card_reader_onboarding_account_rejected_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
@@ -962,6 +1046,12 @@
     <string name="card_reader_tutorial_charged_detail">Your reader takes about three hours to fully charge</string>
 
     <!--
+        Card reader Accessibility
+    -->
+    <string name="card_reader_accessibility_reader_is_connected">Reader is connected</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">Reader is disconnected</string>
+
+    <!--
         Notifications
     -->
     <string name="new_notifications">%d new notifications</string>
@@ -991,6 +1081,7 @@
     <string name="wc_mark_all_read">Mark all as read</string>
     <string name="wc_mark_all_read_success">All reviews marked as read</string>
     <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
+    <string name="product_review_list_fetching_failed">Error fetching product reviews</string>
     <string name="pending_review_label">Pending Review</string>
     <!--
         Products
@@ -1292,7 +1383,7 @@
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
     <string name="orders_processed_empty_message">All orders have been processed</string>
     <string name="orders_empty_message_with_search">No matching orders</string>
-    <string name="orders_empty_message_with_order_status_filter">We\'re sorry, we couldn\'t find any \"%s\" orders</string>
+    <string name="orders_empty_message_for_filtered_orders">We\'re sorry, we couldn\'t find any orders</string>
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
     <!--
@@ -1302,7 +1393,9 @@
     <string name="privacy_settings">Privacy settings</string>
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
-    <string name="beta_features_message">View Add-ons, quick order</string>
+    <string name="beta_features_add_ons">View Add-ons</string>
+    <string name="beta_features_simple_payments">Simple payments</string>
+    <string name="beta_features_order_creation">Order creation</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
@@ -1313,8 +1406,10 @@
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
-    <string name="settings_enable_quick_order_teaser_title">Quick order</string>
-    <string name="settings_enable_quick_order_teaser_message">Test out creating orders with minimal information as we get ready to launch</string>
+    <string name="settings_enable_simple_payments_teaser_title">Simple payments</string>
+    <string name="settings_enable_simple_payments_teaser_message">Test out creating orders with minimal information as we get ready to launch</string>
+    <string name="settings_enable_order_creation_teaser_title">Order Creation</string>
+    <string name="settings_enable_order_creation_teaser_message">Test out creating orders with full details as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
@@ -1595,7 +1690,7 @@
 
     <!-- New Product screen -->
     <string name="product_add_tool_bar_title">New Product</string>
-    <string name="product_add_tool_bar_menu_button_done">PUBLISH</string>
+    <string name="product_add_tool_bar_menu_button_done">Publish</string>
     <string name="product_publish_dialog_title">Publishing product</string>
     <string name="product_publish_draft_dialog_title">Saving draft</string>
     <string name="product_publish_dialog_message" translatable="false">@string/product_update_dialog_message</string>
@@ -1637,6 +1732,17 @@
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Allow multiple users to access WooCommerce Mobile.</string>
     <string name="jetpack_benefits_modal_install_jetpack">Install Jetpack</string>
     <string name="jetpack_benefits_modal_dismiss">Not Now</string>
+
+    <string name="jetpack_install_start_title">Install Jetpack</string>
+    <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
+    <string name="jetpack_install_start_default_name">your site</string>
+
+    <string name="jetpack_install_progress_title">Installing\nJetpack</string>
+    <string name="jetpack_install_progress_subtitle">Please wait while we connect %s with Jetpack.</string>
+    <string name="jetpack_install_progress_step_one_message">Installing Jetpack</string>
+    <string name="jetpack_install_progress_step_two_message">Activating</string>
+    <string name="jetpack_install_progress_step_three_message">Connecting your store</string>
+    <string name="jetpack_install_progress_step_four_message">All done</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

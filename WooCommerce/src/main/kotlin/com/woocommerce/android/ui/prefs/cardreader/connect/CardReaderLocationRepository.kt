@@ -1,23 +1,26 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import com.woocommerce.android.tools.SelectedSite
-import org.wordpress.android.fluxc.model.pay.WCTerminalStoreLocationErrorType
-import org.wordpress.android.fluxc.store.WCPayStore
+import org.wordpress.android.fluxc.model.payments.inperson.WCTerminalStoreLocationErrorType
+import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import javax.inject.Inject
 
 class CardReaderLocationRepository @Inject constructor(
-    private val wcPayStore: WCPayStore,
+    private val inPersonPaymentsStore: WCInPersonPaymentsStore,
     private val selectedSite: SelectedSite
 ) {
     suspend fun getDefaultLocationId(): LocationIdFetchingResult {
         val selectedSite = selectedSite.getIfExists() ?: return LocationIdFetchingResult.Error.Other(
             "Missing selected site"
         )
-        val result = wcPayStore.getStoreLocationForSite(selectedSite)
+        val result = inPersonPaymentsStore.getStoreLocationForSite(selectedSite)
         return if (result.isError) {
             when (val type = result.error?.type) {
                 is WCTerminalStoreLocationErrorType.MissingAddress -> {
                     LocationIdFetchingResult.Error.MissingAddress(type.addressEditingUrl)
+                }
+                is WCTerminalStoreLocationErrorType.InvalidPostalCode -> {
+                    LocationIdFetchingResult.Error.InvalidPostalCode
                 }
                 else -> LocationIdFetchingResult.Error.Other(result.error?.message)
             }
@@ -29,6 +32,7 @@ class CardReaderLocationRepository @Inject constructor(
     sealed class LocationIdFetchingResult {
         sealed class Error : LocationIdFetchingResult() {
             data class MissingAddress(val url: String) : Error()
+            object InvalidPostalCode : Error()
             data class Other(val error: String?) : Error()
         }
 

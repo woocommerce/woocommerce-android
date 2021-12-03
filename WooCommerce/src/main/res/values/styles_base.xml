@@ -424,6 +424,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="iconTint">@color/button_fg_selector</item>
+    </style>
+
+    <style name="Woo.Button.TextButton.TextStart" parent="Woo.Button.TextButton">
         <item name="android:gravity">center_vertical|start</item>
         <item name="android:textAlignment">gravity</item>
     </style>
@@ -503,6 +506,15 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="tint">@color/woo_white</item>
         <item name="backgroundTint">@color/color_secondary</item>
     </style>
+
+    <!--  Button used in Jetpack Installation dialogs   -->
+    <style name="Woo.JetpackButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="backgroundTint">@color/jetpack_button_color</item>
+    </style>
+
 
 
     <!-- Set at the theme level so no need to set directly on the component -->
@@ -612,6 +624,12 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:indeterminateTint">?attr/colorPrimary</item>
         <item name="android:indeterminateTintMode">src_in</item>
     </style>
+
+    <style name="Woo.JetpackProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@color/jetpack_install_progressbar</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
+
 
     <!--
         TagView Style
