@@ -11,10 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogJetpackInstallProgressBinding
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.show
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
@@ -65,6 +63,10 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             findNavController().navigateSafely(
                 JetpackInstallProgressDialogDirections.actionJetpackInstallProgressDialogToDashboard()
             )
+        }
+
+        binding.contactButton.setOnClickListener {
+            activity?.startHelpActivity(HelpActivity.Origin.JETPACK_INSTALLATION)
         }
 
         setupObservers(binding)
