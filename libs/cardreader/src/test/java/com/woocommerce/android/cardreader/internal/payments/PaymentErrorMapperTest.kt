@@ -6,7 +6,7 @@ import com.stripe.stripeterminal.external.models.TerminalException.TerminalError
 import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode.DECLINED_BY_READER
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Server
@@ -69,7 +69,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.Unknown)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.Unknown)
     }
 
     @Test
@@ -133,7 +133,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.AmountTooSmall)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.AmountTooSmall)
     }
 
     @Test
@@ -144,7 +144,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.Unknown)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.Unknown)
     }
 
     @Test
@@ -155,7 +155,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.Unknown)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.Unknown)
     }
 
     @Test
@@ -164,7 +164,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Temporary)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Temporary)
     }
 
     @Test
@@ -173,7 +173,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Temporary)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Temporary)
     }
 
     @Test
@@ -182,7 +182,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Temporary)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Temporary)
     }
 
     @Test
@@ -191,7 +191,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Temporary)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Temporary)
     }
 
     @Test
@@ -200,7 +200,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Temporary)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Temporary)
     }
 
     @Test
@@ -209,7 +209,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -218,7 +218,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -227,7 +227,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -236,7 +236,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -245,7 +245,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -254,7 +254,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -263,7 +263,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -272,7 +272,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -281,7 +281,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -290,7 +290,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -299,7 +299,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -308,7 +308,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -317,7 +317,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -326,7 +326,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Fraud)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Fraud)
     }
 
     @Test
@@ -335,7 +335,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Generic)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Generic)
     }
 
     @Test
@@ -344,7 +344,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Generic)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Generic)
     }
 
     @Test
@@ -353,7 +353,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Generic)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Generic)
     }
 
     @Test
@@ -362,7 +362,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Generic)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Generic)
     }
 
     @Test
@@ -371,7 +371,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.Generic)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.Generic)
     }
 
     @Test
@@ -380,7 +380,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.InvalidAccount)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.InvalidAccount)
     }
 
     @Test
@@ -389,7 +389,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.InvalidAccount)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.InvalidAccount)
     }
 
     @Test
@@ -398,7 +398,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.CardNotSupported)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.CardNotSupported)
     }
 
     @Test
@@ -407,7 +407,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.CurrencyNotSupported)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.CurrencyNotSupported)
     }
 
     @Test
@@ -416,7 +416,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.DuplicateTransaction)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.DuplicateTransaction)
     }
 
     @Test
@@ -425,7 +425,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.ExpiredCard)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.ExpiredCard)
     }
 
     @Test
@@ -434,7 +434,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.IncorrectPostalCode)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.IncorrectPostalCode)
     }
 
     @Test
@@ -443,7 +443,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.InsufficientFunds)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.InsufficientFunds)
     }
 
     @Test
@@ -452,7 +452,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.InsufficientFunds)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.InsufficientFunds)
     }
 
     @Test
@@ -461,7 +461,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.InvalidAmount)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.InvalidAmount)
     }
 
     @Test
@@ -470,7 +470,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.PinRequired)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.PinRequired)
     }
 
     @Test
@@ -479,7 +479,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.PinRequired)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.PinRequired)
     }
 
     @Test
@@ -488,7 +488,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.PinRequired)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.PinRequired)
     }
 
     @Test
@@ -497,7 +497,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.TooManyPinTries)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.TooManyPinTries)
     }
 
     @Test
@@ -506,7 +506,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.TestCard)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.TestCard)
     }
 
     @Test
@@ -515,7 +515,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.CardDeclined.TestModeLiveCard)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.TestModeLiveCard)
     }
 
     @Test
@@ -524,7 +524,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.Unknown)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.Unknown)
     }
 
     @Test
@@ -533,7 +533,7 @@ class PaymentErrorMapperTest {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByStripeApiError.Unknown)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.Unknown)
     }
 
     private fun setupStripeApiCardDeclined(declineCode: String?) {

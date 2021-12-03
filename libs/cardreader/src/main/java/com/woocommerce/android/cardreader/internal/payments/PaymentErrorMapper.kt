@@ -8,11 +8,11 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.ServerError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.*
 
 internal class PaymentErrorMapper {
     fun mapTerminalError(
@@ -33,7 +33,7 @@ internal class PaymentErrorMapper {
     }
 
     @Suppress("ComplexMethod")
-    private fun mapDeclinedByStripeApiError(exception: TerminalException): DeclinedByStripeApiError =
+    private fun mapDeclinedByStripeApiError(exception: TerminalException): DeclinedByBackendError =
         when (exception.apiError?.declineCode) {
             "approve_with_id",
             "issuer_not_available",
@@ -60,7 +60,7 @@ internal class PaymentErrorMapper {
             "no_action_taken",
             "not_permitted",
             "service_not_allowed",
-            "transaction_not_allowed" -> DeclinedByStripeApiError.CardDeclined.Generic
+            "transaction_not_allowed" -> DeclinedByBackendError.CardDeclined.Generic
 
             "invalid_account",
             "new_account_information_available" -> InvalidAccount
@@ -90,8 +90,8 @@ internal class PaymentErrorMapper {
 
             "test_mode_live_card" -> TestModeLiveCard
             else -> when (exception.apiError?.code) {
-                "amount_too_small" -> DeclinedByStripeApiError.AmountTooSmall
-                else -> DeclinedByStripeApiError.Unknown
+                "amount_too_small" -> DeclinedByBackendError.AmountTooSmall
+                else -> DeclinedByBackendError.Unknown
             }
         }
 

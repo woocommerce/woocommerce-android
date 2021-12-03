@@ -67,7 +67,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given AmountTooSmall error, when map to ui error, then AmountTooSmall error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.AmountTooSmall
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmall
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -81,7 +81,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given Temporary error, when map to ui error, then Temporary error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.Temporary
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.Temporary
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -95,7 +95,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given Fraud error, when map to ui error, then Fraud error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.Fraud
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.Fraud
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -109,7 +109,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given Generic card declined error, when map to ui error, then Generic error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.Generic
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.Generic
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -123,7 +123,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given InvalidAccount error, when map to ui error, then InvalidAccount error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.InvalidAccount
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.InvalidAccount
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -137,7 +137,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given CardNotSupported error, when map to ui error, then CardNotSupported error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.CardNotSupported
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.CardNotSupported
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -151,7 +151,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given CurrencyNotSupported error, when map to ui error, then CurrencyNotSupported error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.CurrencyNotSupported
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.CurrencyNotSupported
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -165,7 +165,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given DuplicateTransaction error, when map to ui error, then DuplicateTransaction error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.DuplicateTransaction
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.DuplicateTransaction
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -179,7 +179,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given ExpiredCard error, when map to ui error, then ExpiredCard error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.ExpiredCard
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.ExpiredCard
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -193,7 +193,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given IncorrectPostalCode error, when map to ui error, then IncorrectPostalCode error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.IncorrectPostalCode
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.IncorrectPostalCode
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -207,7 +207,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given InvalidAmount error, when map to ui error, then InvalidAmount error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.InvalidAmount
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.InvalidAmount
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -221,7 +221,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given PinRequired error, when map to ui error, then PinRequired error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.PinRequired
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.PinRequired
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -235,7 +235,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given TooManyPinTries error, when map to ui error, then TooManyPinTries error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.TooManyPinTries
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.TooManyPinTries
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -249,7 +249,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given TestCard error, when map to ui error, then TestCard error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.TestCard
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.TestCard
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -263,7 +263,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given TestModeLiveCard error, when map to ui error, then TestModeLiveCard error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined.TestModeLiveCard
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.TestModeLiveCard
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)
@@ -277,7 +277,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given Unknown error, when map to ui error, then Unknown error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByStripeApiError.Unknown
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.Unknown
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error)

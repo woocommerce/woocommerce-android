@@ -20,18 +20,18 @@ sealed class CardPaymentStatus {
         object Server : CardPaymentStatusErrorType()
         object Generic : CardPaymentStatusErrorType()
 
-        sealed class DeclinedByStripeApiError : CardPaymentStatusErrorType() {
+        sealed class DeclinedByBackendError : CardPaymentStatusErrorType() {
             /**
              * The specified amount is less than the minimum amount allowed (50 cents at the moment)
              */
-            object AmountTooSmall : DeclinedByStripeApiError()
+            object AmountTooSmall : DeclinedByBackendError()
 
             /**
              * Declined by stripe api with unknown reason
              */
-            object Unknown : DeclinedByStripeApiError()
+            object Unknown : DeclinedByBackendError()
 
-            sealed class CardDeclined : DeclinedByStripeApiError() {
+            sealed class CardDeclined : DeclinedByBackendError() {
                 /**
                  * A possibly temporary error caused the decline (e.g. the issuing
                  * bank's servers could not be contacted.) Tell the user this and prompt

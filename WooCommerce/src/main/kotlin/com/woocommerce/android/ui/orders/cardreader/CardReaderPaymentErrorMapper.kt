@@ -1,15 +1,15 @@
 package com.woocommerce.android.ui.orders.cardreader
 
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError.*
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError.CardDeclined
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined
 import javax.inject.Inject
 
 class CardReaderPaymentErrorMapper @Inject constructor() {
     fun mapPaymentErrorToUiError(errorType: CardPaymentStatus.CardPaymentStatusErrorType): PaymentFlowError =
         when (errorType) {
             CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork -> PaymentFlowError.NoNetwork
-            is CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError ->
+            is CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError ->
                 mapPaymentDeclinedErrorType(errorType)
             CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut,
             CardPaymentStatus.CardPaymentStatusErrorType.Generic -> PaymentFlowError.Generic
@@ -19,7 +19,7 @@ class CardReaderPaymentErrorMapper @Inject constructor() {
 
     @Suppress("ComplexMethod")
     private fun mapPaymentDeclinedErrorType(
-        cardPaymentStatusErrorType: CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByStripeApiError
+        cardPaymentStatusErrorType: CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
     ) = when (cardPaymentStatusErrorType) {
         AmountTooSmall -> PaymentFlowError.AmountTooSmall
         Unknown -> PaymentFlowError.Unknown
