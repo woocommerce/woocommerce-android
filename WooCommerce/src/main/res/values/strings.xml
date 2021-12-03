@@ -995,12 +995,21 @@
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Refresh after activating</string>
 
     <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting Card-Present Payments.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refresh</string>
 
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Update WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Refresh after updating</string>
+
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Finish setup WooCommerce Stripe Payment Gateway in your store admin</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Stripe Payment Gateway to start accepting In-Person Payments.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Refresh</string>
+
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Update WooCommerce Stripe Payment Gateway</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Outdated version of the WooCommerce Stripe Payment Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Refresh after updating</string>
+
 
     <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
     <string name="card_reader_onboarding_account_rejected_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
