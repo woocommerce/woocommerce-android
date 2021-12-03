@@ -25,10 +25,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(FragmentOrderCreationFormBinding.bind(view)) {
-            orderStatusView.customizeViewBehavior(
-                displayOrderNumber = false,
-                editActionAsText = true
-            )
             setupObserversWith(this)
             setupHandleResults()
             initView()
@@ -36,9 +32,13 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun FragmentOrderCreationFormBinding.initView() {
-        orderStatusView.setOnClickListener {
-            formViewModel.onEditOrderStatusSelected(sharedViewModel.currentStatus)
-        }
+        orderStatusView.customizeViewBehavior(
+            displayOrderNumber = false,
+            editActionAsText = true,
+            customEditClickListener = {
+                formViewModel.onEditOrderStatusSelected(sharedViewModel.currentStatus)
+            }
+        )
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
