@@ -30,7 +30,9 @@ class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_cu
             binding.customerOrderNoteEditor.setText(sharedViewModel.currentDraft.customerNote)
         }
         binding.customerOrderNoteEditor.doAfterTextChanged {
-            doneMenuItem.isVisible = hasChanges()
+            if (::doneMenuItem.isInitialized) {
+                doneMenuItem.isVisible = hasChanges()
+            }
         }
     }
 
