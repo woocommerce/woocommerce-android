@@ -23,6 +23,10 @@ class OrderCreationViewModel @Inject constructor(
     private val _orderStatus = MutableLiveData<OrderStatus>()
     val orderStatus: LiveData<OrderStatus> = _orderStatus
 
+    init {
+        updateOrderStatus(orderDraft.status)
+    }
+
     fun onOrderStatusChanged(status: Order.Status) {
         orderDraft = orderDraft.copy(status = status)
     }

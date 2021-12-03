@@ -36,6 +36,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             displayOrderNumber = false,
             editActionAsText = true,
             customEditClickListener = {
+                sharedViewModel.orderStatus.value?.let {
+                    formViewModel.onEditOrderStatusClicked(it)
+                }
             }
         )
     }
