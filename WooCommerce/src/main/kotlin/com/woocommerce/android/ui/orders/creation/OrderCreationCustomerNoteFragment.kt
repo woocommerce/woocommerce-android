@@ -53,6 +53,8 @@ class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_cu
         }
     }
 
+    override fun getFragmentTitle() = getString(R.string.order_creation_customer_note)
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
