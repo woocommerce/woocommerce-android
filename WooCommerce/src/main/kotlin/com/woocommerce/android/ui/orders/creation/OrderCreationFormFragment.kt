@@ -58,11 +58,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun handleViewModelEvents(event: Event) {
         when (event) {
-            is ViewOrderStatusSelector -> OrderCreationFormFragmentDirections
-                .actionOrderCreationFragmentToOrderStatusSelectorDialog(
-                    currentStatus = event.currentStatus,
-                    orderStatusList = event.orderStatusList
-                ).let { findNavController().navigateSafely(it) }
+            is ViewOrderStatusSelector ->
+                OrderCreationFormFragmentDirections
+                    .actionOrderCreationFragmentToOrderStatusSelectorDialog(
+                        currentStatus = event.currentStatus,
+                        orderStatusList = event.orderStatusList
+                    ).let { findNavController().navigateSafely(it) }
         }
     }
 
