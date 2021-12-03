@@ -18,12 +18,6 @@ class OrderCreationViewModel @Inject constructor(
     val currentStatus
         get() = orderDraft.status
 
-    init {
-        orderDraft = orderDraft.copy(
-            dateCreated = Date()
-        )
-    }
-
     fun onOrderStatusChanged(status: Order.Status) {
         orderDraft = orderDraft.copy(status = status)
     }
