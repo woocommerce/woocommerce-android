@@ -48,9 +48,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             binding.orderStatusView.updateOrder(newOrderData)
         }
 
-        formViewModel.event.observe(viewLifecycleOwner) {
-            handleViewModelEvents(it, binding)
-        }
+        formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 
     private fun setupHandleResults() {
@@ -60,7 +58,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         ) { sharedViewModel.onOrderStatusChanged(Order.Status.fromValue(it.newStatus)) }
     }
 
-    private fun handleViewModelEvents(event: Event, binding: FragmentOrderCreationFormBinding) {
+    private fun handleViewModelEvents(event: Event) {
         when (event) {
             is ViewOrderStatusSelector ->
                 OrderCreationFormFragmentDirections
