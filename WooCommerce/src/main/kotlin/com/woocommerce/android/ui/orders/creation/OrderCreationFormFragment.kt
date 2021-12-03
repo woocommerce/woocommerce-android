@@ -36,7 +36,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             displayOrderNumber = false,
             editActionAsText = true,
             customEditClickListener = {
-                sharedViewModel.orderStatus.value?.let {
+                sharedViewModel.orderStatusData.value?.let {
                     formViewModel.onEditOrderStatusClicked(it)
                 }
             }
@@ -46,6 +46,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
         sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
             binding.orderStatusView.updateOrder(newOrderData)
+        }
+
+        sharedViewModel.orderStatusData.observe(viewLifecycleOwner) {
+            binding.orderStatusView.updateStatus(it)
         }
 
         formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)

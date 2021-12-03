@@ -20,8 +20,8 @@ class OrderCreationViewModel @Inject constructor(
     val orderDraftData = LiveDataDelegate(savedState, Order.EMPTY, onChange = ::onOrderDraftChange)
     private var orderDraft by orderDraftData
 
-    private val _orderStatus = MutableLiveData<OrderStatus>()
-    val orderStatus: LiveData<OrderStatus> = _orderStatus
+    private val orderStatus = MutableLiveData<OrderStatus>()
+    val orderStatusData: LiveData<OrderStatus> = orderStatus
 
     init {
         updateOrderStatus(orderDraft.status)
@@ -39,7 +39,7 @@ class OrderCreationViewModel @Inject constructor(
 
     private fun updateOrderStatus(status: Order.Status) {
         launch {
-            _orderStatus.value = orderDetailRepository.getOrderStatus(status.value)
+            orderStatus.value = orderDetailRepository.getOrderStatus(status.value)
         }
     }
 }
