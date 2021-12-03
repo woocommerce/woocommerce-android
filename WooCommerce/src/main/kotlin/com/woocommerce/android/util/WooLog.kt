@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.util.Log
+import com.woocommerce.android.util.LogEntryList.LogEntry
 import java.io.PrintWriter
 import java.io.StringWriter
 import org.wordpress.android.util.AppLog as WordPressAppLog
