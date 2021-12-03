@@ -35,13 +35,4 @@ class OrderCreationFormViewModel @Inject constructor(
             orderStatusList = statusList
         ).let { triggerEvent(it) }
     }
-
-    fun requestStatusTagData(status: Order.Status) {
-        launch(dispatchers.io) {
-            ShowStatusTag(orderDetailRepository.getOrderStatus(status.value))
-                .runWithContext(dispatchers.main) { triggerEvent(it) }
-        }
-    }
-
-    data class ShowStatusTag(val orderStatus: OrderStatus) : Event()
 }
