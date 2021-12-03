@@ -16,6 +16,8 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
 import com.woocommerce.android.widgets.tags.TagView
 
+typealias EditStatusClickListener = (View) -> Unit
+
 class OrderDetailOrderStatusView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -66,14 +68,18 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         return tagView
     }
 
-    fun adjustViewPresentation(
+    fun customizeViewBehavior(
         displayOrderNumber: Boolean,
-        editActionAsText: Boolean
+        editActionAsText: Boolean,
+        customEditClickListener: EditStatusClickListener? = null
     ) {
         shouldDisplayOrderNumber = displayOrderNumber
         if (editActionAsText) {
             binding.orderStatusEditAction.text = context.getString(R.string.edit)
             binding.orderStatusEditAction.background = null
+        }
+        customEditClickListener?.let {
+            binding.orderStatusEdit.setOnClickListener(it)
         }
     }
 }
