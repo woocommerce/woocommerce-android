@@ -1,12 +1,7 @@
 package com.woocommerce.android.util
 
-import com.woocommerce.android.util.WooLog.LogLevel
-import com.woocommerce.android.util.WooLog.T
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.util.ArrayList
-
-typealias LogListener = (T, LogLevel, String) -> Unit
 
 /**
  * Simple wrapper for Android log calls, enables registering listeners for log events.
@@ -37,11 +32,6 @@ object WooLog {
     enum class LogLevel { v, d, i, w, e }
 
     const val TAG = "WooCommerce"
-    private val listeners = ArrayList<LogListener>(0)
-
-    fun addListener(listener: LogListener) {
-        listeners.add(listener)
-    }
 
     /**
      * Sends a VERBOSE log message
@@ -145,10 +135,6 @@ object WooLog {
     }
 
     private fun addEntry(tag: T, level: LogLevel, text: String) {
-        // Call our listeners if any
-        for (listener in listeners) {
-            listener(tag, level, text)
-        }
     }
 
     private fun getStringStackTrace(throwable: Throwable): String {
