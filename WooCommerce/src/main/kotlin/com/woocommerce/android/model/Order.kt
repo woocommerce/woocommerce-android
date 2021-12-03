@@ -246,7 +246,7 @@ data class Order(
             Order(
                 identifier = OrderIdentifier(),
                 rawLocalOrderId = 0,
-                remoteId = 0,
+                rawRemoteOrderId = 0,
                 number = "",
                 dateCreated = Date(),
                 dateModified = Date(),

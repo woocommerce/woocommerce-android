@@ -307,7 +307,7 @@ class OrderListFragment :
         }
         handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
             binding.orderListView.post {
-                openOrderDetail(order.localId.value, order.remoteId, order.status.value)
+                openOrderDetail(order.localId.value, order.remoteId.value, order.status.value)
             }
         }
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
