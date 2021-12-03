@@ -131,5 +131,5 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
         object TestModeLiveCard : Declined(R.string.card_reader_payment_failed_test_mode_live_card)
     }
 
-    sealed interface NonRetryableError
+    interface NonRetryableError
 }
