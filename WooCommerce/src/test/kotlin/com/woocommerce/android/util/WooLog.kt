@@ -1,8 +1,5 @@
 package com.woocommerce.android.util
 
-import java.io.PrintWriter
-import java.io.StringWriter
-
 /**
  * Simple wrapper for Android log calls, enables registering listeners for log events.
  *
@@ -41,7 +38,6 @@ object WooLog {
      */
     fun v(tag: T, message: String) {
         println("v - $TAG-$tag - $message")
-        addEntry(tag, LogLevel.v, message)
     }
 
     /**
@@ -52,7 +48,6 @@ object WooLog {
      */
     fun d(tag: T, message: String) {
         println("d - $TAG-$tag - $message")
-        addEntry(tag, LogLevel.d, message)
     }
 
     /**
@@ -63,7 +58,6 @@ object WooLog {
      */
     fun i(tag: T, message: String) {
         println("i - $TAG-$tag - $message")
-        addEntry(tag, LogLevel.i, message)
     }
 
     /**
@@ -74,7 +68,6 @@ object WooLog {
      */
     fun w(tag: T, message: String) {
         println("w - $TAG-$tag - $message")
-        addEntry(tag, LogLevel.w, message)
     }
 
     /**
@@ -85,7 +78,6 @@ object WooLog {
      */
     fun e(tag: T, message: String) {
         println("e - $TAG-$tag - $message")
-        addEntry(tag, LogLevel.e, message)
     }
 
     /**
@@ -98,8 +90,6 @@ object WooLog {
     fun e(tag: T, message: String, tr: Throwable) {
         println("e - $TAG-$tag - $message")
         println(tr)
-        addEntry(tag, LogLevel.e, message + " - exception: " + tr.message)
-        addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(tr))
     }
 
     /**
@@ -111,8 +101,6 @@ object WooLog {
     fun e(tag: T, tr: Throwable) {
         println("e - " + TAG + "-" + tag.toString() + " - " + tr.message)
         println(tr)
-        addEntry(tag, LogLevel.e, tr.message ?: "")
-        addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(tr))
     }
 
     /**
@@ -131,15 +119,5 @@ object WooLog {
             "$volleyErrorMsg, status $statusCode"
         }
         println("e - $TAG-$tag - $logText")
-        addEntry(tag, LogLevel.w, logText)
-    }
-
-    private fun addEntry(tag: T, level: LogLevel, text: String) {
-    }
-
-    private fun getStringStackTrace(throwable: Throwable): String {
-        val errors = StringWriter()
-        throwable.printStackTrace(PrintWriter(errors))
-        return errors.toString()
     }
 }

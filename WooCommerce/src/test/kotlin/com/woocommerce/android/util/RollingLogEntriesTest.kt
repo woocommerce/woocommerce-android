@@ -23,7 +23,6 @@ class RollingLogEntriesTest {
         for (i in 0 until entries) {
             assertEquals(log[i].text, "$i")
         }
-
     }
 
     @Test
