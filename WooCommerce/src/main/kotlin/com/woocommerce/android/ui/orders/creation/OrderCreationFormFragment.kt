@@ -54,7 +54,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     text = getString(R.string.order_creation_add_customer_note),
                     onClickListener = {
                         formViewModel.onCustomerNoteClicked()
-                    })
+                    }
+                )
             )
         )
         notesSection.setOnEditButtonClicked {

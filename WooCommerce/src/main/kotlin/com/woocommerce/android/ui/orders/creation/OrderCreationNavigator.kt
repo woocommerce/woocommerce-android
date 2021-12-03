@@ -10,8 +10,8 @@ class OrderCreationNavigator @Inject constructor() {
         val navController = fragment.findNavController()
 
         val action = when (target) {
-            is EditCustomerNote -> OrderCreationFormFragmentDirections
-                .actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
+            is EditCustomerNote ->
+                OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
         }
 
         navController.navigate(action)
