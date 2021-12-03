@@ -36,7 +36,7 @@ class OrderCreationFormViewModel @Inject constructor(
         ).let { triggerEvent(it) }
     }
 
-    fun requestOrderStatusFrom(status: Order.Status) {
+    fun requestStatusTagData(status: Order.Status) {
         launch(dispatchers.io) {
             ShowStatusTag(orderDetailRepository.getOrderStatus(status.value))
                 .runWithContext(dispatchers.main) { triggerEvent(it) }

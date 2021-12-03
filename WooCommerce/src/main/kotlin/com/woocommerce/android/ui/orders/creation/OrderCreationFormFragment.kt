@@ -9,9 +9,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.creation.OrderCreationFormViewModel.ShowStatusTag
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -42,11 +44,16 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
-        sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
+        sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { oldOrderData, newOrderData ->
             binding.orderStatusView.updateOrder(newOrderData)
+            newOrderData.takeIfNotEqualTo(oldOrderData?.status) {
+                formViewModel.requestStatusTagData(newOrderData.status)
+            }
         }
 
-        formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
+        formViewModel.event.observe(viewLifecycleOwner) {
+            handleViewModelEvents(it, binding)
+        }
     }
 
     private fun setupHandleResults() {
@@ -56,7 +63,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         ) { sharedViewModel.onOrderStatusChanged(Order.Status.fromValue(it.newStatus)) }
     }
 
-    private fun handleViewModelEvents(event: Event) {
+    private fun handleViewModelEvents(event: Event, binding: FragmentOrderCreationFormBinding) {
         when (event) {
             is ViewOrderStatusSelector ->
                 OrderCreationFormFragmentDirections
@@ -64,6 +71,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                         currentStatus = event.currentStatus,
                         orderStatusList = event.orderStatusList
                     ).let { findNavController().navigateSafely(it) }
+            is ShowStatusTag -> binding.orderStatusView.updateStatus(event.orderStatus)
         }
     }
 
