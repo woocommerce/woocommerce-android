@@ -28,52 +28,35 @@ class AnalyticsViewModel @Inject constructor(
     private val analyticsRepository: AnalyticsRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val dateRange = SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(1)), dateUtils.getCurrentDate())
 
     private val mutableState = MutableStateFlow(AnalyticsViewState(
-        AnalyticsDateRangeSelectorViewState(
-            fromDatePeriod = calculateFromDatePeriod(dateRange),
-            toDatePeriod = calculateToDatePeriod(AnalyticsDateRanges.TODAY, dateRange),
-            availableRangeDates = getAvailableDateRanges(),
-            selectedPeriod = getDefaultSelectedPeriod()
-        ),
-        revenueState = AnalyticsInformationViewState.DataViewState(
-            title = resourceProvider.getString(R.string.analytics_revenue_card_title),
-            totalValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
-                "$2323,22", 33
-            ),
-            netValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
-                "$111", -33
-            )
-        )))
+        buildAnalyticsDateRangeSelectorViewState(),
+        AnalyticsInformationViewState.LoadingViewState)
+    )
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
-    fun onSelectedDateRangeChanged(newSelection: String) {
-        val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)
-        val newDateRange: DateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedRange)
-
-        updateDateRangeCalendarView(selectedRange, newDateRange)
-        updateRevenueForPeriod(selectedRange, newDateRange)
+    init {
+        updateRevenue()
     }
 
-    private fun updateRevenueForPeriod(range: AnalyticsDateRanges, dateRange: DateRange) =
+    fun onSelectedDateRangeChanged(newSelection: String) {
+        val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)
+        val dateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedRange)
+        updateDateRangeCalendarView(selectedRange, getDefaultDateRange())
+        updateRevenue(selectedRange, dateRange)
+    }
+
+    private fun updateRevenue(range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
+                              dateRange: DateRange = getDefaultDateRange()) =
         launch {
-            val revenueData = analyticsRepository.fetchRevenueStatData(dateRange, range)
-            if (revenueData != null) {
+            analyticsRepository.fetchRevenueStatData(dateRange, range)?.let {
                 mutableState.value = state.value.copy(
-                    revenueState = AnalyticsInformationViewState.DataViewState(
-                        title = resourceProvider.getString(R.string.analytics_revenue_card_title),
-                        totalValues = SectionDataViewState(
-                            resourceProvider.getString(R.string.analytics_total_sales_title),
-                            formatValue(revenueData.totalValue.toString(), revenueData.currencyCode),
-                            revenueData.totalDelta
-                        ),
-                        netValues = SectionDataViewState(
-                            resourceProvider.getString(R.string.analytics_total_sales_title),
-                            formatValue(revenueData.netValue.toString(), revenueData.currencyCode),
-                            revenueData.netDelta
-                        )
+                    revenueState = buildRevenueDataViewState(
+                        formatValue(it.totalValue.toString(), it.currencyCode),
+                        it.totalDelta,
+                        formatValue(it.netValue.toString(), it.currencyCode),
+                        it.netDelta
                     )
                 )
             }
@@ -135,6 +118,9 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
     private fun getDefaultSelectedPeriod() = getDateSelectedMessage(AnalyticsDateRanges.TODAY)
+    private fun getDefaultDateRange() = SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(1)),
+        dateUtils.getCurrentDate())
+
     private fun getDateSelectedMessage(analyticsDateRange: AnalyticsDateRanges): String =
         when (analyticsDateRange) {
             AnalyticsDateRanges.TODAY -> resourceProvider.getString(R.string.date_timeframe_today)
@@ -149,8 +135,25 @@ class AnalyticsViewModel @Inject constructor(
             AnalyticsDateRanges.YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
         }
 
-    private fun formatValue(value: String, currencyCode: String?) = currencyCode?.let {
-        currencyFormatter.formatCurrency(value, it)
-    } ?: value
+    private fun formatValue(value: String, currencyCode: String?) = currencyCode
+        ?.let { currencyFormatter.formatCurrency(value, it) }
+        ?: value
 
+    private fun buildAnalyticsDateRangeSelectorViewState() = AnalyticsDateRangeSelectorViewState(
+        fromDatePeriod = calculateFromDatePeriod(getDefaultDateRange()),
+        toDatePeriod = calculateToDatePeriod(AnalyticsDateRanges.TODAY, getDefaultDateRange()),
+        availableRangeDates = getAvailableDateRanges(),
+        selectedPeriod = getDefaultSelectedPeriod()
+    )
+
+    private fun buildRevenueDataViewState(totalValue: String, totalDelta: Int, netValue: String, netDelta: Int) =
+        AnalyticsInformationViewState.DataViewState(
+            title = resourceProvider.getString(R.string.analytics_revenue_card_title),
+            totalValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
+                totalValue, totalDelta
+            ),
+            netValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
+                netValue, netDelta
+            )
+        )
 }
