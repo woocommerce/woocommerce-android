@@ -15,7 +15,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 
@@ -59,7 +58,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.localId,
+                    testOrder.remoteId,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("")
                 )
@@ -82,7 +81,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.localId,
+                    testOrder.remoteId,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("")
                 )
@@ -153,7 +152,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.localId,
+                    testOrder.remoteId,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("original@email.com")
                 )
