@@ -16,6 +16,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
@@ -25,6 +26,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
+        private const val JETPACK_INSTALL_URL = "plugin-install.php?tab=plugin-information&plugin=jetpack"
     }
 
     @Inject lateinit var selectedSite: SelectedSite
@@ -67,6 +69,11 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
 
         binding.contactButton.setOnClickListener {
             activity?.startHelpActivity(HelpActivity.Origin.JETPACK_INSTALLATION)
+        }
+
+        binding.openAdminButton.setOnClickListener {
+            val installJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_INSTALL_URL
+            ChromeCustomTabUtils.launchUrl(requireContext(), installJetpackInWpAdminUrl)
         }
 
         setupObservers(binding)
