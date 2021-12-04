@@ -27,6 +27,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
         private const val JETPACK_INSTALL_URL = "plugin-install.php?tab=plugin-information&plugin=jetpack"
+        private const val ICON_NOT_DONE = R.drawable.ic_progress_circle_start
+        private const val ICON_DONE = R.drawable.ic_progress_circle_complete
     }
 
     @Inject lateinit var selectedSite: SelectedSite
@@ -98,8 +100,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
     }
 
     private fun updateInstallProgressUi(status: InstallStatus, binding: DialogJetpackInstallProgressBinding) {
-        val iconNotDone = R.drawable.ic_progress_circle_start
-        val iconDone = R.drawable.ic_progress_circle_complete
         val iconStep1 = binding.firstStepIcon
         val iconStep2 = binding.secondStepIcon
         val iconStep3 = binding.thirdStepIcon
@@ -116,7 +116,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             is Installing -> {
                 setViewVisibility(View.INVISIBLE, iconStep1, progressStep2, progressStep3)
                 setViewVisibility(View.VISIBLE, iconStep2, iconStep3, iconStep4, progressStep1)
-                setViewImage(iconNotDone, iconStep2, iconStep3, iconStep4)
+                setViewImage(ICON_NOT_DONE, iconStep2, iconStep3, iconStep4)
                 setTextWeight(Typeface.BOLD, messageStep1)
                 setTextWeight(Typeface.NORMAL, messageStep2, messageStep3, messageStep4)
 
@@ -125,8 +125,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             is Activating -> {
                 setViewVisibility(View.INVISIBLE, iconStep2, progressStep1, progressStep3)
                 setViewVisibility(View.VISIBLE, iconStep1, iconStep3, iconStep4, progressStep2)
-                setViewImage(iconNotDone, iconStep3, iconStep4)
-                setViewImage(iconDone, iconStep1)
+                setViewImage(ICON_NOT_DONE, iconStep3, iconStep4)
+                setViewImage(ICON_DONE, iconStep1)
                 setTextWeight(Typeface.BOLD, messageStep1, messageStep2)
                 setTextWeight(Typeface.NORMAL, messageStep3, messageStep4)
 
@@ -135,8 +135,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             is Connecting -> {
                 setViewVisibility(View.INVISIBLE, iconStep3, progressStep1, progressStep2)
                 setViewVisibility(View.VISIBLE, iconStep1, iconStep2, iconStep4, progressStep3)
-                setViewImage(iconNotDone, iconStep4)
-                setViewImage(iconDone, iconStep1, iconStep2)
+                setViewImage(ICON_NOT_DONE, iconStep4)
+                setViewImage(ICON_DONE, iconStep1, iconStep2)
                 setTextWeight(Typeface.BOLD, messageStep1, messageStep2, messageStep3)
                 setTextWeight(Typeface.NORMAL, messageStep4)
 
@@ -145,7 +145,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             is Finished -> {
                 setViewVisibility(View.INVISIBLE, progressStep1, progressStep2, progressStep3)
                 setViewVisibility(View.VISIBLE, iconStep1, iconStep2, iconStep3, iconStep4)
-                setViewImage(iconDone, iconStep1, iconStep2, iconStep3, iconStep4)
+                setViewImage(ICON_DONE, iconStep1, iconStep2, iconStep3, iconStep4)
                 setTextWeight(Typeface.BOLD, messageStep1, messageStep2, messageStep3, messageStep4)
 
                 binding.jetpackProgressActionButton.show()
