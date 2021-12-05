@@ -1,1 +1,1 @@
-We’ve made some updates to our in-person payments support! Your card reader might have firmware software updates – some are super important and are required to be installed immediately. With this release, you can defer the upgrade of the optional updates for a better time.
+The orders tab has gotten an update with this release. The tabs are now gone, and we’ve given you a filter by status or date range option. This is based upon your direct feedback over the years, and we know you’ll like the change!

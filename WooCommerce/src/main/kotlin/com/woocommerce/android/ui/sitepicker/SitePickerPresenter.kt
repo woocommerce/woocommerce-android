@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.sitepicker
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
@@ -85,13 +87,21 @@ class SitePickerPresenter
 
     override fun fetchSitesFromAPI() {
         coroutineScope.launch {
+            val startTime = System.currentTimeMillis()
             val result = wooCommerceStore.fetchWooCommerceSites()
+            val duration = System.currentTimeMillis() - startTime
             view?.showLoadingView(false)
             if (result.isError) {
                 WooLog.e(T.LOGIN, "Site error [${result.error.type}] : ${result.error.message}")
             } else {
                 hasFetchedWooSites = true
                 view?.showStoreList(result.model!!)
+                if (result.model?.any { it.isJetpackCPConnected } == true) {
+                    AnalyticsTracker.track(
+                        stat = Stat.JETPACK_CP_SITES_FETCHED,
+                        properties = mapOf(AnalyticsTracker.KEY_FETCH_SITES_DURATION to duration)
+                    )
+                }
             }
         }
     }

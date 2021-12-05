@@ -1,9 +1,11 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
@@ -21,50 +23,57 @@ class StatsRepository @Inject constructor(
     private val wcLeaderboardsStore: WCLeaderboardsStore
 ) {
     companion object {
-        private val TAG = MyStorePresenter::class.java
+        private val TAG = StatsRepository::class.java
     }
 
     suspend fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean,
-                                  startDate: String = "", endDate: String = ""): Result<WCRevenueStatsModel?> {
+                                  startDate: String = "", endDate: String = ""): Flow<Result<WCRevenueStatsModel?>> = flow {
         val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity,
             startDate, endDate, forced = forced)
         val result = wcStatsStore.fetchRevenueStats(statsPayload)
 
-        return if (!result.isError) {
+        if (!result.isError) {
             val revenueStatsModel = wcStatsStore.getRawRevenueStats(
                 selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
             )
             Result.success(revenueStatsModel)
+            emit(Result.success(revenueStatsModel))
         } else {
             val errorMessage = result.error?.message ?: "Timeout"
-            WooLog.e(DASHBOARD, "$TAG - Error fetching revenue stats: $errorMessage")
-            val exception = StatsException(error = result.error)
-            Result.failure(exception)
-        }
-    }
-
-    suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Result<Map<String, Int>> {
-        val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
-        val result = wcStatsStore.fetchNewVisitorStats(visitsPayload)
-
-        return if (!result.isError) {
-            val visitorStats = wcStatsStore.getNewVisitorStats(
-                selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
-            )
-            Result.success(visitorStats)
-        } else {
-            val errorMessage = result?.error?.message ?: "Timeout"
             WooLog.e(
                 DASHBOARD,
-                "$TAG - Error fetching visitor stats: $errorMessage"
+                "$TAG - Error fetching revenue stats: $errorMessage"
             )
-            Result.failure(Exception(errorMessage))
+            val exception = StatsException(error = result.error)
+            emit(Result.failure(exception))
         }
     }
 
-    suspend fun fetchProductLeaderboards(granularity: StatsGranularity, quantity: Int, forced: Boolean):
-        Result<List<WCTopPerformerProductModel>> {
-        return when (forced) {
+    suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Flow<Result<Map<String, Int>>> =
+        flow {
+            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
+            val result = wcStatsStore.fetchNewVisitorStats(visitsPayload)
+            if (!result.isError) {
+                val visitorStats = wcStatsStore.getNewVisitorStats(
+                    selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
+                )
+                emit(Result.success(visitorStats))
+            } else {
+                val errorMessage = result.error?.message ?: "Timeout"
+                WooLog.e(
+                    DASHBOARD,
+                    "$TAG - Error fetching visitor stats: $errorMessage"
+                )
+                emit(Result.failure(Exception(errorMessage)))
+            }
+        }
+
+    suspend fun fetchProductLeaderboards(
+        forced: Boolean,
+        granularity: StatsGranularity,
+        quantity: Int
+    ): Flow<Result<List<WCTopPerformerProductModel>>> = flow {
+        when (forced) {
             true -> wcLeaderboardsStore.fetchProductLeaderboards(
                 site = selectedSite.get(),
                 unit = granularity,
@@ -77,28 +86,30 @@ class StatsRepository @Inject constructor(
         }.let { result ->
             val model = result.model
             if (result.isError || model == null) {
-                Result.failure(Exception(result.error?.message.orEmpty()))
+                val resultError: Result<List<WCTopPerformerProductModel>> = Result.failure(
+                    Exception(result.error?.message.orEmpty())
+                )
+                emit(resultError)
             } else {
-                Result.success(model)
+                emit(Result.success(model))
             }
         }
     }
 
-    suspend fun checkIfStoreHasNoOrders(): Result<Boolean> {
+    suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
             wcOrderStore.fetchHasOrders(selectedSite.get(), status = null)
         }
-        return if (result?.isError == false) {
+        if (result?.isError == false) {
             val hasNoOrders = result.rowsAffected == 0
-            Result.success(hasNoOrders)
+            emit(Result.success(hasNoOrders))
         } else {
             val errorMessage = result?.error?.message ?: "Timeout"
             WooLog.e(
                 DASHBOARD,
                 "$TAG - Error fetching whether orders exist: $errorMessage"
             )
-
-            Result.failure(Exception(errorMessage))
+            emit(Result.failure(Exception(errorMessage)))
         }
     }
 

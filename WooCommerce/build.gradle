@@ -55,15 +55,15 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.0"
+            versionName "8.1-rc-2"
         }
-        versionCode 262
+        versionCode 264
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
         // and thoroughly testing the app. Consider publishing a p2 post to inform the team about the upcoming change.
         // P.S. Update the targetSdkVersion in all the modules, otherwise static analysis tools won't give you a heads-up about potential issues.
-        targetSdkVersion 30
+        targetSdkVersion 31
 
         vectorDrawables.useSupportLibrary = true
 
@@ -153,7 +153,7 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging:21.0.0'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.0'
     implementation 'com.google.android.gms:play-services-auth:19.2.0'
 
     // Support library

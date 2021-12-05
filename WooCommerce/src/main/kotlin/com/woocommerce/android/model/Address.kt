@@ -166,4 +166,22 @@ data class Address(
             .appendWithIfNotEmpty(getCountryLabelByCountryCode(), "\n")
             .toString()
     }
+
+    companion object {
+        val EMPTY by lazy {
+            Address(
+                company = "",
+                firstName = "",
+                lastName = "",
+                phone = "",
+                country = "",
+                state = "",
+                address1 = "",
+                address2 = "",
+                city = "",
+                postcode = "",
+                email = ""
+            )
+        }
+    }
 }

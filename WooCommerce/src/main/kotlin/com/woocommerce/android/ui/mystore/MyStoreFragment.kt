@@ -37,12 +37,11 @@ import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -187,6 +186,10 @@ class MyStoreFragment :
             presenter.dismissJetpackBenefitsBanner()
         }
         binding.jetpackBenefitsBanner.root.setOnClickListener {
+            AnalyticsTracker.track(
+                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
+            )
             findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
         }
         val appBarLayout = appBarLayout ?: return
@@ -338,9 +341,7 @@ class MyStoreFragment :
         }
         presenter.run {
             loadStats(activeGranularity, forced)
-            coroutineScope.launch {
-                presenter.loadTopPerformersStats(activeGranularity, forced)
-            }
+            loadTopPerformersStats(activeGranularity, forced)
         }
     }
 
@@ -359,9 +360,7 @@ class MyStoreFragment :
 
     override fun onRequestLoadTopPerformersStats(period: StatsGranularity) {
         binding.myStoreTopPerformers.showErrorView(false)
-        presenter.coroutineScope.launch {
-            presenter.loadTopPerformersStats(period)
-        }
+        presenter.loadTopPerformersStats(period)
     }
 
     override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {
