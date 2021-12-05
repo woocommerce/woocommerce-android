@@ -6,7 +6,24 @@
     app:startDestination="@id/orderCreationFragment">
     <fragment
         android:id="@+id/orderCreationFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationFormFragment"
         android:label="orderCreationFragment"
-        tools:layout="@layout/fragment_order_creation" />
+        tools:layout="@layout/fragment_order_creation_form">
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderStatusSelectorDialog"
+            app:destination="@id/orderStatusSelectorDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+    </fragment>
+    <dialog
+        android:id="@+id/orderStatusSelectorDialog"
+        android:name="com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog">
+        <argument
+            android:name="currentStatus"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="orderStatusList"
+            app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
+    </dialog>
 </navigation>

@@ -166,6 +166,7 @@ class OrderListViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
+                orderListRepository.fetchOrderStatusOptionsFromApi()
                 fetchPaymentGateways()
             }
         } else {
@@ -173,7 +174,6 @@ class OrderListViewModel @Inject constructor(
             showOfflineSnack()
         }
     }
-
     /**
      * Fetch payment gateways so they are available for order refunds later
      */

@@ -2,6 +2,7 @@
 
 8.2
 -----
+- [*] In-Person Payments: Better error handling
 
 
 8.1
