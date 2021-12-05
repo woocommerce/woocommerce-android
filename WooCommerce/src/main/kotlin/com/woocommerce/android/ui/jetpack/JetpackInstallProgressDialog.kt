@@ -18,6 +18,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -101,7 +102,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             activity?.startHelpActivity(HelpActivity.Origin.JETPACK_INSTALLATION)
         }
 
-        binding.openAdminButton.setOnClickListener {
+        binding.openAdminOrRetryButton.setOnClickListener {
             val installJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_INSTALL_URL
             ChromeCustomTabUtils.launchUrl(requireContext(), installJetpackInWpAdminUrl)
         }
@@ -167,19 +168,65 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.jetpackProgressActionButton.show()
             }
             is Failed -> {
-                val context = binding.root.context
-                binding.title.text = context.getString(R.string.jetpack_install_progress_failed_title)
-                binding.subtitle.text = context.getString(R.string.jetpack_install_progress_failed_subtitle)
-
-                setViewVisibility(View.GONE, iconStep1, iconStep2, iconStep3, iconStep4)
-                setViewVisibility(View.GONE, messageStep1, messageStep2, messageStep3, messageStep4)
-                setViewVisibility(View.GONE, progressStep1, progressStep2, progressStep3)
-
-                binding.contactButton.show()
-                binding.openAdminButton.show()
-                binding.jetpackProgressActionButton.hide()
+                handleFailedState(status, binding)
             }
         }
+    }
+
+    private fun handleFailedState(status: Failed, binding: DialogJetpackInstallProgressBinding) {
+        val ctx = binding.root.context
+
+        // Title copy
+        binding.title.text = ctx.getString(
+            R.string.jetpack_install_progress_failed_title,
+            when (status.errorType) {
+                INSTALLATION -> ctx.getString(R.string.jetpack_install_progress_failed_reason_installation)
+                ACTIVATION -> ctx.getString(R.string.jetpack_install_progress_failed_reason_activation)
+                CONNECTION -> ctx.getString(R.string.jetpack_install_progress_failed_reason_connection)
+            }
+        )
+
+        // Subtitle copy
+        val subtitle = ctx.getString(R.string.jetpack_install_progress_failed_try)
+        val sb = StringBuilder()
+        sb.append(subtitle)
+        if (status.errorType != CONNECTION) {
+            sb.append(" ")
+            sb.append(
+                when (status.errorType) {
+                    INSTALLATION -> ctx.getString(R.string.jetpack_install_progress_failed_alternative_install)
+                    ACTIVATION -> ctx.getString(R.string.jetpack_install_progress_failed_alternative_activate)
+                    else -> ""
+                }
+            )
+        }
+        binding.subtitle.text = sb.toString()
+
+        // Button copy
+        val btnText = when (status.errorType) {
+            INSTALLATION -> {
+                ctx.getString(
+                    R.string.jetpack_install_progress_failed_option_wp_admin,
+                    ctx.getString(R.string.jetpack_install_progress_option_wp_admin_install)
+                )
+            }
+            ACTIVATION -> {
+                ctx.getString(
+                    R.string.jetpack_install_progress_failed_option_wp_admin,
+                    ctx.getString(R.string.jetpack_install_progress_option_wp_admin_activate)
+                )
+            }
+            CONNECTION -> ctx.getString(R.string.try_again)
+        }
+        binding.openAdminOrRetryButton.text = btnText
+
+        // Visibilities
+        setViewVisibility(View.GONE, iconStep1, iconStep2, iconStep3, iconStep4)
+        setViewVisibility(View.GONE, messageStep1, messageStep2, messageStep3, messageStep4)
+        setViewVisibility(View.GONE, progressStep1, progressStep2, progressStep3)
+        binding.contactButton.show()
+        binding.openAdminOrRetryButton.show()
+        binding.jetpackProgressActionButton.hide()
     }
 
     private fun setViewVisibility(visibility: Int, vararg views: View) = views.forEach { it.visibility = visibility }

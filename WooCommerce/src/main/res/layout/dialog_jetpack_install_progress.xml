@@ -219,7 +219,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/open_admin_button"
+        android:id="@+id/open_admin_or_retry_button"
         style="@style/Woo.Button.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
