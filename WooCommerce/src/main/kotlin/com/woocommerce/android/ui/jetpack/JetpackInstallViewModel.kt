@@ -57,7 +57,7 @@ class JetpackInstallViewModel @Inject constructor(
                             errorType = it.errorType,
                             errorDescription = it.errorDescription
                         )
-                        viewState = viewState.copy(installStatus = Failed(it.errorDescription))
+                        viewState = viewState.copy(installStatus = Failed(it.errorType, it.errorDescription))
                     }
 
                     is PluginActivated -> {
@@ -72,7 +72,7 @@ class JetpackInstallViewModel @Inject constructor(
                             errorType = it.errorType,
                             errorDescription = it.errorDescription
                         )
-                        viewState = viewState.copy(installStatus = Failed(it.errorDescription))
+                        viewState = viewState.copy(installStatus = Failed(it.errorType, it.errorDescription))
                     }
                 }
             }
@@ -106,6 +106,6 @@ class JetpackInstallViewModel @Inject constructor(
         object Finished : InstallStatus()
 
         @Parcelize
-        data class Failed(val error: String) : InstallStatus()
+        data class Failed(val errorType: String, val errorDescription: String) : InstallStatus()
     }
 }
