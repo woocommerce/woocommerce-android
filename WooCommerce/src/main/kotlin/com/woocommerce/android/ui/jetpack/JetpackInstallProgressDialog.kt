@@ -4,11 +4,13 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogJetpackInstallProgressBinding
 import com.woocommerce.android.extensions.*
@@ -35,6 +37,18 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
 
     private val viewModel: JetpackInstallViewModel by viewModels()
 
+    private lateinit var iconStep1: ImageView
+    private lateinit var iconStep2: ImageView
+    private lateinit var iconStep3: ImageView
+    private lateinit var iconStep4: ImageView
+    private lateinit var progressStep1: ProgressBar
+    private lateinit var progressStep2: ProgressBar
+    private lateinit var progressStep3: ProgressBar
+    private lateinit var messageStep1: MaterialTextView
+    private lateinit var messageStep2: MaterialTextView
+    private lateinit var messageStep3: MaterialTextView
+    private lateinit var messageStep4: MaterialTextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Use fullscreen style for all cases except tablet in landscape mode
@@ -48,6 +62,20 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
 
         val binding = DialogJetpackInstallProgressBinding.bind(view)
+
+        with(binding) {
+            iconStep1 = firstStepIcon
+            iconStep2 = secondStepIcon
+            iconStep3 = thirdStepIcon
+            iconStep4 = fourthStepIcon
+            progressStep1 = firstStepProgressBar
+            progressStep2 = secondStepProgressBar
+            progressStep3 = thirdStepProgressBar
+            messageStep1 = firstStepMessage
+            messageStep2 = secondStepMessage
+            messageStep3 = thirdStepMessage
+            messageStep4 = fourthStepMessage
+        }
 
         with(binding.subtitle) {
             val stringBuilder = StringBuilder()
@@ -100,18 +128,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
     }
 
     private fun updateInstallProgressUi(status: InstallStatus, binding: DialogJetpackInstallProgressBinding) {
-        val iconStep1 = binding.firstStepIcon
-        val iconStep2 = binding.secondStepIcon
-        val iconStep3 = binding.thirdStepIcon
-        val iconStep4 = binding.fourthStepIcon
-        val progressStep1 = binding.firstStepProgressBar
-        val progressStep2 = binding.secondStepProgressBar
-        val progressStep3 = binding.thirdStepProgressBar
-        val messageStep1 = binding.firstStepMessage
-        val messageStep2 = binding.secondStepMessage
-        val messageStep3 = binding.thirdStepMessage
-        val messageStep4 = binding.fourthStepMessage
-
         when (status) {
             is Installing -> {
                 setViewVisibility(View.INVISIBLE, iconStep1, progressStep2, progressStep3)
