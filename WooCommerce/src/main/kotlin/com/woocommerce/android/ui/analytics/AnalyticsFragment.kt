@@ -33,7 +33,6 @@ class AnalyticsFragment :
         super.onViewCreated(view, savedInstanceState)
         bind(view)
         setupResultHandlers(viewModel)
-        setupListeners(viewModel)
         lifecycleScope.launchWhenStarted { viewModel.state.collect { newState -> handleStateChange(newState) } }
         viewModel.event.observe(viewLifecycleOwner, { event -> handleEvent(event) })
     }
@@ -52,10 +51,6 @@ class AnalyticsFragment :
     private fun handleEvent(event: MultiLiveEvent.Event) = when (event) {
         is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
         else -> event.isHandled = false
-    }
-
-    private fun setupListeners(viewModel: AnalyticsViewModel) {
-        binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
     }
 
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
@@ -78,6 +73,7 @@ class AnalyticsFragment :
     private fun bind(view: View) {
         _binding = FragmentAnalyticsBinding.bind(view)
         binding.analyticsDateSelectorCard.setCalendarClickListener { openDateRangeSelector() }
+        binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
