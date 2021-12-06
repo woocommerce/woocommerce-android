@@ -29,7 +29,6 @@
             style="@style/Woo.Card.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/analytics_see_report_button_text"
             android:textSize="@dimen/text_minor_125"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
