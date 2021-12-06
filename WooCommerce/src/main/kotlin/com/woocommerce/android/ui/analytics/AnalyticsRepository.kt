@@ -91,7 +91,7 @@ class AnalyticsRepository @Inject constructor(
 
 
     companion object {
-        const val analyticsRevenuePath = "&path=%2Fanalytics%2Frevenue"
+        const val analyticsRevenuePath = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
     }
 
     sealed class RevenueResult {
