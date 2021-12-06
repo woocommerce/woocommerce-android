@@ -43,9 +43,9 @@ class AnalyticsViewModel @Inject constructor(
 
     fun onSelectedDateRangeChanged(newSelection: String) {
         val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)
-        val dateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedRange)
-        updateDateRangeCalendarView(selectedRange, dateRange)
-        updateRevenue(selectedRange, dateRange)
+        val newDateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedRange)
+        updateDateRangeCalendarView(selectedRange, newDateRange)
+        updateRevenue(selectedRange, newDateRange)
     }
 
     fun onRevenueSeeReportClick() =
@@ -54,6 +54,7 @@ class AnalyticsViewModel @Inject constructor(
     private fun updateRevenue(range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
                               dateRange: DateRange = getDefaultDateRange()) =
         launch {
+            mutableState.value = state.value.copy(revenueState = LoadingViewState)
             analyticsRepository.fetchRevenueData(dateRange, range)
                 .collect {
                     when (it) {

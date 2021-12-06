@@ -67,7 +67,7 @@
         <View
             android:id="@+id/divider"
             style="@style/Woo.Divider"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="@dimen/major_100"
             app:layout_constraintBottom_toTopOf="@id/iv_seeReport"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
