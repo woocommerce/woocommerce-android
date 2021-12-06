@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.RevenueStat
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
@@ -149,6 +151,32 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a view model, when selected date range changes, then data view state has ordersViewState values`() =
+        testBlocking {
+            val resourceProvider: ResourceProvider = mock {
+                on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
+                on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
+                on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
+            }
+
+            sut = givenAViewModel(resourceProvider)
+            whenever(currencyFormatter.formatCurrency(AVG_ORDER_VALUE.toString(), CURRENCY_CODE))
+                .thenReturn(AVG_CURRENCY_VALUE)
+            whenever(analyticsRepository.fetchOrdersData(any(), any()))
+                .thenReturn(listOf(geOrdersStats(), geOrdersStats()).asFlow())
+
+            sut.onSelectedDateRangeChanged(LAST_YEAR.description)
+
+            with(sut.state.value.ordersState) {
+                assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertEquals(ORDERS_COUNT.toString(), leftSection.value)
+                assertEquals(ORDERS_COUNT_DELTA, leftSection.delta)
+                assertEquals(AVG_CURRENCY_VALUE, rightSection.value)
+                assertEquals(AVG_ORDER_VALUE_DELTA, rightSection.delta)
+            }
+        }
+
+    @Test
     fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() =
         testBlocking {
             whenever(siteModel.isWPComAtomic).thenReturn(false)
@@ -175,6 +203,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     private fun getRevenueStats() =
         RevenueData(RevenueStat(TOTAL_VALUE, TOTAL_DELTA, NET_VALUE, NET_DELTA, CURRENCY_CODE))
+
+    private fun geOrdersStats() =
+        OrdersData(OrdersStat(ORDERS_COUNT, ORDERS_COUNT_DELTA, AVG_ORDER_VALUE, AVG_ORDER_VALUE_DELTA, CURRENCY_CODE))
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
@@ -203,5 +234,13 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         const val NET_CURRENCY_VALUE = "10 E"
 
         const val ANY_URL = "https://a8c.com"
+
+        const val ORDERS_COUNT = 5
+        const val ORDERS_COUNT_DELTA = 20
+        const val AVG_ORDER_VALUE = 11.2
+        const val AVG_ORDER_VALUE_DELTA = 50
+        const val AVG_CURRENCY_VALUE = "11.20 E"
+
+
     }
 }
