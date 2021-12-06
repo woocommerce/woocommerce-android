@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionDataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -67,7 +68,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             with(sut.state.value.revenueState) {
-                assertTrue(this is AnalyticsInformationViewState.NoDataState)
+                assertTrue(this is LoadingViewState)
             }
         }
 

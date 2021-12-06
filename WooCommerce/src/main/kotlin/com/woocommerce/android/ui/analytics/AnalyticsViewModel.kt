@@ -8,8 +8,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionDataViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -33,10 +32,8 @@ class AnalyticsViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
-    private val mutableState = MutableStateFlow(AnalyticsViewState(
-        buildAnalyticsDateRangeSelectorViewState(),
-        NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data)))
-    )
+    private val mutableState =
+        MutableStateFlow(AnalyticsViewState(buildAnalyticsDateRangeSelectorViewState(), LoadingViewState))
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
@@ -160,7 +157,7 @@ class AnalyticsViewModel @Inject constructor(
     )
 
     private fun buildRevenueDataViewState(totalValue: String, totalDelta: Int, netValue: String, netDelta: Int) =
-        AnalyticsInformationViewState.DataViewState(
+        DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
             totalValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
                 totalValue, totalDelta

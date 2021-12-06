@@ -95,5 +95,4 @@ class AnalyticsRepository @Inject constructor(
         object RevenueError : RevenueResult()
         data class RevenueData(val revenueStat: RevenueStat) : RevenueResult()
     }
-
 }
