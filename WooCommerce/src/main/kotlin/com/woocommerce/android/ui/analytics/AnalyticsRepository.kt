@@ -3,12 +3,14 @@ package com.woocommerce.android.ui.analytics
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.AnalyticStat.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
-import com.woocommerce.android.ui.mystore.StatsRepository
+import com.woocommerce.android.ui.mystore.data.StatsRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.*
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -21,33 +23,29 @@ class AnalyticsRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) {
 
-    suspend fun fetchRevenueStatData(dateRange: DateRange, selectedRange: AnalyticsDateRanges): RevenueStat? {
-        val granularity = getGranularity(selectedRange)
-        val previousPeriodRevenue = getPreviousPeriodRevenue(dateRange, granularity) ?: return null
+    suspend fun fetchRevenueData(dateRange: DateRange, selectedRange: AnalyticsDateRanges): Flow<RevenueResult> =
+        getGranularity(selectedRange).let {
+            return getCurrentPeriodRevenue(dateRange, it)
+                .combine(getPreviousPeriodRevenue(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
+                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null ||
+                        currentPeriodRevenue.getOrNull()!!.parseTotal() == null)
+                        return@combine RevenueError
 
-        val currentPeriodRevenue = getCurrentPeriodRevenue(dateRange, granularity)
-        if (currentPeriodRevenue?.totalSales == null || currentPeriodRevenue.netRevenue == null) {
-            return null
+                    val previousTotalSales = previousPeriodRevenue.getOrNull()?.parseTotal()?.totalSales ?: 0.0
+                    val previousNetRevenue = previousPeriodRevenue.getOrNull()?.parseTotal()?.netRevenue ?: 0.0
+                    val currentTotalSales = currentPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales!!
+                    val currentNetRevenue = currentPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue!!
+
+                    return@combine RevenueData(
+                        RevenueStat(
+                            currentTotalSales,
+                            calculateDeltaPercentage(previousTotalSales, currentTotalSales),
+                            currentNetRevenue,
+                            calculateDeltaPercentage(previousNetRevenue, currentNetRevenue),
+                            getCurrencyCode()
+                        ))
+                }
         }
-
-        val previousTotalSales = if (previousPeriodRevenue.totalSales != null)
-            previousPeriodRevenue.totalSales!!
-        else
-            0.0
-
-        val previousNetRevenue = if (previousPeriodRevenue.netRevenue != null)
-            previousPeriodRevenue.netRevenue!!
-        else
-            0.0
-
-        return RevenueStat(
-            currentPeriodRevenue.totalSales!!,
-            calculateDeltaPercentage(currentPeriodRevenue.totalSales!!, previousTotalSales),
-            currentPeriodRevenue.netRevenue!!,
-            calculateDeltaPercentage(currentPeriodRevenue.netRevenue!!, previousNetRevenue),
-            getCurrencyCode()
-        )
-    }
 
     private suspend fun getCurrentPeriodRevenue(dateRange: DateRange, granularity: StatsGranularity) =
         when (dateRange) {
@@ -74,17 +72,22 @@ class AnalyticsRepository @Inject constructor(
             AnalyticsDateRanges.LAST_YEAR, AnalyticsDateRanges.YEAR_TO_DATE -> YEARS
         }
 
-    private fun calculateDeltaPercentage(valueX: Double, valueY: Double): Int = if (valueY <= 0.0)
-        round(valueX * 100).toInt()
-    else
-        round((valueX - valueY) / valueY).toInt()
+    private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double) = when {
+        previousVal <= 0.0 -> round(currentVal * 100).toInt()
+        currentVal <= 0.0 -> round(-1 * previousVal * 100).toInt()
+        else -> (round((previousVal - currentVal) / currentVal) * 100).toInt()
+    }
 
     private suspend fun fetchRevenueStats(startDate: String, endDate: String, granularity: StatsGranularity) =
         withContext(Dispatchers.IO) {
             statsRepository.fetchRevenueStats(granularity, true, startDate, endDate)
-                .fold({ it?.parseTotal() }, { null })
         }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+
+    sealed class RevenueResult {
+        object RevenueError : RevenueResult()
+        data class RevenueData(val revenueStat: RevenueStat) : RevenueResult()
+    }
 
 }
