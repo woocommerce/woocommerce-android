@@ -27,9 +27,7 @@ class AnalyticsRepository @Inject constructor(
         getGranularity(selectedRange).let {
             return getCurrentPeriodRevenue(dateRange, it)
                 .combine(getPreviousPeriodRevenue(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
-
-                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null ||
-                        currentPeriodRevenue.getOrNull()!!.parseTotal() == null)
+                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null)
                         return@combine RevenueError
 
                     val previousTotalSales = previousPeriodRevenue.getOrNull()?.parseTotal()?.totalSales ?: 0.0
@@ -48,7 +46,7 @@ class AnalyticsRepository @Inject constructor(
                 }
         }
 
-    fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + analyticsRevenuePath
+    fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
 
     private suspend fun getCurrentPeriodRevenue(dateRange: DateRange, granularity: StatsGranularity) =
         when (dateRange) {
@@ -89,9 +87,8 @@ class AnalyticsRepository @Inject constructor(
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
 
-
     companion object {
-        const val analyticsRevenuePath = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
+        const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
     }
 
     sealed class RevenueResult {
