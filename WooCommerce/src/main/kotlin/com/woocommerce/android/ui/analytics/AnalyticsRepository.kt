@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
@@ -75,6 +76,7 @@ class AnalyticsRepository @Inject constructor(
         }
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
+    fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
 
     private suspend fun getCurrentPeriodStats(dateRange: DateRange, granularity: StatsGranularity) = when (dateRange) {
         is DateRange.SimpleDateRange ->
@@ -114,6 +116,8 @@ class AnalyticsRepository @Inject constructor(
 
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
+        const val ANALYTICS_ORDERS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Forders"
+
         const val ZERO_VALUE = 0.0
         const val MINUS_ONE = -1
         const val ONE_H_PERCENT = 100
@@ -126,6 +130,6 @@ class AnalyticsRepository @Inject constructor(
 
     sealed class OrdersResult {
         object OrdersError : OrdersResult()
-        data class OrdersData(val ordersState: OrdersStat) : OrdersResult()
+        data class OrdersData(val ordersStat: OrdersStat) : OrdersResult()
     }
 }
