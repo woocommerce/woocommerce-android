@@ -79,12 +79,14 @@ class AnalyticsFragment :
         _binding = FragmentAnalyticsBinding.bind(view)
         binding.analyticsDateSelectorCard.setCalendarClickListener { openDateRangeSelector() }
         binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
+        binding.analyticsOrdersCard.setSeeReportClickListener { viewModel.onOrdersSeeReportClick() }
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
         binding.analyticsDateSelectorCard.updateFromText(viewState.analyticsDateRangeSelectorState.fromDatePeriod)
         binding.analyticsDateSelectorCard.updateToText(viewState.analyticsDateRangeSelectorState.toDatePeriod)
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
+        binding.analyticsOrdersCard.updateInformation(viewState.ordersState)
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
