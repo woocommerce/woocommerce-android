@@ -238,7 +238,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `get admin url panel is expected`() {
+    fun `get revenue admin url panel is expected`() {
         val siteModel: SiteModel = mock()
         whenever(siteModel.adminUrl).thenReturn(ANY_URL)
         whenever(selectedSite.getIfExists()).thenReturn(siteModel)
