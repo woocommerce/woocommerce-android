@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.Companion.ANALYTICS_ORDERS_PATH
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.Companion.ANALYTICS_REVENUE_PATH
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
@@ -55,11 +58,30 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given no currentPeriodRevenue when fetchOrderData result is RevenueError`() = runBlocking {
+        // Given
+        val previousPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            .thenReturn(listOf(Result.success(previousPeriodOrdersStats)).asFlow())
+
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+            .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
+
+        // When
+        val result = sut.fetchOrdersData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+
+        // Then
+        with(result.first()) {
+            assertTrue(this is OrdersError)
+        }
+    }
+
+    @Test
     fun `given no previousRevenuePeriod, when fetchRevenueData, then result is RevenueError`() = runBlocking {
         // Given
-        val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE)
+        val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE)
         whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
-            .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
+            .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
         whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
             .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
@@ -70,6 +92,30 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         // Then
         with(result.first()) {
             assertTrue(this is RevenueError)
+        }
+    }
+
+    @Test
+    fun `given no previousRevenuePeriod when fetchOrdersData result is the expected`() = runBlocking {
+        // Given
+        val currentPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+            .thenReturn(listOf(Result.success(currentPeriodOrdersStats)).asFlow())
+
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
+
+        // When
+        val result = sut.fetchOrdersData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+
+        // Then
+        with(result.single()) {
+            assertNotNull(this)
+            assertTrue(this is OrdersData)
+            assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
+            assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
+            assertEquals(THOUSAND_DELTA, ordersStat.avgOrderDelta)
+            assertEquals(THOUSAND_DELTA, ordersStat.ordersCountDelta)
         }
     }
 
@@ -95,6 +141,31 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertEquals(TEN_VALUE, revenueStat.netValue)
                 assertEquals(ZERO_DELTA, revenueStat.totalDelta)
                 assertEquals(ZERO_DELTA, revenueStat.netDelta)
+            }
+        }
+
+    @Test
+    fun `given previous and current period revenue when fetchOrdersData result is the expected`() =
+        runBlocking {
+            // Given
+            val ordersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success(ordersStats)).asFlow())
+
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success(ordersStats)).asFlow())
+
+            // When
+            val result = sut.fetchOrdersData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+
+            // Then
+            with(result.single()) {
+                assertNotNull(this)
+                assertTrue(this is OrdersData)
+                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
+                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
+                assertEquals(ZERO_DELTA, ordersStat.ordersCountDelta)
+                assertEquals(ZERO_DELTA, ordersStat.avgOrderDelta)
             }
         }
 
@@ -125,6 +196,32 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given zero previous orders revenue when fetchOrdersData result is the expected`() =
+        runBlocking {
+            // Given
+            val previousPeriodOrdersStats = givenRevenuOrderStats(ZERO_VALUE.toInt(), ZERO_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
+
+            val currentPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
+
+            // When
+            val result = sut.fetchOrdersData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+
+            // Then
+            with(result.single()) {
+                assertNotNull(this)
+                assertTrue(this is OrdersData)
+                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
+                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
+                assertEquals(THOUSAND_DELTA, ordersStat.ordersCountDelta)
+                assertEquals(THOUSAND_DELTA, ordersStat.avgOrderDelta)
+            }
+        }
+
+    @Test
     fun `given zero previous net revenue, when fetchRevenueData, then result is the expected`() =
         runBlocking {
             // Given
@@ -147,6 +244,32 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertEquals(TEN_VALUE, revenueStat.netValue)
                 assertEquals(ZERO_DELTA, revenueStat.totalDelta)
                 assertEquals(THOUSAND_DELTA, revenueStat.netDelta)
+            }
+        }
+
+    @Test
+    fun `given zero previous avg order when fetchOrderData result is the expected`() =
+        runBlocking {
+            // Given
+            val previousPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), ZERO_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
+
+            val currentPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
+
+            // When
+            val result = sut.fetchOrdersData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+
+            // Then
+            with(result.single()) {
+                assertNotNull(this)
+                assertTrue(this is OrdersData)
+                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
+                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
+                assertEquals(ZERO_DELTA, ordersStat.ordersCountDelta)
+                assertEquals(THOUSAND_DELTA, ordersStat.avgOrderDelta)
             }
         }
 
@@ -177,6 +300,32 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given null previous orders when fetchOrdersData result is the expected`() =
+        runBlocking {
+            // Given
+            val previousPeriodOrdersStats = givenRevenuOrderStats(null, TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
+
+            val currentPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
+
+            // When
+            val result = sut.fetchOrdersData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+
+            // Then
+            with(result.single()) {
+                assertNotNull(this)
+                assertTrue(this is OrdersData)
+                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
+                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
+                assertEquals(THOUSAND_DELTA, ordersStat.ordersCountDelta)
+                assertEquals(ZERO_DELTA, ordersStat.avgOrderDelta)
+            }
+        }
+
+    @Test
     fun `given null previous net revenue,  when fetchRevenueData, then result is the expected`() =
         runBlocking {
             // Given
@@ -199,6 +348,32 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertEquals(TEN_VALUE, revenueStat.netValue)
                 assertEquals(ZERO_DELTA, revenueStat.totalDelta)
                 assertEquals(THOUSAND_DELTA, revenueStat.netDelta)
+            }
+        }
+
+    @Test
+    fun `given null previous avg order when fetchOrdersData result is the expected`() =
+        runBlocking {
+            // Given
+            val previousPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), null)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
+
+            val currentPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
+
+            // When
+            val result = sut.fetchOrdersData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+
+            // Then
+            with(result.single()) {
+                assertNotNull(this)
+                assertTrue(this is OrdersData)
+                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
+                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
+                assertEquals(ZERO_DELTA, ordersStat.ordersCountDelta)
+                assertEquals(THOUSAND_DELTA, ordersStat.avgOrderDelta)
             }
         }
 
@@ -235,6 +410,36 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given previous and current period revenue when fetchOrdersData multiple date range result is the expected`() =
+        runBlocking {
+            // Given
+            val previousPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
+
+            val currentPeriodRevenue = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
+
+
+            // When
+            val result = sut.fetchOrdersData(DateRange.MultipleDateRange(
+                DateRange.SimpleDateRange(previousDate!!, previousDate),
+                DateRange.SimpleDateRange(currentDate!!, currentDate)
+            ), ANY_RANGE)
+
+            // Then
+            with(result.single()) {
+                assertNotNull(this)
+                assertTrue(this is OrdersData)
+                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
+                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
+                assertEquals(ZERO_DELTA, ordersStat.ordersCountDelta)
+                assertEquals(ZERO_DELTA, ordersStat.avgOrderDelta)
+            }
+        }
+
+    @Test
     fun `when get revenue admin url panel, then is expected`() {
         val siteModel: SiteModel = mock()
         whenever(siteModel.adminUrl).thenReturn(ANY_URL)
@@ -245,11 +450,31 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         assertEquals(ANY_URL + ANALYTICS_REVENUE_PATH, adminPanelUrl)
     }
 
+    @Test
+    fun `get orders admin url panel is expected`() {
+        val siteModel: SiteModel = mock()
+        whenever(siteModel.adminUrl).thenReturn(ANY_URL)
+        whenever(selectedSite.getIfExists()).thenReturn(siteModel)
+
+        val adminPanelUrl = sut.getOrdersAdminPanelUrl()
+
+        assertEquals(ANY_URL + ANALYTICS_ORDERS_PATH, adminPanelUrl)
+    }
+
     private fun givenARevenue(totalValue: Double?, netValue: Double?): WCRevenueStatsModel {
         val stats: WCRevenueStatsModel = mock()
         val revenueStatsTotal: WCRevenueStatsModel.Total = mock()
         whenever(revenueStatsTotal.totalSales).thenReturn(totalValue)
         whenever(revenueStatsTotal.netRevenue).thenReturn(netValue)
+        whenever(stats.parseTotal()).thenReturn(revenueStatsTotal)
+        return stats
+    }
+
+    private fun givenRevenuOrderStats(orders: Int?, avgOrderValue: Double?): WCRevenueStatsModel {
+        val stats: WCRevenueStatsModel = mock()
+        val revenueStatsTotal: WCRevenueStatsModel.Total = mock()
+        whenever(revenueStatsTotal.ordersCount).thenReturn(orders)
+        whenever(revenueStatsTotal.avgOrderValue).thenReturn(avgOrderValue)
         whenever(stats.parseTotal()).thenReturn(revenueStatsTotal)
         return stats
     }
