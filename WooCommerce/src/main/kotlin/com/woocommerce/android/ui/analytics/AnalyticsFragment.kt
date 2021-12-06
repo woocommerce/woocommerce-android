@@ -10,6 +10,7 @@ import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -31,9 +32,19 @@ class AnalyticsFragment :
         super.onViewCreated(view, savedInstanceState)
         bind(view)
         setupResultHandlers(viewModel)
-        lifecycleScope.launchWhenStarted {
-            viewModel.state.collect { newState -> handleStateChange(newState) }
-        }
+        setupListeners(viewModel)
+        lifecycleScope.launchWhenStarted { viewModel.state.collect { newState -> handleStateChange(newState) } }
+
+        viewModel.event.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                else -> event.isHandled = false
+            }
+        })
+    }
+
+    private fun setupListeners(viewModel: AnalyticsViewModel) {
+        binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
     }
 
     override fun onDestroyView() {
@@ -72,6 +83,7 @@ class AnalyticsFragment :
     private fun handleStateChange(viewState: AnalyticsViewState) {
         binding.analyticsDateSelectorCard.updateFromText(viewState.analyticsDateRangeSelectorState.fromDatePeriod)
         binding.analyticsDateSelectorCard.updateToText(viewState.analyticsDateRangeSelectorState.toDatePeriod)
+        binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState

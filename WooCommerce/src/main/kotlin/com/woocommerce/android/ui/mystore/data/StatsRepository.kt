@@ -26,29 +26,29 @@ class StatsRepository @Inject constructor(
         private val TAG = StatsRepository::class.java
     }
 
-    suspend fun fetchRevenueStats(
-        granularity: StatsGranularity,
-        forced: Boolean
-    ): Flow<Result<WCRevenueStatsModel?>> = flow {
-        val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, forced = forced)
-        val result = wcStatsStore.fetchRevenueStats(statsPayload)
+    suspend fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean,
+                                  startDate: String = "", endDate: String = ""): Flow<Result<WCRevenueStatsModel?>> =
+        flow {
+            val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity,
+                startDate, endDate, forced = forced)
+            val result = wcStatsStore.fetchRevenueStats(statsPayload)
 
-        if (!result.isError) {
-            val revenueStatsModel = wcStatsStore.getRawRevenueStats(
-                selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
-            )
-            Result.success(revenueStatsModel)
-            emit(Result.success(revenueStatsModel))
-        } else {
-            val errorMessage = result.error?.message ?: "Timeout"
-            WooLog.e(
-                DASHBOARD,
-                "$TAG - Error fetching revenue stats: $errorMessage"
-            )
-            val exception = StatsException(error = result.error)
-            emit(Result.failure(exception))
+            if (!result.isError) {
+                val revenueStatsModel = wcStatsStore.getRawRevenueStats(
+                    selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
+                )
+                Result.success(revenueStatsModel)
+                emit(Result.success(revenueStatsModel))
+            } else {
+                val errorMessage = result.error?.message ?: "Timeout"
+                WooLog.e(
+                    DASHBOARD,
+                    "$TAG - Error fetching revenue stats: $errorMessage"
+                )
+                val exception = StatsException(error = result.error)
+                emit(Result.failure(exception))
+            }
         }
-    }
 
     suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Flow<Result<Map<String, Int>>> =
         flow {
