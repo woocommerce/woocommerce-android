@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
@@ -20,13 +21,13 @@ import kotlin.math.round
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
 ) {
 
     suspend fun fetchRevenueData(dateRange: DateRange, selectedRange: AnalyticsDateRanges): Flow<RevenueResult> =
         getGranularity(selectedRange).let {
-            return getCurrentPeriodRevenue(dateRange, it)
-                .combine(getPreviousPeriodRevenue(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
+            return getCurrentPeriodStats(dateRange, it)
+                .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
 
                     if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null ||
                         previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
@@ -50,38 +51,52 @@ class AnalyticsRepository @Inject constructor(
                 }
         }
 
+    suspend fun fetchOrdersData(dateRange: DateRange, selectedRange: AnalyticsDateRanges): Flow<OrdersResult> =
+        getGranularity(selectedRange).let {
+            return getCurrentPeriodStats(dateRange, it)
+                .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
+                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null)
+                        return@combine OrdersError
+
+                    val previousOrdersCount = previousPeriodRevenue.getOrNull()?.parseTotal()?.ordersCount ?: 0
+                    val previousOrderValue = previousPeriodRevenue.getOrNull()?.parseTotal()?.avgOrderValue ?: 0.0
+                    val currentOrdersCount = currentPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount!!
+                    val currentAvgOrderValue = currentPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue!!
+
+                    return@combine OrdersResult.OrdersData(
+                        OrdersStat(
+                            currentOrdersCount,
+                            calculateDeltaPercentage(previousOrdersCount.toDouble(), currentOrdersCount.toDouble()),
+                            currentAvgOrderValue,
+                            calculateDeltaPercentage(previousOrderValue, currentAvgOrderValue),
+                            getCurrencyCode()
+                        ))
+                }
+        }
+
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
 
-    private suspend fun getCurrentPeriodRevenue(dateRange: DateRange, granularity: StatsGranularity) =
-        when (dateRange) {
-            is DateRange.SimpleDateRange ->
-                fetchRevenueStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
-            is DateRange.MultipleDateRange ->
-                fetchRevenueStats(
-                    dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(),
-                    granularity
-                )
-        }
+    private suspend fun getCurrentPeriodStats(dateRange: DateRange, granularity: StatsGranularity) = when (dateRange) {
+        is DateRange.SimpleDateRange ->
+            fetchStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
+        is DateRange.MultipleDateRange ->
+            fetchStats(dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(), granularity)
+    }
 
-    private suspend fun getPreviousPeriodRevenue(dateRange: DateRange, granularity: StatsGranularity) =
-        when (dateRange) {
-            is DateRange.SimpleDateRange ->
-                fetchRevenueStats(dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(), granularity)
-            is DateRange.MultipleDateRange ->
-                fetchRevenueStats(
-                    dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(),
-                    granularity
-                )
-        }
+    private suspend fun getPreviousPeriodStats(dateRange: DateRange, granularity: StatsGranularity) = when (dateRange) {
+        is DateRange.SimpleDateRange ->
+            fetchStats(dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(), granularity)
+        is DateRange.MultipleDateRange ->
+            fetchStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(), granularity)
+    }
 
-    private fun getGranularity(selectedRange: AnalyticsDateRanges) =
-        when (selectedRange) {
-            AnalyticsDateRanges.TODAY, AnalyticsDateRanges.YESTERDAY -> DAYS
-            AnalyticsDateRanges.LAST_WEEK, AnalyticsDateRanges.WEEK_TO_DATE -> WEEKS
-            AnalyticsDateRanges.LAST_MONTH, AnalyticsDateRanges.MONTH_TO_DATE -> MONTHS
-            AnalyticsDateRanges.LAST_QUARTER, AnalyticsDateRanges.QUARTER_TO_DATE -> MONTHS
-            AnalyticsDateRanges.LAST_YEAR, AnalyticsDateRanges.YEAR_TO_DATE -> YEARS
-        }
+    private fun getGranularity(selectedRange: AnalyticsDateRanges) = when (selectedRange) {
+        AnalyticsDateRanges.TODAY, AnalyticsDateRanges.YESTERDAY -> DAYS
+        AnalyticsDateRanges.LAST_WEEK, AnalyticsDateRanges.WEEK_TO_DATE -> WEEKS
+        AnalyticsDateRanges.LAST_MONTH, AnalyticsDateRanges.MONTH_TO_DATE -> MONTHS
+        AnalyticsDateRanges.LAST_QUARTER, AnalyticsDateRanges.QUARTER_TO_DATE -> MONTHS
+        AnalyticsDateRanges.LAST_YEAR, AnalyticsDateRanges.YEAR_TO_DATE -> YEARS
+    }
 
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double) = when {
         previousVal <= ZERO_VALUE -> round(currentVal * ONE_H_PERCENT).toInt()
@@ -89,7 +104,7 @@ class AnalyticsRepository @Inject constructor(
         else -> (round((previousVal - currentVal) / currentVal) * ONE_H_PERCENT).toInt()
     }
 
-    private suspend fun fetchRevenueStats(startDate: String, endDate: String, granularity: StatsGranularity) =
+    private suspend fun fetchStats(startDate: String, endDate: String, granularity: StatsGranularity) =
         withContext(Dispatchers.IO) {
             statsRepository.fetchRevenueStats(granularity, true, startDate, endDate)
         }
@@ -107,5 +122,10 @@ class AnalyticsRepository @Inject constructor(
     sealed class RevenueResult {
         object RevenueError : RevenueResult()
         data class RevenueData(val revenueStat: RevenueStat) : RevenueResult()
+    }
+
+    sealed class OrdersResult {
+        object OrdersError : OrdersResult()
+        data class OrdersData(val ordersState: OrdersStat) : OrdersResult()
     }
 }
