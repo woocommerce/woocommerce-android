@@ -21,8 +21,8 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
 
     internal fun updateInformation(viewState: AnalyticsInformationViewState) = when (viewState) {
         is LoadingViewState -> setSkeleton()
-        is DataViewState -> setSkeleton()
-        is NoDataState -> setSkeleton()
+        is DataViewState -> setDataViewState(viewState)
+        is NoDataState -> setNoDataViewState(viewState)
     }
 
     private fun setSkeleton() {
