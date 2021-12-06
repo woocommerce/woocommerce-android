@@ -41,8 +41,8 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
     private fun setDataViewState(viewState: DataViewState) {
         skeletonView.hide()
         binding.tvAnalyticsCardTitle.text = viewState.title
-        binding.vSectionTotalSales.setViewState(viewState.totalValues)
-        binding.vSectionNetSales.setViewState(viewState.netValues)
+        binding.vSectionTotalSales.setViewState(viewState.leftSection)
+        binding.vSectionNetSales.setViewState(viewState.rightSection)
         binding.tvAnalyticsCardTitle.visibility = VISIBLE
         binding.llInformationPanel.visibility = VISIBLE
         binding.tvNoData.visibility = GONE

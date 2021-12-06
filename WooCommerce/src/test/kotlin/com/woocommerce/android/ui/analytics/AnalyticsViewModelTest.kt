@@ -116,13 +116,13 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             with(sut.state.value.revenueState) {
 
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
-                assertTrue(totalValues is SectionDataViewState)
-                assertEquals(TOTAL_CURRENCY_VALUE, (totalValues as SectionDataViewState).value)
-                assertEquals(TOTAL_DELTA, (totalValues as SectionDataViewState).delta)
+                assertTrue(leftSection is SectionDataViewState)
+                assertEquals(TOTAL_CURRENCY_VALUE, (leftSection as SectionDataViewState).value)
+                assertEquals(TOTAL_DELTA, (leftSection as SectionDataViewState).delta)
 
-                assertTrue(netValues is SectionDataViewState)
-                assertEquals(NET_CURRENCY_VALUE, (netValues as SectionDataViewState).value)
-                assertEquals(NET_DELTA, (netValues as SectionDataViewState).delta)
+                assertTrue(rightSection is SectionDataViewState)
+                assertEquals(NET_CURRENCY_VALUE, (rightSection as SectionDataViewState).value)
+                assertEquals(NET_DELTA, (rightSection as SectionDataViewState).delta)
             }
         }
 

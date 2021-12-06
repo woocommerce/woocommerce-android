@@ -51,13 +51,13 @@
             tools:visibility="visible">
 
             <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionView
-                android:id="@+id/v_sectionTotalSales"
+                android:id="@+id/v_leftSection"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5" />
 
             <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionView
-                android:id="@+id/v_sectionNetSales"
+                android:id="@+id/v_rightSection"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5" />

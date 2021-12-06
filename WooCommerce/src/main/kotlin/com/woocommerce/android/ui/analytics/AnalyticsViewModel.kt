@@ -160,10 +160,10 @@ class AnalyticsViewModel @Inject constructor(
     private fun buildRevenueDataViewState(totalValue: String, totalDelta: Int, netValue: String, netDelta: Int) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
-            totalValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
+            leftSection = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
                 totalValue, totalDelta
             ),
-            netValues = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
+            rightSection = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
                 netValue, netDelta
             )
         )
