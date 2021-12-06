@@ -1,8 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.model.AnalyticStat
-import com.woocommerce.android.model.AnalyticStat.RevenueStat
+import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges.LAST_YEAR
@@ -17,7 +16,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flow
 import org.junit.Test
 import org.mockito.kotlin.*
 import java.text.SimpleDateFormat

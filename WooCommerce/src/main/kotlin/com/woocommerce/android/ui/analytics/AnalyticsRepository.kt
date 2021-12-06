@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
-import com.woocommerce.android.model.AnalyticStat.RevenueStat
+import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
