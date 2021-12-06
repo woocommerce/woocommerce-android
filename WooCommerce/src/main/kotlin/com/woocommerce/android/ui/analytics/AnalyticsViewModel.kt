@@ -5,8 +5,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionDataViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -15,6 +15,8 @@ import com.zendesk.util.DateUtils.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -43,23 +45,29 @@ class AnalyticsViewModel @Inject constructor(
     fun onSelectedDateRangeChanged(newSelection: String) {
         val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)
         val dateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedRange)
-        updateDateRangeCalendarView(selectedRange, getDefaultDateRange())
+        updateDateRangeCalendarView(selectedRange, dateRange)
         updateRevenue(selectedRange, dateRange)
     }
 
     private fun updateRevenue(range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
                               dateRange: DateRange = getDefaultDateRange()) =
         launch {
-            analyticsRepository.fetchRevenueStatData(dateRange, range)?.let {
-                mutableState.value = state.value.copy(
-                    revenueState = buildRevenueDataViewState(
-                        formatValue(it.totalValue.toString(), it.currencyCode),
-                        it.totalDelta,
-                        formatValue(it.netValue.toString(), it.currencyCode),
-                        it.netDelta
-                    )
-                )
-            }
+            analyticsRepository.fetchRevenueData(dateRange, range)
+                .distinctUntilChanged()
+                .collect {
+                    when (it) {
+                        is AnalyticsRepository.RevenueResult.RevenueData -> mutableState.value = state.value.copy(
+                            revenueState = buildRevenueDataViewState(
+                                formatValue(it.revenueStat.totalValue.toString(), it.revenueStat.currencyCode),
+                                it.revenueStat.totalDelta,
+                                formatValue(it.revenueStat.netValue.toString(), it.revenueStat.currencyCode),
+                                it.revenueStat.netDelta
+                            )
+                        )
+                        AnalyticsRepository.RevenueResult.RevenueError -> TODO()
+                    }
+                }
+
         }
 
     private fun updateDateRangeCalendarView(newRange: AnalyticsDateRanges, newDateRange: DateRange) {
