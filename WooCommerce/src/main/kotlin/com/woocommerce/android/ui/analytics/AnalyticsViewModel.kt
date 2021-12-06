@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
@@ -10,7 +11,6 @@ import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionDataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -66,9 +66,9 @@ class AnalyticsViewModel @Inject constructor(
 
     fun onOrdersSeeReportClick() {
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(OpenWPComWebView(analyticsRepository.getRevenueAdminPanelUrl()))
+            triggerEvent(OpenWPComWebView(analyticsRepository.getOrdersAdminPanelUrl()))
         } else {
-            triggerEvent(AnalyticsViewEvent.OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
+            triggerEvent(AnalyticsViewEvent.OpenUrl(analyticsRepository.getOrdersAdminPanelUrl()))
         }
     }
     private fun updateRevenue(
@@ -104,10 +104,10 @@ class AnalyticsViewModel @Inject constructor(
                     when (it) {
                         is OrdersData -> mutableState.value = state.value.copy(
                             ordersState = buildOrdersDataViewState(
-                                formatValue(it.ordersState.totalOrders.toString(), it.ordersState.currencyCode),
-                                it.ordersState.totalDelta,
-                                formatValue(it.ordersState.avgOrderValue.toString(), it.ordersState.currencyCode),
-                                it.ordersState.avgOrderDelta
+                                formatValue(it.ordersStat.ordersCount.toString(), it.ordersStat.currencyCode),
+                                it.ordersStat.ordersCountDelta,
+                                formatValue(it.ordersStat.avgOrderValue.toString(), it.ordersStat.currencyCode),
+                                it.ordersStat.avgOrderDelta
                             )
                         )
                         is AnalyticsRepository.OrdersResult.OrdersError -> mutableState.value = state.value.copy(
