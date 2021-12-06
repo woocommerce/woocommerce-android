@@ -41,14 +41,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
     }
 
-    private val currencyFormatter: CurrencyFormatter = mock()
+    private val currencyFormatter: CurrencyFormatter = mock()IssueRefundViewModel
     private val analyticsRepository: AnalyticsRepository = mock()
     private val savedState = SavedStateHandle()
 
     private lateinit var sut: AnalyticsViewModel
 
     @Test
-    fun `given an init viewState when ViewModel is created we have the expected analyticsDateViewState values`() =
+    fun `given an init viewState when ViewModel is created we have the expected values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturn ANY_VALUE
@@ -64,6 +64,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
                 assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
                 assertEquals(dateRangeSelectors, availableRangeDates)
+            }
+
+            with(sut.state.value.revenueState) {
+                assertTrue(this is AnalyticsInformationViewState.NoDataState)
             }
         }
 

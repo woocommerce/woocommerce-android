@@ -2,11 +2,14 @@ package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionDataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -33,7 +36,7 @@ class AnalyticsViewModel @Inject constructor(
 
     private val mutableState = MutableStateFlow(AnalyticsViewState(
         buildAnalyticsDateRangeSelectorViewState(),
-        AnalyticsInformationViewState.LoadingViewState)
+        NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data)))
     )
 
     val state: StateFlow<AnalyticsViewState> = mutableState
@@ -56,7 +59,7 @@ class AnalyticsViewModel @Inject constructor(
                 .distinctUntilChanged()
                 .collect {
                     when (it) {
-                        is AnalyticsRepository.RevenueResult.RevenueData -> mutableState.value = state.value.copy(
+                        is RevenueData -> mutableState.value = state.value.copy(
                             revenueState = buildRevenueDataViewState(
                                 formatValue(it.revenueStat.totalValue.toString(), it.revenueStat.currencyCode),
                                 it.revenueStat.totalDelta,
@@ -64,10 +67,11 @@ class AnalyticsViewModel @Inject constructor(
                                 it.revenueStat.netDelta
                             )
                         )
-                        AnalyticsRepository.RevenueResult.RevenueError -> TODO()
+                        is RevenueError -> mutableState.value = state.value.copy(
+                            revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
+                        )
                     }
                 }
-
         }
 
     private fun updateDateRangeCalendarView(newRange: AnalyticsDateRanges, newDateRange: DateRange) {

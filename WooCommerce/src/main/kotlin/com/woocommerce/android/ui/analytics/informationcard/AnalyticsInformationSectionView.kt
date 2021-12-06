@@ -8,8 +8,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationSectionViewBinding
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionDataViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionHiddenViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.*
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
 import kotlin.math.absoluteValue

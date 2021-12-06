@@ -12,6 +12,18 @@
         android:paddingTop="@dimen/major_125">
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_noData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"
+            app:layout_constraintBottom_toTopOf="@+id/divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="No revenue this period"
+            tools:visibility="visible" />
+
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_analyticsCardTitle"
             style="@style/Woo.Card.Title"
             android:layout_width="wrap_content"
@@ -22,16 +34,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:lineHeight="@dimen/text_major_50"
-            tools:text="Sales" />
+            tools:text="Sales"
+            tools:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/ll_informationPanel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginBottom="@dimen/minor_100"
             android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_analyticsCardTitle">
+            app:layout_constraintTop_toBottomOf="@+id/tv_analyticsCardTitle"
+            tools:visibility="visible">
 
             <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionView
                 android:id="@+id/v_sectionTotalSales"
@@ -49,10 +66,10 @@
         <View
             android:id="@+id/divider"
             style="@style/Woo.Divider"
-            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@id/iv_seeReport"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ll_informationPanel" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
             android:id="@+id/iv_seeReport"
@@ -60,7 +77,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/major_100"
             android:contentDescription="@string/analytics_see_report_button_content_description"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_seeReport"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_seeReport"
             app:srcCompat="@drawable/ic_arrow_right" />
@@ -70,7 +86,6 @@
             style="@style/Woo.Card.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_75"
             android:text="@string/analytics_see_report_button_text"
             android:textSize="@dimen/text_minor_125"
             app:layout_constraintBottom_toBottomOf="parent"
