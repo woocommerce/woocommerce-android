@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics.informationcard
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
@@ -18,6 +19,10 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
         is LoadingViewState -> visibility = INVISIBLE
         is DataViewState -> setDataViewState(viewState)
         is NoDataState -> setNoDataViewState(viewState)
+    }
+
+    fun setSeeReportClickListener(onClickListener: ((view: View) -> Unit)) {
+        binding.tvSeeReport.setOnClickListener(onClickListener)
     }
 
     private fun setDataViewState(viewState: DataViewState) {

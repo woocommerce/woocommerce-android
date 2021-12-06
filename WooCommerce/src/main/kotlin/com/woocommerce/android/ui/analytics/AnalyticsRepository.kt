@@ -48,6 +48,8 @@ class AnalyticsRepository @Inject constructor(
                 }
         }
 
+    fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + analyticsRevenuePath
+
     private suspend fun getCurrentPeriodRevenue(dateRange: DateRange, granularity: StatsGranularity) =
         when (dateRange) {
             is DateRange.SimpleDateRange ->
@@ -85,6 +87,12 @@ class AnalyticsRepository @Inject constructor(
         }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+    private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
+
+
+    companion object {
+        const val analyticsRevenuePath = "&path=%2Fanalytics%2Frevenue"
+    }
 
     sealed class RevenueResult {
         object RevenueError : RevenueResult()

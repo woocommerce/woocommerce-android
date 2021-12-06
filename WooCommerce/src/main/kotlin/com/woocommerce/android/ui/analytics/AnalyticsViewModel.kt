@@ -19,7 +19,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -52,11 +51,13 @@ class AnalyticsViewModel @Inject constructor(
         updateRevenue(selectedRange, dateRange)
     }
 
+    fun onRevenueSeeReportClick() =
+        triggerEvent(AnalyticsViewEvent.OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
+
     private fun updateRevenue(range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
                               dateRange: DateRange = getDefaultDateRange()) =
         launch {
             analyticsRepository.fetchRevenueData(dateRange, range)
-                .distinctUntilChanged()
                 .collect {
                     when (it) {
                         is RevenueData -> mutableState.value = state.value.copy(
