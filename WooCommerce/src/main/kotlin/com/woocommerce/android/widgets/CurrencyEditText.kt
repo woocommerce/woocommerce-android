@@ -63,6 +63,20 @@ class CurrencyEditText : AppCompatEditText {
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
+            val cleanValue = clean(text = text, decimals = decimals, lengthBefore = lengthBefore, lengthAfter = lengthAfter)
+
+            _value.value = cleanValue
+            setText(formatCurrency(cleanValue))
+
+            isChangingText = false
+        }
+    }
+
+    companion object TextCleaner {
+        /**
+         * Cleans the [text] so that it only has numerical characters and has the correct number of fractional digits.
+         */
+        fun clean(text: CharSequence?, decimals: Int, lengthBefore: Int, lengthAfter: Int): BigDecimal {
             val regex = Regex("[^\\d]")
             var cleanValue = text.toString().replace(regex, "").toBigDecimalOrNull() ?: BigDecimal.ZERO
 
@@ -74,10 +88,8 @@ class CurrencyEditText : AppCompatEditText {
                 cleanValue = cleanValue.divide(BigDecimal(10f.pow(lengthBefore - lengthAfter).toInt()), DOWN)
             }
 
-            _value.value = cleanValue
-            setText(formatCurrency(cleanValue))
-
-            isChangingText = false
+            return cleanValue
         }
+
     }
 }
