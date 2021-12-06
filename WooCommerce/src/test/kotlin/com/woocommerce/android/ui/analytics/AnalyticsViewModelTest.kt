@@ -41,7 +41,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
     }
 
-    private val currencyFormatter: CurrencyFormatter = mock()IssueRefundViewModel
+    private val currencyFormatter: CurrencyFormatter = mock()
     private val analyticsRepository: AnalyticsRepository = mock()
     private val savedState = SavedStateHandle()
 
