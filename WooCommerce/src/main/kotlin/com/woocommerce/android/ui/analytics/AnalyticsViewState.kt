@@ -6,7 +6,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 data class AnalyticsViewState(
     val analyticsDateRangeSelectorState: AnalyticsDateRangeSelectorViewState,
-    val revenueState: AnalyticsInformationViewState
+    val revenueState: AnalyticsInformationViewState,
+    val ordersState: AnalyticsInformationViewState
 )
 
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {
