@@ -11,6 +11,7 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -34,17 +35,7 @@ class AnalyticsFragment :
         setupResultHandlers(viewModel)
         setupListeners(viewModel)
         lifecycleScope.launchWhenStarted { viewModel.state.collect { newState -> handleStateChange(newState) } }
-
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                else -> event.isHandled = false
-            }
-        })
-    }
-
-    private fun setupListeners(viewModel: AnalyticsViewModel) {
-        binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
+        viewModel.event.observe(viewLifecycleOwner, { event -> handleEvent(event) })
     }
 
     override fun onDestroyView() {
@@ -56,6 +47,15 @@ class AnalyticsFragment :
 
     override fun scrollToTop() {
         return
+    }
+
+    private fun handleEvent(event: MultiLiveEvent.Event) = when (event) {
+        is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+        else -> event.isHandled = false
+    }
+
+    private fun setupListeners(viewModel: AnalyticsViewModel) {
+        binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
     }
 
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
