@@ -43,10 +43,10 @@ class AnalyticsFragment :
         _binding = null
     }
 
-    override fun shouldExpandToolbar(): Boolean = true
+    override fun shouldExpandToolbar(): Boolean = binding.scrollView.scrollY == 0
 
     override fun scrollToTop() {
-        return
+        binding.scrollView.smoothScrollTo(0, 0)
     }
 
     private fun handleEvent(event: MultiLiveEvent.Event) {

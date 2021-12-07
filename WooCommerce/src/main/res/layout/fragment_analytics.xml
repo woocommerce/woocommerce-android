@@ -7,27 +7,33 @@
     android:layout_height="match_parent"
     tools:context=".ui.analytics.AnalyticsFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/analyticsViewRoot"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCardView
-            android:id="@+id/analyticsDateSelectorCard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/minor_10"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/analyticsViewRoot"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationCardView
-            android:id="@+id/analyticsRevenueCard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/analyticsDateSelectorCard" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCardView
+                android:id="@+id/analyticsDateSelectorCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_10"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationCardView
+                android:id="@+id/analyticsRevenueCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/analyticsDateSelectorCard" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
