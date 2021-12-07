@@ -50,6 +50,7 @@ data class Order(
     val shippingMethods: List<ShippingMethod>,
     val items: List<Item>,
     val shippingLines: List<ShippingLine>,
+    val feesLines: List<FeeLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
     val localId
@@ -60,7 +61,7 @@ data class Order(
 
     // Allow refunding only integer quantities
     @IgnoredOnParcel
-    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt()
+    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
@@ -158,6 +159,12 @@ data class Order(
         val methodId: String,
         val methodTitle: String,
         val totalTax: BigDecimal,
+        val total: BigDecimal
+    ) : Parcelable
+
+    @Parcelize
+    data class FeeLine(
+        val name: String,
         val total: BigDecimal
     ) : Parcelable
 
@@ -270,7 +277,8 @@ data class Order(
                 shippingMethods = emptyList(),
                 items = emptyList(),
                 shippingLines = emptyList(),
-                metaData = emptyList()
+                metaData = emptyList(),
+                feesLines = emptyList()
             )
         }
     }
@@ -366,6 +374,12 @@ fun WCOrderModel.toAppModel(): Order {
                 it.methodId ?: StringUtils.EMPTY,
                 it.methodTitle ?: StringUtils.EMPTY,
                 it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+            )
+        },
+        feesLines = this.getFeeLineList().map {
+            FeeLine(
+                it.name ?: StringUtils.EMPTY,
                 it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
             )
         },
