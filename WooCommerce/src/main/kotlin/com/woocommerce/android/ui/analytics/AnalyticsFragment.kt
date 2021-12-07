@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
@@ -48,9 +49,13 @@ class AnalyticsFragment :
         return
     }
 
-    private fun handleEvent(event: MultiLiveEvent.Event) = when (event) {
-        is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-        else -> event.isHandled = false
+    private fun handleEvent(event: MultiLiveEvent.Event) {
+        when (event) {
+            is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+            is AnalyticsViewEvent.OpenWPComWebView -> findNavController()
+                .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
+            else -> event.isHandled = false
+        }
     }
 
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())

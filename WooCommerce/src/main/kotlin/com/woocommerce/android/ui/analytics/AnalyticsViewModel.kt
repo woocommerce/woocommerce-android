@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.*
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
@@ -29,6 +31,7 @@ class AnalyticsViewModel @Inject constructor(
     private val analyticsDateRange: AnalyticsDateRangeCalculator,
     private val currencyFormatter: CurrencyFormatter,
     private val analyticsRepository: AnalyticsRepository,
+    private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -48,8 +51,13 @@ class AnalyticsViewModel @Inject constructor(
         updateRevenue(selectedRange, newDateRange)
     }
 
-    fun onRevenueSeeReportClick() =
-        triggerEvent(AnalyticsViewEvent.OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
+    fun onRevenueSeeReportClick() {
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(OpenWPComWebView(analyticsRepository.getRevenueAdminPanelUrl()))
+        } else {
+            triggerEvent(OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
+        }
+    }
 
     private fun updateRevenue(range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
                               dateRange: DateRange = getDefaultDateRange()) =
