@@ -53,7 +53,8 @@ class AnalyticsRepository @Inject constructor(
             is DateRange.SimpleDateRange ->
                 fetchRevenueStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
             is DateRange.MultipleDateRange ->
-                fetchRevenueStats(dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(), granularity)
+                fetchRevenueStats(dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(),
+                    granularity)
         }
 
     private suspend fun getPreviousPeriodRevenue(dateRange: DateRange, granularity: StatsGranularity) =
@@ -61,7 +62,8 @@ class AnalyticsRepository @Inject constructor(
             is DateRange.SimpleDateRange ->
                 fetchRevenueStats(dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(), granularity)
             is DateRange.MultipleDateRange ->
-                fetchRevenueStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(), granularity)
+                fetchRevenueStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(),
+                    granularity)
         }
 
     private fun getGranularity(selectedRange: AnalyticsDateRanges) =
