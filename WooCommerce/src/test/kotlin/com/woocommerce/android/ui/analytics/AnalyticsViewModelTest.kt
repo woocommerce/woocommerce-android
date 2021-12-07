@@ -171,9 +171,11 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()) =
-        AnalyticsViewModel(resourceProvider, dateUtil, calculator,
+        AnalyticsViewModel(
+            resourceProvider, dateUtil, calculator,
             currencyFormatter, analyticsRepository,
-            selectedSite, savedState)
+            selectedSite, savedState
+        )
 
     private fun getRevenueStats() =
         RevenueData(RevenueStat(TOTAL_VALUE, TOTAL_DELTA, NET_VALUE, NET_DELTA, CURRENCY_CODE))

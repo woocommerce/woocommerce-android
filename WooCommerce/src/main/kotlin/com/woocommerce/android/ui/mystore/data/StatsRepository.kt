@@ -26,11 +26,14 @@ class StatsRepository @Inject constructor(
         private val TAG = StatsRepository::class.java
     }
 
-    suspend fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean,
-                                  startDate: String = "", endDate: String = ""): Flow<Result<WCRevenueStatsModel?>> =
+    suspend fun fetchRevenueStats(
+        granularity: StatsGranularity,
+        forced: Boolean,
+        startDate: String = "",
+        endDate: String = ""
+    ): Flow<Result<WCRevenueStatsModel?>> =
         flow {
-            val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity,
-                startDate, endDate, forced = forced)
+            val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, startDate, endDate, forced)
             val result = wcStatsStore.fetchRevenueStats(statsPayload)
 
             if (!result.isError) {

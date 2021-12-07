@@ -27,8 +27,9 @@ class AnalyticsRepository @Inject constructor(
         getGranularity(selectedRange).let {
             return getCurrentPeriodRevenue(dateRange, it)
                 .combine(getPreviousPeriodRevenue(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
-                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null)
+                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
                         return@combine RevenueError
+                    }
 
                     val previousTotalSales = previousPeriodRevenue.getOrNull()?.parseTotal()?.totalSales ?: 0.0
                     val previousNetRevenue = previousPeriodRevenue.getOrNull()?.parseTotal()?.netRevenue ?: 0.0
@@ -42,7 +43,8 @@ class AnalyticsRepository @Inject constructor(
                             currentNetRevenue,
                             calculateDeltaPercentage(previousNetRevenue, currentNetRevenue),
                             getCurrencyCode()
-                        ))
+                        )
+                    )
                 }
         }
 
@@ -53,8 +55,10 @@ class AnalyticsRepository @Inject constructor(
             is DateRange.SimpleDateRange ->
                 fetchRevenueStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
             is DateRange.MultipleDateRange ->
-                fetchRevenueStats(dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(),
-                    granularity)
+                fetchRevenueStats(
+                    dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(),
+                    granularity
+                )
         }
 
     private suspend fun getPreviousPeriodRevenue(dateRange: DateRange, granularity: StatsGranularity) =
@@ -62,8 +66,10 @@ class AnalyticsRepository @Inject constructor(
             is DateRange.SimpleDateRange ->
                 fetchRevenueStats(dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(), granularity)
             is DateRange.MultipleDateRange ->
-                fetchRevenueStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(),
-                    granularity)
+                fetchRevenueStats(
+                    dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(),
+                    granularity
+                )
         }
 
     private fun getGranularity(selectedRange: AnalyticsDateRanges) =
@@ -76,9 +82,9 @@ class AnalyticsRepository @Inject constructor(
         }
 
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double) = when {
-        previousVal <= 0.0 -> round(currentVal * 100).toInt()
-        currentVal <= 0.0 -> round(-1 * previousVal * 100).toInt()
-        else -> (round((previousVal - currentVal) / currentVal) * 100).toInt()
+        previousVal <= ZERO_VALUE -> round(currentVal * ONE_H_PERCENT).toInt()
+        currentVal <= ZERO_VALUE -> round(MINUS_ONE * previousVal * ONE_H_PERCENT).toInt()
+        else -> (round((previousVal - currentVal) / currentVal) * ONE_H_PERCENT).toInt()
     }
 
     private suspend fun fetchRevenueStats(startDate: String, endDate: String, granularity: StatsGranularity) =
@@ -91,6 +97,9 @@ class AnalyticsRepository @Inject constructor(
 
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
+        const val ZERO_VALUE = 0.0
+        const val MINUS_ONE = -1
+        const val ONE_H_PERCENT = 100
     }
 
     sealed class RevenueResult {

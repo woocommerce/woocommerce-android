@@ -28,8 +28,10 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
                 binding.cardInformationSectionTitle.text = sectionViewState.title
                 binding.cardInformationSectionValue.text = sectionViewState.value
                 binding.cardInformationSectionDeltaTag.text =
-                    ctx.resources.getString(R.string.analytics_information_card_delta,
-                        sectionViewState.sign, sectionViewState.delta)
+                    ctx.resources.getString(
+                        R.string.analytics_information_card_delta,
+                        sectionViewState.sign, sectionViewState.delta
+                    )
                 binding.cardInformationSectionDeltaTag.tag =
                     AnalyticsInformationSectionDeltaTag(sectionViewState.delta, getDeltaTagText(sectionViewState))
             }
@@ -37,9 +39,11 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
     }
 
     private fun getDeltaTagText(sectionDataViewState: SectionDataViewState) =
-        ctx.resources.getString(R.string.analytics_information_card_delta,
+        ctx.resources.getString(
+            R.string.analytics_information_card_delta,
             sectionDataViewState.sign,
-            sectionDataViewState.delta.absoluteValue)
+            sectionDataViewState.delta.absoluteValue
+        )
 
     class AnalyticsInformationSectionDeltaTag(private val delta: Int, private val text: String) : ITag(text) {
         override fun getTagConfiguration(context: Context): TagConfig {

@@ -59,8 +59,10 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    private fun updateRevenue(range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
-                              dateRange: DateRange = getDefaultDateRange()) =
+    private fun updateRevenue(
+        range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
+        dateRange: DateRange = getDefaultDateRange()
+    ) =
         launch {
             mutableState.value = state.value.copy(revenueState = LoadingViewState)
             analyticsRepository.fetchRevenueData(dateRange, range)
@@ -137,8 +139,10 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
     private fun getDefaultSelectedPeriod() = getDateSelectedMessage(AnalyticsDateRanges.TODAY)
-    private fun getDefaultDateRange() = SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(1)),
-        dateUtils.getCurrentDate())
+    private fun getDefaultDateRange() = SimpleDateRange(
+        Date(dateUtils.getCurrentDateTimeMinusDays(1)),
+        dateUtils.getCurrentDate()
+    )
 
     private fun getDateSelectedMessage(analyticsDateRange: AnalyticsDateRanges): String =
         when (analyticsDateRange) {
@@ -168,10 +172,12 @@ class AnalyticsViewModel @Inject constructor(
     private fun buildRevenueDataViewState(totalValue: String, totalDelta: Int, netValue: String, netDelta: Int) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
-            leftSection = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
+            leftSection = SectionDataViewState(
+                resourceProvider.getString(R.string.analytics_total_sales_title),
                 totalValue, totalDelta
             ),
-            rightSection = SectionDataViewState(resourceProvider.getString(R.string.analytics_net_sales_title),
+            rightSection = SectionDataViewState(
+                resourceProvider.getString(R.string.analytics_net_sales_title),
                 netValue, netDelta
             )
         )

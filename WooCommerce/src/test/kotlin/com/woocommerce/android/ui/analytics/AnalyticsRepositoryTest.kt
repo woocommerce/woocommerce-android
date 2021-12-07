@@ -219,12 +219,14 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
-
             // When
-            val result = sut.fetchRevenueData(DateRange.MultipleDateRange(
-                DateRange.SimpleDateRange(previousDate!!, previousDate),
-                DateRange.SimpleDateRange(currentDate!!, currentDate)
-            ), ANY_RANGE)
+            val result = sut.fetchRevenueData(
+                DateRange.MultipleDateRange(
+                    DateRange.SimpleDateRange(previousDate!!, previousDate),
+                    DateRange.SimpleDateRange(currentDate!!, currentDate)
+                ),
+                ANY_RANGE
+            )
 
             // Then
             with(result.single()) {
