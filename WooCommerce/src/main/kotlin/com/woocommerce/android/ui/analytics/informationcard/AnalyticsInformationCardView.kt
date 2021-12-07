@@ -34,8 +34,8 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
         visibility = View.VISIBLE
     }
 
-    fun setSeeReportClickListener(onClickListener: ((view: View) -> Unit)) {
-        binding.tvSeeReport.setOnClickListener(onClickListener)
+    fun setSeeReportClickListener(onClickListener: (() -> Unit)) {
+        binding.tvSeeReport.setOnClickListener { onClickListener() }
     }
 
     private fun setDataViewState(viewState: DataViewState) {
