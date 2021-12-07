@@ -20,6 +20,7 @@ allprojects {
     apply plugin: 'io.gitlab.arturbosch.detekt'
 
     repositories {
+        google()
         mavenCentral()
     }
 

@@ -29,6 +29,14 @@ repositories {
         }
     }
     mavenCentral()
+    //noinspection JcenterRepositoryObsolete
+    jcenter {
+        content {
+            includeModule("org.wordpress", "wellsql")
+            includeModule("org.wordpress", "wellsql-core")
+            includeModule("com.google.android", "flexbox")
+        }
+    }
     maven { url "https://jitpack.io" }
 }
 
