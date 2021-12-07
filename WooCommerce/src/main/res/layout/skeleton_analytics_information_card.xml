@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true">
@@ -10,7 +11,7 @@
         android:layout_width="@dimen/image_major_64"
         android:layout_height="@dimen/major_125"
         android:layout_marginStart="@dimen/major_100"
-        android:layout_marginTop="@dimen/major_200"
+        android:layout_marginTop="@dimen/major_100"
         android:background="@color/skeleton_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -19,38 +20,36 @@
         android:id="@+id/leftTitle"
         android:layout_width="@dimen/image_major_72"
         android:layout_height="@dimen/major_125"
-        android:layout_marginTop="@dimen/major_200"
+        android:layout_marginTop="@dimen/major_100"
         android:background="@color/skeleton_color"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title" />
 
     <View
         android:id="@+id/leftVal"
-        android:layout_width="@dimen/image_major_72"
+        android:layout_width="@dimen/image_major_100"
         android:layout_height="@dimen/major_150"
-        android:layout_marginTop="@dimen/major_150"
+        android:layout_marginTop="@dimen/major_100"
         android:background="@color/skeleton_color"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@+id/leftTitle" />
 
     <View
         android:id="@+id/rightVal"
-        android:layout_width="@dimen/image_major_72"
+        android:layout_width="@dimen/image_major_100"
         android:layout_height="@dimen/major_150"
-        android:layout_marginTop="@dimen/major_150"
         android:background="@color/skeleton_color"
-        app:layout_constraintEnd_toEndOf="@+id/rightTitle"
-        app:layout_constraintHorizontal_bias="0.81"
+        app:layout_constraintBottom_toBottomOf="@+id/leftVal"
         app:layout_constraintStart_toStartOf="@+id/rightTitle"
-        app:layout_constraintTop_toBottomOf="@+id/rightTitle" />
+        app:layout_constraintTop_toTopOf="@+id/leftVal" />
 
     <View
         android:id="@+id/rightTitle"
         android:layout_width="@dimen/image_major_72"
-        android:layout_height="@dimen/major_150"
+        android:layout_height="@dimen/major_125"
         android:background="@color/skeleton_color"
+        app:layout_constraintBottom_toBottomOf="@+id/leftTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.64"
         app:layout_constraintStart_toEndOf="@+id/leftTitle"
         app:layout_constraintTop_toTopOf="@+id/leftTitle" />
 
@@ -62,8 +61,6 @@
         android:layout_marginBottom="@dimen/major_100"
         android:background="@color/skeleton_color"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/leftPlot"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
@@ -71,12 +68,11 @@
         android:id="@+id/arrow"
         android:layout_width="@dimen/major_150"
         android:layout_height="@dimen/major_125"
-        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_200"
         android:background="@color/skeleton_color"
+        app:layout_constraintBottom_toBottomOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.718"
-        app:layout_constraintStart_toStartOf="@+id/rightPlot"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
+        app:layout_constraintTop_toTopOf="@+id/button" />
 
     <View
         android:id="@+id/leftPlot"
@@ -91,25 +87,19 @@
         android:id="@+id/rightPlot"
         android:layout_width="@dimen/major_300"
         android:layout_height="@dimen/major_125"
-        android:layout_marginTop="@dimen/major_100"
         android:background="@color/skeleton_color"
         app:layout_constraintBottom_toBottomOf="@+id/leftPlot"
-        app:layout_constraintEnd_toEndOf="@+id/rightVal"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/rightVal"
-        app:layout_constraintTop_toBottomOf="@+id/rightVal" />
+        app:layout_constraintTop_toTopOf="@+id/leftPlot" />
 
 
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
         android:layout_height="@dimen/minor_10"
-        android:layout_marginTop="@dimen/major_125"
-        android:layout_marginBottom="@dimen/major_125"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="@dimen/major_100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/leftPlot"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/rightPlot" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
