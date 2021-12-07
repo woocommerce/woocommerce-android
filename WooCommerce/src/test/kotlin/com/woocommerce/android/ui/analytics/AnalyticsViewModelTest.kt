@@ -47,7 +47,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private lateinit var sut: AnalyticsViewModel
 
     @Test
-    fun `given an init viewState when ViewModel is created we have the expected values`() =
+    fun `given an init viewState, when ViewModel is created, then has the expected values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturn ANY_VALUE
@@ -71,7 +71,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a view model when selected date range changes we have the expected analyticsDateViewState values`() =
+    fun `given a view model, when selected date range changes, then has the expected date range selector values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturnConsecutively
@@ -95,7 +95,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a view model when selected date range changes data view state has revenueViewState values`() =
+    fun `given a view model, when selected date range changes, then has expected revenue values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }

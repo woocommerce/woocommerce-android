@@ -36,7 +36,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     private val sut: AnalyticsRepository = AnalyticsRepository(statsRepository, selectedSite, wooCommerceStore)
 
     @Test
-    fun `given no currentPeriodRevenue when fetchRevenueData result is RevenueError`() = runBlocking {
+    fun `given no currentPeriodRevenue, when fetchRevenueData, then result is RevenueError`() = runBlocking {
         // Given
         val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE)
         whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -55,7 +55,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no previousRevenuePeriod when fetchRevenueData result is the expected`() = runBlocking {
+    fun `given no previousRevenuePeriod, when fetchRevenueData, then result is the expected`() = runBlocking {
         // Given
         val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE)
         whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
@@ -79,7 +79,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given previous and current period revenue when fetchRevenueData result is the expected`() =
+    fun `given previous and current period revenue, when fetchRevenueData, then result is the expected`() =
         runBlocking {
             // Given
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE)
@@ -104,7 +104,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given zero previous total revenue when fetchRevenueData result is the expected`() =
+    fun `given zero previous total revenue, when fetchRevenueData, then result is the expected`() =
         runBlocking {
             // Given
             val previousPeriodRevenue = givenARevenue(ZERO_VALUE, ZERO_VALUE)
@@ -130,7 +130,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given zero previous net revenue when fetchRevenueData result is the expected`() =
+    fun `given zero previous net revenue, when fetchRevenueData, then result is the expected`() =
         runBlocking {
             // Given
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, ZERO_VALUE)
@@ -156,7 +156,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given null previous total revenue when fetchRevenueData result is the expected`() =
+    fun `given null previous total revenue, when fetchRevenueData, then result is the expected`() =
         runBlocking {
             // Given
             val previousPeriodRevenue = givenARevenue(null, TEN_VALUE)
@@ -182,7 +182,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given null previous net revenue when fetchRevenueData result is the expected`() =
+    fun `given null previous net revenue,  when fetchRevenueData, then result is the expected`() =
         runBlocking {
             // Given
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, null)
@@ -208,7 +208,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given previous and current period revenue when fetchRevenueData multiple date range result is the expected`() =
+    fun `given previous and current revenue, when fetchRevenueData multiple date range, then result is the expected`() =
         runBlocking {
             // Given
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE)
@@ -238,7 +238,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `get revenue admin url panel is expected`() {
+    fun `when get revenue admin url panel, then is expected`() {
         val siteModel: SiteModel = mock()
         whenever(siteModel.adminUrl).thenReturn(ANY_URL)
         whenever(selectedSite.getIfExists()).thenReturn(siteModel)
