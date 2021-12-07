@@ -27,7 +27,7 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
 
     private fun setSkeleton() {
         skeletonView.show(
-            binding.containerAnalyticsCardData,
+            binding.analyticsCardDataContainer,
             R.layout.skeleton_analytics_information_card,
             delayed = true
         )
@@ -35,26 +35,28 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
     }
 
     fun setSeeReportClickListener(onClickListener: (() -> Unit)) {
-        binding.tvSeeReport.setOnClickListener { onClickListener() }
+        binding.seeReportPanel.setOnClickListener { onClickListener() }
     }
 
     private fun setDataViewState(viewState: DataViewState) {
         skeletonView.hide()
-        binding.tvAnalyticsCardTitle.text = viewState.title
-        binding.vLeftSection.setViewState(viewState.leftSection)
-        binding.vRightSection.setViewState(viewState.rightSection)
-        binding.tvAnalyticsCardTitle.visibility = VISIBLE
-        binding.llInformationPanel.visibility = VISIBLE
-        binding.tvNoData.visibility = GONE
+        binding.analyticsCardTitle.text = viewState.title
+        binding.leftAnalyticsSection.setViewState(viewState.leftSection)
+        binding.rightAnalyticsSection.setViewState(viewState.rightSection)
+        binding.analyticsCardTitle.visibility = VISIBLE
+        binding.leftAnalyticsSection.visibility = VISIBLE
+        binding.rightAnalyticsSection.visibility = VISIBLE
+        binding.noDataText.visibility = GONE
         visibility = VISIBLE
     }
 
     private fun setNoDataViewState(viewState: NoDataState) {
         skeletonView.hide()
-        binding.tvNoData.text = viewState.message
-        binding.tvAnalyticsCardTitle.visibility = GONE
-        binding.llInformationPanel.visibility = GONE
-        binding.tvNoData.visibility = VISIBLE
+        binding.noDataText.text = viewState.message
+        binding.analyticsCardTitle.visibility = GONE
+        binding.leftAnalyticsSection.visibility = GONE
+        binding.rightAnalyticsSection.visibility = GONE
+        binding.noDataText.visibility = VISIBLE
         visibility = VISIBLE
     }
 }

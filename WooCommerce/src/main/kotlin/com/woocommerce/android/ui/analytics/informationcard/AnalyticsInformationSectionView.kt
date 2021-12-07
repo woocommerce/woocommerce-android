@@ -25,12 +25,12 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
             is SectionHiddenViewState -> visibility = INVISIBLE
             is SectionDataViewState -> {
                 visibility = View.VISIBLE
-                binding.tvSectionCardTitle.text = sectionViewState.title
-                binding.tvSectionCardValue.text = sectionViewState.value
-                binding.tvSectionCardDeltaValue.text =
+                binding.cardInformationSectionTitle.text = sectionViewState.title
+                binding.cardInformationSectionValue.text = sectionViewState.value
+                binding.cardInformationSectionDeltaTag.text =
                     ctx.resources.getString(R.string.analytics_information_card_delta,
                         sectionViewState.sign, sectionViewState.delta)
-                binding.tvSectionCardDeltaValue.tag =
+                binding.cardInformationSectionDeltaTag.tag =
                     AnalyticsInformationSectionDeltaTag(sectionViewState.delta, getDeltaTagText(sectionViewState))
             }
         }
