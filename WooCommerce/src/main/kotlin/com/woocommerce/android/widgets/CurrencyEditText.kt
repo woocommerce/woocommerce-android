@@ -85,6 +85,5 @@ class CurrencyEditText : AppCompatEditText {
 
             return cleanValue
         }
-
     }
 }
