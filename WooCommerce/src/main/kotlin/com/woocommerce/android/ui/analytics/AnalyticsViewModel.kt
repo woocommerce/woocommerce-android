@@ -171,7 +171,7 @@ class AnalyticsViewModel @Inject constructor(
             leftSection = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
                 totalValue, totalDelta
             ),
-            rightSection = SectionDataViewState(resourceProvider.getString(R.string.analytics_total_sales_title),
+            rightSection = SectionDataViewState(resourceProvider.getString(R.string.analytics_net_sales_title),
                 netValue, netDelta
             )
         )
