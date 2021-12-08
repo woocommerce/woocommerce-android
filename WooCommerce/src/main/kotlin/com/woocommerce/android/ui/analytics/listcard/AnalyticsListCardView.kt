@@ -54,7 +54,8 @@ class AnalyticsListCardView @JvmOverloads constructor(
         binding.analyticsItemsValue.text = viewState.subTitleValue
         binding.analyticsListLeftHeader.text = viewState.listLeftHeader
         binding.analyticsListRightHeader.text = viewState.listRightHeader
-        viewState.items.forEach { addListItem(context, it) }
+        val inflater = LayoutInflater.from(context)
+        viewState.items.forEach { addListItem(inflater, it) }
         binding.analyticsCardTitle.visibility = VISIBLE
         binding.analyticsItemsTitle.visibility = VISIBLE
         binding.analyticsItemsValue.visibility = VISIBLE
@@ -76,8 +77,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
         binding.noDataText.visibility = VISIBLE
     }
 
-    private fun addListItem(context: Context, viewState: AnalyticsListCardItemViewState) {
-        val inflater = LayoutInflater.from(context)
+    private fun addListItem(inflater: LayoutInflater, viewState: AnalyticsListCardItemViewState) {
         val listItemView: AnalyticsListCardItemView =
             inflater.inflate(R.layout.analytics_list_card_item_view, this, true)
                 as AnalyticsListCardItemView
