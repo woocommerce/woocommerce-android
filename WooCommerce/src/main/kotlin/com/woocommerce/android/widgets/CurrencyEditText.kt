@@ -77,15 +77,19 @@ class CurrencyEditText : AppCompatEditText {
          * Cleans the [text] so that it only has numerical characters and has the correct number of fractional digits.
          */
         fun clean(text: CharSequence?, decimals: Int, lengthBefore: Int, lengthAfter: Int): BigDecimal {
-            val nonNumericMatchPattern = Regex("[^\\d]")
-            var cleanValue = text.toString().replace(nonNumericMatchPattern, "").toBigDecimalOrNull() ?: BigDecimal.ZERO
+            val nonNumericPattern = Regex("[^\\d]")
+            var cleanValue = text.toString().replace(nonNumericPattern, "").toBigDecimalOrNull() ?: BigDecimal.ZERO
 
             if (decimals > 0) {
                 cleanValue = cleanValue.divide(BigDecimal(10f.pow(decimals).toInt()), decimals, HALF_UP)
             }
 
             if (lengthBefore > lengthAfter) {
-                cleanValue = cleanValue.divide(BigDecimal(10f.pow(lengthBefore - lengthAfter).toInt()), DOWN)
+                // https://regexr.com/6b5tk
+                val startsWithDigitPattern = Regex("^\\d.*")
+                if (text.toString().matches(startsWithDigitPattern)) {
+                    cleanValue = cleanValue.divide(BigDecimal(10f.pow(lengthBefore - lengthAfter).toInt()), DOWN)
+                }
             }
 
             return cleanValue
