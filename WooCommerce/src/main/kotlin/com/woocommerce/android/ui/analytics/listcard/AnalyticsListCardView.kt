@@ -76,7 +76,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
         binding.noDataText.visibility = VISIBLE
     }
 
-    fun addListItem(context: Context, viewState: AnalyticsListCardItemViewState) {
+    private fun addListItem(context: Context, viewState: AnalyticsListCardItemViewState) {
         val inflater = LayoutInflater.from(context)
         val listItemView: AnalyticsListCardItemView =
             inflater.inflate(R.layout.analytics_list_card_item_view, this, true)
