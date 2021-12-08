@@ -439,7 +439,7 @@ workflows:
       - Connected Tests:
           requires: [Hold]
           executor:
-            name: android/android-machine
+            name: android_ci/android-machine
             resource-class: large   
   Release Build:
     when: << pipeline.parameters.release_build >>
