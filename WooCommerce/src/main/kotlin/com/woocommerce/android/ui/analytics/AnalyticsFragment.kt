@@ -36,6 +36,10 @@ class AnalyticsFragment :
         setupResultHandlers(viewModel)
         lifecycleScope.launchWhenStarted { viewModel.state.collect { newState -> handleStateChange(newState) } }
         viewModel.event.observe(viewLifecycleOwner, { event -> handleEvent(event) })
+        binding.analyticsRefreshLayout.setOnRefreshListener {
+            binding.analyticsRefreshLayout.scrollUpChild = binding.scrollView
+            viewModel.onRefreshRequested()
+        }
     }
 
     override fun onDestroyView() {
@@ -85,6 +89,7 @@ class AnalyticsFragment :
         binding.analyticsDateSelectorCard.updateFromText(viewState.analyticsDateRangeSelectorState.fromDatePeriod)
         binding.analyticsDateSelectorCard.updateToText(viewState.analyticsDateRangeSelectorState.toDatePeriod)
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
+        binding.analyticsRefreshLayout.isRefreshing = false
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState

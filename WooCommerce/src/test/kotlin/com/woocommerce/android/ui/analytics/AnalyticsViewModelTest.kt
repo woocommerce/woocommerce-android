@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges.LAST_YEAR
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
@@ -45,6 +46,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(TOTAL_VALUE.toString(), CURRENCY_CODE) } doReturn TOTAL_CURRENCY_VALUE
         on { formatCurrency(NET_VALUE.toString(), CURRENCY_CODE) } doReturn NET_CURRENCY_VALUE
+        on { formatCurrency(OTHER_TOTAL_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_TOTAL_CURRENCY_VALUE
+        on { formatCurrency(OTHER_NET_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_NET_CURRENCY_VALUE
     }
 
     private val analyticsRepository: AnalyticsRepository = mock {
@@ -160,6 +163,43 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
         }
 
+    @Test
+    fun `given a week to date selected, when refresh is requested, then revenue is the expected`() = testBlocking {
+
+        val weekToDateRange = MultipleDateRange(
+            DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekRevenueStats = getRevenueStats(
+            OTHER_TOTAL_VALUE,
+            OTHER_TOTAL_DELTA,
+            OTHER_NET_VALUE,
+            OTHER_NET_DELTA,
+            OTHER_CURRENCY_CODE
+        )
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        whenever(analyticsRepository.fetchRevenueData(weekToDateRange, WEEK_TO_DATE))
+            .thenReturn(listOf(weekRevenueStats, weekRevenueStats).asFlow())
+
+        sut = givenAViewModel()
+        sut.onSelectedDateRangeChanged(WEEK_TO_DATE.description)
+        sut.onRefreshRequested()
+
+        with(sut.state.value.revenueState) {
+            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertTrue(leftSection is SectionDataViewState)
+            assertEquals(OTHER_TOTAL_CURRENCY_VALUE, (leftSection as SectionDataViewState).value)
+            assertEquals(OTHER_TOTAL_DELTA, (leftSection as SectionDataViewState).delta)
+
+            assertTrue(rightSection is SectionDataViewState)
+            assertEquals(OTHER_NET_CURRENCY_VALUE, (rightSection as SectionDataViewState).value)
+            assertEquals(OTHER_NET_DELTA, (rightSection as SectionDataViewState).delta)
+        }
+
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
@@ -173,12 +213,18 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             selectedSite, savedState
         )
 
-    private fun getRevenueStats() =
-        RevenueData(RevenueStat(TOTAL_VALUE, TOTAL_DELTA, NET_VALUE, NET_DELTA, CURRENCY_CODE))
+    private fun getRevenueStats(
+        totalValue: Double = TOTAL_VALUE,
+        totalDelta: Int = TOTAL_DELTA,
+        netValue: Double = NET_VALUE,
+        netDelta: Int = NET_DELTA,
+        currencyCode: String = CURRENCY_CODE
+    ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
         private const val ANY_OTHER_DATE_TIME_VALUE = "2021-11-20 00:00:00"
+        private const val ANY_WEEK_DATE_TIME_VALUE = "2010-11-20 00:00:00"
 
         private const val ANY_YEAR_VALUE = "2021-11-21"
         private const val ANY_SORT_FORMAT_VALUE = "21 Nov, 2021"
@@ -192,6 +238,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         private val ANY_DATE: Date = sdf.parse(ANY_DATE_TIME_VALUE)!!
         private val ANY_OTHER_DATE: Date = sdf.parse(ANY_OTHER_DATE_TIME_VALUE)!!
+        private val ANY_WEEK_DATE: Date = sdf.parse(ANY_WEEK_DATE_TIME_VALUE)!!
         private val DATE_RANGE_SELECTORS = listOf(ANY_VALUE, ANY_OTHER_VALUE)
 
         const val TOTAL_VALUE = 10.0
@@ -201,6 +248,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         const val CURRENCY_CODE = "EUR"
         const val TOTAL_CURRENCY_VALUE = "10 E"
         const val NET_CURRENCY_VALUE = "10 E"
+
+        const val OTHER_TOTAL_VALUE = 20.0
+        const val OTHER_TOTAL_DELTA = 15
+        const val OTHER_NET_VALUE = 10.0
+        const val OTHER_NET_DELTA = 20
+        const val OTHER_CURRENCY_CODE = "DOL"
+        const val OTHER_TOTAL_CURRENCY_VALUE = "20 USD"
+        const val OTHER_NET_CURRENCY_VALUE = "10 USD"
 
         const val ANY_URL = "https://a8c.com"
     }
