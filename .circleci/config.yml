@@ -179,23 +179,7 @@ workflows:
       - Lint
       - Test
       - Installable Build
-      - Ensure Screenshots Tests Build
-  Optional Tests:
-    unless:
-      or:
-        - << pipeline.parameters.release_build >>
-    #Optionally run connected tests on PRs
-    jobs:
-      - Hold:
-          type: approval
-          filters:
-            branches:
-              ignore:
-                - develop
-                - /^release.*/
-                - /pull\/[0-9]+/
-      - Connected Tests:
-          requires: [Hold]      
+      - Ensure Screenshots Tests Build    
   Release Build:
     when: << pipeline.parameters.release_build >>
     jobs:
