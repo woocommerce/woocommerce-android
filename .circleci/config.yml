@@ -102,7 +102,7 @@ jobs:
           command: ./gradlew assembleVanillaDebugAndroidTest
 
   Connected Tests:
-     executor:
+    executor:
       name: android_ci/android-machine
       resource-class: large
     steps:
