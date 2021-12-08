@@ -23,43 +23,65 @@ class AnalyticsListCardView @JvmOverloads constructor(
         when (viewState) {
             is LoadingViewState -> setSkeleton()
             is DataViewState -> setDataViewState(viewState)
-            is NoDataState -> {
-            }
+            is NoDataState -> setNoDataViewState(viewState)
         }
-    }
-
-    private fun setSkeleton() {
-        skeletonView.show(
-            binding.analyticsCardDataContainer,
-            R.layout.skeleton_analytics_information_card,
-            delayed = true
-        )
-        visibility = View.VISIBLE
     }
 
     fun setSeeReportClickListener(onClickListener: (() -> Unit)) {
         binding.seeReportPanel.setOnClickListener { onClickListener() }
     }
 
+    private fun setSkeleton() {
+        skeletonView.show(
+            binding.analyticsCardListContainer,
+            R.layout.skeleton_analytics_information_card,
+            delayed = true
+        )
+        binding.analyticsCardTitle.visibility = GONE
+        binding.analyticsItemsTitle.visibility = GONE
+        binding.analyticsItemsValue.visibility = GONE
+        binding.analyticsListLeftHeader.visibility = GONE
+        binding.analyticsListRightHeader.visibility = GONE
+        binding.analyticsCardListContainer.visibility = GONE
+        binding.noDataText.visibility = GONE
+        visibility = View.VISIBLE
+    }
+
     private fun setDataViewState(viewState: DataViewState) {
         skeletonView.hide()
         binding.analyticsCardTitle.text = viewState.title
-        binding.leftAnalyticsSection.setViewState(viewState.leftSection)
-        binding.rightAnalyticsSection.setViewState(viewState.rightSection)
+        binding.analyticsItemsTitle.text = viewState.subTitle
+        binding.analyticsItemsValue.text = viewState.subTitleValue
+        binding.analyticsListLeftHeader.text = viewState.listLeftHeader
+        binding.analyticsListRightHeader.text = viewState.listRightHeader
+        viewState.items.forEach { addListItem(context, it) }
         binding.analyticsCardTitle.visibility = VISIBLE
-        binding.leftAnalyticsSection.visibility = VISIBLE
-        binding.rightAnalyticsSection.visibility = VISIBLE
+        binding.analyticsItemsTitle.visibility = VISIBLE
+        binding.analyticsItemsValue.visibility = VISIBLE
+        binding.analyticsListLeftHeader.visibility = VISIBLE
+        binding.analyticsListRightHeader.visibility = VISIBLE
+        binding.analyticsCardListContainer.visibility = VISIBLE
         binding.noDataText.visibility = GONE
-        visibility = VISIBLE
     }
 
     private fun setNoDataViewState(viewState: NoDataState) {
         skeletonView.hide()
         binding.noDataText.text = viewState.message
         binding.analyticsCardTitle.visibility = GONE
-        binding.leftAnalyticsSection.visibility = GONE
-        binding.rightAnalyticsSection.visibility = GONE
+        binding.analyticsItemsTitle.visibility = GONE
+        binding.analyticsItemsValue.visibility = GONE
+        binding.analyticsListLeftHeader.visibility = GONE
+        binding.analyticsListRightHeader.visibility = GONE
+        binding.analyticsCardListContainer.visibility = GONE
         binding.noDataText.visibility = VISIBLE
-        visibility = VISIBLE
+    }
+
+    fun addListItem(context: Context, viewState: AnalyticsListCardItemViewState) {
+        val inflater = LayoutInflater.from(context)
+        val listItemView: AnalyticsListCardItemView =
+            inflater.inflate(R.layout.analytics_list_card_item_view, this, true)
+                as AnalyticsListCardItemView
+        listItemView.setInformation(viewState)
+        addView(listItemView)
     }
 }

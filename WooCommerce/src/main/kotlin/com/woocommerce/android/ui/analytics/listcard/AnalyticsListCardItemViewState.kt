@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.analytics.listcard
 
 data class AnalyticsListCardItemViewState(
-    val photoUri: String,
+    val imageUri: String,
     val title: String,
-    val subtitle: String,
+    val description: String,
     val value: Int,
 )

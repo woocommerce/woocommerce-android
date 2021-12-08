@@ -22,7 +22,6 @@
             tools:text="No products sold this period"
             tools:visibility="visible" />
 
-
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/analyticsCardTitle"
             style="@style/Woo.Card.Title"
@@ -38,7 +37,7 @@
             tools:visibility="visible" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/analyticsItemsSoldTitle"
+            android:id="@+id/analytics_items_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_100"
@@ -52,15 +51,15 @@
 
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/analyticsItemsSoldValue"
+            android:id="@+id/analytics_items_value"
             style="@style/Woo.Card.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/minor_00"
             android:text="@string/analytics_total_sales_title"
             android:textSize="@dimen/text_major_50"
-            app:layout_constraintStart_toStartOf="@+id/analyticsItemsSoldTitle"
-            app:layout_constraintTop_toBottomOf="@+id/analyticsItemsSoldTitle"
+            app:layout_constraintStart_toStartOf="@+id/analytics_items_title"
+            app:layout_constraintTop_toBottomOf="@+id/analytics_items_title"
             app:lineHeight="@dimen/text_major_25"
             tools:text="32" />
 
@@ -73,8 +72,8 @@
             android:layout_marginBottom="@dimen/major_100"
             android:text="@string/analytics_total_sales_title"
             android:textSize="@dimen/text_minor_125"
-            app:layout_constraintStart_toStartOf="@+id/analyticsItemsSoldValue"
-            app:layout_constraintTop_toBottomOf="@+id/analyticsItemsSoldValue"
+            app:layout_constraintStart_toStartOf="@+id/analytics_items_value"
+            app:layout_constraintTop_toBottomOf="@+id/analytics_items_value"
             app:lineHeight="@dimen/text_major_25"
             tools:text="Products" />
 
@@ -85,20 +84,20 @@
             android:text="@string/analytics_total_sales_title"
             android:textSize="@dimen/text_minor_125"
             app:layout_constraintBottom_toBottomOf="@+id/analyticsListLeftHeader"
-            app:layout_constraintEnd_toEndOf="@+id/analyticsItemsSoldTag"
+            app:layout_constraintEnd_toEndOf="@+id/analytics_items_tag"
             app:layout_constraintTop_toTopOf="@+id/analyticsListLeftHeader"
             app:lineHeight="@dimen/text_major_25"
             tools:text="Items Sold" />
 
         <com.woocommerce.android.widgets.tags.TagView
-            android:id="@+id/analyticsItemsSoldTag"
+            android:id="@+id/analytics_items_tag"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/major_150"
             android:layout_marginEnd="@dimen/major_100"
             android:textSize="@dimen/text_minor_80"
-            app:layout_constraintBottom_toBottomOf="@+id/analyticsItemsSoldValue"
+            app:layout_constraintBottom_toBottomOf="@+id/analytics_items_value"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/analyticsItemsSoldValue"
+            app:layout_constraintTop_toTopOf="@+id/analytics_items_value"
             app:tagTextColor="@color/woo_white"
             tools:ignore="TextContrastCheck"
             tools:tagColor="#69B56E"
@@ -127,6 +126,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:id="@+id/seeReportPanel"
             android:layout_marginTop="@dimen/major_75"
             android:layout_marginBottom="@dimen/major_75"
             app:layout_constraintBottom_toBottomOf="parent"
