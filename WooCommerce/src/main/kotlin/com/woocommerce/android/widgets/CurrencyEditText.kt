@@ -84,6 +84,10 @@ class CurrencyEditText : AppCompatEditText {
                 cleanValue = cleanValue.divide(BigDecimal(10f.pow(decimals).toInt()), decimals, HALF_UP)
             }
 
+            if (lengthBefore > lengthAfter) {
+                cleanValue = cleanValue.divide(BigDecimal(10f.pow(lengthBefore - lengthAfter).toInt()), DOWN)
+            }
+
             return cleanValue
         }
     }
