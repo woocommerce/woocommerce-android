@@ -171,7 +171,6 @@ jobs:
           failure_message: '${SLACK_FAILURE_MESSAGE}'
           success_message: '${SLACK_SUCCESS_MESSAGE}'
 
-
 workflows:
   "WooCommerce Android":
     unless: << pipeline.parameters.release_build >>
@@ -179,17 +178,16 @@ workflows:
       - Lint
       - Test
       - Installable Build
-      - Ensure Screenshots Tests Build    
+      - Ensure Screenshots Tests Build     
   Release Build:
     when: << pipeline.parameters.release_build >>
     jobs:
       - Release Build
-  UI_test:
+  UITest:
     jobs:
-
+      copy-gradle-properties
       # This job uses the Android machine image by default
       - android_ci/run-ui-tests:
-          copy-gradle-properties
           # Use pre-steps and post-steps if necessary
           # to execute custom steps before and afer any of the built-in steps
-          system-image: system-images;android-29;default;x86      
+          system-image: system-images;android-29;default;x86
