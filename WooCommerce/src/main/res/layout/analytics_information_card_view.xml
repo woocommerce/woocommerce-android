@@ -64,8 +64,9 @@
 
         <View
             android:id="@+id/divider"
-            style="@style/Woo.Divider"
+            android:background="@color/divider_color"
             android:layout_height="1dp"
+            android:layout_width="match_parent"
             android:layout_marginBottom="@dimen/major_75"
             app:layout_constraintBottom_toTopOf="@id/seeReportPanel"
             app:layout_constraintEnd_toEndOf="parent"
