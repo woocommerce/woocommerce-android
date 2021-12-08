@@ -105,7 +105,9 @@ jobs:
     description: |
       Creates an AVD, starts an emulator and runs Android UI tests.
       This is a job that wraps the "start-emulator-and-run-tests" command.
-    executor: << parameters.executor >>
+    executor:
+      name: android_ci/android-machine
+      resource-class: large
     parameters:
       additional-avd-args:
         default: ''
@@ -341,7 +343,6 @@ jobs:
           test-command: << parameters.test-command >>
           verbose: << parameters.verbose >>
           wait-for-emulator: << parameters.wait-for-emulator >>
-
 
   Installable Build:
     executor:
