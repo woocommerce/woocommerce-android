@@ -111,7 +111,7 @@ class CurrencyEditTextTest {
     }
 
     @Test
-    fun `given a currency symbol with space on the left, when pressing backspace, clean() does not remove the last digit`() {
+    fun `given a spaced currency symbol on left, when pressing backspace, clean() does not remove the last digit`() {
         val text = "$ 123.89"
 
         val cleaned = CurrencyEditText.clean(
