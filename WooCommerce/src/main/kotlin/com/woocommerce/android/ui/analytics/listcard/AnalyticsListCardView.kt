@@ -4,14 +4,18 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardViewBinding
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.*
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.tags.ITag
+import com.woocommerce.android.widgets.tags.TagConfig
+import kotlin.math.absoluteValue
 
 class AnalyticsListCardView @JvmOverloads constructor(
-    ctx: Context,
+    val ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
@@ -46,13 +50,18 @@ class AnalyticsListCardView @JvmOverloads constructor(
     }
 
     private fun setDataViewState(viewState: DataViewState) {
+        val inflater = LayoutInflater.from(context)
         skeletonView.hide()
         binding.analyticsCardTitle.text = viewState.title
         binding.analyticsItemsTitle.text = viewState.subTitle
         binding.analyticsItemsValue.text = viewState.subTitleValue
         binding.analyticsListLeftHeader.text = viewState.listLeftHeader
         binding.analyticsListRightHeader.text = viewState.listRightHeader
-        val inflater = LayoutInflater.from(context)
+        binding.analyticsItemsTag.text = ctx.resources.getString(
+            R.string.analytics_information_card_delta,
+            viewState.sign, viewState.delta
+        )
+        binding.analyticsItemsTag.tag = AnalyticsListDeltaTag(viewState.delta, getDeltaTagText(viewState))
         viewState.items.forEach { addListItem(inflater, it) }
         binding.analyticsCardTitle.visibility = VISIBLE
         binding.analyticsItemsTitle.visibility = VISIBLE
@@ -82,4 +91,29 @@ class AnalyticsListCardView @JvmOverloads constructor(
         listItemView.setInformation(viewState)
         addView(listItemView)
     }
+
+    private fun getDeltaTagText(viewState: DataViewState) =
+        ctx.resources.getString(
+            R.string.analytics_information_card_delta,
+            viewState.sign,
+            viewState.delta.absoluteValue
+        )
+
+    class AnalyticsListDeltaTag(private val delta: Int, private val text: String) : ITag(text) {
+        override fun getTagConfiguration(context: Context): TagConfig {
+            val config = TagConfig(context)
+                .apply {
+                    tagText = text
+                    fgColor = ContextCompat.getColor(context, R.color.analytics_delta_text_color)
+                    bgColor = getDeltaTagBackgroundColor(context)
+                }
+            return config
+        }
+
+        private fun getDeltaTagBackgroundColor(context: Context) =
+            if (delta > 0) ContextCompat.getColor(context, R.color.analytics_delta_positive_color)
+            else ContextCompat.getColor(context, R.color.analytics_delta_tag_negative_color)
+    }
+
+
 }
