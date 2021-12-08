@@ -55,7 +55,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no previousRevenuePeriod, when fetchRevenueData, then result is the expected`() = runBlocking {
+    fun `given no previousRevenuePeriod, when fetchRevenueData, then result is RevenueError`() = runBlocking {
         // Given
         val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE)
         whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
@@ -68,13 +68,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         val result = sut.fetchRevenueData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
 
         // Then
-        with(result.single()) {
-            assertNotNull(this)
-            assertTrue(this is RevenueData)
-            assertEquals(TEN_VALUE, revenueStat.totalValue)
-            assertEquals(TEN_VALUE, revenueStat.netValue)
-            assertEquals(THOUSAND_DELTA, revenueStat.totalDelta)
-            assertEquals(THOUSAND_DELTA, revenueStat.netDelta)
+        with(result.first()) {
+            assertTrue(this is RevenueError)
         }
     }
 

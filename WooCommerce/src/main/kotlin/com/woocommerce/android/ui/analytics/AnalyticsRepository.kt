@@ -27,12 +27,14 @@ class AnalyticsRepository @Inject constructor(
         getGranularity(selectedRange).let {
             return getCurrentPeriodRevenue(dateRange, it)
                 .combine(getPreviousPeriodRevenue(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
-                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
+
+                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null ||
+                        previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
                         return@combine RevenueError
                     }
 
-                    val previousTotalSales = previousPeriodRevenue.getOrNull()?.parseTotal()?.totalSales ?: 0.0
-                    val previousNetRevenue = previousPeriodRevenue.getOrNull()?.parseTotal()?.netRevenue ?: 0.0
+                    val previousTotalSales = previousPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales ?: 0.0
+                    val previousNetRevenue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue ?: 0.0
                     val currentTotalSales = currentPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales!!
                     val currentNetRevenue = currentPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue!!
 
