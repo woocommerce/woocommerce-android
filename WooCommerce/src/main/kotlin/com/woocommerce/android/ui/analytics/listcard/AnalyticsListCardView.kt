@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
@@ -62,7 +63,8 @@ class AnalyticsListCardView @JvmOverloads constructor(
             viewState.sign, viewState.delta
         )
         binding.analyticsItemsTag.tag = AnalyticsListDeltaTag(viewState.delta, getDeltaTagText(viewState))
-        viewState.items.forEach { addListItem(inflater, it) }
+        binding.analyticsItemsList.removeAllViews()
+        viewState.items.forEach { addListItem(inflater, binding.analyticsItemsList, it) }
         binding.analyticsCardTitle.visibility = VISIBLE
         binding.analyticsItemsTitle.visibility = VISIBLE
         binding.analyticsItemsValue.visibility = VISIBLE
@@ -84,12 +86,16 @@ class AnalyticsListCardView @JvmOverloads constructor(
         binding.noDataText.visibility = VISIBLE
     }
 
-    private fun addListItem(inflater: LayoutInflater, viewState: AnalyticsListCardItemViewState) {
-        val listItemView: AnalyticsListCardItemView =
-            inflater.inflate(R.layout.analytics_list_card_item_view, this, true)
-                as AnalyticsListCardItemView
+    private fun addListItem(
+        inflater: LayoutInflater,
+        listContainer: ViewGroup,
+        viewState: AnalyticsListCardItemViewState
+    ) {
+        val listItemView = inflater.inflate(R.layout.analytics_list_card_item, listContainer, false)
+            as AnalyticsListCardItemView
+        listItemView.cardElevation = resources.getDimension(R.dimen.minor_00)
         listItemView.setInformation(viewState)
-        addView(listItemView)
+        listContainer.addView(listItemView)
     }
 
     private fun getDeltaTagText(viewState: DataViewState) =
@@ -114,6 +120,4 @@ class AnalyticsListCardView @JvmOverloads constructor(
             if (delta > 0) ContextCompat.getColor(context, R.color.analytics_delta_positive_color)
             else ContextCompat.getColor(context, R.color.analytics_delta_tag_negative_color)
     }
-
-
 }
