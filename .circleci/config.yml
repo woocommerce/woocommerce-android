@@ -126,7 +126,7 @@ jobs:
       # Runs "./gradlew connectedDebugAndroidTest" by default.
       # Specify the "test-command" parameter to customize the command run.
       - android_ci/run-tests:
-        test-command: ./gradlew connectedJalapenoDebugAndroidTest -P android.testInstrumentationRunnerArguments.class=com.woocommerce.android.ui.main.ReviewsUITest
+          test-command: ./gradlew connectedJalapenoDebugAndroidTest -P android.testInstrumentationRunnerArguments.class=com.woocommerce.android.ui.main.ReviewsUITest
       - android_ci/save-gradle-cache:
           cache-prefix: v1a
 
