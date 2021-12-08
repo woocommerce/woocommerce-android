@@ -80,6 +80,32 @@ class AnalyticsRepository @Inject constructor(
                 }
         }
 
+    suspend fun fetchProductsData(dateRange: DateRange, selectedRange: AnalyticsDateRanges): Flow<ProductsResult> =
+        getGranularity(selectedRange).let {
+            return getCurrentPeriodStats(dateRange, it)
+                .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
+                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null ||
+                        previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null ||
+                        previousPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold == null ||
+                        currentPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold == null
+                    ) {
+                        return@combine ProductsResult.ProductsError
+                    }
+
+                    val previousItemsSold = previousPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold ?: 0
+                    val currentItemsSold = currentPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
+
+                    return@combine ProductsResult.ProductsData(
+                        ProductsStat(
+                            currentItemsSold,
+                            calculateDeltaPercentage(previousItemsSold.toDouble(), currentItemsSold.toDouble()),
+                            emptyList()
+                        )
+                    )
+                }
+        }
+
+
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
     fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
 
@@ -114,6 +140,11 @@ class AnalyticsRepository @Inject constructor(
     private suspend fun fetchStats(startDate: String, endDate: String, granularity: StatsGranularity) =
         withContext(Dispatchers.IO) {
             statsRepository.fetchRevenueStats(granularity, true, startDate, endDate)
+        }
+
+    private suspend fun fetchTopProducts(startDate: String, endDate: String, granularity: StatsGranularity, quantity: Int) =
+        withContext(Dispatchers.IO) {
+            statsRepository.fetchProductLeaderboards(true, granularity, quantity, endDate)
         }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode

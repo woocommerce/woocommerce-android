@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +21,8 @@ class StatsRepository @Inject constructor(
     private val wcStatsStore: WCStatsStore,
     @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
     private val wcOrderStore: WCOrderStore,
-    private val wcLeaderboardsStore: WCLeaderboardsStore
+    private val wcLeaderboardsStore: WCLeaderboardsStore,
+    private val dateUtils: DateUtils
 ) {
     companion object {
         private val TAG = StatsRepository::class.java
@@ -75,13 +77,16 @@ class StatsRepository @Inject constructor(
     suspend fun fetchProductLeaderboards(
         forced: Boolean,
         granularity: StatsGranularity,
-        quantity: Int
+        quantity: Int,
+        startDate: String = "",
+        endDate: String = ""
     ): Flow<Result<List<WCTopPerformerProductModel>>> = flow {
         when (forced) {
             true -> wcLeaderboardsStore.fetchProductLeaderboards(
                 site = selectedSite.get(),
                 unit = granularity,
-                quantity = quantity
+                quantity = quantity,
+                queryTimeRange = getQueryTimeRange(startDate, endDate)
             )
             false -> wcLeaderboardsStore.fetchCachedProductLeaderboards(
                 site = selectedSite.get(),
@@ -98,6 +103,13 @@ class StatsRepository @Inject constructor(
                 emit(Result.success(model))
             }
         }
+    }
+
+    private fun getQueryTimeRange(startDate: String, endDate: String): LongRange? {
+        if (startDate.isEmpty() || endDate.isEmpty()) return null
+        val startTime = dateUtils.fromIso8601Format(startDate)?.time ?: return null
+        val endTime = dateUtils.fromIso8601Format(endDate)?.time ?: return null
+        return LongRange(startTime, endTime)
     }
 
     suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
