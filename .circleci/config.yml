@@ -188,6 +188,7 @@ workflows:
     jobs:
       # This job uses the Android machine image by default
       - android_ci/run-ui-tests:
+          - copy-gradle-properties
           # Use pre-steps and post-steps if necessary
           # to execute custom steps before and afer any of the built-in steps
           system-image: system-images;android-29;default;x86      
