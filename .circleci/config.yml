@@ -100,6 +100,19 @@ jobs:
           name: Check instrumentation tests build
           command: ./gradlew assembleVanillaDebugAndroidTest
 
+  Connected Tests:
+    executor:
+      name: android/default
+      api-version: "28"
+    steps:
+      - checkout
+      - android/restore-gradle-cache:
+          cache-prefix: tests-cache-v1
+      - copy-gradle-properties
+      - run:
+          name: TDB
+          command: ./gradlew connectedJalapenoDebugAndroidTest -P android.testInstrumentationRunnerArguments.class=com.woocommerce.android.ui.main.ReviewsUITest
+
   Installable Build:
     executor:
       name: android/default
@@ -179,6 +192,24 @@ workflows:
       - Test
       - Installable Build
       - Ensure Screenshots Tests Build
+  Optional Tests:
+    unless:
+      or:
+        - << pipeline.parameters.generate_screenshots >>
+        - << pipeline.parameters.release_build >>
+    #Optionally run connected tests on PRs
+    jobs:
+      - Hold:
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - develop
+                - /^release.*/
+                - /^gutenberg\/integrate_release_.*/
+                - /pull\/[0-9]+/
+      - Connected Tests:
+          requires: [Hold]      
   Release Build:
     when: << pipeline.parameters.release_build >>
     jobs:
