@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.OrdersStat
+import com.woocommerce.android.model.ProductItem
+import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
@@ -80,34 +82,47 @@ class AnalyticsRepository @Inject constructor(
                 }
         }
 
-    suspend fun fetchProductsData(dateRange: DateRange, selectedRange: AnalyticsDateRanges): Flow<ProductsResult> =
-        getGranularity(selectedRange).let {
-            return getCurrentPeriodStats(dateRange, it)
-                .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
-                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null ||
-                        previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null ||
-                        previousPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold == null ||
-                        currentPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold == null
-                    ) {
-                        return@combine ProductsResult.ProductsError
-                    }
-
-                    val previousItemsSold = previousPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold ?: 0
-                    val currentItemsSold = currentPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
-
-                    return@combine ProductsResult.ProductsData(
-                        ProductsStat(
-                            currentItemsSold,
-                            calculateDeltaPercentage(previousItemsSold.toDouble(), currentItemsSold.toDouble()),
-                            emptyList()
-                        )
-                    )
+    suspend fun fetchProductsStats(dateRange: DateRange, selectedRange: AnalyticsDateRanges): Flow<ProductsResult> =
+        getGranularity(selectedRange).let { statsGranularity: StatsGranularity ->
+            return combine(
+                getCurrentPeriodStats(dateRange, statsGranularity),
+                getPreviousPeriodStats(dateRange, statsGranularity),
+                getProductStats(dateRange, statsGranularity, 10)
+            ) { currentRevenue, previousRevenue, products ->
+                if (currentRevenue.isFailure || currentRevenue.getOrNull() == null ||
+                    previousRevenue.isFailure || previousRevenue.getOrNull() == null ||
+                    products.isFailure || products.getOrNull() == null ||
+                    previousRevenue.getOrNull()!!.parseTotal()?.itemsSold == null ||
+                    currentRevenue.getOrNull()!!.parseTotal()?.itemsSold == null
+                ) {
+                    return@combine ProductsResult.ProductsError
                 }
-        }
 
+                val previousItemsSold = previousRevenue.getOrNull()!!.parseTotal()?.itemsSold ?: 0
+                val currentItemsSold = currentRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
+                val productItems = products.getOrNull()?.map {
+                    ProductItem(
+                        it.product.name,
+                        it.total,
+                        it.product.getFirstImageUrl(),
+                        it.quantity,
+                        it.currency
+                    )
+                } ?: emptyList()
+
+                return@combine ProductsResult.ProductsData(
+                    ProductsStat(
+                        currentItemsSold,
+                        calculateDeltaPercentage(previousItemsSold.toDouble(), currentItemsSold.toDouble()),
+                        productItems
+                    )
+                )
+            }
+        }
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
     fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
+    fun getProductsAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_PRODUCTS_PATH
 
     private suspend fun getCurrentPeriodStats(dateRange: DateRange, granularity: StatsGranularity) = when (dateRange) {
         is DateRange.SimpleDateRange ->
@@ -122,6 +137,20 @@ class AnalyticsRepository @Inject constructor(
         is DateRange.MultipleDateRange ->
             fetchStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(), granularity)
     }
+
+    private suspend fun getProductStats(dateRange: DateRange, granularity: StatsGranularity, quantity: Int) =
+        when (dateRange) {
+            is DateRange.SimpleDateRange ->
+                fetchProductLeaderboards(
+                    dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(),
+                    granularity, quantity
+                )
+            is DateRange.MultipleDateRange ->
+                fetchProductLeaderboards(
+                    dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(),
+                    granularity, quantity
+                )
+        }
 
     private fun getGranularity(selectedRange: AnalyticsDateRanges) = when (selectedRange) {
         AnalyticsDateRanges.TODAY, AnalyticsDateRanges.YESTERDAY -> DAYS
@@ -142,10 +171,14 @@ class AnalyticsRepository @Inject constructor(
             statsRepository.fetchRevenueStats(granularity, true, startDate, endDate)
         }
 
-    private suspend fun fetchTopProducts(startDate: String, endDate: String, granularity: StatsGranularity, quantity: Int) =
-        withContext(Dispatchers.IO) {
-            statsRepository.fetchProductLeaderboards(true, granularity, quantity, endDate)
-        }
+    private suspend fun fetchProductLeaderboards(
+        startDate: String,
+        endDate: String,
+        granularity: StatsGranularity,
+        quantity: Int
+    ) = withContext(Dispatchers.IO) {
+        statsRepository.fetchProductLeaderboards(true, granularity, quantity, startDate, endDate)
+    }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
@@ -153,6 +186,7 @@ class AnalyticsRepository @Inject constructor(
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
         const val ANALYTICS_ORDERS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Forders"
+        const val ANALYTICS_PRODUCTS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Fproducts"
 
         const val ZERO_VALUE = 0.0
         const val MINUS_ONE = -1

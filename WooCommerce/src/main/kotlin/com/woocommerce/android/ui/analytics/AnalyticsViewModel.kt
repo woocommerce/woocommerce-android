@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
@@ -15,6 +16,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.Multiple
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -92,6 +94,14 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
+    fun onProductsSeeReportClick() {
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(OpenWPComWebView(analyticsRepository.getProductsAdminPanelUrl()))
+        } else {
+            triggerEvent(OpenUrl(analyticsRepository.getProductsAdminPanelUrl()))
+        }
+    }
+
     private fun updateRevenue(
         range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
         dateRange: DateRange = getDefaultDateRange()
@@ -146,13 +156,14 @@ class AnalyticsViewModel @Inject constructor(
     ) =
         launch {
             mutableState.value = state.value.copy(productsState = LoadingProductsViewState)
-            analyticsRepository.fetchProductsData(dateRange, range)
+            analyticsRepository.fetchProductsStats(dateRange, range)
                 .collect {
                     when (it) {
                         is ProductsData -> mutableState.value = state.value.copy(
                             productsState = buildProductsDataState(
                                 it.productsStat.itemsSold,
-                                it.productsStat.itemsSoldDelta
+                                it.productsStat.itemsSoldDelta,
+                                it.productsStat.products
                             )
                         )
                         ProductsError -> mutableState.value = state.value.copy(
@@ -280,7 +291,7 @@ class AnalyticsViewModel @Inject constructor(
             )
         )
 
-    private fun buildProductsDataState(itemsSold: Int, delta: Int) =
+    private fun buildProductsDataState(itemsSold: Int, delta: Int, products: List<ProductItem>) =
         ProductsViewState.DataViewState(
             title = resourceProvider.getString(R.string.analytics_products_card_title),
             subTitle = resourceProvider.getString(R.string.analytics_products_list_items_sold),
@@ -288,7 +299,20 @@ class AnalyticsViewModel @Inject constructor(
             delta = delta,
             listLeftHeader = resourceProvider.getString(R.string.analytics_products_list_header_title),
             listRightHeader = resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
-            emptyList()
+            items = products
+                .sortedByDescending { it.quantity }
+                .mapIndexed { index, it ->
+                    AnalyticsListCardItemViewState(
+                        it.image,
+                        it.name,
+                        it.quantity.toString(),
+                        resourceProvider.getString(
+                            R.string.analytics_products_list_item_description,
+                            formatValue(it.netSales.toString(), it.currencyCode)
+                        ),
+                        index != products.size - 1
+                    )
+                }
         )
 
     private fun saveCurrentRange(range: AnalyticsDateRanges) {

@@ -84,6 +84,7 @@ class AnalyticsFragment :
         binding.analyticsDateSelectorCard.setCalendarClickListener { openDateRangeSelector() }
         binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
         binding.analyticsOrdersCard.setSeeReportClickListener { viewModel.onOrdersSeeReportClick() }
+        binding.analyticsProductsCard.setSeeReportClickListener { viewModel.onProductsSeeReportClick() }
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
