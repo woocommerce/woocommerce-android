@@ -107,6 +107,7 @@ jobs:
       resource-class: large
     steps:
       - checkout
+      - copy-gradle-properties
       # Create an AVD named "myavd"
       - android_ci/create-avd:
           avd-name: myavd
