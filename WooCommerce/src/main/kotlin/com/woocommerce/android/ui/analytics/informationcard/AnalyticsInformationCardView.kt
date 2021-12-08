@@ -19,10 +19,12 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
     val binding = AnalyticsInformationCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
 
-    internal fun updateInformation(viewState: AnalyticsInformationViewState) = when (viewState) {
-        is LoadingViewState -> setSkeleton()
-        is DataViewState -> setDataViewState(viewState)
-        is NoDataState -> setNoDataViewState(viewState)
+    internal fun updateInformation(viewState: AnalyticsInformationViewState) {
+        when (viewState) {
+            is LoadingViewState -> setSkeleton()
+            is DataViewState -> setDataViewState(viewState)
+            is NoDataState -> setNoDataViewState(viewState)
+        }
     }
 
     private fun setSkeleton() {
