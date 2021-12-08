@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.*
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionDataViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -172,11 +172,11 @@ class AnalyticsViewModel @Inject constructor(
     private fun buildRevenueDataViewState(totalValue: String, totalDelta: Int, netValue: String, netDelta: Int) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
-            leftSection = SectionDataViewState(
+            leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
                 totalValue, totalDelta
             ),
-            rightSection = SectionDataViewState(
+            rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_net_sales_title),
                 netValue, netDelta
             )

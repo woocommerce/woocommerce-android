@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges.LAST_YEAR
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionDataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -120,13 +119,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             with(sut.state.value.revenueState) {
 
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
-                assertTrue(leftSection is SectionDataViewState)
-                assertEquals(TOTAL_CURRENCY_VALUE, (leftSection as SectionDataViewState).value)
-                assertEquals(TOTAL_DELTA, (leftSection as SectionDataViewState).delta)
-
-                assertTrue(rightSection is SectionDataViewState)
-                assertEquals(NET_CURRENCY_VALUE, (rightSection as SectionDataViewState).value)
-                assertEquals(NET_DELTA, (rightSection as SectionDataViewState).delta)
+                assertEquals(TOTAL_CURRENCY_VALUE, leftSection.value)
+                assertEquals(TOTAL_DELTA, leftSection.delta)
+                assertEquals(NET_CURRENCY_VALUE, rightSection.value)
+                assertEquals(NET_DELTA, rightSection.delta)
             }
         }
 

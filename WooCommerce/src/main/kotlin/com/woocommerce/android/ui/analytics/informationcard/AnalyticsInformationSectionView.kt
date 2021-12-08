@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationSectionViewBinding
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.*
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
 import kotlin.math.absoluteValue
@@ -21,24 +20,19 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
     val binding = AnalyticsInformationSectionViewBinding.inflate(LayoutInflater.from(ctx), this)
 
     internal fun setViewState(sectionViewState: AnalyticsInformationSectionViewState) {
-        when (sectionViewState) {
-            is SectionHiddenViewState -> visibility = INVISIBLE
-            is SectionDataViewState -> {
-                visibility = View.VISIBLE
-                binding.cardInformationSectionTitle.text = sectionViewState.title
-                binding.cardInformationSectionValue.text = sectionViewState.value
-                binding.cardInformationSectionDeltaTag.text =
-                    ctx.resources.getString(
-                        R.string.analytics_information_card_delta,
-                        sectionViewState.sign, sectionViewState.delta
-                    )
-                binding.cardInformationSectionDeltaTag.tag =
-                    AnalyticsInformationSectionDeltaTag(sectionViewState.delta, getDeltaTagText(sectionViewState))
-            }
-        }
+        visibility = View.VISIBLE
+        binding.cardInformationSectionTitle.text = sectionViewState.title
+        binding.cardInformationSectionValue.text = sectionViewState.value
+        binding.cardInformationSectionDeltaTag.text =
+            ctx.resources.getString(
+                R.string.analytics_information_card_delta,
+                sectionViewState.sign, sectionViewState.delta
+            )
+        binding.cardInformationSectionDeltaTag.tag =
+            AnalyticsInformationSectionDeltaTag(sectionViewState.delta, getDeltaTagText(sectionViewState))
     }
 
-    private fun getDeltaTagText(sectionDataViewState: SectionDataViewState) =
+    private fun getDeltaTagText(sectionDataViewState: AnalyticsInformationSectionViewState) =
         ctx.resources.getString(
             R.string.analytics_information_card_delta,
             sectionDataViewState.sign,
