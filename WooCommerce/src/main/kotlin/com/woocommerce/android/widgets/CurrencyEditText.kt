@@ -84,7 +84,23 @@ class CurrencyEditText : AppCompatEditText {
                 cleanValue = cleanValue.divide(BigDecimal(10f.pow(decimals).toInt()), decimals, HALF_UP)
             }
 
+            // Check if a backspace was pressed.
             if (lengthBefore > lengthAfter) {
+                // If backspace was pressed, we want the last digit to be removed if there is a non-numeric character
+                // (i.e. the currency symbol) on the right. Or if there is no non-numeric character at all. This means
+                // that the backspace only deleted the currency symbol character and not the digit.
+                //
+                // If we don't handle this manually, it will look like the user _did not delete anything_.
+                //
+                // Example scenario:
+                //
+                // 1. If the current text is "123.79CA$" (French Canada places the dollar symbol on the right)
+                // 2. The user presses backspace
+                // 3. The [CurrencyEditText.onTextChanged] will be called with [text] equal to "123.79CA"
+                //
+                // If keep this as is and reformat again, we'll end up with same text, "123.79CA$". So it'll look like
+                // the backspace was ignored.
+
                 // https://regexr.com/6b5tk
                 val startsWithDigitPattern = Regex("^\\d.*")
                 if (text.toString().matches(startsWithDigitPattern)) {
