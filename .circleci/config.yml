@@ -102,246 +102,32 @@ jobs:
           command: ./gradlew assembleVanillaDebugAndroidTest
 
   Connected Tests:
-    description: |
-      Creates an AVD, starts an emulator and runs Android UI tests.
-      This is a job that wraps the "start-emulator-and-run-tests" command.
-    executor: << parameters.executor >>
-    parameters:
-      additional-avd-args:
-        default: ''
-        description: |
-          Additional args to be passed directly to the avd creation command
-        type: string
-      additional-emulator-args:
-        default: ''
-        description: |
-          Additional args to be passed directly to the emulator command
-        type: string
-      avd-name:
-        default: test
-        description: |
-          The name of the AVD to create
-        type: string
-      camera-back:
-        default: ''
-        description: |
-          The value to use for the "-camera-back" flag.
-          If set to "", the emulator will be run without the -camera-back flag.
-        type: string
-      camera-front:
-        default: ''
-        description: |
-          The value to use for the "-camera-front" flag.
-          If set to "", the emulator will be run without the -camera-front flag.
-        type: string
-      checkout:
-        default: true
-        description: Whether to run the checkout step
-        type: boolean
-      delay-adb:
-        default: false
-        description: |
-          Whether to run the emulator with the -delay-adb flag
-        type: boolean
-      disable-animations:
-        default: true
-        description: >
-          Whether to disable animations that may interfere with tests, after the
-          emulator starts up
-        type: boolean
-      executor:
-        default: android-machine
-        description: Executor for the job
-        type: executor
-      gpu:
-        default: swiftshader_indirect
-        description: |
-          The value to use for the "-gpu" flag.
-          If set to "", the emulator will be run without the -gpu flag.
-        type: string
-      install-system-image:
-        default: true
-        description: |
-          Whether to first install the system image via sdkmanager
-        type: boolean
-      kill-emulators:
-        default: true
-        description: |
-          Whether to kill the emulators after the tests complete
-        type: boolean
-      max-tries:
-        default: 2
-        description: 'Max number of tries. To disable retries, set this to 1.'
-        type: integer
-      memory:
-        default: -1
-        description: |
-          The value to use for the "-memory" flag.
-          If set to -1, the emulator will be run without the -memory flag.
-        type: integer
-      no-audio:
-        default: true
-        description: |
-          Whether to run the emulator with the -noaudio flag
-        type: boolean
-      no-boot-anim:
-        default: true
-        description: |
-          Whether to run the emulator with the -no-boot-anim flag
-        type: boolean
-      no-output-timeout:
-        default: 10m
-        description: |
-          Use this to configure the no_output_timeout value of the test run
-        type: string
-      no-snapshot:
-        default: true
-        description: |
-          Whether to run the emulator with the -no-snapshot flag
-        type: boolean
-      no-window:
-        default: true
-        description: |
-          Whether to run the emulator with the -no-window flag
-        type: boolean
-      override-emulator-args:
-        default: ''
-        description: >
-          If this is set to a non-blank value, the emulator command will be
-
-          run with the -avd flag and the value of "override-args" (i.e. none of the
-          defaults
-
-          provided by the orb command will be used)
-        type: string
-      post-emulator-launch-assemble-command:
-        default: ./gradlew assembleDebugAndroidTest
-        description: |
-          If this is set to a non-blank value, the configured command will be run
-          after the emulator has been launched, and before commencing the
-          wait for the emulator to finish starting up.
-        type: string
-      post-emulator-wait-steps:
-        default: []
-        description: |
-          Steps to execute after waiting for the emulator to start up
-        type: steps
-      post-run-tests-steps:
-        default: []
-        description: |
-          Steps to run after the tests
-        type: steps
-      pre-emulator-wait-steps:
-        default: []
-        description: >
-          Steps to execute while before beginning to wait for the emulator to start
-          up
-        type: steps
-      pre-run-tests-steps:
-        default: []
-        description: |
-          Steps to run before the tests
-        type: steps
-      restore-gradle-cache-find-args:
-        default: . -name 'build.gradle'
-        description: |
-          Use this to customize how the find command is used to look for relevant
-          file changes.
-        type: string
-      restore-gradle-cache-post-emulator-launch:
-        default: true
-        description: |
-          Whether to restore the gradle cache after the emulator has been launched,
-          and before commencing the wait for the emulator to finish starting up.
-        type: boolean
-      restore-gradle-cache-prefix:
-        default: v1
-        description: >
-          Cache prefix used if the "restore-gradle-cache-post-emulator-launch"
-          parameter
-
-          is set to true.
-        type: string
-      retry-interval:
-        default: 5
-        description: Duration in seconds to wait before the next try
-        type: integer
-      run-logcat:
-        default: false
-        description: |
-          Whether to run with logcat in the background, after the emulator starts up
-        type: boolean
-      run-tests-working-directory:
-        default: .
-        description: Working directory to run the tests in
-        type: string
-      save-gradle-cache:
-        default: true
-        description: |
-          Whether to write to the gradle cache after the tests have run
-        type: boolean
-      system-image:
-        default: system-images;android-29;default;x86
-        description: |
-          Name of system image e.g. "system-images;android-29;default;x86".
-          It should match the name seen in the "sdkmanager --list" output.
-        type: string
-      test-command:
-        default: ./gradlew connectedDebugAndroidTest
-        description: Command to run in order to run the tests
-        type: string
-      verbose:
-        default: true
-        description: |
-          Whether to run the emulator with the -verbose flag
-        type: boolean
-      wait-for-emulator:
-        default: true
-        description: |
-          Whether to wait for the emulator to start up
-        type: boolean
+    executor:
+      name: android_ci/android-machine
+      resource-class: large
     steps:
-      - when:
-          condition: << parameters.checkout >>
-          steps:
-            - checkout
-      - copy-gradle-properties            
-      - start-emulator-and-run-tests:
-          additional-avd-args: << parameters.additional-avd-args >>
-          additional-emulator-args: << parameters.additional-emulator-args >>
-          avd-name: << parameters.avd-name >>
-          camera-back: << parameters.camera-back >>
-          camera-front: << parameters.camera-front >>
-          delay-adb: << parameters.delay-adb >>
-          disable-animations: << parameters.disable-animations >>
-          gpu: << parameters.gpu >>
-          install-system-image: << parameters.install-system-image >>
-          kill-emulators: << parameters.kill-emulators >>
-          max-tries: << parameters.max-tries >>
-          memory: << parameters.memory >>
-          no-audio: << parameters.no-audio >>
-          no-boot-anim: << parameters.no-boot-anim >>
-          no-output-timeout: << parameters.no-output-timeout >>
-          no-snapshot: << parameters.no-snapshot >>
-          no-window: << parameters.no-window >>
-          override-emulator-args: << parameters.override-emulator-args >>
-          post-emulator-launch-assemble-command: << parameters.post-emulator-launch-assemble-command >>
-          post-emulator-wait-steps: << parameters.post-emulator-wait-steps >>
-          post-run-tests-steps: << parameters.post-run-tests-steps >>
-          pre-emulator-wait-steps: << parameters.pre-emulator-wait-steps >>
-          pre-run-tests-steps: << parameters.pre-run-tests-steps >>
-          restore-gradle-cache-find-args: << parameters.restore-gradle-cache-find-args >>
-          restore-gradle-cache-post-emulator-launch: << parameters.restore-gradle-cache-post-emulator-launch >>
-          restore-gradle-cache-prefix: << parameters.restore-gradle-cache-prefix >>
-          retry-interval: << parameters.retry-interval >>
-          run-logcat: << parameters.run-logcat >>
-          run-tests-working-directory: << parameters.run-tests-working-directory >>
-          save-gradle-cache: << parameters.save-gradle-cache >>
-          system-image: <<parameters.system-image>>
-          test-command: << parameters.test-command >>
-          verbose: << parameters.verbose >>
-          wait-for-emulator: << parameters.wait-for-emulator >>
-
+      - checkout
+      - copy-gradle-properties
+      # Create an AVD named "myavd"
+      - android_ci/create-avd:
+          avd-name: myavd
+          system-image: system-images;android-29;default;x86
+          install: true
+      # By default, after starting up the emulator, a cache will be restored,
+      # "./gradlew assembleDebugAndroidTest" will be run and then a script
+      # will be run to wait for the emulator to start up.
+      # Specify the "post-emulator-launch-assemble-command" command to override
+      # the gradle command run, or set "wait-for-emulator" to false to disable
+      # waiting for the emulator altogether.
+      - android_ci/start-emulator:
+          avd-name: myavd
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+      # Runs "./gradlew connectedDebugAndroidTest" by default.
+      # Specify the "test-command" parameter to customize the command run.
+      - android_ci/run-tests
+      - android_ci/save-gradle-cache:
+          cache-prefix: v1a
 
   Installable Build:
     executor:
@@ -437,10 +223,7 @@ workflows:
                 - /^release.*/
                 - /pull\/[0-9]+/
       - Connected Tests:
-          requires: [Hold]
-          executor:
-            name: android_ci/android-machine
-            resource-class: large   
+          requires: [Hold]      
   Release Build:
     when: << pipeline.parameters.release_build >>
     jobs:
