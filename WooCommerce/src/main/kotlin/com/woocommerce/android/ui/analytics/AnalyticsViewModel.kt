@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
@@ -48,9 +49,15 @@ class AnalyticsViewModel @Inject constructor(
         updateOrders()
     }
 
+    fun onRefreshRequested() {
+        updateRevenue(getCurrentRange(), getCurrentDateRange())
+    }
+
     fun onSelectedDateRangeChanged(newSelection: String) {
         val selectedRange: AnalyticsDateRanges = AnalyticsDateRanges.from(newSelection)
         val newDateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedRange)
+        saveCurrentRange(selectedRange)
+        saveCurrentDateRange(newDateRange)
         updateDateRangeCalendarView(selectedRange, newDateRange)
         updateRevenue(selectedRange, newDateRange)
         updateOrders(selectedRange, newDateRange)
@@ -60,7 +67,7 @@ class AnalyticsViewModel @Inject constructor(
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
             triggerEvent(OpenWPComWebView(analyticsRepository.getRevenueAdminPanelUrl()))
         } else {
-            triggerEvent(AnalyticsViewEvent.OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
+            triggerEvent(OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
         }
     }
 
@@ -68,9 +75,10 @@ class AnalyticsViewModel @Inject constructor(
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
             triggerEvent(OpenWPComWebView(analyticsRepository.getOrdersAdminPanelUrl()))
         } else {
-            triggerEvent(AnalyticsViewEvent.OpenUrl(analyticsRepository.getOrdersAdminPanelUrl()))
+            triggerEvent(OpenUrl(analyticsRepository.getOrdersAdminPanelUrl()))
         }
     }
+
     private fun updateRevenue(
         range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
         dateRange: DateRange = getDefaultDateRange()
@@ -226,6 +234,24 @@ class AnalyticsViewModel @Inject constructor(
                 avgValue, avgDelta
             )
         )
+
+    private fun saveCurrentRange(range: AnalyticsDateRanges) {
+        savedState[RANGE_SELECTION_KEY] = range
+    }
+
+    private fun saveCurrentDateRange(dateRange: DateRange) {
+        savedState[DATE_RANGE_SELECTION_KEY] = dateRange
+    }
+
+    private fun getCurrentDateRange(): DateRange = savedState[DATE_RANGE_SELECTION_KEY] ?: getDefaultDateRange()
+    private fun getCurrentRange(): AnalyticsDateRanges = savedState[RANGE_SELECTION_KEY]
+        ?: AnalyticsDateRanges.from(getDefaultSelectedPeriod())
+
+    companion object {
+        const val RANGE_SELECTION_KEY = "range_selection_key"
+        const val DATE_RANGE_SELECTION_KEY = "date_range_selection_key"
+    }
+
 }
 
 
