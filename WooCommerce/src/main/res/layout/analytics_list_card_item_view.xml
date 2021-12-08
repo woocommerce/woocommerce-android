@@ -1,15 +1,15 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content">
+    style="@style/Woo.Card.WithoutPadding"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardElevation="@dimen/minor_00">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
-        android:paddingTop="@dimen/major_75"
-        android:paddingBottom="@dimen/major_75">
+        android:paddingTop="@dimen/major_75">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/analyticsCardListItemImage"
@@ -35,7 +35,6 @@
             app:layout_constraintTop_toTopOf="@+id/analyticsCardListItemImage"
             app:lineHeight="@dimen/text_major_50"
             tools:text="Tabletop Pothos" />
-
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/analyticsCardListItemDescription"
@@ -69,10 +68,11 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/minor_10"
             android:layout_marginTop="@dimen/major_75"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/analyticsCardListItemDescription"
             app:layout_constraintTop_toBottomOf="@+id/analyticsCardListItemDescription" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</merge>
+</com.google.android.material.card.MaterialCardView>
 
