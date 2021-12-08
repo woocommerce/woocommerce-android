@@ -195,7 +195,6 @@ workflows:
   Optional Tests:
     unless:
       or:
-        - << pipeline.parameters.generate_screenshots >>
         - << pipeline.parameters.release_build >>
     #Optionally run connected tests on PRs
     jobs:
@@ -206,7 +205,6 @@ workflows:
               ignore:
                 - develop
                 - /^release.*/
-                - /^gutenberg\/integrate_release_.*/
                 - /pull\/[0-9]+/
       - Connected Tests:
           requires: [Hold]      
