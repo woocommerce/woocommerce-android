@@ -44,7 +44,7 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
             val config = TagConfig(context)
                 .apply {
                     tagText = text
-                    fgColor = ContextCompat.getColor(context, R.color.woo_white)
+                    fgColor = ContextCompat.getColor(context, R.color.analytics_delta_text_color)
                     bgColor = getDeltaTagBackgroundColor(context)
                 }
             return config

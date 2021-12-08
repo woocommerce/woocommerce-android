@@ -8,8 +8,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
-        android:paddingTop="@dimen/minor_100"
         android:paddingBottom="@dimen/minor_100">
 
         <com.google.android.material.textview.MaterialTextView
@@ -49,7 +47,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_analytics_calendar" />
+            app:srcCompat="@drawable/ic_analytics_calendar"
+            tools:ignore="TouchTargetSizeCheck" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
