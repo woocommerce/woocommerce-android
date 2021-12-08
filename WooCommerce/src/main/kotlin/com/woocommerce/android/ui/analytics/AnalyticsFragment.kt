@@ -36,6 +36,10 @@ class AnalyticsFragment :
         setupResultHandlers(viewModel)
         lifecycleScope.launchWhenStarted { viewModel.state.collect { newState -> handleStateChange(newState) } }
         viewModel.event.observe(viewLifecycleOwner, { event -> handleEvent(event) })
+        binding.analyticsRefreshLayout.setOnRefreshListener {
+            binding.analyticsRefreshLayout.scrollUpChild = binding.scrollView
+            viewModel.onRefreshRequested()
+        }
     }
 
     override fun onDestroyView() {
@@ -43,10 +47,10 @@ class AnalyticsFragment :
         _binding = null
     }
 
-    override fun shouldExpandToolbar(): Boolean = true
+    override fun shouldExpandToolbar(): Boolean = binding.scrollView.scrollY == 0
 
     override fun scrollToTop() {
-        return
+        binding.scrollView.smoothScrollTo(0, 0)
     }
 
     private fun handleEvent(event: MultiLiveEvent.Event) {
@@ -87,6 +91,8 @@ class AnalyticsFragment :
         binding.analyticsDateSelectorCard.updateToText(viewState.analyticsDateRangeSelectorState.toDatePeriod)
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
         binding.analyticsOrdersCard.updateInformation(viewState.ordersState)
+        binding.analyticsProductsCard.updateInformation(viewState.productsState)
+        binding.analyticsRefreshLayout.isRefreshing = false
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
