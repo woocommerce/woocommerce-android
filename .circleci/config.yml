@@ -101,6 +101,34 @@ jobs:
           name: Check instrumentation tests build
           command: ./gradlew assembleVanillaDebugAndroidTest
 
+  Connected Tests:
+    executor:
+      name: android_ci/android-machine
+      resource-class: large
+    steps:
+      - checkout
+      - copy-gradle-properties
+      # Create an AVD named "myavd"
+      - android_ci/create-avd:
+          avd-name: myavd
+          system-image: system-images;android-29;default;x86
+          install: true
+      # By default, after starting up the emulator, a cache will be restored,
+      # "./gradlew assembleDebugAndroidTest" will be run and then a script
+      # will be run to wait for the emulator to start up.
+      # Specify the "post-emulator-launch-assemble-command" command to override
+      # the gradle command run, or set "wait-for-emulator" to false to disable
+      # waiting for the emulator altogether.
+      - android_ci/start-emulator:
+          avd-name: myavd
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+      # Runs "./gradlew connectedDebugAndroidTest" by default.
+      # Specify the "test-command" parameter to customize the command run.
+      - android_ci/run-tests
+      - android_ci/save-gradle-cache:
+          cache-prefix: v1a
+
   Installable Build:
     executor:
       name: android/default
@@ -171,6 +199,7 @@ jobs:
           failure_message: '${SLACK_FAILURE_MESSAGE}'
           success_message: '${SLACK_SUCCESS_MESSAGE}'
 
+
 workflows:
   "WooCommerce Android":
     unless: << pipeline.parameters.release_build >>
@@ -178,16 +207,24 @@ workflows:
       - Lint
       - Test
       - Installable Build
-      - Ensure Screenshots Tests Build     
+      - Ensure Screenshots Tests Build
+  Optional Tests:
+    unless:
+      or:
+        - << pipeline.parameters.release_build >>
+    #Optionally run connected tests on PRs
+    jobs:
+      - Hold:
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - develop
+                - /^release.*/
+                - /pull\/[0-9]+/
+      - Connected Tests:
+          requires: [Hold]      
   Release Build:
     when: << pipeline.parameters.release_build >>
     jobs:
       - Release Build
-  UITest:
-    jobs:
-      copy-gradle-properties
-      # This job uses the Android machine image by default
-      - android_ci/run-ui-tests:
-          # Use pre-steps and post-steps if necessary
-          # to execute custom steps before and afer any of the built-in steps
-          system-image: system-images;android-29;default;x86
