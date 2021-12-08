@@ -20,6 +20,7 @@ commands:
 orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
   android: wordpress-mobile/android@1.0
+  android_ci: circleci/android@1.0.3
   git: wordpress-mobile/git@1.0
   bundle-install: toshimaru/bundle-install@0.3.1
   slack: circleci/slack@3.4.2
@@ -101,17 +102,31 @@ jobs:
           command: ./gradlew assembleVanillaDebugAndroidTest
 
   Connected Tests:
-    executor:
-      name: android/default
-      api-version: "28"
+     executor:
+      name: android_ci/android-machine
+      resource-class: large
     steps:
       - checkout
-      - android/restore-gradle-cache:
-          cache-prefix: tests-cache-v1
-      - copy-gradle-properties
-      - run:
-          name: TDB
-          command: ./gradlew connectedJalapenoDebugAndroidTest -P android.testInstrumentationRunnerArguments.class=com.woocommerce.android.ui.main.ReviewsUITest
+      # Create an AVD named "myavd"
+      - android_ci/create-avd:
+          avd-name: myavd
+          system-image: system-images;android-29;default;x86
+          install: true
+      # By default, after starting up the emulator, a cache will be restored,
+      # "./gradlew assembleDebugAndroidTest" will be run and then a script
+      # will be run to wait for the emulator to start up.
+      # Specify the "post-emulator-launch-assemble-command" command to override
+      # the gradle command run, or set "wait-for-emulator" to false to disable
+      # waiting for the emulator altogether.
+      - android_ci/start-emulator:
+          avd-name: myavd
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+      # Runs "./gradlew connectedDebugAndroidTest" by default.
+      # Specify the "test-command" parameter to customize the command run.
+      - android_ci/run-tests
+      - android_ci/save-gradle-cache:
+          cache-prefix: v1a
 
   Installable Build:
     executor:
