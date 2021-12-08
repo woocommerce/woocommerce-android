@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
@@ -25,6 +26,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
@@ -37,16 +41,21 @@ class AnalyticsViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
-    private val mutableState = MutableStateFlow(AnalyticsViewState(
-        buildAnalyticsDateRangeSelectorViewState(),
-        LoadingViewState,
-        LoadingViewState))
+    private val mutableState = MutableStateFlow(
+        AnalyticsViewState(
+            buildAnalyticsDateRangeSelectorViewState(),
+            LoadingViewState,
+            LoadingViewState,
+            LoadingProductsViewState
+        )
+    )
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
     init {
         updateRevenue()
         updateOrders()
+        updateProducts()
     }
 
     fun onRefreshRequested() {
@@ -123,6 +132,30 @@ class AnalyticsViewModel @Inject constructor(
                         )
                         is AnalyticsRepository.OrdersResult.OrdersError -> mutableState.value = state.value.copy(
                             ordersState = NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
+                        )
+                    }
+                }
+        }
+
+    private fun updateProducts(
+        range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
+        dateRange: DateRange = getDefaultDateRange()
+    ) =
+        launch {
+            mutableState.value = state.value.copy(productsState = LoadingProductsViewState)
+            analyticsRepository.fetchProductsData(dateRange, range)
+                .collect {
+                    when (it) {
+                        is AnalyticsRepository.ProductsResult.ProductsData -> mutableState.value = state.value.copy(
+                            productsState = buildProductsDataState(
+                                it.productsStat.itemsSold,
+                                it.productsStat.itemsSoldDelta
+                            )
+                        )
+                        ProductsError -> mutableState.value = state.value.copy(
+                            productsState = ProductsNoDataState(
+                                resourceProvider.getString(R.string.analytics_revenue_no_data)
+                            )
                         )
                     }
                 }
@@ -242,6 +275,17 @@ class AnalyticsViewModel @Inject constructor(
                 resourceProvider.getString(R.string.analytics_avg_orders_title),
                 avgValue, avgDelta
             )
+        )
+
+    private fun buildProductsDataState(itemsSold: Int, delta: Int) =
+        ProductsViewState.DataViewState(
+            title = resourceProvider.getString(R.string.analytics_products_card_title),
+            subTitle = resourceProvider.getString(R.string.analytics_products_list_items_sold),
+            subTitleValue = itemsSold.toString(),
+            delta = delta,
+            listLeftHeader = resourceProvider.getString(R.string.analytics_products_list_header_title),
+            listRightHeader = resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
+            emptyList()
         )
 
     private fun saveCurrentRange(range: AnalyticsDateRanges) {

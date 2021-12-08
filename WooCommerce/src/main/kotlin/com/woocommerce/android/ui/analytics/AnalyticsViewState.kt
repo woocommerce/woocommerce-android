@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 data class AnalyticsViewState(
     val analyticsDateRangeSelectorState: AnalyticsDateRangeSelectorViewState,
     val revenueState: AnalyticsInformationViewState,
-    val ordersState: AnalyticsInformationViewState
+    val ordersState: AnalyticsInformationViewState,
+    val productsState: AnalyticsListViewState
 )
 
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {
