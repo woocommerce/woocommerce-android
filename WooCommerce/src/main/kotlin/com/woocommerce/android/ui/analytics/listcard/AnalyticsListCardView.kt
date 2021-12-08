@@ -39,7 +39,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
     private fun setSkeleton() {
         skeletonView.show(
             binding.analyticsCardListContainer,
-            R.layout.skeleton_analytics_information_card,
+            R.layout.skeleton_analytics_list_card,
             delayed = true
         )
         binding.analyticsCardTitle.visibility = GONE
