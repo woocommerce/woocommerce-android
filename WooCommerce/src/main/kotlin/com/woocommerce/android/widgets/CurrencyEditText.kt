@@ -63,7 +63,12 @@ class CurrencyEditText : AppCompatEditText {
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
-            val cleanValue = clean(text = text, decimals = decimals, lengthBefore = lengthBefore, lengthAfter = lengthAfter)
+            val cleanValue = clean(
+                text = text,
+                decimals = decimals,
+                lengthBefore = lengthBefore,
+                lengthAfter = lengthAfter
+            )
 
             _value.value = cleanValue
             setText(formatCurrency(cleanValue))
