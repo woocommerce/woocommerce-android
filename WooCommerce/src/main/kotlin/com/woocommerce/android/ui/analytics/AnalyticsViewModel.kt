@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
@@ -61,6 +62,7 @@ class AnalyticsViewModel @Inject constructor(
     fun onRefreshRequested() {
         updateRevenue(getCurrentRange(), getCurrentDateRange())
         updateOrders(getCurrentRange(), getCurrentDateRange())
+        updateProducts(getCurrentRange(), getCurrentDateRange())
     }
 
     fun onSelectedDateRangeChanged(newSelection: String) {
@@ -71,6 +73,7 @@ class AnalyticsViewModel @Inject constructor(
         updateDateRangeCalendarView(selectedRange, newDateRange)
         updateRevenue(selectedRange, newDateRange)
         updateOrders(selectedRange, newDateRange)
+        updateProducts(selectedRange, newDateRange)
     }
 
     fun onRevenueSeeReportClick() {
@@ -146,7 +149,7 @@ class AnalyticsViewModel @Inject constructor(
             analyticsRepository.fetchProductsData(dateRange, range)
                 .collect {
                     when (it) {
-                        is AnalyticsRepository.ProductsResult.ProductsData -> mutableState.value = state.value.copy(
+                        is ProductsData -> mutableState.value = state.value.copy(
                             productsState = buildProductsDataState(
                                 it.productsStat.itemsSold,
                                 it.productsStat.itemsSoldDelta
