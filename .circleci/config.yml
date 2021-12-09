@@ -111,7 +111,7 @@ jobs:
       # Create an AVD named "myavd"
       - android_ci/create-avd:
           avd-name: myavd
-          system-image: system-images;android-29;default;x86
+          system-image: system-images;android-30;default;x86
           install: true
       # By default, after starting up the emulator, a cache will be restored,
       # "./gradlew assembleDebugAndroidTest" will be run and then a script
@@ -126,7 +126,7 @@ jobs:
       # Runs "./gradlew connectedDebugAndroidTest" by default.
       # Specify the "test-command" parameter to customize the command run.
       - android_ci/run-tests:
-          test-command: ./gradlew connectedJalapenoDebugAndroidTest -P android.testInstrumentationRunnerArguments.class=com.woocommerce.android.ui.main.ReviewsUITest
+          test-command: ./gradlew connectedVanillaDebugAndroidTest -P android.testInstrumentationRunnerArguments.class=com.woocommerce.android.ui.main.ReviewsUITest
       - android_ci/save-gradle-cache:
           cache-prefix: v1a
 
