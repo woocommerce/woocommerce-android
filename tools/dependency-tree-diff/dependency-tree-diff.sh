@@ -22,6 +22,7 @@ if [ -n "$CIRCLE_PULL_REQUEST" ]; then
   git checkout "$CIRCLE_BRANCH"
   ./gradlew :WooCommerce:dependencies --configuration $CONFIGURATION >$CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE
 
+  # https://github.com/JakeWharton/dependency-tree-diff
   ./tools/dependency-tree-diff/dependency-tree-diff.jar $TARGET_BRANCH_DEPENDENCIES_FILE $CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE >$DIFF_DEPENDENCIES_FILE
 
   if [ -s $DIFF_DEPENDENCIES_FILE ]; then
