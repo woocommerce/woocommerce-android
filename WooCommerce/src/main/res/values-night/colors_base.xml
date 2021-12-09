@@ -130,5 +130,8 @@
     <!--
     Analytics
     -->
+    <color name="analytics_background">@color/woo_black_90</color>
+    <color name="analytics_divider">@color/woo_black_900</color>
     <color name="analytics_delta_positive_color">#B8E6BF</color>
+    <color name="analytics_delta_text_color">@color/woo_black_90</color>
 </resources>

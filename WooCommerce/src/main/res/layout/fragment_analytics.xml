@@ -17,20 +17,32 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider_color"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCardView
                 android:id="@+id/analyticsDateSelectorCard"
+                style="@style/Woo.Card.WithoutPadding"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_10"
+                app:cardElevation="@dimen/minor_50"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationCardView
                 android:id="@+id/analyticsRevenueCard"
+                style="@style/Woo.Card.WithoutPadding"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
+                app:cardElevation="@dimen/minor_10"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/analyticsDateSelectorCard" />
