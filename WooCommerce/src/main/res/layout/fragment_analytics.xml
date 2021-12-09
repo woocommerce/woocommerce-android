@@ -22,7 +22,7 @@
 
         <com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCardView
             android:id="@+id/analyticsDateSelectorCard"
-            style="@style/Woo.Card"
+            style="@style/Woo.Card.WithoutPadding"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_10"
@@ -33,7 +33,7 @@
 
         <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationCardView
             android:id="@+id/analyticsRevenueCard"
-            style="@style/Woo.Card"
+            style="@style/Woo.Card.WithoutPadding"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_100"
