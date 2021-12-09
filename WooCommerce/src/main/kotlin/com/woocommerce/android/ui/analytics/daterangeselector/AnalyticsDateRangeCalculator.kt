@@ -1,14 +1,19 @@
 package com.woocommerce.android.ui.analytics.daterangeselector
 
+import android.os.Parcelable
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.util.DateUtils
+import kotlinx.parcelize.Parcelize
 import java.util.*
 import javax.inject.Inject
 
 sealed class DateRange {
-    data class SimpleDateRange(val from: Date, val to: Date) : DateRange()
-    data class MultipleDateRange(val from: SimpleDateRange, val to: SimpleDateRange) : DateRange()
+    @Parcelize
+    data class SimpleDateRange(val from: Date, val to: Date) : DateRange(), Parcelable
+
+    @Parcelize
+    data class MultipleDateRange(val from: SimpleDateRange, val to: SimpleDateRange) : DateRange(), Parcelable
 }
 
 class AnalyticsDateRangeCalculator @Inject constructor(
