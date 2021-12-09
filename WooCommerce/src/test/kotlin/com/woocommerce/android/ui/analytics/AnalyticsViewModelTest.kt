@@ -242,7 +242,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         with(sut.state.value.ordersState) {
             assertTrue(this is AnalyticsInformationViewState.DataViewState)
             assertEquals(OTHER_ORDERS_COUNT.toString(), leftSection.value)
-            assertEquals(OTHER_ORDERS_COUNT_DELTA,  leftSection.delta)
+            assertEquals(OTHER_ORDERS_COUNT_DELTA, leftSection.delta)
             assertEquals(OTHER_AVG_CURRENCY_VALUE, rightSection.value)
             assertEquals(OTHER_AVG_ORDER_VALUE_DELTA, rightSection.delta)
         }
