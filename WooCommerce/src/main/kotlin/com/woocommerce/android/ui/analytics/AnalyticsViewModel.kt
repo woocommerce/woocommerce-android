@@ -119,7 +119,7 @@ class AnalyticsViewModel @Inject constructor(
                             )
                         )
                         is AnalyticsRepository.OrdersResult.OrdersError -> mutableState.value = state.value.copy(
-                            ordersState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
+                            ordersState = NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
                         )
                     }
                 }
