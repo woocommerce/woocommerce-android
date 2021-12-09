@@ -81,9 +81,6 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
 
     @Test
     fun `Do not update prefs when request failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(
-            WooResult<WooError>(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN))
-        ).whenever(userStore).fetchUserRole(any())
         doReturn(true).whenever(appPrefsWrapper).isUserEligible()
         doReturn(null).whenever(appPrefsWrapper).getUserEmail()
 
