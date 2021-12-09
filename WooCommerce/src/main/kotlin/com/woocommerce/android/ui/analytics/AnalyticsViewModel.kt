@@ -4,9 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
@@ -331,7 +331,6 @@ class AnalyticsViewModel @Inject constructor(
         const val RANGE_SELECTION_KEY = "range_selection_key"
         const val DATE_RANGE_SELECTION_KEY = "date_range_selection_key"
     }
-
 }
 
 

@@ -7,8 +7,9 @@ data class ProductsStat(
 )
 
 data class ProductItem(
-    private val name: String,
-    private val description: String,
-    private val image: String,
-    private val quantity: Int,
+    val name: String,
+    val netSales: Double,
+    val image: String?,
+    val quantity: Int,
+    val currencyCode: String?
 )

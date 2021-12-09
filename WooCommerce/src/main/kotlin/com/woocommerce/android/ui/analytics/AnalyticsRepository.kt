@@ -62,7 +62,8 @@ class AnalyticsRepository @Inject constructor(
             return getCurrentPeriodStats(dateRange, it)
                 .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
                     if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null ||
-                        previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
+                        previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null
+                    ) {
                         return@combine OrdersError
                     }
 
@@ -78,7 +79,8 @@ class AnalyticsRepository @Inject constructor(
                             currentAvgOrderValue,
                             calculateDeltaPercentage(previousOrderValue, currentAvgOrderValue),
                             getCurrencyCode()
-                        ))
+                        )
+                    )
                 }
         }
 
@@ -87,18 +89,23 @@ class AnalyticsRepository @Inject constructor(
             return combine(
                 getCurrentPeriodStats(dateRange, statsGranularity),
                 getPreviousPeriodStats(dateRange, statsGranularity),
-                getProductStats(dateRange, statsGranularity, 10)
+                getProductStats(dateRange, statsGranularity, TOP_PRODUCTS_LIST_SIZE)
             ) { currentRevenue, previousRevenue, products ->
                 if (currentRevenue.isFailure || currentRevenue.getOrNull() == null ||
-                    previousRevenue.isFailure || previousRevenue.getOrNull() == null ||
-                    products.isFailure || products.getOrNull() == null ||
-                    previousRevenue.getOrNull()!!.parseTotal()?.itemsSold == null ||
+                    previousRevenue.isFailure || previousRevenue.getOrNull() == null
+                ) {
+                    return@combine ProductsResult.ProductsError
+                }
+                if (products.isFailure || products.getOrNull() == null) {
+                    return@combine ProductsResult.ProductsError
+                }
+                if (previousRevenue.getOrNull()!!.parseTotal()?.itemsSold == null ||
                     currentRevenue.getOrNull()!!.parseTotal()?.itemsSold == null
                 ) {
                     return@combine ProductsResult.ProductsError
                 }
 
-                val previousItemsSold = previousRevenue.getOrNull()!!.parseTotal()?.itemsSold ?: 0
+                val previousItemsSold = previousRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
                 val currentItemsSold = currentRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
                 val productItems = products.getOrNull()?.map {
                     ProductItem(
@@ -191,6 +198,8 @@ class AnalyticsRepository @Inject constructor(
         const val ZERO_VALUE = 0.0
         const val MINUS_ONE = -1
         const val ONE_H_PERCENT = 100
+
+        const val TOP_PRODUCTS_LIST_SIZE = 5
     }
 
     sealed class RevenueResult {
@@ -201,5 +210,10 @@ class AnalyticsRepository @Inject constructor(
     sealed class OrdersResult {
         object OrdersError : OrdersResult()
         data class OrdersData(val ordersStat: OrdersStat) : OrdersResult()
+    }
+
+    sealed class ProductsResult {
+        object ProductsError : ProductsResult()
+        data class ProductsData(val productsStat: ProductsStat) : ProductsResult()
     }
 }
