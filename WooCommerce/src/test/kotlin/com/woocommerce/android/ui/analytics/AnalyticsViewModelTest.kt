@@ -67,7 +67,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private lateinit var sut: AnalyticsViewModel
 
     @Test
-    fun `given an init viewState, when ViewModel is created, then has the expected values`() =
+    fun `given an init viewState, when view model is created, then has the expected values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturn ANY_VALUE
@@ -139,38 +139,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() {
-        whenever(siteModel.isWPCom).thenReturn(true)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-    }
-
-    @Test
-    fun `given a WPComAtomic site, when see report is clicked, then OpenWPComWebView event is triggered`() {
-        whenever(siteModel.isWPComAtomic).thenReturn(true)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-    }
-
-    @Test
-    fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() {
-        whenever(siteModel.isWPComAtomic).thenReturn(false)
-        whenever(siteModel.isWPCom).thenReturn(false)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
-    }
-
-    @Test
-    fun `given a week to date selected, when refresh is requested, then revenue is the expected`() = testBlocking {
+    fun `given a week to date selected, when refresh is requested, then has expected revenue values`() = testBlocking {
 
         val weekToDateRange = MultipleDateRange(
             DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
@@ -207,7 +176,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a view model, when selected date range changes, then data view state has ordersViewState values`() =
+    fun `given a view model, when selected date range changes, then has expected orders values`() =
         testBlocking {
 
             whenever(analyticsRepository.fetchOrdersData(any(), any()))
@@ -230,7 +199,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a week to date selected, when refresh is requested, then orders data is the expected`() = testBlocking {
+    fun `given a week to date selected, when refresh is requested, then has expected orders values`() = testBlocking {
 
         val weekToDateRange = MultipleDateRange(
             DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
@@ -264,6 +233,37 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             assertEquals(OTHER_AVG_CURRENCY_VALUE, rightSection.value)
             assertEquals(OTHER_AVG_ORDER_VALUE_DELTA, rightSection.delta)
         }
+    }
+
+    @Test
+    fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() {
+        whenever(siteModel.isWPCom).thenReturn(true)
+
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+    }
+
+    @Test
+    fun `given a WPComAtomic site, when see report is clicked, then OpenWPComWebView event is triggered`() {
+        whenever(siteModel.isWPComAtomic).thenReturn(true)
+
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+    }
+
+    @Test
+    fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() {
+        whenever(siteModel.isWPComAtomic).thenReturn(false)
+        whenever(siteModel.isWPCom).thenReturn(false)
+
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
