@@ -51,6 +51,7 @@ class AnalyticsViewModel @Inject constructor(
 
     fun onRefreshRequested() {
         updateRevenue(getCurrentRange(), getCurrentDateRange())
+        updateOrders(getCurrentRange(), getCurrentDateRange())
     }
 
     fun onSelectedDateRangeChanged(newSelection: String) {
@@ -103,8 +104,10 @@ class AnalyticsViewModel @Inject constructor(
                 }
         }
 
-    private fun updateOrders(range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
-                             dateRange: DateRange = getDefaultDateRange()) =
+    private fun updateOrders(
+        range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
+        dateRange: DateRange = getDefaultDateRange()
+    ) =
         launch {
             mutableState.value = state.value.copy(ordersState = LoadingViewState)
             analyticsRepository.fetchOrdersData(dateRange, range)
@@ -144,20 +147,20 @@ class AnalyticsViewModel @Inject constructor(
                     dateUtils.getYearMonthDayStringFromDate(dateRange.to)
                 ).orEmpty()
             )
-            is MultipleDateRange -> when {
-                isSameDay(dateRange.to.from, dateRange.to.to) -> resourceProvider.getString(
-                    R.string.analytics_date_range_to_date,
-                    getDateSelectedMessage(analyticsDateRange),
-                    dateUtils.getShortMonthDayAndYearString(
-                        dateUtils.getYearMonthDayStringFromDate(dateRange.to.from)
-                    ).orEmpty()
-                )
-                else -> resourceProvider.getString(
+            is MultipleDateRange ->
+                if (isSameDay(dateRange.to.from, dateRange.to.to))
+                    resourceProvider.getString(
+                        R.string.analytics_date_range_to_date,
+                        getDateSelectedMessage(analyticsDateRange),
+                        dateUtils.getShortMonthDayAndYearString(
+                            dateUtils.getYearMonthDayStringFromDate(dateRange.to.from)
+                        ).orEmpty()
+                    )
+                else resourceProvider.getString(
                     R.string.analytics_date_range_to_date,
                     getDateSelectedMessage(analyticsDateRange),
                     dateRange.to.formatDatesToFriendlyPeriod()
                 )
-            }
         }
 
     private fun calculateFromDatePeriod(dateRange: DateRange) = when (dateRange) {
@@ -165,18 +168,18 @@ class AnalyticsViewModel @Inject constructor(
             R.string.analytics_date_range_from_date,
             dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.from)).orEmpty()
         )
-        is MultipleDateRange -> when {
-            isSameDay(dateRange.from.from, dateRange.from.to) -> resourceProvider.getString(
-                R.string.analytics_date_range_from_date,
-                dateUtils.getShortMonthDayAndYearString(
-                    dateUtils.getYearMonthDayStringFromDate(dateRange.from.from)
-                ).orEmpty()
-            )
-            else -> resourceProvider.getString(
+        is MultipleDateRange ->
+            if (isSameDay(dateRange.from.from, dateRange.from.to))
+                resourceProvider.getString(
+                    R.string.analytics_date_range_from_date,
+                    dateUtils.getShortMonthDayAndYearString(
+                        dateUtils.getYearMonthDayStringFromDate(dateRange.from.from)
+                    ).orEmpty()
+                )
+            else resourceProvider.getString(
                 R.string.analytics_date_range_from_date,
                 dateRange.from.formatDatesToFriendlyPeriod()
             )
-        }
     }
 
     private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
