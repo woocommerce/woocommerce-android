@@ -8,7 +8,6 @@
         android:id="@+id/analyticsCardListContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
         android:paddingTop="@dimen/major_100">
 
         <com.google.android.material.textview.MaterialTextView
@@ -33,8 +32,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:lineHeight="@dimen/text_major_50"
-            tools:text="Sales"
-            tools:visibility="visible" />
+            tools:text="Sales" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/analytics_items_title"
@@ -49,7 +47,6 @@
             app:lineHeight="@dimen/text_major_25"
             tools:text="Items sold" />
 
-
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/analytics_items_value"
             style="@style/Woo.Card.Title"
@@ -62,7 +59,6 @@
             app:layout_constraintTop_toBottomOf="@+id/analytics_items_title"
             app:lineHeight="@dimen/text_major_25"
             tools:text="32" />
-
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/analyticsListLeftHeader"
@@ -111,22 +107,21 @@
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/analyticsListLeftHeader">
-
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@+id/analyticsListLeftHeader" />
 
         <View
             android:id="@+id/divider"
             style="@style/Woo.Divider"
             android:layout_height="1dp"
+            android:layout_marginTop="@dimen/major_75"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/analyticsItemsList" />
 
         <RelativeLayout
+            android:id="@+id/seeReportPanel"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/seeReportPanel"
             android:layout_marginTop="@dimen/major_75"
             android:layout_marginBottom="@dimen/major_75"
             app:layout_constraintBottom_toBottomOf="parent"

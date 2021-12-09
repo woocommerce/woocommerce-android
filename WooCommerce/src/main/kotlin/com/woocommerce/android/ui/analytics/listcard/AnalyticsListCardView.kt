@@ -42,9 +42,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
         binding.analyticsItemsValue.visibility = GONE
         binding.analyticsListLeftHeader.visibility = GONE
         binding.analyticsListRightHeader.visibility = GONE
-        binding.analyticsCardListContainer.visibility = GONE
         binding.noDataText.visibility = GONE
-        visibility = View.VISIBLE
     }
 
     private fun setDataViewState(viewState: DataViewState) {
@@ -59,9 +57,9 @@ class AnalyticsListCardView @JvmOverloads constructor(
         binding.analyticsCardTitle.visibility = VISIBLE
         binding.analyticsItemsTitle.visibility = VISIBLE
         binding.analyticsItemsValue.visibility = VISIBLE
+        binding.analyticsItemsTag.visibility = VISIBLE
         binding.analyticsListLeftHeader.visibility = VISIBLE
         binding.analyticsListRightHeader.visibility = VISIBLE
-        binding.analyticsCardListContainer.visibility = VISIBLE
         binding.noDataText.visibility = GONE
     }
 
@@ -71,9 +69,9 @@ class AnalyticsListCardView @JvmOverloads constructor(
         binding.analyticsCardTitle.visibility = GONE
         binding.analyticsItemsTitle.visibility = GONE
         binding.analyticsItemsValue.visibility = GONE
+        binding.analyticsItemsTag.visibility = GONE
         binding.analyticsListLeftHeader.visibility = GONE
         binding.analyticsListRightHeader.visibility = GONE
-        binding.analyticsCardListContainer.visibility = GONE
         binding.noDataText.visibility = VISIBLE
     }
 
