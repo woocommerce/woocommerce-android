@@ -145,9 +145,7 @@ class OrderListFragment :
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        if (FeatureFlag.SIMPLE_PAYMENTS.isEnabled()) {
-            displaySimplePaymentsWIPCard(true)
-        }
+        displaySimplePaymentsWIPCard(true)
     }
 
     override fun onResume() {
@@ -172,8 +170,7 @@ class OrderListFragment :
     }
 
     private fun isSimplePaymentsAvailable(): Boolean {
-        return FeatureFlag.SIMPLE_PAYMENTS.isEnabled() &&
-            AppPrefs.isSimplePaymentsEnabled &&
+        return AppPrefs.isSimplePaymentsEnabled &&
             viewModel.isCardReaderOnboardingCompleted()
     }
 
