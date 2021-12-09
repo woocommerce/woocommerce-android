@@ -61,9 +61,11 @@ class AnalyticsRepository @Inject constructor(
         getGranularity(selectedRange).let {
             return getCurrentPeriodStats(dateRange, it)
                 .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
-                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null ||
-                        previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null
-                    ) {
+                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
+                        return@combine OrdersError
+                    }
+
+                    if (previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
                         return@combine OrdersError
                     }
 

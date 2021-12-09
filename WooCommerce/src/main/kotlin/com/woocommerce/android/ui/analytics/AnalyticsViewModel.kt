@@ -332,5 +332,3 @@ class AnalyticsViewModel @Inject constructor(
         const val DATE_RANGE_SELECTION_KEY = "date_range_selection_key"
     }
 }
-
-
