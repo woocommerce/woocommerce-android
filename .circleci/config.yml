@@ -20,7 +20,6 @@ commands:
 orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
   android: wordpress-mobile/android@1.0
-  android_ci: circleci/android@1.0.3
   git: wordpress-mobile/git@1.0
   bundle-install: toshimaru/bundle-install@0.3.1
   slack: circleci/slack@3.4.2
@@ -102,33 +101,49 @@ jobs:
           command: ./gradlew assembleVanillaDebugAndroidTest
 
   Connected Tests:
+    parameters:
+      post-to-slack:
+        description: Post to Slack when tests fail. SLACK_WEBHOOK ENV variable must be set.
+        type: boolean
+        default: false
     executor:
-      name: android_ci/android-machine
-      resource-class: large
+      name: android/default
+      api-version: "29"
     steps:
-      - checkout
+      - git/shallow-checkout
+      - android/restore-gradle-cache
       - copy-gradle-properties
-      # Create an AVD named "myavd"
-      - android_ci/create-avd:
-          avd-name: myavd
-          system-image: system-images;android-29;default;x86
-          install: true
-      # By default, after starting up the emulator, a cache will be restored,
-      # "./gradlew assembleDebugAndroidTest" will be run and then a script
-      # will be run to wait for the emulator to start up.
-      # Specify the "post-emulator-launch-assemble-command" command to override
-      # the gradle command run, or set "wait-for-emulator" to false to disable
-      # waiting for the emulator altogether.
-      - android_ci/start-emulator:
-          avd-name: myavd
-          no-window: true
-          restore-gradle-cache-prefix: v1a
-      # Runs "./gradlew connectedDebugAndroidTest" by default.
-      # Specify the "test-command" parameter to customize the command run.
-      - android_ci/run-tests:
-          test-command: ./gradlew connectedVanillaDebugAndroidTest -P android.testInstrumentationRunnerArguments.class=com.woocommerce.android.ui.main.ReviewsUITest
-      - android_ci/save-gradle-cache:
-          cache-prefix: v1a
+      - update-gradle-memory:
+          jvmargs: "Xmx1536m"
+      - run:
+          name: Build
+          command: ./gradlew WooCommerce:assembleVanillaDebug --stacktrace
+      - run:
+          name: Build Tests
+          command: ./gradlew WooCommerce:assembleVanillaDebugAndroidTest --stacktrace
+      - run:
+          name: Decrypt credentials
+          command: openssl aes-256-cbc -md sha256 -d -in .circleci/.firebase.secrets.json.enc -out .circleci/.firebase.secrets.json -k "${FIREBASE_SECRETS_ENCRYPTION_KEY}"
+      - android/firebase-test:
+          key-file: .circleci/.firebase.secrets.json
+          type: instrumentation
+          apk-path: WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk
+          test-apk-path: WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk
+          test-targets: package com.woocommerce.android.ui.main
+          device: model=Pixel2,version=28,locale=en,orientation=portrait
+          project: api-project-108380595987
+          timeout: 10m
+          num-flaky-test-attempts: 2
+          results-history-name: CircleCI WooCommerce Android Connected Tests
+      - android/save-gradle-cache
+      - when:
+          condition: << parameters.post-to-slack >>
+          steps:
+            - slack/status:
+                fail_only: true
+                include_job_number_field: false
+                include_project_field: false
+                failure_message: 'TBD'
 
   Installable Build:
     executor:
