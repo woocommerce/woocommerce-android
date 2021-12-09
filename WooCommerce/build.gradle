@@ -170,8 +170,8 @@ dependencies {
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.1"
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.2"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
