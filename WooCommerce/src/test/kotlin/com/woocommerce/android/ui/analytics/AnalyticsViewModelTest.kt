@@ -151,6 +151,50 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() {
+        whenever(siteModel.isWPComAtomic).thenReturn(false)
+        whenever(siteModel.isWPCom).thenReturn(false)
+
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
+    }
+
+    @Test
+    fun `given a week to date selected, when refresh is requested, then revenue is the expected`() = testBlocking {
+
+        val weekToDateRange = MultipleDateRange(
+            DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekRevenueStats = getRevenueStats(
+            OTHER_TOTAL_VALUE,
+            OTHER_TOTAL_DELTA,
+            OTHER_NET_VALUE,
+            OTHER_NET_DELTA,
+            OTHER_CURRENCY_CODE
+        )
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        whenever(analyticsRepository.fetchRevenueData(weekToDateRange, WEEK_TO_DATE))
+            .thenReturn(listOf(weekRevenueStats, weekRevenueStats).asFlow())
+
+        sut = givenAViewModel()
+        sut.onSelectedDateRangeChanged(WEEK_TO_DATE.description)
+        sut.onRefreshRequested()
+
+        with(sut.state.value.revenueState) {
+            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(OTHER_TOTAL_CURRENCY_VALUE, leftSection.value)
+            assertEquals(OTHER_TOTAL_DELTA, leftSection.delta)
+            assertEquals(OTHER_NET_CURRENCY_VALUE, rightSection.value)
+            assertEquals(OTHER_NET_DELTA, rightSection.delta)
+        }
+    }
+
+    @Test
     fun `given a view model, when selected date range changes, then data view state has ordersViewState values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
@@ -177,16 +221,37 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() =
-        testBlocking {
-            whenever(siteModel.isWPComAtomic).thenReturn(false)
-            whenever(siteModel.isWPCom).thenReturn(false)
+    fun `given a week to date selected, when refresh is requested, then orders data is the expected`() = testBlocking {
 
-            sut = givenAViewModel()
-            sut.onRevenueSeeReportClick()
+        val weekToDateRange = MultipleDateRange(
+            DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
 
-            assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
+        val weekOrdersData = geOrdersStats(
+            OTHER_ORDERS_COUNT,
+            OTHER_ORDERS_COUNT_DELTA,
+            OTHER_AVG_ORDER_VALUE,
+            OTHER_AVG_ORDER_VALUE_DELTA,
+            OTHER_CURRENCY_CODE
+        )
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        whenever(analyticsRepository.fetchOrdersData(weekToDateRange, WEEK_TO_DATE))
+            .thenReturn(listOf(weekOrdersData, weekOrdersData).asFlow())
+
+        sut = givenAViewModel()
+        sut.onSelectedDateRangeChanged(WEEK_TO_DATE.description)
+        sut.onRefreshRequested()
+
+        with(sut.state.value.ordersState) {
+            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(OTHER_ORDERS_COUNT.toString(), leftSection.value)
+            assertEquals(OTHER_ORDERS_COUNT_DELTA, leftSection.delta)
+            assertEquals(OTHER_AVG_CURRENCY_VALUE, rightSection.value)
+            assertEquals(OTHER_AVG_ORDER_VALUE_DELTA, rightSection.delta)
         }
+    }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }

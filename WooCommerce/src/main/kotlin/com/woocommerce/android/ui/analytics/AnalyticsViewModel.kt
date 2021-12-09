@@ -227,10 +227,12 @@ class AnalyticsViewModel @Inject constructor(
     private fun buildOrdersDataViewState(totalOrders: String, totalDelta: Int, avgValue: String, avgDelta: Int) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_orders_card_title),
-            leftSection = AnalyticsInformationSectionViewState(resourceProvider.getString(R.string.analytics_total_orders_title),
+            leftSection = AnalyticsInformationSectionViewState(
+                resourceProvider.getString(R.string.analytics_total_orders_title),
                 totalOrders, totalDelta
             ),
-            rightSection = AnalyticsInformationSectionViewState(resourceProvider.getString(R.string.analytics_avg_orders_title),
+            rightSection = AnalyticsInformationSectionViewState(
+                resourceProvider.getString(R.string.analytics_avg_orders_title),
                 avgValue, avgDelta
             )
         )

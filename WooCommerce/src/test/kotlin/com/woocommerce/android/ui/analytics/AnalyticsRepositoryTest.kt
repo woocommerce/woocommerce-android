@@ -96,7 +96,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no previousRevenuePeriod when fetchOrdersData result is the expected`() = runBlocking {
+    fun `given no previousRevenuePeriod when fetchOrdersData result is OrdersError`() = runBlocking {
         // Given
         val currentPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
         whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
@@ -109,13 +109,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         val result = sut.fetchOrdersData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
 
         // Then
-        with(result.single()) {
-            assertNotNull(this)
-            assertTrue(this is OrdersData)
-            assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
-            assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-            assertEquals(THOUSAND_DELTA, ordersStat.avgOrderDelta)
-            assertEquals(THOUSAND_DELTA, ordersStat.ordersCountDelta)
+        with(result.first()) {
+            assertTrue(this is OrdersError)
         }
     }
 
@@ -248,7 +243,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given zero previous avg order when fetchOrderData result is the expected`() =
+    fun `given zero previous avg order, when fetchOrderData, result is the expected`() =
         runBlocking {
             // Given
             val previousPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), ZERO_VALUE)
@@ -300,7 +295,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given null previous orders when fetchOrdersData result is the expected`() =
+    fun `given null previous orders, when fetchOrdersData, then result is the expected`() =
         runBlocking {
             // Given
             val previousPeriodOrdersStats = givenRevenuOrderStats(null, TEN_VALUE)
@@ -352,7 +347,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given null previous avg order when fetchOrdersData result is the expected`() =
+    fun `given null previous avg order, when fetchOrdersData, then result is the expected`() =
         runBlocking {
             // Given
             val previousPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), null)
@@ -410,7 +405,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given previous and current period revenue when fetchOrdersData multiple date range result is the expected`() =
+    fun `given previous and current period revenue, when fetchOrdersData multiple date range, result is the expected`() =
         runBlocking {
             // Given
             val previousPeriodOrdersStats = givenRevenuOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
@@ -423,10 +418,13 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
 
             // When
-            val result = sut.fetchOrdersData(DateRange.MultipleDateRange(
-                DateRange.SimpleDateRange(previousDate!!, previousDate),
-                DateRange.SimpleDateRange(currentDate!!, currentDate)
-            ), ANY_RANGE)
+            val result = sut.fetchOrdersData(
+                DateRange.MultipleDateRange(
+                    DateRange.SimpleDateRange(previousDate!!, previousDate),
+                    DateRange.SimpleDateRange(currentDate!!, currentDate)
+                ),
+                ANY_RANGE
+            )
 
             // Then
             with(result.single()) {

@@ -56,11 +56,13 @@ class AnalyticsRepository @Inject constructor(
         getGranularity(selectedRange).let {
             return getCurrentPeriodStats(dateRange, it)
                 .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
-                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null)
+                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null ||
+                        previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
                         return@combine OrdersError
+                    }
 
-                    val previousOrdersCount = previousPeriodRevenue.getOrNull()?.parseTotal()?.ordersCount ?: 0
-                    val previousOrderValue = previousPeriodRevenue.getOrNull()?.parseTotal()?.avgOrderValue ?: 0.0
+                    val previousOrdersCount = previousPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount ?: 0
+                    val previousOrderValue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue ?: 0.0
                     val currentOrdersCount = currentPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount!!
                     val currentAvgOrderValue = currentPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue!!
 
