@@ -111,7 +111,7 @@ jobs:
       # Create an AVD named "myavd"
       - android_ci/create-avd:
           avd-name: myavd
-          system-image: system-images;android-30;default;x86
+          system-image: system-images;android-29;default;x86
           install: true
       # By default, after starting up the emulator, a cache will be restored,
       # "./gradlew assembleDebugAndroidTest" will be run and then a script
