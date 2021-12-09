@@ -28,8 +28,11 @@ class AnalyticsRepository @Inject constructor(
             return getCurrentPeriodRevenue(dateRange, it)
                 .combine(getPreviousPeriodRevenue(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
 
-                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null ||
-                        previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
+                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
+                        return@combine RevenueError
+                    }
+
+                    if (previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
                         return@combine RevenueError
                     }
 

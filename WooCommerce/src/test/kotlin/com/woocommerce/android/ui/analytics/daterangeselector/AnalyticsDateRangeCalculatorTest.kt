@@ -30,12 +30,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         val twtyEightNov2021 = Date().apply { time = TWTY8_NOV_2021 }
         val oneDec2021 = Date().apply { time = ONE_DEC_2021 }
 
-
         const val SAME_YEAR_SAME_MONTH_EXPECTED = "Jan 1 - 3, 1970"
         const val SAME_YEAR_DIFFERENT_MONTH_EXPECTED = "Jan 3 - Feb 3, 1970"
         const val DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED = "Jan 3, 1970 - Nov 24, 2021"
         const val DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED_TWO = "Nov 28 - Dec 1, 2021"
-
     }
 
     @Test
@@ -228,8 +226,9 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
 
         val differentYearAndDifferentMonthFriendlyFormattedDateTwo =
             SimpleDateRange(twtyEightNov2021, oneDec2021).formatDatesToFriendlyPeriod()
-        assertEquals(DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED_TWO, differentYearAndDifferentMonthFriendlyFormattedDateTwo)
+        assertEquals(
+            DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED_TWO,
+            differentYearAndDifferentMonthFriendlyFormattedDateTwo
+        )
     }
 }
-
-
