@@ -88,6 +88,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             with(sut.state.value.revenueState) {
                 assertTrue(this is LoadingViewState)
             }
+
+            with(sut.state.value.ordersState) {
+                assertTrue(this is LoadingViewState)
+            }
         }
 
     @Test
