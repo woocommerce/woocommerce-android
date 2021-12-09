@@ -1,7 +1,4 @@
-#!/usr/bin/env sh
-
-# Exit if any command fails
-set -eu
+#!/bin/bash -eu
 
 TARGET_BRANCH_DEPENDENCIES_FILE="target_branch_dependencies.txt"
 CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE="current_branch_dependencies.txt"
