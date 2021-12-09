@@ -3,11 +3,12 @@ package com.woocommerce.android.ui.analytics
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.RevenueStat
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges.LAST_YEAR
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
@@ -47,6 +48,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(TOTAL_VALUE.toString(), CURRENCY_CODE) } doReturn TOTAL_CURRENCY_VALUE
         on { formatCurrency(NET_VALUE.toString(), CURRENCY_CODE) } doReturn NET_CURRENCY_VALUE
+        on { formatCurrency(OTHER_TOTAL_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_TOTAL_CURRENCY_VALUE
+        on { formatCurrency(OTHER_NET_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_NET_CURRENCY_VALUE
+        on { formatCurrency(AVG_ORDER_VALUE.toString(), CURRENCY_CODE) } doReturn AVG_CURRENCY_VALUE
+        on { formatCurrency(OTHER_AVG_ORDER_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_AVG_CURRENCY_VALUE
     }
 
     private val analyticsRepository: AnalyticsRepository = mock {
@@ -119,7 +124,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut.onSelectedDateRangeChanged(LAST_YEAR.description)
 
             with(sut.state.value.revenueState) {
-
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
                 assertEquals(TOTAL_CURRENCY_VALUE, leftSection.value)
                 assertEquals(TOTAL_DELTA, leftSection.delta)
@@ -129,26 +133,24 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() =
-        testBlocking {
-            whenever(siteModel.isWPCom).thenReturn(true)
+    fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() {
+        whenever(siteModel.isWPCom).thenReturn(true)
 
-            sut = givenAViewModel()
-            sut.onRevenueSeeReportClick()
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
 
-            assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-        }
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+    }
 
     @Test
-    fun `given a WPComAtomic site, when see report is clicked, then OpenWPComWebView event is triggered`() =
-        testBlocking {
-            whenever(siteModel.isWPComAtomic).thenReturn(true)
+    fun `given a WPComAtomic site, when see report is clicked, then OpenWPComWebView event is triggered`() {
+        whenever(siteModel.isWPComAtomic).thenReturn(true)
 
-            sut = givenAViewModel()
-            sut.onRevenueSeeReportClick()
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
 
-            assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-        }
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+    }
 
     @Test
     fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() {
@@ -197,18 +199,11 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then data view state has ordersViewState values`() =
         testBlocking {
-            val resourceProvider: ResourceProvider = mock {
-                on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
-                on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
-                on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
-            }
 
-            sut = givenAViewModel(resourceProvider)
-            whenever(currencyFormatter.formatCurrency(AVG_ORDER_VALUE.toString(), CURRENCY_CODE))
-                .thenReturn(AVG_CURRENCY_VALUE)
             whenever(analyticsRepository.fetchOrdersData(any(), any()))
                 .thenReturn(listOf(geOrdersStats(), geOrdersStats()).asFlow())
 
+            sut = givenAViewModel()
             sut.onSelectedDateRangeChanged(LAST_YEAR.description)
 
             with(sut.state.value.ordersState) {
@@ -247,7 +242,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         with(sut.state.value.ordersState) {
             assertTrue(this is AnalyticsInformationViewState.DataViewState)
             assertEquals(OTHER_ORDERS_COUNT.toString(), leftSection.value)
-            assertEquals(OTHER_ORDERS_COUNT_DELTA, leftSection.delta)
+            assertEquals(OTHER_ORDERS_COUNT_DELTA,  leftSection.delta)
             assertEquals(OTHER_AVG_CURRENCY_VALUE, rightSection.value)
             assertEquals(OTHER_AVG_ORDER_VALUE_DELTA, rightSection.delta)
         }
@@ -266,15 +261,26 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             selectedSite, savedState
         )
 
-    private fun getRevenueStats() =
-        RevenueData(RevenueStat(TOTAL_VALUE, TOTAL_DELTA, NET_VALUE, NET_DELTA, CURRENCY_CODE))
+    private fun getRevenueStats(
+        totalValue: Double = TOTAL_VALUE,
+        totalDelta: Int = TOTAL_DELTA,
+        netValue: Double = NET_VALUE,
+        netDelta: Int = NET_DELTA,
+        currencyCode: String = CURRENCY_CODE
+    ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
 
-    private fun geOrdersStats() =
-        OrdersData(OrdersStat(ORDERS_COUNT, ORDERS_COUNT_DELTA, AVG_ORDER_VALUE, AVG_ORDER_VALUE_DELTA, CURRENCY_CODE))
+    private fun geOrdersStats(
+        ordersCount: Int = ORDERS_COUNT,
+        ordersCountDelta: Int = ORDERS_COUNT_DELTA,
+        avgOrderValue: Double = AVG_ORDER_VALUE,
+        avgOrderValueDelta: Int = AVG_ORDER_VALUE_DELTA,
+        currencyCode: String = CURRENCY_CODE
+    ) = OrdersData(OrdersStat(ordersCount, ordersCountDelta, avgOrderValue, avgOrderValueDelta, currencyCode))
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
         private const val ANY_OTHER_DATE_TIME_VALUE = "2021-11-20 00:00:00"
+        private const val ANY_WEEK_DATE_TIME_VALUE = "2010-11-20 00:00:00"
 
         private const val ANY_YEAR_VALUE = "2021-11-21"
         private const val ANY_SORT_FORMAT_VALUE = "21 Nov, 2021"
@@ -288,6 +294,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         private val ANY_DATE: Date = sdf.parse(ANY_DATE_TIME_VALUE)!!
         private val ANY_OTHER_DATE: Date = sdf.parse(ANY_OTHER_DATE_TIME_VALUE)!!
+        private val ANY_WEEK_DATE: Date = sdf.parse(ANY_WEEK_DATE_TIME_VALUE)!!
         private val DATE_RANGE_SELECTORS = listOf(ANY_VALUE, ANY_OTHER_VALUE)
 
         const val TOTAL_VALUE = 10.0
@@ -298,14 +305,24 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         const val TOTAL_CURRENCY_VALUE = "10 E"
         const val NET_CURRENCY_VALUE = "10 E"
 
+        const val OTHER_TOTAL_VALUE = 20.0
+        const val OTHER_TOTAL_DELTA = 15
+        const val OTHER_NET_VALUE = 10.0
+        const val OTHER_NET_DELTA = 20
+        const val OTHER_CURRENCY_CODE = "DOL"
+        const val OTHER_TOTAL_CURRENCY_VALUE = "20 USD"
+        const val OTHER_NET_CURRENCY_VALUE = "10 USD"
+
         const val ANY_URL = "https://a8c.com"
-
         const val ORDERS_COUNT = 5
+        const val OTHER_ORDERS_COUNT = 50
         const val ORDERS_COUNT_DELTA = 20
+        const val OTHER_ORDERS_COUNT_DELTA = 1
         const val AVG_ORDER_VALUE = 11.2
+        const val OTHER_AVG_ORDER_VALUE = 44.21
         const val AVG_ORDER_VALUE_DELTA = 50
+        const val OTHER_AVG_ORDER_VALUE_DELTA = 1
         const val AVG_CURRENCY_VALUE = "11.20 E"
-
-
+        const val OTHER_AVG_CURRENCY_VALUE = "44.21 E"
     }
 }
