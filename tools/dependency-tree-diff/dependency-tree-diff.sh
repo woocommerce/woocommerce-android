@@ -6,7 +6,7 @@ DIFF_DEPENDENCIES_FOLDER="./build/reports/diff"
 DIFF_DEPENDENCIES_FILE="$DIFF_DEPENDENCIES_FOLDER/diff_dependencies.txt"
 CONFIGURATION="vanillaReleaseRuntimeClasspath"
 
-if [ -n $CIRCLE_PULL_REQUEST ]; then
+if [ -n "$CIRCLE_PULL_REQUEST" ]; then
   curl -L "https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64" -o jq
   chmod +x jq
   prNumber=$(echo "$CIRCLE_PULL_REQUEST" | sed "s/^.*\/\([0-9]*$\)/\1/")
@@ -14,7 +14,7 @@ if [ -n $CIRCLE_PULL_REQUEST ]; then
   githubResponse="$(curl "$githubUrl" -H "Authorization: token $GITHUB_API_TOKEN")"
   targetBranch=$(echo "$githubResponse" | tr '\r\n' ' ' | ./jq '.base.ref' | tr -d '"')
 
-  mkdir -p $DIFF_DEPENDENCIES_FOLDER
+  mkdir -p "$DIFF_DEPENDENCIES_FOLDER"
 
   git checkout "$targetBranch"
   ./gradlew :WooCommerce:dependencies --configuration $CONFIGURATION >$TARGET_BRANCH_DEPENDENCIES_FILE
