@@ -182,6 +182,8 @@
     <!--
     Analytics
     -->
+    <color name="analytics_background">@color/woo_white</color>
     <color name="analytics_delta_positive_color">#69B56E</color>
     <color name="analytics_delta_tag_negative_color">#C95854</color>
+    <color name="analytics_delta_text_color">@color/white</color>
 </resources>
