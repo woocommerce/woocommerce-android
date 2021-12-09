@@ -1,10 +1,14 @@
 package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.model.OrdersStat
+import com.woocommerce.android.model.ProductItem
+import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges.LAST_YEAR
@@ -13,6 +17,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -44,7 +49,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             DateRange.SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
         )
     }
-
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(TOTAL_VALUE.toString(), CURRENCY_CODE) } doReturn TOTAL_CURRENCY_VALUE
         on { formatCurrency(NET_VALUE.toString(), CURRENCY_CODE) } doReturn NET_CURRENCY_VALUE
@@ -52,6 +56,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         on { formatCurrency(OTHER_NET_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_NET_CURRENCY_VALUE
         on { formatCurrency(AVG_ORDER_VALUE.toString(), CURRENCY_CODE) } doReturn AVG_CURRENCY_VALUE
         on { formatCurrency(OTHER_AVG_ORDER_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_AVG_CURRENCY_VALUE
+        on { formatCurrency(PRODUCT_NET_SALES.toString(), CURRENCY_CODE) } doReturn PRODUCT_CURRENCY_VALUE
+        on { formatCurrency(OTHER_PRODUCT_NET_SALES.toString(), OTHER_CURRENCY_CODE) } doReturn
+            OTHER_PRODUCT_CURRENCY_VALUE
+
     }
 
     private val analyticsRepository: AnalyticsRepository = mock {
@@ -91,6 +99,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             with(sut.state.value.ordersState) {
                 assertTrue(this is LoadingViewState)
+            }
+
+            with(sut.state.value.productsState) {
+                assertTrue(this is AnalyticsListViewState.LoadingViewState)
             }
         }
 
@@ -220,6 +232,28 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a view model, when selected date range changes, then product has values`() =
+        testBlocking {
+
+            whenever(analyticsRepository.fetchProductsStats(any(), any()))
+                .thenReturn(listOf(getProductsStats(), getProductsStats()).asFlow())
+
+            sut = givenAViewModel()
+            sut.onSelectedDateRangeChanged(LAST_YEAR.description)
+
+            val resourceProvider = givenAResourceProvider()
+            with(sut.state.value.productsState) {
+                assertTrue(this is AnalyticsListViewState.DataViewState)
+                assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
+                assertEquals(PRODUCT_ITEMS_SOLD_DELTA, delta)
+                assertEquals(resourceProvider.getString(R.string.analytics_products_list_items_sold), subTitle)
+                assertEquals(PRODUCT_ITEMS_SOLD.toString(), subTitleValue)
+                assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_title), listLeftHeader)
+                assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_subtitle), listRightHeader)
+            }
+        }
+
+    @Test
     fun `given a week to date selected, when refresh is requested, then orders data is the expected`() = testBlocking {
 
         val weekToDateRange = MultipleDateRange(
@@ -252,6 +286,40 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given a week to date selected, when refresh is requested, then product has expected values`() = testBlocking {
+
+        val weekToDateRange = MultipleDateRange(
+            DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekProductsData = getProductsStats(
+            OTHER_PRODUCT_ITEMS_SOLD,
+            OTHER_PRODUCT_ITEMS_SOLD_DELTA,
+            emptyList()
+        )
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        whenever(analyticsRepository.fetchProductsStats(weekToDateRange, WEEK_TO_DATE))
+            .thenReturn(listOf(weekProductsData, weekProductsData).asFlow())
+
+        sut = givenAViewModel()
+        sut.onSelectedDateRangeChanged(WEEK_TO_DATE.description)
+        sut.onRefreshRequested()
+
+        val resourceProvider = givenAResourceProvider()
+        with(sut.state.value.productsState) {
+            assertTrue(this is AnalyticsListViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
+            assertEquals(OTHER_PRODUCT_ITEMS_SOLD_DELTA, delta)
+            assertEquals(resourceProvider.getString(R.string.analytics_products_list_items_sold), subTitle)
+            assertEquals(OTHER_PRODUCT_ITEMS_SOLD.toString(), subTitleValue)
+            assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_title), listLeftHeader)
+            assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_subtitle), listRightHeader)
+        }
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
@@ -280,6 +348,12 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         avgOrderValueDelta: Int = AVG_ORDER_VALUE_DELTA,
         currencyCode: String = CURRENCY_CODE
     ) = OrdersData(OrdersStat(ordersCount, ordersCountDelta, avgOrderValue, avgOrderValueDelta, currencyCode))
+
+    private fun getProductsStats(
+        itemsSold: Int = PRODUCT_ITEMS_SOLD,
+        itemsSoldDelta: Int = PRODUCT_ITEMS_SOLD_DELTA,
+        productList: List<ProductItem> = PRODUCT_LIST
+    ) = ProductsData(ProductsStat(itemsSold, itemsSoldDelta, productList))
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
@@ -316,6 +390,38 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         const val OTHER_CURRENCY_CODE = "DOL"
         const val OTHER_TOTAL_CURRENCY_VALUE = "20 USD"
         const val OTHER_NET_CURRENCY_VALUE = "10 USD"
+
+        const val PRODUCT_ITEMS_SOLD = 1
+        const val PRODUCT_ITEMS_SOLD_DELTA = 50
+        const val PRODUCT_CURRENCY_VALUE = "50 E"
+        const val OTHER_PRODUCT_ITEMS_SOLD = 3
+        const val OTHER_PRODUCT_ITEMS_SOLD_DELTA = 10
+        const val OTHER_PRODUCT_CURRENCY_VALUE = "55 E"
+
+        private const val PRODUCT_ONE_QUANTITY = 1
+        private const val PRODUCT_MORE_THAN_ONE_QUANTITY = 10
+        private const val PRODUCT_NET_SALES = 1.toDouble()
+        private const val OTHER_PRODUCT_NET_SALES = 2.toDouble()
+        private const val PRODUCT_ITEM_IMAGE = "image"
+        private const val PRODUCT_ITEM_NAME = "product"
+        private const val PRODUCT_CURRENCY_CODE = "EUR"
+
+        val PRODUCT_LIST = listOf(
+            ProductItem(
+                PRODUCT_ITEM_NAME,
+                PRODUCT_NET_SALES,
+                PRODUCT_ITEM_IMAGE,
+                PRODUCT_ONE_QUANTITY,
+                PRODUCT_CURRENCY_CODE
+            ),
+            ProductItem(
+                PRODUCT_ITEM_NAME,
+                PRODUCT_NET_SALES,
+                PRODUCT_ITEM_IMAGE,
+                PRODUCT_MORE_THAN_ONE_QUANTITY,
+                PRODUCT_CURRENCY_CODE
+            )
+        ).sortedByDescending { it.quantity }
 
         const val ANY_URL = "https://a8c.com"
         const val ORDERS_COUNT = 5
