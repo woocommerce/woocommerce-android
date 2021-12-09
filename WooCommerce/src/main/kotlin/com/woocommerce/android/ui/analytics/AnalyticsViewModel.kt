@@ -168,7 +168,7 @@ class AnalyticsViewModel @Inject constructor(
                         )
                         ProductsError -> mutableState.value = state.value.copy(
                             productsState = ProductsNoDataState(
-                                resourceProvider.getString(R.string.analytics_revenue_no_data)
+                                resourceProvider.getString(R.string.analytics_products_no_data)
                             )
                         )
                     }
