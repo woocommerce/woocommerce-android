@@ -24,8 +24,8 @@ enum class FeatureFlag {
             ORDER_CREATION,
             JETPACK_CP -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
             CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
+            PAYMENTS_STRIPE_EXTENSION -> false
             ORDER_FILTERS,
-            PAYMENTS_STRIPE_EXTENSION,
             ANALYTICS_HUB -> PackageUtils.isDebugBuild()
         }
     }
