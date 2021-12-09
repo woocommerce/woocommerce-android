@@ -152,38 +152,42 @@ enum class AnalyticsDateRanges(val description: String) {
  */
 @Throws(IllegalArgumentException::class)
 fun SimpleDateRange.formatDatesToFriendlyPeriod(locale: Locale = Locale.getDefault()): String {
-    val calendar: Calendar = let {
+    val firstCalendar: Calendar = let {
         Calendar.getInstance().apply {
             time = it.from
         }
     }
 
-    val anotherCalendar: Calendar = let {
+    val secondCalendar: Calendar = let {
         Calendar.getInstance().apply {
             time = it.to
         }
     }
 
-    val isSameYearAndMonth =
-        calendar.get(Calendar.YEAR) == anotherCalendar.get(Calendar.YEAR) &&
-            calendar.get(Calendar.MONTH) == anotherCalendar.get(Calendar.MONTH)
+    val sortedDates = listOf(firstCalendar, secondCalendar).sorted()
+    val firstDate = sortedDates.first()
+    val secondDate = sortedDates[1]
 
-    val minDay = kotlin.math.min(calendar.get(Calendar.DAY_OF_MONTH), anotherCalendar.get(Calendar.DAY_OF_MONTH))
-    val maxDay = kotlin.math.max(calendar.get(Calendar.DAY_OF_MONTH), anotherCalendar.get(Calendar.DAY_OF_MONTH))
-    val month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
-    val year = calendar.get(Calendar.YEAR)
+    val isSameYearAndMonth =
+        firstCalendar.get(Calendar.YEAR) == secondCalendar.get(Calendar.YEAR) &&
+            firstCalendar.get(Calendar.MONTH) == secondCalendar.get(Calendar.MONTH)
+
+    val firstCalendarDay = firstDate.get(Calendar.DAY_OF_MONTH)
+    val secondCalendarDay = secondDate.get(Calendar.DAY_OF_MONTH)
+
+    val firstDisplayMonth = firstCalendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
+    val firstYear = firstCalendar.get(Calendar.YEAR)
 
     return if (isSameYearAndMonth) {
-        "$month $minDay - $maxDay, $year"
+        "$firstDisplayMonth $firstCalendarDay - $secondCalendarDay, $firstYear"
     } else {
-        val isSameYear = calendar.get(Calendar.YEAR) == anotherCalendar.get(Calendar.YEAR)
-        val anotherMonth = anotherCalendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
-
+        val isSameYear = firstCalendar.get(Calendar.YEAR) == secondCalendar.get(Calendar.YEAR)
+        val secondDisplayMonth = secondDate.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
         if (isSameYear) {
-            "$month $minDay - $anotherMonth $maxDay, $year"
+            "$firstDisplayMonth $firstCalendarDay - $secondDisplayMonth $secondCalendarDay, $firstYear"
         } else {
-            val anotherYear = anotherCalendar.get(Calendar.YEAR)
-            "$month $minDay, $year - $anotherMonth $maxDay, $anotherYear"
+            val secondYear = secondCalendar.get(Calendar.YEAR)
+            "$firstDisplayMonth $firstCalendarDay, $firstYear - $secondDisplayMonth $secondCalendarDay, $secondYear"
         }
     }
 }
