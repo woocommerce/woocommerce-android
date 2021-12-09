@@ -70,7 +70,6 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider_color"
-            android:layout_marginTop="@dimen/major_110"
             app:layout_constraintBottom_toTopOf="@id/seeReportPanel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
