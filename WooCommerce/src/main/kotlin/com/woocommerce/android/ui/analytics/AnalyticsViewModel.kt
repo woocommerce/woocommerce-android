@@ -5,11 +5,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.*
+import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState.SectionDataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -35,13 +36,16 @@ class AnalyticsViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
-    private val mutableState =
-        MutableStateFlow(AnalyticsViewState(buildAnalyticsDateRangeSelectorViewState(), LoadingViewState))
+    private val mutableState = MutableStateFlow(AnalyticsViewState(
+        buildAnalyticsDateRangeSelectorViewState(),
+        LoadingViewState,
+        LoadingViewState))
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
     init {
         updateRevenue()
+        updateOrders()
     }
 
     fun onSelectedDateRangeChanged(newSelection: String) {
@@ -49,16 +53,24 @@ class AnalyticsViewModel @Inject constructor(
         val newDateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedRange)
         updateDateRangeCalendarView(selectedRange, newDateRange)
         updateRevenue(selectedRange, newDateRange)
+        updateOrders(selectedRange, newDateRange)
     }
 
     fun onRevenueSeeReportClick() {
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
             triggerEvent(OpenWPComWebView(analyticsRepository.getRevenueAdminPanelUrl()))
         } else {
-            triggerEvent(OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
+            triggerEvent(AnalyticsViewEvent.OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
         }
     }
 
+    fun onOrdersSeeReportClick() {
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(OpenWPComWebView(analyticsRepository.getRevenueAdminPanelUrl()))
+        } else {
+            triggerEvent(AnalyticsViewEvent.OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
+        }
+    }
     private fun updateRevenue(
         range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
         dateRange: DateRange = getDefaultDateRange()
@@ -78,6 +90,28 @@ class AnalyticsViewModel @Inject constructor(
                         )
                         is RevenueError -> mutableState.value = state.value.copy(
                             revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
+                        )
+                    }
+                }
+        }
+
+    private fun updateOrders(range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
+                             dateRange: DateRange = getDefaultDateRange()) =
+        launch {
+            mutableState.value = state.value.copy(ordersState = LoadingViewState)
+            analyticsRepository.fetchOrdersData(dateRange, range)
+                .collect {
+                    when (it) {
+                        is OrdersData -> mutableState.value = state.value.copy(
+                            ordersState = buildOrdersDataViewState(
+                                formatValue(it.ordersState.totalOrders.toString(), it.ordersState.currencyCode),
+                                it.ordersState.totalDelta,
+                                formatValue(it.ordersState.avgOrderValue.toString(), it.ordersState.currencyCode),
+                                it.ordersState.avgOrderDelta
+                            )
+                        )
+                        is AnalyticsRepository.OrdersResult.OrdersError -> mutableState.value = state.value.copy(
+                            ordersState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
                         )
                     }
                 }
@@ -181,4 +215,17 @@ class AnalyticsViewModel @Inject constructor(
                 netValue, netDelta
             )
         )
+
+    private fun buildOrdersDataViewState(totalOrders: String, totalDelta: Int, avgValue: String, avgDelta: Int) =
+        DataViewState(
+            title = resourceProvider.getString(R.string.analytics_orders_card_title),
+            leftSection = AnalyticsInformationSectionViewState(resourceProvider.getString(R.string.analytics_total_orders_title),
+                totalOrders, totalDelta
+            ),
+            rightSection = AnalyticsInformationSectionViewState(resourceProvider.getString(R.string.analytics_avg_orders_title),
+                avgValue, avgDelta
+            )
+        )
 }
+
+
