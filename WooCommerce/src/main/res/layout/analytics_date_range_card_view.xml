@@ -17,7 +17,6 @@
             style="@style/Woo.Card.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_150"
             android:maxLines="1"
             android:textSize="@dimen/text_minor_125"

@@ -5,11 +5,14 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -31,9 +34,8 @@ class AnalyticsFragment :
         super.onViewCreated(view, savedInstanceState)
         bind(view)
         setupResultHandlers(viewModel)
-        lifecycleScope.launchWhenStarted {
-            viewModel.state.collect { newState -> handleStateChange(newState) }
-        }
+        lifecycleScope.launchWhenStarted { viewModel.state.collect { newState -> handleStateChange(newState) } }
+        viewModel.event.observe(viewLifecycleOwner, { event -> handleEvent(event) })
     }
 
     override fun onDestroyView() {
@@ -45,6 +47,15 @@ class AnalyticsFragment :
 
     override fun scrollToTop() {
         return
+    }
+
+    private fun handleEvent(event: MultiLiveEvent.Event) {
+        when (event) {
+            is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+            is AnalyticsViewEvent.OpenWPComWebView -> findNavController()
+                .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
+            else -> event.isHandled = false
+        }
     }
 
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
@@ -67,11 +78,13 @@ class AnalyticsFragment :
     private fun bind(view: View) {
         _binding = FragmentAnalyticsBinding.bind(view)
         binding.analyticsDateSelectorCard.setCalendarClickListener { openDateRangeSelector() }
+        binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
         binding.analyticsDateSelectorCard.updateFromText(viewState.analyticsDateRangeSelectorState.fromDatePeriod)
         binding.analyticsDateSelectorCard.updateToText(viewState.analyticsDateRangeSelectorState.toDatePeriod)
+        binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
