@@ -1,5 +1,6 @@
 package com.woocommerce.android.util.crashlogging
 
+import android.app.Application
 import android.content.Context
 import android.util.Base64
 import com.automattic.android.tracks.crashlogging.CrashLogging
@@ -23,8 +24,8 @@ abstract class CrashLoggingModule {
     companion object {
         @Provides
         @Singleton
-        fun provideCrashLogging(context: Context, crashLoggingDataProvider: CrashLoggingDataProvider): CrashLogging {
-            return CrashLoggingProvider.createInstance(context, crashLoggingDataProvider)
+        fun provideCrashLogging(application: Application, crashLoggingDataProvider: CrashLoggingDataProvider): CrashLogging {
+            return CrashLoggingProvider.createInstance(application, crashLoggingDataProvider)
         }
 
         @Provides

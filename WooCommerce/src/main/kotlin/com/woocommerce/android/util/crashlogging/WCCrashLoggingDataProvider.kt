@@ -29,6 +29,9 @@ class WCCrashLoggingDataProvider @Inject constructor(
     override val locale: Locale?
         get() = localeProvider.provideLocale()
 
+    override val performanceMonitoringSampleRate: Double
+        get() = 1.0
+
     override val releaseName: String = if (buildConfig.debug) {
         DEBUG_RELEASE_NAME
     } else {
@@ -47,7 +50,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
     }
 
     override fun crashLoggingEnabled(): Boolean {
-        return appPrefs.isCrashReportingEnabled()
+        return true
     }
 
     override fun extraKnownKeys(): List<ExtraKnownKey> {

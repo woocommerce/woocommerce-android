@@ -187,7 +187,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.1.0'
+    implementation 'com.github.Automattic:Automattic-Tracks-Android:c2fa770cb6'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
