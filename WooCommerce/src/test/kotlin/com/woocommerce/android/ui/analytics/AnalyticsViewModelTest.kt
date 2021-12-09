@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
@@ -26,7 +27,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -78,7 +78,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut = givenAViewModel(resourceProvider)
 
             with(sut.state.value.analyticsDateRangeSelectorState) {
-                assertNotNull(this)
                 assertEquals(ANY_VALUE, selectedPeriod)
                 assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
                 assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
@@ -109,7 +108,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut.onSelectedDateRangeChanged(LAST_YEAR.description)
 
             with(sut.state.value.analyticsDateRangeSelectorState) {
-                assertNotNull(this)
                 assertEquals(LAST_YEAR.description, selectedPeriod)
                 assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
                 assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
@@ -127,10 +125,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut.onSelectedDateRangeChanged(LAST_YEAR.description)
 
+            val resourceProvider = givenAResourceProvider()
             with(sut.state.value.revenueState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
+                assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
                 assertEquals(TOTAL_CURRENCY_VALUE, leftSection.value)
                 assertEquals(TOTAL_DELTA, leftSection.delta)
+                assertEquals(resourceProvider.getString(R.string.analytics_net_sales_title), rightSection.title)
                 assertEquals(NET_CURRENCY_VALUE, rightSection.value)
                 assertEquals(NET_DELTA, rightSection.delta)
             }
@@ -191,10 +193,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut.onSelectedDateRangeChanged(WEEK_TO_DATE.description)
         sut.onRefreshRequested()
 
+        val resourceProvider = givenAResourceProvider()
         with(sut.state.value.revenueState) {
             assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
+            assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
             assertEquals(OTHER_TOTAL_CURRENCY_VALUE, leftSection.value)
             assertEquals(OTHER_TOTAL_DELTA, leftSection.delta)
+            assertEquals(resourceProvider.getString(R.string.analytics_net_sales_title), rightSection.title)
             assertEquals(OTHER_NET_CURRENCY_VALUE, rightSection.value)
             assertEquals(OTHER_NET_DELTA, rightSection.delta)
         }
@@ -210,9 +216,13 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut = givenAViewModel()
             sut.onSelectedDateRangeChanged(LAST_YEAR.description)
 
+            val resourceProvider = givenAResourceProvider()
             with(sut.state.value.ordersState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
+                assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
                 assertEquals(ORDERS_COUNT.toString(), leftSection.value)
+                assertEquals(resourceProvider.getString(R.string.analytics_avg_orders_title), rightSection.title)
                 assertEquals(ORDERS_COUNT_DELTA, leftSection.delta)
                 assertEquals(AVG_CURRENCY_VALUE, rightSection.value)
                 assertEquals(AVG_ORDER_VALUE_DELTA, rightSection.delta)
@@ -243,10 +253,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut.onSelectedDateRangeChanged(WEEK_TO_DATE.description)
         sut.onRefreshRequested()
 
+        val resourceProvider = givenAResourceProvider()
         with(sut.state.value.ordersState) {
             assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
+            assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
             assertEquals(OTHER_ORDERS_COUNT.toString(), leftSection.value)
             assertEquals(OTHER_ORDERS_COUNT_DELTA, leftSection.delta)
+            assertEquals(resourceProvider.getString(R.string.analytics_avg_orders_title), rightSection.title)
             assertEquals(OTHER_AVG_CURRENCY_VALUE, rightSection.value)
             assertEquals(OTHER_AVG_ORDER_VALUE_DELTA, rightSection.delta)
         }
