@@ -130,7 +130,7 @@ jobs:
           apk-path: WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk
           test-apk-path: WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk
           test-targets: package com.woocommerce.android.ui.main
-          device: model=Pixel4,version=29,locale=en,orientation=portrait
+          device: model=Pixel3,version=28,locale=en,orientation=portrait
           project: api-project-108380595987
           timeout: 10m
           num-flaky-test-attempts: 2
