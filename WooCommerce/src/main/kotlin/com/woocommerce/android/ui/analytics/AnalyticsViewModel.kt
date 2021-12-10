@@ -5,7 +5,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.*
+import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
+import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
@@ -163,7 +164,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
-    private fun getDefaultTimePeriod() = getTimePeriodDescription(AnalyticTimePeriod.TODAY)
+    private fun getDefaultTimePeriod() = AnalyticTimePeriod.TODAY
     private fun getDefaultDateRange() = SimpleDateRange(
         Date(dateUtils.getCurrentDateTimeMinusDays(1)),
         dateUtils.getCurrentDate()
@@ -191,7 +192,7 @@ class AnalyticsViewModel @Inject constructor(
         fromDatePeriod = calculateFromDatePeriod(getDefaultDateRange()),
         toDatePeriod = calculateToDatePeriod(AnalyticTimePeriod.TODAY, getDefaultDateRange()),
         availableRangeDates = getAvailableDateRanges(),
-        selectedPeriod = getDefaultTimePeriod()
+        selectedPeriod = getTimePeriodDescription(getDefaultTimePeriod())
     )
 
     private fun buildRevenueDataViewState(totalValue: String, totalDelta: Int, netValue: String, netDelta: Int) =
@@ -217,7 +218,7 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getSavedDateRange(): AnalyticsDateRange = savedState[DATE_RANGE_SELECTED_KEY] ?: getDefaultDateRange()
     private fun getSavedTimePeriod(): AnalyticTimePeriod = savedState[TIME_PERIOD_SELECTED_KEY]
-        ?: AnalyticTimePeriod.from(getDefaultTimePeriod())
+        ?: getDefaultTimePeriod()
 
     companion object {
         const val TIME_PERIOD_SELECTED_KEY = "range_selection_key"
