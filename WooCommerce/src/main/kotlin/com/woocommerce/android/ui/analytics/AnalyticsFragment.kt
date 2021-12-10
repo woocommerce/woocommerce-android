@@ -76,7 +76,7 @@ class AnalyticsFragment :
         handleDialogResult<String>(
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
-        ) { dateRange -> viewModel.onSelectedDateRangeChanged(dateRange) }
+        ) { dateRange -> viewModel.onSelectedTimePeriodChanged(dateRange) }
     }
 
     private fun bind(view: View) {

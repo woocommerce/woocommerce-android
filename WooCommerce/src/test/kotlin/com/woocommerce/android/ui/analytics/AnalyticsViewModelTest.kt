@@ -4,11 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges.LAST_YEAR
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges.WEEK_TO_DATE
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -38,8 +38,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     private val calculator: AnalyticsDateRangeCalculator = mock {
         on { getAnalyticsDateRangeFrom(LAST_YEAR) } doReturn MultipleDateRange(
-            DateRange.SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
-            DateRange.SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
+            SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
+            SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
         )
     }
 
@@ -98,7 +98,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             sut = givenAViewModel(resourceProvider)
-            sut.onSelectedDateRangeChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
 
             with(sut.state.value.analyticsDateRangeSelectorState) {
                 assertNotNull(this)
@@ -117,7 +117,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut = givenAViewModel()
 
-            sut.onSelectedDateRangeChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
 
             with(sut.state.value.revenueState) {
 
@@ -167,8 +167,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given a week to date selected, when refresh is requested, then revenue is the expected`() = testBlocking {
 
         val weekToDateRange = MultipleDateRange(
-            DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
-            DateRange.SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
         )
 
         val weekRevenueStats = getRevenueStats(
@@ -184,7 +184,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             .thenReturn(listOf(weekRevenueStats, weekRevenueStats).asFlow())
 
         sut = givenAViewModel()
-        sut.onSelectedDateRangeChanged(WEEK_TO_DATE.description)
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
         sut.onRefreshRequested()
 
         with(sut.state.value.revenueState) {
@@ -194,7 +194,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             assertEquals(OTHER_NET_CURRENCY_VALUE, rightSection.value)
             assertEquals(OTHER_NET_DELTA, rightSection.delta)
         }
-
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
