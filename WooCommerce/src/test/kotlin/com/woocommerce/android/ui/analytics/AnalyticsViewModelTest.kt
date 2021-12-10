@@ -4,7 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
-import com.woocommerce.android.ui.analytics.RefreshIndicator.*
+import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.DATE_RANGE_SELECTED_KEY
+import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.TIME_PERIOD_SELECTED_KEY
+import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
@@ -17,7 +19,8 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -25,7 +28,6 @@ import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.stream.Collectors.toList
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -90,6 +92,35 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             with(sut.state.value.refreshIndicator) {
                 assertTrue(this is NotShowIndicator)
+            }
+        }
+
+    @Test
+    fun `when ViewModel is with savedState is created, then has the expected values`() =
+        testBlocking {
+
+            val resourceProvider: ResourceProvider = mock {
+                on { getString(any()) } doReturn ANY_SAVED_VALUE
+                on { getString(any(), anyVararg()) } doReturn ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE
+                on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
+            }
+
+            savedState.set(TIME_PERIOD_SELECTED_KEY, LAST_YEAR)
+            savedState.set(
+                DATE_RANGE_SELECTED_KEY,
+                MultipleDateRange(
+                    SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
+                    SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
+                )
+            )
+
+            sut = givenAViewModel(resourceProvider)
+
+            with(sut.state.value.analyticsDateRangeSelectorState) {
+                assertEquals(ANY_SAVED_VALUE, selectedPeriod)
+                assertEquals(ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
+                assertEquals(ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
+                assertEquals(DATE_RANGE_SELECTORS, availableRangeDates)
             }
         }
 
@@ -262,10 +293,12 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         private const val ANY_SORT_FORMAT_VALUE = "21 Nov, 2021"
 
         private const val ANY_VALUE = "Today"
+        private const val ANY_SAVED_VALUE = "Other year"
         private const val ANY_OTHER_VALUE = "Last year"
 
         private const val ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE = "$ANY_VALUE ($ANY_SORT_FORMAT_VALUE)"
         private const val ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE = "$ANY_OTHER_VALUE ($ANY_SORT_FORMAT_VALUE)"
+        private const val ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE = "$ANY_OTHER_VALUE ($ANY_SORT_FORMAT_VALUE)"
 
         private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         private val ANY_DATE: Date = sdf.parse(ANY_DATE_TIME_VALUE)!!

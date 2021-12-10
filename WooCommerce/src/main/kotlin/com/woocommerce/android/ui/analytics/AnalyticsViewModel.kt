@@ -189,10 +189,10 @@ class AnalyticsViewModel @Inject constructor(
         ?: value
 
     private fun buildAnalyticsDateRangeSelectorViewState() = AnalyticsDateRangeSelectorViewState(
-        fromDatePeriod = calculateFromDatePeriod(getDefaultDateRange()),
-        toDatePeriod = calculateToDatePeriod(AnalyticTimePeriod.TODAY, getDefaultDateRange()),
+        fromDatePeriod = calculateFromDatePeriod(getSavedDateRange()),
+        toDatePeriod = calculateToDatePeriod(getSavedTimePeriod(), getSavedDateRange()),
         availableRangeDates = getAvailableDateRanges(),
-        selectedPeriod = getTimePeriodDescription(getDefaultTimePeriod())
+        selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
     )
 
     private fun buildRevenueDataViewState(totalValue: String, totalDelta: Int, netValue: String, netDelta: Int) =
