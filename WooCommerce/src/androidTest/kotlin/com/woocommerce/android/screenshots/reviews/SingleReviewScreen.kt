@@ -26,7 +26,8 @@ class SingleReviewScreen : Screen {
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withId(R.id.toolbar),
-                ViewMatchers.withChild(ViewMatchers.withContentDescription("Navigate up")),
+                //Disabled the next line for debugging. It looks like this text is not present in APIs < 30:
+                //ViewMatchers.withChild(ViewMatchers.withContentDescription("Navigate up")),
                 ViewMatchers.withChild(ViewMatchers.withText("Review"))
             )
         )
