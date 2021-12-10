@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.Re
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.*
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -59,9 +60,9 @@ class AnalyticsRepository @Inject constructor(
 
     private suspend fun getCurrentPeriodRevenue(dateRange: AnalyticsDateRange, granularity: StatsGranularity) =
         when (dateRange) {
-            is AnalyticsDateRange.SimpleDateRange ->
+            is SimpleDateRange ->
                 fetchRevenueStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
-            is AnalyticsDateRange.MultipleDateRange ->
+            is MultipleDateRange ->
                 fetchRevenueStats(
                     dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(),
                     granularity
@@ -70,9 +71,9 @@ class AnalyticsRepository @Inject constructor(
 
     private suspend fun getPreviousPeriodRevenue(dateRange: AnalyticsDateRange, granularity: StatsGranularity) =
         when (dateRange) {
-            is AnalyticsDateRange.SimpleDateRange ->
+            is SimpleDateRange ->
                 fetchRevenueStats(dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(), granularity)
-            is AnalyticsDateRange.MultipleDateRange ->
+            is MultipleDateRange ->
                 fetchRevenueStats(
                     dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(),
                     granularity
