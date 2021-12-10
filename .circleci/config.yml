@@ -224,7 +224,7 @@ workflows:
       - Test
       - Installable Build
       - Ensure Screenshots Tests Build
-  "Optional UI Tests (Pixel 2 | API 28)" :
+  Optional UI Tests:
     unless: << pipeline.parameters.release_build >>
     #Optionally run connected tests on PRs
     jobs:
@@ -237,6 +237,7 @@ workflows:
                 - /^release.*/
                 - /pull\/[0-9]+/
       - Connected Tests:
+          name: UI Tests (Pixel 2 | API 28)
           requires: [Hold]      
   Release Build:
     when: << pipeline.parameters.release_build >>
