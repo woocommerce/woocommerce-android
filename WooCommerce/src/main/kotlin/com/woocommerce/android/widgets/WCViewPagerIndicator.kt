@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.annotation.IdRes
 import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
 
@@ -20,6 +21,7 @@ class WCViewPagerIndicator @JvmOverloads constructor(
     private var pageCount: Int = 0
 
     fun setupFromViewPager(viewPager: ViewPager2) {
+        contentDescription = "Page Indicator" + 1
         pageCount = viewPager.adapter?.itemCount ?: 0
 
         orientation = HORIZONTAL
@@ -30,6 +32,7 @@ class WCViewPagerIndicator @JvmOverloads constructor(
                 imageView.setImageResource(R.drawable.ic_tab_indicator)
                 imageView.isSelected = page == 0
                 imageView.setPadding(padding, 0, padding, 0)
+                imageView.contentDescription = "Page Indicator " + (page + 1)
                 this.addView(imageView)
                 indicators.add(imageView)
 
@@ -42,6 +45,7 @@ class WCViewPagerIndicator @JvmOverloads constructor(
         val listener = object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 setSelectedIndicator(position)
+                contentDescription = "Page Indicator" + (position + 1)
             }
         }
         viewPager.registerOnPageChangeCallback(listener)

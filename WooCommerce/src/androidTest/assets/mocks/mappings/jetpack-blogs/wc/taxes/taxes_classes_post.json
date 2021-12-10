@@ -1,18 +1,7 @@
 {
     "request": {
-        "method": "GET",
-        "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
-        "queryParameters": {
-            "json": {
-                "equalTo": "true"
-            },
-            "path": {
-                "matches": "/wc/v3/taxes/classes/(.*)"
-            },
-            "locale": {
-                "matches": "(.*)"
-            }
-        }
+        "method": "POST",
+        "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/"
     },
     "response": {
         "status": 200,
@@ -42,10 +31,6 @@
                     }]
                 }
             }]
-        },
-        "headers": {
-            "Content-Type": "application/json",
-            "Connection": "keep-alive"
         }
     }
 }

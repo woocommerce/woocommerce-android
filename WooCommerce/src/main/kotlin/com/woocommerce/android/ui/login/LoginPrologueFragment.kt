@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
+import com.woocommerce.android.extensions.expandHitArea
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,6 +48,7 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
 
         binding.viewPager.adapter = LoginPrologueAdapter(this)
         binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
+        binding.viewPagerIndicator.expandHitArea(24, 24)
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)

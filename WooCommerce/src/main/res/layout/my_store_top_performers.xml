@@ -49,6 +49,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/topPerformers_recycler"
+            android:contentDescription="@string/top_performers_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:minHeight="@dimen/top_performer_min_height"

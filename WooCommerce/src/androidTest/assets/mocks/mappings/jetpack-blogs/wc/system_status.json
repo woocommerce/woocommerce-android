@@ -1,0 +1,101 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+        "queryParameters": {
+            "json": {
+                "equalTo": "true"
+            },
+            "path": {
+                "matches": "/wc/v3/system_status/(.*)"
+            },
+            "locale": {
+                "matches": "(.*)"
+            }
+        }
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": {
+            "data": {
+                "active_plugins": [
+                    {
+                        "plugin": "akismet/akismet.php",
+                        "name": "Akismet Anti-Spam",
+                        "version": "4.2.1",
+                        "version_latest": "4.2.1",
+                        "url": "https://akismet.com/",
+                        "author_name": "Automattic",
+                        "author_url": "https://automattic.com/wordpress-plugins/",
+                        "network_activated": false
+                    },
+                    {
+                        "plugin": "jetpack/jetpack.php",
+                        "name": "Jetpack",
+                        "version": "10.5-a.1",
+                        "version_latest": "10.5-a.1",
+                        "url": "https://jetpack.com",
+                        "author_name": "Automattic",
+                        "author_url": "https://jetpack.com",
+                        "network_activated": false
+                    },
+                    {
+                        "plugin": "woocommerce-gateway-stripe/woocommerce-gateway-stripe.php",
+                        "name": "WooCommerce Stripe Gateway",
+                        "version": "5.8.1",
+                        "version_latest": "5.8.1",
+                        "url": "https://wordpress.org/plugins/woocommerce-gateway-stripe/",
+                        "author_name": "WooCommerce",
+                        "author_url": "https://woocommerce.com/",
+                        "network_activated": false
+                    },
+                    {
+                        "plugin": "woocommerce-payments-dev-tools-trunk/woocommerce-payments-dev-tools.php",
+                        "name": "WooCommerce Payments Dev Tools",
+                        "version": "",
+                        "version_latest": "",
+                        "url": "",
+                        "author_name": "Automattic",
+                        "author_url": "https://woocommerce.com/",
+                        "network_activated": false
+                    },
+                    {
+                        "plugin": "woocommerce-payments/woocommerce-payments.php",
+                        "name": "WooCommerce Payments",
+                        "version": "3.3.0",
+                        "version_latest": "3.4.0",
+                        "url": "https://woocommerce.com/payments/",
+                        "author_name": "Automattic",
+                        "author_url": "https://woocommerce.com/",
+                        "network_activated": false
+                    },
+                    {
+                        "plugin": "woocommerce/woocommerce.php",
+                        "name": "WooCommerce",
+                        "version": "5.9.0",
+                        "version_latest": "5.9.0",
+                        "url": "https://woocommerce.com/",
+                        "author_name": "Automattic",
+                        "author_url": "https://woocommerce.com",
+                        "network_activated": false
+                    },
+                    {
+                        "plugin": "wpc-product-quantity/wpc-product-quantity.php",
+                        "name": "WPC Product Quantity for WooCommerce",
+                        "version": "2.3.0",
+                        "version_latest": "2.3.3",
+                        "url": "https://wpclever.net/",
+                        "author_name": "WPClever",
+                        "author_url": "https://wpclever.net",
+                        "network_activated": false
+                    }
+                ],
+                "inactive_plugins": []
+            }
+        },
+        "headers": {
+            "Content-Type": "application/json",
+            "Connection": "keep-alive"
+        }
+    }
+}
