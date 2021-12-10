@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.*
+import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
@@ -36,16 +37,22 @@ class AnalyticsViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
 
     private val mutableState =
-        MutableStateFlow(AnalyticsViewState(buildAnalyticsDateRangeSelectorViewState(), LoadingViewState))
+        MutableStateFlow(
+            AnalyticsViewState(
+                NotShowIndicator,
+                buildAnalyticsDateRangeSelectorViewState(),
+                LoadingViewState
+            )
+        )
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
     init {
-        updateRevenue()
+        updateRevenue(false, showSkeleton = true)
     }
 
     fun onRefreshRequested() {
-        updateRevenue()
+        updateRevenue(isRefreshing = true, showSkeleton = false)
     }
 
     fun onSelectedTimePeriodChanged(newSelection: String) {
@@ -54,7 +61,7 @@ class AnalyticsViewModel @Inject constructor(
         saveSelectedTimePeriod(selectedTimePeriod)
         saveSelectedDateRange(dateRange)
         updateDateSelector()
-        updateRevenue()
+        updateRevenue(isRefreshing = false, showSkeleton = true)
     }
 
     fun onRevenueSeeReportClick() {
@@ -65,15 +72,21 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    private fun updateRevenue() =
+    private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
-            mutableState.value = state.value.copy(revenueState = LoadingViewState)
+
+            if (showSkeleton) mutableState.value = state.value.copy(revenueState = LoadingViewState)
+            mutableState.value = state.value.copy(
+                refreshIndicator = if (isRefreshing) RefreshIndicator.ShowIndicator else NotShowIndicator
+            )
+
             analyticsRepository.fetchRevenueData(dateRange, timePeriod)
                 .collect {
                     when (it) {
                         is RevenueData -> mutableState.value = state.value.copy(
+                            refreshIndicator = NotShowIndicator,
                             revenueState = buildRevenueDataViewState(
                                 formatValue(it.revenueStat.totalValue.toString(), it.revenueStat.currencyCode),
                                 it.revenueStat.totalDelta,
@@ -82,6 +95,7 @@ class AnalyticsViewModel @Inject constructor(
                             )
                         )
                         is RevenueError -> mutableState.value = state.value.copy(
+                            refreshIndicator = NotShowIndicator,
                             revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
                         )
                     }

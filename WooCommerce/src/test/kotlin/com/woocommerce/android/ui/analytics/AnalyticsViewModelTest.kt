@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
+import com.woocommerce.android.ui.analytics.RefreshIndicator.*
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
@@ -16,13 +17,15 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.stream.Collectors.toList
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -84,6 +87,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             with(sut.state.value.revenueState) {
                 assertTrue(this is LoadingViewState)
             }
+
+            with(sut.state.value.refreshIndicator) {
+                assertTrue(this is NotShowIndicator)
+            }
         }
 
     @Test
@@ -130,6 +137,21 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a view model, when selected date range changes, then has expected refresh indicator value`() =
+        testBlocking {
+            whenever(analyticsRepository.fetchRevenueData(any(), any()))
+                .thenReturn(listOf(getRevenueStats(), getRevenueStats()).asFlow())
+
+            sut = givenAViewModel()
+
+            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+
+            with(sut.state.value.refreshIndicator) {
+                assertTrue(this is NotShowIndicator)
+            }
+        }
+
+    @Test
     fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() =
         testBlocking {
             whenever(siteModel.isWPCom).thenReturn(true)
@@ -165,7 +187,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a week to date selected, when refresh is requested, then revenue is the expected`() = testBlocking {
-
         val weekToDateRange = MultipleDateRange(
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
@@ -194,6 +215,21 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             assertEquals(OTHER_NET_CURRENCY_VALUE, rightSection.value)
             assertEquals(OTHER_NET_DELTA, rightSection.delta)
         }
+    }
+
+    @Test
+    fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
+        whenever(analyticsRepository.fetchRevenueData(any(), any()))
+            .thenReturn(listOf(getRevenueStats(), getRevenueStats()).asFlow())
+
+        val states = mutableListOf<AnalyticsViewState>()
+        sut = givenAViewModel()
+        sut.onRefreshRequested()
+        val getShowIndicatorStatesJob = launch { sut.state.toList(states) }
+
+        assertTrue(states[states.size - 1].refreshIndicator is NotShowIndicator)
+        assertTrue(states.last().refreshIndicator is NotShowIndicator)
+        getShowIndicatorStatesJob.cancel()
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
