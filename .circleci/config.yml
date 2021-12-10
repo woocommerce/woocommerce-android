@@ -225,9 +225,7 @@ workflows:
       - Installable Build
       - Ensure Screenshots Tests Build
   Optional Tests:
-    unless:
-      or:
-        - << pipeline.parameters.release_build >>
+    unless: << pipeline.parameters.release_build >>
     #Optionally run connected tests on PRs
     jobs:
       - Hold:
