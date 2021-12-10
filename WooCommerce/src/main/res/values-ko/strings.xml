@@ -1,11 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-11-09 09:54:03+0000
+Translation-Revision-Date: 2021-12-07 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="settings_enable_order_creation_teaser_message">출시 준비가 되면 전체 상세 정보로 주문 생성해 보기</string>
+    <string name="settings_enable_order_creation_teaser_title">주문 생성</string>
+    <string name="settings_enable_simple_payments_teaser_title">간편한 결제</string>
+    <string name="beta_features_order_creation">주문 생성</string>
+    <string name="beta_features_simple_payments">간편한 결제</string>
+    <string name="beta_features_add_ons">애드온 보기</string>
+    <string name="orders_empty_message_for_filtered_orders">죄송합니다. 주문을 찾을 수 없습니다.</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">설정 열기</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">필수 근처 기기 권한 없음</string>
+    <string name="shipping_label_edit_address_country_search_hint">국가 필터링</string>
+    <string name="shipping_label_edit_address_state_search_hint">광역시/도 필터링</string>
+    <string name="order_detail_edit_address_state">광역시/도</string>
+    <string name="orderfilters_date_range_end_date">종료 날짜</string>
+    <string name="orderfilters_date_range_start_date">시작 날짜</string>
+    <string name="orderfilters_date_range_picker_title">날짜 선택</string>
+    <string name="orderfilters_date_range_filter_custom_range">사용자 정의 범위</string>
+    <string name="orderlist_bottom_sheet_simple_payment_description">최소 정보로 주문 생성</string>
+    <string name="orderlist_bottom_sheet_simple_payment_action">간편한 결제</string>
+    <string name="orderlist_bottom_sheet_create_order_description">새 수동 주문 생성</string>
+    <string name="orderlist_bottom_sheet_create_order_action">주문 생성</string>
+    <string name="orderlist_create_order_button_description">주문 생성</string>
+    <string name="simple_payments_creation_error">주문을 생성할 수 없음</string>
+    <string name="simple_payments_enter_amount">금액 입력</string>
+    <string name="simple_payments_dialog_title">결제하기</string>
+    <string name="orderlist_simple_payments_menu">간편한 결제</string>
+    <string name="orderlist_simple_payments_wip_title">기기에서 결제하세요!</string>
+    <string name="analytics">분석</string>
+    <string name="jetpack_install_progress_step_four_message">모두 완료</string>
+    <string name="jetpack_install_progress_step_three_message">스토어 연결 중</string>
+    <string name="jetpack_install_progress_step_two_message">활성화 중</string>
+    <string name="jetpack_install_progress_step_one_message">젯팩 설치 중</string>
+    <string name="jetpack_install_progress_subtitle">%s을(를) 젯팩과 연결하는 동안 기다려 주세요.</string>
+    <string name="jetpack_install_progress_title">설치 중\n젯팩</string>
+    <string name="jetpack_install_start_default_name">내 사이트</string>
+    <string name="jetpack_install_start_subtitle">무료 젯팩 플러그인을 &lt;strong&gt;%s&lt;/strong&gt;에 설치하여 최상의 모바일 환경을 경험하세요.</string>
+    <string name="jetpack_install_start_title">젯팩 설정</string>
+    <string name="product_review_list_fetching_failed">상품 리뷰를 가져오는 동안 오류 발생</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">리더 연결이 해제됨</string>
+    <string name="card_reader_accessibility_reader_is_connected">리더가 연결됨</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">진행 중인 소프트웨어 업데이트는 취소하지 않는 것이 좋습니다. 취소하면 리더 연결이 차단됩니다.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">리더의 배터리가 충분히 충전되지 않아서 리더 소프트웨어를 업데이트하지 못했습니다. 다시 시도하기 전에 리더를 50%% 넘게 충전하세요.</string>
+    <string name="card_reader_software_update_progress_description_low_battery">리더의 배터리가 %1$s%% 충전되어 리더 소프트웨어를 업데이트하지 못했습니다. 다시 시도하기 전에 리더를 50%% 넘게 충전하세요.</string>
+    <string name="card_reader_software_update_title_battery_low">리더를 충전하세요.</string>
+    <string name="card_reader_software_update_description">카드 리더가 계속 원활하게 작동하려면 소프트웨어를 업데이트해야 합니다.</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">스토어 설정에서 유효한 우편번호를 입력하고 다시 시도하세요.</string>
+    <string name="card_reader_connect_invalid_postal_code_header">스토어 주소 우편번호가 유효하지 않습니다.</string>
+    <string name="card_reader_connect_missing_address_button">주소 입력</string>
+    <string name="card_reader_connect_missing_address">진행하려면 스토어 주소를 입력하세요.</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">모바일 장치 확인</string>
+    <string name="card_reader_m2_manual_card_reader">Stripe M2 카드 리더 사용설명서</string>
+    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper 카드 리더 사용설명서</string>
+    <string name="order_error_update_empty_mail">빈 이메일로 주소를 업데이트할 수 없습니다. 실행하는 우커머스가 최신 버전인지 확인하세요.</string>
+    <string name="orderfilters_date_range_filter_last_30_days">최근 30일</string>
+    <string name="orderfilters_date_range_filter_last_7_days">최근 7일</string>
+    <string name="orderfilters_date_range_filter_last_two_days">최근 2일</string>
+    <string name="orderfilters_date_range_filter_today">오늘</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s(%2$d)</string>
+    <string name="orderfilters_default_filter_option">전체</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">필터링한 주문</string>
+    <string name="orderfilters_filter_card_title_all_orders">모든 주문</string>
+    <string name="orderlist_simple_payments_wip_message_disabled">기기에서 더 쉽게 결제할 수 있도록 만들려고 노력하고 있습니다! 설정 &gt; 베타 기능에서 활성화하세요.</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">기기에서 더 쉽게 결제할 수 있도록 만들려고 노력하고 있습니다! 지금은 \"+\" 버튼을 누르면 받으려는 금액으로 주문을 생성할 수 있습니다.</string>
     <string name="jetpack_benefits_modal_dismiss">나중에</string>
     <string name="jetpack_benefits_modal_install_jetpack">젯팩 설정</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">여러 사용자에게 우커머스 모바일 접근을 허용하세요.</string>
@@ -16,9 +78,7 @@ Language: ko_KR
     <string name="jetpack_benefits_modal_push_notifications_title">푸시 알림</string>
     <string name="jetpack_benefits_modal_subtitle">무료 젯팩 플러그인을 설치하여 최상의 모바일 환경을 경험하세요.</string>
     <string name="jetpack_benefits_modal_title">스토어 최대한 활용하기</string>
-    <string name="settings_enable_quick_order_teaser_message">출시 준비가 되면 최소한의 정보로 주문 생성해 보기</string>
-    <string name="settings_enable_quick_order_teaser_title">빠른 주문</string>
-    <string name="beta_features_message">애드온 기능, 빠른 주문 보기</string>
+    <string name="settings_enable_simple_payments_teaser_message">출시 준비가 되면 최소한의 정보로 주문 생성해 보기</string>
     <string name="order_detail_use_as_shipping_address">배송 주소로 사용</string>
     <string name="order_detail_use_as_billing_address">청구 주소로 사용</string>
     <string name="orderfilters_filters_count_title">필터(%d)</string>
@@ -37,7 +97,6 @@ Language: ko_KR
     <string name="product_description_hint_with_title">%s에 대해 자세히 알려주세요…</string>
     <string name="product_description_hint_no_title">미래 고객에게 제품 설명…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">클립보드에 복사된 리더의 일련번호</string>
-    <string name="card_reader_manual_card_reader">카드 리더 사용설명서</string>
     <string name="order_detail_add_billing_address">청구 주소 추가</string>
     <string name="order_detail_add_shipping_address">배송 주소 추가</string>
     <string name="order_detail_add_customer_note">고객 메모 추가</string>
@@ -45,7 +104,6 @@ Language: ko_KR
     <string name="order_detail_shipping_address_section">배송 주소</string>
     <string name="order_detail_address_section">주소</string>
     <string name="order_detail_edit_address_country">국가</string>
-    <string name="order_detail_edit_address_state">광역시/도</string>
     <string name="order_detail_edit_address_zip">우편번호</string>
     <string name="order_detail_edit_address_city">도시</string>
     <string name="order_detail_edit_address_line2">주소 2</string>
@@ -125,7 +183,6 @@ Language: ko_KR
     <string name="card_reader_purchase_card_reader">카드 리더 주문</string>
     <string name="card_reader_manage_card_reader">카드 리더 관리</string>
     <string name="shipping_label_multiple_customs_form_print_button">인쇄</string>
-    <string name="shipping_label_edit_address_state">광역시/도 및 구/군/시</string>
     <string name="shipping_label_edit_address_line2">주소 2</string>
     <string name="shipping_label_edit_address_line1">주소 1</string>
     <string name="shipping_label_print_multiple_screen_title">배송 레이블 인쇄</string>
@@ -183,7 +240,7 @@ Language: ko_KR
     <string name="product_attributes_created_generate_action_text">변형 생성</string>
     <string name="product_attributes_created_description">이제 속성을 추가했으니 첫 번째 변형을 만드실 수 있습니다!</string>
     <string name="product_attributes_created_title">속성 생성됨</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% 완료</string>
     <string name="card_reader_software_update_progress_cancel_warning">진행 중인 소프트웨어 업데이트는 취소하지 않는 것이 좋습니다.</string>
     <string name="card_reader_payment_failed_unexpected_error_state">죄송합니다. 이 결제는 처리할 수 없습니다.</string>
     <string name="card_reader_payment_failed_server_error_state">서버에 연결되지 않음</string>
@@ -273,7 +330,6 @@ Language: ko_KR
     <string name="shipping_label_rate_included_options_usps_tracking">USPS 추적</string>
     <string name="card_reader_software_update_in_progress_title">리더의 소프트웨어 업데이트하기</string>
     <string name="card_reader_software_update_title">소프트웨어 업데이트</string>
-    <string name="card_reader_software_update_description">카드 리더가 계속 원활하게 작동하려면 소프트웨어를 업데이트해야 합니다.  지금 업데이트하시겠어요?</string>
     <string name="card_reader_detail_connected_update_success">리더의 소프트웨어 업데이트됨</string>
     <string name="card_reader_detail_connected_reader_unknown">알 수 없는 카드 리더의 이름</string>
     <string name="card_reader_detail_connected_disconnect_reader">리더 연결 해제</string>
@@ -344,7 +400,7 @@ Language: ko_KR
     <string name="card_reader_connect_open_permission_settings">설정 열기</string>
     <string name="card_reader_connect_bluetooth_disabled_header">블루투스가 비활성화되었음</string>
     <string name="card_reader_connect_location_provider_disabled_header">위치가 비활성화되었음</string>
-    <string name="card_reader_connect_missing_permissions_header">필수 위치 권한이 없음</string>
+    <string name="card_reader_connect_missing_permissions_header">필수 정밀 위치 권한 없음</string>
     <string name="card_reader_connect_connecting_failed_hint">리더에 연결할 수 없습니다.</string>
     <string name="card_reader_connect_connecting_header">리더에 연결 중</string>
     <string name="card_reader_connect_to_reader">리더에 연결</string>
@@ -487,6 +543,7 @@ Language: ko_KR
     <string name="shipping_label_edit_address_use_address_as_is">입력된 주소 사용</string>
     <string name="shipping_label_edit_address_country">국가</string>
     <string name="shipping_label_edit_address_zip">우편번호</string>
+    <string name="shipping_label_edit_address_state">주</string>
     <string name="shipping_label_edit_address_city">도시</string>
     <string name="shipping_label_edit_address_phone">전화</string>
     <string name="shipping_label_edit_address_company">회사</string>
@@ -840,7 +897,6 @@ Language: ko_KR
     <string name="product_schedule_sale_sublabel">자동 판매 시작 및 종료</string>
     <string name="product_schedule_sale_label">판매 일정</string>
     <string name="order_refunds_store_admin_link_text">스토어 관리자에서</string>
-    <string name="orders_empty_message_with_order_status_filter">죄송합니다. \"%s\" 주문을 찾을 수 없습니다.</string>
     <string name="product_inventory_update_sku_error">SKU가 다른 제품에서 이미 사용 중</string>
     <string name="product_shipping_settings">배송 설정</string>
     <string name="product_no_shipping_class">배송 클래스 없음</string>
