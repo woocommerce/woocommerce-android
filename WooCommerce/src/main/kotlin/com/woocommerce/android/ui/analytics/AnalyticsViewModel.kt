@@ -221,7 +221,7 @@ class AnalyticsViewModel @Inject constructor(
         ?: getDefaultTimePeriod()
 
     companion object {
-        const val TIME_PERIOD_SELECTED_KEY = "range_selection_key"
-        const val DATE_RANGE_SELECTED_KEY = "date_range_selection_key"
+        const val TIME_PERIOD_SELECTED_KEY = "time_period_selected_key"
+        const val DATE_RANGE_SELECTED_KEY = "date_range_selected_key"
     }
 }
