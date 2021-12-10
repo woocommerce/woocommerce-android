@@ -796,8 +796,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
 
-        // TODO nbradbury change to production when feature is released
-        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments_prototype"
+        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
