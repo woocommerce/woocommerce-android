@@ -173,16 +173,18 @@ class AnalyticsViewModel @Inject constructor(
         selectedPeriod = getDefaultSelectedPeriod()
     )
 
-    private fun buildRevenueDataViewState(totalValue: String, totalDelta: Int, netValue: String, netDelta: Int) =
+    private fun buildRevenueDataViewState(totalValue: String, totalDelta: Double, netValue: String, netDelta: Double) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
-                totalValue, totalDelta
+                totalValue, totalDelta.toInt(),
+                totalDelta != Double.POSITIVE_INFINITY
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_net_sales_title),
-                netValue, netDelta
+                netValue, netDelta.toInt(),
+                netDelta != Double.POSITIVE_INFINITY
             )
         )
 }

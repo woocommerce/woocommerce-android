@@ -93,8 +93,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is RevenueData)
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertEquals(ZERO_DELTA, revenueStat.totalDelta)
-                assertEquals(ZERO_DELTA, revenueStat.netDelta)
+                assertEquals(ONE_DELTA, revenueStat.totalDelta)
+                assertEquals(ONE_DELTA, revenueStat.netDelta)
             }
         }
 
@@ -145,7 +145,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is RevenueData)
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertEquals(ZERO_DELTA, revenueStat.totalDelta)
+                assertEquals(ONE_DELTA, revenueStat.totalDelta)
                 assertEquals(THOUSAND_DELTA, revenueStat.netDelta)
             }
         }
@@ -172,7 +172,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
                 assertEquals(THOUSAND_DELTA, revenueStat.totalDelta)
-                assertEquals(ZERO_DELTA, revenueStat.netDelta)
+                assertEquals(ONE_DELTA, revenueStat.netDelta)
             }
         }
 
@@ -197,7 +197,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is RevenueData)
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertEquals(ZERO_DELTA, revenueStat.totalDelta)
+                assertEquals(ONE_DELTA, revenueStat.totalDelta)
                 assertEquals(THOUSAND_DELTA, revenueStat.netDelta)
             }
         }
@@ -229,8 +229,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is RevenueData)
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertEquals(ZERO_DELTA, revenueStat.totalDelta)
-                assertEquals(ZERO_DELTA, revenueStat.netDelta)
+                assertEquals(ONE_DELTA, revenueStat.totalDelta)
+                assertEquals(ONE_DELTA, revenueStat.netDelta)
             }
         }
 
@@ -261,8 +261,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         const val TEN_VALUE = 10.0
         const val ZERO_VALUE = 0.0
 
-        const val ZERO_DELTA = 0
-        const val THOUSAND_DELTA = 1000
+        const val ONE_DELTA = 1.0
+        const val THOUSAND_DELTA = 1000.0
 
         const val ANY_URL = "https://a8c.com"
 

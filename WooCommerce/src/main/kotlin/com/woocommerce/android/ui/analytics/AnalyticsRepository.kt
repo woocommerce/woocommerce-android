@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.*
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.lang.Double.POSITIVE_INFINITY
 import javax.inject.Inject
 import kotlin.math.round
 
@@ -87,9 +88,9 @@ class AnalyticsRepository @Inject constructor(
         }
 
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double) = when {
-        previousVal <= ZERO_VALUE -> round(currentVal * ONE_H_PERCENT).toInt()
-        currentVal <= ZERO_VALUE -> round(MINUS_ONE * previousVal * ONE_H_PERCENT).toInt()
-        else -> (round((previousVal - currentVal) / currentVal) * ONE_H_PERCENT).toInt()
+        previousVal <= ZERO_VALUE -> POSITIVE_INFINITY
+        currentVal <= ZERO_VALUE -> POSITIVE_INFINITY
+        else -> (round((previousVal - currentVal) / currentVal) * ONE_H_PERCENT)
     }
 
     private suspend fun fetchRevenueStats(startDate: String, endDate: String, granularity: StatsGranularity) =

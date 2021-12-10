@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -120,9 +121,32 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
                 assertEquals(TOTAL_CURRENCY_VALUE, leftSection.value)
-                assertEquals(TOTAL_DELTA, leftSection.delta)
+                assertEquals(TOTAL_DELTA.toInt(), leftSection.delta)
                 assertEquals(NET_CURRENCY_VALUE, rightSection.value)
-                assertEquals(NET_DELTA, rightSection.delta)
+                assertEquals(NET_DELTA.toInt(), rightSection.delta)
+            }
+        }
+
+    @Test
+    fun `given a view model with infinite delta, then delta is not shown`() =
+        testBlocking {
+            whenever(analyticsRepository.fetchRevenueData(any(), any()))
+                .thenReturn(
+                    listOf(
+                        getRevenueStats(
+                            netDelta = Double.POSITIVE_INFINITY,
+                            totalDelta = Double.POSITIVE_INFINITY
+                        )
+                    ).asFlow()
+                )
+
+            sut = givenAViewModel()
+            sut.onSelectedDateRangeChanged(LAST_YEAR.description)
+
+            with(sut.state.value.revenueState) {
+                assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertFalse(leftSection.showDelta)
+                assertFalse(rightSection.showDelta)
             }
         }
 
@@ -173,8 +197,13 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             selectedSite, savedState
         )
 
-    private fun getRevenueStats() =
-        RevenueData(RevenueStat(TOTAL_VALUE, TOTAL_DELTA, NET_VALUE, NET_DELTA, CURRENCY_CODE))
+    private fun getRevenueStats(
+        totalValue: Double = TOTAL_VALUE,
+        totalDelta: Double = TOTAL_DELTA,
+        netValue: Double = NET_VALUE,
+        netDelta: Double = NET_DELTA,
+        currencyCode: String = CURRENCY_CODE
+    ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
@@ -195,9 +224,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         private val DATE_RANGE_SELECTORS = listOf(ANY_VALUE, ANY_OTHER_VALUE)
 
         const val TOTAL_VALUE = 10.0
-        const val TOTAL_DELTA = 5
+        const val TOTAL_DELTA = 5.0
         const val NET_VALUE = 20.0
-        const val NET_DELTA = 10
+        const val NET_DELTA = 10.0
         const val CURRENCY_CODE = "EUR"
         const val TOTAL_CURRENCY_VALUE = "10 E"
         const val NET_CURRENCY_VALUE = "10 E"

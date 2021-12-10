@@ -2,8 +2,8 @@ package com.woocommerce.android.model
 
 data class RevenueStat(
     val totalValue: Double,
-    val totalDelta: Int,
+    val totalDelta: Double,
     val netValue: Double,
-    val netDelta: Int,
+    val netDelta: Double,
     val currencyCode: String?
 )
