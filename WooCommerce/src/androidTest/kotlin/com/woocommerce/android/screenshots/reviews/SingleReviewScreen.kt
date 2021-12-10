@@ -26,16 +26,10 @@ class SingleReviewScreen : Screen {
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withId(R.id.toolbar),
-                // Disabled this check for debugging. It looks like this text is not present in APIs < 30:
-                // ViewMatchers.withChild(ViewMatchers.withContentDescription("Navigate up")),
                 ViewMatchers.withChild(ViewMatchers.withText("Review"))
             )
         )
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        // Disabled this check for debugging. It looks like this text is not present in APIs < 30:
-        // Espresso.onView(ViewMatchers.withContentDescription("Navigate up"))
-        //    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
 
         // Review top bar
         Espresso.onView(ViewMatchers.withId(R.id.review_product_icon))

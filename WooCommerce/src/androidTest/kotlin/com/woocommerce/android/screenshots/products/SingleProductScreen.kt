@@ -26,8 +26,6 @@ class SingleProductScreen : Screen {
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withId(R.id.toolbar),
-                // Disabled this check for debugging. It looks like this text is not present in APIs < 30:
-                // ViewMatchers.withChild(ViewMatchers.withContentDescription("Navigate up")),
                 ViewMatchers.withChild(ViewMatchers.withText(product.name))
             )
         )
