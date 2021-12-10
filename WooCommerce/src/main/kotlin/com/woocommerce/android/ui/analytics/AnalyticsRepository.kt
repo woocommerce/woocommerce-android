@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
@@ -14,7 +15,6 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.*
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.lang.Double.POSITIVE_INFINITY
 import javax.inject.Inject
 import kotlin.math.round
 
@@ -87,10 +87,10 @@ class AnalyticsRepository @Inject constructor(
             AnalyticsDateRanges.LAST_YEAR, AnalyticsDateRanges.YEAR_TO_DATE -> YEARS
         }
 
-    private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double) = when {
-        previousVal <= ZERO_VALUE -> POSITIVE_INFINITY
-        currentVal <= ZERO_VALUE -> POSITIVE_INFINITY
-        else -> (round((previousVal - currentVal) / currentVal) * ONE_H_PERCENT)
+    private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {
+        previousVal <= ZERO_VALUE -> DeltaPercentage.NotExist
+        currentVal <= ZERO_VALUE -> DeltaPercentage.Value((MINUS_ONE * ONE_H_PERCENT))
+        else -> DeltaPercentage.Value((round((currentVal - previousVal) / previousVal) * ONE_H_PERCENT).toInt())
     }
 
     private suspend fun fetchRevenueStats(startDate: String, endDate: String, granularity: StatsGranularity) =

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
@@ -128,14 +129,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a view model with infinite delta, then delta is not shown`() =
+    fun `given a view model with on existent delta then delta is not shown`() =
         testBlocking {
             whenever(analyticsRepository.fetchRevenueData(any(), any()))
                 .thenReturn(
                     listOf(
                         getRevenueStats(
-                            netDelta = Double.POSITIVE_INFINITY,
-                            totalDelta = Double.POSITIVE_INFINITY
+                            netDelta = DeltaPercentage.NotExist,
+                            totalDelta = DeltaPercentage.NotExist
                         )
                     ).asFlow()
                 )
@@ -199,10 +200,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     private fun getRevenueStats(
         totalValue: Double = TOTAL_VALUE,
-        totalDelta: Double = TOTAL_DELTA,
         netValue: Double = NET_VALUE,
-        netDelta: Double = NET_DELTA,
-        currencyCode: String = CURRENCY_CODE
+        currencyCode: String = CURRENCY_CODE,
+        totalDelta: DeltaPercentage = DeltaPercentage.Value(TOTAL_DELTA.toInt()),
+        netDelta: DeltaPercentage = DeltaPercentage.Value(NET_DELTA.toInt()),
     ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
 
     companion object {
