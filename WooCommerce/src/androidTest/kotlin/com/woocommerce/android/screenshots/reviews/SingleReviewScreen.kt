@@ -22,12 +22,10 @@ class SingleReviewScreen : Screen {
     }
 
     fun assertSingleReviewScreen(review: ReviewData): SingleReviewScreen {
-        Thread.sleep(2000)
         // Navigation bar
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withId(R.id.toolbar),
-                ViewMatchers.withChild(ViewMatchers.withContentDescription("Navigate up")),
                 ViewMatchers.withChild(ViewMatchers.withText("Review"))
             )
         )
