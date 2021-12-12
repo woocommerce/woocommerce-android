@@ -103,7 +103,7 @@ jobs:
   Connected Tests:
     parameters:
       post-to-slack:
-        description: Post to Slack when tests fail. SLACK_WEBHOOK ENV variable must be set.
+        description: Post to Slack when tests fail. SLACK_UI_TESTS_WEBHOOK ENV variable must be set.
         type: boolean
         default: false
     executor:
