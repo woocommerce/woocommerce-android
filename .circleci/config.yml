@@ -145,8 +145,8 @@ jobs:
                 include_project_field: true
                 include_visit_job_action: true
                 webhook: '${SLACK_UI_TESTS_WEBHOOK}'
-                failure_message: 'UI Tests Failed'
-                success_message: 'UI Tests Passed'
+                failure_message: 'WooCommerce Android UI Tests failed.'
+                success_message: 'WooCommerce Android UI Tests passed.'
 
   Installable Build:
     executor:
@@ -227,6 +227,15 @@ workflows:
       - Test
       - Installable Build
       - Ensure Screenshots Tests Build
+      - Connected Tests:
+          name: UI Tests (Pixel 2 | API 28)
+          post-to-slack: true
+          # Always run connected tests on develop and release branches
+          filters:
+            branches:
+              only:
+                - develop
+                - /^release.*/          
   Optional UI Tests:
     unless: << pipeline.parameters.release_build >>
     #Optionally run connected tests on PRs
