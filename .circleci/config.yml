@@ -140,10 +140,13 @@ jobs:
           condition: << parameters.post-to-slack >>
           steps:
             - slack/status:
-                fail_only: true
-                include_job_number_field: false
-                include_project_field: false
-                failure_message: 'TBD'
+                fail_only: false
+                include_job_number_field: true
+                include_project_field: true
+                include_visit_job_action: true
+                webhook: '${SLACK_UI_TESTS_WEBHOOK}'
+                failure_message: 'UI Tests Failed'
+                success_message: 'UI Tests Passed'
 
   Installable Build:
     executor:
@@ -237,6 +240,7 @@ workflows:
                 - /^release.*/
                 - /pull\/[0-9]+/
       - Connected Tests:
+          post-to-slack: true
           name: UI Tests (Pixel 2 | API 28)
           requires: [Hold]      
   Release Build:
