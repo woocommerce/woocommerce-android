@@ -165,19 +165,22 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.jetpackProgressActionButton.show()
             }
             is Failed -> {
-                handleFailedState(status, binding)
+                handleFailedState(status.errorType, binding)
                 handleWpAdminButton(status.errorType, binding.openAdminOrRetryButton)
             }
         }
     }
 
-    private fun handleFailedState(status: Failed, binding: DialogJetpackInstallProgressBinding) {
+    private fun handleFailedState(
+        errorType: JetpackInstallViewModel.FailureType,
+        binding: DialogJetpackInstallProgressBinding
+    ) {
         val ctx = binding.root.context
 
         // Title copy
         binding.title.text = ctx.getString(
             R.string.jetpack_install_progress_failed_title,
-            when (status.errorType) {
+            when (errorType) {
                 INSTALLATION -> ctx.getString(R.string.jetpack_install_progress_failed_reason_installation)
                 ACTIVATION -> ctx.getString(R.string.jetpack_install_progress_failed_reason_activation)
                 CONNECTION -> ctx.getString(R.string.jetpack_install_progress_failed_reason_connection)
@@ -188,10 +191,10 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         val subtitle = ctx.getString(R.string.jetpack_install_progress_failed_try)
         val sb = StringBuilder()
         sb.append(subtitle)
-        if (status.errorType != CONNECTION) {
+        if (errorType != CONNECTION) {
             sb.append(" ")
             sb.append(
-                when (status.errorType) {
+                when (errorType) {
                     INSTALLATION -> ctx.getString(R.string.jetpack_install_progress_failed_alternative_install)
                     ACTIVATION -> ctx.getString(R.string.jetpack_install_progress_failed_alternative_activate)
                     else -> ""
@@ -201,7 +204,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         binding.subtitle.text = sb.toString()
 
         // Button copy
-        val btnText = when (status.errorType) {
+        val btnText = when (errorType) {
             INSTALLATION -> {
                 ctx.getString(
                     R.string.jetpack_install_progress_failed_option_wp_admin,
@@ -226,6 +229,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         binding.openAdminOrRetryButton.show()
         binding.jetpackProgressActionButton.hide()
     }
+
     private fun handleWpAdminButton(errorType: JetpackInstallViewModel.FailureType, button: MaterialButton) {
         when (errorType) {
             INSTALLATION -> {
