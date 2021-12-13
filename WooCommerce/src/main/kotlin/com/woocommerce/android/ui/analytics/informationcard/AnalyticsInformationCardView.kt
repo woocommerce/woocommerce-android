@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import androidx.constraintlayout.widget.Group
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
@@ -37,7 +38,7 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
     }
 
     fun setSeeReportClickListener(onClickListener: (() -> Unit)) {
-        binding.seeReportPanel.setOnClickListener { onClickListener() }
+        binding.seeReportGroup.setAllOnClickListener { onClickListener() }
     }
 
     private fun setDataViewState(viewState: DataViewState) {
@@ -60,5 +61,11 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
         binding.rightAnalyticsSection.visibility = GONE
         binding.noDataText.visibility = VISIBLE
         visibility = VISIBLE
+    }
+
+    private fun Group.setAllOnClickListener(onClickListener: (() -> Unit)) {
+        referencedIds.forEach { id ->
+            rootView.findViewById<View>(id).setOnClickListener { onClickListener() }
+        }
     }
 }
