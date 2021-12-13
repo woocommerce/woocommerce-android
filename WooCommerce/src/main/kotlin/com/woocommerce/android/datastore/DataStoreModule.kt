@@ -6,10 +6,12 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.woocommerce.android.datastore.DataStoreType.TRACKER
+import com.woocommerce.android.di.AppCoroutineScope
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -18,9 +20,13 @@ class DataStoreModule {
     @Provides
     @Singleton
     @DataStoreQualifier(TRACKER)
-    fun provideTrackerDataStore(appContext: Context): DataStore<Preferences> = PreferenceDataStoreFactory.create(
+    fun provideTrackerDataStore(
+        appContext: Context,
+        @AppCoroutineScope appCoroutineScope: CoroutineScope
+    ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = {
             appContext.preferencesDataStoreFile("tracker")
-        }
+        },
+        scope = appCoroutineScope
     )
 }
