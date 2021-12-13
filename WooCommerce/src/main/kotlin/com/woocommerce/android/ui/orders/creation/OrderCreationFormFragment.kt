@@ -20,14 +20,11 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatu
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val formViewModel by viewModels<OrderCreationFormViewModel>()
-
-    @Inject lateinit var navigator: OrderCreationNavigator
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -98,7 +95,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun handleViewModelEvents(event: Event) {
         when (event) {
-            is OrderCreationNavigationTarget -> navigator.navigate(this, event)
+            is OrderCreationNavigationTarget -> OrderCreationNavigator.navigate(this, event)
             is ViewOrderStatusSelector ->
                 OrderCreationFormFragmentDirections
                     .actionOrderCreationFragmentToOrderStatusSelectorDialog(
