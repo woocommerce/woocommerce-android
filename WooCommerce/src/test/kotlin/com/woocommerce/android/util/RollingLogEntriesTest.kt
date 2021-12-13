@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 
 class RollingLogEntriesTest {
     @Test
-    fun `Verify all entries are present if limit not reached`() {
+    fun `Given there are fewer entries than the limit, no entries are removed`() {
         val maxEntries = 20
         val entries = 15
         val log = RollingLogEntries(maxEntries)
@@ -26,13 +26,13 @@ class RollingLogEntriesTest {
     }
 
     @Test
-    fun `Verify oldest entries are discarded if limit reached`() {
+    fun `Given there are more entries than the limit, the oldest entries are removed, keeping the size to the max`() {
         val maxEntries = 10
         val entries = 15
         val logs = RollingLogEntries(maxEntries)
 
         for (i in 0 until entries) {
-            logs.add(LogEntry(T.UTILS, d, "$i"))
+            logs.add(LogEntry(UTILS, d, "$i"))
         }
 
         assertEquals(logs.size, maxEntries)
@@ -43,7 +43,7 @@ class RollingLogEntriesTest {
     }
 
     @Test
-    fun `Verify an exception is thrown if the limit is less than or equal to 0`() {
+    fun `When the RollingLogEntries is initialized with non-positive number as the limit, an exception is thrown`() {
         assertThrows(InvalidParameterException::class.java) {
             RollingLogEntries(0)
         }
