@@ -1,5 +1,11 @@
 import io.github.wzieba.tracks.plugin.TracksExtension
 
+buildscript {
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.2.2'
+    }
+}
+
 plugins {
     id 'com.automattic.android.fetchstyle'
     id 'io.gitlab.arturbosch.detekt'
