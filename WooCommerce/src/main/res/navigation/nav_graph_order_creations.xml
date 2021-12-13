@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_order_creations"
+    app:startDestination="@id/orderCreationFragment">
+    <fragment
+        android:id="@+id/orderCreationFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationFormFragment"
+        android:label="orderCreationFragment"
+        tools:layout="@layout/fragment_order_creation_form">
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderStatusSelectorDialog"
+            app:destination="@id/orderStatusSelectorDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerNoteFragment"
+            app:destination="@id/orderCreationCustomerNoteFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/orderStatusSelectorDialog"
+        android:name="com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog">
+        <argument
+            android:name="currentStatus"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="orderStatusList"
+            app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
+    </dialog>
+    <fragment
+        android:id="@+id/orderCreationCustomerNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerNoteFragment"
+        android:label="OrderCreationCustomerNoteFragment" />
+
+</navigation>

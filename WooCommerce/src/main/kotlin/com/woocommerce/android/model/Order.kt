@@ -50,6 +50,7 @@ data class Order(
     val shippingMethods: List<ShippingMethod>,
     val items: List<Item>,
     val shippingLines: List<ShippingLine>,
+    val feesLines: List<FeeLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
     val localId
@@ -60,7 +61,7 @@ data class Order(
 
     // Allow refunding only integer quantities
     @IgnoredOnParcel
-    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt()
+    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
@@ -161,6 +162,12 @@ data class Order(
         val total: BigDecimal
     ) : Parcelable
 
+    @Parcelize
+    data class FeeLine(
+        val name: String,
+        val total: BigDecimal
+    ) : Parcelable
+
     fun getBillingName(defaultValue: String): String {
         return when {
             billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty() -> defaultValue
@@ -236,6 +243,44 @@ data class Order(
 
         @Parcelize
         data class Custom(private val customValue: String) : Status(customValue)
+    }
+
+    companion object {
+        val EMPTY by lazy {
+            Order(
+                identifier = OrderIdentifier(),
+                rawLocalOrderId = 0,
+                remoteId = 0,
+                number = "",
+                dateCreated = Date(),
+                dateModified = Date(),
+                datePaid = null,
+                status = Status.Pending,
+                total = BigDecimal(0),
+                productsTotal = BigDecimal(0),
+                totalTax = BigDecimal(0),
+                shippingTotal = BigDecimal(0),
+                discountTotal = BigDecimal(0),
+                refundTotal = BigDecimal(0),
+                feesTotal = BigDecimal(0),
+                currency = "",
+                orderKey = "",
+                customerNote = "",
+                discountCodes = "",
+                paymentMethod = "",
+                paymentMethodTitle = "",
+                isCashPayment = false,
+                pricesIncludeTax = false,
+                multiShippingLinesAvailable = false,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY,
+                shippingMethods = emptyList(),
+                items = emptyList(),
+                shippingLines = emptyList(),
+                metaData = emptyList(),
+                feesLines = emptyList()
+            )
+        }
     }
 }
 
@@ -329,6 +374,12 @@ fun WCOrderModel.toAppModel(): Order {
                 it.methodId ?: StringUtils.EMPTY,
                 it.methodTitle ?: StringUtils.EMPTY,
                 it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+            )
+        },
+        feesLines = this.getFeeLineList().map {
+            FeeLine(
+                it.name ?: StringUtils.EMPTY,
                 it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
             )
         },

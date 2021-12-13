@@ -16,11 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.AppUrls
-import com.woocommerce.android.FeedbackPrefs
-import com.woocommerce.android.NavGraphMainDirections
-import com.woocommerce.android.R
+import com.woocommerce.android.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
@@ -149,9 +145,7 @@ class OrderListFragment :
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        if (FeatureFlag.SIMPLE_PAYMENTS.isEnabled()) {
-            displaySimplePaymentsWIPCard(true)
-        }
+        displaySimplePaymentsWIPCard(true)
     }
 
     override fun onResume() {
@@ -176,8 +170,7 @@ class OrderListFragment :
     }
 
     private fun isSimplePaymentsAvailable(): Boolean {
-        return FeatureFlag.SIMPLE_PAYMENTS.isEnabled() &&
-            AppPrefs.isSimplePaymentsEnabled &&
+        return AppPrefs.isSimplePaymentsEnabled &&
             viewModel.isCardReaderOnboardingCompleted()
     }
 
@@ -221,9 +214,7 @@ class OrderListFragment :
                 when {
                     isSimplePaymentAvailable && isOrderCreationAvailable -> showOrderCreationBottomSheet()
                     isSimplePaymentAvailable -> showSimplePaymentsDialog()
-                    isOrderCreationAvailable -> {
-                        // TODO trigger Order Creation form
-                    }
+                    isOrderCreationAvailable -> openOrderCreationFragment()
                 }
             }
             pinFabAboveBottomNavigationBar(fabButton)
@@ -319,9 +310,7 @@ class OrderListFragment :
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
             binding.orderListView.post {
                 when (it) {
-                    OrderCreationAction.CREATE_ORDER -> {
-                        // TODO trigger Order Creation form
-                    }
+                    OrderCreationAction.CREATE_ORDER -> openOrderCreationFragment()
                     OrderCreationAction.SIMPLE_PAYMENT -> showSimplePaymentsDialog()
                 }
             }
@@ -340,6 +329,10 @@ class OrderListFragment :
     private fun showOrderCreationBottomSheet() {
         OrderListFragmentDirections.actionOrderListFragmentToOrderCreationBottomSheet()
             .let { findNavController().navigateSafely(it) }
+    }
+
+    private fun openOrderCreationFragment() {
+        findNavController().navigate(R.id.action_orderListFragment_to_orderCreationFragment)
     }
 
     private fun hideEmptyView() {

@@ -550,6 +550,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- What's new / feature announcements
         FEATURE_ANNOUNCEMENT_SHOWN,
 
+        // -- Jetpack CP
+        JETPACK_CP_SITES_FETCHED,
+        FEATURE_JETPACK_BENEFITS_BANNER,
+        JETPACK_INSTALL_BUTTON_TAPPED,
+        JETPACK_INSTALL_SUCCEEDED,
+        JETPACK_INSTALL_FAILED,
+
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
         TOP_EARNER_PRODUCT_TAPPED,
@@ -790,8 +797,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
 
-        // TODO nbradbury change to production when feature is released
-        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments_prototype"
+        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
@@ -835,6 +841,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_REFUND_TYPE = "method"
         const val KEY_REFUND_METHOD = "gateway"
         const val KEY_AMOUNT = "amount"
+
+        const val KEY_IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_conntected"
+        const val KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS = "active_jetpack_connection_plugins"
+        const val KEY_FETCH_SITES_DURATION = "duration"
+        const val KEY_JETPACK_BENEFITS_BANNER_ACTION = "action"
+        const val KEY_JETPACK_INSTALLATION_SOURCE = "source"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 

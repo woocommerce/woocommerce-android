@@ -76,6 +76,6 @@
         style="@style/Woo.JetpackButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/jetpack_benefits_modal_install_jetpack" />
+        android:text="@string/get_started" />
 
 </LinearLayout>
