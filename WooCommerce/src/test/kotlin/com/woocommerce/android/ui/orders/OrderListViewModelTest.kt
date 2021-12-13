@@ -141,6 +141,16 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertTrue(isRefreshPending)
     }
 
+    @Test
+    fun `Given network is connected, when fetching orders and dependencies, then load order status list from api`() =
+        testBlocking {
+            doReturn(true).whenever(networkStatus).isConnected()
+
+            viewModel.fetchOrdersAndOrderDependencies()
+
+            verify(orderListRepository).fetchOrderStatusOptionsFromApi()
+        }
+
     /**
      * Test the logic that generates the "No orders yet" empty view for the ALL tab
      * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].

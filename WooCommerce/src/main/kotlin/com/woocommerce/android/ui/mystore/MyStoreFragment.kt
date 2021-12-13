@@ -186,6 +186,10 @@ class MyStoreFragment :
             presenter.dismissJetpackBenefitsBanner()
         }
         binding.jetpackBenefitsBanner.root.setOnClickListener {
+            AnalyticsTracker.track(
+                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
+            )
             findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
         }
         val appBarLayout = appBarLayout ?: return

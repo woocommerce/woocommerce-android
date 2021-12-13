@@ -11,11 +11,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.OrderCreationFormViewModel.ShowStatusTag
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
@@ -45,7 +43,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             displayOrderNumber = false,
             editActionAsText = true,
             customEditClickListener = {
-                formViewModel.onEditOrderStatusSelected(sharedViewModel.currentDraft.status)
+                sharedViewModel.orderStatusData.value?.let {
+                    formViewModel.onEditOrderStatusClicked(it)
+                }
             }
         )
         notesSection.setAddButtons(
@@ -64,17 +64,16 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
-        sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { oldOrderData, newOrderData ->
+        sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
             binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
-            newOrderData.takeIfNotEqualTo(oldOrderData?.status) {
-                formViewModel.requestStatusTagData(newOrderData.status)
-            }
         }
 
-        formViewModel.event.observe(viewLifecycleOwner) {
-            handleViewModelEvents(it, binding)
+        sharedViewModel.orderStatusData.observe(viewLifecycleOwner) {
+            binding.orderStatusView.updateStatus(it)
         }
+
+        formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 
     private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {
@@ -97,7 +96,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         ) { sharedViewModel.onOrderStatusChanged(Order.Status.fromValue(it.newStatus)) }
     }
 
-    private fun handleViewModelEvents(event: Event, binding: FragmentOrderCreationFormBinding) {
+    private fun handleViewModelEvents(event: Event) {
         when (event) {
             is OrderCreationNavigationTarget -> navigator.navigate(this, event)
             is ViewOrderStatusSelector ->
@@ -106,7 +105,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                         currentStatus = event.currentStatus,
                         orderStatusList = event.orderStatusList
                     ).let { findNavController().navigateSafely(it) }
-            is ShowStatusTag -> binding.orderStatusView.updateStatus(event.orderStatus)
         }
     }
 

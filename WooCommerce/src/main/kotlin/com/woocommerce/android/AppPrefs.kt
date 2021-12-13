@@ -7,11 +7,16 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
@@ -55,7 +60,7 @@ object AppPrefs {
         IS_USER_ELIGIBLE,
         USER_EMAIL,
         RECEIPT_PREFIX,
-        CARD_READER_ONBOARDING_COMPLETED,
+        CARD_READER_ONBOARDING_COMPLETED_STATUS,
         ORDER_FILTER_PREFIX,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
@@ -414,23 +419,55 @@ object AppPrefs {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
     }
 
-    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        PreferenceUtils.getBoolean(
-            getPreferences(),
-            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            false
+    fun getCardReaderOnboardingCompletedStatus(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ): CardReaderOnboardingCompletedStatus {
+        return CardReaderOnboardingCompletedStatus.valueOf(
+            PreferenceUtils.getString(
+                getPreferences(),
+                getCardReaderOnboardingCompletedKey(
+                    localSiteId,
+                    remoteSiteId,
+                    selfHostedSiteId
+                ),
+                CARD_READER_ONBOARDING_NOT_COMPLETED.name
+            ) ?: CARD_READER_ONBOARDING_NOT_COMPLETED.name
         )
+    }
+
+    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): Boolean {
+        return getCardReaderOnboardingCompletedStatus(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        ) != CARD_READER_ONBOARDING_NOT_COMPLETED
+    }
 
     fun setCardReaderOnboardingCompleted(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long,
-        isCompleted: Boolean
-    ) = PreferenceUtils.setBoolean(
-        getPreferences(),
-        getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
-        isCompleted
-    )
+        pluginType: PluginType?
+    ) {
+        val pluginName = when (pluginType) {
+            PluginType.WOOCOMMERCE_PAYMENTS -> CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
+            PluginType.STRIPE_TERMINAL_GATEWAY -> CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
+            null -> CARD_READER_ONBOARDING_NOT_COMPLETED
+        }
+        PreferenceUtils.setString(
+            getPreferences(),
+            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            pluginName.name
+        )
+    }
+
+    private fun getCardReaderOnboardingCompletedKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = "$CARD_READER_ONBOARDING_COMPLETED_STATUS:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
     fun getJetpackBenefitsDismissalDate(): Long {
         return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)
@@ -439,9 +476,6 @@ object AppPrefs {
     fun recordJetpackBenefitsDismissal() {
         return setLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, System.currentTimeMillis())
     }
-
-    private fun getCardReaderOnboardingCompletedKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        "${DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
     fun isTrackingExtensionAvailable(): Boolean {
         return getBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, false)
@@ -597,5 +631,11 @@ object AppPrefs {
                 return null
             }
         }
+    }
+
+    enum class CardReaderOnboardingCompletedStatus {
+        CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY,
+        CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION,
+        CARD_READER_ONBOARDING_NOT_COMPLETED,
     }
 }
