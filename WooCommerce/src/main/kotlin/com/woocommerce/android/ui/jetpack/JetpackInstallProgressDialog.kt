@@ -10,6 +10,7 @@ import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogJetpackInstallProgressBinding
@@ -30,6 +31,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
         private const val JETPACK_INSTALL_URL = "plugin-install.php?tab=plugin-information&plugin=jetpack"
+        private const val JETPACK_ACTIVATE_URL = "plugins.php"
         private const val ICON_NOT_DONE = R.drawable.ic_progress_circle_start
         private const val ICON_DONE = R.drawable.ic_progress_circle_complete
     }
@@ -102,11 +104,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             activity?.startHelpActivity(HelpActivity.Origin.JETPACK_INSTALLATION)
         }
 
-        binding.openAdminOrRetryButton.setOnClickListener {
-            val installJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_INSTALL_URL
-            ChromeCustomTabUtils.launchUrl(requireContext(), installJetpackInWpAdminUrl)
-        }
-
         setupObservers(binding)
     }
 
@@ -169,6 +166,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             }
             is Failed -> {
                 handleFailedState(status, binding)
+                handleWpAdminButton(status.errorType, binding.openAdminOrRetryButton)
             }
         }
     }
@@ -227,6 +225,25 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         binding.contactButton.show()
         binding.openAdminOrRetryButton.show()
         binding.jetpackProgressActionButton.hide()
+    }
+    private fun handleWpAdminButton(errorType: JetpackInstallViewModel.FailureType, button: MaterialButton) {
+        when (errorType) {
+            INSTALLATION -> {
+                button.setOnClickListener {
+                    val installJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_INSTALL_URL
+                    ChromeCustomTabUtils.launchUrl(requireContext(), installJetpackInWpAdminUrl)
+                }
+            }
+            ACTIVATION -> {
+                button.setOnClickListener {
+                    val activateJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_ACTIVATE_URL
+                    ChromeCustomTabUtils.launchUrl(requireContext(), activateJetpackInWpAdminUrl)
+                }
+            }
+            else -> {
+                // Add sync functionality.
+            }
+        }
     }
 
     private fun setViewVisibility(visibility: Int, vararg views: View) = views.forEach { it.visibility = visibility }
