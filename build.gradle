@@ -89,7 +89,7 @@ ext {
     mockitoVersion = '4.0.0'
     constraintLayoutVersion = '1.2.0'
     libaddressinputVersion = '0.0.2'
-    eventBusVersion = '3.3.0'
+    eventBusVersion = '3.3.1'
     googlePlayCoreVersion = '1.10.2'
     coroutinesVersion = '1.5.2'
     lifecycleVersion = '2.4.0'
