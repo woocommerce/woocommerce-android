@@ -2,7 +2,6 @@ package com.woocommerce.android.util
 
 import com.woocommerce.android.util.RollingLogEntries.LogEntry
 import com.woocommerce.android.util.WooLog.LogLevel.d
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.UTILS
 import org.junit.Assert.assertThrows
 import org.junit.Test
