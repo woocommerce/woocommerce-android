@@ -405,7 +405,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given previous and current period revenue, when fetchOrdersData multiple date range, result is the expected`() =
+    fun `given previous and current period revenue, when fetchOrdersData multiple date range, result is expected`() =
         runBlocking {
             // Given
             val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
@@ -415,7 +415,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val currentPeriodRevenue = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
-
 
             // When
             val result = sut.fetchOrdersData(

@@ -37,10 +37,13 @@ class AnalyticsViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
-    private val mutableState = MutableStateFlow(AnalyticsViewState(
-        buildAnalyticsDateRangeSelectorViewState(),
-        LoadingViewState,
-        LoadingViewState))
+    private val mutableState = MutableStateFlow(
+        AnalyticsViewState(
+            buildAnalyticsDateRangeSelectorViewState(),
+            LoadingViewState,
+            LoadingViewState
+        )
+    )
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
@@ -260,7 +263,6 @@ class AnalyticsViewModel @Inject constructor(
         const val RANGE_SELECTION_KEY = "range_selection_key"
         const val DATE_RANGE_SELECTION_KEY = "date_range_selection_key"
     }
-
 }
 
 
