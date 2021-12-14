@@ -213,19 +213,19 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     @Test
     fun `get the friendly period date range is the expected`() {
         val sameYearAndMonthFriendlyFormattedDate = SimpleDateRange(date, threeJan1970)
-            .formatDatesToFriendlyPeriod()
+            .formatDatesToFriendlyPeriod(Locale.UK)
         assertEquals(SAME_YEAR_SAME_MONTH_EXPECTED, sameYearAndMonthFriendlyFormattedDate)
 
         val sameYearAndDifferentMonthFriendlyFormattedDate = SimpleDateRange(threeJan1970, threeFeb1970)
-            .formatDatesToFriendlyPeriod()
+            .formatDatesToFriendlyPeriod(Locale.UK)
         assertEquals(SAME_YEAR_DIFFERENT_MONTH_EXPECTED, sameYearAndDifferentMonthFriendlyFormattedDate)
 
         val differentYearAndDifferentMonthFriendlyFormattedDate = SimpleDateRange(threeJan1970, twtyFourNov2021)
-            .formatDatesToFriendlyPeriod()
+            .formatDatesToFriendlyPeriod(Locale.UK)
         assertEquals(DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED, differentYearAndDifferentMonthFriendlyFormattedDate)
 
         val differentYearAndDifferentMonthFriendlyFormattedDateTwo =
-            SimpleDateRange(twtyEightNov2021, oneDec2021).formatDatesToFriendlyPeriod()
+            SimpleDateRange(twtyEightNov2021, oneDec2021).formatDatesToFriendlyPeriod(Locale.UK)
         assertEquals(
             DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED_TWO,
             differentYearAndDifferentMonthFriendlyFormattedDateTwo
