@@ -100,9 +100,10 @@ class AnalyticsRepository @Inject constructor(
                 getPreviousPeriodStats(dateRange, statsGranularity),
                 getProductStats(dateRange, statsGranularity, TOP_PRODUCTS_LIST_SIZE)
             ) { currentRevenue, previousRevenue, products ->
-                if (currentRevenue.isFailure || currentRevenue.getOrNull() == null ||
-                    previousRevenue.isFailure || previousRevenue.getOrNull() == null
-                ) {
+                if (currentRevenue.isFailure || currentRevenue.getOrNull() == null) {
+                    return@combine ProductsResult.ProductsError
+                }
+                if (previousRevenue.isFailure || previousRevenue.getOrNull() == null) {
                     return@combine ProductsResult.ProductsError
                 }
                 if (products.isFailure || products.getOrNull() == null) {
@@ -155,7 +156,6 @@ class AnalyticsRepository @Inject constructor(
             is MultipleDateRange ->
                 fetchStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(), granularity)
         }
-
 
     private suspend fun getProductStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity, quantity: Int) =
         when (dateRange) {

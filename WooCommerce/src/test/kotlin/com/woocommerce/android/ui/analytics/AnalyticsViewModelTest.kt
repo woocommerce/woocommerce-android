@@ -63,7 +63,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         on { formatCurrency(PRODUCT_NET_SALES.toString(), CURRENCY_CODE) } doReturn PRODUCT_CURRENCY_VALUE
         on { formatCurrency(OTHER_PRODUCT_NET_SALES.toString(), OTHER_CURRENCY_CODE) } doReturn
             OTHER_PRODUCT_CURRENCY_VALUE
-
     }
 
     private val analyticsRepository: AnalyticsRepository = mock {
@@ -293,7 +292,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 assertEquals(resourceProvider.getString(R.string.analytics_products_list_items_sold), subTitle)
                 assertEquals(PRODUCT_ITEMS_SOLD.toString(), subTitleValue)
                 assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_title), listLeftHeader)
-                assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_subtitle), listRightHeader)
+                assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
+                    listRightHeader)
             }
         }
 
