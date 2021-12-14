@@ -1,11 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-11-09 11:54:13+0000
+Translation-Revision-Date: 2021-12-08 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="settings_enable_order_creation_teaser_message">Versuche, Bestellungen mit vollständigen Informationen zu erstellen, während wir uns auf den Launch vorbereiten</string>
+    <string name="settings_enable_order_creation_teaser_title">Erstellung von Bestellungen</string>
+    <string name="settings_enable_simple_payments_teaser_title">Einfaches Bezahlen</string>
+    <string name="beta_features_order_creation">Erstellung von Bestellungen</string>
+    <string name="beta_features_simple_payments">Einfaches Bezahlen</string>
+    <string name="beta_features_add_ons">Add-ons anzeigen</string>
+    <string name="orders_empty_message_for_filtered_orders">Leider wurden keine Bestellungen gefunden.</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">Einstellungen öffnen</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">Erforderliche Rechte für Geräte in der Nähe fehlen</string>
+    <string name="shipping_label_edit_address_country_search_hint">Länder filtern</string>
+    <string name="shipping_label_edit_address_state_search_hint">Bundesland filtern</string>
+    <string name="order_detail_edit_address_state">Bundesland</string>
+    <string name="orderfilters_date_range_end_date">End-Datum</string>
+    <string name="orderfilters_date_range_start_date">Start-Datum</string>
+    <string name="orderfilters_date_range_picker_title">Daten auswählen</string>
+    <string name="orderfilters_date_range_filter_custom_range">Angepasster Zeitraum</string>
+    <string name="orderlist_bottom_sheet_simple_payment_description">Bestellung mit nur wenigen Informationen erstellen</string>
+    <string name="orderlist_bottom_sheet_simple_payment_action">Einfaches Bezahlen</string>
+    <string name="orderlist_bottom_sheet_create_order_description">Neue manuelle Bestellung erstellen</string>
+    <string name="orderlist_bottom_sheet_create_order_action">Bestellung erstellen</string>
+    <string name="orderlist_create_order_button_description">Bestellung erstellen</string>
+    <string name="simple_payments_creation_error">Die Bestellung konnte nicht erstellt werden</string>
+    <string name="simple_payments_enter_amount">Betrag eingeben</string>
+    <string name="simple_payments_dialog_title">Zahlung erhalten</string>
+    <string name="orderlist_simple_payments_menu">Einfaches Bezahlen</string>
+    <string name="orderlist_simple_payments_wip_title">Nimm Zahlungen mit deinem Gerät entgegen!</string>
+    <string name="analytics">Statistiken</string>
+    <string name="jetpack_install_progress_step_four_message">Erledigt</string>
+    <string name="jetpack_install_progress_step_three_message">Dein Store wird verbunden</string>
+    <string name="jetpack_install_progress_step_two_message">Wird aktiviert</string>
+    <string name="jetpack_install_progress_step_one_message">Jetpack wird installiert</string>
+    <string name="jetpack_install_progress_subtitle">Bitte warte, während wir %s mit Jetpack verbinden.</string>
+    <string name="jetpack_install_progress_title">Folgendes wird installiert:\nJetpack</string>
+    <string name="jetpack_install_start_default_name">deine Website</string>
+    <string name="jetpack_install_start_subtitle">Installiere das kostenlose Jetpack-Plugin auf &lt;strong&gt;%s&lt;/strong&gt;, um auf deinem Mobilgerät die bestmögliche Erfahrung zu haben.</string>
+    <string name="jetpack_install_start_title">Jetpack installieren</string>
+    <string name="product_review_list_fetching_failed">Fehler beim Abrufen von Produktbewertungen</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">Lesegerät ist nicht verbunden</string>
+    <string name="card_reader_accessibility_reader_is_connected">Lesegerät ist verbunden</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">Es wird nicht empfohlen, ein laufendes Software-Update abzubrechen. Wenn du abbrichst, wird die Verbindung deines Lesegeräts blockiert.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">Das Software-Update ist fehlgeschlagen, da der Akkustand deines Lesegeräts zu niedrig ist. Lade den Akku deines Lesegeräts bitte auf über 50 %%, bevor du es erneut versuchst.</string>
+    <string name="card_reader_software_update_progress_description_low_battery">Das Software-Update ist fehlgeschlagen, da der Akkustand deines Lesegeräts nur %1$s%% beträgt. Lade den Akku deines Lesegeräts bitte auf über 50 %%, bevor du es erneut versuchst.</string>
+    <string name="card_reader_software_update_title_battery_low">Lade bitte den Akku deines Lesegeräts auf</string>
+    <string name="card_reader_software_update_description">Damit die Software deines Kartenlesegeräts weiter problemlos funktioniert, ist eine Aktualisierung erforderlich</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">Bitte gib in den Einstellungen deines Stores eine gültige Postleitzahl ein und versuche es erneut</string>
+    <string name="card_reader_connect_invalid_postal_code_header">Postleitzahl der Store-Adresse ist ungültig</string>
+    <string name="card_reader_connect_missing_address_button">Adresse eingeben</string>
+    <string name="card_reader_connect_missing_address">Bitte gib die Adresse deines Stores an, um fortzufahren</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">Überprüfe dein Mobilgerät</string>
+    <string name="card_reader_m2_manual_card_reader">Stripe M2 – Handbuch für Kartenlesegerät</string>
+    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper – Handbuch für Kartenlesegerät</string>
+    <string name="order_error_update_empty_mail">Die Adresse kann nicht mit einer leeren E-Mail aktualisiert werden. Stelle sicher, dass du die neueste Version von WooCommerce ausführst.</string>
+    <string name="orderfilters_date_range_filter_last_30_days">Letzte 30 Tage</string>
+    <string name="orderfilters_date_range_filter_last_7_days">Letzte 7 Tage</string>
+    <string name="orderfilters_date_range_filter_last_two_days">Die letzten 2 Tage</string>
+    <string name="orderfilters_date_range_filter_today">Heute</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
+    <string name="orderfilters_default_filter_option">Alle</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">Gefilterte Bestellungen</string>
+    <string name="orderfilters_filter_card_title_all_orders">Alle Bestellungen</string>
+    <string name="orderlist_simple_payments_wip_message_disabled">Wir arbeiten daran, es dir einfacher zu machen, Zahlungen mit deinem Gerät entgegenzunehmen! Aktiviere die Funktion unter „Einstellungen“ &gt; „Betafunktionen“.</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Wir arbeiten daran, es dir einfacher zu machen, Zahlungen mit deinem Gerät entgegenzunehmen! Im Moment kannst du eine Bestellung mit dem von dir gewünschten Betrag erstellen, indem du auf den „+“-Button tippst.</string>
     <string name="jetpack_benefits_modal_dismiss">Nicht jetzt</string>
     <string name="jetpack_benefits_modal_install_jetpack">Jetpack installieren</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Erlaube mehreren Benutzen, auf WooCommerce Mobile zuzugreifen. </string>
@@ -16,9 +78,7 @@ Language: de
     <string name="jetpack_benefits_modal_push_notifications_title">Push-Benachrichtigungen</string>
     <string name="jetpack_benefits_modal_subtitle">Installiere das kostenlose Jetpack-Plugin, um auf deinem Mobilgerät die bestmögliche Erfahrung zu haben.</string>
     <string name="jetpack_benefits_modal_title">Hole das Maximum aus deinem Store heraus</string>
-    <string name="settings_enable_quick_order_teaser_message">Versuche, Bestellungen mit nur wenigen Informationen zu erstellen, während wir uns auf den Launch vorbereiten</string>
-    <string name="settings_enable_quick_order_teaser_title">Quick Order</string>
-    <string name="beta_features_message">Add-ons anzeigen, quick order</string>
+    <string name="settings_enable_simple_payments_teaser_message">Versuche, Bestellungen mit nur wenigen Informationen zu erstellen, während wir uns auf den Launch vorbereiten</string>
     <string name="order_detail_use_as_shipping_address">Als Lieferadresse verwenden</string>
     <string name="order_detail_use_as_billing_address">Als Rechnungsadresse verwenden</string>
     <string name="orderfilters_filters_count_title">Filter (%d)</string>
@@ -37,7 +97,6 @@ Language: de
     <string name="product_description_hint_with_title">Erzähle uns mehr über %s …</string>
     <string name="product_description_hint_no_title">Beschreibe deinen zukünftigen Kunden dein Produkt …</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Seriennummer des Lesegeräts in die Zwischenablage kopiert</string>
-    <string name="card_reader_manual_card_reader">Handbuch für Kartenlesegerät</string>
     <string name="order_detail_add_billing_address">Rechnungsadresse hinzufügen</string>
     <string name="order_detail_add_shipping_address">Versandadresse hinzufügen</string>
     <string name="order_detail_add_customer_note">Anmerkung des Kunden hinzufügen</string>
@@ -45,7 +104,6 @@ Language: de
     <string name="order_detail_shipping_address_section">Lieferadresse</string>
     <string name="order_detail_address_section">Adresse</string>
     <string name="order_detail_edit_address_country">Land</string>
-    <string name="order_detail_edit_address_state">Bundesland/Landkreis</string>
     <string name="order_detail_edit_address_zip">Postleitzahl</string>
     <string name="order_detail_edit_address_city">Stadt</string>
     <string name="order_detail_edit_address_line2">Adresse 2</string>
@@ -125,7 +183,6 @@ Language: de
     <string name="card_reader_purchase_card_reader">Kartenlesegerät bestellen</string>
     <string name="card_reader_manage_card_reader">Kartenlesegerät verwalten</string>
     <string name="shipping_label_multiple_customs_form_print_button">Drucken</string>
-    <string name="shipping_label_edit_address_state">Bundesland / Landkreis</string>
     <string name="shipping_label_edit_address_line2">Adresszeile 2</string>
     <string name="shipping_label_edit_address_line1">Adresszeile 1</string>
     <string name="shipping_label_print_multiple_screen_title">Versandetiketten drucken</string>
@@ -183,7 +240,7 @@ Language: de
     <string name="product_attributes_created_generate_action_text">Variante erstellen</string>
     <string name="product_attributes_created_description">Nachdem du nun Attribute hinzugefügt hast, kannst du deine erste Variante erstellen!</string>
     <string name="product_attributes_created_title">Attribute erstellt</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% abgeschlossen</string>
     <string name="card_reader_software_update_progress_cancel_warning">Es wird nicht empfohlen, ein laufendes Software-Update abzubrechen</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Leider konnte diese Zahlung nicht bearbeitet werden</string>
     <string name="card_reader_payment_failed_server_error_state">Keine Verbindung zum Server</string>
@@ -273,7 +330,6 @@ Language: de
     <string name="shipping_label_rate_included_options_usps_tracking">USPS-Sendungsverfolgung</string>
     <string name="card_reader_software_update_in_progress_title">Die Software deines Kartenlesegeräts wird aktualisiert</string>
     <string name="card_reader_software_update_title">Software-Update</string>
-    <string name="card_reader_software_update_description">Damit die Software deines Kartenlesegeräts weiter problemlos funktioniert, ist eine Aktualisierung erforderlich. Möchtest du sie jetzt aktualisieren?</string>
     <string name="card_reader_detail_connected_update_success">Software des Kartenlesegeräts aktualisiert</string>
     <string name="card_reader_detail_connected_reader_unknown">NAME DES KARTENLESEGERÄTS UNBEKANNT</string>
     <string name="card_reader_detail_connected_disconnect_reader">Kartenlesegerät trennen</string>
@@ -344,7 +400,7 @@ Language: de
     <string name="card_reader_connect_open_permission_settings">Einstellungen öffnen</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth ist deaktiviert</string>
     <string name="card_reader_connect_location_provider_disabled_header">Standort ist deaktiviert</string>
-    <string name="card_reader_connect_missing_permissions_header">Erforderliche Standortrechte fehlen</string>
+    <string name="card_reader_connect_missing_permissions_header">Erforderliche genaue Standortrechte fehlen</string>
     <string name="card_reader_connect_connecting_failed_hint">Es konnte keine Verbindung zum Reader hergestellt werden.</string>
     <string name="card_reader_connect_connecting_header">Verbindung zum Reader wird hergestellt</string>
     <string name="card_reader_connect_to_reader">Mit Reader verbinden</string>
@@ -487,6 +543,7 @@ Language: de
     <string name="shipping_label_edit_address_use_address_as_is">Adresse wie eingegeben verwenden</string>
     <string name="shipping_label_edit_address_country">Land</string>
     <string name="shipping_label_edit_address_zip">Postleitzahl</string>
+    <string name="shipping_label_edit_address_state">Bundesstaat</string>
     <string name="shipping_label_edit_address_city">Ort</string>
     <string name="shipping_label_edit_address_phone">Telefon</string>
     <string name="shipping_label_edit_address_company">Firma</string>
@@ -840,7 +897,6 @@ Language: de
     <string name="product_schedule_sale_sublabel">Verkauf automatisch beginnen und beenden</string>
     <string name="product_schedule_sale_label">Verkauf planen</string>
     <string name="order_refunds_store_admin_link_text">in deiner Shop-Administration</string>
-    <string name="orders_empty_message_with_order_status_filter">Leider wurden für „%s“ keine Bestellungen gefunden</string>
     <string name="product_inventory_update_sku_error">Diese SKU wird bereits für ein anderes Produkt verwendet</string>
     <string name="product_shipping_settings">Einstellungen für den Versand</string>
     <string name="product_no_shipping_class">Keine Versandklasse</string>

@@ -22,6 +22,9 @@ class OrderCreationRepository @Inject constructor(
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), order.status.value)
                 ?: error("Couldn't find a status with key ${order.status.value}")
         }
+
+        // TODO pass the customer note to the request
+
         val request = CreateOrderRequest(
             status = status,
             lineItems = order.items.map {
