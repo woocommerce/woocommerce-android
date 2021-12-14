@@ -14,6 +14,9 @@
             app:destination="@id/orderStatusSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerNoteFragment"
+            app:destination="@id/orderCreationCustomerNoteFragment" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -26,4 +29,9 @@
             android:name="orderStatusList"
             app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
     </dialog>
+    <fragment
+        android:id="@+id/orderCreationCustomerNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerNoteFragment"
+        android:label="OrderCreationCustomerNoteFragment" />
+
 </navigation>
