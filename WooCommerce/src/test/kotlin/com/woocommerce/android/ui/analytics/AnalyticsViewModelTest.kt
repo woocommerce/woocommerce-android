@@ -248,10 +248,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         val weekRevenueStats = getRevenueStats(
             OTHER_TOTAL_VALUE,
-            OTHER_TOTAL_DELTA.toDouble(),
+            OTHER_NET_VALUE,
             OTHER_CURRENCY_CODE,
-            DeltaPercentage.Value(OTHER_NET_DELTA),
-            DeltaPercentage.Value(OTHER_NET_VALUE)
+            DeltaPercentage.Value(OTHER_TOTAL_DELTA),
+            DeltaPercentage.Value(OTHER_NET_DELTA)
         )
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
@@ -339,7 +339,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         const val OTHER_TOTAL_VALUE = 20.0
         const val OTHER_TOTAL_DELTA = 15
-        const val OTHER_NET_VALUE = 10
+        const val OTHER_NET_VALUE = 10.0
         const val OTHER_NET_DELTA = 20
         const val OTHER_CURRENCY_CODE = "DOL"
         const val OTHER_TOTAL_CURRENCY_VALUE = "20 USD"
