@@ -9,8 +9,6 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.Re
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
-import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
-import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
@@ -116,13 +114,13 @@ class AnalyticsViewModel @Inject constructor(
                 }
         }
 
-    private fun updateOrders(
-        range: AnalyticsDateRanges = AnalyticsDateRanges.from(getDefaultSelectedPeriod()),
-        dateRange: DateRange = getDefaultDateRange()
-    ) =
+    private fun updateOrders() =
         launch {
+            val timePeriod = getSavedTimePeriod()
+            val dateRange = getSavedDateRange()
+
             mutableState.value = state.value.copy(ordersState = LoadingViewState)
-            analyticsRepository.fetchOrdersData(dateRange, range)
+            analyticsRepository.fetchOrdersData(dateRange, timePeriod)
                 .collect {
                     when (it) {
                         is OrdersData -> mutableState.value = state.value.copy(
@@ -273,16 +271,6 @@ class AnalyticsViewModel @Inject constructor(
     companion object {
         const val TIME_PERIOD_SELECTED_KEY = "time_period_selected_key"
         const val DATE_RANGE_SELECTED_KEY = "date_range_selected_key"
-    }
-}
-
-    private fun getCurrentDateRange(): DateRange = savedState[DATE_RANGE_SELECTION_KEY] ?: getDefaultDateRange()
-    private fun getCurrentRange(): AnalyticsDateRanges = savedState[RANGE_SELECTION_KEY]
-        ?: AnalyticsDateRanges.from(getDefaultSelectedPeriod())
-
-    companion object {
-        const val RANGE_SELECTION_KEY = "range_selection_key"
-        const val DATE_RANGE_SELECTION_KEY = "date_range_selection_key"
     }
 }
 
