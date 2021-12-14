@@ -42,6 +42,7 @@
         <item name="android:textColorLink">@color/color_secondary</item>
 
         <item name="minTouchTargetSize">@dimen/min_tap_target</item>
+        <item name="actionMenuTextColor">?attr/colorSecondary</item>
 
         <!-- Shapes -->
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Theme.Woo.SmallComponent</item>
@@ -88,6 +89,7 @@
         <item name="autoCompleteTextViewStyle">@style/Woo.AutoCompleteTextView</item>
         <item name="bottomSheetDialogTheme">@style/Woo.Theme.BottomSheetDialog</item>
         <item name="actionOverflowButtonStyle">@style/Woo.ActionMode.OverflowButtonStyle</item>
+        <item name="secondaryTextButtonStyle">@style/Woo.Button.TextButton.Secondary</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -148,4 +150,6 @@
         <item name="colorAccent">@color/color_primary</item>
         <item name="android:colorForeground">@color/woo_black_90</item>
     </style>
+
+    <style name="MediaPicker.Button.Colored" parent="Woo.Button.Colored" />
 </resources>
