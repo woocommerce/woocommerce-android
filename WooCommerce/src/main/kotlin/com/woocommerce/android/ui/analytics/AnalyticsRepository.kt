@@ -31,7 +31,7 @@ class AnalyticsRepository @Inject constructor(
     ): Flow<RevenueResult> =
         getGranularity(selectedRange).let {
             return getCurrentPeriodRevenue(dateRange, it)
-                .combine(getPreviousPeriodRevenue(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
+                .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
                     if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
                         return@combine RevenueError
                     }
@@ -56,8 +56,9 @@ class AnalyticsRepository @Inject constructor(
                 }
         }
 
-    suspend fun fetchOrdersData(dateRange: AnalyticsDateRange,
-                                selectedRange: AnalyticTimePeriod
+    suspend fun fetchOrdersData(
+        dateRange: AnalyticsDateRange,
+        selectedRange: AnalyticTimePeriod
     ): Flow<OrdersResult> =
         getGranularity(selectedRange).let {
             return getCurrentPeriodStats(dateRange, it)
@@ -100,19 +101,22 @@ class AnalyticsRepository @Inject constructor(
                     granularity
                 )
         }
-    private suspend fun getCurrentPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) = when (dateRange) {
-        is SimpleDateRange ->
-            fetchStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
-        is MultipleDateRange ->
-            fetchStats(dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(), granularity)
-    }
 
-    private suspend fun getPreviousPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) = when (dateRange) {
-        is SimpleDateRange ->
-            fetchStats(dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(), granularity)
-        is MultipleDateRange ->
-            fetchStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(), granularity)
-    }
+    private suspend fun getCurrentPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) =
+        when (dateRange) {
+            is SimpleDateRange ->
+                fetchStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
+            is MultipleDateRange ->
+                fetchStats(dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(), granularity)
+        }
+
+    private suspend fun getPreviousPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) =
+        when (dateRange) {
+            is SimpleDateRange ->
+                fetchStats(dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(), granularity)
+            is MultipleDateRange ->
+                fetchStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(), granularity)
+        }
 
     private fun getGranularity(selectedRange: AnalyticTimePeriod) =
         when (selectedRange) {
