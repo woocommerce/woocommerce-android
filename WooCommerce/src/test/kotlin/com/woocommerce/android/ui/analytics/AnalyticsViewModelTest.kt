@@ -98,7 +98,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `when ViewModel is with savedState is created, then has the expected values`() =
         testBlocking {
-
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturn ANY_SAVED_VALUE
                 on { getString(any(), anyVararg()) } doReturn ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE
@@ -158,7 +157,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
 
             with(sut.state.value.revenueState) {
-
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
                 assertEquals(TOTAL_CURRENCY_VALUE, leftSection.value)
                 assertEquals(TOTAL_DELTA, leftSection.delta)
