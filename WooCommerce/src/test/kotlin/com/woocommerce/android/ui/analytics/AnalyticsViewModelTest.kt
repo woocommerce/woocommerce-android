@@ -105,6 +105,11 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `when ViewModel is with savedState is created, then has the expected values`() =
         testBlocking {
+            analyticsRepository.stub {
+                onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
+                onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
+            }
+
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturn ANY_SAVED_VALUE
                 on { getString(any(), anyVararg()) } doReturn ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE
@@ -133,6 +138,11 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then has the expected date range selector values`() =
         testBlocking {
+            analyticsRepository.stub {
+                onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
+                onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
+            }
+
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturnConsecutively
                     listOf(ANY_VALUE, LAST_YEAR.description)
@@ -191,37 +201,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 assertTrue(this is NotShowIndicator)
             }
         }
-
-    @Test
-    fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() {
-        whenever(siteModel.isWPCom).thenReturn(true)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-    }
-
-    @Test
-    fun `given a WPComAtomic site, when see report is clicked, then OpenWPComWebView event is triggered`() {
-        whenever(siteModel.isWPComAtomic).thenReturn(true)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-    }
-
-    @Test
-    fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() {
-        whenever(siteModel.isWPComAtomic).thenReturn(false)
-        whenever(siteModel.isWPCom).thenReturn(false)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
-    }
 
     @Test
     fun `given a week to date selected, when refresh is requested, then has expected revenue values`() = testBlocking {
@@ -356,7 +335,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
         analyticsRepository.stub {
             onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
@@ -372,6 +350,37 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         assertEquals(2, states.filter { it.refreshIndicator is RefreshIndicator.ShowIndicator }.size)
 
         getShowIndicatorStatesJob.cancel()
+    }
+
+    @Test
+    fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() {
+        whenever(siteModel.isWPCom).thenReturn(true)
+
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+    }
+
+    @Test
+    fun `given a WPComAtomic site, when see report is clicked, then OpenWPComWebView event is triggered`() {
+        whenever(siteModel.isWPComAtomic).thenReturn(true)
+
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+    }
+
+    @Test
+    fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() {
+        whenever(siteModel.isWPComAtomic).thenReturn(false)
+        whenever(siteModel.isWPCom).thenReturn(false)
+
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {

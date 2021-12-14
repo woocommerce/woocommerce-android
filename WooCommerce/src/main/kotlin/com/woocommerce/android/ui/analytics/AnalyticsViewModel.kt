@@ -9,12 +9,9 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.Re
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.RefreshIndicator.*
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
 import com.woocommerce.android.util.CurrencyFormatter
