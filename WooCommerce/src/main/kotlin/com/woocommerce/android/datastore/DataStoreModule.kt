@@ -12,6 +12,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
@@ -27,6 +28,6 @@ class DataStoreModule {
         produceFile = {
             appContext.preferencesDataStoreFile("tracker")
         },
-        scope = appCoroutineScope
+        scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
 }
