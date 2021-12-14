@@ -20,20 +20,20 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         private const val THREE_JAN_1970_TIME = 234083000L
         private const val THREE_FEB_1970_TIME = 2912483000L
         private const val TWTY_FOUR_NOV_2021 = 1637776266465L
-        private const val TWTY8_NOV_2021 = 1638054000000L
-        private const val ONE_DEC_2021 = 1638313200000L
+        private const val TWTY8_NOV_2021 = 1638087612000L
+        private const val TWO_DEC_2021 = 1638433212000L
 
         val date = Date().apply { time = DATE_ZERO }
         val threeJan1970 = Date().apply { time = THREE_JAN_1970_TIME }
         val threeFeb1970 = Date().apply { time = THREE_FEB_1970_TIME }
         val twtyFourNov2021 = Date().apply { time = TWTY_FOUR_NOV_2021 }
         val twtyEightNov2021 = Date().apply { time = TWTY8_NOV_2021 }
-        val oneDec2021 = Date().apply { time = ONE_DEC_2021 }
+        val oneDec2021 = Date().apply { time = TWO_DEC_2021 }
 
         const val SAME_YEAR_SAME_MONTH_EXPECTED = "Jan 1 - 3, 1970"
         const val SAME_YEAR_DIFFERENT_MONTH_EXPECTED = "Jan 3 - Feb 3, 1970"
         const val DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED = "Jan 3, 1970 - Nov 24, 2021"
-        const val DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED_TWO = "Nov 28 - Dec 1, 2021"
+        const val DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED_TWO = "Nov 28 - Dec 2, 2021"
     }
 
     @Test
