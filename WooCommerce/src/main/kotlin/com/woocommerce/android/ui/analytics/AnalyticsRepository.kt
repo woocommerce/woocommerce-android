@@ -56,7 +56,10 @@ class AnalyticsRepository @Inject constructor(
                 }
         }
 
-    suspend fun fetchOrdersData(dateRange: AnalyticsDateRange, selectedRange: AnalyticTimePeriod): Flow<OrdersResult> =
+    suspend fun fetchOrdersData(
+        dateRange: AnalyticsDateRange,
+        selectedRange: AnalyticTimePeriod
+    ): Flow<OrdersResult> =
         getGranularity(selectedRange).let {
             return getCurrentPeriodStats(dateRange, it)
                 .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
@@ -88,19 +91,21 @@ class AnalyticsRepository @Inject constructor(
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
     fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
 
-    private suspend fun getCurrentPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) = when (dateRange) {
-        is SimpleDateRange ->
-            fetchStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
-        is MultipleDateRange ->
-            fetchStats(dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(), granularity)
-    }
+    private suspend fun getCurrentPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) =
+        when (dateRange) {
+            is SimpleDateRange ->
+                fetchStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
+            is MultipleDateRange ->
+                fetchStats(dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(), granularity)
+        }
 
-    private suspend fun getPreviousPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) = when (dateRange) {
-        is SimpleDateRange ->
-            fetchStats(dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(), granularity)
-        is MultipleDateRange ->
-            fetchStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(), granularity)
-    }
+    private suspend fun getPreviousPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) =
+        when (dateRange) {
+            is SimpleDateRange ->
+                fetchStats(dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(), granularity)
+            is MultipleDateRange ->
+                fetchStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(), granularity)
+        }
 
     private fun getGranularity(selectedRange: AnalyticTimePeriod) =
         when (selectedRange) {

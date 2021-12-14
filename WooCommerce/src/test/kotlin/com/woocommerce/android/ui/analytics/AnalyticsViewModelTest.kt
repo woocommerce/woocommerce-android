@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
@@ -21,7 +22,9 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -29,7 +32,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -70,7 +72,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private lateinit var sut: AnalyticsViewModel
 
     @Test
-    fun `given an init viewState, when ViewModel is created, then has the expected values`() =
+    fun `given an init viewState, when view model is created, then has the expected values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturn ANY_VALUE
@@ -81,7 +83,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut = givenAViewModel(resourceProvider)
 
             with(sut.state.value.analyticsDateRangeSelectorState) {
-                assertNotNull(this)
                 assertEquals(ANY_VALUE, selectedPeriod)
                 assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
                 assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
@@ -89,6 +90,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             with(sut.state.value.revenueState) {
+                assertTrue(this is LoadingViewState)
+            }
+
+            with(sut.state.value.ordersState) {
                 assertTrue(this is LoadingViewState)
             }
 
@@ -140,7 +145,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
 
             with(sut.state.value.analyticsDateRangeSelectorState) {
-                assertNotNull(this)
                 assertEquals(LAST_YEAR.description, selectedPeriod)
                 assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
                 assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
@@ -151,17 +155,22 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then has expected revenue values`() =
         testBlocking {
-            whenever(analyticsRepository.fetchRevenueData(any(), any()))
-                .thenReturn(listOf(getRevenueStats(), getRevenueStats()).asFlow())
+            analyticsRepository.stub {
+                onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
+            }
 
             sut = givenAViewModel()
 
             sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
 
+            val resourceProvider = givenAResourceProvider()
             with(sut.state.value.revenueState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
+                assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
                 assertEquals(TOTAL_CURRENCY_VALUE, leftSection.value)
                 assertEquals(TOTAL_DELTA, leftSection.delta)
+                assertEquals(resourceProvider.getString(R.string.analytics_net_sales_title), rightSection.title)
                 assertEquals(NET_CURRENCY_VALUE, rightSection.value)
                 assertEquals(NET_DELTA, rightSection.delta)
             }
@@ -170,8 +179,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then has expected refresh indicator value`() =
         testBlocking {
-            whenever(analyticsRepository.fetchRevenueData(any(), any()))
-                .thenReturn(listOf(getRevenueStats(), getRevenueStats()).asFlow())
+            analyticsRepository.stub {
+                onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
+            }
 
             sut = givenAViewModel()
 
@@ -214,7 +224,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a week to date selected, when refresh is requested, then revenue is the expected`() = testBlocking {
+    fun `given a week to date selected, when refresh is requested, then has expected revenue values`() = testBlocking {
 
         val weekToDateRange = MultipleDateRange(
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
@@ -230,8 +240,107 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
-        whenever(analyticsRepository.fetchRevenueData(weekToDateRange, WEEK_TO_DATE))
-            .thenReturn(listOf(weekRevenueStats, weekRevenueStats).asFlow())
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE) }.doReturn(flowOf(weekRevenueStats))
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onRefreshRequested()
+
+        val resourceProvider = givenAResourceProvider()
+        with(sut.state.value.revenueState) {
+            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
+            assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
+            assertEquals(OTHER_TOTAL_CURRENCY_VALUE, leftSection.value)
+            assertEquals(OTHER_TOTAL_DELTA, leftSection.delta)
+            assertEquals(resourceProvider.getString(R.string.analytics_net_sales_title), rightSection.title)
+            assertEquals(OTHER_NET_CURRENCY_VALUE, rightSection.value)
+            assertEquals(OTHER_NET_DELTA, rightSection.delta)
+        }
+    }
+
+    @Test
+    fun `given a view model, when selected date range changes, then has expected orders values`() =
+        testBlocking {
+            analyticsRepository.stub {
+                onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
+            }
+
+            sut = givenAViewModel()
+            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+
+            val resourceProvider = givenAResourceProvider()
+            with(sut.state.value.ordersState) {
+                assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
+                assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
+                assertEquals(ORDERS_COUNT.toString(), leftSection.value)
+                assertEquals(resourceProvider.getString(R.string.analytics_avg_orders_title), rightSection.title)
+                assertEquals(ORDERS_COUNT_DELTA, leftSection.delta)
+                assertEquals(AVG_CURRENCY_VALUE, rightSection.value)
+                assertEquals(AVG_ORDER_VALUE_DELTA, rightSection.delta)
+            }
+        }
+
+    @Test
+    fun `given a week to date selected, when refresh is requested, then has expected orders values`() = testBlocking {
+
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekOrdersData = getOrdersStats(
+            OTHER_ORDERS_COUNT,
+            OTHER_ORDERS_COUNT_DELTA,
+            OTHER_AVG_ORDER_VALUE,
+            OTHER_AVG_ORDER_VALUE_DELTA,
+            OTHER_CURRENCY_CODE
+        )
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchOrdersData(weekToDateRange, WEEK_TO_DATE) }.doReturn(flowOf(weekOrdersData))
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onRefreshRequested()
+
+        val resourceProvider = givenAResourceProvider()
+        with(sut.state.value.ordersState) {
+            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
+            assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
+            assertEquals(OTHER_ORDERS_COUNT.toString(), leftSection.value)
+            assertEquals(OTHER_ORDERS_COUNT_DELTA, leftSection.delta)
+            assertEquals(resourceProvider.getString(R.string.analytics_avg_orders_title), rightSection.title)
+            assertEquals(OTHER_AVG_CURRENCY_VALUE, rightSection.value)
+            assertEquals(OTHER_AVG_ORDER_VALUE_DELTA, rightSection.delta)
+        }
+    }
+
+    @Test
+    fun `given a week to date selected, when refresh is requested, then revenue is the expected`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekRevenueStats = getRevenueStats(
+            OTHER_TOTAL_VALUE,
+            OTHER_TOTAL_DELTA,
+            OTHER_NET_VALUE,
+            OTHER_NET_DELTA,
+            OTHER_CURRENCY_CODE
+        )
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE) }.doReturn(flowOf(weekRevenueStats))
+        }
 
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
@@ -247,55 +356,22 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a view model, when selected date range changes, then data view state has ordersViewState values`() =
-        testBlocking {
 
-            whenever(analyticsRepository.fetchOrdersData(any(), any()))
-                .thenReturn(listOf(geOrdersStats(), geOrdersStats()).asFlow())
-
-            sut = givenAViewModel()
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
-
-            with(sut.state.value.ordersState) {
-                assertTrue(this is AnalyticsInformationViewState.DataViewState)
-                assertEquals(ORDERS_COUNT.toString(), leftSection.value)
-                assertEquals(ORDERS_COUNT_DELTA, leftSection.delta)
-                assertEquals(AVG_CURRENCY_VALUE, rightSection.value)
-                assertEquals(AVG_ORDER_VALUE_DELTA, rightSection.delta)
-            }
+    fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
+            onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
         }
-
-    @Test
-    fun `given a week to date selected, when refresh is requested, then orders data is the expected`() = testBlocking {
-
-        val weekToDateRange = MultipleDateRange(
-            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
-            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
-        )
-
-        val weekOrdersData = geOrdersStats(
-            OTHER_ORDERS_COUNT,
-            OTHER_ORDERS_COUNT_DELTA,
-            OTHER_AVG_ORDER_VALUE,
-            OTHER_AVG_ORDER_VALUE_DELTA,
-            OTHER_CURRENCY_CODE
-        )
-
-        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
-        whenever(analyticsRepository.fetchOrdersData(weekToDateRange, WEEK_TO_DATE))
-            .thenReturn(listOf(weekOrdersData, weekOrdersData).asFlow())
 
         sut = givenAViewModel()
-        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        val states = mutableListOf<AnalyticsViewState>()
+        val getShowIndicatorStatesJob = launch { sut.state.toList(states) }
         sut.onRefreshRequested()
 
-        with(sut.state.value.ordersState) {
-            assertTrue(this is AnalyticsInformationViewState.DataViewState)
-            assertEquals(OTHER_ORDERS_COUNT.toString(), leftSection.value)
-            assertEquals(OTHER_ORDERS_COUNT_DELTA,  leftSection.delta)
-            assertEquals(OTHER_AVG_CURRENCY_VALUE, rightSection.value)
-            assertEquals(OTHER_AVG_ORDER_VALUE_DELTA, rightSection.delta)
-        }
+        assertEquals(2, states.filter { it.refreshIndicator is NotShowIndicator }.size)
+        assertEquals(2, states.filter { it.refreshIndicator is RefreshIndicator.ShowIndicator }.size)
+
+        getShowIndicatorStatesJob.cancel()
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
@@ -319,7 +395,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         currencyCode: String = CURRENCY_CODE
     ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
 
-    private fun geOrdersStats(
+    private fun getOrdersStats(
         ordersCount: Int = ORDERS_COUNT,
         ordersCountDelta: Int = ORDERS_COUNT_DELTA,
         avgOrderValue: Double = AVG_ORDER_VALUE,

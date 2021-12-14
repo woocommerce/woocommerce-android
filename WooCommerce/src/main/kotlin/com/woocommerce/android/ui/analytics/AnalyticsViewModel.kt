@@ -8,10 +8,13 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.Re
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
-import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
-import com.woocommerce.android.ui.analytics.daterangeselector.*
+import com.woocommerce.android.ui.analytics.RefreshIndicator.*
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
+import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
 import com.woocommerce.android.util.CurrencyFormatter
@@ -50,12 +53,13 @@ class AnalyticsViewModel @Inject constructor(
     val state: StateFlow<AnalyticsViewState> = mutableState
 
     init {
-        updateRevenue(false, showSkeleton = true)
-        updateOrders()
+        updateRevenue(isRefreshing = false, showSkeleton = true)
+        updateOrders(isRefreshing = false, showSkeleton = true)
     }
 
     fun onRefreshRequested() {
         updateRevenue(isRefreshing = true, showSkeleton = false)
+        updateOrders(isRefreshing = true, showSkeleton = false)
     }
 
     fun onSelectedTimePeriodChanged(newSelection: String) {
@@ -65,7 +69,7 @@ class AnalyticsViewModel @Inject constructor(
         saveSelectedDateRange(dateRange)
         updateDateSelector()
         updateRevenue(isRefreshing = false, showSkeleton = true)
-        updateOrders()
+        updateOrders(isRefreshing = false, showSkeleton = true)
     }
 
     fun onRevenueSeeReportClick() {
@@ -91,7 +95,7 @@ class AnalyticsViewModel @Inject constructor(
 
             if (showSkeleton) mutableState.value = state.value.copy(revenueState = LoadingViewState)
             mutableState.value = state.value.copy(
-                refreshIndicator = if (isRefreshing) RefreshIndicator.ShowIndicator else NotShowIndicator
+                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
             analyticsRepository.fetchRevenueData(dateRange, timePeriod)
@@ -114,12 +118,14 @@ class AnalyticsViewModel @Inject constructor(
                 }
         }
 
-    private fun updateOrders() =
+    private fun updateOrders(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
-
-            mutableState.value = state.value.copy(ordersState = LoadingViewState)
+            if (showSkeleton) mutableState.value = state.value.copy(ordersState = LoadingViewState)
+            mutableState.value = state.value.copy(
+                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
+            )
             analyticsRepository.fetchOrdersData(dateRange, timePeriod)
                 .collect {
                     when (it) {
@@ -273,5 +279,3 @@ class AnalyticsViewModel @Inject constructor(
         const val DATE_RANGE_SELECTED_KEY = "date_range_selected_key"
     }
 }
-
-

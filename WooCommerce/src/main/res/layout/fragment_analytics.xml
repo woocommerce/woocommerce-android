@@ -48,7 +48,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/analyticsDateSelectorCard" />
 
-
             <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationCardView
                 android:id="@+id/analyticsOrdersCard"
                 style="@style/Woo.Card.WithoutPadding"

@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.analytics.daterangeselector
 
 import android.os.Parcelable
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.*
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.util.DateUtils
 import kotlinx.parcelize.Parcelize
 import java.util.*
