@@ -1,36 +1,43 @@
 package com.woocommerce.android.ui.analytics.daterangeselector
 
 import android.os.Parcelable
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.util.DateUtils
 import kotlinx.parcelize.Parcelize
 import java.util.*
 import javax.inject.Inject
 
-sealed class DateRange {
+sealed class AnalyticsDateRange {
     @Parcelize
-    data class SimpleDateRange(val from: Date, val to: Date) : DateRange(), Parcelable
+    data class SimpleDateRange(
+        val from: Date,
+        val to: Date
+    ) : AnalyticsDateRange(), Parcelable
 
     @Parcelize
-    data class MultipleDateRange(val from: SimpleDateRange, val to: SimpleDateRange) : DateRange(), Parcelable
+    data class MultipleDateRange(
+        val from: SimpleDateRange,
+        val to: SimpleDateRange
+    ) : AnalyticsDateRange(), Parcelable
 }
 
 class AnalyticsDateRangeCalculator @Inject constructor(
     val dateUtils: DateUtils
 ) {
-    fun getAnalyticsDateRangeFrom(selectionRange: AnalyticsDateRanges): DateRange = when (selectionRange) {
-        AnalyticsDateRanges.TODAY -> getTodayRange()
-        AnalyticsDateRanges.YESTERDAY -> getYesterdayRange()
-        AnalyticsDateRanges.LAST_WEEK -> getLastWeekRange()
-        AnalyticsDateRanges.LAST_MONTH -> getLastMonthRange()
-        AnalyticsDateRanges.LAST_QUARTER -> getLastQuarterRange()
-        AnalyticsDateRanges.LAST_YEAR -> getLastYearRange()
-        AnalyticsDateRanges.WEEK_TO_DATE -> getWeekToDateRange()
-        AnalyticsDateRanges.MONTH_TO_DATE -> getMonthToDateRange()
-        AnalyticsDateRanges.QUARTER_TO_DATE -> getQuarterToRangeDate()
-        AnalyticsDateRanges.YEAR_TO_DATE -> getYearToDateRange()
-    }
+    fun getAnalyticsDateRangeFrom(selectionRange: AnalyticTimePeriod): AnalyticsDateRange =
+        when (selectionRange) {
+            AnalyticTimePeriod.TODAY -> getTodayRange()
+            AnalyticTimePeriod.YESTERDAY -> getYesterdayRange()
+            AnalyticTimePeriod.LAST_WEEK -> getLastWeekRange()
+            AnalyticTimePeriod.LAST_MONTH -> getLastMonthRange()
+            AnalyticTimePeriod.LAST_QUARTER -> getLastQuarterRange()
+            AnalyticTimePeriod.LAST_YEAR -> getLastYearRange()
+            AnalyticTimePeriod.WEEK_TO_DATE -> getWeekToDateRange()
+            AnalyticTimePeriod.MONTH_TO_DATE -> getMonthToDateRange()
+            AnalyticTimePeriod.QUARTER_TO_DATE -> getQuarterToRangeDate()
+            AnalyticTimePeriod.YEAR_TO_DATE -> getYearToDateRange()
+        }
 
     private fun getYearToDateRange() = MultipleDateRange(
         SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(), getMinusOneYearDate()),
@@ -128,7 +135,7 @@ class AnalyticsDateRangeCalculator @Inject constructor(
     }
 }
 
-enum class AnalyticsDateRanges(val description: String) {
+enum class AnalyticTimePeriod(val description: String) {
     TODAY("Today"),
     YESTERDAY("Yesterday"),
     LAST_WEEK("Last Week"),
@@ -141,8 +148,8 @@ enum class AnalyticsDateRanges(val description: String) {
     YEAR_TO_DATE("Year to Date");
 
     companion object {
-        fun from(dateRangeDescription: String): AnalyticsDateRanges = values()
-            .find { it.description == dateRangeDescription } ?: TODAY
+        fun from(datePeriod: String): AnalyticTimePeriod = values()
+            .find { it.description == datePeriod } ?: TODAY
     }
 }
 

@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.analytics.RefreshIndicator.*
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -76,7 +77,7 @@ class AnalyticsFragment :
         handleDialogResult<String>(
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
-        ) { dateRange -> viewModel.onSelectedDateRangeChanged(dateRange) }
+        ) { dateRange -> viewModel.onSelectedTimePeriodChanged(dateRange) }
     }
 
     private fun bind(view: View) {
@@ -93,7 +94,7 @@ class AnalyticsFragment :
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
         binding.analyticsOrdersCard.updateInformation(viewState.ordersState)
         binding.analyticsProductsCard.updateInformation(viewState.productsState)
-        binding.analyticsRefreshLayout.isRefreshing = false
+        binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState

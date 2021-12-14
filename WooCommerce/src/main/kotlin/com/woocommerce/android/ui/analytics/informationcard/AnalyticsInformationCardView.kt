@@ -16,7 +16,6 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-
     val binding = AnalyticsInformationCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
 

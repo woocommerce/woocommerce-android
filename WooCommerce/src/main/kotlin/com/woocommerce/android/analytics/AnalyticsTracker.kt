@@ -575,7 +575,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MEDIA_PICKER_ITEM_UNSELECTED,
         MEDIA_PICKER_SELECTION_CLEARED,
         MEDIA_PICKER_OPENED,
-        MEDIA_PICKER_OPEN_SYSTEM_PICKER
+        MEDIA_PICKER_OPEN_SYSTEM_PICKER,
+        MEDIA_PICKER_OPEN_WORDPRESS_MEDIA_LIBRARY_PICKER
     }
     // endregion
 

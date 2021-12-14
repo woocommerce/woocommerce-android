@@ -51,6 +51,7 @@ gradle.ext.mediaPickerBinaryPath = "org.wordpress:mediapicker"
 gradle.ext.mediaPickerDomainBinaryPath = "org.wordpress.mediapicker:domain"
 gradle.ext.mediaPickerSourceDeviceBinaryPath = "org.wordpress.mediapicker:source-device"
 gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gif"
+gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:source-wordpress"
 
 def localBuilds = new File('local-builds.gradle')
 if (localBuilds.exists()) {
@@ -93,6 +94,7 @@ if (localBuilds.exists()) {
                 substitute module("$gradle.ext.mediaPickerDomainBinaryPath") with project(':mediapicker:domain')
                 substitute module("$gradle.ext.mediaPickerSourceDeviceBinaryPath") with project(':mediapicker:source-device')
                 substitute module("$gradle.ext.mediaPickerSourceGifBinaryPath") with project(':mediapicker:source-gif')
+                substitute module("$gradle.ext.mediaPickerSourceWordPressBinaryPath") with project(':mediapicker:source-wordpress')
             }
         }
     }

@@ -1,11 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-11-09 11:54:03+0000
+Translation-Revision-Date: 2021-12-08 16:54:02+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="settings_enable_order_creation_teaser_message">Coba buat pesanan dengan detail lengkap sembari kami bersiap untuk meluncurkan</string>
+    <string name="settings_enable_order_creation_teaser_title">Pembuatan Pesanan</string>
+    <string name="settings_enable_simple_payments_teaser_title">Simple payments</string>
+    <string name="beta_features_order_creation">Pembuatan pesanan</string>
+    <string name="beta_features_simple_payments">Simple payments</string>
+    <string name="beta_features_add_ons">Lihat Add-on</string>
+    <string name="orders_empty_message_for_filtered_orders">Maaf, kami tidak menemukan pesanan</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">Buka pengaturan</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">Izin perangkat terdekat tidak ditemukan</string>
+    <string name="shipping_label_edit_address_country_search_hint">Saring negara</string>
+    <string name="shipping_label_edit_address_state_search_hint">Saring provinsi</string>
+    <string name="order_detail_edit_address_state">Provinsi</string>
+    <string name="orderfilters_date_range_end_date">Tanggal Selesai</string>
+    <string name="orderfilters_date_range_start_date">Tanggal Mulai</string>
+    <string name="orderfilters_date_range_picker_title">Pilih tanggal</string>
+    <string name="orderfilters_date_range_filter_custom_range">Rentang Khusus</string>
+    <string name="orderlist_bottom_sheet_simple_payment_description">Buat pesanan dengan informasi minimal</string>
+    <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
+    <string name="orderlist_bottom_sheet_create_order_description">Buat pesanan manual baru</string>
+    <string name="orderlist_bottom_sheet_create_order_action">Buat pesanan</string>
+    <string name="orderlist_create_order_button_description">Buat pesanan</string>
+    <string name="simple_payments_creation_error">Tidak dapat membuat pesanan</string>
+    <string name="simple_payments_enter_amount">Masukkan jumlah</string>
+    <string name="simple_payments_dialog_title">Terima pembayaran</string>
+    <string name="orderlist_simple_payments_menu">Simple payment</string>
+    <string name="orderlist_simple_payments_wip_title">Terima pembayaran dari perangkat Anda!</string>
+    <string name="analytics">Analytics</string>
+    <string name="jetpack_install_progress_step_four_message">Semua selesai</string>
+    <string name="jetpack_install_progress_step_three_message">Menyambungkan ke toko Anda</string>
+    <string name="jetpack_install_progress_step_two_message">Mengaktifkan</string>
+    <string name="jetpack_install_progress_step_one_message">Menginstal Jetpack</string>
+    <string name="jetpack_install_progress_subtitle">Harap tunggu sembari kami menghubungkan %s dengan Jetpack.</string>
+    <string name="jetpack_install_progress_title">Menginstal\nJetpack</string>
+    <string name="jetpack_install_start_default_name">situs Anda</string>
+    <string name="jetpack_install_start_subtitle">Instal plugin Jetpack gratis &lt;strong&gt;%s&lt;/strong&gt; untuk mendapatkan pengalaman seluler terbaik.</string>
+    <string name="jetpack_install_start_title">Menginstal Jetpack</string>
+    <string name="product_review_list_fetching_failed">Error saat memuat ulasan produk</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">Sambungan pembaca terputus</string>
+    <string name="card_reader_accessibility_reader_is_connected">Pembaca terhubung</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">Membatalkan pembaruan perangkat lunak yang sedang berlangsung tidak dianjurkan. Pembatalan akan memblok sambungan pembaca Anda.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">Pembaruan perangkat lunak pembaca gagal karena daya baterai pembaca tidak cukup. Isi daya pembaca di atas 50%% sebelum mencoba lagi.</string>
+    <string name="card_reader_software_update_progress_description_low_battery">Pembaruan perangkat lunak pembaca gagal karena daya baterai hanya terisi %1$s%%. Isi daya pembaca di atas 50%% sebelum mencoba lagi.</string>
+    <string name="card_reader_software_update_title_battery_low">Isi daya pembaca</string>
+    <string name="card_reader_software_update_description">Perangkat lunak pembaca kartu Anda perlu diperbarui agar dapat berfungsi normal</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">Cantumkan kode pos yang valid pada pengaturan toko Anda lalu coba lagi</string>
+    <string name="card_reader_connect_invalid_postal_code_header">Kode pos alamat toko tidak valid</string>
+    <string name="card_reader_connect_missing_address_button">Masukan alamat:</string>
+    <string name="card_reader_connect_missing_address">Cantumkan alamat toko Anda untuk melanjutkan</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">Periksa perangkat seluler Anda</string>
+    <string name="card_reader_m2_manual_card_reader">Panduan Pembaca Kartu Stripe M2</string>
+    <string name="card_reader_bbpos_manual_card_reader">Panduan Pembaca Kartu BBPOS Chipper</string>
+    <string name="order_error_update_empty_mail">Tidak dapat memperbarui alamat dengan alamat email kosong. Pastikan Anda menggunakan WooCommerce versi terbaru.</string>
+    <string name="orderfilters_date_range_filter_last_30_days">30 hari terakhir</string>
+    <string name="orderfilters_date_range_filter_last_7_days">7 hari terakhir</string>
+    <string name="orderfilters_date_range_filter_last_two_days">2 Hari Terakhir</string>
+    <string name="orderfilters_date_range_filter_today">Hari ini</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
+    <string name="orderfilters_default_filter_option">Semua</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">Pesanan disaring</string>
+    <string name="orderfilters_filter_card_title_all_orders">Semua Pesanan</string>
+    <string name="orderlist_simple_payments_wip_message_disabled">Kami berupaya untuk lebih memudahkan Anda menerima pembayaran dari perangkat! Aktifkan di Pengaturan &gt; Fitur beta.</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Kami berupaya untuk lebih memudahkan Anda menerima pembayaran dari perangkat! Untuk sekarang, ketuk tombol \"+\" dan Anda akan dapat membuat pesanan dengan jumlah yang diinginkan.</string>
     <string name="jetpack_benefits_modal_dismiss">Lain Kali</string>
     <string name="jetpack_benefits_modal_install_jetpack">Menginstal Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Izinkan banyak pengguna untuk mengakses WooCommerce Mobile.</string>
@@ -16,9 +78,7 @@ Language: id
     <string name="jetpack_benefits_modal_push_notifications_title">Notifikasi Otomatis</string>
     <string name="jetpack_benefits_modal_subtitle">Instal plugin Jetpack gratis untuk mendapatkan pengalaman seluler terbaik.</string>
     <string name="jetpack_benefits_modal_title">Dapatkan hasil maksimal dari toko Anda</string>
-    <string name="settings_enable_quick_order_teaser_message">Coba buat pesanan dengan informasi minimal sembari kami bersiap untuk meluncurkan</string>
-    <string name="settings_enable_quick_order_teaser_title">Pesan cepat</string>
-    <string name="beta_features_message">Lihat Add-on, pesan cepat</string>
+    <string name="settings_enable_simple_payments_teaser_message">Coba buat pesanan dengan informasi minimal sembari kami bersiap untuk meluncurkan</string>
     <string name="order_detail_use_as_shipping_address">Gunakan sebagai Alamat Pengiriman</string>
     <string name="order_detail_use_as_billing_address">Gunakan sebagai Alamat Penagihan</string>
     <string name="orderfilters_filters_count_title">Penyaring (%d)</string>
@@ -37,7 +97,6 @@ Language: id
     <string name="product_description_hint_with_title">Beri tahu kami lebih banyak tentang %s…</string>
     <string name="product_description_hint_no_title">Jelaskan produk Anda ke calon pelanggan…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Nomor seri pembaca disalin ke clipboard</string>
-    <string name="card_reader_manual_card_reader">Panduan Pembaca Kartu</string>
     <string name="order_detail_add_billing_address">Tambahkan alamat penagihan</string>
     <string name="order_detail_add_shipping_address">Tambahkan alamat pengiriman</string>
     <string name="order_detail_add_customer_note">Tambahkan catatan pelanggan</string>
@@ -45,7 +104,6 @@ Language: id
     <string name="order_detail_shipping_address_section">Alamat Pengiriman</string>
     <string name="order_detail_address_section">Alamat</string>
     <string name="order_detail_edit_address_country">Negara</string>
-    <string name="order_detail_edit_address_state">Provinsi</string>
     <string name="order_detail_edit_address_zip">Kode Pos</string>
     <string name="order_detail_edit_address_city">Kota</string>
     <string name="order_detail_edit_address_line2">Alamat 2</string>
@@ -125,7 +183,6 @@ Language: id
     <string name="card_reader_purchase_card_reader">Pesan Pembaca Kartu</string>
     <string name="card_reader_manage_card_reader">Kelola Pembaca Kartu</string>
     <string name="shipping_label_multiple_customs_form_print_button">Cetak</string>
-    <string name="shipping_label_edit_address_state">Provinsi</string>
     <string name="shipping_label_edit_address_line2">Baris alamat 2</string>
     <string name="shipping_label_edit_address_line1">Baris alamat 1</string>
     <string name="shipping_label_print_multiple_screen_title">Cetak label pengiriman</string>
@@ -183,7 +240,7 @@ Language: id
     <string name="product_attributes_created_generate_action_text">Buat Variasi</string>
     <string name="product_attributes_created_description">Karena atribut sudah ditambahkan, Anda sekarang bisa membuat variasi pertama Anda!</string>
     <string name="product_attributes_created_title">Atribut dibuat</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% selesai</string>
     <string name="card_reader_software_update_progress_cancel_warning">Membatalkan pembaruan perangkat lunak yang sedang berlangsung tidak dianjurkan</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Maaf, pembayaran ini tidak dapat diproses</string>
     <string name="card_reader_payment_failed_server_error_state">Tidak ada koneksi ke server</string>
@@ -273,7 +330,6 @@ Language: id
     <string name="shipping_label_rate_included_options_usps_tracking">Pelacakan USPS</string>
     <string name="card_reader_software_update_in_progress_title">Memperbarui perangkat lunak pembaca Anda</string>
     <string name="card_reader_software_update_title">Pembaruan perangkat lunak</string>
-    <string name="card_reader_software_update_description">Perangkat lunak pembaca kartu Anda perlu diperbarui agar dapat berfungsi normal. Apakah Anda ingin memperbaruinya sekarang?</string>
     <string name="card_reader_detail_connected_update_success">Perangkat lunak pembaca diperbarui</string>
     <string name="card_reader_detail_connected_reader_unknown">NAMA PEMBACA KARTU TIDAK DIKENALI</string>
     <string name="card_reader_detail_connected_disconnect_reader">Putus sambungan pembaca</string>
@@ -344,7 +400,7 @@ Language: id
     <string name="card_reader_connect_open_permission_settings">Buka pengaturan</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth dinonaktifkan</string>
     <string name="card_reader_connect_location_provider_disabled_header">Lokasi dinonaktifkan</string>
-    <string name="card_reader_connect_missing_permissions_header">Izin lokasi wajib yang belum disetujui</string>
+    <string name="card_reader_connect_missing_permissions_header">Izin lokasi tepat tidak ditemukan</string>
     <string name="card_reader_connect_connecting_failed_hint">Tidak dapat menyambungkan ke pembaca.</string>
     <string name="card_reader_connect_connecting_header">Menyambungkan ke pembaca</string>
     <string name="card_reader_connect_to_reader">Sambungkan ke pembaca</string>
@@ -487,6 +543,7 @@ Language: id
     <string name="shipping_label_edit_address_use_address_as_is">Gunakan alamat yang dimasukkan</string>
     <string name="shipping_label_edit_address_country">Negara</string>
     <string name="shipping_label_edit_address_zip">Kode Pos</string>
+    <string name="shipping_label_edit_address_state">Provinsi</string>
     <string name="shipping_label_edit_address_city">Kota</string>
     <string name="shipping_label_edit_address_phone">Telepon</string>
     <string name="shipping_label_edit_address_company">Perusahaan</string>
@@ -840,7 +897,6 @@ Language: id
     <string name="product_schedule_sale_sublabel">Otomatis mulai dan akhiri penjualan</string>
     <string name="product_schedule_sale_label">Jadwalkan obral</string>
     <string name="order_refunds_store_admin_link_text">di admin toko Anda</string>
-    <string name="orders_empty_message_with_order_status_filter">Maaf, kami tidak dapat menemukan pesanan \"%s\"</string>
     <string name="product_inventory_update_sku_error">SKU telah digunakan oleh produk lain</string>
     <string name="product_shipping_settings">Pengaturan pengiriman</string>
     <string name="product_no_shipping_class">Tidak ada kelas pengiriman</string>

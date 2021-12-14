@@ -26,6 +26,9 @@ class OrderCreationViewModel @Inject constructor(
     private val orderStatus = MutableLiveData<OrderStatus>()
     val orderStatusData: LiveData<OrderStatus> = orderStatus
 
+    val currentDraft
+        get() = orderDraft
+
     init {
         updateOrderStatus(orderDraft.status)
     }
@@ -47,5 +50,9 @@ class OrderCreationViewModel @Inject constructor(
                     orderStatus.value = it
                 }
         }
+    }
+
+    fun onCustomerNoteEdited(newNote: String) {
+        orderDraft = orderDraft.copy(customerNote = newNote)
     }
 }
