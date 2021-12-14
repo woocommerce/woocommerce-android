@@ -5,8 +5,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.Companion.ANALYTICS_REVENUE_PATH
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,7 +48,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
         // When
-        val result = sut.fetchRevenueData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+        val result = sut.fetchRevenueData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
 
         // Then
         with(result.first()) {
@@ -66,7 +67,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
         // When
-        val result = sut.fetchRevenueData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+        val result = sut.fetchRevenueData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
 
         // Then
         with(result.first()) {
@@ -86,7 +87,10 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
             // When
-            val result = sut.fetchRevenueData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+            val result = sut.fetchRevenueData(
+                SimpleDateRange(previousDate!!, currentDate!!),
+                ANY_RANGE
+            )
 
             // Then
             with(result.single()) {
@@ -160,7 +164,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
-            val result = sut.fetchRevenueData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+            val result = sut.fetchRevenueData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
 
             // Then
             with(result.single()) {
@@ -184,7 +188,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
-            val result = sut.fetchRevenueData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+            val result = sut.fetchRevenueData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
 
             // Then
             with(result.single()) {
@@ -208,7 +212,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
-            val result = sut.fetchRevenueData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+            val result = sut.fetchRevenueData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
 
             // Then
             with(result.single()) {
@@ -232,7 +236,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
-            val result = sut.fetchRevenueData(DateRange.SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+            val result = sut.fetchRevenueData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
 
             // Then
             with(result.single()) {
@@ -257,9 +261,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                DateRange.MultipleDateRange(
-                    DateRange.SimpleDateRange(previousDate!!, previousDate),
-                    DateRange.SimpleDateRange(currentDate!!, currentDate)
+                MultipleDateRange(
+                    SimpleDateRange(previousDate!!, previousDate),
+                    SimpleDateRange(currentDate!!, currentDate)
                 ),
                 ANY_RANGE
             )
@@ -304,7 +308,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
         const val ANY_URL = "https://a8c.com"
 
-        val ANY_RANGE = AnalyticsDateRanges.LAST_YEAR
+        val ANY_RANGE = AnalyticTimePeriod.LAST_YEAR
         private val sdf = SimpleDateFormat("yyyy-MM-dd")
         val previousDate: Date? = sdf.parse(PREVIOUS_DATE)
         val currentDate: Date? = sdf.parse(CURRENT_DATE)

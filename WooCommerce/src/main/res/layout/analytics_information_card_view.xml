@@ -50,7 +50,7 @@
             app:layout_constraintTop_toBottomOf="@+id/analyticsCardTitle"
             app:layout_constraintWidth_default="percent"
             app:layout_constraintWidth_percent="0.5"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
         <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionView
             android:id="@+id/rightAnalyticsSection"
@@ -70,49 +70,60 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider_color"
-            app:layout_constraintBottom_toTopOf="@id/seeReportPanel"
+            android:layout_marginBottom="@dimen/minor_00"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/leftAnalyticsSection" />
 
-        <RelativeLayout
-            android:id="@+id/seeReportPanel"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/seeReportText"
+            style="@style/Woo.Card.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/minor_10"
-            android:layout_marginBottom="@dimen/minor_10"
-            android:paddingTop="@dimen/minor_75"
-            android:paddingBottom="@dimen/minor_75"
+            android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginEnd="@dimen/minor_00"
+            android:layout_marginBottom="@dimen/minor_00"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="fill_vertical"
+            android:lineSpacingExtra="@dimen/minor_50"
+            android:paddingStart="@dimen/major_75"
+            android:paddingEnd="@dimen/major_75"
+            android:paddingTop="@dimen/major_85"
+            android:paddingBottom="@dimen/major_85"
+            android:text="@string/analytics_see_report_button_text"
+            android:textSize="@dimen/text_minor_125"
+            android:translationZ="100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider">
+            app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/seeReportText"
-                style="@style/Woo.Card.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="false"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/minor_00"
-                android:lineSpacingExtra="@dimen/minor_50"
-                android:text="@string/analytics_see_report_button_text"
-                android:textSize="@dimen/text_minor_125"
-                tools:ignore="RelativeOverlap"
-                tools:text="See Report" />
+        <ImageView
+            android:id="@+id/seeReportArrowImage"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:contentDescription="@string/analytics_see_report_button_content_description"
+            android:focusable="true"
+            android:paddingEnd="@dimen/major_100"
+            android:paddingStart="@dimen/major_100"
+            app:layout_constraintBottom_toBottomOf="@+id/seeReportText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/seeReportText"
+            app:srcCompat="@drawable/ic_arrow_right" />
 
-            <ImageView
-                android:id="@+id/seeReportArrowImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/major_100"
-                android:contentDescription="@string/analytics_see_report_button_content_description"
-                app:srcCompat="@drawable/ic_arrow_right" />
-        </RelativeLayout>
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/seeReportGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:constraint_referenced_ids="seeReportText, seeReportArrowImage"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
 

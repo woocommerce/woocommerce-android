@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.analytics.daterangeselector
 
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.junit.Test
@@ -20,20 +20,20 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         private const val THREE_JAN_1970_TIME = 234083000L
         private const val THREE_FEB_1970_TIME = 2912483000L
         private const val TWTY_FOUR_NOV_2021 = 1637776266465L
-        private const val TWTY8_NOV_2021 = 1638054000000L
-        private const val ONE_DEC_2021 = 1638313200000L
+        private const val TWTY8_NOV_2021 = 1638087612000L
+        private const val TWO_DEC_2021 = 1638433212000L
 
         val date = Date().apply { time = DATE_ZERO }
         val threeJan1970 = Date().apply { time = THREE_JAN_1970_TIME }
         val threeFeb1970 = Date().apply { time = THREE_FEB_1970_TIME }
         val twtyFourNov2021 = Date().apply { time = TWTY_FOUR_NOV_2021 }
         val twtyEightNov2021 = Date().apply { time = TWTY8_NOV_2021 }
-        val oneDec2021 = Date().apply { time = ONE_DEC_2021 }
+        val oneDec2021 = Date().apply { time = TWO_DEC_2021 }
 
         const val SAME_YEAR_SAME_MONTH_EXPECTED = "Jan 1 - 3, 1970"
         const val SAME_YEAR_DIFFERENT_MONTH_EXPECTED = "Jan 3 - Feb 3, 1970"
         const val DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED = "Jan 3, 1970 - Nov 24, 2021"
-        const val DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED_TWO = "Nov 28 - Dec 1, 2021"
+        const val DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED_TWO = "Nov 28 - Dec 2, 2021"
     }
 
     @Test
@@ -43,7 +43,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
 
         // When
-        val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.TODAY)
+        val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.TODAY)
 
         // Then
         assertTrue(result is SimpleDateRange)
@@ -57,7 +57,7 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getCurrentDateTimeMinusDays(any())).thenReturn(DATE_ZERO)
 
         // When
-        val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.YESTERDAY)
+        val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.YESTERDAY)
 
         // Then
         assertTrue(result is SimpleDateRange)
@@ -72,10 +72,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForLastDayOfPreviousWeek(any(), any())).thenReturn(date)
 
         // When
-        val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_WEEK)
+        val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.LAST_WEEK)
 
         // Then
-        assertTrue(result is DateRange.MultipleDateRange)
+        assertTrue(result is AnalyticsDateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
         assertEquals(date, result.to.from)
@@ -89,10 +89,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForLastDayOfPreviousMonth(any(), any())).thenReturn(date)
 
         // When
-        val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_MONTH)
+        val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.LAST_MONTH)
 
         // Then
-        assertTrue(result is DateRange.MultipleDateRange)
+        assertTrue(result is AnalyticsDateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
         assertEquals(date, result.to.from)
@@ -106,10 +106,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForLastDayOfPreviousQuarter(any(), any())).thenReturn(date)
 
         // When
-        val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_QUARTER)
+        val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.LAST_QUARTER)
 
         // Then
-        assertTrue(result is DateRange.MultipleDateRange)
+        assertTrue(result is AnalyticsDateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
         assertEquals(date, result.to.from)
@@ -123,10 +123,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForLastDayOfPreviousYear(any(), any())).thenReturn(date)
 
         // When
-        val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.LAST_YEAR)
+        val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.LAST_YEAR)
 
         // Then
-        assertTrue(result is DateRange.MultipleDateRange)
+        assertTrue(result is AnalyticsDateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
         assertEquals(date, result.to.from)
@@ -142,10 +142,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForFirstDayOfWeek(any())).thenReturn(date)
 
         // When
-        val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.WEEK_TO_DATE)
+        val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.WEEK_TO_DATE)
 
         // Then
-        assertTrue(result is DateRange.MultipleDateRange)
+        assertTrue(result is AnalyticsDateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
         assertEquals(date, result.to.from)
@@ -161,10 +161,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForFirstDayOfMonth(any())).thenReturn(date)
 
         // When
-        val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.MONTH_TO_DATE)
+        val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.MONTH_TO_DATE)
 
         // Then
-        assertTrue(result is DateRange.MultipleDateRange)
+        assertTrue(result is AnalyticsDateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
         assertEquals(date, result.to.from)
@@ -180,10 +180,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForFirstDayOfQuarter(any())).thenReturn(date)
 
         // When
-        val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.QUARTER_TO_DATE)
+        val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.QUARTER_TO_DATE)
 
         // Then
-        assertTrue(result is DateRange.MultipleDateRange)
+        assertTrue(result is AnalyticsDateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
         assertEquals(date, result.to.from)
@@ -199,10 +199,10 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
         whenever(dateUtils.getDateForFirstDayOfYear(any())).thenReturn(date)
 
         // When
-        val result = sut.getAnalyticsDateRangeFrom(AnalyticsDateRanges.YEAR_TO_DATE)
+        val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.YEAR_TO_DATE)
 
         // Then
-        assertTrue(result is DateRange.MultipleDateRange)
+        assertTrue(result is AnalyticsDateRange.MultipleDateRange)
         assertEquals(date, result.from.from)
         assertEquals(date, result.from.to)
 
@@ -213,19 +213,19 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     @Test
     fun `get the friendly period date range is the expected`() {
         val sameYearAndMonthFriendlyFormattedDate = SimpleDateRange(date, threeJan1970)
-            .formatDatesToFriendlyPeriod()
+            .formatDatesToFriendlyPeriod(Locale.UK)
         assertEquals(SAME_YEAR_SAME_MONTH_EXPECTED, sameYearAndMonthFriendlyFormattedDate)
 
         val sameYearAndDifferentMonthFriendlyFormattedDate = SimpleDateRange(threeJan1970, threeFeb1970)
-            .formatDatesToFriendlyPeriod()
+            .formatDatesToFriendlyPeriod(Locale.UK)
         assertEquals(SAME_YEAR_DIFFERENT_MONTH_EXPECTED, sameYearAndDifferentMonthFriendlyFormattedDate)
 
         val differentYearAndDifferentMonthFriendlyFormattedDate = SimpleDateRange(threeJan1970, twtyFourNov2021)
-            .formatDatesToFriendlyPeriod()
+            .formatDatesToFriendlyPeriod(Locale.UK)
         assertEquals(DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED, differentYearAndDifferentMonthFriendlyFormattedDate)
 
         val differentYearAndDifferentMonthFriendlyFormattedDateTwo =
-            SimpleDateRange(twtyEightNov2021, oneDec2021).formatDatesToFriendlyPeriod()
+            SimpleDateRange(twtyEightNov2021, oneDec2021).formatDatesToFriendlyPeriod(Locale.UK)
         assertEquals(
             DIFFERENT_YEAR_DIFFERENT_MONTH_EXPECTED_TWO,
             differentYearAndDifferentMonthFriendlyFormattedDateTwo
