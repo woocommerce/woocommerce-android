@@ -23,7 +23,6 @@ class AnalyticsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-
     suspend fun fetchRevenueData(
         dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod
@@ -31,7 +30,6 @@ class AnalyticsRepository @Inject constructor(
         getGranularity(selectedRange).let {
             return getCurrentPeriodRevenue(dateRange, it)
                 .combine(getPreviousPeriodRevenue(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
-
                     if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
                         return@combine RevenueError
                     }

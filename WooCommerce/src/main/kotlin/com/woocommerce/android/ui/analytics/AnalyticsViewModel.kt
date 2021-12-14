@@ -36,7 +36,6 @@ class AnalyticsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-
     private val mutableState =
         MutableStateFlow(
             AnalyticsViewState(
