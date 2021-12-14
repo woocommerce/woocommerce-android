@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.mystore
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -159,6 +160,10 @@ class MyStorePresenter @Inject constructor(
                 System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
             )
             myStoreView?.showJetpackBenefitsBanner(daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER)
+            AnalyticsTracker.track(
+                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
+            )
         } else {
             myStoreView?.showJetpackBenefitsBanner(false)
         }
@@ -167,6 +172,10 @@ class MyStorePresenter @Inject constructor(
     override fun dismissJetpackBenefitsBanner() {
         myStoreView?.showJetpackBenefitsBanner(false)
         appPrefsWrapper.recordJetpackBenefitsDismissal()
+        AnalyticsTracker.track(
+            stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
+        )
     }
 
     @Suppress("unused")
