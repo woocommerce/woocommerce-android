@@ -9,6 +9,7 @@ import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.ViewGroupCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -24,10 +25,15 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.databinding.FragmentProductListBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.*
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -35,7 +41,10 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.*
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
@@ -84,10 +93,11 @@ class ProductListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        postponeEnterTransition()
         setHasOptionsMenu(true)
 
         _binding = FragmentProductListBinding.bind(view)
+        view.doOnPreDraw { startPostponedEnterTransition() }
         setupObservers(viewModel)
         setupResultHandlers()
         ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
@@ -445,10 +455,14 @@ class ProductListFragment :
         }
     }
 
-    override fun onProductClick(remoteProductId: Long) = showProductDetails(remoteProductId)
-
-    private fun showProductDetails(remoteProductId: Long) {
-        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = true)
+    override fun onProductClick(remoteProductId: Long, sharedView: View?) {
+        (activity as? MainNavigationRouter)?.let { router ->
+            if (sharedView == null) {
+                router.showProductDetail(remoteProductId, enableTrash = true)
+            } else {
+                router.showProductDetailWithSharedTransition(remoteProductId, sharedView, enableTrash = true)
+            }
+        }
     }
 
     private fun showAddProductBottomSheet() {

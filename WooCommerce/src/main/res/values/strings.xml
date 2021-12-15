@@ -1309,7 +1309,8 @@
     <string name="upsell_product_count_one">%d upsell product</string>
     <string name="upsell_product_count_many">%d upsell products</string>
     <string name="product_detail_background_image_upload">Image uploading will continue in the background</string>
-
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
     <!--
         Product Add more details Bottom sheet
     -->

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
@@ -20,7 +21,7 @@ class ProductListAdapter(
     var tracker: SelectionTracker<Long>? = null
 
     interface OnProductClickListener {
-        fun onProductClick(remoteProductId: Long)
+        fun onProductClick(remoteProductId: Long, sharedView: View? = null)
     }
 
     init {
@@ -48,7 +49,7 @@ class ProductListAdapter(
 
         holder.itemView.setOnClickListener {
             AnalyticsTracker.track(PRODUCT_LIST_PRODUCT_TAPPED)
-            clickListener?.onProductClick(product.remoteId)
+            clickListener?.onProductClick(product.remoteId, holder.itemView)
         }
 
         if (position == itemCount - 1) {

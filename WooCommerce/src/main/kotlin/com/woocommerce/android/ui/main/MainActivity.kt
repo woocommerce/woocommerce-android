@@ -779,6 +779,17 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    override fun showProductDetailWithSharedTransition(remoteProductId: Long, sharedView: View, enableTrash: Boolean) {
+        val productCardDetailTransitionName = getString(R.string.product_card_detail_transition_name)
+        val extras = FragmentNavigatorExtras(sharedView to productCardDetailTransitionName)
+
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+            remoteProductId = remoteProductId,
+            isTrashEnabled = enableTrash
+        )
+        navController.navigateSafely(directions = action, extras = extras)
+    }
+
     override fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
         // variation detail is part of the products navigation graph, and product detail is the starting destination
         // for that graph, so we have to use a deep link to navigate to variation detail
