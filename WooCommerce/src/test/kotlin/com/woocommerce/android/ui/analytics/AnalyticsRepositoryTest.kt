@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics
 
+import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.Companion.ANALYTICS_ORDERS_PATH
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.Companion.ANALYTICS_REVENUE_PATH
@@ -138,8 +139,56 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is RevenueData)
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertEquals(ZERO_DELTA, revenueStat.totalDelta)
-                assertEquals(ZERO_DELTA, revenueStat.netDelta)
+                assertTrue(revenueStat.totalDelta is DeltaPercentage.Value)
+                assertTrue(revenueStat.netDelta is DeltaPercentage.Value)
+            }
+        }
+
+    @Test
+    fun `given previous revenue and current zero revenue, when fetchRevenueData, then deltas are the expected`() =
+        runBlocking {
+            // Given
+            val revenue = givenARevenue(ZERO_VALUE, ZERO_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success(revenue)).asFlow())
+
+            val previousRevenue = givenARevenue(TEN_VALUE, TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success(previousRevenue)).asFlow())
+
+            // When
+            val result = sut.fetchRevenueData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+
+            // Then
+            with(result.single()) {
+                assertTrue(this is RevenueData)
+                assertTrue(revenueStat.totalDelta is DeltaPercentage.Value)
+                assertEquals(ONE_HUNDRED_DECREASE, (revenueStat.totalDelta as DeltaPercentage.Value).value)
+                assertTrue(revenueStat.netDelta is DeltaPercentage.Value)
+                assertEquals(ONE_HUNDRED_DECREASE, (revenueStat.netDelta as DeltaPercentage.Value).value)
+            }
+        }
+
+    @Test
+    fun `given zero previous and current revenue, when fetchRevenueData, then deltas are the expected`() =
+        runBlocking {
+            // Given
+            val revenue = givenARevenue(TEN_VALUE, TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success(revenue)).asFlow())
+
+            val previousRevenue = givenARevenue(ZERO_VALUE, ZERO_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success(previousRevenue)).asFlow())
+
+            // When
+            val result = sut.fetchRevenueData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+
+            // Then
+            with(result.single()) {
+                assertTrue(this is RevenueData)
+                assertTrue(revenueStat.totalDelta is DeltaPercentage.NotExist)
+                assertTrue(revenueStat.netDelta is DeltaPercentage.NotExist)
             }
         }
 
@@ -189,8 +238,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is RevenueData)
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertEquals(THOUSAND_DELTA, revenueStat.totalDelta)
-                assertEquals(THOUSAND_DELTA, revenueStat.netDelta)
             }
         }
 
@@ -241,8 +288,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is RevenueData)
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertEquals(ZERO_DELTA, revenueStat.totalDelta)
-                assertEquals(THOUSAND_DELTA, revenueStat.netDelta)
             }
         }
 
@@ -293,8 +338,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is RevenueData)
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertEquals(THOUSAND_DELTA, revenueStat.totalDelta)
-                assertEquals(ZERO_DELTA, revenueStat.netDelta)
             }
         }
 
@@ -345,8 +388,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is RevenueData)
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertEquals(ZERO_DELTA, revenueStat.totalDelta)
-                assertEquals(THOUSAND_DELTA, revenueStat.netDelta)
             }
         }
 
@@ -403,8 +444,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is RevenueData)
                 assertEquals(TEN_VALUE, revenueStat.totalValue)
                 assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertEquals(ZERO_DELTA, revenueStat.totalDelta)
-                assertEquals(ZERO_DELTA, revenueStat.netDelta)
             }
         }
 
@@ -462,10 +501,10 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         assertEquals(ANY_URL + ANALYTICS_ORDERS_PATH, adminPanelUrl)
     }
 
-    private fun givenARevenue(totalValue: Double?, netValue: Double?): WCRevenueStatsModel {
+    private fun givenARevenue(totalSales: Double?, netValue: Double?): WCRevenueStatsModel {
         val stats: WCRevenueStatsModel = mock()
         val revenueStatsTotal: WCRevenueStatsModel.Total = mock()
-        whenever(revenueStatsTotal.totalSales).thenReturn(totalValue)
+        whenever(revenueStatsTotal.totalSales).thenReturn(totalSales)
         whenever(revenueStatsTotal.netRevenue).thenReturn(netValue)
         whenever(stats.parseTotal()).thenReturn(revenueStatsTotal)
         return stats
@@ -488,6 +527,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         const val ZERO_VALUE = 0.0
 
         const val ZERO_DELTA = 0
+        const val ONE_HUNDRED_DECREASE = -100
         const val THOUSAND_DELTA = 1000
 
         const val ANY_URL = "https://a8c.com"
