@@ -19,5 +19,4 @@ sealed class AnalyticsListViewState {
                 else -> "-"
             }
     }
-
 }
