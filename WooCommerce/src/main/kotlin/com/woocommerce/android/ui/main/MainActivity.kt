@@ -826,6 +826,24 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    override fun showReviewDetailWithSharedTransition(
+        remoteReviewId: Long,
+        launchedFromNotification: Boolean,
+        enableModeration: Boolean,
+        sharedView: View,
+        tempStatus: String?
+    ) {
+        val reviewCardDetailTransitionName = getString(R.string.review_card_detail_transition_name)
+        val extras = FragmentNavigatorExtras(sharedView to reviewCardDetailTransitionName)
+        val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
+            remoteReviewId = remoteReviewId,
+            tempStatus = tempStatus,
+            launchedFromNotification = launchedFromNotification,
+            enableModeration = enableModeration
+        )
+        navController.navigateSafely(directions = action, extras = extras)
+    }
+
     override fun showProductFilters(
         stockStatus: String?,
         productType: String?,

@@ -37,6 +37,13 @@ interface MainNavigationRouter {
         enableModeration: Boolean,
         tempStatus: String? = null
     )
+    fun showReviewDetailWithSharedTransition(
+        remoteReviewId: Long,
+        launchedFromNotification: Boolean,
+        enableModeration: Boolean,
+        sharedView: View,
+        tempStatus: String? = null
+    )
 
     fun showProductFilters(
         stockStatus: String?,

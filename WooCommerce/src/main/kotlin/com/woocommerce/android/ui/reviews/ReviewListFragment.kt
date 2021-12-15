@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.OnClickListener
 import androidx.core.view.ViewGroupCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -40,7 +41,7 @@ import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListen
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -88,10 +89,11 @@ class ReviewListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        postponeEnterTransition()
         setHasOptionsMenu(true)
 
         _binding = FragmentReviewsListBinding.bind(view)
+        view.doOnPreDraw { startPostponedEnterTransition() }
 
         val activity = requireActivity()
         ViewGroupCompat.setTransitionGroup(binding.notifsRefreshLayout, true)
@@ -271,15 +273,6 @@ class ReviewListFragment :
         menuMarkAllRead?.let { if (it.isVisible != show) it.isVisible = show }
     }
 
-    private fun openReviewDetail(review: ProductReview) {
-        (activity as? MainNavigationRouter)?.showReviewDetail(
-            review.remoteId,
-            launchedFromNotification = false,
-            enableModeration = true,
-            tempStatus = pendingModerationNewStatus
-        )
-    }
-
     private fun handleReviewModerationRequest(request: ProductReviewModerationRequest) {
         when (request.actionStatus) {
             ActionStatus.PENDING -> processNewModerationRequest(request)
@@ -375,8 +368,25 @@ class ReviewListFragment :
 
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 
-    override fun onReviewClick(review: ProductReview) {
-        openReviewDetail(review)
+    override fun onReviewClick(review: ProductReview, sharedView: View?) {
+        (activity as? MainNavigationRouter)?.let { router ->
+            if (sharedView == null) {
+                router.showReviewDetail(
+                    review.remoteId,
+                    launchedFromNotification = false,
+                    enableModeration = true,
+                    tempStatus = pendingModerationNewStatus
+                )
+            } else {
+                router.showReviewDetailWithSharedTransition(
+                    review.remoteId,
+                    launchedFromNotification = false,
+                    enableModeration = true,
+                    tempStatus = pendingModerationNewStatus,
+                    sharedView = sharedView
+                )
+            }
+        }
     }
 
     override fun shouldExpandToolbar() = binding.reviewsList.computeVerticalScrollOffset() == 0
