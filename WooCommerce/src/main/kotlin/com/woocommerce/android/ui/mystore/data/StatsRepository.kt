@@ -104,16 +104,19 @@ class StatsRepository @Inject constructor(
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
             wcOrderStore.fetchHasOrders(selectedSite.get(), status = null)
         }
-        if (result?.isError == false) {
-            val hasNoOrders = result.rowsAffected == 0
-            emit(Result.success(hasNoOrders))
-        } else {
-            val errorMessage = result?.error?.message ?: "Timeout"
-            WooLog.e(
-                DASHBOARD,
-                "$TAG - Error fetching whether orders exist: $errorMessage"
-            )
-            emit(Result.failure(Exception(errorMessage)))
+
+        when (result) {
+            is WCOrderStore.HasOrdersResult.Success -> {
+                emit(Result.success(!result.hasOrders))
+            }
+            is WCOrderStore.HasOrdersResult.Failure, null -> {
+                val errorMessage = (result as? WCOrderStore.HasOrdersResult.Failure)?.error?.message ?: "Timeout"
+                WooLog.e(
+                    DASHBOARD,
+                    "$TAG - Error fetching whether orders exist: $errorMessage"
+                )
+                emit(Result.failure(Exception(errorMessage)))
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.model.Order.Item.Attribute
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
 import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
 import org.wordpress.android.fluxc.domain.Addon
@@ -12,8 +13,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteAd
 
 object AddonTestFixtures {
     val defaultWCOrderModel: WCOrderModel by lazy {
-        WCOrderModel()
-            .apply { lineItems = "mocks/order_items.json".jsonFileToString() ?: "" }
+        OrderTestUtils.generateOrder()
+            .copy(lineItems = "mocks/order_items.json".jsonFileToString() ?: "")
     }
 
     val defaultWCOrderItemList: List<LineItem> by lazy {
