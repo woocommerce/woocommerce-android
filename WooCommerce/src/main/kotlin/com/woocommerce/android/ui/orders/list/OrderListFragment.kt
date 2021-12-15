@@ -312,7 +312,7 @@ class OrderListFragment :
         }
         handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
             binding.orderListView.post {
-                openSimpleOrder(order)
+                openSimpleOrder()
             }
         }
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
@@ -362,8 +362,8 @@ class OrderListFragment :
         }
     }
 
-    fun openSimpleOrder(order: Order) {
-        // TODO nbradbury
+    fun openSimpleOrder() {
+        // TODO nbradbury - tracks?
         findNavController().navigateSafely(R.id.action_orderListFragment_to_simplePaymentsFragment)
     }
 

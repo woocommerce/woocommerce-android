@@ -54,12 +54,7 @@
             android:id="@+id/action_orderListFragment_to_simplePaymentsFragment"
             app:destination="@id/simplePaymentsFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out">
-            <argument
-                android:name="orderId"
-                android:defaultValue='""'
-                app:argType="string" />
-        </action>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderListFragment_to_orderCreationBottomSheet"
             app:destination="@id/orderCreationBottomSheetFragment"
