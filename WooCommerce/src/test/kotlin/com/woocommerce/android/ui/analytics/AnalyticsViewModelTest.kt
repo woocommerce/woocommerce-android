@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
+import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.DATE_RANGE_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.TIME_PERIOD_SELECTED_KEY
@@ -21,6 +24,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
@@ -31,7 +35,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -55,6 +58,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         on { formatCurrency(NET_VALUE.toString(), CURRENCY_CODE) } doReturn NET_CURRENCY_VALUE
         on { formatCurrency(OTHER_TOTAL_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_TOTAL_CURRENCY_VALUE
         on { formatCurrency(OTHER_NET_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_NET_CURRENCY_VALUE
+        on { formatCurrency(AVG_ORDER_VALUE.toString(), CURRENCY_CODE) } doReturn AVG_CURRENCY_VALUE
+        on { formatCurrency(OTHER_AVG_ORDER_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_AVG_CURRENCY_VALUE
     }
 
     private val analyticsRepository: AnalyticsRepository = mock {
@@ -70,7 +75,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private lateinit var sut: AnalyticsViewModel
 
     @Test
-    fun `given an init viewState, when ViewModel is created, then has the expected values`() =
+    fun `given an init viewState, when view model is created, then has the expected values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturn ANY_VALUE
@@ -81,7 +86,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut = givenAViewModel(resourceProvider)
 
             with(sut.state.value.analyticsDateRangeSelectorState) {
-                assertNotNull(this)
                 assertEquals(ANY_VALUE, selectedPeriod)
                 assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
                 assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
@@ -89,6 +93,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             with(sut.state.value.revenueState) {
+                assertTrue(this is LoadingViewState)
+            }
+
+            with(sut.state.value.ordersState) {
                 assertTrue(this is LoadingViewState)
             }
 
@@ -140,7 +148,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
 
             with(sut.state.value.analyticsDateRangeSelectorState) {
-                assertNotNull(this)
                 assertEquals(LAST_YEAR.description, selectedPeriod)
                 assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
                 assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
@@ -151,16 +158,21 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then has expected revenue values`() =
         testBlocking {
-            whenever(analyticsRepository.fetchRevenueData(any(), any()))
-                .thenReturn(listOf(getRevenueStats(), getRevenueStats()).asFlow())
+            analyticsRepository.stub {
+                onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
+            }
 
             sut = givenAViewModel()
 
             sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
 
+            val resourceProvider = givenAResourceProvider()
             with(sut.state.value.revenueState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
+                assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
                 assertEquals(TOTAL_CURRENCY_VALUE, leftSection.value)
+                assertEquals(resourceProvider.getString(R.string.analytics_net_sales_title), rightSection.title)
                 assertEquals(TOTAL_DELTA.toInt(), leftSection.delta)
                 assertEquals(NET_CURRENCY_VALUE, rightSection.value)
                 assertEquals(NET_DELTA.toInt(), rightSection.delta)
@@ -193,8 +205,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then has expected refresh indicator value`() =
         testBlocking {
-            whenever(analyticsRepository.fetchRevenueData(any(), any()))
-                .thenReturn(listOf(getRevenueStats(), getRevenueStats()).asFlow())
+            analyticsRepository.stub {
+                onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
+            }
 
             sut = givenAViewModel()
 
@@ -206,38 +219,132 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() =
+    fun `given a week to date selected, when refresh is requested, then has expected revenue values`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekRevenueStats = getRevenueStats(
+            OTHER_TOTAL_VALUE,
+            OTHER_NET_VALUE,
+            OTHER_CURRENCY_CODE,
+            DeltaPercentage.Value(OTHER_TOTAL_DELTA),
+            DeltaPercentage.Value(OTHER_NET_DELTA),
+        )
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE) }.doReturn(flowOf(weekRevenueStats))
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onRefreshRequested()
+
+        val resourceProvider = givenAResourceProvider()
+        with(sut.state.value.revenueState) {
+            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
+            assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
+            assertEquals(OTHER_TOTAL_CURRENCY_VALUE, leftSection.value)
+            assertEquals(OTHER_TOTAL_DELTA, leftSection.delta)
+            assertEquals(resourceProvider.getString(R.string.analytics_net_sales_title), rightSection.title)
+            assertEquals(OTHER_NET_CURRENCY_VALUE, rightSection.value)
+            assertEquals(OTHER_NET_DELTA, rightSection.delta)
+        }
+    }
+
+    @Test
+    fun `given a view model, when selected date range changes, then has expected orders values`() =
         testBlocking {
-            whenever(siteModel.isWPCom).thenReturn(true)
+            analyticsRepository.stub {
+                onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
+            }
 
             sut = givenAViewModel()
-            sut.onRevenueSeeReportClick()
+            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
 
-            assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+            val resourceProvider = givenAResourceProvider()
+            with(sut.state.value.ordersState) {
+                assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
+                assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
+                assertEquals(ORDERS_COUNT.toString(), leftSection.value)
+                assertEquals(resourceProvider.getString(R.string.analytics_avg_orders_title), rightSection.title)
+                assertEquals(ORDERS_COUNT_DELTA, leftSection.delta)
+                assertEquals(AVG_CURRENCY_VALUE, rightSection.value)
+                assertEquals(AVG_ORDER_VALUE_DELTA, rightSection.delta)
+            }
         }
 
     @Test
-    fun `given a WPComAtomic site, when see report is clicked, then OpenWPComWebView event is triggered`() =
-        testBlocking {
-            whenever(siteModel.isWPComAtomic).thenReturn(true)
+    fun `given a week to date selected, when refresh is requested, then has expected orders values`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
 
-            sut = givenAViewModel()
-            sut.onRevenueSeeReportClick()
+        val weekOrdersData = getOrdersStats(
+            OTHER_ORDERS_COUNT,
+            OTHER_ORDERS_COUNT_DELTA,
+            OTHER_AVG_ORDER_VALUE,
+            OTHER_AVG_ORDER_VALUE_DELTA,
+            OTHER_CURRENCY_CODE
+        )
 
-            assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchOrdersData(weekToDateRange, WEEK_TO_DATE) }.doReturn(flowOf(weekOrdersData))
         }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onRefreshRequested()
+
+        val resourceProvider = givenAResourceProvider()
+        with(sut.state.value.ordersState) {
+            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
+            assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
+            assertEquals(OTHER_ORDERS_COUNT.toString(), leftSection.value)
+            assertEquals(OTHER_ORDERS_COUNT_DELTA, leftSection.delta)
+            assertEquals(resourceProvider.getString(R.string.analytics_avg_orders_title), rightSection.title)
+            assertEquals(OTHER_AVG_CURRENCY_VALUE, rightSection.value)
+            assertEquals(OTHER_AVG_ORDER_VALUE_DELTA, rightSection.delta)
+        }
+    }
 
     @Test
-    fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() =
-        testBlocking {
-            whenever(siteModel.isWPComAtomic).thenReturn(false)
-            whenever(siteModel.isWPCom).thenReturn(false)
+    fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() {
+        whenever(siteModel.isWPCom).thenReturn(true)
 
-            sut = givenAViewModel()
-            sut.onRevenueSeeReportClick()
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
 
-            assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
-        }
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+    }
+
+    @Test
+    fun `given a WPComAtomic site, when see report is clicked, then OpenWPComWebView event is triggered`() {
+        whenever(siteModel.isWPComAtomic).thenReturn(true)
+
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+    }
+
+    @Test
+    fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() {
+        whenever(siteModel.isWPComAtomic).thenReturn(false)
+        whenever(siteModel.isWPCom).thenReturn(false)
+
+        sut = givenAViewModel()
+        sut.onRevenueSeeReportClick()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
+    }
 
     @Test
     fun `given a week to date selected, when refresh is requested, then revenue is the expected`() = testBlocking {
@@ -255,8 +362,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
-        whenever(analyticsRepository.fetchRevenueData(weekToDateRange, WEEK_TO_DATE))
-            .thenReturn(listOf(weekRevenueStats, weekRevenueStats).asFlow())
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE) }.doReturn(flowOf(weekRevenueStats))
+        }
 
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
@@ -273,16 +381,19 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
-        whenever(analyticsRepository.fetchRevenueData(any(), any()))
-            .thenReturn(listOf(getRevenueStats(), getRevenueStats()).asFlow())
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
+            onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
+        }
 
-        val states = mutableListOf<AnalyticsViewState>()
         sut = givenAViewModel()
-        sut.onRefreshRequested()
+        val states = mutableListOf<AnalyticsViewState>()
         val getShowIndicatorStatesJob = launch { sut.state.toList(states) }
+        sut.onRefreshRequested()
 
-        assertTrue(states[states.size - 1].refreshIndicator is NotShowIndicator)
-        assertTrue(states.last().refreshIndicator is NotShowIndicator)
+        assertEquals(2, states.filter { it.refreshIndicator is NotShowIndicator }.size)
+        assertEquals(2, states.filter { it.refreshIndicator is RefreshIndicator.ShowIndicator }.size)
+
         getShowIndicatorStatesJob.cancel()
     }
 
@@ -306,6 +417,22 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         totalDelta: DeltaPercentage = DeltaPercentage.Value(TOTAL_DELTA.toInt()),
         netDelta: DeltaPercentage = DeltaPercentage.Value(NET_DELTA.toInt()),
     ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
+
+    private fun getOrdersStats(
+        ordersCount: Int = ORDERS_COUNT,
+        ordersCountDelta: Int = ORDERS_COUNT_DELTA,
+        avgOrderValue: Double = AVG_ORDER_VALUE,
+        avgOrderValueDelta: Int = AVG_ORDER_VALUE_DELTA,
+        currencyCode: String = CURRENCY_CODE
+    ) = OrdersData(
+        OrdersStat(
+            ordersCount,
+            DeltaPercentage.Value(ordersCountDelta),
+            avgOrderValue,
+            DeltaPercentage.Value(avgOrderValueDelta),
+            currencyCode
+        )
+    )
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
@@ -346,5 +473,15 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         const val OTHER_NET_CURRENCY_VALUE = "10 USD"
 
         const val ANY_URL = "https://a8c.com"
+        const val ORDERS_COUNT = 5
+        const val OTHER_ORDERS_COUNT = 50
+        const val ORDERS_COUNT_DELTA = 20
+        const val OTHER_ORDERS_COUNT_DELTA = 1
+        const val AVG_ORDER_VALUE = 11.2
+        const val OTHER_AVG_ORDER_VALUE = 44.21
+        const val AVG_ORDER_VALUE_DELTA = 50
+        const val OTHER_AVG_ORDER_VALUE_DELTA = 1
+        const val AVG_CURRENCY_VALUE = "11.20 E"
+        const val OTHER_AVG_CURRENCY_VALUE = "44.21 E"
     }
 }

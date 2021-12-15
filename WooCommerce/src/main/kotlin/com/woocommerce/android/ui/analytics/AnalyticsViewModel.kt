@@ -4,10 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.*
+import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
+import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
+import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
@@ -41,6 +45,7 @@ class AnalyticsViewModel @Inject constructor(
             AnalyticsViewState(
                 NotShowIndicator,
                 buildAnalyticsDateRangeSelectorViewState(),
+                LoadingViewState,
                 LoadingViewState
             )
         )
@@ -48,11 +53,13 @@ class AnalyticsViewModel @Inject constructor(
     val state: StateFlow<AnalyticsViewState> = mutableState
 
     init {
-        updateRevenue(false, showSkeleton = true)
+        updateRevenue(isRefreshing = false, showSkeleton = true)
+        updateOrders(isRefreshing = false, showSkeleton = true)
     }
 
     fun onRefreshRequested() {
         updateRevenue(isRefreshing = true, showSkeleton = false)
+        updateOrders(isRefreshing = true, showSkeleton = false)
     }
 
     fun onSelectedTimePeriodChanged(newSelection: String) {
@@ -62,6 +69,7 @@ class AnalyticsViewModel @Inject constructor(
         saveSelectedDateRange(dateRange)
         updateDateSelector()
         updateRevenue(isRefreshing = false, showSkeleton = true)
+        updateOrders(isRefreshing = false, showSkeleton = true)
     }
 
     fun onRevenueSeeReportClick() {
@@ -72,6 +80,14 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
+    fun onOrdersSeeReportClick() {
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(OpenWPComWebView(analyticsRepository.getOrdersAdminPanelUrl()))
+        } else {
+            triggerEvent(OpenUrl(analyticsRepository.getOrdersAdminPanelUrl()))
+        }
+    }
+
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             val timePeriod = getSavedTimePeriod()
@@ -79,7 +95,7 @@ class AnalyticsViewModel @Inject constructor(
 
             if (showSkeleton) mutableState.value = state.value.copy(revenueState = LoadingViewState)
             mutableState.value = state.value.copy(
-                refreshIndicator = if (isRefreshing) RefreshIndicator.ShowIndicator else NotShowIndicator
+                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
             analyticsRepository.fetchRevenueData(dateRange, timePeriod)
@@ -97,6 +113,32 @@ class AnalyticsViewModel @Inject constructor(
                         is RevenueError -> mutableState.value = state.value.copy(
                             refreshIndicator = NotShowIndicator,
                             revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
+                        )
+                    }
+                }
+        }
+
+    private fun updateOrders(isRefreshing: Boolean, showSkeleton: Boolean) =
+        launch {
+            val timePeriod = getSavedTimePeriod()
+            val dateRange = getSavedDateRange()
+            if (showSkeleton) mutableState.value = state.value.copy(ordersState = LoadingViewState)
+            mutableState.value = state.value.copy(
+                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
+            )
+            analyticsRepository.fetchOrdersData(dateRange, timePeriod)
+                .collect {
+                    when (it) {
+                        is OrdersData -> mutableState.value = state.value.copy(
+                            ordersState = buildOrdersDataViewState(
+                                it.ordersStat.ordersCount.toString(),
+                                it.ordersStat.ordersCountDelta,
+                                formatValue(it.ordersStat.avgOrderValue.toString(), it.ordersStat.currencyCode),
+                                it.ordersStat.avgOrderDelta
+                            )
+                        )
+                        is OrdersError -> mutableState.value = state.value.copy(
+                            ordersState = NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
                         )
                     }
                 }
@@ -213,6 +255,28 @@ class AnalyticsViewModel @Inject constructor(
                 netValue,
                 if (netDelta is DeltaPercentage.Value) netDelta.value else null,
                 netDelta is DeltaPercentage.Value
+            )
+        )
+
+    private fun buildOrdersDataViewState(
+        totalOrders: String,
+        totalDelta: DeltaPercentage,
+        avgValue: String,
+        avgDelta: DeltaPercentage
+    ) =
+        DataViewState(
+            title = resourceProvider.getString(R.string.analytics_orders_card_title),
+            leftSection = AnalyticsInformationSectionViewState(
+                resourceProvider.getString(R.string.analytics_total_orders_title),
+                totalOrders,
+                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null,
+                totalDelta is DeltaPercentage.Value
+            ),
+            rightSection = AnalyticsInformationSectionViewState(
+                resourceProvider.getString(R.string.analytics_avg_orders_title),
+                avgValue,
+                if (avgDelta is DeltaPercentage.Value) avgDelta.value else null,
+                avgDelta is DeltaPercentage.Value
             )
         )
 
