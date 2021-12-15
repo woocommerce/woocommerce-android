@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics.listcard
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
@@ -45,6 +46,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
         binding.analyticsItemsValue.visibility = GONE
         binding.analyticsListLeftHeader.visibility = GONE
         binding.analyticsListRightHeader.visibility = GONE
+        binding.analyticsItemsTag.visibility = View.GONE
         binding.noDataText.visibility = GONE
     }
 
@@ -65,10 +67,10 @@ class AnalyticsListCardView @JvmOverloads constructor(
         }
         binding.analyticsItemsList.removeAllViews()
         viewState.items.forEach { addListItem(inflater, binding.analyticsItemsList, it) }
+        binding.analyticsItemsTag.visibility = if (viewState.showDelta) View.VISIBLE else View.GONE
         binding.analyticsCardTitle.visibility = VISIBLE
         binding.analyticsItemsTitle.visibility = VISIBLE
         binding.analyticsItemsValue.visibility = VISIBLE
-        binding.analyticsItemsTag.visibility = VISIBLE
         binding.analyticsListLeftHeader.visibility = VISIBLE
         binding.analyticsListRightHeader.visibility = VISIBLE
         binding.noDataText.visibility = GONE

@@ -331,6 +331,7 @@ class AnalyticsViewModel @Inject constructor(
             subTitle = resourceProvider.getString(R.string.analytics_products_list_items_sold),
             subTitleValue = itemsSold.toString(),
             delta = if (delta is DeltaPercentage.Value) delta.value else null,
+            showDelta = delta is DeltaPercentage.Value,
             listLeftHeader = resourceProvider.getString(R.string.analytics_products_list_header_title),
             listRightHeader = resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
             items = products
