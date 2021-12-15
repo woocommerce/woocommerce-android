@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.analytics.listcard
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
@@ -20,7 +19,6 @@ class AnalyticsListCardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-
     val binding = AnalyticsListCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
 
@@ -33,7 +31,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
     }
 
     fun setSeeReportClickListener(onClickListener: (() -> Unit)) {
-        binding.seeReportGroup.setOnClickListener { onClickListener() }
+        binding.seeReportText.setOnClickListener { onClickListener() }
     }
 
     private fun setSkeleton() {
