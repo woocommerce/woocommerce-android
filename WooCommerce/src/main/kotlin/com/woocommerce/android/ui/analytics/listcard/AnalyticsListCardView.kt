@@ -27,7 +27,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
     }
 
     fun setSeeReportClickListener(onClickListener: (() -> Unit)) {
-        binding.seeReportGroup.setOnClickListener { onClickListener() }
+        binding.seeReportText.setOnClickListener { onClickListener() }
     }
 
     private fun setSkeleton() {
