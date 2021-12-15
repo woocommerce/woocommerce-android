@@ -302,6 +302,7 @@
          Simple Payments
     -->
     <string name="simple_payments_dialog_title">Take payment</string>
+    <string name="simple_payments_title">Simple payment</string>
     <string name="simple_payments_enter_amount">Enter amount</string>
     <string name="simple_payments_creation_error">Unable to create order</string>
     <string name="simple_payments_edit_email_hint">Enter email</string>

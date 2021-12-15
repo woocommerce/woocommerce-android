@@ -24,7 +24,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: SimplePaymentsViewModel by viewModels()
+    private val viewModel: SimplePaymentsDialogViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
