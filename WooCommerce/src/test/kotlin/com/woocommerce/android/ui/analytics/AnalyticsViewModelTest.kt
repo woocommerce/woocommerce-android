@@ -220,7 +220,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a week to date selected, when refresh is requested, then has expected revenue values`() = testBlocking {
-
         val weekToDateRange = MultipleDateRange(
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
