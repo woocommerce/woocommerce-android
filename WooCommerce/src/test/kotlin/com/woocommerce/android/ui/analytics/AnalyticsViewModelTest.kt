@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
+import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
@@ -26,6 +27,7 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -36,6 +38,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -189,10 +192,33 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
                 assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
                 assertEquals(TOTAL_CURRENCY_VALUE, leftSection.value)
-                assertEquals(TOTAL_DELTA, leftSection.delta)
                 assertEquals(resourceProvider.getString(R.string.analytics_net_sales_title), rightSection.title)
+                assertEquals(TOTAL_DELTA.toInt(), leftSection.delta)
                 assertEquals(NET_CURRENCY_VALUE, rightSection.value)
-                assertEquals(NET_DELTA, rightSection.delta)
+                assertEquals(NET_DELTA.toInt(), rightSection.delta)
+            }
+        }
+
+    @Test
+    fun `given a view model with on existent delta then delta is not shown`() =
+        testBlocking {
+            whenever(analyticsRepository.fetchRevenueData(any(), any()))
+                .thenReturn(
+                    listOf(
+                        getRevenueStats(
+                            netDelta = DeltaPercentage.NotExist,
+                            totalDelta = DeltaPercentage.NotExist
+                        )
+                    ).asFlow()
+                )
+
+            sut = givenAViewModel()
+            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+
+            with(sut.state.value.revenueState) {
+                assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertFalse(leftSection.showDelta)
+                assertFalse(rightSection.showDelta)
             }
         }
 
@@ -214,7 +240,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a week to date selected, when refresh is requested, then has expected revenue values`() = testBlocking {
-
         val weekToDateRange = MultipleDateRange(
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
@@ -222,10 +247,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         val weekRevenueStats = getRevenueStats(
             OTHER_TOTAL_VALUE,
-            OTHER_TOTAL_DELTA,
             OTHER_NET_VALUE,
-            OTHER_NET_DELTA,
-            OTHER_CURRENCY_CODE
+            OTHER_CURRENCY_CODE,
+            DeltaPercentage.Value(OTHER_TOTAL_DELTA),
+            DeltaPercentage.Value(OTHER_NET_DELTA),
         )
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
@@ -292,14 +317,15 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 assertEquals(resourceProvider.getString(R.string.analytics_products_list_items_sold), subTitle)
                 assertEquals(PRODUCT_ITEMS_SOLD.toString(), subTitleValue)
                 assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_title), listLeftHeader)
-                assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
-                    listRightHeader)
+                assertEquals(
+                    resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
+                    listRightHeader
+                )
             }
         }
 
     @Test
     fun `given a week to date selected, when refresh is requested, then has expected orders values`() = testBlocking {
-
         val weekToDateRange = MultipleDateRange(
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
@@ -344,10 +370,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         val weekRevenueStats = getRevenueStats(
             OTHER_TOTAL_VALUE,
-            OTHER_TOTAL_DELTA,
             OTHER_NET_VALUE,
-            OTHER_NET_DELTA,
-            OTHER_CURRENCY_CODE
+            OTHER_CURRENCY_CODE,
+            DeltaPercentage.Value(OTHER_TOTAL_DELTA),
+            DeltaPercentage.Value(OTHER_NET_DELTA)
         )
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
@@ -432,10 +458,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     private fun getRevenueStats(
         totalValue: Double = TOTAL_VALUE,
-        totalDelta: Int = TOTAL_DELTA,
         netValue: Double = NET_VALUE,
-        netDelta: Int = NET_DELTA,
-        currencyCode: String = CURRENCY_CODE
+        currencyCode: String = CURRENCY_CODE,
+        totalDelta: DeltaPercentage = DeltaPercentage.Value(TOTAL_DELTA.toInt()),
+        netDelta: DeltaPercentage = DeltaPercentage.Value(NET_DELTA.toInt()),
     ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
 
     private fun getOrdersStats(
@@ -444,7 +470,15 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         avgOrderValue: Double = AVG_ORDER_VALUE,
         avgOrderValueDelta: Int = AVG_ORDER_VALUE_DELTA,
         currencyCode: String = CURRENCY_CODE
-    ) = OrdersData(OrdersStat(ordersCount, ordersCountDelta, avgOrderValue, avgOrderValueDelta, currencyCode))
+    ) = OrdersData(
+        OrdersStat(
+            ordersCount,
+            DeltaPercentage.Value(ordersCountDelta),
+            avgOrderValue,
+            DeltaPercentage.Value(avgOrderValueDelta),
+            currencyCode
+        )
+    )
 
     private fun getProductsStats(
         itemsSold: Int = PRODUCT_ITEMS_SOLD,
@@ -475,9 +509,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         private val DATE_RANGE_SELECTORS = listOf(ANY_VALUE, ANY_OTHER_VALUE)
 
         const val TOTAL_VALUE = 10.0
-        const val TOTAL_DELTA = 5
+        const val TOTAL_DELTA = 5.0
         const val NET_VALUE = 20.0
-        const val NET_DELTA = 10
+        const val NET_DELTA = 10.0
         const val CURRENCY_CODE = "EUR"
         const val TOTAL_CURRENCY_VALUE = "10 E"
         const val NET_CURRENCY_VALUE = "10 E"
