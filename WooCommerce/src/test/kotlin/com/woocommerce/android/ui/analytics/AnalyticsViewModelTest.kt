@@ -281,7 +281,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a week to date selected, when refresh is requested, then has expected orders values`() = testBlocking {
-
         val weekToDateRange = MultipleDateRange(
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
@@ -382,9 +381,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
-
         analyticsRepository.stub {
             onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
             onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
