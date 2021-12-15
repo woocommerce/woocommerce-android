@@ -320,6 +320,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                     resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
                     listRightHeader
                 )
+                assertEquals(PRODUCT_LIST.size, items.size)
             }
         }
 
@@ -390,6 +391,44 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             assertEquals(OTHER_TOTAL_DELTA, leftSection.delta)
             assertEquals(OTHER_NET_CURRENCY_VALUE, rightSection.value)
             assertEquals(OTHER_NET_DELTA, rightSection.delta)
+        }
+    }
+
+    @Test
+    fun `given a week to date selected, when refresh is requested, then has expected product values`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekOrdersData = getProductsStats(
+            OTHER_PRODUCT_ITEMS_SOLD,
+            OTHER_PRODUCT_ITEMS_SOLD_DELTA,
+            OTHER_PRODUCT_LIST
+        )
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchProductsData(weekToDateRange, WEEK_TO_DATE) }.doReturn(flowOf(weekOrdersData))
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onRefreshRequested()
+
+        val resourceProvider = givenAResourceProvider()
+        with(sut.state.value.productsState) {
+            assertTrue(this is AnalyticsListViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
+            assertEquals(OTHER_PRODUCT_ITEMS_SOLD_DELTA, delta)
+            assertEquals(resourceProvider.getString(R.string.analytics_products_list_items_sold), subTitle)
+            assertEquals(OTHER_PRODUCT_ITEMS_SOLD.toString(), subTitleValue)
+            assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_title), listLeftHeader)
+            assertEquals(
+                resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
+                listRightHeader
+            )
+            assertEquals(OTHER_PRODUCT_LIST.size, items.size)
         }
     }
 
@@ -551,6 +590,16 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 PRODUCT_NET_SALES,
                 PRODUCT_ITEM_IMAGE,
                 PRODUCT_MORE_THAN_ONE_QUANTITY,
+                PRODUCT_CURRENCY_CODE
+            )
+        ).sortedByDescending { it.quantity }
+
+        val OTHER_PRODUCT_LIST = listOf(
+            ProductItem(
+                PRODUCT_ITEM_NAME,
+                PRODUCT_NET_SALES,
+                PRODUCT_ITEM_IMAGE,
+                PRODUCT_ONE_QUANTITY,
                 PRODUCT_CURRENCY_CODE
             )
         ).sortedByDescending { it.quantity }

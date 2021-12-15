@@ -107,7 +107,7 @@ class AnalyticsRepository @Inject constructor(
                 if (previousRevenue.isFailure || previousRevenue.getOrNull() == null) {
                     return@combine ProductsResult.ProductsError
                 }
-                if (products.isFailure || products.getOrNull() == null) {
+                if (products.isFailure) {
                     return@combine ProductsResult.ProductsError
                 }
                 if (previousRevenue.getOrNull()!!.parseTotal()?.itemsSold == null ||
