@@ -18,6 +18,10 @@
         android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
         android:label="SimplePaymentsDialog" />
     <fragment
+        android:id="@+id/simplePaymentsFragment"
+        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsFragment"
+        android:label="SimplePaymentsFragment" />
+    <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
         android:label="fragment_order_list"
@@ -46,6 +50,16 @@
             app:destination="@id/simplePaymentsDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_orderListFragment_to_simplePaymentsFragment"
+            app:destination="@id/simplePaymentsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="orderId"
+                android:defaultValue='""'
+                app:argType="string" />
+        </action>
         <action
             android:id="@+id/action_orderListFragment_to_orderCreationBottomSheet"
             app:destination="@id/orderCreationBottomSheetFragment"

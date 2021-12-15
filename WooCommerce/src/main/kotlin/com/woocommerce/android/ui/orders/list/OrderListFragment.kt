@@ -16,11 +16,19 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.woocommerce.android.*
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppUrls
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -29,10 +37,10 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog.Companion.KEY_SIMPLE_PAYMENTS_RESULT
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -304,7 +312,7 @@ class OrderListFragment :
         }
         handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
             binding.orderListView.post {
-                openOrderDetail(order.localId.value, order.remoteId.value, order.status.value)
+                openSimpleOrder(order)
             }
         }
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
@@ -352,6 +360,11 @@ class OrderListFragment :
         if (show) {
             refreshOptionsMenu()
         }
+    }
+
+    fun openSimpleOrder(order: Order) {
+        // TODO nbradbury
+        findNavController().navigateSafely(R.id.action_orderListFragment_to_simplePaymentsFragment)
     }
 
     override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String) {
