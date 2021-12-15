@@ -2,13 +2,16 @@ package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
-import com.woocommerce.android.ui.analytics.RefreshIndicator.*
+import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
+import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
@@ -128,13 +131,13 @@ class AnalyticsViewModel @Inject constructor(
                     when (it) {
                         is OrdersData -> mutableState.value = state.value.copy(
                             ordersState = buildOrdersDataViewState(
-                                formatValue(it.ordersStat.ordersCount.toString(), it.ordersStat.currencyCode),
+                                it.ordersStat.ordersCount.toString(),
                                 it.ordersStat.ordersCountDelta,
                                 formatValue(it.ordersStat.avgOrderValue.toString(), it.ordersStat.currencyCode),
                                 it.ordersStat.avgOrderDelta
                             )
                         )
-                        is AnalyticsRepository.OrdersResult.OrdersError -> mutableState.value = state.value.copy(
+                        is OrdersError -> mutableState.value = state.value.copy(
                             ordersState = NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
                         )
                     }
@@ -233,29 +236,47 @@ class AnalyticsViewModel @Inject constructor(
         selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
     )
 
-    private fun buildRevenueDataViewState(totalValue: String, totalDelta: Int, netValue: String, netDelta: Int) =
+    private fun buildRevenueDataViewState(
+        totalValue: String,
+        totalDelta: DeltaPercentage,
+        netValue: String,
+        netDelta: DeltaPercentage
+    ) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
-                totalValue, totalDelta
+                totalValue,
+                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null,
+                netDelta is DeltaPercentage.Value
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_net_sales_title),
-                netValue, netDelta
+                netValue,
+                if (netDelta is DeltaPercentage.Value) netDelta.value else null,
+                netDelta is DeltaPercentage.Value
             )
         )
 
-    private fun buildOrdersDataViewState(totalOrders: String, totalDelta: Int, avgValue: String, avgDelta: Int) =
+    private fun buildOrdersDataViewState(
+        totalOrders: String,
+        totalDelta: DeltaPercentage,
+        avgValue: String,
+        avgDelta: DeltaPercentage
+    ) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_orders_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_orders_title),
-                totalOrders, totalDelta
+                totalOrders,
+                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null,
+                totalDelta is DeltaPercentage.Value
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_avg_orders_title),
-                avgValue, avgDelta
+                avgValue,
+                if (avgDelta is DeltaPercentage.Value) avgDelta.value else null,
+                avgDelta is DeltaPercentage.Value
             )
         )
 
