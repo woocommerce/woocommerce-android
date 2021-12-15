@@ -22,24 +22,19 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
         super.onViewCreated(view, savedInstanceState)
 
         with(FragmentSimplePaymentsBinding.bind(view)) {
-            setupObserversWith(this)
-            setupHandleResults()
             showOrder(sharedViewModel.viewState.createdOrder!!, this)
         }
     }
 
-    private fun setupObserversWith(binding: FragmentSimplePaymentsBinding) {
-        // TODO nbradbury
-    }
-
-    private fun setupHandleResults() {
-        // TODO nbradbury - customer note screen
-    }
-
     private fun showOrder(order: Order, binding: FragmentSimplePaymentsBinding) {
-        val amount = currencyFormatter.formatCurrency(sharedViewModel.currentPrice, sharedViewModel.currencyCode)
-        binding.textCustomAmount.text = amount
-        binding.textSubtotal.text = amount
+        val subTotal = currencyFormatter.formatCurrency(sharedViewModel.currentPrice, sharedViewModel.currencyCode)
+        binding.textCustomAmount.text = subTotal
+        binding.textSubtotal.text = subTotal
+
+        // TODO nbradbury - email
+        // TODO nbradbury - taxes
+        // TODO nbradbury - customer note
+        // TODO nbradbury - take payment
     }
 
     override fun getFragmentTitle() = getString(R.string.simple_payments_title)
