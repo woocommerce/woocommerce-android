@@ -82,8 +82,9 @@
             android:layout_height="wrap_content"
             android:text="@string/analytics_total_sales_title"
             android:textSize="@dimen/text_minor_125"
+            android:layout_marginEnd="@dimen/major_100"
             app:layout_constraintBottom_toBottomOf="@+id/analyticsListLeftHeader"
-            app:layout_constraintEnd_toEndOf="@+id/analyticsItemsTag"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/analyticsListLeftHeader"
             app:lineHeight="@dimen/text_major_25"
             tools:text="Items Sold" />
