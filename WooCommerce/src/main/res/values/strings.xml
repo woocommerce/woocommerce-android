@@ -2120,6 +2120,8 @@
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
     <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
+    <string name="order_creation_customer">Customer</string>
     <string name="order_creation_customer_note">Customer Note</string>
+    <string name="order_creation_add_customer">Add customer</string>
     <string name="order_creation_add_customer_note">Add note</string>
 </resources>
