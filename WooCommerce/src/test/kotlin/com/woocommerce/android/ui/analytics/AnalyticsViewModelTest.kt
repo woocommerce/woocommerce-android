@@ -35,7 +35,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -231,8 +230,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             OTHER_TOTAL_VALUE,
             OTHER_NET_VALUE,
             OTHER_CURRENCY_CODE,
-            OTHER_TOTAL_DELTA,
-            OTHER_NET_DELTA,
+            DeltaPercentage.Value(OTHER_TOTAL_DELTA),
+            DeltaPercentage.Value(OTHER_NET_DELTA),
         )
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
@@ -429,7 +428,15 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         avgOrderValue: Double = AVG_ORDER_VALUE,
         avgOrderValueDelta: Int = AVG_ORDER_VALUE_DELTA,
         currencyCode: String = CURRENCY_CODE
-    ) = OrdersData(OrdersStat(ordersCount, ordersCountDelta, avgOrderValue, avgOrderValueDelta, currencyCode))
+    ) = OrdersData(
+        OrdersStat(
+            ordersCount,
+            DeltaPercentage.Value(ordersCountDelta),
+            avgOrderValue,
+            DeltaPercentage.Value(avgOrderValueDelta),
+            currencyCode
+        )
+    )
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"

@@ -193,6 +193,30 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given zero previous and current revenue, when fetchOrdersData, then deltas are the expected`() =
+        runBlocking {
+            // Given
+            val ordersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success(ordersStats)).asFlow())
+
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success(ordersStats)).asFlow())
+
+            // When
+            val result = sut.fetchOrdersData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE)
+
+            // Then
+            with(result.single()) {
+                assertTrue(this is OrdersData)
+                assertTrue(ordersStat.avgOrderDelta is DeltaPercentage.Value)
+                assertTrue(ordersStat.ordersCountDelta is DeltaPercentage.Value)
+                assertEquals(ZERO_DELTA, (ordersStat.avgOrderDelta as DeltaPercentage.Value).value)
+                assertEquals(ZERO_DELTA, (ordersStat.ordersCountDelta as DeltaPercentage.Value).value)
+            }
+        }
+
+    @Test
     fun `given previous and current period revenue when fetchOrdersData result is the expected`() =
         runBlocking {
             // Given
@@ -212,8 +236,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is OrdersData)
                 assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
                 assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-                assertEquals(ZERO_DELTA, ordersStat.ordersCountDelta)
-                assertEquals(ZERO_DELTA, ordersStat.avgOrderDelta)
             }
         }
 
@@ -262,8 +284,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is OrdersData)
                 assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
                 assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-                assertEquals(THOUSAND_DELTA, ordersStat.ordersCountDelta)
-                assertEquals(THOUSAND_DELTA, ordersStat.avgOrderDelta)
+                assertTrue(ordersStat.ordersCountDelta is DeltaPercentage.NotExist)
+                assertTrue(ordersStat.avgOrderDelta is DeltaPercentage.NotExist)
             }
         }
 
@@ -312,8 +334,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is OrdersData)
                 assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
                 assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-                assertEquals(ZERO_DELTA, ordersStat.ordersCountDelta)
-                assertEquals(THOUSAND_DELTA, ordersStat.avgOrderDelta)
             }
         }
 
@@ -362,13 +382,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is OrdersData)
                 assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
                 assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-                assertEquals(THOUSAND_DELTA, ordersStat.ordersCountDelta)
-                assertEquals(ZERO_DELTA, ordersStat.avgOrderDelta)
             }
         }
 
     @Test
-    fun `given null previous net revenue,  when fetchRevenueData, then result is the expected`() =
+    fun `given null previous net revenue, when fetchRevenueData, then result is the expected`() =
         runBlocking {
             // Given
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, null)
@@ -411,9 +429,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertNotNull(this)
                 assertTrue(this is OrdersData)
                 assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
-                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-                assertEquals(ZERO_DELTA, ordersStat.ordersCountDelta)
-                assertEquals(THOUSAND_DELTA, ordersStat.avgOrderDelta)
             }
         }
 
@@ -474,8 +489,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 assertTrue(this is OrdersData)
                 assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
                 assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-                assertEquals(ZERO_DELTA, ordersStat.ordersCountDelta)
-                assertEquals(ZERO_DELTA, ordersStat.avgOrderDelta)
             }
         }
 
@@ -528,7 +541,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
         const val ZERO_DELTA = 0
         const val ONE_HUNDRED_DECREASE = -100
-        const val THOUSAND_DELTA = 1000
 
         const val ANY_URL = "https://a8c.com"
 

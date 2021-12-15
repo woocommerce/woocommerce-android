@@ -2,8 +2,8 @@ package com.woocommerce.android.model
 
 data class OrdersStat(
     val ordersCount: Int,
-    val ordersCountDelta: Int,
+    val ordersCountDelta: DeltaPercentage,
     val avgOrderValue: Double,
-    val avgOrderDelta: Int,
+    val avgOrderDelta: DeltaPercentage,
     val currencyCode: String?
 )
