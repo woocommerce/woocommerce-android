@@ -7,15 +7,16 @@ sealed class AnalyticsListViewState {
         val title: String,
         val subTitle: String,
         val subTitleValue: String,
-        val delta: Int,
+        val delta: Int?,
         val listLeftHeader: String,
         val listRightHeader: String,
         val items: List<AnalyticsListCardItemViewState>
     ) : AnalyticsListViewState() {
         val sign: String
             get() = when {
-                delta > 0 -> "+"
+                delta == null -> ""
                 delta == 0 -> ""
+                delta > 0 -> "+"
                 else -> "-"
             }
     }
