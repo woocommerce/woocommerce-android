@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -24,7 +24,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsViewModel>(R.id.nav_graph_main)
+    private val viewModel: SimplePaymentsDialogViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,9 +47,9 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         }
 
         val binding = DialogSimplePaymentsBinding.bind(view)
-        binding.editPrice.initView(sharedViewModel.currencyCode, sharedViewModel.decimals, currencyFormatter)
+        binding.editPrice.initView(viewModel.currencyCode, viewModel.decimals, currencyFormatter)
         binding.buttonDone.setOnClickListener {
-            sharedViewModel.onDoneButtonClicked()
+            viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
             AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_CANCELED)
@@ -72,11 +72,11 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         binding.editPrice.value.observe(
             this,
             {
-                sharedViewModel.currentPrice = it
+                viewModel.currentPrice = it
             }
         )
 
-        sharedViewModel.event.observe(viewLifecycleOwner) { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     ActivityUtils.hideKeyboardForced(binding.editPrice)
@@ -85,7 +85,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             }
         }
 
-        sharedViewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
                 binding.buttonDone.isEnabled = isEnabled
             }

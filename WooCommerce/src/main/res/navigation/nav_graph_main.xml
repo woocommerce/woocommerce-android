@@ -20,7 +20,12 @@
     <fragment
         android:id="@+id/simplePaymentsFragment"
         android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsFragment"
-        android:label="SimplePaymentsFragment" />
+        android:label="SimplePaymentsFragment">
+        <argument
+            android:name="order"
+            app:argType="com.woocommerce.android.model.Order"
+            app:nullable="false" />
+    </fragment>
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"

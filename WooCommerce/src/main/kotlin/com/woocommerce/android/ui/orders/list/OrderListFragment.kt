@@ -312,7 +312,7 @@ class OrderListFragment :
         }
         handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
             binding.orderListView.post {
-                openSimpleOrder()
+                openSimpleOrder(order)
             }
         }
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
@@ -362,9 +362,12 @@ class OrderListFragment :
         }
     }
 
-    fun openSimpleOrder() {
+    fun openSimpleOrder(order: Order) {
         // TODO nbradbury - tracks?
-        findNavController().navigateSafely(R.id.action_orderListFragment_to_simplePaymentsFragment)
+        val bundle = Bundle().also {
+            it.putParcelable("order", order)
+        }
+        findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsFragment, bundle)
     }
 
     override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String) {
