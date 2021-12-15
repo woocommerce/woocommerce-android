@@ -24,6 +24,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:drawableStart="@drawable/ic_gridicons_money"
+                android:drawablePadding="@dimen/major_100"
                 android:text="@string/simple_payments_custom_amount" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -76,7 +78,7 @@
         <!-- Payment -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textPayment"
-            style="@style/Woo.Card.Body.Bold"
+            style="@style/Woo.Card.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

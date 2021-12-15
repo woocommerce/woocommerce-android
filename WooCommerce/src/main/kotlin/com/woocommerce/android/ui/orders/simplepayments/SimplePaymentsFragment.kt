@@ -37,8 +37,9 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     }
 
     private fun showOrder(order: Order, binding: FragmentSimplePaymentsBinding) {
-        binding.textCustomAmount.text =
-            currencyFormatter.formatCurrency(sharedViewModel.currentPrice, sharedViewModel.currencyCode)
+        val amount = currencyFormatter.formatCurrency(sharedViewModel.currentPrice, sharedViewModel.currencyCode)
+        binding.textCustomAmount.text = amount
+        binding.textSubtotal.text = amount
     }
 
     override fun getFragmentTitle() = getString(R.string.simple_payments_title)
