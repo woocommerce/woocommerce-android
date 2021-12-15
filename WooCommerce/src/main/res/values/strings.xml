@@ -289,6 +289,8 @@
     <string name="analytics_orders_card_title">Orders</string>
     <string name="analytics_total_orders_title">Total Orders</string>
     <string name="analytics_avg_orders_title">Average Order Value</string>
+    <string name="analytics_products_list_items_sold">Items sold</string>
+
     <!--
         Order List View
     -->

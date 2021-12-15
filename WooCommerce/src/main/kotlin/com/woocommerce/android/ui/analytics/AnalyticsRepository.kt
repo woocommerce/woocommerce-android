@@ -31,7 +31,7 @@ class AnalyticsRepository @Inject constructor(
         selectedRange: AnalyticTimePeriod
     ): Flow<RevenueResult> =
         getGranularity(selectedRange).let {
-            return getCurrentPeriodRevenue(dateRange, it)
+            return getCurrentPeriodStats(dateRange, it)
                 .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
                     if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
                         return@combine RevenueError
@@ -91,17 +91,6 @@ class AnalyticsRepository @Inject constructor(
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
     fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
-
-    private suspend fun getCurrentPeriodRevenue(dateRange: AnalyticsDateRange, granularity: StatsGranularity) =
-        when (dateRange) {
-            is SimpleDateRange ->
-                fetchStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
-            is MultipleDateRange ->
-                fetchStats(
-                    dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(),
-                    granularity
-                )
-        }
 
     private suspend fun getCurrentPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) =
         when (dateRange) {
