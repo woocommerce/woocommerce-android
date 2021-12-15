@@ -21,7 +21,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
         super.onViewCreated(view, savedInstanceState)
 
         with(FragmentSimplePaymentsBinding.bind(view)) {
-            showOrder(viewModel.viewState.order!!, this)
+            showOrder(viewModel.order, this)
         }
     }
 

@@ -33,6 +33,9 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     val currencyCode: String
         get() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
 
+    val order: Order
+        get() = viewState.order!!
+
     @Parcelize
     data class ViewState(
         val currentPrice: BigDecimal = BigDecimal.ZERO,
