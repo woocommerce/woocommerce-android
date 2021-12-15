@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
-    private val viewModel: SimplePaymentsViewModel by viewModels()
+    private val viewModel: SimplePaymentsFragmentViewModel by viewModels()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 

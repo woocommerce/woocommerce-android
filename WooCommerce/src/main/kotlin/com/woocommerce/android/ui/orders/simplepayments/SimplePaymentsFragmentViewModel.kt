@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @OpenClassOnDebug
 @HiltViewModel
-class SimplePaymentsViewModel @Inject constructor(
+class SimplePaymentsFragmentViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
