@@ -6,8 +6,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -16,15 +24,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
-import org.wordpress.android.fluxc.store.*
-import org.wordpress.android.fluxc.store.WCOrderStore.*
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
+import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class OrderDetailRepository @Inject constructor(
@@ -98,7 +116,7 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun updateOrderStatus(
-        orderLocalId: LocalId,
+        remoteOrderId: LocalOrRemoteId.RemoteId,
         newStatus: String
     ): Flow<UpdateOrderResult> {
         val status = withContext(dispatchers.io) {
@@ -106,7 +124,7 @@ class OrderDetailRepository @Inject constructor(
                 ?: error("Couldn't find a status with key $newStatus")
         }
         return orderStore.updateOrderStatus(
-            orderLocalId,
+            remoteOrderId,
             selectedSite.get(),
             status
         )
@@ -120,12 +138,14 @@ class OrderDetailRepository @Inject constructor(
         val order = orderStore.getOrderByIdentifier(orderIdentifier)
         if (order == null) {
             WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
-            return OnOrderChanged(0).also {
-                it.error = OrderError(GENERIC_ERROR, "Can't find order with identifier $orderIdentifier")
-            }
+            return OnOrderChanged(
+                orderError = OrderError(GENERIC_ERROR, "Can't find order with identifier $orderIdentifier")
+            )
         }
         val dataModel = noteModel.toDataModel()
-        val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
+        val payload = PostOrderNotePayload(
+            @Suppress("DEPRECATION_ERROR") order.id, remoteOrderId, selectedSite.get(), dataModel
+        )
         return orderStore.postOrderNote(payload)
     }
 

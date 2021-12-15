@@ -21,8 +21,6 @@ open class BaseWooCommerce : Application(), HasAndroidInjector {
         fun injector(): DispatchingAndroidInjector<Any>
     }
 
-    private lateinit var injector: AndroidInjector<Any>
-
     override fun onCreate() {
         super.onCreate()
         val wellSqlConfig = WooWellSqlConfig(this)
@@ -30,12 +28,9 @@ open class BaseWooCommerce : Application(), HasAndroidInjector {
     }
 
     override fun androidInjector(): AndroidInjector<Any> {
-        if (!this::injector.isInitialized) {
-            injector = EntryPoints.get(
-                applicationContext,
-                AndroidInjectorEntryPoint::class.java
-            ).injector()
-        }
-        return injector
+        return EntryPoints.get(
+            applicationContext,
+            AndroidInjectorEntryPoint::class.java
+        ).injector()
     }
 }
