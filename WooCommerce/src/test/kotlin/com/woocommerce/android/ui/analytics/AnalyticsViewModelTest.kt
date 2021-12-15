@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
@@ -29,6 +30,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -159,9 +161,32 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             with(sut.state.value.revenueState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
                 assertEquals(TOTAL_CURRENCY_VALUE, leftSection.value)
-                assertEquals(TOTAL_DELTA, leftSection.delta)
+                assertEquals(TOTAL_DELTA.toInt(), leftSection.delta)
                 assertEquals(NET_CURRENCY_VALUE, rightSection.value)
-                assertEquals(NET_DELTA, rightSection.delta)
+                assertEquals(NET_DELTA.toInt(), rightSection.delta)
+            }
+        }
+
+    @Test
+    fun `given a view model with on existent delta then delta is not shown`() =
+        testBlocking {
+            whenever(analyticsRepository.fetchRevenueData(any(), any()))
+                .thenReturn(
+                    listOf(
+                        getRevenueStats(
+                            netDelta = DeltaPercentage.NotExist,
+                            totalDelta = DeltaPercentage.NotExist
+                        )
+                    ).asFlow()
+                )
+
+            sut = givenAViewModel()
+            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+
+            with(sut.state.value.revenueState) {
+                assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertFalse(leftSection.showDelta)
+                assertFalse(rightSection.showDelta)
             }
         }
 
@@ -223,10 +248,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         val weekRevenueStats = getRevenueStats(
             OTHER_TOTAL_VALUE,
-            OTHER_TOTAL_DELTA,
             OTHER_NET_VALUE,
-            OTHER_NET_DELTA,
-            OTHER_CURRENCY_CODE
+            OTHER_CURRENCY_CODE,
+            DeltaPercentage.Value(OTHER_TOTAL_DELTA),
+            DeltaPercentage.Value(OTHER_NET_DELTA)
         )
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
@@ -276,10 +301,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     private fun getRevenueStats(
         totalValue: Double = TOTAL_VALUE,
-        totalDelta: Int = TOTAL_DELTA,
         netValue: Double = NET_VALUE,
-        netDelta: Int = NET_DELTA,
-        currencyCode: String = CURRENCY_CODE
+        currencyCode: String = CURRENCY_CODE,
+        totalDelta: DeltaPercentage = DeltaPercentage.Value(TOTAL_DELTA.toInt()),
+        netDelta: DeltaPercentage = DeltaPercentage.Value(NET_DELTA.toInt()),
     ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
 
     companion object {
@@ -305,9 +330,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         private val DATE_RANGE_SELECTORS = listOf(ANY_VALUE, ANY_OTHER_VALUE)
 
         const val TOTAL_VALUE = 10.0
-        const val TOTAL_DELTA = 5
+        const val TOTAL_DELTA = 5.0
         const val NET_VALUE = 20.0
-        const val NET_DELTA = 10
+        const val NET_DELTA = 10.0
         const val CURRENCY_CODE = "EUR"
         const val TOTAL_CURRENCY_VALUE = "10 E"
         const val NET_CURRENCY_VALUE = "10 E"

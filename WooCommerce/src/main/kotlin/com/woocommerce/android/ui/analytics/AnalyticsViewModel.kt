@@ -2,11 +2,11 @@ package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
-import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
+import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.*
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.*
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
@@ -194,16 +194,25 @@ class AnalyticsViewModel @Inject constructor(
         selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
     )
 
-    private fun buildRevenueDataViewState(totalValue: String, totalDelta: Int, netValue: String, netDelta: Int) =
+    private fun buildRevenueDataViewState(
+        totalValue: String,
+        totalDelta: DeltaPercentage,
+        netValue: String,
+        netDelta: DeltaPercentage
+    ) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
-                totalValue, totalDelta
+                totalValue,
+                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null,
+                netDelta is DeltaPercentage.Value
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_net_sales_title),
-                netValue, netDelta
+                netValue,
+                if (netDelta is DeltaPercentage.Value) netDelta.value else null,
+                netDelta is DeltaPercentage.Value
             )
         )
 
