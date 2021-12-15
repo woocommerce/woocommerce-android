@@ -363,11 +363,15 @@ class OrderListFragment :
     }
 
     fun openSimpleOrder(order: Order) {
-        // TODO nbradbury - tracks?
-        val bundle = Bundle().also {
-            it.putParcelable("order", order)
+        if (FeatureFlag.SIMPLE_PAYMENT_I2.isEnabled()) {
+            // TODO nbradbury - tracks?
+            val bundle = Bundle().also {
+                it.putParcelable("order", order)
+            }
+            findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsFragment, bundle)
+        } else {
+            openOrderDetail(order.localId.value, order.remoteId.value, order.status.value)
         }
-        findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsFragment, bundle)
     }
 
     override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String) {
