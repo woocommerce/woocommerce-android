@@ -325,12 +325,12 @@ class AnalyticsViewModel @Inject constructor(
             )
         )
 
-    private fun buildProductsDataState(itemsSold: Int, delta: Int, products: List<ProductItem>) =
+    private fun buildProductsDataState(itemsSold: Int, delta: DeltaPercentage, products: List<ProductItem>) =
         ProductsViewState.DataViewState(
             title = resourceProvider.getString(R.string.analytics_products_card_title),
             subTitle = resourceProvider.getString(R.string.analytics_products_list_items_sold),
             subTitleValue = itemsSold.toString(),
-            delta = delta,
+            delta = if (delta is DeltaPercentage.Value) delta.value else null,
             listLeftHeader = resourceProvider.getString(R.string.analytics_products_list_header_title),
             listRightHeader = resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
             items = products

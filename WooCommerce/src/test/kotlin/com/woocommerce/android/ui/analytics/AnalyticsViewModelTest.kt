@@ -483,7 +483,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         itemsSold: Int = PRODUCT_ITEMS_SOLD,
         itemsSoldDelta: Int = PRODUCT_ITEMS_SOLD_DELTA,
         productList: List<ProductItem> = PRODUCT_LIST
-    ) = ProductsData(ProductsStat(itemsSold, itemsSoldDelta, productList))
+    ) = ProductsData(ProductsStat(itemsSold, DeltaPercentage.Value(itemsSoldDelta), productList))
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
