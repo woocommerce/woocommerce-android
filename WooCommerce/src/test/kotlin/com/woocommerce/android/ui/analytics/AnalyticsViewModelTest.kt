@@ -301,7 +301,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then product has values`() =
         testBlocking {
-
             analyticsRepository.stub {
                 onBlocking { fetchProductsData(any(), any()) }.doReturn(flowOf(getProductsStats()))
             }

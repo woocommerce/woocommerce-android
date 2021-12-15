@@ -107,9 +107,15 @@ class StatsRepository @Inject constructor(
 
     private fun getQueryTimeRange(startDate: String, endDate: String): LongRange? {
         if (startDate.isEmpty() || endDate.isEmpty()) return null
-        val startTime = dateUtils.fromIso8601Format(startDate)?.time ?: return null
-        val endTime = dateUtils.fromIso8601Format(endDate)?.time ?: return null
-        return LongRange(startTime, endTime)
+        return getLongRange(
+            dateUtils.fromIso8601Format(startDate)?.time,
+            dateUtils.fromIso8601Format(endDate)?.time
+        )
+    }
+
+    private fun getLongRange(startDate: Long?, endDate: Long?): LongRange? {
+        if (startDate == null || endDate == null) return null
+        return LongRange(startDate, endDate)
     }
 
     suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {

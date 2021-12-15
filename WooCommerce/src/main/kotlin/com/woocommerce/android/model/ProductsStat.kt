@@ -2,7 +2,7 @@ package com.woocommerce.android.model
 
 data class ProductsStat(
     val itemsSold: Int,
-    val itemsSoldDelta: Int,
+    val itemsSoldDelta: DeltaPercentage,
     val products: List<ProductItem>
 )
 

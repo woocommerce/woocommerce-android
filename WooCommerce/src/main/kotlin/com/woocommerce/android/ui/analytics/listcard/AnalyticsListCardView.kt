@@ -60,7 +60,9 @@ class AnalyticsListCardView @JvmOverloads constructor(
             R.string.analytics_information_card_delta,
             viewState.sign, viewState.delta
         )
-        binding.analyticsItemsTag.tag = AnalyticsListDeltaTag(viewState.delta, getDeltaTagText(viewState))
+        viewState.delta?.let {
+            binding.analyticsItemsTag.tag = AnalyticsListDeltaTag(viewState.delta, getDeltaTagText(viewState))
+        }
         binding.analyticsItemsList.removeAllViews()
         viewState.items.forEach { addListItem(inflater, binding.analyticsItemsList, it) }
         binding.analyticsCardTitle.visibility = VISIBLE
@@ -100,7 +102,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
         ctx.resources.getString(
             R.string.analytics_information_card_delta,
             viewState.sign,
-            viewState.delta.absoluteValue
+            viewState.delta?.absoluteValue
         )
 
     class AnalyticsListDeltaTag(private val delta: Int, private val text: String) : ITag(text) {
