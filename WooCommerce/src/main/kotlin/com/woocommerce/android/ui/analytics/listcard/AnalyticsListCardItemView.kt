@@ -12,7 +12,6 @@ class AnalyticsListCardItemView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-
     val binding = AnalyticsListCardItemViewBinding.inflate(LayoutInflater.from(ctx), this)
 
     fun setInformation(viewState: AnalyticsListCardItemViewState) {
