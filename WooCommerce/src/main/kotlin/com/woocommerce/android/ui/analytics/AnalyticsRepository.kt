@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.*
 import com.woocommerce.android.ui.mystore.data.StatsRepository
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -200,11 +199,6 @@ class AnalyticsRepository @Inject constructor(
         quantity: Int
     ) = withContext(Dispatchers.IO) {
         statsRepository.fetchProductLeaderboards(true, granularity, quantity, startDate, endDate)
-            .shareIn(
-                CoroutineScope(Dispatchers.Default),
-                replay = 1,
-                started = SharingStarted.WhileSubscribed()
-            )
     }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
