@@ -1,11 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
-import com.woocommerce.android.model.DeltaPercentage
-import com.woocommerce.android.model.OrdersStat
-import com.woocommerce.android.model.ProductItem
-import com.woocommerce.android.model.ProductsStat
-import com.woocommerce.android.model.RevenueStat
+import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
@@ -16,6 +12,8 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.*
@@ -26,15 +24,19 @@ import kotlin.math.round
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore,
+    private val wooCommerceStore: WooCommerceStore
 ) {
+
+    private val getRevenueMutex = Mutex()
+
     suspend fun fetchRevenueData(
         dateRange: AnalyticsDateRange,
-        selectedRange: AnalyticTimePeriod
+        selectedRange: AnalyticTimePeriod,
+        fetchStrategy: FetchStrategy
     ): Flow<RevenueResult> =
         getGranularity(selectedRange).let {
-            return getCurrentPeriodStats(dateRange, it)
-                .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
+            return getCurrentPeriodStats(dateRange, it, fetchStrategy)
+                .combine(getPreviousPeriodStats(dateRange, it, fetchStrategy)) { currentPeriodRevenue, previousPeriodRevenue ->
                     if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
                         return@combine RevenueError
                     }
@@ -61,11 +63,12 @@ class AnalyticsRepository @Inject constructor(
 
     suspend fun fetchOrdersData(
         dateRange: AnalyticsDateRange,
-        selectedRange: AnalyticTimePeriod
+        selectedRange: AnalyticTimePeriod,
+        fetchStrategy: FetchStrategy
     ): Flow<OrdersResult> =
         getGranularity(selectedRange).let {
-            return getCurrentPeriodStats(dateRange, it)
-                .combine(getPreviousPeriodStats(dateRange, it)) { currentPeriodRevenue, previousPeriodRevenue ->
+            return getCurrentPeriodStats(dateRange, it, fetchStrategy)
+                .combine(getPreviousPeriodStats(dateRange, it, fetchStrategy)) { currentPeriodRevenue, previousPeriodRevenue ->
                     if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
                         return@combine OrdersError
                     }
@@ -93,13 +96,14 @@ class AnalyticsRepository @Inject constructor(
 
     suspend fun fetchProductsData(
         dateRange: AnalyticsDateRange,
-        selectedRange: AnalyticTimePeriod
+        selectedRange: AnalyticTimePeriod,
+        fetchStrategy: FetchStrategy
     ): Flow<ProductsResult> =
         getGranularity(selectedRange).let { statsGranularity: StatsGranularity ->
             return combine(
-                getCurrentPeriodStats(dateRange, statsGranularity),
-                getPreviousPeriodStats(dateRange, statsGranularity),
-                getProductStats(dateRange, statsGranularity, TOP_PRODUCTS_LIST_SIZE)
+                getCurrentPeriodStats(dateRange, statsGranularity, fetchStrategy),
+                getPreviousPeriodStats(dateRange, statsGranularity, fetchStrategy),
+                getProductStats(dateRange, statsGranularity, TOP_PRODUCTS_LIST_SIZE, fetchStrategy)
             ) { currentRevenue, previousRevenue, products ->
                 if (currentRevenue.isFailure || currentRevenue.getOrNull() == null) {
                     return@combine ProductsResult.ProductsError
@@ -142,35 +146,72 @@ class AnalyticsRepository @Inject constructor(
     fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
     fun getProductsAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_PRODUCTS_PATH
 
-    private suspend fun getCurrentPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) =
-        when (dateRange) {
-            is SimpleDateRange ->
-                fetchStats(dateRange.to.formatToYYYYmmDD(), dateRange.to.formatToYYYYmmDD(), granularity)
-            is MultipleDateRange ->
-                fetchStats(dateRange.to.from.formatToYYYYmmDD(), dateRange.to.to.formatToYYYYmmDD(), granularity)
-        }
+    private suspend fun getCurrentPeriodStats(
+        dateRange: AnalyticsDateRange,
+        granularity: StatsGranularity,
+        fetchStrategy: FetchStrategy
+    ) = when (dateRange) {
+        is SimpleDateRange ->
+            fetchStats(
+                dateRange.to.formatToYYYYmmDD(),
+                dateRange.to.formatToYYYYmmDD(),
+                granularity,
+                fetchStrategy
+            )
+        is MultipleDateRange ->
+            fetchStats(
+                dateRange.to.from.formatToYYYYmmDD(),
+                dateRange.to.to.formatToYYYYmmDD(),
+                granularity,
+                fetchStrategy
+            )
+    }
 
-    private suspend fun getPreviousPeriodStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity) =
-        when (dateRange) {
-            is SimpleDateRange ->
-                fetchStats(dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(), granularity)
-            is MultipleDateRange ->
-                fetchStats(dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(), granularity)
-        }
+    private suspend fun getPreviousPeriodStats(
+        dateRange: AnalyticsDateRange,
+        granularity: StatsGranularity,
+        fetchStrategy: FetchStrategy
+    ) = when (dateRange) {
+        is SimpleDateRange ->
+            fetchStats(
+                dateRange.from.formatToYYYYmmDD(),
+                dateRange.from.formatToYYYYmmDD(),
+                granularity,
+                fetchStrategy
+            )
 
-    private suspend fun getProductStats(dateRange: AnalyticsDateRange, granularity: StatsGranularity, quantity: Int) =
-        when (dateRange) {
-            is SimpleDateRange ->
-                fetchProductLeaderboards(
-                    dateRange.from.formatToYYYYmmDD(), dateRange.from.formatToYYYYmmDD(),
-                    granularity, quantity
-                )
-            is MultipleDateRange ->
-                fetchProductLeaderboards(
-                    dateRange.from.from.formatToYYYYmmDD(), dateRange.from.to.formatToYYYYmmDD(),
-                    granularity, quantity
-                )
-        }
+        is MultipleDateRange ->
+            fetchStats(
+                dateRange.from.from.formatToYYYYmmDD(),
+                dateRange.from.to.formatToYYYYmmDD(),
+                granularity,
+                fetchStrategy
+            )
+    }
+
+    private suspend fun getProductStats(
+        dateRange: AnalyticsDateRange,
+        granularity: StatsGranularity,
+        quantity: Int,
+        fetchStrategy: FetchStrategy
+    ) = when (dateRange) {
+        is SimpleDateRange ->
+            fetchProductLeaderboards(
+                dateRange.from.formatToYYYYmmDD(),
+                dateRange.from.formatToYYYYmmDD(),
+                granularity,
+                quantity,
+                fetchStrategy
+            )
+        is MultipleDateRange ->
+            fetchProductLeaderboards(
+                dateRange.from.from.formatToYYYYmmDD(),
+                dateRange.from.to.formatToYYYYmmDD(),
+                granularity,
+                quantity,
+                fetchStrategy
+            )
+    }
 
     private fun getGranularity(selectedRange: AnalyticTimePeriod) =
         when (selectedRange) {
@@ -187,18 +228,36 @@ class AnalyticsRepository @Inject constructor(
         else -> DeltaPercentage.Value((round((currentVal - previousVal) / previousVal) * ONE_H_PERCENT).toInt())
     }
 
-    private suspend fun fetchStats(startDate: String, endDate: String, granularity: StatsGranularity) =
-        withContext(Dispatchers.IO) {
-            statsRepository.fetchRevenueStats(granularity, true, startDate, endDate)
+    private suspend fun fetchStats(
+        startDate: String,
+        endDate: String,
+        granularity: StatsGranularity,
+        fetchStrategy: FetchStrategy
+    ) = withContext(Dispatchers.IO) {
+        getRevenueMutex.withLock {
+            statsRepository.fetchRevenueStats(
+                granularity,
+                fetchStrategy is FetchStrategy.ForceNew,
+                startDate,
+                endDate
+            )
         }
+    }
 
     private suspend fun fetchProductLeaderboards(
         startDate: String,
         endDate: String,
         granularity: StatsGranularity,
-        quantity: Int
+        quantity: Int,
+        fetchStrategy: FetchStrategy
     ) = withContext(Dispatchers.IO) {
-        statsRepository.fetchProductLeaderboards(true, granularity, quantity, startDate, endDate)
+        statsRepository.fetchProductLeaderboards(
+            fetchStrategy is FetchStrategy.ForceNew,
+            granularity,
+            quantity,
+            startDate,
+            endDate
+        )
     }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
@@ -229,5 +288,10 @@ class AnalyticsRepository @Inject constructor(
     sealed class ProductsResult {
         object ProductsError : ProductsResult()
         data class ProductsData(val productsStat: ProductsStat) : ProductsResult()
+    }
+
+    sealed class FetchStrategy {
+        object ForceNew : FetchStrategy()
+        object Saved : FetchStrategy()
     }
 }

@@ -5,6 +5,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
@@ -110,13 +112,14 @@ class AnalyticsViewModel @Inject constructor(
         launch {
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
+            val fetchStrategy = getFetchStrategy(isRefreshing)
 
             if (showSkeleton) mutableState.value = state.value.copy(revenueState = LoadingViewState)
             mutableState.value = state.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
-            analyticsRepository.fetchRevenueData(dateRange, timePeriod)
+            analyticsRepository.fetchRevenueData(dateRange, timePeriod, fetchStrategy)
                 .collect {
                     when (it) {
                         is RevenueData -> mutableState.value = state.value.copy(
@@ -140,11 +143,13 @@ class AnalyticsViewModel @Inject constructor(
         launch {
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
+            val fetchStrategy = getFetchStrategy(isRefreshing)
+
             if (showSkeleton) mutableState.value = state.value.copy(ordersState = LoadingViewState)
             mutableState.value = state.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
-            analyticsRepository.fetchOrdersData(dateRange, timePeriod)
+            analyticsRepository.fetchOrdersData(dateRange, timePeriod, fetchStrategy)
                 .collect {
                     when (it) {
                         is OrdersData -> mutableState.value = state.value.copy(
@@ -166,11 +171,12 @@ class AnalyticsViewModel @Inject constructor(
         launch {
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
+            val fetchStrategy = getFetchStrategy(isRefreshing)
             if (showSkeleton) mutableState.value = state.value.copy(productsState = LoadingProductsViewState)
             mutableState.value = state.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
-            analyticsRepository.fetchProductsData(dateRange, timePeriod)
+            analyticsRepository.fetchProductsData(dateRange, timePeriod, fetchStrategy)
                 .collect {
                     when (it) {
                         is ProductsData -> mutableState.value = state.value.copy(
@@ -344,6 +350,8 @@ class AnalyticsViewModel @Inject constructor(
                     )
                 }
         )
+
+    private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
 
     private fun saveSelectedTimePeriod(range: AnalyticTimePeriod) {
         savedState[TIME_PERIOD_SELECTED_KEY] = range
