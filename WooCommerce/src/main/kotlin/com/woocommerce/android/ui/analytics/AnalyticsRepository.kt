@@ -26,7 +26,6 @@ class AnalyticsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-
     private val getRevenueMutex = Mutex()
 
     suspend fun fetchRevenueData(
@@ -36,7 +35,8 @@ class AnalyticsRepository @Inject constructor(
     ): Flow<RevenueResult> =
         getGranularity(selectedRange).let {
             return getCurrentPeriodStats(dateRange, it, fetchStrategy)
-                .combine(getPreviousPeriodStats(dateRange, it, fetchStrategy)) { currentPeriodRevenue, previousPeriodRevenue ->
+                .combine(getPreviousPeriodStats(dateRange, it, fetchStrategy)) { currentPeriodRevenue,
+                    previousPeriodRevenue ->
                     if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
                         return@combine RevenueError
                     }
@@ -68,7 +68,8 @@ class AnalyticsRepository @Inject constructor(
     ): Flow<OrdersResult> =
         getGranularity(selectedRange).let {
             return getCurrentPeriodStats(dateRange, it, fetchStrategy)
-                .combine(getPreviousPeriodStats(dateRange, it, fetchStrategy)) { currentPeriodRevenue, previousPeriodRevenue ->
+                .combine(getPreviousPeriodStats(dateRange, it, fetchStrategy)) { currentPeriodRevenue,
+                    previousPeriodRevenue ->
                     if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
                         return@combine OrdersError
                     }
