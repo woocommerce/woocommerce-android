@@ -545,15 +545,6 @@ class DateUtils @Inject constructor(
             null
         }
 
-    fun fromIso8601Format(date: String): Date? =
-        try {
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-                .parse(date)
-        } catch (e: Exception) {
-            "Error while parsing Iso8601 date to millis".reportAsError(e)
-            null
-        }
-
     fun toDisplayMMMddYYYYDate(dateMillis: Long): String? =
         try {
             SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())

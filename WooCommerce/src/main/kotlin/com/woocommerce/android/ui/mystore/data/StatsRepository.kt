@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.extensions.formatDateToISO8601Format
+import com.woocommerce.android.extensions.formatDateToYYYYMMDDFormat
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.flow.Flow
@@ -21,8 +22,7 @@ class StatsRepository @Inject constructor(
     private val wcStatsStore: WCStatsStore,
     @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
     private val wcOrderStore: WCOrderStore,
-    private val wcLeaderboardsStore: WCLeaderboardsStore,
-    private val dateUtils: DateUtils
+    private val wcLeaderboardsStore: WCLeaderboardsStore
 ) {
     companion object {
         private val TAG = StatsRepository::class.java
@@ -108,8 +108,8 @@ class StatsRepository @Inject constructor(
     private fun getQueryTimeRange(startDate: String, endDate: String): LongRange? {
         if (startDate.isEmpty() || endDate.isEmpty()) return null
         return getLongRange(
-            dateUtils.fromIso8601Format(startDate)?.time,
-            dateUtils.fromIso8601Format(endDate)?.time
+            startDate.formatDateToYYYYMMDDFormat()?.time,
+            endDate.formatDateToYYYYMMDDFormat()?.time
         )
     }
 
