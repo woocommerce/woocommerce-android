@@ -26,7 +26,6 @@ class SingleProductScreen : Screen {
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withId(R.id.toolbar),
-                ViewMatchers.withChild(ViewMatchers.withContentDescription("Navigate up")),
                 ViewMatchers.withChild(ViewMatchers.withText(product.name))
             )
         )
