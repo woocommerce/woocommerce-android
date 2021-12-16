@@ -62,7 +62,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editEmail"
                 android:layout_width="0dp"
-                style="@style/Woo.Card.Body.High"
+                style="@style/Woo.TextInputEditText"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
