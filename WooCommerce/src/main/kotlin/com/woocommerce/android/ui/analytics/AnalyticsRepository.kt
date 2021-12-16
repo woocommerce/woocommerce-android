@@ -104,7 +104,7 @@ class AnalyticsRepository @Inject constructor(
             return combine(
                 getCurrentPeriodStats(dateRange, statsGranularity, fetchStrategy),
                 getPreviousPeriodStats(dateRange, statsGranularity, fetchStrategy),
-                getProductStats(dateRange, statsGranularity, TOP_PRODUCTS_LIST_SIZE, fetchStrategy)
+                getProductStats(dateRange, statsGranularity, TOP_PRODUCTS_LIST_SIZE)
             ) { currentRevenue, previousRevenue, products ->
                 if (currentRevenue.isFailure || currentRevenue.getOrNull() == null) {
                     return@combine ProductsResult.ProductsError
@@ -193,24 +193,21 @@ class AnalyticsRepository @Inject constructor(
     private suspend fun getProductStats(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
-        quantity: Int,
-        fetchStrategy: FetchStrategy
+        quantity: Int
     ) = when (dateRange) {
         is SimpleDateRange ->
             fetchProductLeaderboards(
                 dateRange.from.formatToYYYYmmDD(),
-                dateRange.from.formatToYYYYmmDD(),
+                dateRange.to.formatToYYYYmmDD(),
                 granularity,
-                quantity,
-                fetchStrategy
+                quantity
             )
         is MultipleDateRange ->
             fetchProductLeaderboards(
-                dateRange.from.from.formatToYYYYmmDD(),
-                dateRange.from.to.formatToYYYYmmDD(),
+                dateRange.to.from.formatToYYYYmmDD(),
+                dateRange.to.to.formatToYYYYmmDD(),
                 granularity,
-                quantity,
-                fetchStrategy
+                quantity
             )
     }
 
@@ -250,10 +247,9 @@ class AnalyticsRepository @Inject constructor(
         endDate: String,
         granularity: StatsGranularity,
         quantity: Int,
-        fetchStrategy: FetchStrategy
     ) = withContext(Dispatchers.IO) {
         statsRepository.fetchProductLeaderboards(
-            fetchStrategy is FetchStrategy.ForceNew,
+            true,
             granularity,
             quantity,
             startDate,
