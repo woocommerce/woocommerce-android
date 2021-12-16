@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardViewBinding
@@ -67,7 +68,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
         }
         binding.analyticsItemsList.removeAllViews()
         viewState.items.forEach { addListItem(inflater, binding.analyticsItemsList, it) }
-        binding.analyticsItemsTag.visibility = if (viewState.showDelta) View.VISIBLE else View.GONE
+        binding.analyticsItemsTag.isVisible = viewState.showDelta == true
         binding.analyticsCardTitle.visibility = VISIBLE
         binding.analyticsItemsTitle.visibility = VISIBLE
         binding.analyticsItemsValue.visibility = VISIBLE

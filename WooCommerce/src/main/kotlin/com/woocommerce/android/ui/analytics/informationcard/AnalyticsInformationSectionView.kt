@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationSectionViewBinding
@@ -32,7 +33,7 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
             binding.cardInformationSectionDeltaTag.tag =
                 AnalyticsInformationSectionDeltaTag(it, getDeltaTagText(sectionViewState.sign, it))
         }
-        binding.cardInformationSectionDeltaTag.visibility = if (sectionViewState.showDelta) View.VISIBLE else View.GONE
+        binding.cardInformationSectionDeltaTag.isVisible = sectionViewState.showDelta == true
     }
 
     private fun getDeltaTagText(sign: String, value: Int) =

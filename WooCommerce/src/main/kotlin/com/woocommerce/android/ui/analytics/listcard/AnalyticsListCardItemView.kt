@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.view.isVisible
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.card.MaterialCardView
@@ -22,7 +23,7 @@ class AnalyticsListCardItemView @JvmOverloads constructor(
         binding.analyticsCardListItemTitle.text = viewState.title
         binding.analyticsCardListItemValue.text = viewState.value
         binding.analyticsCardListItemDescription.text = viewState.description
-        binding.divider.visibility = if (viewState.showDivider == true) View.VISIBLE else View.GONE
+        binding.divider.isVisible = viewState.showDivider == true
         GlideApp
             .with(binding.root.context)
             .applyDefaultRequestOptions(

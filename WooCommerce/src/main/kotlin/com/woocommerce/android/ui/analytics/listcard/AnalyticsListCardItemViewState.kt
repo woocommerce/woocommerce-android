@@ -5,5 +5,5 @@ data class AnalyticsListCardItemViewState(
     val title: String,
     val value: String,
     val description: String,
-    val showDivider: Boolean? = true
+    val showDivider: Boolean = true
 )
