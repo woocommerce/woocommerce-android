@@ -217,8 +217,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             with(sut.state.value.revenueState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
-                assertFalse(leftSection.showDelta)
-                assertFalse(rightSection.showDelta)
+                assertTrue(leftSection.delta == null)
+                assertTrue(rightSection.delta == null)
             }
         }
 

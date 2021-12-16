@@ -8,7 +8,6 @@ sealed class AnalyticsListViewState {
         val subTitle: String,
         val subTitleValue: String,
         val delta: Int?,
-        val showDelta: Boolean,
         val listLeftHeader: String,
         val listRightHeader: String,
         val items: List<AnalyticsListCardItemViewState>

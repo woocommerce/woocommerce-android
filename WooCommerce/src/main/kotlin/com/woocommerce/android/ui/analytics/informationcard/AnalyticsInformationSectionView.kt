@@ -33,7 +33,7 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
             binding.cardInformationSectionDeltaTag.tag =
                 AnalyticsInformationSectionDeltaTag(it, getDeltaTagText(sectionViewState.sign, it))
         }
-        binding.cardInformationSectionDeltaTag.isVisible = sectionViewState.showDelta == true
+        binding.cardInformationSectionDeltaTag.isVisible = sectionViewState.delta != null
     }
 
     private fun getDeltaTagText(sign: String, value: Int) =

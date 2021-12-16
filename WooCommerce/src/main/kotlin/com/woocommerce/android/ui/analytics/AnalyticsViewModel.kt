@@ -292,14 +292,12 @@ class AnalyticsViewModel @Inject constructor(
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
                 totalValue,
-                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null,
-                netDelta is DeltaPercentage.Value
+                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_net_sales_title),
                 netValue,
-                if (netDelta is DeltaPercentage.Value) netDelta.value else null,
-                netDelta is DeltaPercentage.Value
+                if (netDelta is DeltaPercentage.Value) netDelta.value else null
             )
         )
 
@@ -314,14 +312,12 @@ class AnalyticsViewModel @Inject constructor(
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_orders_title),
                 totalOrders,
-                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null,
-                totalDelta is DeltaPercentage.Value
+                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_avg_orders_title),
                 avgValue,
-                if (avgDelta is DeltaPercentage.Value) avgDelta.value else null,
-                avgDelta is DeltaPercentage.Value
+                if (avgDelta is DeltaPercentage.Value) avgDelta.value else null
             )
         )
 
@@ -331,7 +327,6 @@ class AnalyticsViewModel @Inject constructor(
             subTitle = resourceProvider.getString(R.string.analytics_products_list_items_sold),
             subTitleValue = itemsSold.toString(),
             delta = if (delta is DeltaPercentage.Value) delta.value else null,
-            showDelta = delta is DeltaPercentage.Value,
             listLeftHeader = resourceProvider.getString(R.string.analytics_products_list_header_title),
             listRightHeader = resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
             items = products

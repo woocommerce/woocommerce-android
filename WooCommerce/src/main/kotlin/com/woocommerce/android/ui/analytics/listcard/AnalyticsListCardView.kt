@@ -4,17 +4,14 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardViewBinding
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.*
-import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
@@ -76,7 +73,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
             itemAnimator = DefaultItemAnimator()
             adapter = AnalyticsListAdapter(viewState.items)
         }
-        binding.analyticsItemsTag.isVisible = viewState.showDelta == true
+        binding.analyticsItemsTag.isVisible = viewState.delta != null
         binding.analyticsCardTitle.visibility = VISIBLE
         binding.analyticsItemsTitle.visibility = VISIBLE
         binding.analyticsItemsValue.visibility = VISIBLE
