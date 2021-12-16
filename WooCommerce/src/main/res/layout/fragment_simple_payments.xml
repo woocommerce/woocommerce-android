@@ -131,7 +131,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                tools:text="Tax (10%)" />
+                android:text="@string/taxes" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textTax"
