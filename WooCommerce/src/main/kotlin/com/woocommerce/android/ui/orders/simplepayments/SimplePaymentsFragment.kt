@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.simplepayments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSimplePaymentsBinding
 import com.woocommerce.android.model.Order
@@ -14,6 +15,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     private val viewModel: SimplePaymentsFragmentViewModel by viewModels()
+    private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
@@ -26,7 +28,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     }
 
     private fun showOrder(order: Order, binding: FragmentSimplePaymentsBinding) {
-        val subTotal = currencyFormatter.formatCurrency(order.total, viewModel.currencyCode)
+        val subTotal = currencyFormatter.formatCurrency(order.total, sharedViewModel.currencyCode)
         binding.textCustomAmount.text = subTotal
         binding.textSubtotal.text = subTotal
 

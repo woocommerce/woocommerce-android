@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -29,17 +28,10 @@ class SimplePaymentsDialogViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
-    private val wooCommerceStore: WooCommerceStore,
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
-
-    val currencyCode: String
-        get() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
-
-    val decimals: Int
-        get() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber ?: DEFAULT_DECIMAL_PRECISION
 
     var currentPrice: BigDecimal
         get() = viewState.currentPrice
@@ -94,8 +86,4 @@ class SimplePaymentsDialogViewModel @Inject constructor(
         val isProgressShowing: Boolean = false,
         val createdOrder: Order? = null
     ) : Parcelable
-
-    companion object {
-        private const val DEFAULT_DECIMAL_PRECISION = 2
-    }
 }
