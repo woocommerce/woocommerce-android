@@ -294,7 +294,7 @@
     <string name="analytics_products_card_title">Products</string>
     <string name="analytics_products_list_header_title">Products</string>
     <string name="analytics_products_list_header_subtitle">Items sold</string>
-    <string name="analytics_products_list_item_description">Net values: %1$s</string>
+    <string name="analytics_products_list_item_description">Net sales: %1$s</string>
 
     <!--
         Order List View
