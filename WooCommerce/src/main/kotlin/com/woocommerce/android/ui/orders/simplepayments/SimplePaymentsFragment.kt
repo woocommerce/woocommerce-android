@@ -6,6 +6,7 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSimplePaymentsBinding
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.CurrencyFormatter
@@ -23,7 +24,15 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
         super.onViewCreated(view, savedInstanceState)
 
         with(FragmentSimplePaymentsBinding.bind(view)) {
-            showOrder(viewModel.order, this)
+            setupObservers(this)
+        }
+    }
+
+    private fun setupObservers(binding: FragmentSimplePaymentsBinding) {
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.order.takeIfNotEqualTo(old?.order) { order ->
+                showOrder(order!!, binding)
+            }
         }
     }
 

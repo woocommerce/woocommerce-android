@@ -25,9 +25,6 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         viewState = viewState.copy(order = navArgs.order)
     }
 
-    val order: Order
-        get() = viewState.order!!
-
     @Parcelize
     data class ViewState(
         val order: Order? = null
