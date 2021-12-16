@@ -51,7 +51,7 @@ class ProductsUITest : TestBase() {
                 .scrollToProduct(productData.name)
                 .assertProductCard(productData)
                 .selectProductByName(productData.name)
-                //.assertSingleProductScreen(productData)
+                .assertSingleProductScreen(productData)
                 .goBackToProductsScreen()
         }
     }
