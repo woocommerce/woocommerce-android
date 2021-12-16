@@ -7,10 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardViewBinding
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.*
+import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
@@ -66,8 +70,12 @@ class AnalyticsListCardView @JvmOverloads constructor(
         viewState.delta?.let {
             binding.analyticsItemsTag.tag = AnalyticsListDeltaTag(viewState.delta, getDeltaTagText(viewState))
         }
-        binding.analyticsItemsList.removeAllViews()
-        viewState.items.forEach { addListItem(inflater, binding.analyticsItemsList, it) }
+        binding.analyticsItemsList.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            itemAnimator = DefaultItemAnimator()
+            adapter = AnalyticsListAdapter(viewState.items)
+        }
         binding.analyticsItemsTag.isVisible = viewState.showDelta == true
         binding.analyticsCardTitle.visibility = VISIBLE
         binding.analyticsItemsTitle.visibility = VISIBLE
@@ -87,18 +95,6 @@ class AnalyticsListCardView @JvmOverloads constructor(
         binding.analyticsListLeftHeader.visibility = GONE
         binding.analyticsListRightHeader.visibility = GONE
         binding.noDataText.visibility = VISIBLE
-    }
-
-    private fun addListItem(
-        inflater: LayoutInflater,
-        listContainer: ViewGroup,
-        viewState: AnalyticsListCardItemViewState
-    ) {
-        val listItemView = inflater.inflate(R.layout.analytics_list_card_item, listContainer, false)
-            as AnalyticsListCardItemView
-        listItemView.cardElevation = resources.getDimension(R.dimen.minor_00)
-        listItemView.setInformation(viewState)
-        listContainer.addView(listItemView)
     }
 
     private fun getDeltaTagText(viewState: DataViewState) =
