@@ -29,6 +29,7 @@ abstract class BaseAddressEditingFragment :
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_orders)
 
     abstract val storedAddress: Address
+    abstract val addressType: AddressViewModel.AddressType
     abstract fun onViewBound(binding: FragmentBaseEditAddressBinding)
 
     private var _binding: FragmentBaseEditAddressBinding? = null
@@ -46,9 +47,9 @@ abstract class BaseAddressEditingFragment :
                 address2 = address2.text,
                 city = city.text,
                 postcode = postcode.text,
-                country = addressViewModel.countryLocation.code,
+                country = addressViewModel.selectedCountryLocationFor(addressType).code,
                 state = if (shouldShowStateSpinner()) {
-                    addressViewModel.stateLocation.code
+                    addressViewModel.selectedStateLocationFor(addressType).code
                 } else {
                     stateEditText.text
                 }
@@ -107,7 +108,7 @@ abstract class BaseAddressEditingFragment :
         binding.city.text = city
         binding.postcode.text = postcode
         binding.countrySpinner.setText(getCountryLabelByCountryCode())
-        binding.stateSpinner.setText(addressViewModel.stateLocation.name)
+        binding.stateSpinner.setText(addressViewModel.selectedStateLocationFor(addressType).name)
         binding.stateEditText.text = state
         binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
@@ -128,7 +129,7 @@ abstract class BaseAddressEditingFragment :
         binding.stateEditText.textWatcher = textWatcher
     }
 
-    private fun shouldShowStateSpinner() = addressViewModel.hasStates()
+    private fun shouldShowStateSpinner() = addressViewModel.hasStatesFor(addressType)
 
     /**
      * When the country is empty, or we don't have country or state data, we show an editText
@@ -156,7 +157,7 @@ abstract class BaseAddressEditingFragment :
     }
 
     private fun showStateSearchScreen() {
-        val states = addressViewModel.states
+        val states = addressViewModel.statesAvailableFor(addressType)
         val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
             items = states.map {
                 SearchFilterItem(
@@ -173,12 +174,15 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.countryLocation.takeIfNotEqualTo(old?.countryLocation) {
+            val oldCountryStatePair = old?.countryStatePairs?.get(addressType)
+            val newCountryStatePair = new.countryStatePairs.getValue(addressType)
+
+            newCountryStatePair.countryLocation.takeIfNotEqualTo(oldCountryStatePair?.countryLocation) {
                 binding.countrySpinner.setText(it.name)
                 updateDoneMenuItem()
                 updateStateViews()
             }
-            new.stateLocation.takeIfNotEqualTo(old?.stateLocation) {
+            newCountryStatePair.stateLocation.takeIfNotEqualTo(oldCountryStatePair?.stateLocation) {
                 binding.stateSpinner.setText(it.name)
                 binding.stateEditText.text = it.code
                 updateDoneMenuItem()
@@ -197,10 +201,10 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupResultHandlers() {
         handleResult<String>(SELECT_COUNTRY_REQUEST) {
-            addressViewModel.onCountrySelected(it)
+            addressViewModel.onCountrySelected(addressType, it)
         }
         handleResult<String>(SELECT_STATE_REQUEST) {
-            addressViewModel.onStateSelected(it)
+            addressViewModel.onStateSelected(addressType, it)
         }
     }
 }
