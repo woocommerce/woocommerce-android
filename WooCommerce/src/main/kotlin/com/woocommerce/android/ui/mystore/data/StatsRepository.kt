@@ -85,7 +85,8 @@ class StatsRepository @Inject constructor(
                 site = selectedSite.get(),
                 unit = granularity,
                 quantity = quantity,
-                queryTimeRange = getQueryTimeRange(startDate, endDate)
+                startDate = startDate,
+                endDate = endDate
             )
             false -> wcLeaderboardsStore.fetchCachedProductLeaderboards(
                 site = selectedSite.get(),
@@ -102,19 +103,6 @@ class StatsRepository @Inject constructor(
                 emit(Result.success(model))
             }
         }
-    }
-
-    private fun getQueryTimeRange(startDate: String, endDate: String): LongRange? {
-        if (startDate.isEmpty() || endDate.isEmpty()) return null
-        return getLongRange(
-            startDate.formatDateToYYYYMMDDFormat()?.time,
-            endDate.formatDateToYYYYMMDDFormat()?.time
-        )
-    }
-
-    private fun getLongRange(startDate: Long?, endDate: Long?): LongRange? {
-        if (startDate == null || endDate == null) return null
-        return LongRange(startDate, endDate)
     }
 
     suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
