@@ -12,6 +12,11 @@
         android:background="@color/color_surface"
         android:orientation="vertical">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider_color" />
+
         <!-- Custom amount -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,8 +66,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editEmail"
-                android:layout_width="0dp"
                 style="@style/Woo.TextInputEditText"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
