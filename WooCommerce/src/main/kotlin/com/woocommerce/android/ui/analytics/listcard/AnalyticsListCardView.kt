@@ -53,7 +53,6 @@ class AnalyticsListCardView @JvmOverloads constructor(
     }
 
     private fun setDataViewState(viewState: DataViewState) {
-        val inflater = LayoutInflater.from(context)
         skeletonView.hide()
         binding.analyticsCardTitle.text = viewState.title
         binding.analyticsItemsTitle.text = viewState.subTitle

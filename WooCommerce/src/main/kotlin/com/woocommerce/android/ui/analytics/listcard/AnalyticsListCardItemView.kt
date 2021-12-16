@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.analytics.listcard
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import androidx.core.view.isVisible
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions

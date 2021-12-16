@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
-import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatDateToYYYYMMDDFormat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog

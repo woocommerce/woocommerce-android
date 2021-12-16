@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListAdapter.ViewHolder
 
-
 class AnalyticsListAdapter(
     private val items: List<AnalyticsListCardItemViewState>,
 ) : RecyclerView.Adapter<ViewHolder>() {
