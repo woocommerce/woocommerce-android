@@ -16,6 +16,7 @@ class ProductListScreen : Screen {
     constructor() : super(LIST_VIEW)
 
     fun scrollToProduct(productTitle: String): ProductListScreen {
+        Thread.sleep(2000)
         scrollToListItem(productTitle, LIST_VIEW)
         return ProductListScreen()
     }

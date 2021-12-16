@@ -38,6 +38,7 @@ class ProductsUITest : TestBase() {
             .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
         TabNavComponent().gotoProductsScreen()
+        Thread.sleep(2000)
     }
 
     @Test
@@ -53,6 +54,8 @@ class ProductsUITest : TestBase() {
                 .selectProductByName(productData.name)
                 .assertSingleProductScreen(productData)
                 .goBackToProductsScreen()
+
+            Thread.sleep(2000)
         }
     }
 

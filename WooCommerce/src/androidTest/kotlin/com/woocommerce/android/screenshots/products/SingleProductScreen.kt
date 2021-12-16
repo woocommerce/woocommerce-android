@@ -22,6 +22,7 @@ class SingleProductScreen : Screen {
     }
 
     fun assertSingleProductScreen(product: ProductData): SingleProductScreen {
+        Thread.sleep(2000)
         // Navigation bar:
         Espresso.onView(
             Matchers.allOf(
