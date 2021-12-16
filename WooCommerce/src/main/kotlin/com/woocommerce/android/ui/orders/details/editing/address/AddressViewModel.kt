@@ -48,7 +48,7 @@ class AddressViewModel @Inject constructor(
      * search and back) we don't want this method to be called again, otherwise the ViewModel will replace the newly
      * selected country or state with the previously saved values.
      */
-    fun start(countryCode: String, stateCode: String) {
+    fun start(countryCode: LocationCode, stateCode: LocationCode) {
         if (hasStarted) {
             return
         }
@@ -84,22 +84,22 @@ class AddressViewModel @Inject constructor(
         viewState = ViewState()
     }
 
-    private fun getCountryNameFromCode(countryCode: String): String {
+    private fun getCountryNameFromCode(countryCode: LocationCode): String {
         return countries.find { it.code == countryCode }?.name ?: countryCode
     }
 
-    private fun getCountryLocationFromCode(countryCode: String): Location {
+    private fun getCountryLocationFromCode(countryCode: LocationCode): Location {
         return Location(countryCode, getCountryNameFromCode(countryCode))
     }
 
-    private fun getStateLocationFromCode(country: String, stateCode: String): Location {
+    private fun getStateLocationFromCode(countryCode: LocationCode, stateCode: LocationCode): Location {
         return Location(
             code = stateCode,
-            name = dataStore.getStates(country).firstOrNull { state -> state.code == stateCode }?.name ?: stateCode
+            name = dataStore.getStates(countryCode).firstOrNull { state -> state.code == stateCode }?.name ?: stateCode
         )
     }
 
-    fun onCountrySelected(type: AddressType, countryCode: String) {
+    fun onCountrySelected(type: AddressType, countryCode: LocationCode) {
         viewState = viewState.copy(
             countryStatePairs = viewState.countryStatePairs.toMutableMap().apply {
                 put(
@@ -114,7 +114,7 @@ class AddressViewModel @Inject constructor(
         )
     }
 
-    fun onStateSelected(type: AddressType, stateCode: String) {
+    fun onStateSelected(type: AddressType, stateCode: LocationCode) {
         val initialLocation = viewState.countryStatePairs.getValue(type)
         if (stateCode != initialLocation.stateLocation.code) {
             viewState = viewState.copy(
@@ -130,7 +130,7 @@ class AddressViewModel @Inject constructor(
         }
     }
 
-    private fun initializeCountriesAndStates(countryCode: String, stateCode: String) {
+    private fun initializeCountriesAndStates(countryCode: LocationCode, stateCode: LocationCode) {
         viewState = viewState.copy(
             countryStatePairs = mapOf(
                 AddressType.BILLING to CountryStatePair(
