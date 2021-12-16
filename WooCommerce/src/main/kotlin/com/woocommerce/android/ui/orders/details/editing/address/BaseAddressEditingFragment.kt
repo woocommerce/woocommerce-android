@@ -2,18 +2,23 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.core.view.updateMargins
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.UiDimen
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
+import com.woocommerce.android.util.UiHelpers.getPxOfUiDimen
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
@@ -35,8 +40,10 @@ abstract class BaseAddressEditingFragment :
     private var _binding: FragmentBaseEditAddressBinding? = null
     private val binding get() = _binding!!
 
+    protected lateinit var replicateAddressSwitch: SwitchMaterial
+
     val addressDraft
-        get() = binding.run {
+        get() = binding.form.run {
             Address(
                 firstName = firstName.text,
                 lastName = lastName.text,
@@ -59,6 +66,16 @@ abstract class BaseAddressEditingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBaseEditAddressBinding.bind(view)
+        replicateAddressSwitch = SwitchMaterial(requireContext())
+        _binding?.form?.root?.addView(replicateAddressSwitch)
+        replicateAddressSwitch.apply {
+            val verticalMargin = getPxOfUiDimen(context, UiDimen.UiDimenRes(R.dimen.major_100))
+            (layoutParams as ViewGroup.MarginLayoutParams).updateMargins(
+                left = verticalMargin,
+                right = verticalMargin
+            )
+        }
+
         storedAddress.bindToView()
         bindTextWatchers()
 
@@ -67,11 +84,11 @@ abstract class BaseAddressEditingFragment :
             stateCode = storedAddress.state
         )
 
-        binding.countrySpinner.setClickListener {
+        binding.form.countrySpinner.setClickListener {
             showCountrySearchScreen()
         }
 
-        binding.stateSpinner.setClickListener {
+        binding.form.stateSpinner.setClickListener {
             showStateSearchScreen()
         }
 
@@ -82,7 +99,7 @@ abstract class BaseAddressEditingFragment :
     }
 
     override fun hasChanges() =
-        (addressDraft != storedAddress) || binding.replicateAddressSwitch.isChecked
+        (addressDraft != storedAddress) || replicateAddressSwitch.isChecked
 
     override fun onStop() {
         sharedViewModel.onReplicateAddressSwitchChanged(false)
@@ -98,35 +115,35 @@ abstract class BaseAddressEditingFragment :
     }
 
     private fun Address.bindToView() {
-        binding.firstName.text = firstName
-        binding.lastName.text = lastName
-        binding.email.text = email
-        binding.phone.text = phone
-        binding.company.text = company
-        binding.address1.text = address1
-        binding.address2.text = address2
-        binding.city.text = city
-        binding.postcode.text = postcode
-        binding.countrySpinner.setText(getCountryLabelByCountryCode())
-        binding.stateSpinner.setText(addressViewModel.selectedStateLocationFor(addressType).name)
-        binding.stateEditText.text = state
-        binding.replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
+        binding.form.firstName.text = firstName
+        binding.form.lastName.text = lastName
+        binding.form.email.text = email
+        binding.form.phone.text = phone
+        binding.form.company.text = company
+        binding.form.address1.text = address1
+        binding.form.address2.text = address2
+        binding.form.city.text = city
+        binding.form.postcode.text = postcode
+        binding.form.countrySpinner.setText(getCountryLabelByCountryCode())
+        binding.form.stateSpinner.setText(addressViewModel.selectedStateLocationFor(addressType).name)
+        binding.form.stateEditText.text = state
+        replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
             updateDoneMenuItem()
         }
     }
 
     private fun bindTextWatchers() {
-        binding.firstName.textWatcher = textWatcher
-        binding.lastName.textWatcher = textWatcher
-        binding.email.textWatcher = textWatcher
-        binding.phone.textWatcher = textWatcher
-        binding.company.textWatcher = textWatcher
-        binding.address1.textWatcher = textWatcher
-        binding.address2.textWatcher = textWatcher
-        binding.city.textWatcher = textWatcher
-        binding.postcode.textWatcher = textWatcher
-        binding.stateEditText.textWatcher = textWatcher
+        binding.form.firstName.textWatcher = textWatcher
+        binding.form.lastName.textWatcher = textWatcher
+        binding.form.email.textWatcher = textWatcher
+        binding.form.phone.textWatcher = textWatcher
+        binding.form.company.textWatcher = textWatcher
+        binding.form.address1.textWatcher = textWatcher
+        binding.form.address2.textWatcher = textWatcher
+        binding.form.city.textWatcher = textWatcher
+        binding.form.postcode.textWatcher = textWatcher
+        binding.form.stateEditText.textWatcher = textWatcher
     }
 
     private fun shouldShowStateSpinner() = addressViewModel.hasStatesFor(addressType)
@@ -136,8 +153,8 @@ abstract class BaseAddressEditingFragment :
      * for the state rather than a spinner
      */
     private fun updateStateViews() {
-        binding.stateSpinner.isVisible = shouldShowStateSpinner()
-        binding.stateEditText.isVisible = !shouldShowStateSpinner()
+        binding.form.stateSpinner.isVisible = shouldShowStateSpinner()
+        binding.form.stateEditText.isVisible = !shouldShowStateSpinner()
     }
 
     private fun showCountrySearchScreen() {
@@ -178,13 +195,13 @@ abstract class BaseAddressEditingFragment :
             val newCountryStatePair = new.countryStatePairs.getValue(addressType)
 
             newCountryStatePair.countryLocation.takeIfNotEqualTo(oldCountryStatePair?.countryLocation) {
-                binding.countrySpinner.setText(it.name)
+                binding.form.countrySpinner.setText(it.name)
                 updateDoneMenuItem()
                 updateStateViews()
             }
             newCountryStatePair.stateLocation.takeIfNotEqualTo(oldCountryStatePair?.stateLocation) {
-                binding.stateSpinner.setText(it.name)
-                binding.stateEditText.text = it.code
+                binding.form.stateSpinner.setText(it.name)
+                binding.form.stateEditText.text = it.code
                 updateDoneMenuItem()
             }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
@@ -194,7 +211,7 @@ abstract class BaseAddressEditingFragment :
                 }
             }
             new.isStateSelectionEnabled.takeIfNotEqualTo(old?.isStateSelectionEnabled) {
-                binding.stateSpinner.isEnabled = it
+                binding.form.stateSpinner.isEnabled = it
             }
         }
     }
