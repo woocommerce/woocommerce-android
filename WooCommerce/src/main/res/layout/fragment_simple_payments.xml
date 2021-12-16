@@ -21,7 +21,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textCustomAmountLabel"
-                style="@style/Woo.Card.Body.Bold"
+                style="@style/Woo.Card.Body.High"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -31,7 +31,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textCustomAmount"
-                style="@style/Woo.TextView.Body2"
+                style="@style/Woo.Card.Body.High"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -53,7 +53,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textEmail"
-                style="@style/Woo.Card.Body.Bold"
+                style="@style/Woo.Card.Body.High"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -62,6 +62,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editEmail"
                 android:layout_width="0dp"
+                style="@style/Woo.Card.Body.High"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
@@ -93,7 +94,7 @@
             android:orientation="horizontal">
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/Woo.Card.Body.Bold"
+                style="@style/Woo.Card.Body.High"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -101,7 +102,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textSubtotal"
-                style="@style/Woo.TextView.Body2"
+                style="@style/Woo.Card.Body.High"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -113,7 +114,7 @@
         <!-- Charge taxes -->
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchChargeTaxes"
-            style="@style/Woo.Card.Body.Bold"
+            style="@style/Woo.Card.Body.High"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/simple_payments_charge_taxes" />
@@ -127,7 +128,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textTaxLabel"
-                style="@style/Woo.Card.Body.Bold"
+                style="@style/Woo.Card.Body.High"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -135,7 +136,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textTax"
-                style="@style/Woo.TextView.Body2"
+                style="@style/Woo.Card.Body.High"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
