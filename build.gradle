@@ -103,7 +103,7 @@ ext {
     jUnitVersion = '4.13.2'
     jUnitExtVersion = '1.1.3'
     hiltJetpackVersion = '1.0.0'
-    wordPressUtilsVersion = "develop-358e582786c11d6d5ae5a351c2ad5475a3376ece"
+    wordPressUtilsVersion = "2.3.0"
     mediapickerVersion = 'trunk-00947a9086ecdf2192b0bdc95a22e1647696d0b1'
     wordPressLoginVersion = '0.10.0'
 }
