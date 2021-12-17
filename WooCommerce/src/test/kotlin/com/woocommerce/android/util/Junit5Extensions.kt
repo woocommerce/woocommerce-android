@@ -20,8 +20,9 @@ import org.junit.jupiter.api.extension.ExtensionContext
  */
 @ExperimentalCoroutinesApi
 class CoroutinesTestExtension(
-    private val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
+    val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
 ) : BeforeEachCallback, AfterEachCallback, TestCoroutineScope by TestCoroutineScope(testDispatcher) {
+    val testDispatchers = CoroutineDispatchers(testDispatcher, testDispatcher, testDispatcher)
 
     override fun beforeEach(context: ExtensionContext?) {
         Dispatchers.setMain(testDispatcher)
@@ -34,7 +35,6 @@ class CoroutinesTestExtension(
 }
 
 class InstantExecutorExtension : BeforeEachCallback, AfterEachCallback {
-
     override fun beforeEach(context: ExtensionContext?) {
         ArchTaskExecutor.getInstance()
             .setDelegate(object : TaskExecutor() {
@@ -49,7 +49,4 @@ class InstantExecutorExtension : BeforeEachCallback, AfterEachCallback {
     override fun afterEach(context: ExtensionContext?) {
         ArchTaskExecutor.getInstance().setDelegate(null)
     }
-
 }
-
-

@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.orders.filters
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.filters.data.*
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
@@ -28,7 +30,7 @@ import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 @ExtendWith(InstantExecutorExtension::class)
-class OrderFilterCategoriesViewModelTestjUnit5 {
+class OrderFilterCategoriesViewModelTestJUnit5 {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val resourceProvider: ResourceProvider = mock()
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions = mock()
@@ -39,10 +41,6 @@ class OrderFilterCategoriesViewModelTestjUnit5 {
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
 
-    private val currentCategoryList
-        get() = viewModel.categories.liveData.value!!.list
-
-    @ExperimentalCoroutinesApi
     @RegisterExtension @JvmField
     val coroutinesTestExtension = CoroutinesTestExtension()
 
@@ -95,27 +93,12 @@ class OrderFilterCategoriesViewModelTestjUnit5 {
         )
     }
 
-    private fun givenDateRangeFiltersAvailable() {
-        whenever(getDateRangeFilterOptions.invoke()).thenReturn(
-            listOf(DateRange.TODAY, DateRange.LAST_2_DAYS, DateRange.LAST_7_DAYS, DateRange.LAST_30_DAYS)
-                .map {
-                    DateRangeFilterOption(
-                        dateRange = it,
-                        isSelected = false,
-                        startDate = 0,
-                        endDate = 0
-                    )
-                }
-        )
-    }
-
     private fun givenResourceProviderReturnsNonEmptyStrings() {
         whenever(resourceProvider.getString(any())).thenReturn("AnyString")
         whenever(resourceProvider.getString(any(), any(), any())).thenReturn("AnyString")
     }
 
     private companion object {
-        const val DEFAULT_FILTER_TITLE = "Title"
         const val ANY_ORDER_STATUS_KEY = "OrderStatusOptionKey"
         val SELECTED_ORDER_STATUS_FILTER_OPTION = OrderFilterOptionUiModel(
             key = ANY_ORDER_STATUS_KEY,
