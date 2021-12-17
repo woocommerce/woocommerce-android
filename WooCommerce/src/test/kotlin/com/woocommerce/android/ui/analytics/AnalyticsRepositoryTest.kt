@@ -20,10 +20,8 @@ import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -47,99 +45,104 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
 
-    private val sut: AnalyticsRepository = AnalyticsRepository(statsRepository, selectedSite, wooCommerceStore)
+    private val sut: AnalyticsRepository = AnalyticsRepository(
+        statsRepository,
+        selectedSite,
+        wooCommerceStore,
+        coroutinesTestRule.testDispatchers
+    )
 
     @Test
-    fun `given no currentPeriodRevenue, when fetchRevenueData, then result is RevenueError`() = runBlocking {
-        // Given
-        val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
-            .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
+    fun `given no currentPeriodRevenue, when fetchRevenueData, then result is RevenueError`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
-            .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
-        // When
-        val result = sut.fetchRevenueData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE, anyFetchStrategy)
+            // When
+            val result = sut.fetchRevenueData(
+                SimpleDateRange(previousDate!!, currentDate!!),
+                ANY_RANGE,
+                anyFetchStrategy
+            )
 
-        // Then
-        with(result.first()) {
-            assertTrue(this is RevenueError)
+            // Then
+            assertTrue(result is RevenueError)
         }
-    }
 
     @Test
-    fun `given no currentPeriodRevenue when fetchOrderData result is RevenueError`() = runBlocking {
-        // Given
-        val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
-            .thenReturn(listOf(Result.success(previousPeriodOrdersStats)).asFlow())
+    fun `given no currentPeriodRevenue when fetchOrderData result is RevenueError`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success(previousPeriodOrdersStats)).asFlow())
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
-            .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
-        // When
-        val result = sut.fetchOrdersData(
-            SimpleDateRange(previousDate!!, currentDate!!),
-            ANY_RANGE,
-            anyFetchStrategy
-        )
+            // When
+            val result = sut.fetchOrdersData(
+                SimpleDateRange(previousDate!!, currentDate!!),
+                ANY_RANGE,
+                anyFetchStrategy
+            )
 
-        // Then
-        with(result.first()) {
-            assertTrue(this is OrdersError)
+            // Then
+            assertTrue(result is OrdersError)
         }
-    }
 
     @Test
-    fun `given no previousRevenuePeriod, when fetchRevenueData, then result is RevenueError`() = runBlocking {
-        // Given
-        val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
-            .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
+    fun `given no previousRevenuePeriod, when fetchRevenueData, then result is RevenueError`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
-            .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
-        // When
-        val result = sut.fetchRevenueData(
-            SimpleDateRange(previousDate!!, currentDate!!),
-            ANY_RANGE,
-            anyFetchStrategy
-        )
+            // When
+            val result = sut.fetchRevenueData(
+                SimpleDateRange(previousDate!!, currentDate!!),
+                ANY_RANGE,
+                anyFetchStrategy
+            )
 
-        // Then
-        with(result.first()) {
-            assertTrue(this is RevenueError)
+            // Then
+            assertTrue(result is RevenueError)
         }
-    }
 
     @Test
-    fun `given no previousRevenuePeriod when fetchOrdersData result is OrdersError`() = runBlocking {
-        // Given
-        val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
-            .thenReturn(listOf(Result.success(currentPeriodOrdersStats)).asFlow())
+    fun `given no previousRevenuePeriod when fetchOrdersData result is OrdersError`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success(currentPeriodOrdersStats)).asFlow())
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
-            .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
-        // When
-        val result = sut.fetchOrdersData(
-            SimpleDateRange(previousDate!!, currentDate!!),
-            ANY_RANGE,
-            anyFetchStrategy
-        )
+            // When
+            val result = sut.fetchOrdersData(
+                SimpleDateRange(previousDate!!, currentDate!!),
+                ANY_RANGE,
+                anyFetchStrategy
+            )
 
-        // Then
-        with(result.first()) {
-            assertTrue(this is OrdersError)
+            // Then
+            assertTrue(result is OrdersError)
         }
-    }
 
     @Test
     fun `given previous and current period revenue, when fetchRevenueData, then result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
@@ -156,19 +159,16 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is RevenueData)
-                assertEquals(TEN_VALUE, revenueStat.totalValue)
-                assertEquals(TEN_VALUE, revenueStat.netValue)
-                assertTrue(revenueStat.totalDelta is DeltaPercentage.Value)
-                assertTrue(revenueStat.netDelta is DeltaPercentage.Value)
-            }
+            assertTrue(result is RevenueData)
+            assertEquals(TEN_VALUE, result.revenueStat.totalValue)
+            assertEquals(TEN_VALUE, result.revenueStat.netValue)
+            assertTrue(result.revenueStat.totalDelta is DeltaPercentage.Value)
+            assertTrue(result.revenueStat.netDelta is DeltaPercentage.Value)
         }
 
     @Test
     fun `given previous revenue and current zero revenue, when fetchRevenueData, then deltas are the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val revenue = givenARevenue(ZERO_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
@@ -186,18 +186,16 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertTrue(this is RevenueData)
-                assertTrue(revenueStat.totalDelta is DeltaPercentage.Value)
-                assertEquals(ONE_HUNDRED_DECREASE, (revenueStat.totalDelta as DeltaPercentage.Value).value)
-                assertTrue(revenueStat.netDelta is DeltaPercentage.Value)
-                assertEquals(ONE_HUNDRED_DECREASE, (revenueStat.netDelta as DeltaPercentage.Value).value)
-            }
+            assertTrue(result is RevenueData)
+            assertTrue(result.revenueStat.totalDelta is DeltaPercentage.Value)
+            assertEquals(ONE_HUNDRED_DECREASE, (result.revenueStat.totalDelta as DeltaPercentage.Value).value)
+            assertTrue(result.revenueStat.netDelta is DeltaPercentage.Value)
+            assertEquals(ONE_HUNDRED_DECREASE, (result.revenueStat.netDelta as DeltaPercentage.Value).value)
         }
 
     @Test
     fun `given zero previous and current revenue, when fetchRevenueData, then deltas are the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
@@ -215,16 +213,14 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertTrue(this is RevenueData)
-                assertTrue(revenueStat.totalDelta is DeltaPercentage.NotExist)
-                assertTrue(revenueStat.netDelta is DeltaPercentage.NotExist)
-            }
+            assertTrue(result is RevenueData)
+            assertTrue(result.revenueStat.totalDelta is DeltaPercentage.NotExist)
+            assertTrue(result.revenueStat.netDelta is DeltaPercentage.NotExist)
         }
 
     @Test
     fun `given zero previous and current revenue, when fetchOrdersData, then deltas are the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val ordersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
@@ -241,18 +237,16 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertTrue(this is OrdersData)
-                assertTrue(ordersStat.avgOrderDelta is DeltaPercentage.Value)
-                assertTrue(ordersStat.ordersCountDelta is DeltaPercentage.Value)
-                assertEquals(ZERO_DELTA, (ordersStat.avgOrderDelta as DeltaPercentage.Value).value)
-                assertEquals(ZERO_DELTA, (ordersStat.ordersCountDelta as DeltaPercentage.Value).value)
-            }
+            assertTrue(result is OrdersData)
+            assertTrue(result.ordersStat.avgOrderDelta is DeltaPercentage.Value)
+            assertTrue(result.ordersStat.ordersCountDelta is DeltaPercentage.Value)
+            assertEquals(ZERO_DELTA, (result.ordersStat.avgOrderDelta as DeltaPercentage.Value).value)
+            assertEquals(ZERO_DELTA, (result.ordersStat.ordersCountDelta as DeltaPercentage.Value).value)
         }
 
     @Test
     fun `given previous and current period revenue when fetchOrdersData result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val ordersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
@@ -269,17 +263,14 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is OrdersData)
-                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
-                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-            }
+            assertTrue(result is OrdersData)
+            assertEquals(TEN_VALUE.toInt(), result.ordersStat.ordersCount)
+            assertEquals(TEN_VALUE, result.ordersStat.avgOrderValue)
         }
 
     @Test
     fun `given zero previous total revenue, when fetchRevenueData, then result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodRevenue = givenARevenue(ZERO_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -297,17 +288,15 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is RevenueData)
-                assertEquals(TEN_VALUE, revenueStat.totalValue)
-                assertEquals(TEN_VALUE, revenueStat.netValue)
-            }
+            assertNotNull(this)
+            assertTrue(result is RevenueData)
+            assertEquals(TEN_VALUE, result.revenueStat.totalValue)
+            assertEquals(TEN_VALUE, result.revenueStat.netValue)
         }
 
     @Test
     fun `given zero previous orders revenue when fetchOrdersData result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodOrdersStats = givenRevenueOrderStats(ZERO_VALUE.toInt(), ZERO_VALUE)
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -325,19 +314,16 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is OrdersData)
-                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
-                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-                assertTrue(ordersStat.ordersCountDelta is DeltaPercentage.NotExist)
-                assertTrue(ordersStat.avgOrderDelta is DeltaPercentage.NotExist)
-            }
+            assertTrue(result is OrdersData)
+            assertEquals(TEN_VALUE.toInt(), result.ordersStat.ordersCount)
+            assertEquals(TEN_VALUE, result.ordersStat.avgOrderValue)
+            assertTrue(result.ordersStat.ordersCountDelta is DeltaPercentage.NotExist)
+            assertTrue(result.ordersStat.avgOrderDelta is DeltaPercentage.NotExist)
         }
 
     @Test
     fun `given zero previous net revenue, when fetchRevenueData, then result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -355,17 +341,14 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is RevenueData)
-                assertEquals(TEN_VALUE, revenueStat.totalValue)
-                assertEquals(TEN_VALUE, revenueStat.netValue)
-            }
+            assertTrue(result is RevenueData)
+            assertEquals(TEN_VALUE, result.revenueStat.totalValue)
+            assertEquals(TEN_VALUE, result.revenueStat.netValue)
         }
 
     @Test
     fun `given zero previous avg order, when fetchOrderData, result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), ZERO_VALUE)
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -383,17 +366,14 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is OrdersData)
-                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
-                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-            }
+            assertTrue(result is OrdersData)
+            assertEquals(TEN_VALUE.toInt(), result.ordersStat.ordersCount)
+            assertEquals(TEN_VALUE, result.ordersStat.avgOrderValue)
         }
 
     @Test
     fun `given null previous total revenue, when fetchRevenueData, then result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodRevenue = givenARevenue(null, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -411,17 +391,13 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is RevenueData)
-                assertEquals(TEN_VALUE, revenueStat.totalValue)
-                assertEquals(TEN_VALUE, revenueStat.netValue)
-            }
+            assertTrue(result is RevenueData)
+            assertEquals(TEN_VALUE, result.revenueStat.totalValue)
         }
 
     @Test
     fun `given null previous orders, when fetchOrdersData, then result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodOrdersStats = givenRevenueOrderStats(null, TEN_VALUE)
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -439,17 +415,14 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is OrdersData)
-                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
-                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-            }
+            assertTrue(result is OrdersData)
+            assertEquals(TEN_VALUE.toInt(), result.ordersStat.ordersCount)
+            assertEquals(TEN_VALUE, result.ordersStat.avgOrderValue)
         }
 
     @Test
     fun `given null previous net revenue, when fetchRevenueData, then result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, null, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -467,17 +440,14 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is RevenueData)
-                assertEquals(TEN_VALUE, revenueStat.totalValue)
-                assertEquals(TEN_VALUE, revenueStat.netValue)
-            }
+            assertTrue(result is RevenueData)
+            assertEquals(TEN_VALUE, result.revenueStat.totalValue)
+            assertEquals(TEN_VALUE, result.revenueStat.netValue)
         }
 
     @Test
     fun `given null previous avg order, when fetchOrdersData, then result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), null)
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -495,16 +465,13 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is OrdersData)
-                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
-            }
+            assertTrue(result is OrdersData)
+            assertEquals(TEN_VALUE.toInt(), result.ordersStat.ordersCount)
         }
 
     @Test
     fun `given previous and current revenue, when fetchRevenueData multiple date range, then result is the expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -525,17 +492,14 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is RevenueData)
-                assertEquals(TEN_VALUE, revenueStat.totalValue)
-                assertEquals(TEN_VALUE, revenueStat.netValue)
-            }
+            assertTrue(result is RevenueData)
+            assertEquals(TEN_VALUE, result.revenueStat.totalValue)
+            assertEquals(TEN_VALUE, result.revenueStat.netValue)
         }
 
     @Test
     fun `given previous and current period revenue, when fetchOrdersData multiple date range, result is expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -556,62 +520,58 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.single()) {
-                assertNotNull(this)
-                assertTrue(this is OrdersData)
-                assertEquals(TEN_VALUE.toInt(), ordersStat.ordersCount)
-                assertEquals(TEN_VALUE, ordersStat.avgOrderValue)
-            }
+            assertTrue(result is OrdersData)
+            assertEquals(TEN_VALUE.toInt(), result.ordersStat.ordersCount)
+            assertEquals(TEN_VALUE, result.ordersStat.avgOrderValue)
         }
 
     @Test
-    fun `given no currentPeriodRevenue, when fetchProductsData, then result is ProductsError`() = runBlocking {
-        // Given
-        val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
-            .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
+    fun `given no currentPeriodRevenue, when fetchProductsData, then result is ProductsError`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
-            .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
-        val productLeaderBoards = Result.success(givenAProductsStats())
-        whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-            .thenReturn(flowOf(productLeaderBoards))
+            val productLeaderBoards = Result.success(givenAProductsStats())
+            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
+                .thenReturn(flowOf(productLeaderBoards))
 
-        // When
-        val result = sut.fetchProductsData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE, anyFetchStrategy)
+            // When
+            val result = sut.fetchProductsData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE, anyFetchStrategy)
 
-        // Then
-        with(result.first()) {
-            assertTrue(this is ProductsError)
+            // Then
+            assertTrue(result is ProductsError)
         }
-    }
 
     @Test
-    fun `given no previousPeriodRevenue, when fetchProductsData, then result is ProductsError`() = runBlocking {
-        // Given
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
-            .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
+    fun `given no previousPeriodRevenue, when fetchProductsData, then result is ProductsError`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
-        val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
-            .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
+            val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
 
-        val productLeaderBoards = Result.success(givenAProductsStats())
-        whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-            .thenReturn(flowOf(productLeaderBoards))
-        // When
-        val result = sut.fetchProductsData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE, anyFetchStrategy)
+            val productLeaderBoards = Result.success(givenAProductsStats())
+            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
+                .thenReturn(flowOf(productLeaderBoards))
+            // When
+            val result = sut.fetchProductsData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE, anyFetchStrategy)
 
-        // Then
-        with(result.first()) {
-            assertTrue(this is ProductsError)
+            // Then
+            assertTrue(result is ProductsError)
+
         }
-    }
 
     @Test
     fun `given previousPeriodRevenue with null items sold, when fetchProductsData, then result is ProductsError`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -631,14 +591,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.first()) {
-                assertTrue(this is ProductsError)
-            }
+            assertTrue(result is ProductsError)
         }
 
     @Test
     fun `given currentPeriodRevenue with null items sold, when fetchProductsData, then result is ProductsError`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
@@ -659,14 +617,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.first()) {
-                assertTrue(this is ProductsError)
-            }
+            assertTrue(result is ProductsError)
         }
 
     @Test
     fun `given no products leader board with null items sold, when fetchProductsData, then result is ProductsError`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
@@ -683,14 +639,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.first()) {
-                assertTrue(this is ProductsError)
-            }
+            assertTrue(result is ProductsError)
         }
 
     @Test
     fun `given products and revenue with null items sold, when fetchProductsData, then result is expected`() =
-        runBlocking {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
@@ -708,12 +662,10 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            with(result.first()) {
-                assertTrue(this is ProductsData)
-                assertEquals(TEN_VALUE.toInt(), productsStat.itemsSold)
-                assertEquals(DeltaPercentage.Value(ZERO_DELTA), productsStat.itemsSoldDelta)
-                assertEquals(expectedProducts, productsStat.products)
-            }
+            assertTrue(result is ProductsData)
+            assertEquals(TEN_VALUE.toInt(), result.productsStat.itemsSold)
+            assertEquals(DeltaPercentage.Value(ZERO_DELTA), result.productsStat.itemsSoldDelta)
+            assertEquals(expectedProducts, result.productsStat.products)
         }
 
     @Test

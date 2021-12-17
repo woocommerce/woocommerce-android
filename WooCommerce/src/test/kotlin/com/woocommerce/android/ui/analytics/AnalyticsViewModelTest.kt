@@ -29,8 +29,6 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
@@ -120,8 +118,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `when ViewModel is with savedState is created, then has the expected values`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(flowOf(getRevenueStats()))
-                onBlocking { fetchOrdersData(any(), any(), eq(Saved)) }.doReturn(flowOf(getOrdersStats()))
+                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(getRevenueStats())
+                onBlocking { fetchOrdersData(any(), any(), eq(Saved)) }.doReturn(getOrdersStats())
             }
 
             val resourceProvider: ResourceProvider = mock {
@@ -153,8 +151,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then has the expected date range selector values`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(flowOf(getRevenueStats()))
-                onBlocking { fetchOrdersData(any(), any(), eq(Saved)) }.doReturn(flowOf(getOrdersStats()))
+                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(getRevenueStats())
+                onBlocking { fetchOrdersData(any(), any(), eq(Saved)) }.doReturn(getOrdersStats())
             }
 
             val resourceProvider: ResourceProvider = mock {
@@ -180,7 +178,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then has expected revenue values`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(flowOf(getRevenueStats()))
+                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(getRevenueStats())
             }
 
             sut = givenAViewModel()
@@ -205,12 +203,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(analyticsRepository.fetchRevenueData(any(), any(), eq(Saved)))
                 .thenReturn(
-                    listOf(
-                        getRevenueStats(
-                            netDelta = DeltaPercentage.NotExist,
-                            totalDelta = DeltaPercentage.NotExist
-                        )
-                    ).asFlow()
+                    getRevenueStats(
+                        netDelta = DeltaPercentage.NotExist,
+                        totalDelta = DeltaPercentage.NotExist
+                    )
                 )
 
             sut = givenAViewModel()
@@ -227,7 +223,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then has expected refresh indicator value`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(flowOf(getRevenueStats()))
+                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(getRevenueStats())
             }
 
             sut = givenAViewModel()
@@ -256,7 +252,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
         analyticsRepository.stub {
-            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(flowOf(weekRevenueStats))
+            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(weekRevenueStats)
         }
 
         sut = givenAViewModel()
@@ -280,7 +276,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then has expected orders values`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchOrdersData(any(), any(), eq(Saved)) }.doReturn(flowOf(getOrdersStats()))
+                onBlocking { fetchOrdersData(any(), any(), eq(Saved)) }.doReturn(getOrdersStats())
             }
 
             sut = givenAViewModel()
@@ -303,7 +299,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then product has values`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchProductsData(any(), any(), eq(Saved)) }.doReturn(flowOf(getProductsStats()))
+                onBlocking { fetchProductsData(any(), any(), eq(Saved)) }.doReturn(getProductsStats())
             }
 
             sut = givenAViewModel()
@@ -342,7 +338,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
         analyticsRepository.stub {
-            onBlocking { fetchOrdersData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(flowOf(weekOrdersData))
+            onBlocking { fetchOrdersData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(weekOrdersData)
         }
 
         sut = givenAViewModel()
@@ -379,7 +375,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
         analyticsRepository.stub {
-            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(flowOf(weekRevenueStats))
+            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(weekRevenueStats)
         }
 
         sut = givenAViewModel()
@@ -410,7 +406,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
         analyticsRepository.stub {
-            onBlocking { fetchProductsData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(flowOf(weekOrdersData))
+            onBlocking { fetchProductsData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(weekOrdersData)
         }
 
         sut = givenAViewModel()
@@ -436,9 +432,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
         analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(flowOf(getRevenueStats()))
-            onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(flowOf(getOrdersStats()))
-            onBlocking { fetchProductsData(any(), any(), any()) }.doReturn(flowOf(getProductsStats()))
+            onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(getRevenueStats())
+            onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(getOrdersStats())
+            onBlocking { fetchProductsData(any(), any(), any()) }.doReturn(getProductsStats())
         }
 
         sut = givenAViewModel()

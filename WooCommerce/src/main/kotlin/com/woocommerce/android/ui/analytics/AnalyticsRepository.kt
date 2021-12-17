@@ -33,7 +33,7 @@ class AnalyticsRepository @Inject constructor(
     private val getCurrentRevenueMutex = Mutex()
     private val getPreviousRevenueMutex = Mutex()
 
-    private val revenueCache = mutableMapOf<Int, WCRevenueStatsModel>()
+    private val statsCache = mutableMapOf<Int, WCRevenueStatsModel>()
 
     suspend fun fetchRevenueData(
         dateRange: AnalyticsDateRange,
@@ -230,7 +230,7 @@ class AnalyticsRepository @Inject constructor(
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): Flow<Result<WCRevenueStatsModel?>> = withContext(dispatchers.io) {
-        revenueCache[getRevenueCacheKey(startDate, endDate)]?.let {
+        statsCache[getStatsCacheKey(startDate, endDate)]?.let {
             flowOf(Result.success(it))
         } ?: statsRepository.fetchRevenueStats(
             granularity,
@@ -239,7 +239,7 @@ class AnalyticsRepository @Inject constructor(
             endDate
         )
             .flowOn(dispatchers.io)
-            .onEach { result -> result.getOrNull()?.let { revenueCache[getRevenueCacheKey(startDate, endDate)] = it } }
+            .onEach { result -> result.getOrNull()?.let { statsCache[getStatsCacheKey(startDate, endDate)] = it } }
     }
 
     private suspend fun fetchProductLeaderboards(
@@ -259,7 +259,7 @@ class AnalyticsRepository @Inject constructor(
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
-    private fun getRevenueCacheKey(startDate: String, endDate: String) = hash(startDate + endDate)
+    private fun getStatsCacheKey(startDate: String, endDate: String) = hash(startDate + endDate)
 
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
