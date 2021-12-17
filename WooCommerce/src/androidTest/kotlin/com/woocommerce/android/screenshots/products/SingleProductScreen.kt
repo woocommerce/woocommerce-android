@@ -77,7 +77,6 @@ class SingleProductScreen : Screen {
 
     // Checks that label and actual value are siblings in view hierarchy:
     fun assertTextNameValuePair(nameText: String, valueText: String?) {
-        //scrollToListItem(nameText, R.id.cardsRecyclerView)
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withChild(

@@ -129,7 +129,7 @@ jobs:
           type: instrumentation
           apk-path: WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk
           test-apk-path: WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk
-          test-targets: class com.woocommerce.android.ui.main.ProductsUITest
+          test-targets: notPackage com.woocommerce.android.screenshots
           device: model=Pixel2,version=28,locale=en,orientation=portrait
           project: api-project-108380595987
           timeout: 10m
