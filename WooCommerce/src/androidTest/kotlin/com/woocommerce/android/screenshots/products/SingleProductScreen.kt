@@ -39,7 +39,7 @@ class SingleProductScreen : Screen {
         ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
         // Name-Value pairs:
-        // assertTextNameValuePair("Price", product.price)
+        assertTextNameValuePair("Price", product.price)
         // assertTextNameValuePair("Inventory", "Stock status: ${product.stockStatus}")
         // assertTextNameValuePair("Product type", product.type)
 
