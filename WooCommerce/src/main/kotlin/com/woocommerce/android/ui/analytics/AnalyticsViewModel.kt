@@ -31,7 +31,6 @@ import com.zendesk.util.DateUtils.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -120,7 +119,7 @@ class AnalyticsViewModel @Inject constructor(
             )
 
             analyticsRepository.fetchRevenueData(dateRange, timePeriod, fetchStrategy)
-                .collect {
+                .let {
                     when (it) {
                         is RevenueData -> mutableState.value = state.value.copy(
                             refreshIndicator = NotShowIndicator,
@@ -150,7 +149,7 @@ class AnalyticsViewModel @Inject constructor(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
             analyticsRepository.fetchOrdersData(dateRange, timePeriod, fetchStrategy)
-                .collect {
+                .let {
                     when (it) {
                         is OrdersData -> mutableState.value = state.value.copy(
                             ordersState = buildOrdersDataViewState(
@@ -177,7 +176,7 @@ class AnalyticsViewModel @Inject constructor(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
             analyticsRepository.fetchProductsData(dateRange, timePeriod, fetchStrategy)
-                .collect {
+                .let {
                     when (it) {
                         is ProductsData -> mutableState.value = state.value.copy(
                             productsState = buildProductsDataState(

@@ -10,29 +10,36 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.*
 import com.woocommerce.android.ui.mystore.data.StatsRepository
-import kotlinx.coroutines.Dispatchers
+import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.*
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Objects.hash
 import javax.inject.Inject
 import kotlin.math.round
 
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val dispatchers: CoroutineDispatchers,
 ) {
-    private val getRevenueMutex = Mutex()
+    private val getCurrentRevenueMutex = Mutex()
+    private val getPreviousRevenueMutex = Mutex()
+
+    private val revenueCache = mutableMapOf<Int, WCRevenueStatsModel>()
 
     suspend fun fetchRevenueData(
         dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
-    ): Flow<RevenueResult> =
+    ): RevenueResult =
         getGranularity(selectedRange).let {
             return getCurrentPeriodStats(dateRange, it, fetchStrategy)
                 .combine(getPreviousPeriodStats(dateRange, it, fetchStrategy)) { currentPeriodRevenue,
@@ -58,14 +65,14 @@ class AnalyticsRepository @Inject constructor(
                             getCurrencyCode()
                         )
                     )
-                }
+                }.single()
         }
 
     suspend fun fetchOrdersData(
         dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
-    ): Flow<OrdersResult> =
+    ): OrdersResult =
         getGranularity(selectedRange).let {
             return getCurrentPeriodStats(dateRange, it, fetchStrategy)
                 .combine(getPreviousPeriodStats(dateRange, it, fetchStrategy)) { currentPeriodRevenue,
@@ -92,14 +99,14 @@ class AnalyticsRepository @Inject constructor(
                             getCurrencyCode()
                         )
                     )
-                }
+                }.single()
         }
 
     suspend fun fetchProductsData(
         dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
-    ): Flow<ProductsResult> =
+    ): ProductsResult =
         getGranularity(selectedRange).let { statsGranularity: StatsGranularity ->
             return combine(
                 getCurrentPeriodStats(dateRange, statsGranularity, fetchStrategy),
@@ -140,7 +147,7 @@ class AnalyticsRepository @Inject constructor(
                         productItems
                     )
                 )
-            }
+            }.single()
         }
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
@@ -151,64 +158,55 @@ class AnalyticsRepository @Inject constructor(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ) = when (dateRange) {
-        is SimpleDateRange ->
-            fetchStats(
-                dateRange.to.formatToYYYYmmDD(),
-                dateRange.to.formatToYYYYmmDD(),
-                granularity,
-                fetchStrategy
-            )
-        is MultipleDateRange ->
-            fetchStats(
-                dateRange.to.from.formatToYYYYmmDD(),
-                dateRange.to.to.formatToYYYYmmDD(),
-                granularity,
-                fetchStrategy
-            )
+    ): Flow<Result<WCRevenueStatsModel?>> {
+        getCurrentRevenueMutex.withLock {
+            val startDate = when (dateRange) {
+                is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
+                is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
+            }
+            val endDate = when (dateRange) {
+                is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
+                is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
+            }
+
+            return fetchStats(startDate, endDate, granularity, fetchStrategy)
+        }
     }
 
     private suspend fun getPreviousPeriodStats(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ) = when (dateRange) {
-        is SimpleDateRange ->
-            fetchStats(
-                dateRange.from.formatToYYYYmmDD(),
-                dateRange.from.formatToYYYYmmDD(),
-                granularity,
-                fetchStrategy
-            )
+    ): Flow<Result<WCRevenueStatsModel?>> {
+        getPreviousRevenueMutex.withLock {
+            val startDate = when (dateRange) {
+                is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
+                is MultipleDateRange -> dateRange.from.from.formatToYYYYmmDD()
+            }
+            val endDate = when (dateRange) {
+                is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
+                is MultipleDateRange -> dateRange.from.to.formatToYYYYmmDD()
+            }
 
-        is MultipleDateRange ->
-            fetchStats(
-                dateRange.from.from.formatToYYYYmmDD(),
-                dateRange.from.to.formatToYYYYmmDD(),
-                granularity,
-                fetchStrategy
-            )
+            return fetchStats(startDate, endDate, granularity, fetchStrategy)
+        }
     }
 
     private suspend fun getProductStats(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         quantity: Int
-    ) = when (dateRange) {
-        is SimpleDateRange ->
-            fetchProductLeaderboards(
-                dateRange.to.formatToYYYYmmDD(),
-                dateRange.to.formatToYYYYmmDD(),
-                granularity,
-                quantity
-            )
-        is MultipleDateRange ->
-            fetchProductLeaderboards(
-                dateRange.to.from.formatToYYYYmmDD(),
-                dateRange.to.to.formatToYYYYmmDD(),
-                granularity,
-                quantity
-            )
+    ): Flow<Result<List<WCTopPerformerProductModel>>> {
+        val startDate = when (dateRange) {
+            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
+            is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
+        }
+        val endDate = when (dateRange) {
+            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
+            is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
+        }
+
+        return fetchProductLeaderboards(startDate, endDate, granularity, quantity)
     }
 
     private fun getGranularity(selectedRange: AnalyticTimePeriod) =
@@ -231,15 +229,17 @@ class AnalyticsRepository @Inject constructor(
         endDate: String,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ) = withContext(Dispatchers.IO) {
-        getRevenueMutex.withLock {
-            statsRepository.fetchRevenueStats(
-                granularity,
-                fetchStrategy is FetchStrategy.ForceNew,
-                startDate,
-                endDate
-            )
-        }
+    ): Flow<Result<WCRevenueStatsModel?>> = withContext(dispatchers.io) {
+        revenueCache[getRevenueCacheKey(startDate, endDate)]?.let {
+            flowOf(Result.success(it))
+        } ?: statsRepository.fetchRevenueStats(
+            granularity,
+            fetchStrategy is FetchStrategy.ForceNew,
+            startDate,
+            endDate
+        )
+            .flowOn(dispatchers.io)
+            .onEach { result -> result.getOrNull()?.let { revenueCache[getRevenueCacheKey(startDate, endDate)] = it } }
     }
 
     private suspend fun fetchProductLeaderboards(
@@ -247,18 +247,19 @@ class AnalyticsRepository @Inject constructor(
         endDate: String,
         granularity: StatsGranularity,
         quantity: Int,
-    ) = withContext(Dispatchers.IO) {
+    ): Flow<Result<List<WCTopPerformerProductModel>>> = withContext(dispatchers.io) {
         statsRepository.fetchProductLeaderboards(
             true,
             granularity,
             quantity,
             startDate,
             endDate
-        )
+        ).flowOn(dispatchers.io)
     }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
+    private fun getRevenueCacheKey(startDate: String, endDate: String) = hash(startDate + endDate)
 
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
