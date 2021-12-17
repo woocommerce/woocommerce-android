@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.*
 import com.woocommerce.android.ui.mystore.data.StatsRepository
+import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
@@ -197,7 +198,7 @@ class AnalyticsRepository @Inject constructor(
     ) = when (dateRange) {
         is SimpleDateRange ->
             fetchProductLeaderboards(
-                dateRange.from.formatToYYYYmmDD(),
+                dateRange.to.formatToYYYYmmDD(),
                 dateRange.to.formatToYYYYmmDD(),
                 granularity,
                 quantity
