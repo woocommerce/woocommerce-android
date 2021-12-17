@@ -22,7 +22,7 @@ class SingleProductScreen : Screen {
     }
 
     fun assertSingleProductScreen(product: ProductData): SingleProductScreen {
-/*
+
         // Navigation bar:
         Espresso.onView(
             Matchers.allOf(
@@ -31,14 +31,14 @@ class SingleProductScreen : Screen {
             )
         )
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-*/
+/*
         // Product name:
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withId(R.id.editText), ViewMatchers.withText(product.name)
             )
         ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
+*/
         // Name-Value pairs:
         assertTextNameValuePair("Price", product.price)
         assertTextNameValuePair("Inventory", "Stock status: ${product.stockStatus}")
