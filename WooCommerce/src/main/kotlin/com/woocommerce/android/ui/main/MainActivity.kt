@@ -61,6 +61,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 // TODO Extract logic out of MainActivity to reduce size
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class MainActivity :
     AppUpgradeActivity(),
