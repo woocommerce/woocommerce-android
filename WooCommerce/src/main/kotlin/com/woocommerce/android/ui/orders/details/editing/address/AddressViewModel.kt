@@ -33,13 +33,11 @@ class AddressViewModel @Inject constructor(
             .map { it.toAppModel() }
     }
 
-    fun selectedCountryLocationFor(type: AddressType): Location {
-        return viewState.countryStatePairs.getValue(type).countryLocation
-    }
+    fun selectedCountryLocationFor(type: AddressType) =
+        viewState.countryStatePairs.getValue(type).countryLocation
 
-    fun selectedStateLocationFor(type: AddressType): Location {
-        return viewState.countryStatePairs.getValue(type).stateLocation
-    }
+    fun selectedStateLocationFor(type: AddressType) =
+        viewState.countryStatePairs.getValue(type).stateLocation
 
     private var hasStarted = false
 
@@ -84,20 +82,16 @@ class AddressViewModel @Inject constructor(
         viewState = ViewState()
     }
 
-    private fun getCountryNameFromCode(countryCode: LocationCode): String {
-        return countries.find { it.code == countryCode }?.name ?: countryCode
-    }
+    private fun getCountryNameFromCode(countryCode: LocationCode): String =
+        countries.find { it.code == countryCode }?.name ?: countryCode
 
-    private fun getCountryLocationFromCode(countryCode: LocationCode): Location {
-        return Location(countryCode, getCountryNameFromCode(countryCode))
-    }
+    private fun getCountryLocationFromCode(countryCode: LocationCode) =
+        Location(countryCode, getCountryNameFromCode(countryCode))
 
-    private fun getStateLocationFromCode(countryCode: LocationCode, stateCode: LocationCode): Location {
-        return Location(
-            code = stateCode,
-            name = dataStore.getStates(countryCode).firstOrNull { state -> state.code == stateCode }?.name ?: stateCode
-        )
-    }
+    private fun getStateLocationFromCode(countryCode: LocationCode, stateCode: LocationCode) = Location(
+        code = stateCode,
+        name = dataStore.getStates(countryCode).firstOrNull { state -> state.code == stateCode }?.name ?: stateCode
+    )
 
     fun onCountrySelected(type: AddressType, countryCode: LocationCode) {
         viewState = viewState.copy(
