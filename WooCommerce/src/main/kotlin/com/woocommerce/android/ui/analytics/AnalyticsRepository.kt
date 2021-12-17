@@ -20,7 +20,6 @@ import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.*
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.Objects.hash
 import javax.inject.Inject
 import kotlin.math.round
 
@@ -28,12 +27,11 @@ class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
+    private val analyticsStorage: AnalyticsStorage,
     private val dispatchers: CoroutineDispatchers,
 ) {
     private val getCurrentRevenueMutex = Mutex()
     private val getPreviousRevenueMutex = Mutex()
-
-    private val statsCache = mutableMapOf<Int, WCRevenueStatsModel>()
 
     suspend fun fetchRevenueData(
         dateRange: AnalyticsDateRange,
@@ -230,7 +228,7 @@ class AnalyticsRepository @Inject constructor(
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): Flow<Result<WCRevenueStatsModel?>> = withContext(dispatchers.io) {
-        statsCache[getStatsCacheKey(startDate, endDate)]?.let {
+        analyticsStorage.getStats(startDate, endDate)?.let {
             flowOf(Result.success(it))
         } ?: statsRepository.fetchRevenueStats(
             granularity,
@@ -239,7 +237,7 @@ class AnalyticsRepository @Inject constructor(
             endDate
         )
             .flowOn(dispatchers.io)
-            .onEach { result -> result.getOrNull()?.let { statsCache[getStatsCacheKey(startDate, endDate)] = it } }
+            .onEach { result -> result.getOrNull()?.let { analyticsStorage.saveStats(startDate, endDate, it) } }
     }
 
     private suspend fun fetchProductLeaderboards(
@@ -259,7 +257,6 @@ class AnalyticsRepository @Inject constructor(
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
-    private fun getStatsCacheKey(startDate: String, endDate: String) = hash(startDate + endDate)
 
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
