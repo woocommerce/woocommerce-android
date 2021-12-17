@@ -2,5 +2,4 @@
 #
 # Ensure this file is checked in to source control!
 
-# TODO: Update to the next major version after: https://github.com/wordpress-mobile/release-toolkit/pull/319
 gem 'fastlane-plugin-wpmreleasetoolkit', '~> 2'
