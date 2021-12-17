@@ -173,7 +173,7 @@ class CardReaderPaymentViewModel
         cardReaderManager.collectPayment(
             PaymentInfo(
                 paymentDescription = order.getPaymentDescription(),
-                orderId = order.remoteId,
+                orderId = order.remoteId.value,
                 amount = order.total,
                 currency = order.currency,
                 orderKey = order.orderKey,
@@ -183,7 +183,7 @@ class CardReaderPaymentViewModel
                 siteUrl = selectedSite.get().url.ifEmpty { null },
             )
         ).collect { paymentStatus ->
-            onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, order.getAmountLabel())
+            onPaymentStatusChanged(order.remoteId.value, customerEmail, paymentStatus, order.getAmountLabel())
         }
     }
 
@@ -274,7 +274,7 @@ class CardReaderPaymentViewModel
             val order = orderRepository.getOrder(arguments.orderIdentifier)
                 ?: throw IllegalStateException("Order URL not available.")
             val amountLabel = order.getAmountLabel()
-            val receiptUrl = getReceiptUrl(order.remoteId)
+            val receiptUrl = getReceiptUrl(order.remoteId.value)
 
             viewState.postValue(
                 PaymentSuccessfulState(
@@ -327,7 +327,7 @@ class CardReaderPaymentViewModel
     private fun startPrintingFlow() {
         val order = orderRepository.getOrder(arguments.orderIdentifier)
             ?: throw IllegalStateException("Order URL not available.")
-        triggerEvent(PrintReceipt(getReceiptUrl(order.remoteId), order.getReceiptDocumentName()))
+        triggerEvent(PrintReceipt(getReceiptUrl(order.remoteId.value), order.getReceiptDocumentName()))
     }
 
     private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {

@@ -19,7 +19,7 @@ org.gradle.jvmargs=-Xmx1536m
 # WooCommerce for Android properties.
 
 android.useAndroidX=true
-android.enableJetifier=true
+android.enableJetifier=false
 
 
 # For more details on what these properties do visit

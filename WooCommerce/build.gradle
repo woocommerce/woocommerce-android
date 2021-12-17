@@ -1,25 +1,15 @@
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        maven { url 'https://plugins.gradle.org/m2/' }
-    }
-    dependencies {
-        classpath 'com.google.gms:google-services:4.3.8'
-        classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.68.3'
-        classpath 'io.sentry:sentry-android-gradle-plugin:2.1.5'
-    }
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
+    id 'org.jetbrains.kotlin.plugin.allopen'
+    id 'org.jetbrains.kotlin.plugin.parcelize'
+    id 'dagger.hilt.android.plugin'
+    id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
+    id 'io.sentry.android.gradle'
+    id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.gms.google-services'
 }
-
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'kotlin-parcelize'
-apply plugin: 'kotlin-allopen'
-apply plugin: 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
-apply plugin: 'io.sentry.android.gradle'
-apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 repositories {
     maven {
@@ -39,7 +29,26 @@ repositories {
         }
     }
     mavenCentral()
-    maven { url "https://jitpack.io" }
+    //noinspection JcenterRepositoryObsolete
+    jcenter {
+        content {
+            includeModule("org.wordpress", "wellsql")
+            includeModule("org.wordpress", "wellsql-core")
+            includeModule("com.google.android", "flexbox")
+            includeModule("com.android.volley", "volley")
+            includeModule("com.jraska", "falcon")
+        }
+    }
+    maven {
+        url "https://jitpack.io"
+        content {
+            includeModule("com.github.Automattic", "Automattic-Tracks-Android")
+            includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
+            includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
+            includeModule("com.github.chrisbanes", "PhotoView")
+            includeModule("com.github.PhilJay", "MPAndroidChart")
+        }
+    }
 }
 
 allOpen {
@@ -55,9 +64,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.1-rc-2"
+            versionName "8.2-rc-1"
         }
-        versionCode 264
+        versionCode 266
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -164,14 +173,14 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.cardview:cardview:1.0.0"
-    implementation ("androidx.browser:browser:1.3.0") {
+    implementation("androidx.browser:browser:1.3.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
     implementation "androidx.preference:preference:1.1.1"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
-    implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
-    implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
+    implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
 
     implementation("org.wordpress:utils:$wordPressUtilsVersion") {
         exclude group: "com.mcxiaoke.volley"
@@ -189,7 +198,7 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
-    implementation ("$gradle.ext.loginFlowBinaryPath:$wordPressLoginVersion") {
+    implementation("$gradle.ext.loginFlowBinaryPath:$wordPressLoginVersion") {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
     }
@@ -209,15 +218,14 @@ dependencies {
     implementation project(":libs:cardreader")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
-    implementation 'com.github.vihtarb:tooltip:0.2.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
     // Dagger
-    implementation "com.google.dagger:hilt-android:$daggerVersion"
+    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
     implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
-    kapt "com.google.dagger:hilt-compiler:$daggerVersion"
-    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
-    kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+    kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
+    kapt "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
@@ -230,7 +238,7 @@ dependencies {
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
     debugImplementation "com.facebook.soloader:soloader:0.10.3"
-    debugImplementation ("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
         // Force Flipper to use the okhttp version defined in the fluxc module
         // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
@@ -242,7 +250,7 @@ dependencies {
     testImplementation "junit:junit:$jUnitVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.mockito:mockito-inline:$mockitoVersion"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
     testImplementation("androidx.arch.core:core-testing:2.1.0", {
         exclude group: 'com.android.support', module: 'support-compat'
@@ -257,8 +265,8 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
-    androidTestImplementation "com.google.dagger:hilt-android-testing:$daggerVersion"
-    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$daggerVersion"
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$gradle.ext.daggerVersion"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
@@ -273,7 +281,9 @@ dependencies {
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
 
-    implementation "com.zendesk:support:5.0.3"
+    implementation ("com.zendesk:support:5.0.3") {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
 
     // ViewModel and LiveData
     // TODO Try to re-enable NullSafeMutableLiveData lint check when we move to fragment-ktx v1.4.0+
@@ -301,6 +311,10 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
     implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:$mediapickerVersion") {
+        exclude group: "org.wordpress", module: "utils"
+        exclude group: "org.wordpress", module: "fluxc"
+    }
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
@@ -412,5 +426,3 @@ if (project.hasProperty("debugStoreFile")) {
     }
 }
 
-// Keep this at the bottom (https://stackoverflow.com/a/37565535)
-apply plugin: 'com.google.gms.google-services'

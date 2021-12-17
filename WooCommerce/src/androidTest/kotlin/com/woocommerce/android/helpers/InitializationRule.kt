@@ -3,10 +3,13 @@ package com.woocommerce.android.helpers
 import android.app.Application
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.AppInitializer
+import com.woocommerce.android.di.AppCoroutineScope
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -14,8 +17,9 @@ import org.junit.runners.model.Statement
 class InitializationRule : TestRule {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
-    interface AppInitializerEntryPoint {
-        fun inject(): AppInitializer
+    interface AppEntryPoint {
+        fun initializer(): AppInitializer
+        @AppCoroutineScope fun appCoroutineScope(): CoroutineScope
     }
 
     private val instrumentation
@@ -24,16 +28,16 @@ class InitializationRule : TestRule {
     override fun apply(base: Statement?, description: Description?): Statement {
         return object : Statement() {
             override fun evaluate() {
+                val application = instrumentation.targetContext.applicationContext as Application
+                val entryPoint = EntryPoints.get(
+                    application,
+                    AppEntryPoint::class.java
+                )
                 instrumentation.runOnMainSync {
-                    val application = instrumentation.targetContext.applicationContext as Application
-                    val appInitializer = EntryPoints.get(
-                        application,
-                        AppInitializerEntryPoint::class.java
-                    ).inject()
-
-                    appInitializer.init(application)
+                    entryPoint.initializer().init(application)
                 }
                 base?.evaluate()
+                entryPoint.appCoroutineScope().cancel()
             }
         }
     }

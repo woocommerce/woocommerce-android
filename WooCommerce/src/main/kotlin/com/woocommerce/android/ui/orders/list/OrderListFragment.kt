@@ -145,9 +145,7 @@ class OrderListFragment :
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        if (FeatureFlag.SIMPLE_PAYMENTS.isEnabled()) {
-            displaySimplePaymentsWIPCard(true)
-        }
+        displaySimplePaymentsWIPCard(true)
     }
 
     override fun onResume() {
@@ -172,8 +170,7 @@ class OrderListFragment :
     }
 
     private fun isSimplePaymentsAvailable(): Boolean {
-        return FeatureFlag.SIMPLE_PAYMENTS.isEnabled() &&
-            AppPrefs.isSimplePaymentsEnabled &&
+        return AppPrefs.isSimplePaymentsEnabled &&
             viewModel.isCardReaderOnboardingCompleted()
     }
 
@@ -307,7 +304,7 @@ class OrderListFragment :
         }
         handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
             binding.orderListView.post {
-                openOrderDetail(order.localId.value, order.remoteId, order.status.value)
+                openOrderDetail(order.localId.value, order.remoteId.value, order.status.value)
             }
         }
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {

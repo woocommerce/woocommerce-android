@@ -73,9 +73,19 @@ class PluginRepository @Inject constructor(
     }.catch { cause ->
         if (cause is PluginException) {
             if (cause.errorType is InstallSitePluginError) {
-                emit(PluginInstallFailed(error = cause.errorMessage))
+                emit(
+                    PluginInstallFailed(
+                        errorDescription = cause.errorMessage,
+                        errorType = cause.errorType.type.name
+                    )
+                )
             } else if (cause.errorType is ConfigureSitePluginError) {
-                emit(PluginActivationFailed(error = cause.errorMessage))
+                emit(
+                    PluginActivationFailed(
+                        errorDescription = cause.errorMessage,
+                        errorType = cause.errorType.type.name
+                    )
+                )
             }
         }
     }
@@ -156,13 +166,13 @@ class PluginRepository @Inject constructor(
         data class PluginInstalled(val slug: String, val site: SiteModel) : PluginStatus()
 
         @Parcelize
-        data class PluginInstallFailed(val error: String) : PluginStatus()
+        data class PluginInstallFailed(val errorDescription: String, val errorType: String) : PluginStatus()
 
         @Parcelize
         data class PluginActivated(val name: String, val site: SiteModel) : PluginStatus()
 
         @Parcelize
-        data class PluginActivationFailed(val error: String) : PluginStatus()
+        data class PluginActivationFailed(val errorDescription: String, val errorType: String) : PluginStatus()
     }
 
     private class PluginException(val errorType: Store.OnChangedError, val errorMessage: String) : Exception()
