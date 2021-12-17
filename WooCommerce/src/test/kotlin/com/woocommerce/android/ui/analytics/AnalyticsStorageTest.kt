@@ -8,7 +8,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class AnalyticsStorageTest : BaseUnitTest() {
-
     private val sut = AnalyticsStorage()
 
     @Test
@@ -17,7 +16,6 @@ class AnalyticsStorageTest : BaseUnitTest() {
 
         assertNull(result)
     }
-
 
     @Test
     fun `given a data in storage, when getStats first time, then result is expected`() {
@@ -56,10 +54,8 @@ class AnalyticsStorageTest : BaseUnitTest() {
         assertNull(result)
     }
 
-
     companion object {
         const val START_DATE = "10-10-2020"
         const val END_DATE = "12-10-2020"
-
     }
 }

@@ -541,7 +541,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 .thenReturn(flowOf(productLeaderBoards))
 
             // When
-            val result = sut.fetchProductsData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE, anyFetchStrategy)
+            val result = sut.fetchProductsData(
+                SimpleDateRange(previousDate!!, currentDate!!),
+                ANY_RANGE,
+                anyFetchStrategy
+            )
 
             // Then
             assertTrue(result is ProductsError)
@@ -562,11 +566,14 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
                 .thenReturn(flowOf(productLeaderBoards))
             // When
-            val result = sut.fetchProductsData(SimpleDateRange(previousDate!!, currentDate!!), ANY_RANGE, anyFetchStrategy)
+            val result = sut.fetchProductsData(
+                SimpleDateRange(previousDate!!, currentDate!!),
+                ANY_RANGE,
+                anyFetchStrategy
+            )
 
             // Then
             assertTrue(result is ProductsError)
-
         }
 
     @Test

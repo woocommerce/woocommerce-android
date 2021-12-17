@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 class AnalyticsStorage @Inject constructor() {
-
     private val statsConsumptions = mutableMapOf<Int, AtomicInteger>()
     private val statsCache = mutableMapOf<Int, WCRevenueStatsModel>()
 
@@ -21,7 +20,7 @@ class AnalyticsStorage @Inject constructor() {
             statsCache[cacheKey]?.let {
                 statsConsumptions[cacheKey]?.incrementAndGet() ?: statsConsumptions.put(cacheKey, AtomicInteger(1))
                 return it
-            } ?: return null
+            }
         }
         return null
     }

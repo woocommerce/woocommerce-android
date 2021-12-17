@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.DeltaPercentage
@@ -61,15 +62,19 @@ class AnalyticsViewModel @Inject constructor(
     val state: StateFlow<AnalyticsViewState> = mutableState
 
     init {
-        updateRevenue(isRefreshing = false, showSkeleton = true)
-        updateOrders(isRefreshing = false, showSkeleton = true)
-        updateProducts(isRefreshing = false, showSkeleton = true)
+        viewModelScope.launch {
+            updateRevenue(isRefreshing = false, showSkeleton = true)
+            updateOrders(isRefreshing = false, showSkeleton = true)
+            updateProducts(isRefreshing = false, showSkeleton = true)
+        }
     }
 
     fun onRefreshRequested() {
-        updateRevenue(isRefreshing = true, showSkeleton = false)
-        updateOrders(isRefreshing = true, showSkeleton = false)
-        updateProducts(isRefreshing = true, showSkeleton = false)
+        viewModelScope.launch {
+            updateRevenue(isRefreshing = true, showSkeleton = false)
+            updateOrders(isRefreshing = true, showSkeleton = false)
+            updateProducts(isRefreshing = true, showSkeleton = false)
+        }
     }
 
     fun onSelectedTimePeriodChanged(newSelection: String) {
@@ -78,9 +83,11 @@ class AnalyticsViewModel @Inject constructor(
         saveSelectedTimePeriod(selectedTimePeriod)
         saveSelectedDateRange(dateRange)
         updateDateSelector()
-        updateRevenue(isRefreshing = false, showSkeleton = true)
-        updateOrders(isRefreshing = false, showSkeleton = true)
-        updateProducts(isRefreshing = false, showSkeleton = true)
+        viewModelScope.launch {
+            updateRevenue(isRefreshing = false, showSkeleton = true)
+            updateOrders(isRefreshing = false, showSkeleton = true)
+            updateProducts(isRefreshing = false, showSkeleton = true)
+        }
     }
 
     fun onRevenueSeeReportClick() {
