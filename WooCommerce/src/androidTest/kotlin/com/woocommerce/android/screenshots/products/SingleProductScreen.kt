@@ -40,7 +40,7 @@ class SingleProductScreen : Screen {
 
         // Name-Value pairs:
         assertTextNameValuePair("Price", product.price)
-        // assertTextNameValuePair("Inventory", "Stock status: ${product.stockStatus}")
+        assertTextNameValuePair("Inventory", "Stock status: ${product.stockStatus}")
         // assertTextNameValuePair("Product type", product.type)
 
         // Rating is shown only if the rating is larger than zero (more than zero reviews):
