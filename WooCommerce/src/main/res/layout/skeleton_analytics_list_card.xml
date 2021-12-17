@@ -63,7 +63,7 @@
         app:layout_constraintTop_toBottomOf="@+id/leftVal" />
 
     <include
-        android:id="@+id/list_item_1"
+        android:id="@+id/listItem1"
         layout="@layout/skeleton_analytics_list_item"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -73,33 +73,33 @@
         app:layout_constraintTop_toBottomOf="@+id/rightVal" />
 
     <include
-        android:id="@+id/list_item_2"
+        android:id="@+id/listItem2"
         layout="@layout/skeleton_analytics_list_item"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/list_item_1" />
+        app:layout_constraintTop_toBottomOf="@+id/listItem1" />
 
     <include
-        android:id="@+id/list_item_3"
+        android:id="@+id/listItem3"
         layout="@layout/skeleton_analytics_list_item"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/list_item_2" />
+        app:layout_constraintTop_toBottomOf="@+id/listItem2" />
 
     <include
-        android:id="@+id/list_item_4"
+        android:id="@+id/listItem4"
         layout="@layout/skeleton_analytics_list_item"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/list_item_3" />
+        app:layout_constraintTop_toBottomOf="@+id/listItem3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
