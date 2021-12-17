@@ -31,19 +31,19 @@ class SingleProductScreen : Screen {
             )
         )
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-/*
+
         // Product name:
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withId(R.id.editText), ViewMatchers.withText(product.name)
             )
         ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-*/
+
         // Name-Value pairs:
         assertTextNameValuePair("Price", product.price)
         assertTextNameValuePair("Inventory", "Stock status: ${product.stockStatus}")
         assertTextNameValuePair("Product type", product.type)
-
+/*
         // Rating is shown only if the rating is larger than zero (more than zero reviews):
         if (product.rating > 0) {
             // Check that "Review" label, actual rating (stars) and reviews count are
@@ -71,7 +71,7 @@ class SingleProductScreen : Screen {
                 )
             ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         }
-
+*/
         return SingleProductScreen()
     }
 
