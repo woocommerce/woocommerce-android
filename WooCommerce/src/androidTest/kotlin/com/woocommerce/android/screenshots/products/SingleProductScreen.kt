@@ -5,6 +5,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.CustomMatchers
+import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.Matchers
@@ -76,6 +77,7 @@ class SingleProductScreen : Screen {
 
     // Checks that label and actual value are siblings in view hierarchy:
     fun assertTextNameValuePair(nameText: String, valueText: String?) {
+        //scrollToListItem(nameText, R.id.cardsRecyclerView)
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withChild(
@@ -89,6 +91,8 @@ class SingleProductScreen : Screen {
                     )
                 )
             )
-        ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        )
+            .perform(NestedScrollViewExtension())
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 }
