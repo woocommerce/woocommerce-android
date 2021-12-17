@@ -416,7 +416,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             }
 
             on<Event.PurchaseSuccess> {
-                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(data.order.remoteId, it.labels))
+                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(data.order.remoteId.value, it.labels))
             }
         }
 

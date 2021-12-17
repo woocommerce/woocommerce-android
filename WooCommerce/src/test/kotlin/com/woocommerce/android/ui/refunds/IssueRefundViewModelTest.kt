@@ -35,7 +35,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val gatewayStore: WCGatewayStore = mock()
     private val refundStore: WCRefundStore = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
-    private val resourceProvider: ResourceProvider = mock() {
+    private val resourceProvider: ResourceProvider = mock {
         on(it.getString(R.string.taxes)).thenAnswer { "Taxes" }
         on(it.getString(R.string.orderdetail_payment_fees)).thenAnswer { "Fees" }
         on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
@@ -86,7 +86,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     @Test
     fun `when order has taxes and no shipping and fees, only the taxes are mentioned in the notice`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val orderWithTax = OrderTestUtils.generateOrder().apply { totalTax = "4.00" }
+            val orderWithTax = OrderTestUtils.generateOrder().copy(totalTax = "4.00")
             whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithTax)
 
             initViewModel()
@@ -118,7 +118,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     @Test
     fun `when order has one shipping, and fees and taxes, shipping are mentioned in the notice`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee().apply { totalTax = "4.00" }
+            val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee().copy(totalTax = "4.00")
             whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithFeesAndShipping)
 
             initViewModel()
