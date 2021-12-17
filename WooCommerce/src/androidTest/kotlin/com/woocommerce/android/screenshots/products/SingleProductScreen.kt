@@ -22,7 +22,7 @@ class SingleProductScreen : Screen {
     }
 
     fun assertSingleProductScreen(product: ProductData): SingleProductScreen {
-        Thread.sleep(5000)
+/*
         // Navigation bar:
         Espresso.onView(
             Matchers.allOf(
@@ -31,7 +31,7 @@ class SingleProductScreen : Screen {
             )
         )
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
+*/
         // Product name:
         Espresso.onView(
             Matchers.allOf(
