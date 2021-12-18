@@ -144,7 +144,7 @@ class ProductReviewsFragment :
         }
     }
 
-    override fun onReviewClick(review: ProductReview) {
+    override fun onReviewClick(review: ProductReview, sharedView: View?) {
         (activity as? MainNavigationRouter)?.showReviewDetail(
             review.remoteId,
             launchedFromNotification = false,
