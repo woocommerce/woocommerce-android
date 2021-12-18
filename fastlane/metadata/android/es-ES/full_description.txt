@@ -1,0 +1,22 @@
+Gestiona tu empresa sobre la marcha con la aplicación móvil de WooCommerce. Crea productos, procesa pedidos y haz un seguimiento de las estadísticas más importantes en tiempo real.
+
+AÑADE PRODUCTOS
+Crea, agrupa y publica productos directamente desde los dispositivos móviles Android que prefieras. Captura tu creatividad al instante: convierte tus ideas en productos en cuestión de segundos o guárdalas como borradores para usarlas más adelante.
+
+RECIBE NOTIFICACIONES
+No te pierdas ningún pedido o reseña. Activa las alertas en tiempo real para no perderte nada y disfruta del adictivo sonido que produce una nueva venta.
+
+CONSULTA Y MODIFICA PEDIDOS
+Desplázate por los resúmenes o busca por cliente en pedidos concretos. Toca en los detalles para ver una factura desglosada, rellenarla o cambiar el estado de un pedido. Añade notas al pedido o envía un correo electrónico directamente a los clientes para hacer un seguimiento.
+
+HAZ UN SEGUIMIENTO DE TUS ESTADÍSTICAS
+Consulta los mejores productos de un vistazo. Haz un seguimiento de los ingresos generales, del número de pedidos y de los detalles de los visitantes por semana, mes y año. ¡El conocimiento es poder!
+
+CAMBIA DE UNA TIENDA A OTRA
+Los propietarios de más de una tienda podrán cambiar de una a otra en cuestión de segundos.
+
+WooCommerce es la plataforma de comercio electrónico de código abierto más personalizable del mundo. Tanto si emprendes un negocio como si realizas la actividad comercial en tiendas físicas en línea o desarrollas sitios para clientes, utiliza WooCommerce para que tu tienda pueda aprovechar la combinación de contenido y comercio.
+
+Requisitos: WooCommerce v. 3.5 o posterior y la instalación del plugin de Jetpack.
+
+Consulta el aviso de privacidad dirigido a los usuarios de California en: https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

@@ -1,2 +1,3 @@
-- [***] Order list filters: Merchants can now filter orders by status or date range [https://github.com/woocommerce/woocommerce-android/issues/4934]
+- [*] In-Person Payments: Better error handling
+
 

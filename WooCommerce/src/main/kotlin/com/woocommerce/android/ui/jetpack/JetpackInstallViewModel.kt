@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.jetpack
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -49,15 +51,28 @@ class JetpackInstallViewModel @Inject constructor(
                     }
 
                     is PluginInstallFailed -> {
-                        viewState = viewState.copy(installStatus = Failed(it.error))
+                        AnalyticsTracker.track(
+                            Stat.JETPACK_INSTALL_FAILED,
+                            errorContext = this@JetpackInstallViewModel.javaClass.simpleName,
+                            errorType = it.errorType,
+                            errorDescription = it.errorDescription
+                        )
+                        viewState = viewState.copy(installStatus = Failed(it.errorDescription))
                     }
 
                     is PluginActivated -> {
+                        AnalyticsTracker.track(Stat.JETPACK_INSTALL_SUCCEEDED)
                         simulateConnectingAndFinishedSteps()
                     }
 
                     is PluginActivationFailed -> {
-                        viewState = viewState.copy(installStatus = Failed(it.error))
+                        AnalyticsTracker.track(
+                            Stat.JETPACK_INSTALL_FAILED,
+                            errorContext = this@JetpackInstallViewModel.javaClass.simpleName,
+                            errorType = it.errorType,
+                            errorDescription = it.errorDescription
+                        )
+                        viewState = viewState.copy(installStatus = Failed(it.errorDescription))
                     }
                 }
             }

@@ -11,6 +11,8 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override val storedAddress: Address
         get() = sharedViewModel.order.billingAddress
 
+    override val addressType: AddressViewModel.AddressType = AddressViewModel.AddressType.BILLING
+
     override fun saveChanges() = sharedViewModel.updateBillingAddress(addressDraft)
 
     override fun getFragmentTitle() = getString(R.string.order_detail_billing_address_section)

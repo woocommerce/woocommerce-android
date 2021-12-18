@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/\\?locale=(.*)",
+    "queryParameters" : {
+      "json" : {
+        "absent" : true
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "data": null
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "Connection": "keep-alive"
+    }
+  }
+}

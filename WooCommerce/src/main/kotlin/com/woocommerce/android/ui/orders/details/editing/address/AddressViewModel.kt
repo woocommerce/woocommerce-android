@@ -13,6 +13,8 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCDataStore
 import javax.inject.Inject
 
+typealias LocationCode = String
+
 @HiltViewModel
 class AddressViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -25,14 +27,17 @@ class AddressViewModel @Inject constructor(
     val countries: List<Location>
         get() = dataStore.getCountries().map { it.toAppModel() }
 
-    val states: List<Location>
-        get() = dataStore.getStates(viewState.countryLocation.code).map { it.toAppModel() }
+    fun statesAvailableFor(type: AddressType): List<Location> {
+        val selectedCountry = selectedCountryLocationFor(type)
+        return dataStore.getStates(selectedCountry.code)
+            .map { it.toAppModel() }
+    }
 
-    val countryLocation: Location
-        get() = viewState.countryLocation
+    fun selectedCountryLocationFor(type: AddressType) =
+        viewState.countryStatePairs.getValue(type).countryLocation
 
-    val stateLocation: Location
-        get() = viewState.stateLocation
+    fun selectedStateLocationFor(type: AddressType) =
+        viewState.countryStatePairs.getValue(type).stateLocation
 
     private var hasStarted = false
 
@@ -40,34 +45,30 @@ class AddressViewModel @Inject constructor(
      * The start method is called when the view is created. When the view is recreated (e.g. navigating to country
      * search and back) we don't want this method to be called again, otherwise the ViewModel will replace the newly
      * selected country or state with the previously saved values.
-     *
-     * @see applyCountryStateChangesSafely
      */
-    fun start(countryCode: String, stateCode: String) {
+    fun start(countryCode: LocationCode, stateCode: LocationCode) {
         if (hasStarted) {
             return
         }
         hasStarted = true
-        loadCountriesAndStates(countryCode, stateCode)
-        viewState.applyCountryStateChangesSafely(countryCode, stateCode)
+        initialize(countryCode, stateCode)
     }
 
-    private fun loadCountriesAndStates(countryCode: String, stateCode: String) {
+    private fun initialize(countryCode: String, stateCode: String) {
         launch {
             // we only fetch the countries and states if they've never been fetched
             if (countries.isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
                 dataStore.fetchCountriesAndStates(selectedSite.get())
-                viewState.copy(
-                    isLoading = false
-                ).applyCountryStateChangesSafely(countryCode, stateCode)
+                viewState = viewState.copy(isLoading = false)
             }
+            initializeCountriesAndStates(countryCode, stateCode)
         }
     }
 
     fun hasCountries() = countries.isNotEmpty()
 
-    fun hasStates() = states.isNotEmpty()
+    fun hasStatesFor(type: AddressType) = statesAvailableFor(type).isNotEmpty()
 
     /**
      * Even when the [BaseAddressEditingFragment] instance is destroyed the instance of [AddressViewModel] will still
@@ -81,61 +82,84 @@ class AddressViewModel @Inject constructor(
         viewState = ViewState()
     }
 
-    private fun getCountryNameFromCode(countryCode: String): String {
-        return countries.find { it.code == countryCode }?.name ?: countryCode
-    }
+    private fun getCountryNameFromCode(countryCode: LocationCode): String =
+        countries.find { it.code == countryCode }?.name ?: countryCode
 
-    private fun getCountryLocationFromCode(countryCode: String): Location {
-        return Location(countryCode, getCountryNameFromCode(countryCode))
-    }
+    private fun getCountryLocationFromCode(countryCode: LocationCode) =
+        Location(countryCode, getCountryNameFromCode(countryCode))
 
-    private fun getStateNameFromCode(stateCode: String): String {
-        return states.find { it.code == stateCode }?.name ?: stateCode
-    }
+    private fun getStateLocationFromCode(countryCode: LocationCode, stateCode: LocationCode) = Location(
+        code = stateCode,
+        name = dataStore.getStates(countryCode).firstOrNull { state -> state.code == stateCode }?.name ?: stateCode
+    )
 
-    private fun getStateLocationFromCode(stateCode: String): Location {
-        return Location(stateCode, getStateNameFromCode(stateCode))
-    }
-
-    fun onCountrySelected(countryCode: String) {
-        if (countryCode != viewState.countryLocation.code) {
-            viewState = viewState.copy(
-                countryLocation = getCountryLocationFromCode(countryCode),
-                stateLocation = Location("", ""),
-                isStateSelectionEnabled = true
-            )
-        }
-    }
-
-    fun onStateSelected(stateCode: String) {
-        if (stateCode != viewState.stateLocation.code) {
-            viewState = viewState.copy(
-                stateLocation = getStateLocationFromCode(stateCode)
-            )
-        }
-    }
-
-    /**
-     * State data acquisition depends on the Country configuration, so when updating the ViewState
-     * we need to make sure that we updated the Country code before applying everything else to avoid
-     * looking into a outdated state information
-     */
-    private fun ViewState.applyCountryStateChangesSafely(countryCode: String, stateCode: String) {
-        viewState = this.copy(
-            countryLocation = getCountryLocationFromCode(countryCode)
-        )
-
+    fun onCountrySelected(type: AddressType, countryCode: LocationCode) {
         viewState = viewState.copy(
-            stateLocation = getStateLocationFromCode(stateCode),
+            countryStatePairs = viewState.countryStatePairs.toMutableMap().apply {
+                put(
+                    type,
+                    CountryStatePair(
+                        countryLocation = getCountryLocationFromCode(countryCode),
+                        stateLocation = Location.EMPTY
+                    )
+                )
+            },
+            isStateSelectionEnabled = true
+        )
+    }
+
+    fun onStateSelected(type: AddressType, stateCode: LocationCode) {
+        val initialLocation = viewState.countryStatePairs.getValue(type)
+        if (stateCode != initialLocation.stateLocation.code) {
+            viewState = viewState.copy(
+                countryStatePairs = viewState.countryStatePairs.toMutableMap().apply {
+                    put(
+                        type,
+                        initialLocation.copy(
+                            stateLocation = getStateLocationFromCode(initialLocation.countryLocation.code, stateCode)
+                        )
+                    )
+                }
+            )
+        }
+    }
+
+    private fun initializeCountriesAndStates(countryCode: LocationCode, stateCode: LocationCode) {
+        viewState = viewState.copy(
+            countryStatePairs = mapOf(
+                AddressType.BILLING to CountryStatePair(
+                    countryLocation = getCountryLocationFromCode(countryCode),
+                    stateLocation = getStateLocationFromCode(countryCode, stateCode)
+                ),
+                AddressType.SHIPPING to CountryStatePair(
+                    countryLocation = getCountryLocationFromCode(countryCode),
+                    stateLocation = getStateLocationFromCode(countryCode, stateCode)
+                )
+            ),
             isStateSelectionEnabled = countryCode.isNotEmpty()
         )
     }
 
     @Parcelize
     data class ViewState(
-        val countryLocation: Location = Location("", ""),
-        val stateLocation: Location = Location("", ""),
+        val countryStatePairs: Map<AddressType, CountryStatePair> = mapOf(
+            AddressType.BILLING to CountryStatePair(
+                countryLocation = Location.EMPTY,
+                stateLocation = Location.EMPTY
+            ),
+            AddressType.SHIPPING to CountryStatePair(
+                countryLocation = Location.EMPTY,
+                stateLocation = Location.EMPTY
+            ),
+        ),
         val isLoading: Boolean = false,
         val isStateSelectionEnabled: Boolean = false
     ) : Parcelable
+
+    enum class AddressType {
+        SHIPPING, BILLING
+    }
+
+    @Parcelize
+    data class CountryStatePair(val countryLocation: Location, val stateLocation: Location) : Parcelable
 }
