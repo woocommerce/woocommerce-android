@@ -5,6 +5,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.RecyclerView
@@ -83,6 +84,14 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             height = size
             width = size
         }
+
+        ViewCompat.setTransitionName(
+            viewBinding.root,
+            String.format(
+                context.getString(R.string.order_card_transition_name),
+                product.remoteId
+            )
+        )
     }
 
     fun setOnDeleteClickListener(

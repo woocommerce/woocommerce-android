@@ -31,9 +31,14 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -193,11 +198,12 @@ class VariationDetailViewModel @Inject constructor(
         onVariationChanged(isVisible = isVisible)
     }
 
+    @Suppress("ComplexMethod")
     fun onVariationChanged(
         remoteProductId: Long? = null,
         remoteVariationId: Long? = null,
         sku: String? = null,
-        image: Image? = null,
+        image: Optional<Image>? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
         saleEndDate: Date? = viewState.variation?.saleEndDateGmt,
@@ -227,7 +233,7 @@ class VariationDetailViewModel @Inject constructor(
                     remoteProductId = remoteProductId ?: variation.remoteProductId,
                     remoteVariationId = remoteVariationId ?: variation.remoteVariationId,
                     sku = sku ?: variation.sku,
-                    image = image ?: variation.image,
+                    image = if (image != null) image.value else variation.image,
                     regularPrice = regularPrice ?: variation.regularPrice,
                     salePrice = salePrice ?: variation.salePrice,
                     saleEndDateGmt = saleEndDate,

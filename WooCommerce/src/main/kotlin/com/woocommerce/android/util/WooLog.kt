@@ -1,17 +1,10 @@
 package com.woocommerce.android.util
 
 import android.util.Log
-import com.woocommerce.android.util.WooLog.LogLevel
-import com.woocommerce.android.util.WooLog.T
-import org.wordpress.android.util.DateTimeUtils
+import com.woocommerce.android.util.RollingLogEntries.LogEntry
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.MutableMap.MutableEntry
 import org.wordpress.android.util.AppLog as WordPressAppLog
-
-typealias LogListener = (T, LogLevel, String) -> Unit
 
 /**
  * Simple wrapper for Android log calls, enables registering listeners for log events.
@@ -42,8 +35,7 @@ object WooLog {
 
     const val TAG = "WooCommerce"
     private const val MAX_ENTRIES = 99
-    private val logEntries = LogEntryList()
-    private val listeners = mutableListOf<LogListener>()
+    private val logEntries = RollingLogEntries(MAX_ENTRIES)
 
     init {
         // add listener for WP app log so we can capture login & FluxC logs
@@ -62,10 +54,6 @@ object WooLog {
         }
 
         addEntry(T.WP, wooLogLevel, wpTag.name + " " + wpMessage)
-    }
-
-    fun addListener(listener: LogListener) {
-        listeners.add(listener)
     }
 
     /**
@@ -173,11 +161,6 @@ object WooLog {
         // add to list of entries
         val entry = LogEntry(tag, level, text)
         logEntries.add(entry)
-
-        // Call our listeners if any
-        for (listener in listeners) {
-            listener(tag, level, text)
-        }
     }
 
     fun addDeviceInfoEntry(tag: T, level: LogLevel = LogLevel.i) {
@@ -195,64 +178,4 @@ object WooLog {
     fun toHtmlList(isDarkTheme: Boolean) = logEntries.toHtmlList(isDarkTheme)
 
     override fun toString() = logEntries.toString()
-
-    /**
-     * Individual log entry
-     */
-    private class LogEntry(
-        val tag: T,
-        val level: LogLevel,
-        val text: String?
-    ) {
-        val logDate: Date = DateTimeUtils.nowUTC()
-
-        override fun toString(): String {
-            val logText = if (text.isNullOrEmpty()) "null" else text
-            val logDateStr = SimpleDateFormat("MMM-dd kk:mm", Locale.US).format(logDate)
-            return "[$logDateStr ${tag.name} ${level.name}] $logText"
-        }
-    }
-
-    /**
-     * Fix-sized list of log entries
-     */
-    private class LogEntryList : LinkedHashMap<Int, LogEntry>() {
-        override fun removeEldestEntry(eldest: MutableEntry<Int, LogEntry>?): Boolean {
-            return size > MAX_ENTRIES
-        }
-
-        @Synchronized
-        fun add(element: LogEntry) {
-            put(size, element)
-        }
-
-        /**
-         * Returns the log entries as an array of html-formatted strings - this enables us to display
-         * a formatted log in [com.woocommerce.android.support.WooLogViewerActivity]
-         */
-        fun toHtmlList(isDarkTheme: Boolean): List<String> {
-            fun LogEntry.getColor(): String {
-                return if (isDarkTheme) {
-                    "white"
-                } else when (level) {
-                    LogLevel.v -> "grey"
-                    LogLevel.d -> "teal"
-                    LogLevel.i -> "black"
-                    LogLevel.w -> "purple"
-                    LogLevel.e -> "red"
-                }
-            }
-
-            // work with a copy of the log entries in case they're modified while traversing them
-            return values.toList().map { entry ->
-                "<font color='${entry.getColor()}'>$entry</font>"
-            }
-        }
-
-        /**
-         * Returns the log entries as a single string with each entry on a new line. Works with a copy of the log
-         * entries in case they're modified while traversing them.
-         */
-        override fun toString() = values.toList().joinToString("\n")
-    }
 }

@@ -383,7 +383,7 @@ class IssueRefundViewModel @Inject constructor(
 
                                 refundStore.createItemsRefund(
                                     selectedSite.get(),
-                                    order.remoteId,
+                                    order.remoteId.value,
                                     refundSummaryState.refundReason ?: "",
                                     true,
                                     gateway.supportsRefunds,
@@ -393,7 +393,7 @@ class IssueRefundViewModel @Inject constructor(
                             AMOUNT -> {
                                 refundStore.createAmountRefund(
                                     selectedSite.get(),
-                                    order.remoteId,
+                                    order.remoteId.value,
                                     commonState.refundTotal,
                                     refundSummaryState.refundReason ?: "",
                                     gateway.supportsRefunds
@@ -445,7 +445,7 @@ class IssueRefundViewModel @Inject constructor(
     private suspend fun addOrderNote(reason: String) {
         val note = OrderNote(note = reason, isCustomerNote = false)
         val onOrderChanged = orderDetailRepository
-            .addOrderNote(order.identifier, order.remoteId, note)
+            .addOrderNote(order.identifier, order.remoteId.value, note)
         if (!onOrderChanged.isError) {
             AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
         } else {
