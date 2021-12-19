@@ -4,20 +4,9 @@ import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.arch.core.executor.TaskExecutor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
-import org.junit.jupiter.api.extension.AfterEachCallback
-import org.junit.jupiter.api.extension.BeforeEachCallback
-import org.junit.jupiter.api.extension.ExtensionContext
+import kotlinx.coroutines.test.*
+import org.junit.jupiter.api.extension.*
 
-/**
- * Add this JUnit 5 extension to your test class using
- * @JvmField
- * @RegisterExtension
- * val coroutinesTestExtension = CoroutinesTestExtension()
- */
 @ExperimentalCoroutinesApi
 class CoroutinesTestExtension(
     val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
@@ -49,4 +38,17 @@ class InstantExecutorExtension : BeforeEachCallback, AfterEachCallback {
     override fun afterEach(context: ExtensionContext?) {
         ArchTaskExecutor.getInstance().setDelegate(null)
     }
+}
+
+@ExperimentalCoroutinesApi
+@ExtendWith(InstantExecutorExtension::class)
+open class BaseJunit5Test {
+    @RegisterExtension @JvmField
+    val coroutinesTestExtension = CoroutinesTestExtension()
+
+    @ExperimentalCoroutinesApi
+    protected fun testBlocking(block: suspend TestCoroutineScope.() -> Unit) =
+        coroutinesTestExtension.testDispatcher.runBlockingTest {
+            block()
+        }
 }

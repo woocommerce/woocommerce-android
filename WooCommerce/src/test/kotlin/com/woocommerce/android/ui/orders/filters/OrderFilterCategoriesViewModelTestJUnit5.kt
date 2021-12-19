@@ -11,9 +11,8 @@ import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSele
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
-import com.woocommerce.android.util.CoroutinesTestExtension
+import com.woocommerce.android.util.BaseJunit5Test
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.InstantExecutorExtension
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -22,15 +21,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-@ExtendWith(InstantExecutorExtension::class)
-class OrderFilterCategoriesViewModelTestJUnit5 {
+class OrderFilterCategoriesViewModelTestJUnit5 : BaseJunit5Test() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val resourceProvider: ResourceProvider = mock()
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions = mock()
@@ -40,9 +36,6 @@ class OrderFilterCategoriesViewModelTestJUnit5 {
     private val dateUtils: DateUtils = mock()
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
-
-    @RegisterExtension @JvmField
-    val coroutinesTestExtension = CoroutinesTestExtension()
 
     @BeforeEach
     fun setup() = runBlockingTest {

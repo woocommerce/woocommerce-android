@@ -10,19 +10,15 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.products.addons.AddonRepository
-import com.woocommerce.android.util.CoroutinesTestExtension
-import com.woocommerce.android.util.InstantExecutorExtension
+import com.woocommerce.android.util.BaseJunit5Test
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.any
@@ -33,14 +29,10 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
-@ExtendWith(InstantExecutorExtension::class)
-class OrderDetailViewModelTestJUnit5 {
+class OrderDetailViewModelTestJUnit5 : BaseJunit5Test() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"
     }
-
-    @RegisterExtension @JvmField
-    val coroutinesTestExtension = CoroutinesTestExtension()
 
     private val appPrefsWrapper: AppPrefs = mock {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
@@ -69,7 +61,7 @@ class OrderDetailViewModelTestJUnit5 {
         private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
         private val repository: OrderDetailRepository = mock {
             whenever(it.getOrder(any())).thenReturn(order)
-            coroutinesTestExtension.testDispatcher.runBlockingTest {
+            testBlocking {
                 whenever(it.fetchOrder(any())).thenReturn(order)
                 whenever(it.fetchOrderNotes(any(), any())).thenReturn(true)
             }
@@ -78,7 +70,7 @@ class OrderDetailViewModelTestJUnit5 {
             )
         }
         private val addonsRepository: AddonRepository = mock {
-            coroutinesTestExtension.testDispatcher.runBlockingTest {
+            testBlocking {
                 whenever(it.containsAddonsFrom(any())).thenReturn(false)
             }
         }
@@ -136,7 +128,7 @@ class OrderDetailViewModelTestJUnit5 {
     }
 //    @Test
 //    fun `collect button hidden if payment is not collectable`() =
-//        coroutinesTestExtension.testDispatcher.runBlockingTest {
+//        testBlocking {
 //            // GIVEN
 //            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
 //            doReturn(order).whenever(repository).getOrder(any())
@@ -153,7 +145,7 @@ class OrderDetailViewModelTestJUnit5 {
 //
 //    @Test
 //    fun `collect button shown if payment is collectable`() =
-//        coroutinesTestExtension.testDispatcher.runBlockingTest {
+//        testBlocking {
 //            // GIVEN
 //            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
 //            doReturn(order).whenever(repository).getOrder(any())
