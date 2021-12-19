@@ -2122,4 +2122,5 @@
     <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
     <string name="order_creation_customer_note">Customer Note</string>
     <string name="order_creation_add_customer_note">Add note</string>
+    <string name="title_barcode">Camera Barcode Scanner</string>
 </resources>
