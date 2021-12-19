@@ -152,6 +152,9 @@ android {
 
     testOptions {
         animationsDisabled = true
+        unitTests.all {
+            useJUnitPlatform()
+        }
     }
 }
 
@@ -315,6 +318,12 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
     }
+
+    //Kotest
+    testImplementation "io.kotest:kotest-runner-junit5:$kotest"
+    testImplementation "io.kotest:kotest-assertions-core:$kotest"
+//    testImplementation 'io.kotest:kotest-runner-junit5-jvm'
+
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

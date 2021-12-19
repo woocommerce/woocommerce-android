@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details.editing
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.NetworkStatus
@@ -49,6 +50,8 @@ class OrderEditingViewModelTest : BaseUnitTest() {
                     updateBothOrderAddresses(any(), any(), any())
                 } doReturn flowOf()
             }
+
+            BuildConfig.DEBUG
 
             sut.apply {
                 start()
