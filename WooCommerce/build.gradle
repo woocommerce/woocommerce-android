@@ -153,6 +153,8 @@ android {
     testOptions {
         animationsDisabled = true
     }
+
+    dynamicFeatures = [':libs:barcode']
 }
 
 dependencies {
@@ -181,6 +183,7 @@ dependencies {
 
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
+    api "androidx.navigation:navigation-dynamic-features-fragment:$gradle.ext.navigationVersion"
 
     implementation("org.wordpress:utils:$wordPressUtilsVersion") {
         exclude group: "com.mcxiaoke.volley"
@@ -315,6 +318,8 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
     }
+
+    implementation 'com.google.mlkit:barcode-scanning:17.0.0'
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

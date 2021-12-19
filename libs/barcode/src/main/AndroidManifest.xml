@@ -11,8 +11,8 @@
         dist:instant="false"
         dist:title="@string/title_barcode">
         <dist:delivery>
-<!--            <dist:install-time />-->
-            <dist:on-demand />
+            <dist:install-time />
+<!--            <dist:on-demand />-->
         </dist:delivery>
         <dist:fusing dist:include="true" />
     </dist:module>
