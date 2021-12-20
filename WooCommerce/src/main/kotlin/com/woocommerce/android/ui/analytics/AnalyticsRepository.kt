@@ -43,7 +43,7 @@ class AnalyticsRepository @Inject constructor(
             val granularity = getGranularity(selectedRange)
             getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
                 .combine(getPreviousPeriodStats(dateRange, granularity, fetchStrategy)) { currentPeriodRevenue,
-                                                                                          previousPeriodRevenue ->
+                    previousPeriodRevenue ->
                     if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
                         return@combine RevenueError
                     }
@@ -76,7 +76,7 @@ class AnalyticsRepository @Inject constructor(
         val granularity = getGranularity(selectedRange)
         getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
             .combine(getPreviousPeriodStats(dateRange, granularity, fetchStrategy)) { currentPeriodRevenue,
-                                                                                      previousPeriodRevenue ->
+                previousPeriodRevenue ->
                 if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
                     return@combine OrdersError
                 }
@@ -101,7 +101,6 @@ class AnalyticsRepository @Inject constructor(
                 )
             }.single()
     }
-
 
     suspend fun fetchProductsData(
         dateRange: AnalyticsDateRange,
