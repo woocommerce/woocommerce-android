@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCreationEditCustomerAddressBinding
@@ -29,19 +28,13 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
 
     private val addressViewModel: AddressViewModel by viewModels()
 
-    private var _binding: FragmentCreationEditCustomerAddressBinding? = null
-
-    private var _billingBinding: LayoutAddressFormBinding? = null
-    private val billingBinding
-        get() = _billingBinding!!
-
     private lateinit var doneMenuItem: MenuItem
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        _billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
+        val billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
             addressSectionHeader.setText(R.string.order_detail_billing_address_section)
             countrySpinner.setClickListener {
                 showCountrySearchScreen()
@@ -51,7 +44,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             }
         }
 
-        _binding = FragmentCreationEditCustomerAddressBinding.bind(view).apply {
+        FragmentCreationEditCustomerAddressBinding.bind(view).apply {
             container.addView(billingBinding.root)
         }
 
@@ -122,12 +115,6 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     }
 
     override fun getFragmentTitle() = getString(R.string.order_creation_new_customer)
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-        _billingBinding = null
-    }
 
     @Suppress("FunctionOnlyReturningConstant")
     private fun hasChanges() = true
