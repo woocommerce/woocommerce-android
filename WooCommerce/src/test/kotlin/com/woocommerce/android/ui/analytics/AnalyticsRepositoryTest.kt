@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -42,13 +43,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     private val statsRepository: StatsRepository = mock()
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val analyticsStorage: AnalyticsStorage = mock()
 
     private val sut: AnalyticsRepository = AnalyticsRepository(
         statsRepository,
         selectedSite,
         wooCommerceStore,
-        analyticsStorage,
         coroutinesTestRule.testDispatchers
     )
 
@@ -676,7 +675,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given stats in analytics storage, when fetch product data, stats repository is called once `() =
+    fun `when get revenue data twice, then stats repository is once per period`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
@@ -684,68 +683,31 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
             val productLeaderBoards = Result.success(givenAProductsStats())
-
             whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
                 .thenReturn(flowOf(productLeaderBoards))
 
-            val previousFromDate = "2021-01-01"
-            val previousToDate = "2021-01-02"
-
-            val currentFromDate = "2021-08-01"
-            val currentToDate = "2021-08-10"
-
-            whenever(analyticsStorage.getStats(currentFromDate, currentToDate)).thenReturn(revenue)
-
             // When
+            sut.fetchRevenueData(
+                MultipleDateRange(
+                    SimpleDateRange(previousDate!!, previousDate),
+                    SimpleDateRange(currentDate!!, currentDate)
+                ),
+                ANY_RANGE,
+                anyFetchStrategy
+            )
+
             sut.fetchProductsData(
                 MultipleDateRange(
-                    SimpleDateRange(sdf.parse(previousFromDate)!!, sdf.parse(previousToDate)!!),
-                    SimpleDateRange(sdf.parse(currentFromDate)!!, sdf.parse(currentToDate)!!)
+                    SimpleDateRange(previousDate, previousDate),
+                    SimpleDateRange(currentDate, currentDate)
                 ),
                 ANY_RANGE,
                 anyFetchStrategy
             )
 
             // Then
-            val startDatesCaptor = argumentCaptor<String>()
-            val endDatesCaptor = argumentCaptor<String>()
-
-            verify(statsRepository, times(1))
-                .fetchRevenueStats(
-                    eq(YEARS),
-                    eq(true),
-                    startDatesCaptor.capture(),
-                    endDatesCaptor.capture()
-                )
-
-            assertEquals(listOf(previousFromDate), startDatesCaptor.allValues)
-            assertEquals(listOf(previousToDate), endDatesCaptor.allValues)
-        }
-
-    @Test
-    fun `given no stats in analytics storage, when fetch product data, stats are saved `() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // Given
-            val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
-                .thenReturn(listOf(Result.success(revenue)).asFlow())
-
-            val productLeaderBoards = Result.success(givenAProductsStats())
-
-            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-                .thenReturn(flowOf(productLeaderBoards))
-
-            whenever(analyticsStorage.getStats(any(), any())).thenReturn(null)
-
-            // When
-            val result = sut.fetchProductsData(
-                SimpleDateRange(previousDate!!, currentDate!!),
-                ANY_RANGE,
-                anyFetchStrategy
-            )
-
-            // Then
-            verify(analyticsStorage, times(1)).saveStats(PREVIOUS_DATE, PREVIOUS_DATE, revenue)
+            verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE))
+            verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE))
         }
 
     @Test

@@ -11,6 +11,8 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.*
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
@@ -28,126 +30,121 @@ class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val analyticsStorage: AnalyticsStorage,
     private val dispatchers: CoroutineDispatchers,
 ) {
     private val getCurrentRevenueMutex = Mutex()
+    private var currentRevenueStats: AnalyticsStatsResultWrapper? = null
+
     private val getPreviousRevenueMutex = Mutex()
+    private var previousRevenueStats: AnalyticsStatsResultWrapper? = null
 
     suspend fun fetchRevenueData(
         dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
-    ): RevenueResult =
-        coroutineScope {
-            val granularity = getGranularity(selectedRange)
-            getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
-                .combine(getPreviousPeriodStats(dateRange, granularity, fetchStrategy)) { currentPeriodRevenue,
-                    previousPeriodRevenue ->
-                    if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
-                        return@combine RevenueError
-                    }
-                    if (previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
-                        return@combine RevenueError
-                    }
-
-                    val previousTotalSales = previousPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales ?: 0.0
-                    val previousNetRevenue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue ?: 0.0
-                    val currentTotalSales = currentPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales!!
-                    val currentNetRevenue = currentPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue!!
-
-                    return@combine RevenueData(
-                        RevenueStat(
-                            currentTotalSales,
-                            calculateDeltaPercentage(previousTotalSales, currentTotalSales),
-                            currentNetRevenue,
-                            calculateDeltaPercentage(previousNetRevenue, currentNetRevenue),
-                            getCurrencyCode()
-                        )
-                    )
-                }.single()
+    ): RevenueResult {
+        val granularity = getGranularity(selectedRange)
+        val currentPeriodRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
+        val previousPeriodRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy)
+        if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
+            return RevenueError
         }
+        if (previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
+            return RevenueError
+        }
+
+        val previousTotalSales = previousPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales ?: 0.0
+        val previousNetRevenue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue ?: 0.0
+        val currentTotalSales = currentPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales!!
+        val currentNetRevenue = currentPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue!!
+
+        return RevenueData(
+            RevenueStat(
+                currentTotalSales,
+                calculateDeltaPercentage(previousTotalSales, currentTotalSales),
+                currentNetRevenue,
+                calculateDeltaPercentage(previousNetRevenue, currentNetRevenue),
+                getCurrencyCode()
+            )
+        )
+    }
 
     suspend fun fetchOrdersData(
         dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
-    ): OrdersResult = coroutineScope {
+    ): OrdersResult {
         val granularity = getGranularity(selectedRange)
-        getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
-            .combine(getPreviousPeriodStats(dateRange, granularity, fetchStrategy)) { currentPeriodRevenue,
-                previousPeriodRevenue ->
-                if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
-                    return@combine OrdersError
-                }
+        val currentPeriodRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
+        val previousPeriodRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy)
 
-                if (previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
-                    return@combine OrdersError
-                }
+        if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
+            return OrdersError
+        }
 
-                val previousOrdersCount = previousPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount ?: 0
-                val previousOrderValue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue ?: 0.0
-                val currentOrdersCount = currentPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount!!
-                val currentAvgOrderValue = currentPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue!!
+        if (previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
+            return OrdersError
+        }
 
-                return@combine OrdersResult.OrdersData(
-                    OrdersStat(
-                        currentOrdersCount,
-                        calculateDeltaPercentage(previousOrdersCount.toDouble(), currentOrdersCount.toDouble()),
-                        currentAvgOrderValue,
-                        calculateDeltaPercentage(previousOrderValue, currentAvgOrderValue),
-                        getCurrencyCode()
-                    )
-                )
-            }.single()
+        val previousOrdersCount = previousPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount ?: 0
+        val previousOrderValue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue ?: 0.0
+        val currentOrdersCount = currentPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount!!
+        val currentAvgOrderValue = currentPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue!!
+
+        return OrdersResult.OrdersData(
+            OrdersStat(
+                currentOrdersCount,
+                calculateDeltaPercentage(previousOrdersCount.toDouble(), currentOrdersCount.toDouble()),
+                currentAvgOrderValue,
+                calculateDeltaPercentage(previousOrderValue, currentAvgOrderValue),
+                getCurrencyCode()
+            )
+        )
     }
 
     suspend fun fetchProductsData(
         dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
-    ): ProductsResult = coroutineScope {
+    ): ProductsResult {
         val granularity = getGranularity(selectedRange)
-        combine(
-            getCurrentPeriodStats(dateRange, granularity, fetchStrategy),
-            getPreviousPeriodStats(dateRange, granularity, fetchStrategy),
-            getProductStats(dateRange, granularity, TOP_PRODUCTS_LIST_SIZE)
-        ) { currentRevenue, previousRevenue, products ->
-            if (currentRevenue.isFailure || currentRevenue.getOrNull() == null) {
-                return@combine ProductsResult.ProductsError
-            }
-            if (previousRevenue.isFailure || previousRevenue.getOrNull() == null) {
-                return@combine ProductsResult.ProductsError
-            }
-            if (products.isFailure) {
-                return@combine ProductsResult.ProductsError
-            }
-            if (previousRevenue.getOrNull()!!.parseTotal()?.itemsSold == null ||
-                currentRevenue.getOrNull()!!.parseTotal()?.itemsSold == null
-            ) {
-                return@combine ProductsResult.ProductsError
-            }
+        val currentPeriodRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
+        val previousPeriodRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy)
+        val productsStats = getProductStats(dateRange, granularity, TOP_PRODUCTS_LIST_SIZE)
+        if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
+            return ProductsResult.ProductsError
+        }
+        if (previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
+            return ProductsResult.ProductsError
+        }
+        if (productsStats.isFailure) {
+            return ProductsResult.ProductsError
+        }
+        if (previousPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold == null ||
+            currentPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold == null
+        ) {
+            return ProductsResult.ProductsError
+        }
 
-            val previousItemsSold = previousRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
-            val currentItemsSold = currentRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
-            val productItems = products.getOrNull()?.map {
-                ProductItem(
-                    it.product.name,
-                    it.total,
-                    it.product.getFirstImageUrl(),
-                    it.quantity,
-                    it.currency
-                )
-            } ?: emptyList()
-
-            return@combine ProductsResult.ProductsData(
-                ProductsStat(
-                    currentItemsSold,
-                    calculateDeltaPercentage(previousItemsSold.toDouble(), currentItemsSold.toDouble()),
-                    productItems
-                )
+        val previousItemsSold = previousPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
+        val currentItemsSold = currentPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
+        val productItems = productsStats.getOrNull()?.map {
+            ProductItem(
+                it.product.name,
+                it.total,
+                it.product.getFirstImageUrl(),
+                it.quantity,
+                it.currency
             )
-        }.single()
+        } ?: emptyList()
+
+        return ProductsResult.ProductsData(
+            ProductsStat(
+                currentItemsSold,
+                calculateDeltaPercentage(previousItemsSold.toDouble(), currentItemsSold.toDouble()),
+                productItems
+            )
+        )
     }
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
@@ -158,7 +155,7 @@ class AnalyticsRepository @Inject constructor(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ): Flow<Result<WCRevenueStatsModel?>> {
+    ): Result<WCRevenueStatsModel?> = coroutineScope {
         getCurrentRevenueMutex.withLock {
             val startDate = when (dateRange) {
                 is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
@@ -169,7 +166,16 @@ class AnalyticsRepository @Inject constructor(
                 is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
             }
 
-            return fetchStats(startDate, endDate, granularity, fetchStrategy)
+            if (shouldUpdateCurrentStats(startDate, endDate)) {
+                currentRevenueStats =
+                    AnalyticsStatsResultWrapper(
+                        startDate = startDate,
+                        endDate = endDate,
+                        result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
+                    )
+            }
+
+            return@coroutineScope currentRevenueStats!!.result.await()
         }
     }
 
@@ -177,7 +183,7 @@ class AnalyticsRepository @Inject constructor(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ): Flow<Result<WCRevenueStatsModel?>> {
+    ): Result<WCRevenueStatsModel?> = coroutineScope {
         getPreviousRevenueMutex.withLock {
             val startDate = when (dateRange) {
                 is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
@@ -188,15 +194,23 @@ class AnalyticsRepository @Inject constructor(
                 is MultipleDateRange -> dateRange.from.to.formatToYYYYmmDD()
             }
 
-            return fetchStats(startDate, endDate, granularity, fetchStrategy)
+            if (shouldUpdatePreviousStats(startDate, endDate)) {
+                previousRevenueStats =
+                    AnalyticsStatsResultWrapper(
+                        startDate,
+                        endDate,
+                        async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
+                    )
+            }
         }
+        return@coroutineScope previousRevenueStats!!.result.await()
     }
 
     private suspend fun getProductStats(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         quantity: Int
-    ): Flow<Result<List<WCTopPerformerProductModel>>> {
+    ): Result<List<WCTopPerformerProductModel>> {
         val startDate = when (dateRange) {
             is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
             is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
@@ -224,37 +238,43 @@ class AnalyticsRepository @Inject constructor(
         else -> DeltaPercentage.Value((round((currentVal - previousVal) / previousVal) * ONE_H_PERCENT).toInt())
     }
 
-    private suspend fun fetchStats(
+    private fun shouldUpdatePreviousStats(startDate: String, endDate: String) =
+        previousRevenueStats == null ||
+            (previousRevenueStats?.startDate != startDate || previousRevenueStats?.endDate != endDate) &&
+            (previousRevenueStats?.result?.isCompleted == true && previousRevenueStats?.result?.isActive != true)
+
+    private fun shouldUpdateCurrentStats(startDate: String, endDate: String) =
+        currentRevenueStats == null ||
+            (currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate) &&
+            (currentRevenueStats?.result?.isCompleted == true && currentRevenueStats?.result?.isActive != true)
+
+    private suspend fun fetchNetworkStats(
         startDate: String,
         endDate: String,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ): Flow<Result<WCRevenueStatsModel?>> = withContext(dispatchers.io) {
-        analyticsStorage.getStats(startDate, endDate)?.let {
-            flowOf(Result.success(it))
-        } ?: statsRepository.fetchRevenueStats(
+    ): Result<WCRevenueStatsModel?> =
+        statsRepository.fetchRevenueStats(
             granularity,
             fetchStrategy is FetchStrategy.ForceNew,
             startDate,
             endDate
-        )
-            .flowOn(dispatchers.io)
-            .onEach { result -> result.getOrNull()?.let { analyticsStorage.saveStats(startDate, endDate, it) } }
-    }
+        ).flowOn(dispatchers.io).single()
+
 
     private suspend fun fetchProductLeaderboards(
         startDate: String,
         endDate: String,
         granularity: StatsGranularity,
         quantity: Int,
-    ): Flow<Result<List<WCTopPerformerProductModel>>> = withContext(dispatchers.io) {
+    ): Result<List<WCTopPerformerProductModel>> = withContext(dispatchers.io) {
         statsRepository.fetchProductLeaderboards(
             true,
             granularity,
             quantity,
             startDate,
             endDate
-        ).flowOn(dispatchers.io)
+        ).flowOn(dispatchers.io).single()
     }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
@@ -291,4 +311,10 @@ class AnalyticsRepository @Inject constructor(
         object ForceNew : FetchStrategy()
         object Saved : FetchStrategy()
     }
+
+    private data class AnalyticsStatsResultWrapper(
+        val startDate: String,
+        val endDate: String,
+        val result: Deferred<Result<WCRevenueStatsModel?>>
+    )
 }
