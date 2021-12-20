@@ -322,8 +322,7 @@ dependencies {
     //Kotest
     testImplementation "io.kotest:kotest-runner-junit5:$kotest"
     testImplementation "io.kotest:kotest-assertions-core:$kotest"
-//    testImplementation 'io.kotest:kotest-runner-junit5-jvm'
-
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.8.1" //Needed to support existing jUnit 4 tests
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
