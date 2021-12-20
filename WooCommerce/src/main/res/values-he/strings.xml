@@ -1,11 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-11-11 16:54:13+0000
+Translation-Revision-Date: 2021-12-08 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="settings_enable_order_creation_teaser_message">כדאי לבדוק את האפשרות ליצור הזמנות עם הפרטים המלאים בזמן שאנחנו מתכוננים להשקה</string>
+    <string name="settings_enable_order_creation_teaser_title">יצירת הזמנה</string>
+    <string name="settings_enable_simple_payments_teaser_title">תשלומים פשוטים</string>
+    <string name="beta_features_order_creation">יצירת הזמנה</string>
+    <string name="beta_features_simple_payments">תשלומים פשוטים</string>
+    <string name="beta_features_add_ons">להציג הרחבות</string>
+    <string name="orders_empty_message_for_filtered_orders">מצטערים, לא הצלחנו למצוא הזמנות</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">לפתוח את ההגדרות</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">חסרה הרשאה שנדרשת למכשירים בסביבה</string>
+    <string name="shipping_label_edit_address_country_search_hint">לסנן ארצות</string>
+    <string name="shipping_label_edit_address_state_search_hint">לסנן מדינה</string>
+    <string name="order_detail_edit_address_state">מדינה</string>
+    <string name="orderfilters_date_range_end_date">תאריך סיום</string>
+    <string name="orderfilters_date_range_start_date">תאריך התחלה</string>
+    <string name="orderfilters_date_range_picker_title">לבחור תאריכים</string>
+    <string name="orderfilters_date_range_filter_custom_range">טווח מותאם</string>
+    <string name="orderlist_bottom_sheet_simple_payment_description">ליצור הזמנה עם מידע חיוני בלבד</string>
+    <string name="orderlist_bottom_sheet_simple_payment_action">תשלום פשוט</string>
+    <string name="orderlist_bottom_sheet_create_order_description">ליצור הזמנה ידנית חדשה</string>
+    <string name="orderlist_bottom_sheet_create_order_action">ליצור הזמנה</string>
+    <string name="orderlist_create_order_button_description">ליצור הזמנה</string>
+    <string name="simple_payments_creation_error">אין אפשרות ליצור הזמנה</string>
+    <string name="simple_payments_enter_amount">להזין סכום</string>
+    <string name="simple_payments_dialog_title">לגבות תשלום</string>
+    <string name="orderlist_simple_payments_menu">תשלום פשוט</string>
+    <string name="orderlist_simple_payments_wip_title">לגבות תשלומים דרך המכשיר שלך!</string>
+    <string name="analytics">נתונים אנליטיים</string>
+    <string name="jetpack_install_progress_step_four_message">סיימת</string>
+    <string name="jetpack_install_progress_step_three_message">מחבר את החנות שלך</string>
+    <string name="jetpack_install_progress_step_two_message">מפעיל</string>
+    <string name="jetpack_install_progress_step_one_message">מתקין את Jetpack</string>
+    <string name="jetpack_install_progress_subtitle">רק רגע, אנחנו מחברים את %s אל Jetpack.</string>
+    <string name="jetpack_install_progress_title">מתקין\nJetpack</string>
+    <string name="jetpack_install_start_default_name">האתר שלך</string>
+    <string name="jetpack_install_start_subtitle">להתקין את התוסף החינמי של Jetpack ב-&lt;strong&gt;%s&lt;/strong&gt; בשביל חוויית השימוש הטובה ביותר בנייד.</string>
+    <string name="jetpack_install_start_title">להתקין את Jetpack</string>
+    <string name="product_review_list_fetching_failed">שגיאה בהבאת הביקורות על המוצר</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">הקורא מנותק</string>
+    <string name="card_reader_accessibility_reader_is_connected">הקורא מחובר</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">לא מומלץ לבטל עדכון תוכנה בזמן פעולתו. הביטול יחסום את החיבור של קורא הכרטיסים.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">עדכון התוכנה של קורא הכרטיסים נכשל מאחר שהסוללה לא הוטענה מספיק. עליך קודם להטעין את סוללת הקורא למעל ‎50%%‎ ולנסות שוב.</string>
+    <string name="card_reader_software_update_progress_description_low_battery">עדכון התוכנה של קורא הכרטיסים נכשל מאחר שאחוז הסוללה הוא ⁦%1$s⁩%%. עליך קודם להטעין את סוללת הקורא למעל ‎50%%‎ ולנסות שוב.</string>
+    <string name="card_reader_software_update_title_battery_low">יש להטעין את הקורא</string>
+    <string name="card_reader_software_update_description">עליך לעדכן את התוכנה של קורא הכרטיסים שלך כדי להבטיח את הפעילות התקינה שלה</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">עליך לספק מיקוד בהגדרות החנות שלך ולנסות שוב</string>
+    <string name="card_reader_connect_invalid_postal_code_header">המיקוד בכתובת של החנות לא תקין</string>
+    <string name="card_reader_connect_missing_address_button">יש להזין כתובת</string>
+    <string name="card_reader_connect_missing_address">עליך לספק את הכתובת של החנות שלך כדי להמשיך</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">יש לבדוק את המכשיר הנייד שלך</string>
+    <string name="card_reader_m2_manual_card_reader">מדריך לקורא הכרטיסים של Stripe M2</string>
+    <string name="card_reader_bbpos_manual_card_reader">מדריך לקורא הכרטיסים של BBPOS Chipper</string>
+    <string name="order_error_update_empty_mail">אין אפשרות לעדכן את הכתובת עם שדה ריק לכתובת האימייל. עליך לוודא שמותקנת באתר שלך הגרסה האחרונה של WooCommerce.</string>
+    <string name="orderfilters_date_range_filter_last_30_days">30 הימים האחרונים</string>
+    <string name="orderfilters_date_range_filter_last_7_days">שבעת הימים האחרונים</string>
+    <string name="orderfilters_date_range_filter_last_two_days">היומיים האחרונים</string>
+    <string name="orderfilters_date_range_filter_today">היום</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
+    <string name="orderfilters_default_filter_option">הכול</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">הזמנות שסוננו</string>
+    <string name="orderfilters_filter_card_title_all_orders">כל ההזמנות</string>
+    <string name="orderlist_simple_payments_wip_message_disabled">אנחנו עובדים על השיפור של תהליך קבלת התשלומים מהמכשיר שלך! ניתן להפעיל את האפשרות דרך \'הגדרות\' &gt; \'אפשרויות ביתא\'.</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">אנחנו עובדים על השיפור של תהליך קבלת התשלומים מהמכשיר שלך! בינתיים, יש להקיש על הכפתור \'+\' ותהיה לך אפשרות ליצור הזמנה עם הסכום שברצונך לגבות.</string>
     <string name="jetpack_benefits_modal_dismiss">לא עכשיו</string>
     <string name="jetpack_benefits_modal_install_jetpack">להתקין את Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">לאפשר למספר משתמשים לגשת אל WooCommerce Mobile.</string>
@@ -16,9 +78,7 @@ Language: he_IL
     <string name="jetpack_benefits_modal_push_notifications_title">הודעות דחיפה</string>
     <string name="jetpack_benefits_modal_subtitle">להתקין את התוסף החינמי של Jetpack בשביל חוויית השימוש הטובה ביותר בנייד.</string>
     <string name="jetpack_benefits_modal_title">לנצל את מלוא הפוטנציאל של החנות שלך</string>
-    <string name="settings_enable_quick_order_teaser_message">כדאי לבדוק את האפשרות ליצור הזמנות עם מידע חיוני בלבד בזמן שאנחנו מתכוננים להשקה</string>
-    <string name="settings_enable_quick_order_teaser_title">הזמנה מהירה</string>
-    <string name="beta_features_message">להציג הרחבות, הזמנה מהירה</string>
+    <string name="settings_enable_simple_payments_teaser_message">כדאי לבדוק את האפשרות ליצור הזמנות עם מידע חיוני בלבד בזמן שאנחנו מתכוננים להשקה</string>
     <string name="order_detail_use_as_shipping_address">להשתמש בתור כתובת למשלוח</string>
     <string name="order_detail_use_as_billing_address">להשתמש בתור כתובת לחיוב</string>
     <string name="orderfilters_filters_count_title">מסננים (%d)</string>
@@ -37,7 +97,6 @@ Language: he_IL
     <string name="product_description_hint_with_title">נשמח לשמוע פרטים נוספים על %s…</string>
     <string name="product_description_hint_no_title">לתאר את המוצר שלך ללקוחות עתידיים…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">המספר הסידורי של הקורא הועתק ללקוח</string>
-    <string name="card_reader_manual_card_reader">מדריך לקורא הכרטיסים</string>
     <string name="order_detail_add_billing_address">להוסיף כתובת לחיוב</string>
     <string name="order_detail_add_shipping_address">להוסיף כתובת למשלוח</string>
     <string name="order_detail_add_customer_note">להוסיף הערת לקוח</string>
@@ -45,7 +104,6 @@ Language: he_IL
     <string name="order_detail_shipping_address_section">כתובת משלוח</string>
     <string name="order_detail_address_section">כתובת</string>
     <string name="order_detail_edit_address_country">ארץ</string>
-    <string name="order_detail_edit_address_state">מדינה / מחוז</string>
     <string name="order_detail_edit_address_zip">מיקוד</string>
     <string name="order_detail_edit_address_city">עיר</string>
     <string name="order_detail_edit_address_line2">שורת כתובת 2</string>
@@ -125,7 +183,6 @@ Language: he_IL
     <string name="card_reader_purchase_card_reader">להזמין קורא כרטיסים</string>
     <string name="card_reader_manage_card_reader">לנהל את קורא הכרטיסים</string>
     <string name="shipping_label_multiple_customs_form_print_button">להדפיס</string>
-    <string name="shipping_label_edit_address_state">מדינה / מחוז</string>
     <string name="shipping_label_edit_address_line2">שורת כתובת 2</string>
     <string name="shipping_label_edit_address_line1">שורת כתובת 1</string>
     <string name="shipping_label_print_multiple_screen_title">להדפיס תוויות משלוח</string>
@@ -183,7 +240,7 @@ Language: he_IL
     <string name="product_attributes_created_generate_action_text">יצירת סוג</string>
     <string name="product_attributes_created_description">לאחר הוספת המאפיינים, באפשרותך ליצור את הסוג הראשון שלך!</string>
     <string name="product_attributes_created_title">המאפיינים נוספו</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% הושלמו</string>
     <string name="card_reader_software_update_progress_cancel_warning">לא מומלץ לבטל עדכון תוכנה בזמן פעולתו</string>
     <string name="card_reader_payment_failed_unexpected_error_state">אנו מתנצלים, לא ניתן היה לעבד תשלום זה</string>
     <string name="card_reader_payment_failed_server_error_state">אין חיבור לשרת</string>
@@ -273,7 +330,6 @@ Language: he_IL
     <string name="shipping_label_rate_included_options_usps_tracking">מעקב של USPS</string>
     <string name="card_reader_software_update_in_progress_title">מעדכן את התוכנה של הקורא שלך</string>
     <string name="card_reader_software_update_title">עדכון תוכנה</string>
-    <string name="card_reader_software_update_description">עליך לעדכן את התוכנה של קורא הכרטיסים שלך כדי להבטיח את הפעילות התקינה שלה. האם ברצונך לעדכן כעת?</string>
     <string name="card_reader_detail_connected_update_success">עדכון תוכנה של הקורא</string>
     <string name="card_reader_detail_connected_reader_unknown">שם לא מזוהה לקורא הכרטיסים</string>
     <string name="card_reader_detail_connected_disconnect_reader">לנתק את הקורא</string>
@@ -344,7 +400,7 @@ Language: he_IL
     <string name="card_reader_connect_open_permission_settings">לפתוח את ההגדרות</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth מושבת</string>
     <string name="card_reader_connect_location_provider_disabled_header">המיקום מושבת</string>
-    <string name="card_reader_connect_missing_permissions_header">חסרה הרשאה שנדרשת למיקום</string>
+    <string name="card_reader_connect_missing_permissions_header">חסרה הרשאה שנדרשת למיקום מדויק</string>
     <string name="card_reader_connect_connecting_failed_hint">לא הצלחנו להתחבר אל Reader.</string>
     <string name="card_reader_connect_connecting_header">מתחבר אל Reader</string>
     <string name="card_reader_connect_to_reader">יש להתחבר אל Reader</string>
@@ -487,6 +543,7 @@ Language: he_IL
     <string name="shipping_label_edit_address_use_address_as_is">להשתמש בכתובת כפי שהוזנה</string>
     <string name="shipping_label_edit_address_country">ארץ</string>
     <string name="shipping_label_edit_address_zip">מיקוד</string>
+    <string name="shipping_label_edit_address_state">מדינה</string>
     <string name="shipping_label_edit_address_city">עיר</string>
     <string name="shipping_label_edit_address_phone">טלפון</string>
     <string name="shipping_label_edit_address_company">חברה</string>
@@ -840,7 +897,6 @@ Language: he_IL
     <string name="product_schedule_sale_sublabel">להתחיל ולסיים מבצע באופן אוטומטי</string>
     <string name="product_schedule_sale_label">לקבוע תאריך למבצע</string>
     <string name="order_refunds_store_admin_link_text">במנהל המערכת של החנות שלך</string>
-    <string name="orders_empty_message_with_order_status_filter">מצטערים, לא הצלחנו למצוא הזמנות של \"%s\"</string>
     <string name="product_inventory_update_sku_error">הקוד של SKU כבר נמצא בשימוש של מוצר אחר</string>
     <string name="product_shipping_settings">הגדרות משלוח</string>
     <string name="product_no_shipping_class">ללא סיווג משלוח</string>

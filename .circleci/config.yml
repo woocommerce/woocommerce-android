@@ -103,6 +103,54 @@ jobs:
           name: Check instrumentation tests build
           command: ./gradlew assembleVanillaDebugAndroidTest
 
+  Connected Tests:
+    parameters:
+      post-to-slack:
+        description: Post to Slack when tests fail. SLACK_UI_TESTS_WEBHOOK ENV variable must be set.
+        type: boolean
+        default: false
+    executor:
+      name: android/default
+      api-version: "29"
+    steps:
+      - git/shallow-checkout
+      - android/restore-gradle-cache
+      - copy-gradle-properties
+      - update-gradle-memory:
+          jvmargs: "Xmx1536m"
+      - run:
+          name: Build
+          command: ./gradlew WooCommerce:assembleVanillaDebug --stacktrace
+      - run:
+          name: Build Tests
+          command: ./gradlew WooCommerce:assembleVanillaDebugAndroidTest --stacktrace
+      - run:
+          name: Decrypt credentials
+          command: openssl aes-256-cbc -md sha256 -d -in .circleci/.firebase.secrets.json.enc -out .circleci/.firebase.secrets.json -k "${FIREBASE_SECRETS_ENCRYPTION_KEY}"
+      - android/firebase-test:
+          key-file: .circleci/.firebase.secrets.json
+          type: instrumentation
+          apk-path: WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk
+          test-apk-path: WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk
+          test-targets: class com.woocommerce.android.ui.main.ReviewsUITest
+          device: model=Pixel2,version=28,locale=en,orientation=portrait
+          project: api-project-108380595987
+          timeout: 10m
+          num-flaky-test-attempts: 2
+          results-history-name: CircleCI WooCommerce Android Connected Tests
+      - android/save-gradle-cache
+      - when:
+          condition: << parameters.post-to-slack >>
+          steps:
+            - slack/status:
+                fail_only: false
+                include_job_number_field: true
+                include_project_field: true
+                include_visit_job_action: true
+                webhook: '${SLACK_UI_TESTS_WEBHOOK}'
+                failure_message: 'WooCommerce Android UI Tests failed.'
+                success_message: 'WooCommerce Android UI Tests passed.'
+
   Installable Build:
     executor:
       name: android/default
@@ -182,6 +230,31 @@ workflows:
       - Test
       - Installable Build
       - Ensure Screenshots Tests Build
+      - Connected Tests:
+          name: UI Tests (Pixel 2 | API 28)
+          post-to-slack: true
+          # Always run connected tests on develop and release branches
+          filters:
+            branches:
+              only:
+                - develop
+                - /^release.*/          
+  Optional UI Tests:
+    unless: << pipeline.parameters.release_build >>
+    #Optionally run connected tests on PRs
+    jobs:
+      - Hold:
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - develop
+                - /^release.*/
+                - /pull\/[0-9]+/
+      - Connected Tests:
+          post-to-slack: true
+          name: UI Tests (Pixel 2 | API 28)
+          requires: [Hold]      
   Release Build:
     when: << pipeline.parameters.release_build >>
     jobs:

@@ -306,7 +306,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <!-- Set at the theme level so no need to set it in the layout -->
     <style name="Woo.CheckedTextView">
-        <item name="textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
         <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
         <item name="android:checkMark">?android:attr/listChoiceIndicatorSingle</item>
         <item name="android:background">?attr/selectableItemBackground</item>

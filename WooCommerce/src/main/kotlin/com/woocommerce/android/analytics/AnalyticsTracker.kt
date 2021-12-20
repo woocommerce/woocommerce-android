@@ -575,7 +575,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MEDIA_PICKER_ITEM_UNSELECTED,
         MEDIA_PICKER_SELECTION_CLEARED,
         MEDIA_PICKER_OPENED,
-        MEDIA_PICKER_OPEN_SYSTEM_PICKER
+        MEDIA_PICKER_OPEN_SYSTEM_PICKER,
+        MEDIA_PICKER_OPEN_WORDPRESS_MEDIA_LIBRARY_PICKER
     }
     // endregion
 
@@ -796,8 +797,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
 
-        // TODO nbradbury change to production when feature is released
-        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments_prototype"
+        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"

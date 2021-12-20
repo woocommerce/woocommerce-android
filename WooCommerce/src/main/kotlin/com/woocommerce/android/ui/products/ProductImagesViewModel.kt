@@ -89,6 +89,10 @@ class ProductImagesViewModel @Inject constructor(
         }
 
         mediaFileUploadHandler.enqueueUpload(remoteProductId, localUriList.map { it.toString() })
+
+        if (!isMultiSelectionAllowed) {
+            viewState = viewState.copy(images = emptyList())
+        }
     }
 
     fun onShowStorageChooserButtonClicked() {
@@ -119,7 +123,7 @@ class ProductImagesViewModel @Inject constructor(
         viewState = viewState.copy(images = images.filter { it.id != imageId })
     }
 
-    fun onImagesAdded(newImages: List<Image>) {
+    fun onMediaLibraryImagesAdded(newImages: List<Image>) {
         viewState = if (isMultiSelectionAllowed) {
             viewState.copy(images = images + newImages)
         } else {

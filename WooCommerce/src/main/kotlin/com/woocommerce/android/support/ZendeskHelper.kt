@@ -98,8 +98,9 @@ class ZendeskHelper(
         oauthClientId: String,
         enableLogs: Boolean = BuildConfig.DEBUG
     ) {
-        require(!isZendeskEnabled) {
-            "Zendesk shouldn't be initialized more than once!"
+        if (isZendeskEnabled) {
+            if (PackageUtils.isUITesting()) return
+            else error("Zendesk shouldn't be initialized more than once!")
         }
         if (zendeskUrl.isEmpty() || applicationId.isEmpty() || oauthClientId.isEmpty()) {
             return

@@ -65,9 +65,10 @@ class OrderListItemDataSource(
                 if (order == null) {
                     LoadingItem(remoteOrderId)
                 } else {
+                    @Suppress("DEPRECATION_ERROR")
                     OrderListItemUI(
                         localOrderId = LocalId(order.id),
-                        remoteOrderId = RemoteId(order.remoteOrderId),
+                        remoteOrderId = order.remoteOrderId,
                         orderNumber = order.number,
                         orderName = order.getBillingName(
                             resourceProvider.getString(R.string.orderdetail_customer_name_default)
@@ -76,7 +77,7 @@ class OrderListItemDataSource(
                         status = order.status,
                         dateCreated = order.dateCreated,
                         currencyCode = order.currency,
-                        isLastItemInSection = isLastItemByRemoteIdMap[RemoteId(order.remoteOrderId)] ?: false
+                        isLastItemInSection = isLastItemByRemoteIdMap[order.remoteOrderId] ?: false
                     )
                 }
             }

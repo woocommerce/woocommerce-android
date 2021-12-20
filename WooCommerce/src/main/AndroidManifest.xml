@@ -93,7 +93,7 @@
             android:theme="@style/Theme.Woo.DayNight.Zendesk" />
 
         <activity android:name="org.wordpress.android.mediapicker.ui.MediaPickerActivity"
-            android:theme="@style/MediaPicker.NoActionBar" />
+            android:theme="@style/Theme.Woo.DayNight" />
 
         <!-- Services -->
         <service
