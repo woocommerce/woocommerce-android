@@ -36,13 +36,11 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.util.Calendar
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -182,6 +180,7 @@ class MyStoreFragment :
         refreshMyStoreStats(forced = this.isRefreshPending)
     }
 
+    @Suppress("ForbiddenComment")
     private fun prepareJetpackBenefitsBanner() {
         binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
             presenter.dismissJetpackBenefitsBanner()
