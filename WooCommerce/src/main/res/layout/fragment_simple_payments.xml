@@ -1,267 +1,273 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container"
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_surface">
+
+            <View
+                android:id="@+id/divider1"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_marginBottom="@dimen/major_100"
+                android:background="@color/divider_color"
+                app:layout_constraintBottom_toTopOf="@+id/containerAmount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Custom amount -->
+            <LinearLayout
+                android:id="@+id/containerAmount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_100"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/divider2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider1">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textCustomAmountLabel"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:drawableStart="@drawable/ic_gridicons_money"
+                    android:drawablePadding="@dimen/major_100"
+                    android:text="@string/simple_payments_custom_amount" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textCustomAmount"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    tools:text="$40.00" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/major_100"
+                android:background="@color/divider_color"
+                app:layout_constraintBottom_toTopOf="@+id/containerEmail"
+                app:layout_constraintStart_toStartOf="@+id/containerEmail"
+                app:layout_constraintTop_toBottomOf="@+id/containerAmount" />
+
+            <!-- Email -->
+            <LinearLayout
+                android:id="@+id/containerEmail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/divider3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider2">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textEmail"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/email" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editEmail"
+                    style="@style/Woo.TextInputEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:hint="@string/simple_payments_edit_email_hint"
+                    android:inputType="textEmailAddress"
+                    app:errorEnabled="true" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/major_100"
+                android:layout_marginBottom="@dimen/major_100"
+                android:background="@color/divider_color"
+                app:layout_constraintBottom_toTopOf="@+id/textPayment"
+                app:layout_constraintStart_toStartOf="@+id/containerEmail"
+                app:layout_constraintTop_toBottomOf="@+id/containerEmail" />
+
+            <!-- Payment -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textPayment"
+                style="@style/Woo.Card.Title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginLeft="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginRight="@dimen/major_100"
+                android:layout_marginBottom="@dimen/major_100"
+                android:text="@string/payment"
+                app:layout_constraintBottom_toTopOf="@+id/containerSubtotal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider3" />
+
+            <!-- Subtotal -->
+            <LinearLayout
+                android:id="@+id/containerSubtotal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/switchChargeTaxes"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textPayment">
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/subtotal" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textSubtotal"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    tools:text="$40.00" />
+            </LinearLayout>
+
+            <!-- Charge taxes -->
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchChargeTaxes"
+                style="@style/Woo.Card.Body.High"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginLeft="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginRight="@dimen/major_100"
+                android:text="@string/simple_payments_charge_taxes"
+                app:layout_constraintBottom_toTopOf="@+id/containerTaxes"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/containerSubtotal" />
+
+            <!-- Tax -->
+            <LinearLayout
+                android:id="@+id/containerTaxes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="17dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/containerTotal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/switchChargeTaxes">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textTaxLabel"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/taxes" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textTax"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    tools:text="$4.00" />
+            </LinearLayout>
+
+            <!-- Total -->
+            <LinearLayout
+                android:id="@+id/containerTotal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/divider4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/containerTaxes">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textTotalLabel"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/order_total" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textTotal"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    tools:text="$44.00" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/major_100"
+                android:background="@color/divider_color"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/containerTotal" />
+
+            <!-- TODO nbradbury - customer provided note -->
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonDone"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/color_surface">
+        android:layout_marginVertical="@dimen/major_100"
+        android:layout_marginHorizontal="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Take payment ($44.00)" />
 
-        <View
-            android:id="@+id/divider1"
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/major_100"
-            android:background="@color/divider_color"
-            app:layout_constraintBottom_toTopOf="@+id/containerAmount"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Custom amount -->
-        <LinearLayout
-            android:id="@+id/containerAmount"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/major_100"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/divider2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider1">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textCustomAmountLabel"
-                style="@style/Woo.Card.Body.Bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:drawableStart="@drawable/ic_gridicons_money"
-                android:drawablePadding="@dimen/major_100"
-                android:text="@string/simple_payments_custom_amount" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textCustomAmount"
-                style="@style/Woo.Card.Body.Bold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="end"
-                tools:text="$40.00" />
-        </LinearLayout>
-
-        <View
-            android:id="@+id/divider2"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/major_100"
-            android:background="@color/divider_color"
-            app:layout_constraintBottom_toTopOf="@+id/containerEmail"
-            app:layout_constraintStart_toStartOf="@+id/containerEmail"
-            app:layout_constraintTop_toBottomOf="@+id/containerAmount" />
-
-        <!-- Email -->
-        <LinearLayout
-            android:id="@+id/containerEmail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/divider3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider2">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textEmail"
-                style="@style/Woo.Card.Body.High"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/email" />
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editEmail"
-                style="@style/Woo.TextInputEditText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:hint="@string/simple_payments_edit_email_hint"
-                android:inputType="textEmailAddress"
-                app:errorEnabled="true" />
-        </LinearLayout>
-
-        <View
-            android:id="@+id/divider3"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:background="@color/divider_color"
-            app:layout_constraintBottom_toTopOf="@+id/textPayment"
-            app:layout_constraintStart_toStartOf="@+id/containerEmail"
-            app:layout_constraintTop_toBottomOf="@+id/containerEmail" />
-
-        <!-- Payment -->
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textPayment"
-            style="@style/Woo.Card.Title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginLeft="@dimen/major_100"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginRight="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:text="@string/payment"
-            app:layout_constraintBottom_toTopOf="@+id/containerSubtotal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider3" />
-
-        <!-- Subtotal -->
-        <LinearLayout
-            android:id="@+id/containerSubtotal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/switchChargeTaxes"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textPayment">
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/Woo.Card.Body.High"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/subtotal" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textSubtotal"
-                style="@style/Woo.Card.Body.High"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="end"
-                tools:text="$40.00" />
-        </LinearLayout>
-
-        <!-- Charge taxes -->
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchChargeTaxes"
-            style="@style/Woo.Card.Body.High"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginLeft="@dimen/major_100"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginRight="@dimen/major_100"
-            android:text="@string/simple_payments_charge_taxes"
-            app:layout_constraintBottom_toTopOf="@+id/containerTaxes"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/containerSubtotal" />
-
-        <!-- Tax -->
-        <LinearLayout
-            android:id="@+id/containerTaxes"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="17dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/containerTotal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switchChargeTaxes">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textTaxLabel"
-                style="@style/Woo.Card.Body.High"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/taxes" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textTax"
-                style="@style/Woo.Card.Body.High"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="end"
-                tools:text="$4.00" />
-        </LinearLayout>
-
-        <!-- Total -->
-        <LinearLayout
-            android:id="@+id/containerTotal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/divider4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/containerTaxes">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textTotalLabel"
-                style="@style/Woo.Card.Body.Bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/order_total" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textTotal"
-                style="@style/Woo.Card.Body.Bold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:gravity="end"
-                tools:text="$44.00" />
-        </LinearLayout>
-
-        <View
-            android:id="@+id/divider4"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_100"
-            android:background="@color/divider_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/containerTotal" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonDone"
-            style="@style/Woo.Button.Colored"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_100"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider4"
-            tools:text="Take payment ($44.00)" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleSmallInverse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/buttonDone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/buttonDone"
-            tools:visibility="visible" />
-
-        <!-- TODO nbradbury - customer provided note -->
-        <!-- TODO nbradbury - take payment button -->
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleSmallInverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/buttonDone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/buttonDone"
+        tools:visibility="visible" />
+</androidx.constraintlayout.widget.ConstraintLayout>
