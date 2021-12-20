@@ -10,33 +10,27 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/color_surface">
+            android:background="@color/color_surface"
+            android:orientation="vertical">
 
             <View
                 android:id="@+id/divider1"
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
                 android:layout_marginBottom="@dimen/major_100"
-                android:background="@color/divider_color"
-                app:layout_constraintBottom_toTopOf="@+id/containerAmount"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:background="@color/divider_color" />
 
             <!-- Custom amount -->
             <LinearLayout
                 android:id="@+id/containerAmount"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/major_100"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/divider2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider1">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/textCustomAmountLabel"
@@ -63,21 +57,14 @@
                 android:id="@+id/divider2"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/major_100"
-                android:background="@color/divider_color"
-                app:layout_constraintBottom_toTopOf="@+id/containerEmail"
-                app:layout_constraintStart_toStartOf="@+id/containerEmail"
-                app:layout_constraintTop_toBottomOf="@+id/containerAmount" />
+                android:background="@color/divider_color" />
 
             <!-- Email -->
             <LinearLayout
                 android:id="@+id/containerEmail"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/divider3"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider2">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/textEmail"
@@ -105,38 +92,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/major_100"
                 android:layout_marginBottom="@dimen/major_100"
-                android:background="@color/divider_color"
-                app:layout_constraintBottom_toTopOf="@+id/textPayment"
-                app:layout_constraintStart_toStartOf="@+id/containerEmail"
-                app:layout_constraintTop_toBottomOf="@+id/containerEmail" />
+                android:background="@color/divider_color" />
 
             <!-- Payment -->
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textPayment"
                 style="@style/Woo.Card.Title"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginLeft="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginRight="@dimen/major_100"
-                android:layout_marginBottom="@dimen/major_100"
-                android:text="@string/payment"
-                app:layout_constraintBottom_toTopOf="@+id/containerSubtotal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider3" />
+                android:layout_margin="@dimen/major_100"
+                android:text="@string/payment" />
 
             <!-- Subtotal -->
             <LinearLayout
                 android:id="@+id/containerSubtotal"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/switchChargeTaxes"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textPayment">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
                     style="@style/Woo.Card.Body.High"
@@ -160,29 +132,18 @@
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchChargeTaxes"
                 style="@style/Woo.Card.Body.High"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginLeft="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginRight="@dimen/major_100"
-                android:text="@string/simple_payments_charge_taxes"
-                app:layout_constraintBottom_toTopOf="@+id/containerTaxes"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/containerSubtotal" />
+                android:layout_margin="@dimen/major_100"
+                android:text="@string/simple_payments_charge_taxes" />
 
             <!-- Tax -->
             <LinearLayout
                 android:id="@+id/containerTaxes"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="17dp"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/containerTotal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/switchChargeTaxes">
+                android:layout_marginBottom="@dimen/major_100"
+                android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/textTaxLabel"
@@ -206,13 +167,9 @@
             <!-- Total -->
             <LinearLayout
                 android:id="@+id/containerTotal"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/divider4"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/containerTaxes">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/textTotalLabel"
@@ -244,7 +201,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/containerTotal" />
 
             <!-- TODO nbradbury - customer provided note -->
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
 
     <com.google.android.material.button.MaterialButton
@@ -252,8 +209,7 @@
         style="@style/Woo.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/major_100"
-        android:layout_marginHorizontal="@dimen/major_100"
+        android:layout_margin="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
