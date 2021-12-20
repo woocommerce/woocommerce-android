@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.simplepayments
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
@@ -13,6 +14,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import dagger.hilt.android.AndroidEntryPoint
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -47,17 +49,33 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
         binding.textCustomAmount.text = subTotal
         binding.textSubtotal.text = subTotal
 
-        val tax = currencyFormatter.formatCurrency(order.totalTax, sharedViewModel.currencyCode)
-        binding.textTax.text = tax
-
         val total = currencyFormatter.formatCurrency(order.total + order.totalTax, sharedViewModel.currencyCode)
         binding.textTotal.text = total
         binding.buttonDone.text = getString(R.string.simple_payments_take_payment_button, total)
+
+        val tax = currencyFormatter.formatCurrency(order.totalTax, sharedViewModel.currencyCode)
+        binding.textTax.text = tax
+
+        val hasTaxes = order.totalTax > BigDecimal.ZERO
+        showTaxes(hasTaxes, binding)
+        binding.switchChargeTaxes.isChecked = hasTaxes
+        binding.switchChargeTaxes.setOnCheckedChangeListener { button, checked ->
+            showTaxes(checked, binding)
+        }
 
         // TODO nbradbury - taxes
         // TODO nbradbury - customer note
     }
 
+    private fun showTaxes(hasTaxes: Boolean, binding: FragmentSimplePaymentsBinding) {
+        if (hasTaxes) {
+            binding.textTax.isVisible = true
+            binding.textTaxMessage.isVisible = true
+        } else {
+            binding.textTax.isVisible = false
+            binding.textTaxMessage.isVisible = false
+        }
+    }
     private fun validateEmail(emailEditText: EditText): Boolean {
         val email = emailEditText.text.toString()
         return if (email.isEmpty() || StringUtils.isValidEmail(email)) {

@@ -163,6 +163,14 @@
                     tools:text="$4.00" />
             </LinearLayout>
 
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/Woo.Card.Body"
+                android:id="@+id/textTaxMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_100"
+                android:text="@string/simple_payments_tax_message" />
+
             <!-- Total -->
             <LinearLayout
                 android:id="@+id/containerTotal"
