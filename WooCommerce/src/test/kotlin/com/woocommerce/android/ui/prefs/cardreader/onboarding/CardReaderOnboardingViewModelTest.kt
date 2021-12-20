@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import org.mockito.kotlin.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -171,6 +172,31 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 OnboardingViewState.StripeTerminalError.StripeTerminalNotSetupState::class.java
             )
+        }
+
+    @Test
+    fun `when stripe terminal not setup, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(PluginType.STRIPE_TERMINAL_GATEWAY))
+
+            val viewModel = createVM()
+
+            val state = (
+                viewModel.viewStateData.value as OnboardingViewState.StripeTerminalError.StripeTerminalNotSetupState
+                )
+            assertThat(state.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_header))
+            assertThat(state.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_hint))
+            assertThat(state.refreshButtonLabel)
+                .describedAs("Check refreshButtonLabel")
+                .isEqualTo(UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button))
+            assertThat(state.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_stripe_extension)
         }
 
     @Test
