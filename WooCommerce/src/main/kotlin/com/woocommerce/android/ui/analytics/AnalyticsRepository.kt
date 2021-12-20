@@ -52,8 +52,9 @@ class AnalyticsRepository @Inject constructor(
             it?.isSuccess == true && it.getOrNull() != null
         }
 
-        if (!resultsAreValid)
+        if (!resultsAreValid) {
             return RevenueError
+        }
 
         val previousTotalSales = previousPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales ?: 0.0
         val previousNetRevenue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue ?: 0.0
@@ -84,8 +85,9 @@ class AnalyticsRepository @Inject constructor(
             it?.isSuccess == true && it.getOrNull() != null
         }
 
-        if (!resultsAreValid)
+        if (!resultsAreValid) {
             return OrdersError
+        }
 
         val previousOrdersCount = previousPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount ?: 0
         val previousOrderValue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue ?: 0.0
@@ -117,9 +119,9 @@ class AnalyticsRepository @Inject constructor(
             it?.isSuccess == true && it.getOrNull() != null && it.getOrNull()!!.parseTotal()?.itemsSold != null
         }
 
-
-        if (!resultsAreValid || productsStats.isFailure)
+        if (!resultsAreValid || productsStats.isFailure) {
             return ProductsError
+        }
 
         val previousItemsSold = previousPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
         val currentItemsSold = currentPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
