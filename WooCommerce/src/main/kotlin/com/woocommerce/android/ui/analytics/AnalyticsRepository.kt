@@ -156,27 +156,26 @@ class AnalyticsRepository @Inject constructor(
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
-        getCurrentRevenueMutex.withLock {
-            val startDate = when (dateRange) {
-                is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
-                is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
-            }
-            val endDate = when (dateRange) {
-                is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
-                is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
-            }
-
-            if (shouldUpdateCurrentStats(startDate, endDate)) {
-                currentRevenueStats =
-                    AnalyticsStatsResultWrapper(
-                        startDate = startDate,
-                        endDate = endDate,
-                        result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                    )
-            }
-
-            return@coroutineScope currentRevenueStats!!.result.await()
+        val startDate = when (dateRange) {
+            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
+            is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
         }
+        val endDate = when (dateRange) {
+            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
+            is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
+        }
+
+        if (shouldUpdateCurrentStats(startDate, endDate)) {
+            currentRevenueStats =
+                AnalyticsStatsResultWrapper(
+                    startDate = startDate,
+                    endDate = endDate,
+                    result = getCurrentRevenueMutex.withLock {
+                        async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
+                    }
+                )
+        }
+        return@coroutineScope currentRevenueStats!!.result.await()
     }
 
     private suspend fun getPreviousPeriodStats(
@@ -184,24 +183,24 @@ class AnalyticsRepository @Inject constructor(
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
-        getPreviousRevenueMutex.withLock {
-            val startDate = when (dateRange) {
-                is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
-                is MultipleDateRange -> dateRange.from.from.formatToYYYYmmDD()
-            }
-            val endDate = when (dateRange) {
-                is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
-                is MultipleDateRange -> dateRange.from.to.formatToYYYYmmDD()
-            }
+        val startDate = when (dateRange) {
+            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
+            is MultipleDateRange -> dateRange.from.from.formatToYYYYmmDD()
+        }
+        val endDate = when (dateRange) {
+            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
+            is MultipleDateRange -> dateRange.from.to.formatToYYYYmmDD()
+        }
 
-            if (shouldUpdatePreviousStats(startDate, endDate)) {
-                previousRevenueStats =
-                    AnalyticsStatsResultWrapper(
-                        startDate,
-                        endDate,
+        if (shouldUpdatePreviousStats(startDate, endDate)) {
+            previousRevenueStats =
+                AnalyticsStatsResultWrapper(
+                    startDate = startDate,
+                    endDate = endDate,
+                    result = getPreviousRevenueMutex.withLock {
                         async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                    )
-            }
+                    }
+                )
         }
         return@coroutineScope previousRevenueStats!!.result.await()
     }
@@ -239,14 +238,12 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private fun shouldUpdatePreviousStats(startDate: String, endDate: String) =
-        previousRevenueStats == null ||
-            (previousRevenueStats?.startDate != startDate || previousRevenueStats?.endDate != endDate) &&
-            (previousRevenueStats?.result?.isCompleted == true && previousRevenueStats?.result?.isActive != true)
+        (previousRevenueStats == null || previousRevenueStats?.result?.isCompleted == true) &&
+            (previousRevenueStats?.startDate != startDate || previousRevenueStats?.endDate != endDate)
 
     private fun shouldUpdateCurrentStats(startDate: String, endDate: String) =
-        currentRevenueStats == null ||
-            (currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate) &&
-            (currentRevenueStats?.result?.isCompleted == true && currentRevenueStats?.result?.isActive != true)
+        (currentRevenueStats == null || currentRevenueStats?.result?.isCompleted == true) &&
+            (currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate)
 
     private suspend fun fetchNetworkStats(
         startDate: String,

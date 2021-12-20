@@ -675,7 +675,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when get revenue data twice, then stats repository is once per period`() =
+    fun `when get revenue and products data at same time, then stats repository is used once per period`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
