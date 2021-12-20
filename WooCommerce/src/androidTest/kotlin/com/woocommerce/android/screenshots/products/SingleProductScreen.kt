@@ -44,7 +44,7 @@ class SingleProductScreen : Screen {
         assertTextNameValuePair("Inventory", "Stock status: ${product.stockStatus}")
         assertTextNameValuePair("Product type", product.type)
 
-        // Rating is shown only if rating is larger than zero (more than zero reviews):
+        // Rating is shown only if the rating is larger than zero (more than zero reviews):
         if (product.rating > 0) {
             // Check that "Review" label, actual rating (stars) and reviews count are
             // all direct children of the same container:
