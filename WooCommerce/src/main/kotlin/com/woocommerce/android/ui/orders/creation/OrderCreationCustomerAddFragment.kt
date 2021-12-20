@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -17,14 +18,16 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation_edit_customer_address) {
     companion object {
         const val SELECT_BILLING_COUNTRY_REQUEST = "select_billing_country_request"
         const val SELECT_BILLING_STATE_REQUEST = "select_billing_state_request"
     }
 
-    private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
+    private val addressViewModel: AddressViewModel by viewModels()
 
     private var _binding: FragmentCreationEditCustomerAddressBinding? = null
 
