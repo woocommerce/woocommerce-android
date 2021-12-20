@@ -9,7 +9,9 @@ object OrderCreationNavigator {
         val navController = fragment.findNavController()
 
         val action = when (target) {
-            is EditCustomerNote ->
+            OrderCreationNavigationTarget.EditCustomer ->
+                TODO()
+            EditCustomerNote ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
         }
 

@@ -35,6 +35,10 @@ class OrderCreationFormViewModel @Inject constructor(
         ).let { triggerEvent(it) }
     }
 
+    fun onCustomerClicked() {
+        triggerEvent(OrderCreationNavigationTarget.EditCustomer)
+    }
+
     fun onCustomerNoteClicked() {
         triggerEvent(EditCustomerNote)
     }
