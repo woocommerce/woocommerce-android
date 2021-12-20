@@ -4,6 +4,7 @@ import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
@@ -46,12 +47,13 @@ class AnalyticsRepository @Inject constructor(
         val granularity = getGranularity(selectedRange)
         val currentPeriodRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
         val previousPeriodRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy)
-        if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
-            return RevenueError
+
+        val resultsAreValid = validateRevenueResults(listOf(currentPeriodRevenue, previousPeriodRevenue)) {
+            it?.isSuccess == true && it.getOrNull() != null
         }
-        if (previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
+
+        if (!resultsAreValid)
             return RevenueError
-        }
 
         val previousTotalSales = previousPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales ?: 0.0
         val previousNetRevenue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue ?: 0.0
@@ -78,13 +80,12 @@ class AnalyticsRepository @Inject constructor(
         val currentPeriodRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
         val previousPeriodRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy)
 
-        if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
-            return OrdersError
+        val resultsAreValid = validateRevenueResults(listOf(currentPeriodRevenue, previousPeriodRevenue)) {
+            it?.isSuccess == true && it.getOrNull() != null
         }
 
-        if (previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
+        if (!resultsAreValid)
             return OrdersError
-        }
 
         val previousOrdersCount = previousPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount ?: 0
         val previousOrderValue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue ?: 0.0
@@ -111,20 +112,14 @@ class AnalyticsRepository @Inject constructor(
         val currentPeriodRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
         val previousPeriodRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy)
         val productsStats = getProductStats(dateRange, granularity, TOP_PRODUCTS_LIST_SIZE)
-        if (currentPeriodRevenue.isFailure || currentPeriodRevenue.getOrNull() == null) {
-            return ProductsResult.ProductsError
+
+        val resultsAreValid = validateRevenueResults(listOf(currentPeriodRevenue, previousPeriodRevenue)) {
+            it?.isSuccess == true && it.getOrNull() != null && it.getOrNull()!!.parseTotal()?.itemsSold != null
         }
-        if (previousPeriodRevenue.isFailure || previousPeriodRevenue.getOrNull() == null) {
-            return ProductsResult.ProductsError
-        }
-        if (productsStats.isFailure) {
-            return ProductsResult.ProductsError
-        }
-        if (previousPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold == null ||
-            currentPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold == null
-        ) {
-            return ProductsResult.ProductsError
-        }
+
+
+        if (!resultsAreValid || productsStats.isFailure)
+            return ProductsError
 
         val previousItemsSold = previousPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
         val currentItemsSold = currentPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
@@ -244,6 +239,11 @@ class AnalyticsRepository @Inject constructor(
     private fun shouldUpdateCurrentStats(startDate: String, endDate: String) =
         (currentRevenueStats == null || currentRevenueStats?.result?.isCompleted == true) &&
             (currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate)
+
+    private fun validateRevenueResults(
+        revenueResults: List<Result<WCRevenueStatsModel?>>,
+        validator: (Result<WCRevenueStatsModel?>?) -> Boolean
+    ): Boolean = revenueResults.all { validator(it) }
 
     private suspend fun fetchNetworkStats(
         startDate: String,
