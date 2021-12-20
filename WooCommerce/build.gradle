@@ -281,7 +281,7 @@ dependencies {
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
 
-    implementation ("com.zendesk:support:5.0.3") {
+    implementation("com.zendesk:support:5.0.3") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 
@@ -315,6 +315,13 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
     }
+
+    // spek
+    testImplementation "org.spekframework.spek2:spek-dsl-jvm:2.0.17"
+    testImplementation "org.spekframework.spek2:spek-runner-junit5:2.0.17"
+
+    // spek requires kotlin-reflect, omit when already in classpath
+    testImplementation "org.jetbrains.kotlin:kotlin-reflect:1.6.0"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
