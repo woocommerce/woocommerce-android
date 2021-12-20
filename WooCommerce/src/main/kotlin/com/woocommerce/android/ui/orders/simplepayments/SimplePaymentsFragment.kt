@@ -69,10 +69,10 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
     private fun showTaxes(hasTaxes: Boolean, binding: FragmentSimplePaymentsBinding) {
         if (hasTaxes) {
-            binding.textTax.isVisible = true
+            binding.containerTaxes.isVisible = true
             binding.textTaxMessage.isVisible = true
         } else {
-            binding.textTax.isVisible = false
+            binding.containerTaxes.isVisible = false
             binding.textTaxMessage.isVisible = false
         }
     }
