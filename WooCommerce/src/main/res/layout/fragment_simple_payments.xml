@@ -142,7 +142,6 @@
                 android:id="@+id/containerTaxes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/major_100"
                 android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
