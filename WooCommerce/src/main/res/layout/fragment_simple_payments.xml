@@ -165,7 +165,8 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textTaxMessage"
-                style="@style/Woo.Card.Body"
+                style="@style/Woo.TextView.Caption"
+                android:layout_marginTop="@dimen/minor_50"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/major_100"
