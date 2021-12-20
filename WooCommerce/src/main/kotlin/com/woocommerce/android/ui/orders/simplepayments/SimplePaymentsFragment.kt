@@ -52,6 +52,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
         val total = currencyFormatter.formatCurrency(order.total + order.totalTax, sharedViewModel.currencyCode)
         binding.textTotal.text = total
+        binding.buttonDone.text = getString(R.string.simple_payments_take_payment_button, total)
 
         // TODO nbradbury - taxes
         // TODO nbradbury - customer note

@@ -310,6 +310,7 @@
     <string name="simple_payments_edit_email_hint">Enter email</string>
     <string name="simple_payments_custom_amount">Custom amount</string>
     <string name="simple_payments_charge_taxes">Charge taxes</string>
+    <string name="simple_payments_take_payment_button"> Take payment (%s)</string>
     <!--
          Order Creation
     -->
