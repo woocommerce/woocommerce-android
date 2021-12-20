@@ -7,6 +7,9 @@ commands:
       - run:
           name: Enable build time reporting
           command: sed -i "s/tracksEnabled = false/tracksEnabled = true/" gradle.properties
+      - run:
+          name: Disable Gradle Build Cache
+          command: sed -i "s/org.gradle.caching=true/org.gradle.caching=false/" gradle.properties
   update-gradle-memory:
       parameters:
         jvmargs:
