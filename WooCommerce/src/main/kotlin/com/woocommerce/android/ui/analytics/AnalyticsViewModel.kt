@@ -263,10 +263,7 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
     private fun getDefaultTimePeriod() = AnalyticTimePeriod.TODAY
-    private fun getDefaultDateRange(): AnalyticsDateRange = SimpleDateRange(
-        Date(dateUtils.getCurrentDateTimeMinusDays(1)),
-        dateUtils.getCurrentDate()
-    )
+    private fun getDefaultDateRange() = analyticsDateRange.getAnalyticsDateRangeFrom(getDefaultTimePeriod())
 
     private fun getTimePeriodDescription(analyticTimeRange: AnalyticTimePeriod): String =
         when (analyticTimeRange) {
