@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.filters
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.CoroutinesTestExtension
 import com.woocommerce.android.InstantExecutorExtension
 import com.woocommerce.android.R
@@ -27,7 +28,9 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 @ExperimentalCoroutinesApi
 class OrderFilterCategoriesViewModelTestKotest : BehaviorSpec() {
     init {
@@ -76,7 +79,7 @@ class OrderFilterCategoriesViewModelTestKotest : BehaviorSpec() {
             `when`("A filter category is selected") {
                 viewModel.onFilterCategorySelected(AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER)
 
-                then("Screen title is updated") {
+                then("Screen title is updated").config(enabled = BuildConfig.DEBUG) {
                     viewModel.event.value shouldBe
                         OrderFilterEvent.ShowFilterOptionsForCategory(
                             AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER
