@@ -7,18 +7,21 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/color_surface"
         android:orientation="vertical">
 
         <View
+            android:id="@+id/divider1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider_color" />
 
         <!-- Custom amount -->
         <LinearLayout
+            android:id="@+id/containerAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="@dimen/major_100"
@@ -46,12 +49,14 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/divider2"
             android:layout_width="match_parent"
             android:layout_height="@dimen/major_100"
             android:background="@color/divider_color" />
 
         <!-- Email -->
         <LinearLayout
+            android:id="@+id/containerEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -78,6 +83,7 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/divider3"
             android:layout_width="match_parent"
             android:layout_height="@dimen/major_100"
             android:background="@color/divider_color" />
@@ -94,6 +100,7 @@
 
         <!-- Subtotal -->
         <LinearLayout
+            android:id="@+id/containerSubtotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -152,6 +159,7 @@
 
         <!-- Total -->
         <LinearLayout
+            android:id="@+id/containerTotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="@dimen/major_100"
@@ -177,6 +185,7 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/divider4"
             android:layout_width="match_parent"
             android:layout_height="@dimen/major_100"
             android:background="@color/divider_color" />
