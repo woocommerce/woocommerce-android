@@ -152,6 +152,9 @@ android {
 
     testOptions {
         animationsDisabled = true
+        unitTests.all {
+            useJUnitPlatform()
+        }
     }
 }
 
@@ -319,6 +322,7 @@ dependencies {
     // spek
     testImplementation "org.spekframework.spek2:spek-dsl-jvm:2.0.17"
     testImplementation "org.spekframework.spek2:spek-runner-junit5:2.0.17"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.8.1" //To support existing jUnit 4 test
 
     // spek requires kotlin-reflect, omit when already in classpath
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:1.6.0"
