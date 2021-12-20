@@ -258,7 +258,6 @@ class AnalyticsRepository @Inject constructor(
             endDate
         ).flowOn(dispatchers.io).single()
 
-
     private suspend fun fetchProductLeaderboards(
         startDate: String,
         endDate: String,
