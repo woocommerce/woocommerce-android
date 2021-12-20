@@ -12,6 +12,8 @@ class ShippingAddressEditingFragment : BaseAddressEditingFragment() {
     override val storedAddress: Address
         get() = sharedViewModel.order.shippingAddress
 
+    override val addressType: AddressViewModel.AddressType = AddressViewModel.AddressType.SHIPPING
+
     override fun saveChanges() = sharedViewModel.updateShippingAddress(addressDraft)
 
     override fun getFragmentTitle() = getString(R.string.order_detail_shipping_address_section)
