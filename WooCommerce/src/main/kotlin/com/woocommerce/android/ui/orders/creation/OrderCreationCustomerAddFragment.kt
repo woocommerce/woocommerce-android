@@ -27,8 +27,10 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
 
     private var _binding: FragmentCreationEditCustomerAddressBinding? = null
-    val binding
-        get() = _binding!!
+
+    private var _billingBinding: LayoutAddressFormBinding? = null
+    private val billingBinding
+        get() = _billingBinding!!
 
     private lateinit var doneMenuItem: MenuItem
 
@@ -36,7 +38,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        val billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
+        _billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
             addressSectionHeader.setText(R.string.order_detail_billing_address_section)
             countrySpinner.setClickListener {
                 showCountrySearchScreen()
@@ -121,6 +123,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        _billingBinding = null
     }
 
     @Suppress("FunctionOnlyReturningConstant")
