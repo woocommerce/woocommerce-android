@@ -198,8 +198,18 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             sb.append(" ")
             sb.append(
                 when (errorType) {
-                    INSTALLATION -> ctx.getString(R.string.jetpack_install_progress_failed_alternative_install)
-                    ACTIVATION -> ctx.getString(R.string.jetpack_install_progress_failed_alternative_activate)
+                    INSTALLATION -> {
+                        ctx.getString(
+                            R.string.jetpack_install_progress_failed_alternative,
+                            ctx.getString(R.string.jetpack_install_progress_failed_alternative_install)
+                        )
+                    }
+                    ACTIVATION -> {
+                        ctx.getString(
+                            R.string.jetpack_install_progress_failed_alternative,
+                            ctx.getString(R.string.jetpack_install_progress_failed_alternative_activate)
+                        )
+                    }
                     else -> ""
                 }
             )

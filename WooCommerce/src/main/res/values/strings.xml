@@ -1748,7 +1748,7 @@
     <string name ="jetpack_install_progress_failed_reason_activation">activation</string>
     <string name ="jetpack_install_progress_failed_reason_connection">connecting</string>
     <string name ="jetpack_install_progress_failed_try">Please try again.</string>
-    <string name ="jetpack_install_progress_failed_alternative">Alternatively, you can %s Jetpack through your WP Admin.</string>
+    <string name ="jetpack_install_progress_failed_alternative">Alternatively, you can %s Jetpack in WP Admin.</string>
     <string name ="jetpack_install_progress_failed_alternative_install">install</string>
     <string name ="jetpack_install_progress_failed_alternative_activate">activate</string>
     <string name ="jetpack_install_progress_failed_option_wp_admin">%s Jetpack in WP Admin</string>
