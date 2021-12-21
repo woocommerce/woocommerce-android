@@ -169,7 +169,6 @@ class OrderListViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
-                orderListRepository.fetchOrderStatusOptionsFromApi()
                 fetchOrderStatusOptions()
                 fetchPaymentGateways()
             }
