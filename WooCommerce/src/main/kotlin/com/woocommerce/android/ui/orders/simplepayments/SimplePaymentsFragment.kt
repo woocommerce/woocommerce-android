@@ -66,6 +66,9 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                     binding.textTaxMessage.isVisible = false
                 }
             }
+            new.orderTaxPercent.takeIfNotEqualTo(old?.orderTaxPercent) { taxPercent ->
+                binding.textTaxLabel.text = getString(R.string.simple_payments_tax_with_percent, taxPercent)
+            }
         }
     }
 

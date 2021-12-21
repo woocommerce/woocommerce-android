@@ -310,7 +310,8 @@
     <string name="simple_payments_edit_email_hint">Enter email</string>
     <string name="simple_payments_custom_amount">Custom amount</string>
     <string name="simple_payments_charge_taxes">Charge taxes</string>
-    <string name="simple_payments_take_payment_button"> Take payment (%s)</string>
+    <string name="simple_payments_take_payment_button">Take payment (%s)</string>
+    <string name="simple_payments_tax_with_percent">Tax (%d%%)</string>
     <string name="simple_payments_tax_message">Taxes are automatically calculated based on your store address</string>
     <!--
          Order Creation
