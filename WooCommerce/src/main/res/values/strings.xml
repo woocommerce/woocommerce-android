@@ -2134,4 +2134,6 @@
     <string name="order_creation_customer_note">Customer Note</string>
     <string name="order_creation_add_customer">Add customer</string>
     <string name="order_creation_add_customer_note">Add note</string>
+    <string name="order_creation_products">Products</string>
+    <string name="order_creation_add_products">Add Product</string>
 </resources>
