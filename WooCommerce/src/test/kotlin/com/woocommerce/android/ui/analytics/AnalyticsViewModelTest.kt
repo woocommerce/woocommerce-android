@@ -16,8 +16,7 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.Re
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.DATE_RANGE_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.TIME_PERIOD_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.*
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
@@ -43,8 +42,6 @@ import kotlin.test.assertTrue
 @ExperimentalCoroutinesApi
 class AnalyticsViewModelTest : BaseUnitTest() {
     private val dateUtil: DateUtils = mock {
-        on { getCurrentDate() } doReturn ANY_DATE
-        on { getCurrentDateTimeMinusDays(1) } doReturn ANY_OTHER_DATE.time
         on { getYearMonthDayStringFromDate(any()) } doReturn ANY_YEAR_VALUE
         on { getShortMonthDayAndYearString(any()) } doReturn ANY_SORT_FORMAT_VALUE
     }
@@ -54,7 +51,11 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
             SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
         )
+
+        on { getAnalyticsDateRangeFrom(TODAY) } doReturn
+            SimpleDateRange(ANY_DATE, ANY_OTHER_DATE)
     }
+
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(TOTAL_VALUE.toString(), CURRENCY_CODE) } doReturn TOTAL_CURRENCY_VALUE
         on { formatCurrency(NET_VALUE.toString(), CURRENCY_CODE) } doReturn NET_CURRENCY_VALUE
