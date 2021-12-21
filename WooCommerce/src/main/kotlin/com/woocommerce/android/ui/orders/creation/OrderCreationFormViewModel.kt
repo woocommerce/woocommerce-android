@@ -42,4 +42,8 @@ class OrderCreationFormViewModel @Inject constructor(
     fun onCustomerNoteClicked() {
         triggerEvent(EditCustomerNote)
     }
+
+    fun onAddSimpleProductsClicked() {
+
+    }
 }

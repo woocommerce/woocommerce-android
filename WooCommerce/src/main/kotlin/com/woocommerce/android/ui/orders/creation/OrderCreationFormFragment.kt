@@ -74,7 +74,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 AddButton(
                     text = getString(R.string.order_creation_add_products),
                     onClickListener = {
-
+                        formViewModel.onAddSimpleProductsClicked()
                     }
                 )
             )
