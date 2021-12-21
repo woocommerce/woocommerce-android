@@ -16,7 +16,7 @@ object OrderCreationNavigator {
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             AddSimpleProduct ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
-         }
+        }
 
         navController.navigate(action)
     }
