@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.AddSimpleProduct
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.EditCustomerNote
 
 object OrderCreationNavigator {
@@ -10,8 +11,8 @@ object OrderCreationNavigator {
         val navController = fragment.findNavController()
 
         val action = when (target) {
-            OrderCreationNavigationTarget.EditCustomer ->
-                TODO()
+            EditCustomer ->
+                OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
             EditCustomerNote ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             AddSimpleProduct ->
