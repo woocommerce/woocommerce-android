@@ -36,11 +36,14 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         private const val JETPACK_ACTIVATE_URL = "plugins.php"
         private const val ICON_NOT_DONE = R.drawable.ic_progress_circle_start
         private const val ICON_DONE = R.drawable.ic_progress_circle_complete
+        private const val STATE_KEY_IS_RETURNING_FROM_WPADMIN = "is_from_wpadmin"
     }
 
     @Inject lateinit var selectedSite: SelectedSite
 
     private val viewModel: JetpackInstallViewModel by viewModels()
+
+    private var isReturningFromWpAdmin = false
 
     private lateinit var iconStep1: ImageView
     private lateinit var iconStep2: ImageView
@@ -58,6 +61,10 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         super.onCreate(savedInstanceState)
         // Use fullscreen style for all cases except tablet in landscape mode
         setStyle(STYLE_NO_TITLE, if (isTabletLandscape()) R.style.Theme_Woo_Dialog else R.style.Theme_Woo)
+
+        savedInstanceState?.let { bundle ->
+            isReturningFromWpAdmin = bundle.getBoolean(STATE_KEY_IS_RETURNING_FROM_WPADMIN)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -247,6 +254,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         when (errorType) {
             INSTALLATION -> {
                 button.setOnClickListener {
+                    isReturningFromWpAdmin = true
+
                     val installJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_INSTALL_URL
                     ChromeCustomTabUtils.launchUrl(requireContext(), installJetpackInWpAdminUrl)
 
@@ -258,6 +267,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             }
             ACTIVATION -> {
                 button.setOnClickListener {
+                    isReturningFromWpAdmin = true
+
                     val activateJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_ACTIVATE_URL
                     ChromeCustomTabUtils.launchUrl(requireContext(), activateJetpackInWpAdminUrl)
                 }
@@ -274,4 +285,22 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
 
     private fun isTabletLandscape() = (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)) &&
         DisplayUtils.isLandscape(context)
+
+    override fun onResume() {
+        super.onResume()
+
+        if(isReturningFromWpAdmin) {
+            // If installation / activation fails and a merchant ends up installing / activating directly in wp-admin,
+            // when they return to the app from wp-admin we want to check Jetpack's installation status and either
+            // proceed with installation process or keep the error message shown.
+
+            isReturningFromWpAdmin = false
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(STATE_KEY_IS_RETURNING_FROM_WPADMIN, isReturningFromWpAdmin)
+
+        super.onSaveInstanceState(outState)
+    }
 }
