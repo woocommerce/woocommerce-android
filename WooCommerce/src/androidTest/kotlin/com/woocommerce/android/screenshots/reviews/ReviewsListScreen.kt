@@ -23,7 +23,7 @@ class ReviewsListScreen : Screen {
 
     fun selectReviewByTitle(reviewTitle: String): SingleReviewScreen {
         selectListItem(reviewTitle, LIST_VIEW)
-        waitForElementToBeDisplayedWithoutFailure(R.id.review_product_icon)
+        Thread.sleep(5000)
         return SingleReviewScreen()
     }
 

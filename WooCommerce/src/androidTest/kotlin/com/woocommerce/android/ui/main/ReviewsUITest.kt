@@ -58,6 +58,8 @@ class ReviewsUITest : TestBase() {
                 .selectReviewByTitle(currentReview.title)
                 .assertSingleReviewScreen(currentReview)
                 .goBackToReviewsScreen()
+
+            Thread.sleep(5000)
         }
     }
 }
