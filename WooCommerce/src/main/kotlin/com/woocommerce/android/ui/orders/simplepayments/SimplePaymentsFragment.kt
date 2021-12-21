@@ -45,11 +45,12 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     }
 
     private fun showOrder(order: Order, binding: FragmentSimplePaymentsBinding) {
-        val subTotal = currencyFormatter.formatCurrency(order.total, sharedViewModel.currencyCode)
+        val feeLine = order.feesLines[0]
+        val subTotal = currencyFormatter.formatCurrency(feeLine.total, sharedViewModel.currencyCode)
         binding.textCustomAmount.text = subTotal
         binding.textSubtotal.text = subTotal
 
-        val total = currencyFormatter.formatCurrency(order.total + order.totalTax, sharedViewModel.currencyCode)
+        val total = currencyFormatter.formatCurrency(order.total, sharedViewModel.currencyCode)
         binding.textTotal.text = total
         binding.buttonDone.text = getString(R.string.simple_payments_take_payment_button, total)
 
@@ -63,7 +64,6 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
             showTaxes(checked, binding)
         }
 
-        // TODO nbradbury - taxes
         // TODO nbradbury - customer note
     }
 
