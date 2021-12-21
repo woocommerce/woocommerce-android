@@ -40,7 +40,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
@@ -55,7 +54,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductListFragment :
     TopLevelFragment(R.layout.fragment_product_list),
-    OnProductClickListener,
     ProductSortAndFilterListener,
     OnLoadMoreListener,
     OnQueryTextListener,
@@ -101,7 +99,7 @@ class ProductListFragment :
         setupObservers(viewModel)
         setupResultHandlers()
         ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
-        _productAdapter = ProductListAdapter(this, this)
+        _productAdapter = ProductListAdapter(::onProductClick, this)
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productAdapter
 
@@ -455,7 +453,7 @@ class ProductListFragment :
         }
     }
 
-    override fun onProductClick(remoteProductId: Long, sharedView: View?) {
+    fun onProductClick(remoteProductId: Long, sharedView: View?) {
         (activity as? MainNavigationRouter)?.let { router ->
             if (sharedView == null) {
                 router.showProductDetail(remoteProductId, enableTrash = true)
