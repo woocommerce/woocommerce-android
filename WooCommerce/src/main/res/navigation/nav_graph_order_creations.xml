@@ -33,5 +33,8 @@
         android:id="@+id/orderCreationCustomerNoteFragment"
         android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerNoteFragment"
         android:label="OrderCreationCustomerNoteFragment" />
-
+    <fragment
+        android:id="@+id/orderCreationProductSelectionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationProductSelectionFragment"
+        android:label="OrderCreationProductSelectionFragment"/>
 </navigation>
