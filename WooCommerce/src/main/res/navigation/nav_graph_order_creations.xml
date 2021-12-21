@@ -17,6 +17,10 @@
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerNoteFragment"
             app:destination="@id/orderCreationCustomerNoteFragment" />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationProductSelectionFragment"
+            app:destination="@id/orderCreationProductSelectionFragment" />
+
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
