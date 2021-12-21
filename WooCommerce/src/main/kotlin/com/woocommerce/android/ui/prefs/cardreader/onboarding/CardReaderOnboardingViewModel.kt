@@ -424,10 +424,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 override val onLearnMoreActionClicked: (() -> Unit)
             ) : StripeTerminalError(
                 headerLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_stripe_terminal_unsupported_version_header
+                    R.string.card_reader_onboarding_stripe_extension_unsupported_version_header
                 ),
                 hintLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_stripe_terminal_unsupported_version_hint
+                    R.string.card_reader_onboarding_stripe_extension_unsupported_version_hint
                 ),
                 learnMoreLabel = UiString.UiStringRes(
                     R.string.card_reader_onboarding_learn_more, containsHtml = true
