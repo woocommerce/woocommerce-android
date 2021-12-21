@@ -158,7 +158,7 @@ class OrderNavigator @Inject constructor() {
             }
             is StartCardReaderPaymentFlow -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToCardReaderPaymentDialog(target.orderIdentifier)
+                    .actionOrderDetailFragmentToCardReaderPaymentDialog(target.orderRemoteId)
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewPrintingInstructions -> {

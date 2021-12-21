@@ -71,6 +71,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import java.util.*
 import javax.inject.Inject
 
@@ -91,6 +92,7 @@ class CardReaderPaymentViewModel
     private val errorMapper: CardReaderPaymentErrorMapper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
+    private val orderRemoteId = LocalOrRemoteId.RemoteId(arguments.orderRemoteId)
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
@@ -240,7 +242,7 @@ class CardReaderPaymentViewModel
     }
 
     private suspend fun fetchOrder(): Order? {
-        return orderRepository.fetchOrder(arguments.orderIdentifier)
+        return orderRepository.fetchOrderByRemoteId(orderRemoteId)
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
@@ -271,7 +273,7 @@ class CardReaderPaymentViewModel
 
     private fun showPaymentSuccessfulState() {
         launch {
-            val order = orderRepository.getOrder(arguments.orderIdentifier)
+            val order = orderRepository.getOrderByRemoteId(orderRemoteId)
                 ?: throw IllegalStateException("Order URL not available.")
             val amountLabel = order.getAmountLabel()
             val receiptUrl = getReceiptUrl(order.remoteId.value)
@@ -325,7 +327,7 @@ class CardReaderPaymentViewModel
     }
 
     private fun startPrintingFlow() {
-        val order = orderRepository.getOrder(arguments.orderIdentifier)
+        val order = orderRepository.getOrderByRemoteId(orderRemoteId)
             ?: throw IllegalStateException("Order URL not available.")
         triggerEvent(PrintReceipt(getReceiptUrl(order.remoteId.value), order.getReceiptDocumentName()))
     }
