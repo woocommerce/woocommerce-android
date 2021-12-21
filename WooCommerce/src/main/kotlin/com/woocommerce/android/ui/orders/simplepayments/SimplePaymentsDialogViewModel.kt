@@ -56,9 +56,10 @@ class SimplePaymentsDialogViewModel @Inject constructor(
         viewState = viewState.copy(isProgressShowing = true, isDoneButtonEnabled = false)
 
         launch(Dispatchers.IO) {
-            val result = orderStore.postQuickOrder(
-                selectedSite.get(),
-                viewState.currentPrice.toString()
+            val result = orderStore.postSimplePayment(
+                site = selectedSite.get(),
+                amount = viewState.currentPrice.toString(),
+                isTaxable = true
             )
 
             withContext(Dispatchers.Main) {
