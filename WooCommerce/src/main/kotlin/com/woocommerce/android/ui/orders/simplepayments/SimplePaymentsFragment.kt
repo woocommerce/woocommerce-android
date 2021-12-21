@@ -9,12 +9,10 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSimplePaymentsBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import dagger.hilt.android.AndroidEntryPoint
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -22,7 +20,8 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     private val viewModel: SimplePaymentsFragmentViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,50 +31,44 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                 validateEmail(this.editEmail)
                 // TODO nbradbury - take payment if email is valid
             }
+
             setupObservers(this)
+
+            this.switchChargeTaxes.setOnCheckedChangeListener { _, isChecked ->
+                viewModel.onChargeTaxesChanged(isChecked)
+            }
         }
     }
 
     private fun setupObservers(binding: FragmentSimplePaymentsBinding) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.order.takeIfNotEqualTo(old?.order) { order ->
-                showOrder(order!!, binding)
+            new.orderSubtotal.takeIfNotEqualTo(old?.orderSubtotal) { subtotal ->
+                val subTotalStr = currencyFormatter.formatCurrency(subtotal, sharedViewModel.currencyCode)
+                binding.textCustomAmount.text = subTotalStr
+                binding.textSubtotal.text = subTotalStr
+            }
+            new.orderTotalTax.takeIfNotEqualTo(old?.orderTotalTax) { totalTax ->
+                val taxStr = currencyFormatter.formatCurrency(totalTax, sharedViewModel.currencyCode)
+                binding.textTax.text = taxStr
+            }
+            new.orderTotal.takeIfNotEqualTo(old?.orderTotal) { total ->
+                val totalStr = currencyFormatter.formatCurrency(total, sharedViewModel.currencyCode)
+                binding.textTotal.text = totalStr
+                binding.buttonDone.text = getString(R.string.simple_payments_take_payment_button, totalStr)
+            }
+            new.chargeTaxes.takeIfNotEqualTo(old?.chargeTaxes) { chargeTaxes ->
+                binding.switchChargeTaxes.isChecked = chargeTaxes
+                if (chargeTaxes) {
+                    binding.containerTaxes.isVisible = true
+                    binding.textTaxMessage.isVisible = true
+                } else {
+                    binding.containerTaxes.isVisible = false
+                    binding.textTaxMessage.isVisible = false
+                }
             }
         }
     }
 
-    private fun showOrder(order: Order, binding: FragmentSimplePaymentsBinding) {
-        val feeLine = order.feesLines[0]
-        val subTotal = currencyFormatter.formatCurrency(feeLine.total, sharedViewModel.currencyCode)
-        binding.textCustomAmount.text = subTotal
-        binding.textSubtotal.text = subTotal
-
-        val total = currencyFormatter.formatCurrency(order.total, sharedViewModel.currencyCode)
-        binding.textTotal.text = total
-        binding.buttonDone.text = getString(R.string.simple_payments_take_payment_button, total)
-
-        val tax = currencyFormatter.formatCurrency(order.totalTax, sharedViewModel.currencyCode)
-        binding.textTax.text = tax
-
-        val hasTaxes = order.totalTax > BigDecimal.ZERO
-        showTaxes(hasTaxes, binding)
-        binding.switchChargeTaxes.isChecked = hasTaxes
-        binding.switchChargeTaxes.setOnCheckedChangeListener { button, checked ->
-            showTaxes(checked, binding)
-        }
-
-        // TODO nbradbury - customer note
-    }
-
-    private fun showTaxes(hasTaxes: Boolean, binding: FragmentSimplePaymentsBinding) {
-        if (hasTaxes) {
-            binding.containerTaxes.isVisible = true
-            binding.textTaxMessage.isVisible = true
-        } else {
-            binding.containerTaxes.isVisible = false
-            binding.textTaxMessage.isVisible = false
-        }
-    }
     private fun validateEmail(emailEditText: EditText): Boolean {
         val email = emailEditText.text.toString()
         return if (email.isEmpty() || StringUtils.isValidEmail(email)) {
