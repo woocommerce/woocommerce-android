@@ -19,10 +19,14 @@ import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginAc
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.PluginStore
 import org.wordpress.android.fluxc.store.PluginStore.*
+import org.wordpress.android.fluxc.store.Store
+import java.lang.Exception
 
 class PluginRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -31,6 +35,7 @@ class PluginRepository @Inject constructor(
 ) {
     companion object {
         const val GENERIC_ERROR = "Unknown issue."
+        const val ATTEMPT_LIMIT = 2
     }
 
     init {
@@ -46,19 +51,46 @@ class PluginRepository @Inject constructor(
     // Note that the `newInstallSitePluginAction` action automatically tries to activate the plugin after
     // installation is successful, so when using this function, there's no need to call `activateJetpackPlugin()
     // separately.
-    fun installPlugin(slug: String) = callbackFlow<PluginStatus> {
+    fun installPlugin(slug: String, name: String) = callbackFlow<PluginStatus> {
         val listener = PluginActionListener(this)
         dispatcher.register(listener)
 
-        val payload = InstallSitePluginPayload(selectedSite.get(), slug)
-        dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
+        // Check whether plugin exists first, in which case we just need to activate it.
+        val plugin = fetchJetpackSitePlugin(name)
+        if (plugin != null) {
+            trySend(PluginInstalled(slug, selectedSite.get()))
+            activatePlugin(name, slug, true)
+        } else {
+            val payload = InstallSitePluginPayload(selectedSite.get(), slug)
+            dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
+        }
 
         awaitClose {
             dispatcher.unregister(listener)
         }
+    }.retryWhen { cause, attempt ->
+        cause is PluginException && attempt < ATTEMPT_LIMIT
+    }.catch { cause ->
+        if (cause is PluginException) {
+            if (cause.errorType is InstallSitePluginError) {
+                emit(
+                    PluginInstallFailed(
+                        errorDescription = cause.errorMessage,
+                        errorType = cause.errorType.type.name
+                    )
+                )
+            } else if (cause.errorType is ConfigureSitePluginError) {
+                emit(
+                    PluginActivationFailed(
+                        errorDescription = cause.errorMessage,
+                        errorType = cause.errorType.type.name
+                    )
+                )
+            }
+        }
     }
 
-    suspend fun fetchJetpackSitePlugin(name: String): SitePluginModel? {
+    private suspend fun fetchJetpackSitePlugin(name: String): SitePluginModel? {
         return if (selectedSite.exists()) {
             val result = continuationFetchJetpackSitePlugin.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
                 val payload = FetchJetpackSitePluginPayload(selectedSite.get(), name)
@@ -91,8 +123,11 @@ class PluginRepository @Inject constructor(
                     PluginInstalled(event.slug, event.site)
                 )
             } else {
-                producerScope.trySendBlocking(
-                    PluginInstallFailed(event.error.message ?: GENERIC_ERROR)
+                producerScope.close(
+                    PluginException(
+                        event.error,
+                        event.error.message ?: GENERIC_ERROR
+                    )
                 )
             }
         }
@@ -106,8 +141,11 @@ class PluginRepository @Inject constructor(
                     PluginActivated(event.pluginName, event.site)
                 )
             } else {
-                producerScope.trySendBlocking(
-                    PluginActivationFailed(event.error.message ?: GENERIC_ERROR)
+                producerScope.close(
+                    PluginException(
+                        event.error,
+                        event.error.message ?: GENERIC_ERROR
+                    )
                 )
             }
         }
@@ -128,12 +166,14 @@ class PluginRepository @Inject constructor(
         data class PluginInstalled(val slug: String, val site: SiteModel) : PluginStatus()
 
         @Parcelize
-        data class PluginInstallFailed(val error: String) : PluginStatus()
+        data class PluginInstallFailed(val errorDescription: String, val errorType: String) : PluginStatus()
 
         @Parcelize
         data class PluginActivated(val name: String, val site: SiteModel) : PluginStatus()
 
         @Parcelize
-        data class PluginActivationFailed(val error: String) : PluginStatus()
+        data class PluginActivationFailed(val errorDescription: String, val errorType: String) : PluginStatus()
     }
+
+    private class PluginException(val errorType: Store.OnChangedError, val errorMessage: String) : Exception()
 }

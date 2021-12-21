@@ -16,11 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.AppUrls
-import com.woocommerce.android.FeedbackPrefs
-import com.woocommerce.android.NavGraphMainDirections
-import com.woocommerce.android.R
+import com.woocommerce.android.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
@@ -37,7 +33,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
-import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog
+import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog.Companion.KEY_SIMPLE_PAYMENTS_RESULT
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -149,9 +145,7 @@ class OrderListFragment :
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        if (FeatureFlag.SIMPLE_PAYMENTS.isEnabled()) {
-            displaySimplePaymentsWIPCard(true)
-        }
+        displaySimplePaymentsWIPCard(true)
     }
 
     override fun onResume() {
@@ -176,8 +170,7 @@ class OrderListFragment :
     }
 
     private fun isSimplePaymentsAvailable(): Boolean {
-        return FeatureFlag.SIMPLE_PAYMENTS.isEnabled() &&
-            AppPrefs.isSimplePaymentsEnabled &&
+        return AppPrefs.isSimplePaymentsEnabled &&
             viewModel.isCardReaderOnboardingCompleted()
     }
 
@@ -221,9 +214,7 @@ class OrderListFragment :
                 when {
                     isSimplePaymentAvailable && isOrderCreationAvailable -> showOrderCreationBottomSheet()
                     isSimplePaymentAvailable -> showSimplePaymentsDialog()
-                    isOrderCreationAvailable -> {
-                        // TODO trigger Order Creation form
-                    }
+                    isOrderCreationAvailable -> openOrderCreationFragment()
                 }
             }
             pinFabAboveBottomNavigationBar(fabButton)
@@ -315,20 +306,18 @@ class OrderListFragment :
     }
 
     private fun initializeResultHandlers() {
-        handleResult<Order>(SimplePaymentsDialog.KEY_SIMPLE_PAYMENTS_RESULT) { order ->
+        handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
+            viewModel.loadOrders()
+        }
+        handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
             binding.orderListView.post {
                 openOrderDetail(order.localId.value, order.remoteId, order.status.value)
             }
         }
-        handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
-            viewModel.loadOrders()
-        }
-        handleResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT) {
+        handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
             binding.orderListView.post {
                 when (it) {
-                    OrderCreationAction.CREATE_ORDER -> {
-                        // TODO trigger Order Creation form
-                    }
+                    OrderCreationAction.CREATE_ORDER -> openOrderCreationFragment()
                     OrderCreationAction.SIMPLE_PAYMENT -> showSimplePaymentsDialog()
                 }
             }
@@ -347,6 +336,10 @@ class OrderListFragment :
     private fun showOrderCreationBottomSheet() {
         OrderListFragmentDirections.actionOrderListFragmentToOrderCreationBottomSheet()
             .let { findNavController().navigateSafely(it) }
+    }
+
+    private fun openOrderCreationFragment() {
+        findNavController().navigate(R.id.action_orderListFragment_to_orderCreationFragment)
     }
 
     private fun hideEmptyView() {
