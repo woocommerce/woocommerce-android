@@ -6,9 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.mystore.domain.GetStats
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.RevenueStatsError
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.RevenueStatsSuccess
+import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersError
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersSuccess
@@ -49,11 +47,25 @@ class MyStoreViewModel @Inject constructor(
         RevenueStatsViewState.Loading
     )
     private var _revenueStatsState by revenueStatsState
+
+    val visitorStatsState: LiveDataDelegate<VisitorStatsViewState> = LiveDataDelegate(
+        savedState,
+        VisitorStatsViewState.Content(emptyMap())
+    )
+    private var _visitorStatsState by visitorStatsState
+
     val topPerformersState: LiveDataDelegate<TopPerformersViewState> = LiveDataDelegate(
         savedState,
         TopPerformersViewState.Loading
     )
     private var _topPerformersState by topPerformersState
+
+    val hasOrders: LiveDataDelegate<OrderState> = LiveDataDelegate(
+        savedState,
+        OrderState.AtLeastOne
+    )
+    private var _hasOrders by hasOrders
+
 
     private val refreshStoreStats = BooleanArray(StatsGranularity.values().size)
     private val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
@@ -101,16 +113,13 @@ class MyStoreViewModel @Inject constructor(
                         }
                         is RevenueStatsError -> _revenueStatsState = RevenueStatsViewState.GenericError
                         PluginNotActive -> _revenueStatsState = RevenueStatsViewState.PluginNotActiveError
-
-//                        is HasOrders -> myStoreView?.showEmptyView(!it.hasOrder)
-//
-//                        is VisitorsStatsSuccess -> myStoreView?.showVisitorStats(it.stats, granularity)
-//                        is VisitorsStatsError -> myStoreView?.showVisitorStatsError(granularity)
-//                        IsJetPackCPEnabled -> myStoreView?.showEmptyVisitorStatsForJetpackCP()
+                        is VisitorsStatsSuccess -> _visitorStatsState = VisitorStatsViewState.Content(it.stats)
+                        is VisitorsStatsError -> _visitorStatsState = VisitorStatsViewState.Error
+                        IsJetPackCPEnabled -> _visitorStatsState = VisitorStatsViewState.JetPackCPEmpty
+                        is HasOrders -> _hasOrders =
+                            if (it.hasOrder) OrderState.AtLeastOne
+                            else OrderState.Empty
                     }
-//                    if (it is RevenueStatsSuccess || it is PluginNotActive || it is RevenueStatsError) {
-//                        myStoreView?.showChartSkeleton(false)
-//                    }
                 }
         }
     }
@@ -159,25 +168,6 @@ class MyStoreViewModel @Inject constructor(
         AnalyticsTracker.track(AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED)
     }
 
-    sealed class TopPerformersViewState : Parcelable {
-        @Parcelize
-        object Loading : TopPerformersViewState()
-
-        @Parcelize
-        object Error : TopPerformersViewState()
-
-        @Parcelize
-        data class Content(
-            val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
-        ) : TopPerformersViewState()
-    }
-
-    sealed class MyStoreEvent : MultiLiveEvent.Event() {
-        data class OpenTopPerformer(
-            val productId: Long
-        ) : MyStoreEvent()
-    }
-
     sealed class RevenueStatsViewState : Parcelable {
         @Parcelize
         object Loading : RevenueStatsViewState()
@@ -192,6 +182,46 @@ class MyStoreViewModel @Inject constructor(
         data class Content(
             val revenueStats: RevenueStatsUiModel?
         ) : RevenueStatsViewState()
+    }
+
+    sealed class VisitorStatsViewState : Parcelable {
+        @Parcelize
+        object Error : VisitorStatsViewState()
+
+        @Parcelize
+        object JetPackCPEmpty : VisitorStatsViewState()
+
+        @Parcelize
+        data class Content(
+            val stats: Map<String, Int>
+        ) : VisitorStatsViewState()
+    }
+
+    sealed class TopPerformersViewState : Parcelable {
+        @Parcelize
+        object Loading : TopPerformersViewState()
+
+        @Parcelize
+        object Error : TopPerformersViewState()
+
+        @Parcelize
+        data class Content(
+            val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
+        ) : TopPerformersViewState()
+    }
+
+    sealed class OrderState : Parcelable {
+        @Parcelize
+        object Empty : OrderState()
+
+        @Parcelize
+        object AtLeastOne : OrderState()
+    }
+
+    sealed class MyStoreEvent : MultiLiveEvent.Event() {
+        data class OpenTopPerformer(
+            val productId: Long
+        ) : MyStoreEvent()
     }
 
     @Parcelize

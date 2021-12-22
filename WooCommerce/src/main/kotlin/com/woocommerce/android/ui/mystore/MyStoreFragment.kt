@@ -193,17 +193,21 @@ class MyStoreFragment :
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+        viewModel.revenueStatsState.observe(viewLifecycleOwner) { _, newValue ->
+            when (newValue) {
+                is RevenueStatsViewState.Content -> showStats(newValue.revenueStats, activeGranularity)
+                RevenueStatsViewState.GenericError -> showStatsError(activeGranularity)
+                RevenueStatsViewState.Loading -> showChartSkeleton(true)
+                RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
+            }
+        }
+        viewModel.visitorStatsState.observe(viewLifecycleOwner) { _, newValue ->
+            when (newValue) {
+                is VisitorStatsViewState.Content -> showVisitorStats(newValue.stats, activeGranularity)
+                VisitorStatsViewState.Error -> showVisitorStatsError(activeGranularity)
+                VisitorStatsViewState.JetPackCPEmpty -> showEmptyVisitorStatsForJetpackCP()
+            }
+        }
         viewModel.topPerformersState.observe(viewLifecycleOwner) { _, newValue ->
             when (newValue) {
                 is TopPerformersViewState.Loading -> showTopPerformersLoading()
@@ -211,12 +215,10 @@ class MyStoreFragment :
                 is TopPerformersViewState.Content -> showTopPerformers(newValue.topPerformers, activeGranularity)
             }
         }
-        viewModel.revenueStatsState.observe(viewLifecycleOwner) { _, newValue ->
+        viewModel.hasOrders.observe(viewLifecycleOwner) { _, newValue ->
             when (newValue) {
-                is RevenueStatsViewState.Content -> showStats(newValue.revenueStats, activeGranularity)
-                RevenueStatsViewState.GenericError -> showStatsError(activeGranularity)
-                RevenueStatsViewState.Loading -> showChartSkeleton(true)
-                RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
+                OrderState.Empty -> showEmptyView(true)
+                OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
