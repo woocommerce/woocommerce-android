@@ -33,7 +33,9 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     fun fetchProductList(
         loadMore: Boolean = false
     ) {
-        viewState = viewState.copy(isSkeletonShown = true)
+        if(loadMore.not()) {
+            viewState = viewState.copy(isSkeletonShown = true)
+        }
         /**
          * We will probably want to improve this call to check if the product list
          * is already available on database before relying directly on this call
