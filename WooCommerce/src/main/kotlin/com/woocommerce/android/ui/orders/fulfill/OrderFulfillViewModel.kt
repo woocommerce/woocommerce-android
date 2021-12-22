@@ -151,7 +151,7 @@ class OrderFulfillViewModel @Inject constructor(
         AnalyticsTracker.track(
             ORDER_TRACKING_ADD,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider
             )

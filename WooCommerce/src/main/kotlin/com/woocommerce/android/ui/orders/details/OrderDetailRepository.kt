@@ -116,7 +116,7 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun updateOrderStatus(
-        remoteOrderId: LocalOrRemoteId.RemoteId,
+        remoteOrderId: Long,
         newStatus: String
     ): Flow<UpdateOrderResult> {
         val status = withContext(dispatchers.io) {
@@ -124,7 +124,7 @@ class OrderDetailRepository @Inject constructor(
                 ?: error("Couldn't find a status with key $newStatus")
         }
         return orderStore.updateOrderStatus(
-            remoteOrderId,
+            LocalOrRemoteId.RemoteId(remoteOrderId),
             selectedSite.get(),
             status
         )

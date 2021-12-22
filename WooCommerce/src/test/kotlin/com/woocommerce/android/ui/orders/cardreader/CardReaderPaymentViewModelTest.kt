@@ -43,7 +43,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import java.math.BigDecimal
 import kotlin.test.assertEquals
@@ -113,7 +112,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(address.lastName).thenReturn("Test")
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
-        whenever(mockedOrder.remoteId).thenReturn(LocalOrRemoteId.RemoteId(1))
+        whenever(mockedOrder.id).thenReturn(1)
         whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
