@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.orders.list
 
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.model.TimeGroup
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
 /**
  * This class represents three possible list item view states for the order list page,
@@ -24,14 +24,14 @@ sealed class OrderListItemUIType {
      * Flag that the data or a single order item is not yet available for
      * display. Signals a loading view for that item should be displayed.
      */
-    data class LoadingItem(val remoteId: RemoteId) : OrderListItemUIType()
+    data class LoadingItem(val remoteId: OrderId) : OrderListItemUIType()
 
     /**
      * Data required to populate a single order item in the order list view.
      */
     data class OrderListItemUI(
         val localOrderId: LocalId,
-        val remoteOrderId: RemoteId,
+        val orderId: OrderId,
         val orderNumber: String,
         val orderName: String,
         val orderTotal: String,

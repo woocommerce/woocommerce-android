@@ -26,6 +26,7 @@ import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -382,11 +383,11 @@ class OrderListFragment :
             }
             findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsFragment, bundle)
         } else {
-            openOrderDetail(order.localId.value, order.remoteId.value, order.status.value)
+            openOrderDetail(order.localId.value, order.id, order.status.value)
         }
     }
 
-    override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String, sharedView: View?) {
+    override fun openOrderDetail(localOrderId: Int, remoteOrderId: OrderId, orderStatus: String, sharedView: View?) {
         // Track user clicked to open an order and the status of that order
         AnalyticsTracker.track(
             Stat.ORDER_OPEN,

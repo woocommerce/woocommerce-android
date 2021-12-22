@@ -325,9 +325,9 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             event = it
         }
 
-        stateFlow.value = Transition(Idle, SideEffect.ShowLabelsPrint(doneData.order.remoteId.value, purchasedLabels))
+        stateFlow.value = Transition(Idle, SideEffect.ShowLabelsPrint(doneData.order.id.value, purchasedLabels))
 
-        assertThat(event).isEqualTo(ShowPrintShippingLabels(doneData.order.remoteId.value, purchasedLabels))
+        assertThat(event).isEqualTo(ShowPrintShippingLabels(doneData.order.id.value, purchasedLabels))
     }
 
     @Test
@@ -350,7 +350,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
         verify(orderDetailRepository).updateOrderStatus(
-            doneData.order.remoteId, CoreOrderStatus.COMPLETED.value
+            doneData.order.id, CoreOrderStatus.COMPLETED.value
         )
     }
 

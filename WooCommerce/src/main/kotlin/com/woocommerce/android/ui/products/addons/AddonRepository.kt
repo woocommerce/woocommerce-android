@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item.Attribute
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -38,16 +39,16 @@ class AddonRepository @Inject constructor(
         observeProductSpecificAddons(productRemoteID).firstOrNull().isNullOrEmpty().not()
 
     suspend fun getOrderAddonsData(
-        orderID: Long,
+        orderID: OrderId,
         orderItemID: Long,
         productID: Long
     ) = getOrder(orderID)
         ?.findOrderAttributesWith(orderItemID)
         ?.joinWithAddonsFrom(productID)
 
-    private fun getOrder(orderID: Long) =
+    private fun getOrder(orderID: OrderId) =
         orderStore.getOrderByIdentifier(
-            OrderIdentifier(selectedSite.get().id, orderID)
+            OrderIdentifier(selectedSite.get().id, orderID.value)
         )
 
     private fun WCOrderModel.findOrderAttributesWith(orderItemID: Long) =

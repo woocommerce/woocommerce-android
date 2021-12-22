@@ -1,17 +1,18 @@
 package com.woocommerce.android
 
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
-    fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
+    fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: OrderId) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)
 
     fun setReceiptUrl(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long,
-        orderId: Long,
+        orderId: OrderId,
         url: String
     ) = AppPrefs.setReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId, url)
 

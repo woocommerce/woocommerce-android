@@ -416,7 +416,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             }
 
             on<Event.PurchaseSuccess> {
-                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(data.order.remoteId.value, it.labels))
+                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(data.order.id, it.labels))
             }
         }
 
@@ -825,7 +825,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object ShowPaymentOptions : SideEffect()
 
         data class ShowLabelsPrint(
-            val orderId: Long,
+            val orderId: OrderId,
             val labels: List<ShippingLabel>
         ) : SideEffect()
 

@@ -50,14 +50,14 @@ data class Order(
     val items: List<Item>,
     val shippingLines: List<ShippingLine>,
     val feesLines: List<FeeLine>,
-    val metaData: List<MetaData<String>>
+    val metaData: List<MetaData<String>>,
 ) : Parcelable {
     @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val localId
         get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
 
-    val remoteId
-        get() = LocalOrRemoteId.RemoteId(this.rawRemoteOrderId)
+    @IgnoredOnParcel
+    val id: OrderId = OrderId(rawRemoteOrderId)
 
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null

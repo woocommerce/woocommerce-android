@@ -15,6 +15,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
@@ -223,17 +224,17 @@ object AppPrefs {
 
     fun setUserEmail(email: String) = setString(DeletablePrefKey.USER_EMAIL, email)
 
-    fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
+    fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: OrderId) =
         PreferenceUtils.getString(getPreferences(), getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId))
 
-    fun setReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long, url: String) =
+    fun setReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: OrderId, url: String) =
         PreferenceUtils.setString(
             getPreferences(),
             getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId),
             url
         )
 
-    private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
+    private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: OrderId) =
         "$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId"
 
     fun setLastConnectedCardReaderId(readerId: String) =

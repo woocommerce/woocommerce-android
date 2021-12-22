@@ -90,13 +90,13 @@ class AddOrderNoteViewModel @Inject constructor(
             triggerEvent(ShowSnackbar(R.string.add_order_note_error))
             return
         }
-        AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to order.remoteId))
+        AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to order.id))
 
         addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = true)
 
         val note = addOrderNoteViewState.draftNote
         launch {
-            val onOrderChanged = orderDetailRepository.addOrderNote(order.identifier, order.remoteId.value, note)
+            val onOrderChanged = orderDetailRepository.addOrderNote(order.identifier, order.id, note)
             if (!onOrderChanged.isError) {
                 AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
                 addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)

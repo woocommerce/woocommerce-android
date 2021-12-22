@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -55,16 +56,18 @@ class RefundDetailViewModel @Inject constructor(
     private val navArgs: RefundDetailFragmentArgs by savedState.navArgs()
 
     init {
-        val orderModel = orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, navArgs.orderId))
+        val orderModel = orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, navArgs.orderId.value))
         orderModel?.toAppModel()?.let { order ->
             formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
             if (navArgs.refundId > 0) {
-                refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)
+                refundStore.getRefund(selectedSite.get(), navArgs.orderId.value, navArgs.refundId)
                     ?.toAppModel()?.let { refund ->
                         displayRefundDetails(refund, order)
                     }
             } else {
-                val refunds = refundStore.getAllRefunds(selectedSite.get(), navArgs.orderId).map { it.toAppModel() }
+                val refunds = refundStore.getAllRefunds(
+                    selectedSite.get(), navArgs.orderId.value
+                ).map { it.toAppModel() }
                 displayRefundedProducts(order, refunds)
             }
         }
@@ -168,7 +171,7 @@ class RefundDetailViewModel @Inject constructor(
     ) : Parcelable
 
     data class ViewOrderedAddons(
-        val remoteOrderID: Long,
+        val remoteOrderID: OrderId,
         val orderItemID: Long,
         val addonsProductID: Long
     ) : Event()

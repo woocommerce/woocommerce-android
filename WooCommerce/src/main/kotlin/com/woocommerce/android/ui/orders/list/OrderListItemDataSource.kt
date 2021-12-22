@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.getBillingName
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.TimeGroup.GROUP_FUTURE
 import com.woocommerce.android.model.TimeGroup.GROUP_OLDER_MONTH
@@ -63,12 +64,12 @@ class OrderListItemDataSource(
         val mapSummary = { remoteOrderId: RemoteId ->
             ordersMap[remoteOrderId].let { order ->
                 if (order == null) {
-                    LoadingItem(remoteOrderId)
+                    LoadingItem(OrderId(remoteOrderId.value))
                 } else {
                     @Suppress("DEPRECATION_ERROR")
                     OrderListItemUI(
                         localOrderId = LocalId(order.id),
-                        remoteOrderId = order.remoteOrderId,
+                        orderId = OrderId(order.remoteOrderId.value),
                         orderNumber = order.number,
                         orderName = order.getBillingName(
                             resourceProvider.getString(R.string.orderdetail_customer_name_default)

@@ -157,7 +157,7 @@ class OrderListAdapter(
             this.itemView.setOnClickListener {
                 listener.openOrderDetail(
                     orderItemUI.localOrderId.value,
-                    orderItemUI.remoteOrderId.value,
+                    orderItemUI.orderId,
                     orderItemUI.status,
                     viewBinding.root
                 )
@@ -204,10 +204,10 @@ private val OrderListDiffItemCallback = object : DiffUtil.ItemCallback<OrderList
             return oldItem.remoteId == newItem.remoteId
         }
         if (oldItem is OrderListItemUI && newItem is OrderListItemUI) {
-            return oldItem.remoteOrderId == newItem.remoteOrderId
+            return oldItem.orderId == newItem.orderId
         }
         if (oldItem is LoadingItem && newItem is OrderListItemUI) {
-            return oldItem.remoteId == newItem.remoteOrderId
+            return oldItem.remoteId == newItem.orderId
         }
         return false
     }

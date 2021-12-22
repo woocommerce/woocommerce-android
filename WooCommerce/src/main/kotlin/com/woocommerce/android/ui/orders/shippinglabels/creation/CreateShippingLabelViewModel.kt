@@ -305,7 +305,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         triggerEvent(ShowPaymentDetails)
     }
 
-    private fun openPrintLabelsScreen(orderId: Long, labels: List<ShippingLabel>) {
+    private fun openPrintLabelsScreen(orderId: OrderId, labels: List<ShippingLabel>) {
         triggerEvent(ShowPrintShippingLabels(orderId, labels))
     }
 
@@ -441,7 +441,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         var result: WooResult<List<ShippingLabel>>
         val duration = measureTimeMillis {
             result = shippingLabelRepository.purchaseLabels(
-                orderId = data.order.remoteId.value,
+                orderId = data.order.id,
                 origin = data.stepsState.originAddressStep.data,
                 destination = data.stepsState.shippingAddressStep.data,
                 packages = data.stepsState.packagingStep.data,
@@ -462,7 +462,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         } else {
             if (fulfillOrder) {
                 orderDetailRepository.updateOrderStatus(
-                    remoteOrderId = data.order.remoteId,
+                    remoteOrderId = data.order.id,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 ).collect { result ->
                     when (result) {

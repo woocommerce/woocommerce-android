@@ -33,6 +33,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Notification
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -748,7 +749,7 @@ class MainActivity :
                     is ViewOrderDetail -> {
                         showOrderDetail(
                             event.localSiteId,
-                            remoteOrderId = event.uniqueId,
+                            remoteOrderId = OrderId(event.uniqueId),
                             remoteNoteId = event.remoteNoteId,
                             launchedFromNotification = true
                         )
@@ -865,7 +866,7 @@ class MainActivity :
     override fun showOrderDetail(
         localSiteId: Int,
         localOrderId: Int,
-        remoteOrderId: Long,
+        remoteOrderId: OrderId,
         remoteNoteId: Long,
         launchedFromNotification: Boolean
     ) {
@@ -875,7 +876,7 @@ class MainActivity :
             binding.bottomNav.active(ORDERS.position)
         }
 
-        val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
+        val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId.value)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
         navController.navigateSafely(action)
     }
@@ -883,14 +884,14 @@ class MainActivity :
     override fun showOrderDetailWithSharedTransition(
         localSiteId: Int,
         localOrderId: Int,
-        remoteOrderId: Long,
+        remoteOrderId: OrderId,
         remoteNoteId: Long,
         sharedView: View
     ) {
         val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
         val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
 
-        val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
+        val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId.value)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
         navController.navigateSafely(directions = action, extras = extras)
     }

@@ -1,6 +1,13 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
+import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderId
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -65,7 +72,8 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
 
     object ShowPaymentDetails : CreateShippingLabelEvent()
 
-    data class ShowPrintShippingLabels(val orderId: Long, val labels: List<ShippingLabel>) : CreateShippingLabelEvent()
+    data class ShowPrintShippingLabels(val orderId: OrderId, val labels: List<ShippingLabel>) :
+        CreateShippingLabelEvent()
 
     object ShowWooDiscountBottomSheet : CreateShippingLabelEvent()
 }

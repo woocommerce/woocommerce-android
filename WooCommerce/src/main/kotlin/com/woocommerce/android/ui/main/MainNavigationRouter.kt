@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.main
 
 import android.view.View
+import com.woocommerce.android.model.OrderId
 
 interface MainNavigationRouter {
     fun isAtNavigationRoot(): Boolean
@@ -17,7 +18,7 @@ interface MainNavigationRouter {
     fun showOrderDetail(
         localSiteId: Int,
         localOrderId: Int = 0,
-        remoteOrderId: Long,
+        remoteOrderId: OrderId,
         remoteNoteId: Long = 0,
         launchedFromNotification: Boolean = false
     )
@@ -25,7 +26,7 @@ interface MainNavigationRouter {
     fun showOrderDetailWithSharedTransition(
         localSiteId: Int,
         localOrderId: Int = 0,
-        remoteOrderId: Long,
+        remoteOrderId: OrderId,
         remoteNoteId: Long = 0,
         sharedView: View
     )

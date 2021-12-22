@@ -10,6 +10,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.addons.order.OrderedAddonFragment.Companion.TAG
@@ -59,7 +60,7 @@ class OrderedAddonViewModel @Inject constructor(
             .orEmpty()
 
     fun start(
-        orderID: Long,
+        orderID: OrderId,
         orderItemID: Long,
         productID: Long
     ) = viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
@@ -95,7 +96,7 @@ class OrderedAddonViewModel @Inject constructor(
     }
 
     private suspend fun loadOrderAddonsData(
-        orderID: Long,
+        orderID: OrderId,
         orderItemID: Long,
         productID: Long
     ) = addonsRepository.getOrderAddonsData(orderID, orderItemID, productID)

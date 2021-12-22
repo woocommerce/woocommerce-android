@@ -295,7 +295,7 @@ class IssueRefundViewModel @Inject constructor(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
-                AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+                AnalyticsTracker.KEY_ORDER_ID to order.id
             )
         )
 
@@ -307,7 +307,7 @@ class IssueRefundViewModel @Inject constructor(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_REFUND_TYPE to AMOUNT.name,
-                AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+                AnalyticsTracker.KEY_ORDER_ID to order.id
             )
         )
 
@@ -357,7 +357,7 @@ class IssueRefundViewModel @Inject constructor(
                     AnalyticsTracker.track(
                         REFUND_CREATE,
                         mapOf(
-                            AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
+                            AnalyticsTracker.KEY_ORDER_ID to order.id,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to
                                 (commonState.refundTotal isEqualTo maxRefund).toString(),
                             AnalyticsTracker.KEY_REFUND_TYPE to commonState.refundType.name,
@@ -383,7 +383,7 @@ class IssueRefundViewModel @Inject constructor(
 
                                 refundStore.createItemsRefund(
                                     selectedSite.get(),
-                                    order.remoteId.value,
+                                    order.id.value,
                                     refundSummaryState.refundReason ?: "",
                                     true,
                                     gateway.supportsRefunds,
@@ -393,7 +393,7 @@ class IssueRefundViewModel @Inject constructor(
                             AMOUNT -> {
                                 refundStore.createAmountRefund(
                                     selectedSite.get(),
-                                    order.remoteId.value,
+                                    order.id.value,
                                     commonState.refundTotal,
                                     refundSummaryState.refundReason ?: "",
                                     gateway.supportsRefunds
@@ -407,7 +407,7 @@ class IssueRefundViewModel @Inject constructor(
                         AnalyticsTracker.track(
                             REFUND_CREATE_FAILED,
                             mapOf(
-                                AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
+                                AnalyticsTracker.KEY_ORDER_ID to order.id,
                                 AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                                 AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
                                 AnalyticsTracker.KEY_ERROR_DESC to result.error.message
@@ -419,7 +419,7 @@ class IssueRefundViewModel @Inject constructor(
                         AnalyticsTracker.track(
                             REFUND_CREATE_SUCCESS,
                             mapOf(
-                                AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
+                                AnalyticsTracker.KEY_ORDER_ID to order.id,
                                 AnalyticsTracker.KEY_ID to result.model?.id
                             )
                         )
@@ -445,7 +445,7 @@ class IssueRefundViewModel @Inject constructor(
     private suspend fun addOrderNote(reason: String) {
         val note = OrderNote(note = reason, isCustomerNote = false)
         val onOrderChanged = orderDetailRepository
-            .addOrderNote(order.identifier, order.remoteId.value, note)
+            .addOrderNote(order.identifier, order.id, note)
         if (!onOrderChanged.isError) {
             AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
         } else {
@@ -460,7 +460,7 @@ class IssueRefundViewModel @Inject constructor(
         AnalyticsTracker.track(
             CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_ORDER_ID to order.remoteId
+                AnalyticsTracker.KEY_ORDER_ID to order.id
             )
         )
 
@@ -487,7 +487,7 @@ class IssueRefundViewModel @Inject constructor(
 
         AnalyticsTracker.track(
             CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED,
-            mapOf(AnalyticsTracker.KEY_ORDER_ID to order.remoteId)
+            mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
         )
     }
 
@@ -511,7 +511,7 @@ class IssueRefundViewModel @Inject constructor(
 
         AnalyticsTracker.track(
             CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED,
-            mapOf(AnalyticsTracker.KEY_ORDER_ID to order.remoteId)
+            mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
         )
     }
 
@@ -578,7 +578,7 @@ class IssueRefundViewModel @Inject constructor(
 
         AnalyticsTracker.track(
             CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED,
-            mapOf(AnalyticsTracker.KEY_ORDER_ID to order.remoteId)
+            mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
         )
     }
 
@@ -595,7 +595,7 @@ class IssueRefundViewModel @Inject constructor(
         AnalyticsTracker.track(
             CREATE_ORDER_REFUND_TAB_CHANGED,
             mapOf(
-                AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
+                AnalyticsTracker.KEY_ORDER_ID to order.id,
                 AnalyticsTracker.KEY_TYPE to type.name
             )
         )

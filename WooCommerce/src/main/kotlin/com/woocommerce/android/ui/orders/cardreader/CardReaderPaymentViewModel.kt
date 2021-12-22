@@ -40,6 +40,7 @@ import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
@@ -158,11 +159,11 @@ class CardReaderPaymentViewModel
         }
     }
 
-    fun retry(orderId: Long, billingEmail: String, paymentData: PaymentData, amountLabel: String) {
+    fun retry(orderId: OrderId, billingEmail: String, paymentData: PaymentData, amountLabel: String) {
         paymentFlowJob = launch {
             viewState.postValue((LoadingDataState))
             delay(ARTIFICIAL_RETRY_DELAY)
-            cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
+            cardReaderManager.retryCollectPayment(orderId.value, paymentData).collect { paymentStatus ->
                 onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
             }
         }
@@ -173,7 +174,7 @@ class CardReaderPaymentViewModel
         cardReaderManager.collectPayment(
             PaymentInfo(
                 paymentDescription = order.getPaymentDescription(),
-                orderId = order.remoteId.value,
+                orderId = order.id.value,
                 amount = order.total,
                 currency = order.currency,
                 orderKey = order.orderKey,
@@ -183,12 +184,12 @@ class CardReaderPaymentViewModel
                 siteUrl = selectedSite.get().url.ifEmpty { null },
             )
         ).collect { paymentStatus ->
-            onPaymentStatusChanged(order.remoteId.value, customerEmail, paymentStatus, order.getAmountLabel())
+            onPaymentStatusChanged(order.id, customerEmail, paymentStatus, order.getAmountLabel())
         }
     }
 
     private fun onPaymentStatusChanged(
-        orderId: Long,
+        orderId: OrderId,
         billingEmail: String,
         paymentStatus: CardPaymentStatus,
         amountLabel: String
@@ -221,7 +222,7 @@ class CardReaderPaymentViewModel
 
     private fun onPaymentCompleted(
         paymentStatus: PaymentCompleted,
-        orderId: Long,
+        orderId: OrderId,
     ) {
         storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         triggerEvent(PlayChaChing)
@@ -243,7 +244,12 @@ class CardReaderPaymentViewModel
         return orderRepository.fetchOrder(arguments.orderIdentifier)
     }
 
-    private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
+    private fun emitFailedPaymentState(
+        orderId: OrderId,
+        billingEmail: String,
+        error: PaymentFailed,
+        amountLabel: String
+    ) {
         WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
@@ -274,7 +280,7 @@ class CardReaderPaymentViewModel
             val order = orderRepository.getOrder(arguments.orderIdentifier)
                 ?: throw IllegalStateException("Order URL not available.")
             val amountLabel = order.getAmountLabel()
-            val receiptUrl = getReceiptUrl(order.remoteId.value)
+            val receiptUrl = getReceiptUrl(order.id)
 
             viewState.postValue(
                 PaymentSuccessfulState(
@@ -327,7 +333,7 @@ class CardReaderPaymentViewModel
     private fun startPrintingFlow() {
         val order = orderRepository.getOrder(arguments.orderIdentifier)
             ?: throw IllegalStateException("Order URL not available.")
-        triggerEvent(PrintReceipt(getReceiptUrl(order.remoteId.value), order.getReceiptDocumentName()))
+        triggerEvent(PrintReceipt(getReceiptUrl(order.id), order.getReceiptDocumentName()))
     }
 
     private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {
@@ -421,13 +427,13 @@ class CardReaderPaymentViewModel
         triggerEvent(Exit)
     }
 
-    private fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
+    private fun storeReceiptUrl(orderId: OrderId, receiptUrl: String) {
         selectedSite.get().let {
             appPrefsWrapper.setReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId, receiptUrl)
         }
     }
 
-    private fun getReceiptUrl(orderId: Long): String {
+    private fun getReceiptUrl(orderId: OrderId): String {
         return selectedSite.get().let {
             appPrefsWrapper.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId)
                 ?: throw IllegalStateException("Receipt URL not available.")
@@ -444,7 +450,7 @@ class CardReaderPaymentViewModel
     private fun Order.getAmountLabel(): String = currencyFormatter
         .formatAmountWithCurrency(this.currency, this.total.toDouble())
 
-    private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
+    private fun Order.getReceiptDocumentName() = "receipt-order-$id"
 
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 

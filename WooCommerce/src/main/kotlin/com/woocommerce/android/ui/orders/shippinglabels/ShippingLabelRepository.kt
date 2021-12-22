@@ -29,22 +29,22 @@ class ShippingLabelRepository @Inject constructor(
     private var availablePackages: List<ShippingPackage>? = null
     private var selectableServicePackages: List<ShippingPackage>? = null
 
-    suspend fun refundShippingLabel(orderId: Long, shippingLabelId: Long): WooResult<Boolean> {
+    suspend fun refundShippingLabel(orderId: OrderId, shippingLabelId: Long): WooResult<Boolean> {
         return withContext(Dispatchers.IO) {
             shippingLabelStore.refundShippingLabelForOrder(
                 site = selectedSite.get(),
-                orderId = orderId,
+                orderId = orderId.value,
                 remoteShippingLabelId = shippingLabelId
             )
         }
     }
 
     fun getShippingLabelByOrderIdAndLabelId(
-        orderId: Long,
+        orderId: OrderId,
         shippingLabelId: Long
     ): ShippingLabel? {
         return shippingLabelStore.getShippingLabelById(
-            selectedSite.get(), orderId, shippingLabelId
+            selectedSite.get(), orderId.value, shippingLabelId
         )
             ?.toAppModel()
     }
@@ -100,7 +100,7 @@ class ShippingLabelRepository @Inject constructor(
     ): WooResult<List<WCShippingRatesResult.ShippingPackage>> {
         val carrierRates = shippingLabelStore.getShippingRates(
             site = selectedSite.get(),
-            orderId = order.remoteId.value,
+            orderId = order.id.value,
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
             packages = packages.mapIndexed { i, box ->
@@ -174,7 +174,7 @@ class ShippingLabelRepository @Inject constructor(
     }
 
     suspend fun purchaseLabels(
-        orderId: Long,
+        orderId: OrderId,
         origin: Address,
         destination: Address,
         packages: List<ShippingLabelPackage>,
@@ -207,7 +207,7 @@ class ShippingLabelRepository @Inject constructor(
 
         return shippingLabelStore.purchaseShippingLabels(
             site = selectedSite.get(),
-            orderId = orderId,
+            orderId = orderId.value,
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
             packagesData = packagesData,

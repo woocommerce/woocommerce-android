@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SU
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -15,6 +16,7 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toFluxcRemoteId
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -24,7 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -116,7 +117,7 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun updateOrderStatus(
-        remoteOrderId: LocalOrRemoteId.RemoteId,
+        remoteOrderId: OrderId,
         newStatus: String
     ): Flow<UpdateOrderResult> {
         val status = withContext(dispatchers.io) {
@@ -124,7 +125,7 @@ class OrderDetailRepository @Inject constructor(
                 ?: error("Couldn't find a status with key $newStatus")
         }
         return orderStore.updateOrderStatus(
-            remoteOrderId,
+            remoteOrderId.toFluxcRemoteId(),
             selectedSite.get(),
             status
         )
@@ -132,7 +133,7 @@ class OrderDetailRepository @Inject constructor(
 
     suspend fun addOrderNote(
         orderIdentifier: OrderIdentifier,
-        remoteOrderId: Long,
+        remoteOrderId: OrderId,
         noteModel: OrderNote
     ): OnOrderChanged {
         val order = orderStore.getOrderByIdentifier(orderIdentifier)
@@ -144,7 +145,7 @@ class OrderDetailRepository @Inject constructor(
         }
         val dataModel = noteModel.toDataModel()
         val payload = PostOrderNotePayload(
-            @Suppress("DEPRECATION_ERROR") order.id, remoteOrderId, selectedSite.get(), dataModel
+            @Suppress("DEPRECATION_ERROR") order.id, remoteOrderId.value, selectedSite.get(), dataModel
         )
         return orderStore.postOrderNote(payload)
     }
@@ -247,10 +248,10 @@ class OrderDetailRepository @Inject constructor(
         return wooCommerceStore.getStoreCountryCode(selectedSite.get())
     }
 
-    suspend fun fetchSLCreationEligibility(orderId: Long) {
+    suspend fun fetchSLCreationEligibility(orderId: OrderId) {
         val result = shippingLabelStore.fetchShippingLabelCreationEligibility(
             site = selectedSite.get(),
-            orderId = orderId,
+            orderId = orderId.value,
             canCreatePackage = true,
             canCreatePaymentMethod = true,
             canCreateCustomsForm = true
@@ -270,10 +271,10 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    fun isOrderEligibleForSLCreation(orderId: Long): Boolean {
+    fun isOrderEligibleForSLCreation(orderId: OrderId): Boolean {
         return shippingLabelStore.isOrderEligibleForShippingLabelCreation(
             site = selectedSite.get(),
-            orderId = orderId,
+            orderId = orderId.value,
             canCreatePackage = true,
             canCreatePaymentMethod = true,
             canCreateCustomsForm = true

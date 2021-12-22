@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderId
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
@@ -28,11 +29,11 @@ sealed class OrderNavigationTarget : Event() {
         }
     }
 
-    data class IssueOrderRefund(val remoteOrderId: Long) : OrderNavigationTarget()
-    data class ViewRefundedProducts(val remoteOrderId: Long) : OrderNavigationTarget()
+    data class IssueOrderRefund(val remoteOrderId: OrderId) : OrderNavigationTarget()
+    data class ViewRefundedProducts(val remoteOrderId: OrderId) : OrderNavigationTarget()
     data class ViewOrderFulfillInfo(val orderIdentifier: String) : OrderNavigationTarget()
     data class AddOrderNote(val orderIdentifier: String, val orderNumber: String) : OrderNavigationTarget()
-    data class RefundShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
+    data class RefundShippingLabel(val remoteOrderId: OrderId, val shippingLabelId: Long) : OrderNavigationTarget()
     data class AddOrderShipmentTracking(
         val orderIdentifier: String,
         val orderTrackingProvider: String,
@@ -43,7 +44,7 @@ sealed class OrderNavigationTarget : Event() {
         val orderIdentifier: String,
         val selectedProvider: String
     ) : OrderNavigationTarget()
-    data class PrintShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
+    data class PrintShippingLabel(val remoteOrderId: OrderId, val shippingLabelId: Long) : OrderNavigationTarget()
     data class ViewShippingLabelPaperSizes(val currentPaperSize: ShippingLabelPaperSize) : OrderNavigationTarget()
     object ViewCreateShippingLabelInfo : OrderNavigationTarget()
     object ViewPrintShippingLabelInfo : OrderNavigationTarget()
@@ -54,8 +55,8 @@ sealed class OrderNavigationTarget : Event() {
     object ShowCardReaderWelcomeDialog : OrderNavigationTarget()
     data class StartCardReaderPaymentFlow(val orderIdentifier: String) : OrderNavigationTarget()
     object ViewPrintingInstructions : OrderNavigationTarget()
-    data class PreviewReceipt(val billingEmail: String, val receiptUrl: String, val orderId: Long) :
+    data class PreviewReceipt(val billingEmail: String, val receiptUrl: String, val orderId: OrderId) :
         OrderNavigationTarget()
-    data class ViewOrderedAddons(val remoteOrderID: Long, val orderItemID: Long, val addonsProductID: Long) :
+    data class ViewOrderedAddons(val remoteOrderID: OrderId, val orderItemID: Long, val addonsProductID: Long) :
         OrderNavigationTarget()
 }

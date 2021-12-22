@@ -113,7 +113,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(address.lastName).thenReturn("Test")
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
-        whenever(mockedOrder.remoteId).thenReturn(LocalOrRemoteId.RemoteId(1))
+        whenever(mockedOrder.id).thenReturn(LocalOrRemoteId.RemoteId(1))
         whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
