@@ -122,6 +122,8 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
+    <string name="minus">Minus</string>
+    <string name="plus">Plus</string>
 
     <!--
         Date/Time Labels
