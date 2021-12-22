@@ -222,7 +222,7 @@ class OrderDetailViewModel @Inject constructor(
         val site = selectedSite.get()
         when {
             cardReaderManager.readerStatus.value is Connected -> {
-                triggerEvent(StartCardReaderPaymentFlow(order.remoteId.value))
+                triggerEvent(StartCardReaderPaymentFlow(order.id))
             }
             !appPrefs.isCardReaderOnboardingCompleted(site.id, site.siteId, site.selfHostedSiteId) -> {
                 triggerEvent(ShowCardReaderWelcomeDialog)
@@ -274,13 +274,13 @@ class OrderDetailViewModel @Inject constructor(
             // transaction when a result is received
             delay(1)
             if (connected) {
-                triggerEvent(StartCardReaderPaymentFlow(order.remoteId.value))
+                triggerEvent(StartCardReaderPaymentFlow(order.id))
             }
         }
     }
 
     fun onViewRefundedProductsClicked() {
-        triggerEvent(ViewRefundedProducts(remoteOrderId = order.id))
+        triggerEvent(ViewRefundedProducts(orderId = order.id))
     }
 
     fun onAddOrderNoteClicked() {

@@ -69,16 +69,16 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchOrderByRemoteId(remoteOrderId: LocalOrRemoteId.RemoteId): Order? {
+    suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
             orderStore.fetchSingleOrder(
                 selectedSite.get(),
-                remoteOrderId.value
+                orderId
             )
         }
 
         return if (result?.isError == false) {
-            getOrderByRemoteId(remoteOrderId)
+            getOrderById(orderId)
         } else {
             null
         }
@@ -194,8 +194,8 @@ class OrderDetailRepository @Inject constructor(
 
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
-    fun getOrderByRemoteId(orderRemoteId: LocalOrRemoteId.RemoteId) =
-        orderStore.getOrderByRemoteIdAndSite(orderRemoteId, selectedSite.get())?.toAppModel()
+    fun getOrderById(orderId: Long) =
+        orderStore.getOrderByRemoteIdAndSite(LocalOrRemoteId.RemoteId(orderId), selectedSite.get())?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {
         return (

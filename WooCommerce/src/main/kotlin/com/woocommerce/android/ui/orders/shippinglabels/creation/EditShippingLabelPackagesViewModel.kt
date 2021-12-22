@@ -307,7 +307,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     private fun Order.getShippableItems(): List<Order.Item> {
-        val refunds = orderDetailRepository.getOrderRefunds(remoteId.value)
+        val refunds = orderDetailRepository.getOrderRefunds(id)
         return refunds.getNonRefundedProducts(items)
             .filter {
                 val product = productDetailRepository.getProduct(it.productId)

@@ -50,7 +50,7 @@ class OrderNavigator @Inject constructor() {
             }
             is ViewRefundedProducts -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToRefundDetailFragment(target.remoteOrderId)
+                    .actionOrderDetailFragmentToRefundDetailFragment(target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
             is AddOrderNote -> {
