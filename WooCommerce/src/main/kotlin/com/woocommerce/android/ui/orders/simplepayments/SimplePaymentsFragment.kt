@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.DecimalFormat
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -66,7 +67,8 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                 }
             }
             new.orderTaxPercent.takeIfNotEqualTo(old?.orderTaxPercent) { taxPercent ->
-                binding.textTaxLabel.text = getString(R.string.simple_payments_tax_with_percent, taxPercent.toString())
+                val df = DecimalFormat("#.##")
+                binding.textTaxLabel.text = getString(R.string.simple_payments_tax_with_percent, df.format(taxPercent))
             }
         }
 
