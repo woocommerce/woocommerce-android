@@ -126,12 +126,10 @@ class MyStoreFragment :
         _binding = FragmentMyStoreBinding.bind(view)
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
-            // Track the user gesture
-            AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
-
             MyStorePresenter.resetForceRefresh()
             binding.myStoreRefreshLayout.isRefreshing = false
             refreshMyStoreStats(forced = true)
+            viewModel.onSwipeToRefresh()
         }
 
         savedInstanceState?.let { bundle ->
@@ -189,15 +187,32 @@ class MyStoreFragment :
         refreshMyStoreStats(forced = this.isRefreshPending)
 
 
-        //NEW VIEWMODEL CODE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         viewModel.topPerformersState.observe(viewLifecycleOwner) { _, newValue ->
             when (newValue) {
-                is Loading -> binding.myStoreTopPerformers.showSkeleton(true)
-                is Error -> showTopPerformersError(activeGranularity)//TODO check why granularity is needed here
-                is Content -> {
-                    binding.myStoreTopPerformers.showSkeleton(false)
-                    showTopPerformers(newValue.topPerformers, activeGranularity)
-                }
+                is Loading -> showTopPerformersLoading()
+                is Error -> showTopPerformersError(activeGranularity) //TODO check why granularity is needed here
+                is Content -> showTopPerformers(newValue.topPerformers, activeGranularity)
             }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -206,6 +221,11 @@ class MyStoreFragment :
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun showTopPerformersLoading() {
+        binding.myStoreTopPerformers.showErrorView(false)
+        binding.myStoreTopPerformers.showSkeleton(true)
     }
 
     private fun prepareJetpackBenefitsBanner() {
@@ -306,6 +326,7 @@ class MyStoreFragment :
         granularity: StatsGranularity
     ) {
         if (activeGranularity == granularity) {
+            binding.myStoreTopPerformers.showSkeleton(false)
             binding.myStoreTopPerformers.showErrorView(false)
             binding.myStoreTopPerformers.updateView(topPerformers)
         }
@@ -314,6 +335,7 @@ class MyStoreFragment :
     override fun showTopPerformersError(granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             binding.myStoreTopPerformers.updateView(emptyList())
+            binding.myStoreTopPerformers.showSkeleton(false)
             binding.myStoreTopPerformers.showErrorView(true)
             showErrorSnack()
         }
@@ -368,7 +390,6 @@ class MyStoreFragment :
         presenter.run {
             loadStats(activeGranularity, forced)
         }
-        viewModel.loadTopPerformersStats(forced)
     }
 
     override fun showChartSkeleton(show: Boolean) {

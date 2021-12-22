@@ -64,14 +64,13 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
      */
     fun loadTopPerformerStats(granularity: StatsGranularity) {
         // Track range change
+        //TODO CHECK if this tracking can be moved out of here to viewmodel onStatsGranularityChanged()
         AnalyticsTracker.track(
             Stat.DASHBOARD_TOP_PERFORMERS_DATE,
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase())
         )
-
         binding.topPerformersRecycler.adapter = TopPerformersAdapter()
         showEmptyView(false)
-        showErrorView(false)
     }
 
     fun showSkeleton(show: Boolean) {

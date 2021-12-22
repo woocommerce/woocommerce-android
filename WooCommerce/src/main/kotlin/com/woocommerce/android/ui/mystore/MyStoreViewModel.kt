@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersError
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersSuccess
@@ -29,6 +30,7 @@ class MyStoreViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
+    private val getStats: GetStats,
     private val getTopPerformers: GetTopPerformers,
     private val currencyFormatter: CurrencyFormatter,
 ) : ScopedViewModel(savedState) {
@@ -36,6 +38,13 @@ class MyStoreViewModel @Inject constructor(
         const val NUM_TOP_PERFORMERS = 5
     }
 
+    private var activeStatsGranularity: StatsGranularity = StatsGranularity.DAYS
+
+    val storeStats: LiveDataDelegate<StoreStatsViewState> = LiveDataDelegate(
+        savedState,
+        StoreStatsViewState.Loading
+    )
+    private var _storeStats by storeStats
     val topPerformersState: LiveDataDelegate<TopPerformersViewState> = LiveDataDelegate(
         savedState,
         TopPerformersViewState.Loading
@@ -45,15 +54,9 @@ class MyStoreViewModel @Inject constructor(
     private val refreshStoreStats = BooleanArray(StatsGranularity.values().size)
     private val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
 
-    private var activeStatsGranularity: StatsGranularity = StatsGranularity.DAYS
-
     init {
-        refreshTopPerformerStats.forEachIndexed { index, _ ->
-            refreshTopPerformerStats[index] = true
-        }
-        refreshStoreStats.forEachIndexed { index, _ ->
-            refreshStoreStats[index] = true
-        }
+        resetForceRefresh()
+//        loadStats()
         loadTopPerformersStats()
     }
 
@@ -62,13 +65,19 @@ class MyStoreViewModel @Inject constructor(
         loadTopPerformersStats()
     }
 
-    fun loadTopPerformersStats(forced: Boolean = false) {
+    fun onSwipeToRefresh() {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.DASHBOARD_PULLED_TO_REFRESH)
+        resetForceRefresh()
+        loadTopPerformersStats()
+    }
+
+    private fun loadTopPerformersStats() {
         if (!networkStatus.isConnected()) {
             refreshTopPerformerStats[activeStatsGranularity.ordinal] = true
             return
         }
 
-        val forceRefresh = refreshTopPerformerStats[activeStatsGranularity.ordinal] || forced
+        val forceRefresh = refreshTopPerformerStats[activeStatsGranularity.ordinal]
         if (forceRefresh) {
             refreshTopPerformerStats[activeStatsGranularity.ordinal] = false
         }
@@ -89,6 +98,15 @@ class MyStoreViewModel @Inject constructor(
                         TopPerformersError -> _topPerformersState = TopPerformersViewState.Error
                     }
                 }
+        }
+    }
+
+    private fun resetForceRefresh() {
+        refreshTopPerformerStats.forEachIndexed { index, _ ->
+            refreshTopPerformerStats[index] = true
+        }
+        refreshStoreStats.forEachIndexed { index, _ ->
+            refreshStoreStats[index] = true
         }
     }
 
