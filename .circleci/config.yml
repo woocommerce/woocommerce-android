@@ -7,9 +7,6 @@ commands:
       - run:
           name: Enable build time reporting
           command: sed -i "s/tracksEnabled = false/tracksEnabled = true/" gradle.properties
-      - run:
-          name: Disable Gradle Build Cache
-          command: sed -i "s/org.gradle.caching=true/org.gradle.caching=false/" gradle.properties
   update-gradle-memory:
       parameters:
         jvmargs:
@@ -238,7 +235,7 @@ workflows:
             branches:
               only:
                 - develop
-                - /^release.*/          
+                - /^release.*/
   Optional UI Tests:
     unless: << pipeline.parameters.release_build >>
     #Optionally run connected tests on PRs
@@ -254,7 +251,7 @@ workflows:
       - Connected Tests:
           post-to-slack: true
           name: UI Tests (Pixel 2 | API 28)
-          requires: [Hold]      
+          requires: [Hold]
   Release Build:
     when: << pipeline.parameters.release_build >>
     jobs:
