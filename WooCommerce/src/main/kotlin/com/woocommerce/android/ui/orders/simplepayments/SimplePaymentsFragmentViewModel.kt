@@ -66,7 +66,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         updateViewState(chargeTaxes = chargeTaxes)
     }
 
-    fun onAddEditCustomerNoteClicked() {
+    fun onCustomerNoteClicked() {
         triggerEvent(ShowCustomerNoteEditor)
     }
 

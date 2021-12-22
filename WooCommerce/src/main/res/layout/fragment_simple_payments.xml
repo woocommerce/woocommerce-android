@@ -207,9 +207,13 @@
 
             <!-- Customer provided note -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/containerCustomerNote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/major_100">
+                android:layout_marginBottom="@dimen/major_100"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/textCustomerNote"
@@ -241,9 +245,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textCustomerNote"
-                    tools:text="This is the customer provided note."
-                    tools:visibility="gone" />
+                    app:layout_constraintTop_toBottomOf="@id/textCustomerNote" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/textAddCustomerNote"
