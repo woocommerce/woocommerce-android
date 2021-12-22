@@ -233,12 +233,12 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private fun shouldUpdatePreviousStats(startDate: String, endDate: String, forceUpdate: Boolean) =
-        previousRevenueStats?.startDate != startDate || previousRevenueStats?.endDate != endDate
-            || (forceUpdate && previousRevenueStats?.result?.isCompleted == true)
+        previousRevenueStats?.startDate != startDate || previousRevenueStats?.endDate != endDate ||
+            (forceUpdate && previousRevenueStats?.result?.isCompleted == true)
 
     private fun shouldUpdateCurrentStats(startDate: String, endDate: String, forceUpdate: Boolean) =
-        currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate
-            || (forceUpdate && currentRevenueStats?.result?.isCompleted == true)
+        currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate ||
+            (forceUpdate && currentRevenueStats?.result?.isCompleted == true)
 
     private suspend fun fetchNetworkStats(
         startDate: String,
