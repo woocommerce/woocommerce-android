@@ -12,6 +12,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentEditCustomerOrderNoteBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import org.wordpress.android.util.ActivityUtils
+import org.wordpress.android.util.DisplayUtils
 
 class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_customer_order_note) {
     private var _binding: FragmentEditCustomerOrderNoteBinding? = null
@@ -28,6 +30,14 @@ class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_c
         _binding = FragmentEditCustomerOrderNoteBinding.bind(view)
         if (savedInstanceState == null) {
             binding.customerOrderNoteEditor.setText(navArgs.customerNote)
+            if (binding.customerOrderNoteEditor.requestFocus() && !DisplayUtils.isLandscape(requireActivity())) {
+                binding.customerOrderNoteEditor.postDelayed(
+                    {
+                        ActivityUtils.showKeyboard(binding.customerOrderNoteEditor)
+                    },
+                    KEYBOARD_DELAY
+                )
+            }
         }
         binding.customerOrderNoteEditor.doAfterTextChanged {
             if (::doneMenuItem.isInitialized) {
@@ -39,6 +49,11 @@ class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_c
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -64,15 +79,11 @@ class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_c
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_customer_provided_note)
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun hasChanges() =
         binding.customerOrderNoteEditor.text.toString() != navArgs.customerNote
 
     companion object {
         const val SIMPLE_PAYMENTS_CUSTOMER_NOTE_RESULT = "simple_payments_customer_note_result"
+        private const val KEYBOARD_DELAY = 100L
     }
 }
