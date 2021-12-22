@@ -8,6 +8,7 @@ import android.view.View
 import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentEditCustomerOrderNoteBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
@@ -35,6 +36,11 @@ class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_c
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
@@ -56,7 +62,7 @@ class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_c
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.order_creation_customer_note)
+    override fun getFragmentTitle() = getString(R.string.orderdetail_customer_provided_note)
 
     override fun onDestroyView() {
         super.onDestroyView()
