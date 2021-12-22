@@ -1,38 +1,29 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import com.woocommerce.android.extensions.CASH_PAYMENTS
-import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.roundError
-import com.woocommerce.android.extensions.sumByBigDecimal
-import com.woocommerce.android.extensions.sumByFloat
-import com.woocommerce.android.model.Order.Item
-import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.Order.ShippingLine
-import com.woocommerce.android.model.Order.ShippingMethod
-import com.woocommerce.android.model.Order.Status
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.model.Order.*
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.StringUtils
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 @Parcelize
 data class Order(
+    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val identifier: OrderIdentifier,
-    val localOrderId: Int,
-    val remoteId: Long,
+    private val rawLocalOrderId: Int,
+    private val rawRemoteOrderId: Long,
     val number: String,
-    val localSiteId: Int,
     val dateCreated: Date,
     val dateModified: Date,
     val datePaid: Date?,
@@ -58,14 +49,22 @@ data class Order(
     val shippingMethods: List<ShippingMethod>,
     val items: List<Item>,
     val shippingLines: List<ShippingLine>,
+    val feesLines: List<FeeLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
+    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
+    val localId
+        get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
+
+    val remoteId
+        get() = LocalOrRemoteId.RemoteId(this.rawRemoteOrderId)
+
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
 
     // Allow refunding only integer quantities
     @IgnoredOnParcel
-    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt()
+    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
@@ -166,6 +165,12 @@ data class Order(
         val total: BigDecimal
     ) : Parcelable
 
+    @Parcelize
+    data class FeeLine(
+        val name: String,
+        val total: BigDecimal
+    ) : Parcelable
+
     fun getBillingName(defaultValue: String): String {
         return when {
             billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty() -> defaultValue
@@ -243,27 +248,52 @@ data class Order(
         data class Custom(private val customValue: String) : Status(customValue)
     }
 
-    /**
-     * This method converts the [Order] model to [WCOrderModel].
-     * Currently only includes the id, localSiteId and remoteOrderId
-     * since we only use these 3 fields when updating an order status
-     */
-    fun toDataModel(): WCOrderModel {
-        return WCOrderModel().also {
-            it.id = identifier.toIdSet().id
-            it.remoteOrderId = remoteId
-            it.localSiteId = localSiteId
+    companion object {
+        val EMPTY by lazy {
+            Order(
+                identifier = OrderIdentifier(),
+                rawLocalOrderId = 0,
+                rawRemoteOrderId = 0,
+                number = "",
+                dateCreated = Date(),
+                dateModified = Date(),
+                datePaid = null,
+                status = Status.Pending,
+                total = BigDecimal(0),
+                productsTotal = BigDecimal(0),
+                totalTax = BigDecimal(0),
+                shippingTotal = BigDecimal(0),
+                discountTotal = BigDecimal(0),
+                refundTotal = BigDecimal(0),
+                feesTotal = BigDecimal(0),
+                currency = "",
+                orderKey = "",
+                customerNote = "",
+                discountCodes = "",
+                paymentMethod = "",
+                paymentMethodTitle = "",
+                isCashPayment = false,
+                pricesIncludeTax = false,
+                multiShippingLinesAvailable = false,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY,
+                shippingMethods = emptyList(),
+                items = emptyList(),
+                shippingLines = emptyList(),
+                metaData = emptyList(),
+                feesLines = emptyList()
+            )
         }
     }
 }
 
 fun WCOrderModel.toAppModel(): Order {
+    @Suppress("DEPRECATION_ERROR")
     return Order(
         identifier = OrderIdentifier(this),
-        localOrderId = this.id,
-        remoteId = this.remoteOrderId,
+        rawLocalOrderId = this.id,
+        rawRemoteOrderId = this.remoteOrderId.value,
         number = this.number,
-        localSiteId = this.localSiteId,
         dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
         dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
         datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
@@ -305,7 +335,7 @@ fun WCOrderModel.toAppModel(): Order {
                 it.company,
                 it.firstName,
                 it.lastName,
-                "",
+                it.phone,
                 it.country,
                 it.state,
                 it.address1,
@@ -348,6 +378,12 @@ fun WCOrderModel.toAppModel(): Order {
                 it.methodId ?: StringUtils.EMPTY,
                 it.methodTitle ?: StringUtils.EMPTY,
                 it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+            )
+        },
+        feesLines = this.getFeeLineList().map {
+            FeeLine(
+                it.name ?: StringUtils.EMPTY,
                 it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
             )
         },

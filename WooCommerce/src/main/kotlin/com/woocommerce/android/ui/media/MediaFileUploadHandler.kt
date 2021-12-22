@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.media
 
 import android.os.Parcelable
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_UPLOAD_FAILED
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker
@@ -24,7 +26,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-@Suppress("TooManyFunctions")
 @ExperimentalCoroutinesApi
 class MediaFileUploadHandler @Inject constructor(
     private val notificationHandler: ProductImagesNotificationHandler,
@@ -82,6 +83,14 @@ class MediaFileUploadHandler @Inject constructor(
             is Event.MediaUploadEvent.UploadFailed -> {
                 WooLog.e(WooLog.T.MEDIA, "MediaFileUploadHandler -> Upload failed", event.error)
                 statusList[index] = newStatus
+                AnalyticsTracker.track(
+                    PRODUCT_IMAGE_UPLOAD_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.errorType.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+                    )
+                )
                 showUploadFailureNotifIfNoObserver(event.productId, statusList)
             }
         }

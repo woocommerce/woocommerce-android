@@ -2,11 +2,13 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
 import androidx.core.view.isVisible
@@ -14,7 +16,20 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.WcEmptyViewBinding
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.*
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.FILTER_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILTERED
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_CATEGORY_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_TAG_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_CARRIER_RATES
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_SERVICE_PACKAGE_LIST
 import org.wordpress.android.util.DisplayUtils
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
@@ -24,7 +39,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         DASHBOARD,
         ORDER_LIST,
         ORDER_LIST_LOADING,
-        ORDER_LIST_ALL_PROCESSED,
         ORDER_LIST_FILTERED,
         PRODUCT_LIST,
         REVIEW_LIST,
@@ -62,7 +76,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (visibility == View.VISIBLE && type != lastEmptyViewType) {
             WooAnimUtils.fadeOut(this, Duration.SHORT)
             val durationMs = Duration.SHORT.toMillis(context) + 50L
-            Handler().postDelayed(
+            Handler(Looper.getMainLooper()).postDelayed(
                 {
                     show(type, searchQueryOrFilter, onButtonClick)
                 },
@@ -99,20 +113,9 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 buttonText = null
                 drawableId = R.drawable.img_empty_orders_loading
             }
-            ORDER_LIST_ALL_PROCESSED -> {
-                isTitleBold = true
-                title = context.getString(R.string.empty_order_list_all_processed)
-                message = null
-                buttonText = null
-                drawableId = R.drawable.img_empty_orders_all_fulfilled
-            }
             ORDER_LIST_FILTERED -> {
                 isTitleBold = false
-                val fmtArgs = "<strong>$searchQueryOrFilter</strong>"
-                title = String.format(
-                    context.getString(R.string.orders_empty_message_with_order_status_filter),
-                    fmtArgs
-                )
+                title = context.getString(R.string.orders_empty_message_for_filtered_orders)
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_empty_search
@@ -197,8 +200,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         }
 
         binding.emptyViewTitle.text = HtmlCompat.fromHtml(titleHtml, FROM_HTML_MODE_LEGACY)
-        binding.emptyViewImage.setImageDrawable(context.getDrawable(drawableId))
-
+        binding.emptyViewImage.setImageDrawable(AppCompatResources.getDrawable(context, drawableId))
         if (message != null) {
             binding.emptyViewMessage.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
             binding.emptyViewMessage.visibility = View.VISIBLE

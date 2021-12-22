@@ -31,7 +31,6 @@ import javax.inject.Inject
 import kotlin.math.ceil
 
 @HiltViewModel
-@Suppress("TooManyFunctions")
 class EditShippingLabelPackagesViewModel @Inject constructor(
     savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
@@ -306,11 +305,6 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     fun onBackButtonClicked() {
         triggerEvent(Exit)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        orderDetailRepository.onCleanup()
     }
 
     private fun Order.getShippableItems(): List<Order.Item> {

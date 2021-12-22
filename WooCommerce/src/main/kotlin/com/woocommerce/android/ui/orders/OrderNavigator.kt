@@ -39,7 +39,7 @@ class OrderNavigator @Inject constructor() {
             is ViewOrderStatusSelector -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderStatusSelectorDialog(
-                        target.currentStatus, target.orderStatusList
+                        currentStatus = target.currentStatus, orderStatusList = target.orderStatusList
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -55,7 +55,10 @@ class OrderNavigator @Inject constructor() {
             }
             is AddOrderNote -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToAddOrderNoteFragment(target.orderIdentifier, target.orderNumber)
+                    .actionOrderDetailFragmentToAddOrderNoteFragment(
+                        orderId = target.orderIdentifier,
+                        orderNumber = target.orderNumber
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewOrderFulfillInfo -> {
@@ -66,28 +69,32 @@ class OrderNavigator @Inject constructor() {
             is RefundShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
-                        target.remoteOrderId, target.shippingLabelId
+                        orderId = target.remoteOrderId, shippingLabelId = target.shippingLabelId
                     )
                 fragment.findNavController().navigateSafely(action)
             }
             is AddOrderShipmentTracking -> {
                 val action = OrderDetailFragmentDirections
                     .actionGlobalAddOrderShipmentTrackingFragment(
-                        target.orderIdentifier, target.orderTrackingProvider, target.isCustomProvider
+                        orderId = target.orderIdentifier,
+                        orderTrackingProvider = target.orderTrackingProvider,
+                        isCustomProvider = target.isCustomProvider
                     )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewShipmentTrackingProviders -> {
                 val action = AddOrderShipmentTrackingFragmentDirections
                     .actionAddOrderShipmentTrackingFragmentToAddOrderTrackingProviderListFragment(
-                        target.orderIdentifier, target.selectedProvider
+                        orderId = target.orderIdentifier, selectedProvider = target.selectedProvider
                     )
                 fragment.findNavController().navigateSafely(action)
             }
             is PrintShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToPrintShippingLabelFragment(
-                        target.remoteOrderId, longArrayOf(target.shippingLabelId), isReprint = true
+                        orderId = target.remoteOrderId,
+                        shippingLabelIds = longArrayOf(target.shippingLabelId),
+                        isReprint = true
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -105,12 +112,12 @@ class OrderNavigator @Inject constructor() {
             }
             is ViewCreateShippingLabelInfo -> {
                 val action = NavGraphMainDirections.actionGlobalInfoScreenFragment(
-                    R.string.shipping_label_more_information_title,
-                    R.string.shipping_label_more_information_heading,
-                    R.string.shipping_label_more_information_message,
-                    R.string.shipping_label_more_information_link,
-                    R.drawable.img_woo_desk_character,
-                    LearnMoreAboutShippingLabels
+                    screenTitle = R.string.shipping_label_more_information_title,
+                    heading = R.string.shipping_label_more_information_heading,
+                    message = R.string.shipping_label_more_information_message,
+                    linkTitle = R.string.shipping_label_more_information_link,
+                    imageResource = R.drawable.img_print_with_phone,
+                    linkAction = LearnMoreAboutShippingLabels
                 )
                 fragment.findNavController().navigateSafely(action)
             }

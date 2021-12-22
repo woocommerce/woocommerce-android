@@ -1,0 +1,18 @@
+{
+    "request": {
+        "method": "POST",
+        "urlPathPattern": "/rest/v1.1/notifications/read/(.*)",
+        "queryParameters": {
+            "locale": {
+                "matches": "(.*)"
+            }
+        }
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": {
+            "updated": [],
+            "success": true
+        }
+    }
+}

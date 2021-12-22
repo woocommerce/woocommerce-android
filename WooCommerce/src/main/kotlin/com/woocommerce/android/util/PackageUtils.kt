@@ -10,14 +10,28 @@ import java.util.Locale
 object PackageUtils {
     const val PACKAGE_VERSION_CODE_DEFAULT = -1
 
+    private var isTesting: Boolean? = null
+
     /**
      * Return true if Debug build. false otherwise.
      */
     fun isDebugBuild() = BuildConfig.DEBUG
 
     fun isTesting(): Boolean {
+        if (isTesting == null) {
+            isTesting = try {
+                Class.forName("com.woocommerce.android.viewmodel.BaseUnitTest")
+                true
+            } catch (e: ClassNotFoundException) {
+                false
+            }
+        }
+        return isTesting!!
+    }
+
+    fun isUITesting(): Boolean {
         return try {
-            Class.forName("com.woocommerce.android.viewmodel.BaseUnitTest")
+            Class.forName("com.woocommerce.android.helpers.TestBase")
             true
         } catch (e: ClassNotFoundException) {
             false

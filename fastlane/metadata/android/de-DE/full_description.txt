@@ -1,4 +1,4 @@
-Verwalte dein Business von unterwegs aus – mit der WooCommerce Mobile App. Erstelle Produkte, berarbeite Bestellungen und behalte wichtige Statistiken im Überblick – alles in Echtzeit.
+Verwalte dein Business von unterwegs aus – mit der WooCommerce Mobile App. Designe Produkte, bearbeite Bestellungen und behalte Schlüsselwerte in Echtzeit im Blick.
 
 FÜGE PRODUKTE HINZU
 Erstelle, gruppiere und veröffentliche Produkte direkt über deine bevorzugten Android-Mobilgeräte. Lasse deiner Kreativität freien Lauf – wandle deine Ideen innerhalb weniger Sekunden in Produkte um oder speichere sie als Entwürfe für später.
@@ -9,7 +9,7 @@ Verpasse keine Bestellungen oder Bewertungen. Aktiviere Echtzeitbenachrichtigung
 ZEIGE BESTELLUNGEN AN UND BEARBEITE SIE
 Scrolle durch die Zusammenfassungen oder Suche nach Kunden oder Bestellspezifika. Nutze die Detailansicht, um dir Einzelabrechnungen anzusehen, die Auftragsabwicklung zu starten oder den Bestellstatus zu ändern. Füge der Bestellung Notizen hinzu oder sende Kunden eine Follow-up-E-Mail.
 
-VERFOLGE DEINE STATISTIKEN NACH
+BEHALTE DEINE STATISTIKEN IM BLICK
 Erfahre auf einen Blick, welche Produkte besonders erfolgreich sind. Kontrolliere deine Gesamteinnahmen, die Anzahl der Bestellungen und die Besucherdaten pro Woche, Monat und Jahr. Wissen = Macht!
 
 WECHSLE ZWISCHEN DEN STORES

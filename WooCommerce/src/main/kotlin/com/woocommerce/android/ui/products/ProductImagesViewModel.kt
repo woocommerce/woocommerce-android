@@ -49,6 +49,7 @@ class ProductImagesViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
+            showSourceChooser = navArgs.showChooser,
             uploadingImageUris = emptyList(),
             isImageDeletingAllowed = true,
             images = navArgs.images.toList(),
@@ -70,7 +71,8 @@ class ProductImagesViewModel @Inject constructor(
         get() = viewState.isImageDeletingAllowed ?: true
 
     init {
-        if (navArgs.showChooser) {
+        if (viewState.showSourceChooser == true) {
+            viewState = viewState.copy(showSourceChooser = false)
             clearImageUploadErrors()
             triggerEvent(ShowImageSourceDialog)
         } else if (navArgs.selectedImage != null) {
@@ -80,13 +82,17 @@ class ProductImagesViewModel @Inject constructor(
         observeImageUploadEvents()
     }
 
-    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
+    fun uploadProductImages(remoteProductId: Long, localUriList: List<Uri>) {
         if (!networkStatus.isConnected()) {
             triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
             return
         }
 
         mediaFileUploadHandler.enqueueUpload(remoteProductId, localUriList.map { it.toString() })
+
+        if (!isMultiSelectionAllowed) {
+            viewState = viewState.copy(images = emptyList())
+        }
     }
 
     fun onShowStorageChooserButtonClicked() {
@@ -117,7 +123,7 @@ class ProductImagesViewModel @Inject constructor(
         viewState = viewState.copy(images = images.filter { it.id != imageId })
     }
 
-    fun onImagesAdded(newImages: List<Image>) {
+    fun onMediaLibraryImagesAdded(newImages: List<Image>) {
         viewState = if (isMultiSelectionAllowed) {
             viewState.copy(images = images + newImages)
         } else {
@@ -233,6 +239,7 @@ class ProductImagesViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
+        val showSourceChooser: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
         val isImageDeletingAllowed: Boolean? = null,
         val images: List<Image>? = null,

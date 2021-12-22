@@ -1,11 +1,130 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-09-29 11:54:48+0000
+Translation-Revision-Date: 2021-12-07 19:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="settings_enable_order_creation_teaser_message">اختبر إنشاء الطلبات باستخدام تفاصيل كاملة بينما نستعد لإطلاقها</string>
+    <string name="settings_enable_order_creation_teaser_title">إنشاء الطلب</string>
+    <string name="settings_enable_simple_payments_teaser_title">المدفوعات البسيطة</string>
+    <string name="beta_features_order_creation">إنشاء الطلب</string>
+    <string name="beta_features_simple_payments">المدفوعات البسيطة</string>
+    <string name="beta_features_add_ons">عرض الوظائف الإضافية</string>
+    <string name="orders_empty_message_for_filtered_orders">عذرًا، لم نتمكن من العثور على أي طلبات</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">فتح الإعدادات</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">صلاحية الأجهزة القريبة المطلوبة مفقودة</string>
+    <string name="shipping_label_edit_address_country_search_hint">تصفية البلدان</string>
+    <string name="shipping_label_edit_address_state_search_hint">تصفية الحالة</string>
+    <string name="order_detail_edit_address_state">الولاية</string>
+    <string name="orderfilters_date_range_end_date">تاريخ الانتهاء</string>
+    <string name="orderfilters_date_range_start_date">تاريخ البدء</string>
+    <string name="orderfilters_date_range_picker_title">تحديد التواريخ</string>
+    <string name="orderfilters_date_range_filter_custom_range">نطاق مخصص</string>
+    <string name="orderlist_bottom_sheet_simple_payment_description">إنشاء طلب باستخدام أقل قدر من المعلومات</string>
+    <string name="orderlist_bottom_sheet_simple_payment_action">عملية دفع بسيطة</string>
+    <string name="orderlist_bottom_sheet_create_order_description">إنشاء طلب يدوي جديد</string>
+    <string name="orderlist_bottom_sheet_create_order_action">إنشاء طلب</string>
+    <string name="orderlist_create_order_button_description">إنشاء طلب</string>
+    <string name="simple_payments_creation_error">يتعذر إنشاء الطلب</string>
+    <string name="simple_payments_enter_amount">إدخال المبلغ</string>
+    <string name="simple_payments_dialog_title">تحصيل الدفع</string>
+    <string name="orderlist_simple_payments_menu">عملية دفع بسيطة</string>
+    <string name="orderlist_simple_payments_wip_title">تحصيل المدفوعات من جهازك!</string>
+    <string name="analytics">التحليلات</string>
+    <string name="jetpack_install_progress_step_four_message">كل شيء جاهز</string>
+    <string name="jetpack_install_progress_step_three_message">الاتصال بمتجرك</string>
+    <string name="jetpack_install_progress_step_two_message">جاري التفعيل</string>
+    <string name="jetpack_install_progress_step_one_message">تنصيب Jetpack</string>
+    <string name="jetpack_install_progress_subtitle">يرجى الانتظار بينما نقوم بربط %s بـ Jetpack.</string>
+    <string name="jetpack_install_progress_title">تثبيت \nJetpack</string>
+    <string name="jetpack_install_start_default_name">موقعك</string>
+    <string name="jetpack_install_start_subtitle">قم بتثبيت إضافة Jetpack المجانية على &lt;strong&gt;%s&lt;/strong&gt; للاستمتاع بأفضل تجربة على الهاتف المحمول.</string>
+    <string name="jetpack_install_start_title">تثبيت Jetpack</string>
+    <string name="product_review_list_fetching_failed">حدث خطأ في أثناء إحضار مراجعات المنتج</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">القارئ غير متصل</string>
+    <string name="card_reader_accessibility_reader_is_connected">القارئ متصل</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">لا يوصى بإلغاء أي تحديث برنامج جارٍ. سيؤدي الإلغاء إلى حظر اتصال القارئ الخاص بك.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">فشل تحديث برنامج القارئ لأن بطارية القارئ غير مشحونة بشكل كافٍ. يرجى شحن القارئ بنسبة تزيد على 50%% قبل المحاولة مرة أخرى.</string>
+    <string name="card_reader_software_update_progress_description_low_battery">فشل تحديث برنامج القارئ لأن بطارية القارئ مشحونة بنسبة ⁦%1$s⁩%%. يرجى شحن القارئ بنسبة تزيد على 50%% قبل المحاولة مرة أخرى.</string>
+    <string name="card_reader_software_update_title_battery_low">يرجى شحن القارئ</string>
+    <string name="card_reader_software_update_description">يتعين تحديث برنامج قارئ بطاقتك لكي يستمر في العمل بسلاسة.</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">يرجى تقديم رمز بريدي صالح في إعدادات مخزنك والمحاولة مرة أخرى</string>
+    <string name="card_reader_connect_invalid_postal_code_header">الرمز البريدي لعنوان المخزن غير صالح</string>
+    <string name="card_reader_connect_missing_address_button">إدخال العنوان</string>
+    <string name="card_reader_connect_missing_address">يرجى تقديم عنوان مخزنك للمتابعة</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">التحقُّق من جهازك المحمول</string>
+    <string name="card_reader_m2_manual_card_reader">دليل قارئ بطاقة Stripe M2</string>
+    <string name="card_reader_bbpos_manual_card_reader">دليل قارئ بطاقة BBPOS Chipper</string>
+    <string name="order_error_update_empty_mail">يتعذر تحديث العنوان باستخدام بريد إلكتروني فارغ. تأكَّد من أنك تستخدك أحدث إصدار من WooCommerce.</string>
+    <string name="orderfilters_date_range_filter_last_30_days">آخر 30 يومًا</string>
+    <string name="orderfilters_date_range_filter_last_7_days">آخر 7 أيام</string>
+    <string name="orderfilters_date_range_filter_last_two_days">آخر يومين</string>
+    <string name="orderfilters_date_range_filter_today">اليوم</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
+    <string name="orderfilters_default_filter_option">الكل</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">الطلبات التي تمت تصفيتها</string>
+    <string name="orderfilters_filter_card_title_all_orders">جميع الطلبات</string>
+    <string name="orderlist_simple_payments_wip_message_disabled">نعمل على تسهيل تحصيلك المدفوعات من جهازك! قم بتمكينه في الإعدادات &gt; ميزات بيتا.</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">نعمل على تسهيل تحصيلك المدفوعات من جهازك! من الآن، اضغط الآن على زر \"+\" وستتمكن من إنشاء طلب بالمبلغ الذي ترغب في تجميعه.</string>
+    <string name="jetpack_benefits_modal_dismiss">ليس الآن</string>
+    <string name="jetpack_benefits_modal_install_jetpack">تثبيت Jetpack</string>
+    <string name="jetpack_benefits_modal_user_profiles_subtitle">اسمح لعدة مستخدمين بالوصول إلى تطبيق WooCommerce للهاتف المحمول.</string>
+    <string name="jetpack_benefits_modal_user_profiles_title">ملفات المستخدم الشخصية</string>
+    <string name="jetpack_benefits_modal_analytics_subtitle">تسمح لك مشاهدات التحليلات الجديدة بالاطلاع على الزائرين والتقريرات والمزيد.</string>
+    <string name="jetpack_benefits_modal_analytics_title">التحليلات</string>
+    <string name="jetpack_benefits_modal_push_notifications_subtitle">احصل على تنبيهات مباشرة للطلبات والمراجعات الجديدة وغير ذلك، يتم توصيلها إلى جهازك.</string>
+    <string name="jetpack_benefits_modal_push_notifications_title">دفع التنبيهات</string>
+    <string name="jetpack_benefits_modal_subtitle">قم بتثبيت إضافة Jetpack المجانية للاستمتاع بأفضل تجربة على الهاتف المحمول.</string>
+    <string name="jetpack_benefits_modal_title">الاستفادة من مخزنك إلى أقصى حد</string>
+    <string name="settings_enable_simple_payments_teaser_message">اختبر إنشاء الطلبات من خلال أقل قدر من المعلومات بينما نستعد لإطلاقها</string>
+    <string name="order_detail_use_as_shipping_address">استخدام عنوان الشحن</string>
+    <string name="order_detail_use_as_billing_address">استخدام عنوان الفوترة</string>
+    <string name="orderfilters_filters_count_title">عوامل التصفية (%d)</string>
+    <string name="orderfilters_filters_default_title">عوامل التصفية</string>
+    <string name="orderfilters_filter_date_range_options_title">نطاق التاريخ</string>
+    <string name="orderfilters_filter_order_status_options_title">حالة الطلب</string>
+    <string name="orderfilters_filter_option_item_selected">خيار التصفية المُحدَّد</string>
+    <string name="orderfilters_date_range_filter">نطاق التاريخ</string>
+    <string name="orderfilters_order_status_filter">حالة الطلب</string>
+    <string name="orderfilters_default_filter_value">الكل</string>
+    <string name="orderfilters_show_orders_button">إظهار الطلبات</string>
+    <string name="orderlist_filters_title">الطلبات التي تمت تصفيتها</string>
+    <string name="orderlist_no_filters_title">جميع الطلبات</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">الاطلاع على المزايا</string>
+    <string name="jetpack_benefits_bottom_banner_title">الحصول على التجربة الكاملة باستخدام Jetpack</string>
+    <string name="product_description_hint_with_title">إخبارنا بالمزيد حول %s…</string>
+    <string name="product_description_hint_no_title">صِف منتجك لعملائك في المستقبل…</string>
+    <string name="card_reader_detail_connected_readers_name_clipboard">تم نسخ الرقم التسلسلي للقارئ إلى الحافظة</string>
+    <string name="order_detail_add_billing_address">إضافة عنوان الفوترة</string>
+    <string name="order_detail_add_shipping_address">إضافة عنوان الشحن</string>
+    <string name="order_detail_add_customer_note">إضافة ملحوظة العميل</string>
+    <string name="order_detail_billing_address_section">عنوان الفوترة</string>
+    <string name="order_detail_shipping_address_section">عنوان الشحن</string>
+    <string name="order_detail_address_section">العنوان</string>
+    <string name="order_detail_edit_address_country">البلد</string>
+    <string name="order_detail_edit_address_zip">الرمز البريدي</string>
+    <string name="order_detail_edit_address_city">المدينة</string>
+    <string name="order_detail_edit_address_line2">العنوان 2</string>
+    <string name="order_detail_edit_address_line1">العنوان 1</string>
+    <string name="order_detail_edit_address_company">الشركة</string>
+    <string name="order_detail_edit_address_details_phone">الهاتف</string>
+    <string name="order_detail_edit_address_details_email">البريد الإلكتروني</string>
+    <string name="order_detail_edit_address_details_last_name">اسم العائلة</string>
+    <string name="order_detail_edit_address_details_first_name">الاسم الأول</string>
+    <string name="orderdetail_customer_note_hint">تحرير ملحوظة طلب العميل</string>
+    <string name="support_system_status_report_fetch_error">خطأ في أثناء إحضار تقرير حالة النظام. يرجى التحقُّق من WooCommerce -&gt; الحالة في مسؤول ووردبريس.</string>
+    <string name="support_system_status_report_share_error">تتعذر مشاركة تقرير حالة النظام</string>
+    <string name="support_system_status_report_error_copy_to_clipboard">خطأ في أثناء نسخ  تقرير حالة النظام إلى الحافظة</string>
+    <string name="support_system_status_report_copied_to_clipboard">تم نسخ تقرير حالة النظام إلى الحافظة</string>
+    <string name="support_system_status_report_detail">معلومات النظام المتنوعة حول موقعك</string>
+    <string name="support_system_status_report_clipboard_label">تقرير حالة النظام الخاص بـ WooCommerce</string>
+    <string name="support_system_status_report">تقرير حالة النظام</string>
+    <string name="card_reader_welcome_dialog_text">تهانينا، أصبحتَ الآن قادرًا على قبول مدفوعات بطاقات السحب والائتمان باستخدام مدفوعات WooCommerce!</string>
+    <string name="card_reader_welcome_dialog_header">جمع المدفوعات باستخدام قارئ البطاقة</string>
+    <string name="card_reader_payment_failed_amount_too_small">يجب أن يكون المبلغ 0.50 دولار أمريكي على الأقل</string>
+    <string name="card_reader_payment_payment_failed_ok">موافق</string>
     <string name="settings_whats_new_icon_description">صورة أيقونة الميزة الجديدة</string>
     <string name="settings_switch_store">تبديل المخزن</string>
     <string name="product_update_failure_notification">فشل تحديث المنتج ⁦%1$s⁩</string>
@@ -21,8 +140,8 @@ Language: ar
     <string name="settings_enable_product_addons_teaser_title">عرض الوظائف الإضافية</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">عذرًا، تعذر علينا تغيير إعداد هذه الميزة الآن</string>
     <string name="product_category">التصنيف</string>
-    <string name="notification_review_title">لديك مراجعة واحدة جديدة! 🌟</string>
-    <string name="notification_order_title">لديك طلب جديد واحد! 🎉</string>
+    <string name="notification_review_title">لديك مراجعة جديدة! 🌟</string>
+    <string name="notification_order_title">لديك طلب جديد! 🎉</string>
     <string name="shipping_label_package_details_items_count_one">%d العنصر</string>
     <string name="upsell_product_count_many">%d من المنتجات الموصى بها</string>
     <string name="upsell_product_count_one">%d منتج موصى به</string>
@@ -64,7 +183,6 @@ Language: ar
     <string name="card_reader_purchase_card_reader">طلب قارئ البطاقة</string>
     <string name="card_reader_manage_card_reader">إدارة قارئ البطاقة</string>
     <string name="shipping_label_multiple_customs_form_print_button">اطبع</string>
-    <string name="shipping_label_edit_address_state">المنطقة</string>
     <string name="shipping_label_edit_address_line2">سطر العنوان 2</string>
     <string name="shipping_label_edit_address_line1">سطر العنوان 1</string>
     <string name="shipping_label_print_multiple_screen_title">طباعة ملصقات الشحن</string>
@@ -122,7 +240,7 @@ Language: ar
     <string name="product_attributes_created_generate_action_text">إنشاء مجموعة</string>
     <string name="product_attributes_created_description">لقد قمت الآن بإضافة السمات، يمكنك إنشاء مجموعتك الأولى!</string>
     <string name="product_attributes_created_title">تم إنشاء سمات</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% مُكتمل</string>
     <string name="card_reader_software_update_progress_cancel_warning">لا يوصى بإلغاء أي تحديث برنامج جارٍ</string>
     <string name="card_reader_payment_failed_unexpected_error_state">عذرًا، تتعذر معالجة عملية الدفع هذه</string>
     <string name="card_reader_payment_failed_server_error_state">لا اتصال بالخادم</string>
@@ -212,7 +330,6 @@ Language: ar
     <string name="shipping_label_rate_included_options_usps_tracking">تعقب الخدمة البريدية للولايات المتحدة</string>
     <string name="card_reader_software_update_in_progress_title">تحديث برنامج قارئك</string>
     <string name="card_reader_software_update_title">تحديث برنامج</string>
-    <string name="card_reader_software_update_description">يتعين تحديث برنامج قارئ بطاقتك لكي يعمل بسلاسة. هل ترغب في تحديثه الآن؟</string>
     <string name="card_reader_detail_connected_update_success">تم تحديث برنامج القارئ</string>
     <string name="card_reader_detail_connected_reader_unknown">اسم قارئ بطاقة غير معروف</string>
     <string name="card_reader_detail_connected_disconnect_reader">فصل القارئ</string>
@@ -283,7 +400,7 @@ Language: ar
     <string name="card_reader_connect_open_permission_settings">فتح الإعدادات</string>
     <string name="card_reader_connect_bluetooth_disabled_header">تم تعطيل البلوتوث</string>
     <string name="card_reader_connect_location_provider_disabled_header">تم تعطيل الموقع</string>
-    <string name="card_reader_connect_missing_permissions_header">صلاحية الموقع المطلوب مفقودة</string>
+    <string name="card_reader_connect_missing_permissions_header">صلاحية الموقع الدقيق المطلوبة مفقودة</string>
     <string name="card_reader_connect_connecting_failed_hint">تعذر علينا الربط بالقارئ.</string>
     <string name="card_reader_connect_connecting_header">الربط بالقارئ</string>
     <string name="card_reader_connect_to_reader">الربط بالقارئ</string>
@@ -426,6 +543,7 @@ Language: ar
     <string name="shipping_label_edit_address_use_address_as_is">استخدام العنوان كما تم إدخاله</string>
     <string name="shipping_label_edit_address_country">البلد</string>
     <string name="shipping_label_edit_address_zip">الرمز البريدي</string>
+    <string name="shipping_label_edit_address_state">الولاية</string>
     <string name="shipping_label_edit_address_city">المدينة</string>
     <string name="shipping_label_edit_address_phone">الهاتف</string>
     <string name="shipping_label_edit_address_company">الشركة</string>
@@ -779,7 +897,6 @@ Language: ar
     <string name="product_schedule_sale_sublabel">بدء التخفيض وانتهاؤه تلقائيًا</string>
     <string name="product_schedule_sale_label">جدولة التخفيض</string>
     <string name="order_refunds_store_admin_link_text">في مسؤول المتجر الخاص بك</string>
-    <string name="orders_empty_message_with_order_status_filter">نأسف لذلك، لم نتمكن من العثور على أي \"%s\" من الطلبات</string>
     <string name="product_inventory_update_sku_error">وحدة SKU قيد الاستخدام بالفعل بواسطة منتج آخر</string>
     <string name="product_shipping_settings">إعدادات الشحن</string>
     <string name="product_no_shipping_class">لا توجد فئة شحن</string>
@@ -820,7 +937,6 @@ Language: ar
     <string name="product_description_empty">وصف منتجك</string>
     <string name="product_description">الوصف</string>
     <string name="product_edit_description">تحرير الوصف</string>
-    <string name="product_description_hint">جارٍ بدء الكتابة…</string>
     <string name="discard_message">هل ترغب في تجاهل تغييراتك؟</string>
     <string name="update">تحديث</string>
     <string name="done">تم</string>
@@ -957,7 +1073,7 @@ Language: ar
     <string name="login_refresh_app_progress">جارٍ التحقُّق من WooCommerce…</string>
     <string name="login_refresh_app">تحديث التطبيق</string>
     <string name="login_not_woo_store">يبدو أنَّ %1$s ليس موقع WooCommerce. ثبِّت إضافة WooCommerce على موقعك ثم %2$s</string>
-    <string name="orderdetail_empty_shipping_address">لا يوجد عنوان محدَّد.</string>
+    <string name="orderdetail_empty_address">لم يتم تحديد أي عنوان</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
     <string name="enter_email_for_site">تسجيل الدخول باستخدام ووردبريس للاتصال بـ &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>

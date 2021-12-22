@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.reviews
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -24,10 +24,7 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 
-class ReviewListAdapter(
-    private val context: Context,
-    private val clickListener: OnReviewClickListener
-) : SectionedRecyclerViewAdapter() {
+class ReviewListAdapter(private val clickListener: OnReviewClickListener) : SectionedRecyclerViewAdapter() {
     private val reviewList = mutableListOf<ProductReview>()
 
     // Copy of current review manually removed from the list so the action may be undone.
@@ -37,7 +34,7 @@ class ReviewListAdapter(
     private val removedRemoteIds = HashSet<Long>()
 
     interface OnReviewClickListener {
-        fun onReviewClick(review: ProductReview) {}
+        fun onReviewClick(review: ProductReview, sharedView: View? = null) {}
     }
 
     fun setReviews(reviews: List<ProductReview>) {
@@ -359,7 +356,7 @@ class ReviewListAdapter(
                 reviewStatus = ProductReviewStatus.fromString(review.status)
             )
             itemHolder.itemView.setOnClickListener {
-                clickListener.onReviewClick(review)
+                clickListener.onReviewClick(review, itemHolder.itemView)
             }
         }
 
@@ -399,6 +396,14 @@ class ReviewListAdapter(
             viewBinding.notifRating.visibility = View.GONE
             viewBinding.notifIcon.setImageResource(R.drawable.ic_comment)
             viewBinding.notifDesc.maxLines = 2
+
+            ViewCompat.setTransitionName(
+                viewBinding.root,
+                String.format(
+                    context.getString(R.string.review_card_transition_name),
+                    review.remoteId
+                )
+            )
 
             if (review.rating > 0) {
                 viewBinding.notifRating.numStars = review.rating

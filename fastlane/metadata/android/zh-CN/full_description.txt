@@ -1,7 +1,7 @@
 使用 WooCommerce 移动应用程序随时随地管理您的业务。 创建产品、处理订单，并实时关注重要的统计数据。
 
 添加产品
-通过您喜欢的 Android 移动设备直接创建、归类并发布产品。 抓住当下创意 – 短短几秒即可将您的创意转化为产品，也可以将想法保存为草案以备之后使用。
+通过您喜欢的 Android 移动设备直接创建、归类并发布产品。 抓住当下创意 – 短短几秒即可将您的创意转化为产品，也可以将想法保存为草稿以备之后编辑。
 
 及时获得通知
 不错过任何订单或评论。 启用实时警示提醒，不再担心错过 – 每次新的销售成功时，还可以听到令人回味的“咔-亲”提示音！
@@ -19,4 +19,4 @@ WooCommerce 是全球可自定义程度最高的开源电子商务平台。 无�
 
 要求：WooCommerce 3.5 及以上版本、Jetpack 插件。
 
-访问 https://automattic.com/privacy/#california-consumer-privacy-act-ccpa，查看适用于加州用户的隐私通知。
+访问 https://automattic.com/privacy/#california-consumer-privacy-act-ccpa，查看面向加州用户的隐私通知。

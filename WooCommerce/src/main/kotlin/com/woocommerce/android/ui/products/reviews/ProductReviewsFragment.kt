@@ -33,7 +33,9 @@ class ProductReviewsFragment :
 
     val viewModel: ProductReviewsViewModel by viewModels()
 
-    private lateinit var reviewsAdapter: ReviewListAdapter
+    private var _reviewsAdapter: ReviewListAdapter? = null
+    private val reviewsAdapter: ReviewListAdapter
+        get() = _reviewsAdapter!!
 
     private val skeletonView = SkeletonView()
 
@@ -50,6 +52,7 @@ class ProductReviewsFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
+        _reviewsAdapter = null
         super.onDestroyView()
         _binding = null
     }
@@ -57,8 +60,7 @@ class ProductReviewsFragment :
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val activity = requireActivity()
-        reviewsAdapter = ReviewListAdapter(activity, this)
+        _reviewsAdapter = ReviewListAdapter(this)
 
         binding.reviewsList.apply {
             layoutManager = LinearLayoutManager(context)
@@ -142,7 +144,7 @@ class ProductReviewsFragment :
         }
     }
 
-    override fun onReviewClick(review: ProductReview) {
+    override fun onReviewClick(review: ProductReview, sharedView: View?) {
         (activity as? MainNavigationRouter)?.showReviewDetail(
             review.remoteId,
             launchedFromNotification = false,

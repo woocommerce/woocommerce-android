@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.refunds
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
@@ -16,8 +13,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -28,7 +26,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class IssueRefundViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock()
     private val wooStore: WooCommerceStore = mock()
@@ -38,7 +35,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val gatewayStore: WCGatewayStore = mock()
     private val refundStore: WCRefundStore = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
-    private val resourceProvider: ResourceProvider = mock() {
+    private val resourceProvider: ResourceProvider = mock {
         on(it.getString(R.string.taxes)).thenAnswer { "Taxes" }
         on(it.getString(R.string.orderdetail_payment_fees)).thenAnswer { "Fees" }
         on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
@@ -89,7 +86,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     @Test
     fun `when order has taxes and no shipping and fees, only the taxes are mentioned in the notice`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val orderWithTax = OrderTestUtils.generateOrder().apply { totalTax = "4.00" }
+            val orderWithTax = OrderTestUtils.generateOrder().copy(totalTax = "4.00")
             whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithTax)
 
             initViewModel()
@@ -121,7 +118,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     @Test
     fun `when order has one shipping, and fees and taxes, shipping are mentioned in the notice`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee().apply { totalTax = "4.00" }
+            val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee().copy(totalTax = "4.00")
             whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithFeesAndShipping)
 
             initViewModel()

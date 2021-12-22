@@ -8,6 +8,8 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.ViewGroupCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -15,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
@@ -24,6 +27,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_
 import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
@@ -34,6 +38,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
@@ -63,7 +68,9 @@ class ProductListFragment :
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private lateinit var productAdapter: ProductListAdapter
+    private var _productAdapter: ProductListAdapter? = null
+    private val productAdapter: ProductListAdapter
+        get() = _productAdapter!!
 
     private val viewModel: ProductListViewModel by viewModels()
 
@@ -86,14 +93,15 @@ class ProductListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        postponeEnterTransition()
         setHasOptionsMenu(true)
 
         _binding = FragmentProductListBinding.bind(view)
+        view.doOnPreDraw { startPostponedEnterTransition() }
         setupObservers(viewModel)
         setupResultHandlers()
-
-        productAdapter = ProductListAdapter(this, this)
+        ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
+        _productAdapter = ProductListAdapter(this, this)
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productAdapter
 
@@ -109,16 +117,26 @@ class ProductListFragment :
             }
         }
 
+        initAddProductFab(binding.addProductButton)
+
         if (!viewModel.isSearching()) {
             viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
+    }
+
+    private fun initAddProductFab(fabButton: FloatingActionButton) {
+        fabButton.setOnClickListener {
+            viewModel.onAddProductButtonClicked()
+        }
+
+        pinFabAboveBottomNavigationBar(fabButton)
     }
 
     override fun onDestroyView() {
         skeletonView.hide()
         disableSearchListeners()
         searchView = null
-        showAddProductButton(false)
+        _productAdapter = null
         super.onDestroyView()
         _binding = null
     }
@@ -131,6 +149,15 @@ class ProductListFragment :
     override fun onStop() {
         super.onStop()
         trashProductUndoSnack?.dismiss()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
+        enterTransition = fadeThroughTransition
+        exitTransition = fadeThroughTransition
+        reenterTransition = fadeThroughTransition
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -272,6 +299,9 @@ class ProductListFragment :
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
                 showAddProductButton(show = isVisible)
             }
+            new.isBottomNavBarVisible?.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
+                showBottomNavBar(isVisible = isBottomNavBarVisible)
+            }
         }
 
         viewModel.productList.observe(
@@ -406,47 +436,41 @@ class ProductListFragment :
         }
     }
 
+    private fun showBottomNavBar(isVisible: Boolean) {
+        if (!isVisible) {
+            (activity as? MainActivity)?.hideBottomNav()
+        } else {
+            (activity as? MainActivity)?.showBottomNav()
+        }
+    }
+
     private fun updateFilterSelection(filterCount: Int) {
         binding.productsSortFilterCard.updateFilterSelection(filterCount)
     }
 
     private fun showAddProductButton(show: Boolean) {
-        // note that the FAB is part of the main activity so it can be direct child of the CoordinatorLayout
-        val addProductButton = requireActivity().findViewById<FloatingActionButton>(R.id.addProductButton)
-
-        fun showButton() = run {
-            if (!addProductButton.isVisible) {
-                addProductButton.show()
-            }
-        }
-
-        fun hideButton() = run {
-            if (addProductButton.isVisible) {
-                addProductButton.hide()
-            }
-        }
-
         when (show) {
-            true -> {
-                showButton()
-                addProductButton.setOnClickListener {
-                    viewModel.onAddProductButtonClicked()
-                }
-            }
-            else -> {
-                hideButton()
-                addProductButton.setOnClickListener(null)
+            true -> binding.addProductButton.show()
+            else -> binding.addProductButton.hide()
+        }
+    }
+
+    override fun onProductClick(remoteProductId: Long, sharedView: View?) {
+        (activity as? MainNavigationRouter)?.let { router ->
+            if (sharedView == null) {
+                router.showProductDetail(remoteProductId, enableTrash = true)
+            } else {
+                router.showProductDetailWithSharedTransition(remoteProductId, sharedView, enableTrash = true)
             }
         }
     }
 
-    override fun onProductClick(remoteProductId: Long) = showProductDetails(remoteProductId)
-
-    private fun showProductDetails(remoteProductId: Long) {
-        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = true)
+    private fun showAddProductBottomSheet() {
+        val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
+            isAddProduct = true
+        )
+        findNavController().navigateSafely(action)
     }
-
-    private fun showAddProductBottomSheet() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
 
     override fun onRequestLoadMore() {
         viewModel.onLoadMoreRequested()

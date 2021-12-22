@@ -21,7 +21,6 @@ import javax.inject.Singleton
 
 @OpenClassOnDebug
 @Singleton
-@Suppress("TooManyFunctions")
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite
@@ -101,7 +100,7 @@ class ShippingLabelRepository @Inject constructor(
     ): WooResult<List<WCShippingRatesResult.ShippingPackage>> {
         val carrierRates = shippingLabelStore.getShippingRates(
             site = selectedSite.get(),
-            orderId = order.remoteId,
+            orderId = order.remoteId.value,
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
             packages = packages.mapIndexed { i, box ->

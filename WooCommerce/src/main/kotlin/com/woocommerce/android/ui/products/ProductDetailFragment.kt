@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.SpannableString
@@ -11,6 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -41,7 +44,6 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
-import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -50,6 +52,7 @@ import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageI
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
+import java.util.Locale
 
 @AndroidEntryPoint
 class ProductDetailFragment :
@@ -75,16 +78,27 @@ class ProductDetailFragment :
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-    private var updateMenuItem: MenuItem? = null
+    private var saveMenuItem: MenuItem? = null
+    private var publishMenuItem: MenuItem? = null
     private var imageUploadErrorsSnackbar: Snackbar? = null
-
-    private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
-    private val saveTitleId = R.string.save
 
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
 
     @Inject lateinit var crashLogging: CrashLogging
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val backgroundColor = ContextCompat.getColor(requireContext(), R.color.default_window_background)
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.snack_root
+            duration = transitionDuration
+            scrimColor = Color.TRANSPARENT
+            startContainerColor = backgroundColor
+            endContainerColor = backgroundColor
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,6 +106,10 @@ class ProductDetailFragment :
         _binding = FragmentProductDetailBinding.bind(view)
         setHasOptionsMenu(true)
 
+        ViewCompat.setTransitionName(
+            binding.root,
+            getString(R.string.product_card_detail_transition_name)
+        )
         initializeViews(savedInstanceState)
         initializeViewModel()
     }
@@ -178,14 +196,7 @@ class ProductDetailFragment :
             changesMade()
         }
         handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
-            viewModel.updateProductDraft(
-                images = it
-            )
-            changesMade()
-        }
-
-        handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
-            viewModel.showAddProductDownload(it.first().source)
+            viewModel.updateProductDraft(images = it)
             changesMade()
         }
 
@@ -210,7 +221,7 @@ class ProductDetailFragment :
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
-            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateMenuItem(it) }
+            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { requireActivity().invalidateOptionsMenu() }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 if (it) {
@@ -335,7 +346,8 @@ class ProductDetailFragment :
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-        updateMenuItem = menu.findItem(R.id.menu_done)
+        saveMenuItem = menu.findItem(R.id.menu_save)
+        publishMenuItem = menu.findItem(R.id.menu_publish)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -392,14 +404,27 @@ class ProductDetailFragment :
 
         menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.canBeStoredAsDraft && viewModel.hasChanges()
 
-        updateMenuItem?.let {
-            it.title = if (viewModel.isAddFlowEntryPoint) getString(publishTitleId) else getString(saveTitleId)
-            it.isVisible = viewModel.hasChanges() or viewModel.isProductUnderCreation
+        saveMenuItem?.isVisible = viewModel.isSaveOptionNeeded
+        publishMenuItem?.isVisible = viewModel.isPublishOptionNeeded
+
+        if (saveMenuItem?.isVisible ?: false) {
+            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
+            publishMenuItem?.title = getString(R.string.product_add_tool_bar_menu_button_done)
+        } else {
+            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            publishMenuItem?.title =
+                getString(R.string.product_add_tool_bar_menu_button_done).uppercase(Locale.getDefault())
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.menu_publish -> {
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onUpdateButtonClicked(isPublish = true)
+                true
+            }
+
             R.id.menu_save_as_draft -> {
                 viewModel.onSaveAsDraftButtonClicked()
                 true
@@ -410,9 +435,9 @@ class ProductDetailFragment :
                 true
             }
 
-            R.id.menu_done -> {
+            R.id.menu_save -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onUpdateButtonClicked()
+                viewModel.onUpdateButtonClicked(isPublish = false)
                 true
             }
 
@@ -433,10 +458,6 @@ class ProductDetailFragment :
 
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun showUpdateMenuItem(show: Boolean) {
-        updateMenuItem?.isVisible = show
     }
 
     private fun changesMade() {

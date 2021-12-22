@@ -7,10 +7,16 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
@@ -41,6 +47,8 @@ object AppPrefs {
         DATABASE_DOWNGRADED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
+        IS_SIMPLE_PAYMENTS_ENABLED,
+        IS_ORDER_CREATION_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
@@ -52,14 +60,18 @@ object AppPrefs {
         IS_USER_ELIGIBLE,
         USER_EMAIL,
         RECEIPT_PREFIX,
-        CARD_READER_ONBOARDING_COMPLETED
+        CARD_READER_ONBOARDING_COMPLETED_STATUS,
+        ORDER_FILTER_PREFIX,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_START,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_END,
     }
 
     /**
      * Application related preferences. When the user changes a site, these preferences are erased.
      */
     private enum class DeletableSitePrefKey : PrefKey {
-        TRACKING_EXTENSION_AVAILABLE
+        TRACKING_EXTENSION_AVAILABLE,
+        JETPACK_BENEFITS_BANNER_DISMISSAL_DATE
     }
 
     /**
@@ -144,6 +156,14 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
+
+    var isSimplePaymentsEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_SIMPLE_PAYMENTS_ENABLED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_SIMPLE_PAYMENTS_ENABLED, value)
+
+    var isOrderCreationEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_ORDER_CREATION_ENABLED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_ORDER_CREATION_ENABLED, value)
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
@@ -399,22 +419,63 @@ object AppPrefs {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
     }
 
-    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        PreferenceUtils.getBoolean(
+    fun getCardReaderOnboardingCompletedStatus(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ): CardReaderOnboardingCompletedStatus {
+        return CardReaderOnboardingCompletedStatus.valueOf(
+            PreferenceUtils.getString(
+                getPreferences(),
+                getCardReaderOnboardingCompletedKey(
+                    localSiteId,
+                    remoteSiteId,
+                    selfHostedSiteId
+                ),
+                CARD_READER_ONBOARDING_NOT_COMPLETED.name
+            ) ?: CARD_READER_ONBOARDING_NOT_COMPLETED.name
+        )
+    }
+
+    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): Boolean {
+        return getCardReaderOnboardingCompletedStatus(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        ) != CARD_READER_ONBOARDING_NOT_COMPLETED
+    }
+
+    fun setCardReaderOnboardingCompleted(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        pluginType: PluginType?
+    ) {
+        val pluginName = when (pluginType) {
+            PluginType.WOOCOMMERCE_PAYMENTS -> CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
+            PluginType.STRIPE_TERMINAL_GATEWAY -> CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
+            null -> CARD_READER_ONBOARDING_NOT_COMPLETED
+        }
+        PreferenceUtils.setString(
             getPreferences(),
             getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            false
+            pluginName.name
         )
+    }
 
-    fun setCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        PreferenceUtils.setBoolean(
-            getPreferences(),
-            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            true
-        )
+    private fun getCardReaderOnboardingCompletedKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = "$CARD_READER_ONBOARDING_COMPLETED_STATUS:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
-    private fun getCardReaderOnboardingCompletedKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        "${DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    fun getJetpackBenefitsDismissalDate(): Long {
+        return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)
+    }
+
+    fun recordJetpackBenefitsDismissal() {
+        return setLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, System.currentTimeMillis())
+    }
 
     fun isTrackingExtensionAvailable(): Boolean {
         return getBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, false)
@@ -422,6 +483,50 @@ object AppPrefs {
 
     fun setTrackingExtensionAvailable(isAvailable: Boolean) {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
+    }
+
+    fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) =
+        PreferenceUtils.setString(
+            getPreferences(),
+            getOrderFilterKey(currentSiteId, filterCategory),
+            filterValue
+        )
+
+    fun getOrderFilters(currentSiteId: Int, filterCategory: String) =
+        PreferenceUtils.getString(
+            getPreferences(),
+            getOrderFilterKey(currentSiteId, filterCategory),
+            null
+        )
+
+    private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
+        "$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory"
+
+    fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> {
+        val startDateMillis = PreferenceUtils.getLong(
+            getPreferences(),
+            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
+            default = 0
+        )
+        val endDateMillis = PreferenceUtils.getLong(
+            getPreferences(),
+            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
+            default = 0
+        )
+        return Pair(startDateMillis, endDateMillis)
+    }
+
+    fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
+        PreferenceUtils.setLong(
+            getPreferences(),
+            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
+            startDateMillis
+        )
+        PreferenceUtils.setLong(
+            getPreferences(),
+            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
+            endDateMillis
+        )
     }
 
     /**
@@ -466,6 +571,12 @@ object AppPrefs {
 
     private fun setInt(key: PrefKey, value: Int) =
         PreferenceUtils.setInt(getPreferences(), key.toString(), value)
+
+    private fun getLong(key: PrefKey, default: Long = 0L) =
+        PreferenceUtils.getLong(getPreferences(), key.toString(), default)
+
+    private fun setLong(key: PrefKey, value: Long) =
+        PreferenceUtils.setLong(getPreferences(), key.toString(), value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
         return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue) ?: defaultValue
@@ -520,5 +631,11 @@ object AppPrefs {
                 return null
             }
         }
+    }
+
+    enum class CardReaderOnboardingCompletedStatus {
+        CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY,
+        CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION,
+        CARD_READER_ONBOARDING_NOT_COMPLETED,
     }
 }

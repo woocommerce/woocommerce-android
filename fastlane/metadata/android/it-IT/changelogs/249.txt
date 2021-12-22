@@ -1,4 +1,0 @@
-7.6:
-Sappiamo che aggiungere immagini ai tuoi prodotti è una delle funzionalità che ami usare nell'app. Abbiamo migliorato l'esperienza di caricamento in background mentre continui con le altre attività.
-
-Se gestisci più negozi dall'app, sarai felice di ricevere questa notizia. Ora riceverai notifiche push per tutti i tuoi negozi, non solo per quello attuale. Sorpresa!

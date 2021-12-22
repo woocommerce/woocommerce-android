@@ -1,16 +1,16 @@
-Gérez votre entreprise où que vous soyez grâce à l’application mobile WooCommerce Créez des produits, traitez les commandes et suivez les statistiques clés en temps réel. 
+Gérez votre entreprise où que vous soyez avec l’application mobile WooCommerce. Créez des produits, traitez des commandes et suivez les statistiques clés en temps réel.
 
 AJOUTEZ DES PRODUITS
-Créez, regroupez et publiez des produits directement à partir de vos appareils mobiles Android préférés. Saisissez un instantané de votre créativité : transformez vos idées en produits en quelques secondes, ou enregistrez-les sous forme de brouillons et revenez-y plus tard. 
+Créez, regroupez et publiez des produits directement à partir de vos appareils mobiles Android préférés. Capturez votre créativité dans l’instant : transformez vos idées en produits en quelques secondes ou enregistrez-les sous forme de brouillons et revenez-y plus tard.
 
 RECEVEZ DES NOTIFICATIONS
-Ne passez jamais à côté d’une commande ou d’un avis laissé par un acheteur. Pour ne pas être victime du syndrome FOMO, activez les alertes en temps réel. Et ne manquez pas ce son « gling-gling » addictif qui retentit chaque fois qu'une vente est conclue !
+Ne passez jamais à côté d’une commande ou d’un avis. Pour ne pas être victime du syndrome FOMO (angoisse à l’idée de rater quelque chose), activez les alertes en temps réel. Et ne manquez pas ce son « gling-gling » addictif qui retentit chaque fois qu’une vente est conclue !
 
 VISUALISEZ ET MODIFIEZ LES COMMANDES
-Faites défiler les résumés ou effectuez une recherche par client ou par commande spécifique. Appuyez sur les détails pour voir la facturation par article, commencer l’exécution et modifier le statut d’une commande. Ajoutez des notes à la commande ou envoyez directement un e-mail aux clients pour en assurer le suivi.
+Faites défiler les résumés ou effectuez une recherche par client ou par commande spécifique. Accédez aux détails pour voir la facturation par article, commencer l’exécution et modifier le statut d’une commande. Ajoutez des notes à la commande ou envoyez directement un e-mail aux clients pour en assurer le suivi.
 
 SUIVEZ VOS STATISTIQUES
-Affichez les produits les plus vendus en un clin d’œil. Surveillez facilement les revenus globaux, le nombre de commandes et les données sur les visiteurs par semaine, mois et année. Savoir est synonyme de pouvoir !
+Affichez en un clin d’œil les produits les plus vendus. Surveillez facilement les revenus globaux, le nombre de commandes et les données sur les visiteurs par semaine, mois et année. Savoir = pouvoir !
 
 PASSEZ D’UNE BOUTIQUE À L’AUTRE
 Si vous en avez plusieurs, passez d’une entreprise à l’autre en quelques secondes.

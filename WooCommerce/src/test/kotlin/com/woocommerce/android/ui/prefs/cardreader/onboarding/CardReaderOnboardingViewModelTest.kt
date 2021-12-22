@@ -1,13 +1,16 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import org.mockito.kotlin.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCStripeError
@@ -32,7 +35,9 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `when onboarding completed, then navigates to card reader hub screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.OnboardingCompleted)
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS)
+            )
 
             val viewModel = createVM()
 
@@ -150,7 +155,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay not setup, then wcpay not setup state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WcpaySetupNotCompleted)
+                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
 
             val viewModel = createVM()
 
@@ -158,10 +163,48 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when stripe terminal not setup, then stripe terminal not setup state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(PluginType.STRIPE_TERMINAL_GATEWAY))
+
+            val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                StripeTerminalError.StripeTerminalNotSetupState::class.java
+            )
+        }
+
+    @Test
+    fun `when stripe terminal not setup, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(PluginType.STRIPE_TERMINAL_GATEWAY))
+
+            val viewModel = createVM()
+
+            val state = (
+                viewModel.viewStateData.value as StripeTerminalError.StripeTerminalNotSetupState
+                )
+            assertThat(state.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_header))
+            assertThat(state.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_hint))
+            assertThat(state.refreshButtonLabel)
+                .describedAs("Check refreshButtonLabel")
+                .isEqualTo(UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button))
+            assertThat(state.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_stripe_extension)
+        }
+
+    @Test
     fun `when unsupported wcpay version installed, then unsupported wcpay version state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WcpayUnsupportedVersion)
+                .thenReturn(CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS))
 
             val viewModel = createVM()
 
@@ -178,6 +221,72 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 WCStripeError.WCPayInTestModeWithLiveAccountState::class.java
+            )
+        }
+
+    @Test
+    fun `when unsupported stripe terminal installed, then unsupported stripe terminal state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_TERMINAL_GATEWAY)
+            )
+
+            val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                StripeTerminalError.StripeTerminalUnsupportedVersionState::class.java
+            )
+        }
+
+    @Test
+    fun `when stripe terminal outdated, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_TERMINAL_GATEWAY)
+            )
+
+            val viewModel = createVM()
+
+            val state = (
+                viewModel.viewStateData.value as StripeTerminalError.StripeTerminalUnsupportedVersionState
+                )
+            assertThat(state.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_stripe_extension_unsupported_version_header
+                    )
+                )
+            assertThat(state.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_stripe_extension_unsupported_version_hint
+                    )
+                )
+            assertThat(state.refreshButtonLabel)
+                .describedAs("Check refreshButtonLabel")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button
+                    )
+                )
+            assertThat(state.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_stripe_extension)
+        }
+
+    @Test(expected = AssertionError::class)
+    fun `when wcpay and stripe terminal installed-activated, then wcpay and stripe terminal activated state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+
+            val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                OnboardingViewState.WcPayAndStripeInstalledState::class.java
             )
         }
 
@@ -348,7 +457,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay unsupported version, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WcpayUnsupportedVersion)
+                .thenReturn(CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS))
 
             createVM()
 
@@ -362,7 +471,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay setup not complete, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WcpaySetupNotCompleted)
+                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
 
             createVM()
 
@@ -444,7 +553,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when onboarding completed, then event NOT tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.OnboardingCompleted)
+                .thenReturn(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
 
             createVM()
 

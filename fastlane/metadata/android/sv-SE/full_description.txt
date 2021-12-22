@@ -3,7 +3,7 @@ Hantera ditt företag i farten med WooCommerce-mobilappen. Skapa produkter, beha
 LÄGG TILL PRODUKTER
 Skapa, gruppera och publicera produkter direkt från dina mobila Android-enheter. Fånga kreativiteten i ögonblicket – förvandla dina idéer till produkter på några sekunder, eller spara dem som utkast för senare användning.
 
-FÅ NOTISER
+BLI MEDDELAD
 Missa aldrig en beställning eller en recension. Håll rädslan för att missa något stången genom att aktivera notiser i realtid – du kommer att höra det där beroendeframkallande "ka-ching"-ljudet vid varje ny försäljning!
 
 VISA OCH ÄNDRA BESTÄLLNINGAR

@@ -1,24 +1,20 @@
 package com.woocommerce.android.cardreader.internal.connection
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
-import com.stripe.stripeterminal.callable.Callback
-import com.stripe.stripeterminal.callable.ReaderCallback
-import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTED
-import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTING
-import com.stripe.stripeterminal.model.external.ConnectionStatus.NOT_CONNECTED
-import com.stripe.stripeterminal.model.external.Reader
-import com.stripe.stripeterminal.model.external.TerminalException
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.ReaderCallback
+import com.stripe.stripeterminal.external.models.DeviceType
+import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -29,35 +25,139 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class ConnectionManagerTest {
     private val terminalWrapper: TerminalWrapper = mock()
-    private val logWrapper: LogWrapper = mock()
+    private val bluetoothReaderListener: BluetoothReaderListenerImpl = mock()
     private val discoverReadersAction: DiscoverReadersAction = mock()
+    private val terminalListenerImpl: TerminalListenerImpl = mock()
+
+    private val supportedReaders =
+        CardReaderTypesToDiscover.SpecificReaders(listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2))
 
     private lateinit var connectionManager: ConnectionManager
 
     @Before
     fun setUp() {
-        connectionManager = ConnectionManager(terminalWrapper, logWrapper, discoverReadersAction)
+        connectionManager = ConnectionManager(
+            terminalWrapper,
+            bluetoothReaderListener,
+            discoverReadersAction,
+            terminalListenerImpl,
+        )
     }
 
     @Test
     fun `when readers discovered, then observers get notified`() = runBlockingTest {
         val dummyReaderId = "12345"
         val discoveredReaders = listOf(
-            mock<Reader>()
-                .apply { whenever(serialNumber).thenReturn(dummyReaderId) }
+            mock<Reader> {
+                on { serialNumber }.thenReturn(dummyReaderId)
+                on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
+            }
         )
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
 
-        val result = connectionManager.discoverReaders(true).toList()
+        val result = connectionManager.discoverReaders(true, supportedReaders).toList()
 
         assertThat((result.first() as ReadersFound).list.first().id)
             .isEqualTo(dummyReaderId)
     }
+
+    @Test
+    fun `given found readers with specified, when readers discovered, then all readers returned`() =
+        runBlockingTest {
+            val dummyReaderId = "12345"
+            val discoveredReaders = listOf<Reader>(
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
+                },
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
+                },
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.WISEPOS_E)
+                }
+            )
+            whenever(discoverReadersAction.discoverReaders(anyBoolean()))
+                .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
+
+            val result = connectionManager.discoverReaders(true, supportedReaders).toList()
+
+            assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(SpecificReader.Chipper2X.name)
+            assertThat((result.first() as ReadersFound).list[1].type).isEqualTo(SpecificReader.StripeM2.name)
+            assertThat((result.first() as ReadersFound).list.size).isEqualTo(2)
+        }
+
+    @Test
+    fun `given found readers with unspecified, when readers discovered, then required readers returned`() =
+        runBlockingTest {
+            val dummyReaderId = "12345"
+            val discoveredReaders = listOf<Reader>(
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
+                },
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
+                },
+                mock {
+                    on { serialNumber }.thenReturn(dummyReaderId)
+                    on { deviceType }.thenReturn(DeviceType.WISEPOS_E)
+                }
+            )
+            whenever(discoverReadersAction.discoverReaders(anyBoolean()))
+                .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
+
+            val result = connectionManager.discoverReaders(
+                true,
+                CardReaderTypesToDiscover.UnspecifiedReaders
+            ).toList()
+
+            assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(SpecificReader.Chipper2X.name)
+            assertThat((result.first() as ReadersFound).list[1].type).isEqualTo(SpecificReader.StripeM2.name)
+            assertThat((result.first() as ReadersFound).list[2].type).isEqualTo(SpecificReader.WisePadeE.name)
+            assertThat((result.first() as ReadersFound).list.size).isEqualTo(3)
+        }
+
+    @Test
+    fun `given no readers found with specified, when readers discovered, then empty list returned`() =
+        runBlockingTest {
+            val discoveredReaders = listOf<Reader>()
+            whenever(discoverReadersAction.discoverReaders(anyBoolean()))
+                .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
+
+            val result = connectionManager.discoverReaders(true, supportedReaders).toList()
+
+            assertThat((result.first() as ReadersFound).list).isEmpty()
+        }
+
+    @Test
+    fun `given no readers found with unspecified, when readers discovered, then empty list returned`() =
+        runBlockingTest {
+            val discoveredReaders = listOf<Reader>()
+            whenever(discoverReadersAction.discoverReaders(anyBoolean()))
+                .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
+
+            val result = connectionManager.discoverReaders(
+                true,
+                CardReaderTypesToDiscover.UnspecifiedReaders
+            ).toList()
+
+            assertThat((result.first() as ReadersFound).list).isEmpty()
+        }
 
     @Test
     fun `when discovery fails, then observers get notified`() = runBlockingTest {
@@ -65,7 +165,7 @@ class ConnectionManagerTest {
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(Failure(terminalException)) })
 
-        val result = connectionManager.discoverReaders(true).single()
+        val result = connectionManager.discoverReaders(true, supportedReaders).single()
 
         assertThat(result).isInstanceOf(CardReaderDiscoveryEvents.Failed::class.java)
     }
@@ -75,67 +175,74 @@ class ConnectionManagerTest {
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(Success) })
 
-        val result = connectionManager.discoverReaders(true).single()
+        val result = connectionManager.discoverReaders(true, supportedReaders).single()
 
         assertThat(result).isInstanceOf(CardReaderDiscoveryEvents.Succeeded::class.java)
     }
 
     @Test
-    fun `when reader unexpectedly disconnected, then observers get notified`() {
-        connectionManager.onUnexpectedReaderDisconnect(mock())
+    fun `given reader with location id, when connectToReader, then status updated with connecting`() =
+        runBlockingTest {
+            val reader: Reader = mock()
+            val cardReader: CardReaderImpl = mock {
+                on { locationId }.thenReturn("location_id")
+                on { cardReader }.thenReturn(reader)
+            }
+            whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+                (it.arguments[2] as ReaderCallback).onFailure(mock())
+            }
 
-        assertThat(connectionManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.NotConnected
-        )
-    }
+            connectionManager.startConnectionToReader(cardReader, "location_id")
 
-    @Test
-    fun `when reader disconnected, then observers get notified`() {
-        connectionManager.onConnectionStatusChange(NOT_CONNECTED)
-
-        assertThat(connectionManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.NotConnected
-        )
-    }
-
-    @Test
-    fun `when connecting to reader, then observers get notified`() {
-        connectionManager.onConnectionStatusChange(CONNECTING)
-
-        assertThat(connectionManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.Connecting
-        )
-    }
-
-    @Test
-    fun `when reader connection established, then observers get notified`() {
-        val cardReader = CardReaderImpl(mock())
-        whenever(terminalWrapper.getConnectedReader()).thenReturn(cardReader)
-        connectionManager.onConnectionStatusChange(CONNECTED)
-
-        assertThat(connectionManager.readerStatus.value).isEqualTo(CardReaderStatus.Connected(cardReader))
-    }
-
-    @Test
-    fun `when connectToReader succeeds, then true is returned`() = runBlockingTest {
-        whenever(terminalWrapper.connectToReader(any(), any())).thenAnswer {
-            (it.arguments[1] as ReaderCallback).onSuccess(it.arguments[0] as Reader)
+            verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.Connecting)
         }
 
-        val result = connectionManager.connectToReader(CardReaderImpl(mock()))
-
-        assertThat(result).isTrue()
-    }
-
     @Test
-    fun `when connectToReader fails, then false is returned`() = runBlockingTest {
-        whenever(terminalWrapper.connectToReader(any(), any())).thenAnswer {
-            (it.arguments[1] as ReaderCallback).onFailure(mock())
+    fun `given reader with location id, when connectToReader fails, then status updated with not connected`() =
+        runBlockingTest {
+            val reader: Reader = mock()
+            val cardReader: CardReaderImpl = mock {
+                on { locationId }.thenReturn("location_id")
+                on { cardReader }.thenReturn(reader)
+            }
+            whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+                (it.arguments[2] as ReaderCallback).onFailure(mock())
+            }
+
+            connectionManager.startConnectionToReader(cardReader, "location_id")
+
+            verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected)
         }
 
-        val result = connectionManager.connectToReader(CardReaderImpl(mock()))
+    @Test
+    fun `given reader with location id, when connectToReader success, then status updated with connected`() =
+        runBlockingTest {
+            val reader: Reader = mock()
+            val cardReader: CardReaderImpl = mock {
+                on { locationId }.thenReturn("location_id")
+                on { cardReader }.thenReturn(reader)
+            }
+            whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+                (it.arguments[2] as ReaderCallback).onSuccess(cardReader.cardReader)
+            }
 
-        assertThat(result).isFalse()
+            connectionManager.startConnectionToReader(cardReader, "location_id")
+
+            val statusCaptor = argumentCaptor<CardReaderStatus>()
+            verify(terminalListenerImpl, times(2)).updateReaderStatus(statusCaptor.capture())
+            val connectedStatus = statusCaptor.secondValue as CardReaderStatus.Connected
+            assertThat((connectedStatus.cardReader as CardReaderImpl).cardReader).isEqualTo(reader)
+        }
+
+    @Test
+    fun `when disconnect succeeds, then status updated with not connected`() = runBlockingTest {
+        whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
+            (it.arguments[0] as Callback).onSuccess()
+        }
+
+        connectionManager.disconnectReader()
+
+        verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected)
     }
 
     @Test
@@ -158,5 +265,16 @@ class ConnectionManagerTest {
         val result = connectionManager.disconnectReader()
 
         assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `when disconnect fails, then false with not connected`() = runBlockingTest {
+        whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
+            (it.arguments[0] as Callback).onFailure(mock())
+        }
+
+        connectionManager.disconnectReader()
+
+        verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected)
     }
 }

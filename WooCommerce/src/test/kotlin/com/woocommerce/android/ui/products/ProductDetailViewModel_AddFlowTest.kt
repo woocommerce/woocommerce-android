@@ -33,15 +33,12 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.*
-import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
@@ -217,7 +214,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         // then
         verify(productRepository, times(1)).getProduct(1L)
@@ -247,7 +244,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(false)
 
         // then
         assertThat(successSnackbarShown).isTrue()
@@ -273,7 +270,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+        viewModel.onUpdateButtonClicked(true)
 
         // then
         assertThat(successSnackbarShown).isTrue()
@@ -301,7 +298,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
             viewModel.start()
 
-            viewModel.onUpdateButtonClicked()
+            viewModel.onUpdateButtonClicked(true)
 
             // then
             verify(productRepository, times(1)).getProduct(1L)
@@ -314,7 +311,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             // when
             doReturn(true).whenever(productRepository).updateProduct(any())
 
-            viewModel.onUpdateButtonClicked()
+            viewModel.onUpdateButtonClicked(true)
             verify(productRepository, times(1)).updateProduct(any())
 
             viewModel.event.observeForever {
@@ -391,7 +388,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 .onCompletion { isObservingEvents = false }
             doReturn(successEvents).whenever(mediaFileUploadHandler)
                 .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
             savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
 
             setup()
@@ -412,7 +408,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 .onCompletion { isObservingEvents = false }
             doReturn(successEvents).whenever(mediaFileUploadHandler)
                 .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
             savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
 
             setup()

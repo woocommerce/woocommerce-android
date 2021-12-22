@@ -65,11 +65,11 @@
         <action
             android:id="@+id/action_printShippingLabelFragment_to_printShippingLabelCustomsFormFragment"
             app:destination="@id/printShippingLabelCustomsFormFragment"
-            app:popUpTo="@id/orderDetailFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:popExitAnim="@anim/activity_slide_out_to_right"
+            app:popUpTo="@id/orderDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/printShippingLabelCustomsFormFragment"
@@ -100,11 +100,6 @@
         <argument
             android:name="requiresPhoneNumber"
             app:argType="boolean" />
-        <action
-            android:id="@+id/action_editShippingLabelAddressFragment_to_itemSelectorDialog"
-            app:destination="@id/itemSelectorDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_editShippingLabelAddressFragment_to_shippingLabelAddressSuggestionFragment"
             app:destination="@id/shippingLabelAddressSuggestionFragment"
@@ -258,7 +253,7 @@
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderConnectDialog"
-            app:destination="@id/cardReaderConnectDialog"
+            app:destination="@id/cardReaderConnectDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
@@ -513,7 +508,7 @@
     <dialog
         android:id="@+id/cardReaderWelcomeDialog"
         android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeDialog"
-        android:label="CardReaderWelcomeDialog" >
+        android:label="CardReaderWelcomeDialog">
         <action
             android:id="@+id/action_cardReaderWelcomeFragment_to_cardReaderOnboardingFragment"
             app:destination="@id/cardReaderOnboardingFragment"
@@ -531,20 +526,25 @@
             app:argType="string" />
     </dialog>
     <dialog
-        android:id="@+id/cardReaderConnectDialog"
+        android:id="@+id/cardReaderConnectDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
-        android:label="CardReaderConnectDialog">
+        android:label="CardReaderConnectDialogFragment">
         <argument
             android:name="skipOnboarding"
             app:argType="boolean"
             app:nullable="false" />
         <action
-            android:id="@+id/action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment"
+            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
             app:destination="@id/cardReaderTutorialDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_cardReaderConnectFragment_to_cardReaderOnboardingFragment"
+            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
+            app:destination="@id/cardReaderUpdateDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment"
             app:destination="@id/cardReaderOnboardingFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
@@ -555,6 +555,15 @@
         android:id="@+id/cardReaderTutorialDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
         android:label="CardReaderTutorialDialogFragment" />
+    <dialog
+        android:id="@+id/cardReaderUpdateDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
+        android:label="CardReaderUpdateDialogFragment" >
+        <argument
+            android:name="requiredUpdate"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </dialog>
     <fragment
         android:id="@+id/cardReaderOnboardingFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
@@ -583,8 +592,7 @@
         android:id="@+id/printingInstructionsFragment"
         android:name="com.woocommerce.android.ui.orders.details.PrintingInstructionsFragment"
         android:label="PrintingInstructionsFragment"
-        tools:layout="@layout/fragment_printing_instructions">
-    </fragment>
+        tools:layout="@layout/fragment_printing_instructions" />
     <fragment
         android:id="@+id/shippingCustomsFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsFragment"
@@ -652,10 +660,40 @@
         android:id="@+id/shippingAddressEditingFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.address.ShippingAddressEditingFragment"
         android:label="ShippingAddressEditingFragment"
-        tools:layout="@layout/fragment_base_edit_address"/>
+        tools:layout="@layout/fragment_base_edit_address" />
     <fragment
         android:id="@+id/billingAddressEditingFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.address.BillingAddressEditingFragment"
         android:label="BillingAddressEditingFragment"
-        tools:layout="@layout/fragment_base_edit_address"/>
+        tools:layout="@layout/fragment_base_edit_address" />
+    <action
+        android:id="@+id/action_global_item_selector_dialog"
+        app:destination="@id/itemSelectorDialog" />
+    <action
+        android:id="@+id/action_search_filter_fragment"
+        app:destination="@id/searchFilterFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
+    <fragment
+        android:id="@+id/searchFilterFragment"
+        android:name="com.woocommerce.android.ui.searchfilter.SearchFilterFragment"
+        android:label="searchFilterFragment"
+        tools:layout="@layout/fragment_search_filter">
+        <argument
+            android:name="title"
+            android:defaultValue='""'
+            app:argType="string" />
+        <argument
+            android:name="hint"
+            android:defaultValue='""'
+            app:argType="string" />
+        <argument
+            android:name="items"
+            app:argType="com.woocommerce.android.ui.searchfilter.SearchFilterItem[]" />
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
 </navigation>

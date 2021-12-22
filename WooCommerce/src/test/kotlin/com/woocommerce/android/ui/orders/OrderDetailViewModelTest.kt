@@ -2,36 +2,15 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.atLeastOnce
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.Status
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
@@ -39,9 +18,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibil
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -55,10 +32,9 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -69,7 +45,6 @@ import java.util.concurrent.CancellationException
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class OrderDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_IDENTIFIER = "1-1-1"
@@ -80,7 +55,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
         on(it.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenAnswer { true }
     }
-    private val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+    private val editor = mock<SharedPreferences.Editor>()
     private val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
@@ -468,8 +443,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
                 )
             ).whenever(repository).getWooServicesPluginInfo()
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
-            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -516,8 +491,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             ).whenever(repository).getWooServicesPluginInfo()
 
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
-            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -597,8 +572,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             ).whenever(repository).getWooServicesPluginInfo()
 
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
-            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -656,7 +631,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Do not fetch order from api when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(null).whenever(repository).getOrder(any())
         doReturn(false).whenever(networkStatus).isConnected()
-        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
@@ -716,7 +690,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         snackbar?.undoAction?.onClick(mock())
         assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
-        verify(repository, times(2)).updateOrderStatus(eq(order.toDataModel()), statusChangeCaptor.capture())
+        verify(repository, times(2)).updateOrderStatus(eq(order.remoteId), statusChangeCaptor.capture())
 
         assertThat(listOf(initialStatus) + statusChangeCaptor.allValues).containsExactly(
             initialStatus, newStatus, initialStatus
@@ -826,8 +800,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
             .whenever(repository).getWooServicesPluginInfo()
-        doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
-        doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+        doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
+        doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
@@ -889,8 +863,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             )
                 .whenever(repository).getWooServicesPluginInfo()
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId)
-            doReturn(false).whenever(repository).isOrderEligibleForSLCreation(order.remoteId)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
+            doReturn(false).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
@@ -1021,7 +995,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             whenever(repository.updateOrderStatus(any(), any()))
                 .thenReturn(
                     flow {
-                        val event = OnOrderChanged(0).apply { this.error = OrderError() }
+                        val event = OnOrderChanged(orderError = OrderError())
                         emit(UpdateOrderResult.RemoteUpdateResult(event))
                     }
                 )

@@ -8,10 +8,12 @@ import android.content.Context
 enum class FeatureFlag {
     DB_DOWNGRADE,
     ORDER_CREATION,
-    ORDER_EDITING,
     CARD_READER,
-    WHATS_NEW,
-    JETPACK_CP;
+    JETPACK_CP,
+    ORDER_FILTERS,
+    ANALYTICS_HUB,
+    PAYMENTS_STRIPE_EXTENSION,
+    SIMPLE_PAYMENT_I2;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -19,10 +21,12 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
             ORDER_CREATION,
-            ORDER_EDITING,
-            JETPACK_CP,
-            WHATS_NEW -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
+            JETPACK_CP -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
             CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
+            PAYMENTS_STRIPE_EXTENSION -> false
+            ORDER_FILTERS,
+            SIMPLE_PAYMENT_I2,
+            ANALYTICS_HUB -> PackageUtils.isDebugBuild()
         }
     }
 }

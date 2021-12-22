@@ -1,7 +1,7 @@
 {
     "request": {
         "method": "GET",
-        "urlPath": "/rest/v1.1/notifications/",
+        "urlPathPattern": "/rest/v1.1/notifications/",
         "queryParameters": {
             "fields": {
                 "equalTo": "id,type,read,body,subject,timestamp,meta,note_hash"

@@ -1,16 +1,9 @@
 package com.woocommerce.android.ui.orders.tracking
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderTestUtils.ORDER_IDENTIFIER
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -22,17 +15,14 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.*
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
-    companion object {
-        private const val ORDER_IDENTIFIER = "1-1-1"
-    }
-
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
 
@@ -52,7 +42,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Add order shipment tracking when network is available - success`() = runBlockingTest {
-        doReturn(true).whenever(repository).addOrderShipmentTracking(any(), any())
+        doReturn(OnOrderChanged()).whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -76,7 +66,8 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Add order shipment tracking fails`() = runBlockingTest {
-        doReturn(false).whenever(repository).addOrderShipmentTracking(any(), any())
+        doReturn(OnOrderChanged().also { it.error = OrderError(type = GENERIC_ERROR, message = "") })
+            .whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }

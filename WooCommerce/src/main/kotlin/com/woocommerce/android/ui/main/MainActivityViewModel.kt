@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
@@ -9,6 +10,8 @@ import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,7 +51,8 @@ class MainActivityViewModel @Inject constructor(
         notification?.let {
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()
-            if (it.remoteSiteId != currentSite.siteId) {
+            val isSiteSpecificNotification = it.remoteSiteId != 0L
+            if (isSiteSpecificNotification && it.remoteSiteId != currentSite.siteId) {
                 // Update selected store
                 siteStore.getSiteBySiteId(it.remoteSiteId)?.let { updatedSite ->
                     selectedSite.set(updatedSite)
@@ -112,6 +116,14 @@ class MainActivityViewModel @Inject constructor(
                 if (prefs.getLastVersionWithAnnouncement() != buildConfigWrapper.versionName &&
                     cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
                 ) {
+                    WooLog.i(T.DEVICE, "Displaying Feature Announcement on main activity")
+                    AnalyticsTracker.track(
+                        AnalyticsTracker.Stat.FEATURE_ANNOUNCEMENT_SHOWN,
+                        mapOf(
+                            AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
+                                AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_UPGRADE
+                        )
+                    )
                     triggerEvent(ShowFeatureAnnouncement(it))
                 }
             }

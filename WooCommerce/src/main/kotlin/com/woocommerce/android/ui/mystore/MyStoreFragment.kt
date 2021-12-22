@@ -7,6 +7,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -19,28 +22,27 @@ import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.startHelpActivity
+import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.util.Calendar
+import java.util.*
 import javax.inject.Inject
+import kotlin.math.abs
 
 @AndroidEntryPoint
 class MyStoreFragment :
@@ -171,9 +173,38 @@ class MyStoreFragment :
             clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) }
         )
 
+        prepareJetpackBenefitsBanner()
+
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
         refreshMyStoreStats(forced = this.isRefreshPending)
+    }
+
+    @Suppress("ForbiddenComment")
+    private fun prepareJetpackBenefitsBanner() {
+        binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
+            presenter.dismissJetpackBenefitsBanner()
+        }
+        binding.jetpackBenefitsBanner.root.setOnClickListener {
+            AnalyticsTracker.track(
+                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
+            )
+            findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
+        }
+        val appBarLayout = appBarLayout ?: return
+        // For the banner to be above the bottom navigation view when the toolbar is expanded
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
+            // we are using `launchWhenCreated` here, since if this view doesn't reach the created state,
+            // the scope will not get cancelled.
+            // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
+            appBarLayout.verticalOffsetChanges()
+                .collect { verticalOffset ->
+                    binding.jetpackBenefitsBanner.root.translationY =
+                        (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
+                }
+        }
     }
 
     private fun initTabLayout() {
@@ -293,6 +324,10 @@ class MyStoreFragment :
         }
     }
 
+    override fun showJetpackBenefitsBanner(show: Boolean) {
+        binding.jetpackBenefitsBanner.root.isVisible = show
+    }
+
     override fun getFragmentTitle() = getString(R.string.my_store)
 
     override fun getFragmentSubtitle(): String = presenter.getSelectedSiteName() ?: ""
@@ -311,9 +346,7 @@ class MyStoreFragment :
         }
         presenter.run {
             loadStats(activeGranularity, forced)
-            coroutineScope.launch {
-                presenter.loadTopPerformersStats(activeGranularity, forced)
-            }
+            loadTopPerformersStats(activeGranularity, forced)
         }
     }
 
@@ -332,9 +365,7 @@ class MyStoreFragment :
 
     override fun onRequestLoadTopPerformersStats(period: StatsGranularity) {
         binding.myStoreTopPerformers.showErrorView(false)
-        presenter.coroutineScope.launch {
-            presenter.loadTopPerformersStats(period)
-        }
+        presenter.loadTopPerformersStats(period)
     }
 
     override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {

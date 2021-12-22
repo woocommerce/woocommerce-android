@@ -15,7 +15,7 @@ Veja quais produtos são mais populares, em um piscar de olhos. Acompanhe sua re
 ALTERNE ENTRE LOJAS
 Para quem tem mais de uma loja, é fácil alternar entre os negócios em questão de segundos.
 
-O WooCommerce é a plataforma de e-commerce de código aberto mais personalizável do mundo. Esteja você lançando um negócio, tendo varejo online tradicional ou desenvolvendo sites para clientes, use o WooCommerce para uma loja que combina conteúdo e comércio de maneira poderosa.
+O WooCommerce é a plataforma de comércio eletrônico open source mais personalizável do mundo. Esteja você lançando um negócio, tendo varejo online tradicional ou desenvolvendo sites para clientes, use o WooCommerce para uma loja que combina conteúdo e comércio de maneira poderosa.
 
 Requisitos: WooCommerce versão 3.5 ou posterior e o plugin do Jetpack.
 

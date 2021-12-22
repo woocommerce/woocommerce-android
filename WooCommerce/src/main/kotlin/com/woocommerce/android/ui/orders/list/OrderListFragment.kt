@@ -2,63 +2,62 @@ package com.woocommerce.android.ui.orders.list
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
-import android.widget.EditText
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.core.view.children
+import androidx.core.view.ViewGroupCompat
+import androidx.core.view.doOnPreDraw
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
-import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.tabs.TabLayout
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.AppUrls
-import com.woocommerce.android.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.transition.MaterialFadeThrough
+import com.woocommerce.android.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.orders.OrderStatusListView
+import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
+import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog.Companion.KEY_SIMPLE_PAYMENTS_RESULT
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
-import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
-import java.util.Locale
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
 class OrderListFragment :
     TopLevelFragment(R.layout.fragment_order_list),
-    OrderStatusListView.OrderStatusListListener,
     OnQueryTextListener,
     OnActionExpandListener,
     OrderListListener {
     companion object {
         const val TAG: String = "OrderListFragment"
-        const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
-        const val STATE_KEY_IS_FILTER_ENABLED = "is_filter_enabled"
-
         private const val SEARCH_TYPING_DELAY_MS = 500L
-        private const val TAB_INDEX_PROCESSING = 0
-        private const val TAB_INDEX_ALL = 1
+        const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
     }
 
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
@@ -66,14 +65,6 @@ class OrderListFragment :
     @Inject internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderListViewModel by viewModels()
-
-    // Alias for interacting with [viewModel.orderStatusFilter] so the value is always
-    // identical to the real value on the UI side.
-    private var orderStatusFilter: String
-        private set(value) {
-            viewModel.orderStatusFilter = value
-        }
-        get() = viewModel.orderStatusFilter
 
     // Alias for interacting with [viewModel.isSearching] so the value is always identical
     // to the real value on the UI side.
@@ -86,7 +77,7 @@ class OrderListFragment :
     private var orderListMenu: Menu? = null
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
-    private val searchHandler = Handler()
+    private val searchHandler = Handler(Looper.getMainLooper())
 
     private var _binding: FragmentOrderListBinding? = null
     private val binding get() = _binding!!
@@ -99,28 +90,25 @@ class OrderListFragment :
         }
         get() = viewModel.searchQuery
 
-    /**
-     * flag to check if the user selected any order status from the order status list
-     * If true, the data in the order list tab is currently visible and will be refreshed
-     */
-    private var isFilterEnabled: Boolean = false
-
-    private var _tabLayout: TabLayout? = null
-    private val tabLayout
-        get() = _tabLayout!!
-
     private val emptyView
         get() = binding.orderListView.emptyView
+
+    private val feedbackState
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         savedInstanceState?.let { bundle ->
-            orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, StringUtils.EMPTY)
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
-            isFilterEnabled = bundle.getBoolean(STATE_KEY_IS_FILTER_ENABLED)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
         }
+
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
+        enterTransition = fadeThroughTransition
+        exitTransition = fadeThroughTransition
+        reenterTransition = fadeThroughTransition
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -141,15 +129,15 @@ class OrderListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
 
         setHasOptionsMenu(true)
 
-        _tabLayout = TabLayout(requireContext(), null, R.attr.tabStyle)
-        addTabLayoutToAppBar()
-
         _binding = FragmentOrderListBinding.bind(view)
+        view.doOnPreDraw { startPostponedEnterTransition() }
+
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
-        binding.orderStatusListView.init(listener = this)
+        ViewGroupCompat.setTransitionGroup(binding.orderRefreshLayout, true)
         binding.orderRefreshLayout.apply {
             // Set the scrolling view in the custom refresh SwipeRefreshLayout
             scrollUpChild = binding.orderListView.ordersList
@@ -159,63 +147,18 @@ class OrderListFragment :
             }
         }
 
-        initializeViewModel()
-        initializeTabs()
-
-        if (isFilterEnabled) {
-            viewModel.submitSearchOrFilter(statusFilter = orderStatusFilter)
-        } else if (isSearching) {
+        initObservers()
+        initializeResultHandlers()
+        if (isSearching) {
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
-        } else {
-            loadListForActiveTab()
         }
+        binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
+        initCreateOrderFAB(binding.createOrderButton)
     }
 
-    private fun initializeTabs() {
-        // Get the english version to use for setting the tab tag.
-        val englishTabArray = StringUtils
-            .getStringArrayByLocale(requireContext(), R.array.order_list_tabs, "en")
-
-        resources.getStringArray(R.array.order_list_tabs).toList()
-            .forEachIndexed { index, title ->
-                val tab = tabLayout.newTab().apply {
-                    text = title
-                    tag = englishTabArray?.get(index) ?: title
-                }
-                tabLayout.addTab(tab)
-
-                // If this tab is the one that should be active, select it and load
-                // the appropriate list.
-                if (index == calculateStartupTabPosition()) {
-                    orderStatusFilter = calculateOrderStatusFilter(tab)
-                    tab.select()
-                }
-            }
-
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                hideEmptyView()
-
-                // Calculate the filter that should be active based on the selected
-                // tab and the state of the list.
-                val previousOrderStatus = orderStatusFilter
-                orderStatusFilter = calculateOrderStatusFilter(tab)
-
-                if (orderStatusFilter != previousOrderStatus) {
-                    // store the selected tab in SharedPrefs and clear the adapter data,
-                    // then load orders with the calculated filter.
-                    AppPrefs.setSelectedOrderListTab(tab.position)
-                    binding.orderListView.clearAdapterData()
-                    loadListForActiveTab()
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-
-            override fun onTabReselected(tab: TabLayout.Tab) {
-                binding.orderListView.scrollToTop()
-            }
-        })
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        displaySimplePaymentsWIPCard(true)
     }
 
     override fun onResume() {
@@ -224,9 +167,7 @@ class OrderListFragment :
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
-        outState.putBoolean(STATE_KEY_IS_FILTER_ENABLED, isFilterEnabled)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
 
         super.onSaveInstanceState(outState)
@@ -234,13 +175,16 @@ class OrderListFragment :
 
     override fun onDestroyView() {
         disableSearchListeners()
-        removeTabLayoutFromAppBar()
-        _tabLayout = null
         searchView = null
         orderListMenu = null
         searchMenuItem = null
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun isSimplePaymentsAvailable(): Boolean {
+        return AppPrefs.isSimplePaymentsEnabled &&
+            viewModel.isCardReaderOnboardingCompleted()
     }
 
     /**
@@ -253,7 +197,6 @@ class OrderListFragment :
             val savedSearchQuery = searchQuery
             searchMenuItem?.expandActionView()
             searchQuery = savedSearchQuery
-            if (isFilterEnabled) displayFilteredList()
         } else {
             val showSearch = shouldShowSearchMenuItem()
             searchMenuItem?.let {
@@ -274,115 +217,142 @@ class OrderListFragment :
         }
     }
 
+    private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
+        val isSimplePaymentAvailable = isSimplePaymentsAvailable()
+        val isOrderCreationAvailable = FeatureFlag.ORDER_CREATION.isEnabled() && AppPrefs.isOrderCreationEnabled
+
+        if (isSimplePaymentAvailable || isOrderCreationAvailable) {
+            fabButton.visibility = View.VISIBLE
+            fabButton.setOnClickListener {
+                when {
+                    isSimplePaymentAvailable && isOrderCreationAvailable -> showOrderCreationBottomSheet()
+                    isSimplePaymentAvailable -> showSimplePaymentsDialog()
+                    isOrderCreationAvailable -> openOrderCreationFragment()
+                }
+            }
+            pinFabAboveBottomNavigationBar(fabButton)
+        }
+    }
+
     private fun isChildFragmentShowing() = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
 
     private fun shouldShowSearchMenuItem(): Boolean {
         val isChildShowing = isChildFragmentShowing()
         return when {
             (isChildShowing) -> false
-            (isFilterEnabled) -> false
             else -> true
         }
     }
 
-    private fun getOrderStatusOptions() = viewModel.orderStatusOptions.value.orEmpty()
-
-    override fun getFragmentTitle() = if (isFilterEnabled || isSearching) "" else getString(R.string.orders)
+    override fun getFragmentTitle() = if (isSearching) "" else getString(R.string.orders)
 
     override fun scrollToTop() {
         binding.orderListView.scrollToTop()
     }
 
     @Suppress("LongMethod")
-    private fun initializeViewModel() {
-        viewModel.initializeListsForMainTabs()
-
-        // populate views with any existing viewModel data
-        viewModel.orderStatusOptions.value?.let { options ->
-            // So the order status can be matched to the appropriate label
-            binding.orderListView.setOrderStatusOptions(options)
-
-            updateOrderStatusList(options)
+    private fun initObservers() {
+        // setup observers
+        viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
+            it?.let { options ->
+                // So the order status can be matched to the appropriate label
+                binding.orderListView.setOrderStatusOptions(options)
+            }
         }
 
-        // setup observers
-        viewModel.isFetchingFirstPage.observe(
-            viewLifecycleOwner,
-            Observer {
-                binding.orderRefreshLayout.isRefreshing = it == true
-            }
-        )
+        viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
+            binding.orderRefreshLayout.isRefreshing = it == true
+        }
 
-        viewModel.isLoadingMore.observe(
-            viewLifecycleOwner,
-            Observer {
-                it?.let { isLoadingMore ->
-                    binding.orderListView.setLoadingMoreIndicator(active = isLoadingMore)
+        viewModel.isLoadingMore.observe(viewLifecycleOwner) {
+            it?.let { isLoadingMore ->
+                binding.orderListView.setLoadingMoreIndicator(active = isLoadingMore)
+            }
+        }
+
+        viewModel.pagedListData.observe(viewLifecycleOwner) {
+            updatePagedListData(it)
+        }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowErrorSnack -> {
+                    uiMessageResolver.showSnack(event.messageRes)
+                    binding.orderRefreshLayout.isRefreshing = false
                 }
+                is ShowOrderFilters -> showOrderFilters()
+                else -> event.isHandled = false
             }
-        )
+        }
 
-        viewModel.orderStatusOptions.observe(
-            viewLifecycleOwner,
-            Observer {
-                it?.let { options ->
-                    // So the order status can be matched to the appropriate label
-                    binding.orderListView.setOrderStatusOptions(options)
-
-                    updateOrderStatusList(options)
-                }
-            }
-        )
-
-        viewModel.pagedListData.observe(
-            viewLifecycleOwner,
-            Observer {
-                updatePagedListData(it)
-            }
-        )
-
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowErrorSnack -> {
-                        uiMessageResolver.showSnack(event.messageRes)
-                        binding.orderRefreshLayout.isRefreshing = false
+        viewModel.emptyViewType.observe(viewLifecycleOwner) {
+            it?.let { emptyViewType ->
+                when (emptyViewType) {
+                    EmptyViewType.SEARCH_RESULTS -> {
+                        emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
                     }
-                    else -> event.isHandled = false
-                }
-            }
-        )
-
-        viewModel.emptyViewType.observe(
-            viewLifecycleOwner,
-            Observer {
-                it?.let { emptyViewType ->
-                    when (emptyViewType) {
-                        EmptyViewType.SEARCH_RESULTS -> {
-                            binding.orderStatusListView
-                            emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
-                        }
-                        EmptyViewType.ORDER_LIST -> {
-                            emptyView.show(emptyViewType) {
-                                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
-                            }
-                        }
-                        EmptyViewType.ORDER_LIST_FILTERED -> {
-                            emptyView.show(emptyViewType, searchQueryOrFilter = viewModel.orderStatusFilter)
-                        }
-                        EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
-                            emptyView.show(emptyViewType) {
-                                refreshOrders()
-                            }
-                        }
-                        else -> {
-                            emptyView.show(emptyViewType)
+                    EmptyViewType.ORDER_LIST -> {
+                        emptyView.show(emptyViewType) {
+                            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
                     }
-                } ?: hideEmptyView()
+                    EmptyViewType.ORDER_LIST_FILTERED -> {
+                        emptyView.show(emptyViewType)
+                    }
+                    EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
+                        emptyView.show(emptyViewType) {
+                            refreshOrders()
+                        }
+                    }
+                    else -> {
+                        emptyView.show(emptyViewType)
+                    }
+                }
+            } ?: hideEmptyView()
+        }
+
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
+                binding.orderFiltersCard.updateFilterSelection(filterCount)
             }
-        )
+        }
+    }
+
+    private fun initializeResultHandlers() {
+        handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
+            viewModel.loadOrders()
+        }
+        handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
+            binding.orderListView.post {
+                openSimpleOrder(order)
+            }
+        }
+        handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
+            binding.orderListView.post {
+                when (it) {
+                    OrderCreationAction.CREATE_ORDER -> openOrderCreationFragment()
+                    OrderCreationAction.SIMPLE_PAYMENT -> showSimplePaymentsDialog()
+                }
+            }
+        }
+    }
+
+    private fun showOrderFilters() {
+        findNavController().navigate(R.id.action_orderListFragment_to_orderFilterListFragment)
+    }
+
+    private fun showSimplePaymentsDialog() {
+        AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
+        findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsDialog)
+    }
+
+    private fun showOrderCreationBottomSheet() {
+        OrderListFragmentDirections.actionOrderListFragmentToOrderCreationBottomSheet()
+            .let { findNavController().navigateSafely(it) }
+    }
+
+    private fun openOrderCreationFragment() {
+        findNavController().navigate(R.id.action_orderListFragment_to_orderCreationFragment)
     }
 
     private fun hideEmptyView() {
@@ -404,7 +374,19 @@ class OrderListFragment :
         }
     }
 
-    override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String) {
+    private fun openSimpleOrder(order: Order) {
+        if (FeatureFlag.SIMPLE_PAYMENT_I2.isEnabled()) {
+            // TODO nbradbury - tracks?
+            val bundle = Bundle().also {
+                it.putParcelable("order", order)
+            }
+            findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsFragment, bundle)
+        } else {
+            openOrderDetail(order.localId.value, order.remoteId.value, order.status.value)
+        }
+    }
+
+    override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String, sharedView: View?) {
         // Track user clicked to open an order and the status of that order
         AnalyticsTracker.track(
             Stat.ORDER_OPEN,
@@ -423,80 +405,18 @@ class OrderListFragment :
             searchQuery = savedSearch
             isSearching = true
         }
-
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, localOrderId, remoteOrderId)
-    }
-
-    private fun updateOrderStatusList(orderStatusList: Map<String, WCOrderStatusModel>) {
-        binding.orderListViewRoot.visibility = View.VISIBLE
-        binding.orderStatusListView.updateOrderStatusListView(orderStatusList.values.toList())
-    }
-
-    override fun onOrderStatusSelected(orderStatus: String?) {
-        orderStatusFilter = orderStatus ?: StringUtils.EMPTY
-        if (isAdded) {
-            AnalyticsTracker.track(
-                Stat.ORDERS_LIST_FILTER,
-                mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty())
-            )
-
-            // Display the filtered list view
-            displayFilteredList()
-
-            // Load the filtered list
-            binding.orderListView.clearAdapterData()
-            viewModel.submitSearchOrFilter(statusFilter = orderStatus)
-
-            updateActivityTitle()
-            searchMenuItem?.isVisible = shouldShowSearchMenuItem()
-        }
-    }
-
-    /**
-     * Calculates the default tab position to display using the following logic:
-     * - If no orders for selected store -> "All Orders" tab
-     * - If no orders to process -> "All Orders" tab
-     * - The last tab the user viewed (saved in SharedPrefs)
-     * - Else the "Processing" tab (default)
-     *
-     * @return the index of the tab to be activated
-     */
-    private fun calculateStartupTabPosition(): Int {
-        val orderStatusOptions = getOrderStatusOptions()
-        return if (orderStatusFilter == PROCESSING.value) {
-            TAB_INDEX_PROCESSING
-        } else if (AppPrefs.hasSelectedOrderListTabPosition()) {
-            // If the user has already changed tabs once then select
-            // the last tab they had selected.
-            AppPrefs.getSelectedOrderListTabPosition()
-        } else if (orderStatusOptions.isEmpty() || orderStatusOptions[PROCESSING.value]?.statusCount == 0) {
-            // There are no "processing" orders to display, show all.
-            TAB_INDEX_ALL
-        } else {
-            // Default to the "processing" tab if there are orders to
-            // process.
-            TAB_INDEX_PROCESSING
-        }
-    }
-
-    private fun getOrderStatusFilterForActiveTab(): String {
-        return tabLayout.getTabAt(tabLayout.selectedTabPosition)?.let {
-            calculateOrderStatusFilter(it)
-        } ?: StringUtils.EMPTY
-    }
-
-    /**
-     * Calculates the filter to apply based on the state of filtering and which tab is selected.
-     *
-     * @return If there is an active filter, return that filter. Otherwise, if the "Processing"
-     * tab is currently selected, return a filter of "processing", else return null (no filter).
-     */
-    private fun calculateOrderStatusFilter(tab: TabLayout.Tab): String {
-        return when {
-            isFilterEnabled -> orderStatusFilter
-            tab.position == 0 -> (tab.tag as? String)?.toLowerCase(Locale.getDefault()) ?: StringUtils.EMPTY
-            else -> StringUtils.EMPTY
+        (activity as? MainNavigationRouter)?.run {
+            if (sharedView != null) {
+                showOrderDetailWithSharedTransition(
+                    localSiteId = selectedSite.get().id,
+                    localOrderId = localOrderId,
+                    remoteOrderId = remoteOrderId,
+                    sharedView = sharedView
+                )
+            } else {
+                showOrderDetail(selectedSite.get().id, localOrderId, remoteOrderId)
+            }
         }
     }
 
@@ -509,44 +429,32 @@ class OrderListFragment :
 
     override fun onQueryTextChange(newText: String): Boolean {
         // only display the order status list if the search query is empty
-        when {
-            newText.isEmpty() -> {
-                displayOrderStatusListView()
-                searchQuery = ""
-            }
-            else -> hideOrderStatusListView()
+        if (newText.isEmpty()) {
+            searchQuery = ""
         }
 
         if (newText.length > 2) {
             submitSearchDelayed(newText)
         } else {
-            clearOrderListData()
+            binding.orderListView.clearAdapterData()
         }
-
         return true
     }
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-        clearOrderListData()
         isSearching = true
         checkOrientation()
-        removeTabLayoutFromAppBar()
         onSearchViewActiveChanged(isActive = true)
+        binding.orderFiltersCard.isVisible = false
+        binding.orderListView.clearAdapterData()
         return true
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-        if (isFilterEnabled) {
-            closeFilteredList()
-            enableSearchListeners()
-            searchMenuItem?.isVisible = false
-            searchView?.post { searchMenuItem?.expandActionView() }
-        } else {
-            clearSearchResults()
-            searchMenuItem?.isVisible = true
-        }
-        loadListForActiveTab()
-        addTabLayoutToAppBar()
+        clearSearchResults()
+        searchMenuItem?.isVisible = true
+        viewModel.onSearchClosed()
+        binding.orderFiltersCard.isVisible = true
         onSearchViewActiveChanged(isActive = false)
         return true
     }
@@ -559,15 +467,6 @@ class OrderListFragment :
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
             (activity as? MainActivity)?.showBottomNav()
-        }
-    }
-
-    private fun loadListForActiveTab() {
-        orderStatusFilter = getOrderStatusFilterForActiveTab()
-        getOrderStatusFilterForActiveTab()
-        when (tabLayout.selectedTabPosition) {
-            TAB_INDEX_PROCESSING -> viewModel.loadProcessingList()
-            TAB_INDEX_ALL -> viewModel.loadAllList()
         }
     }
 
@@ -619,9 +518,6 @@ class OrderListFragment :
         binding.orderListViewRoot.visibility = View.VISIBLE
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
-        hideOrderStatusListView()
-
-        if (isFilterEnabled) closeFilteredList()
     }
 
     /**
@@ -637,69 +533,8 @@ class OrderListFragment :
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = false
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
-        displayOrderStatusListView()
 
         (activity as? MainActivity)?.hideBottomNav()
-    }
-
-    /**
-     * Method called when user clicks on an order status from [OrderStatusListView]
-     *
-     * 1. Hide the order status view
-     * 2. Disable search
-     * 3. Display the order status selected in the search query text area
-     * 4. Set [isFilterEnabled] flag to true.
-     *    This is because once an order status is selected and the order list for that status is displayed,
-     *    when back is clicked, the order list needs to be refreshed again from the api,
-     *    since we only store the orders for a particular status in local cache.
-     */
-    private fun displayFilteredList() {
-        isFilterEnabled = true
-        hideOrderStatusListView()
-        searchView?.queryHint = getString(R.string.orders)
-            .plus(
-                orderStatusFilter.let { filter ->
-                    val orderStatusLabel = getOrderStatusOptions()[filter]?.label
-                    getString(R.string.orderlist_filtered, orderStatusLabel)
-                }
-            )
-
-        searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
-            it.setHintTextColor(requireContext().getColorFromAttribute(R.attr.colorOnSurface))
-            it.isEnabled = false
-        }
-        (activity as? MainActivity)?.showBottomNav()
-    }
-
-    /**
-     * Method called when user clicks on the back button after selecting an order status.
-     *
-     * 1. Hide the order status view
-     * 2. Enable search again and update the hint query
-     */
-    private fun closeFilteredList() {
-        if (isFilterEnabled) {
-            isFilterEnabled = false
-            searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
-                it.setHintTextColor(requireContext().getColorFromAttribute(android.R.attr.textColorHint))
-                it.isEnabled = true
-            }
-            searchView?.queryHint = getString(R.string.orderlist_search_hint)
-
-            (activity as? MainActivity)?.hideBottomNav()
-        }
-    }
-
-    private fun displayOrderStatusListView() {
-        binding.orderStatusListView.visibility = View.VISIBLE
-        binding.orderListView.visibility = View.GONE
-        binding.orderRefreshLayout.isEnabled = false
-    }
-
-    private fun hideOrderStatusListView() {
-        binding.orderStatusListView.visibility = View.GONE
-        binding.orderListView.visibility = View.VISIBLE
-        binding.orderRefreshLayout.isEnabled = true
     }
 
     private fun checkOrientation() {
@@ -708,39 +543,68 @@ class OrderListFragment :
             searchView?.post { searchView?.clearFocus() }
         }
     }
-
-    /**
-     * Method to clear adapter data only if order filter is not enabled.
-     * This is to prevent the order filter list data from being cleared when fragment state is restored
-     */
-    private fun clearOrderListData() {
-        if (!isFilterEnabled) {
-            binding.orderListView.clearAdapterData()
-        }
-    }
     // endregion
-
-    private fun addTabLayoutToAppBar() {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            if (!appBar.children.contains(tabLayout)) {
-                appBar.addView(tabLayout)
-            }
-            appBar.post {
-                if (context != null) {
-                    appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
-                }
-            }
-        }
-    }
-
-    private fun removeTabLayoutFromAppBar() {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            appBar.removeView(tabLayout)
-            appBar.elevation = 0f
-        }
-    }
 
     override fun shouldExpandToolbar(): Boolean {
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
+    }
+
+    private fun displaySimplePaymentsWIPCard(show: Boolean) {
+        if (!show ||
+            feedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED ||
+            !viewModel.isCardReaderOnboardingCompleted()
+        ) {
+            binding.simplePaymentsWIPcard.isVisible = false
+            return
+        }
+
+        val isEnabled = AppPrefs.isSimplePaymentsEnabled
+        @StringRes val messageId = if (isEnabled) {
+            R.string.orderlist_simple_payments_wip_message_enabled
+        } else {
+            R.string.orderlist_simple_payments_wip_message_disabled
+        }
+
+        binding.simplePaymentsWIPcard.isVisible = true
+        binding.simplePaymentsWIPcard.initView(
+            getString(R.string.orderlist_simple_payments_wip_title),
+            getString(messageId),
+            onGiveFeedbackClick = { onGiveFeedbackClicked() },
+            onDismissClick = { onDismissWIPCardClicked() },
+            showFeedbackButton = isEnabled
+        )
+    }
+
+    private fun onGiveFeedbackClicked() {
+        AnalyticsTracker.track(
+            Stat.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
+        )
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.SIMPLE_PAYMENTS)
+            .apply { findNavController().navigateSafely(this) }
+    }
+
+    private fun onDismissWIPCardClicked() {
+        AnalyticsTracker.track(
+            Stat.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
+        displaySimplePaymentsWIPCard(false)
+    }
+
+    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
+        FeatureFeedbackSettings(
+            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS.name,
+            state
+        ).registerItselfWith(TAG)
     }
 }

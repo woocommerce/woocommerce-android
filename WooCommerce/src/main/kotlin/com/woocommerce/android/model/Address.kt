@@ -8,9 +8,11 @@ import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
 import java.util.*
 
+@Suppress("TooManyFunctions")
 @Parcelize
 data class Address(
     val company: String,
@@ -81,6 +83,20 @@ data class Address(
             state.isNotEmpty() || city.isNotEmpty()
     }
 
+    fun isEmpty(): Boolean {
+        return company.isEmpty() &&
+            firstName.isEmpty() &&
+            lastName.isEmpty() &&
+            phone.isEmpty() &&
+            country.isEmpty() &&
+            state.isEmpty() &&
+            address1.isEmpty() &&
+            address2.isEmpty() &&
+            city.isEmpty() &&
+            postcode.isEmpty() &&
+            email.isEmpty()
+    }
+
     fun toShippingLabelModel(): ShippingLabelAddress {
         return ShippingLabelAddress(
             company = company,
@@ -92,6 +108,37 @@ data class Address(
             postcode = postcode,
             state = state,
             country = country
+        )
+    }
+
+    fun toShippingAddressModel(): OrderAddress.Shipping {
+        return OrderAddress.Shipping(
+            firstName = firstName,
+            lastName = lastName,
+            company = company,
+            address1 = address1,
+            address2 = address2,
+            city = city,
+            state = state,
+            postcode = postcode,
+            country = country,
+            phone = phone
+        )
+    }
+
+    fun toBillingAddressModel(customEmail: String? = null): OrderAddress.Billing {
+        return OrderAddress.Billing(
+            email = customEmail?.takeIf { it.isNotEmpty() } ?: email,
+            firstName = firstName,
+            lastName = lastName,
+            company = company,
+            address1 = address1,
+            address2 = address2,
+            city = city,
+            state = state,
+            postcode = postcode,
+            country = country,
+            phone = phone
         )
     }
 
@@ -118,5 +165,23 @@ data class Address(
             .appendWithIfNotEmpty(this.postcode, " ")
             .appendWithIfNotEmpty(getCountryLabelByCountryCode(), "\n")
             .toString()
+    }
+
+    companion object {
+        val EMPTY by lazy {
+            Address(
+                company = "",
+                firstName = "",
+                lastName = "",
+                phone = "",
+                country = "",
+                state = "",
+                address1 = "",
+                address2 = "",
+                city = "",
+                postcode = "",
+                email = ""
+            )
+        }
     }
 }

@@ -2,10 +2,11 @@ package com.woocommerce.android.extensions
 
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.model.WCOrderModel.LineItem
+import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.store.WCProductStore
 
 internal const val CASH_ON_DELIVERY_PAYMENT_TYPE = "cod"
+internal const val WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE = "woocommerce_payments"
 
 val CASH_PAYMENTS = listOf(CASH_ON_DELIVERY_PAYMENT_TYPE, "bacs", "cheque")
 

@@ -273,7 +273,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         binding.termEditText.setOnEditorActionListener { termName ->
             if (termName.isNotBlank() && !assignedTermsAdapter.containsTerm(termName)) {
                 addTerm(termName)
-                binding.termEditText.setText("")
+                binding.termEditText.text = ""
             }
             true
         }

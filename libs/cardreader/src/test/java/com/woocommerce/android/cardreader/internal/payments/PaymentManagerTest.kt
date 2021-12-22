@@ -7,24 +7,21 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import com.stripe.stripeterminal.model.external.Charge
-import com.stripe.stripeterminal.model.external.PaymentIntent
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus.CANCELED
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_CAPTURE
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_CONFIRMATION
-import com.stripe.stripeterminal.model.external.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
-import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
-import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.CardPaymentStatusErrorType
-import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentCompleted
-import com.woocommerce.android.cardreader.CardPaymentStatus.PaymentFailed
-import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
-import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
+import com.stripe.stripeterminal.external.models.Charge
+import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CAPTURE
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
+import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.payments.PaymentInfo
@@ -80,7 +77,6 @@ class PaymentManagerTest {
     private val cancelPaymentAction: CancelPaymentAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
     private val paymentUtils: PaymentUtils = mock()
-    private val additionalInfoMapper: AdditionalInfoMapper = mock()
 
     private val expectedSequence = listOf(
         InitializingPayment::class,
@@ -101,7 +97,6 @@ class PaymentManagerTest {
             cancelPaymentAction,
             paymentUtils,
             paymentErrorMapper,
-            additionalInfoMapper
         )
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(createPaymentAction.createPaymentIntent(any()))
@@ -120,13 +115,12 @@ class PaymentManagerTest {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Successful.Success)
         whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull<TerminalException>()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.GENERIC_ERROR, null, ""))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(true)
-        whenever(additionalInfoMapper.map(any())).thenReturn(INSERT_CARD)
     }
 
     // BEGIN - Arguments validation and conversion
@@ -233,28 +227,6 @@ class PaymentManagerTest {
             .takeUntil(CollectingPayment::class).toList()
 
         assertThat(result.last()).isInstanceOf(CollectingPayment::class.java)
-    }
-
-    @Test
-    fun `when card reader awaiting input, then WaitingForInput emitted`() = runBlockingTest {
-        whenever(collectPaymentAction.collectPayment(anyOrNull()))
-            .thenReturn(flow { emit(CollectPaymentStatus.ReaderInputRequested(mock())) })
-
-        val result = manager
-            .acceptPayment(createPaymentInfo()).toList()
-
-        assertThat(result.last()).isInstanceOf(WaitingForInput::class.java)
-    }
-
-    @Test
-    fun `when card reader requests to display message, then ShowAdditionalInfo emitted`() = runBlockingTest {
-        whenever(collectPaymentAction.collectPayment(anyOrNull()))
-            .thenReturn(flow { emit(CollectPaymentStatus.DisplayMessageRequested(mock())) })
-
-        val result = manager
-            .acceptPayment(createPaymentInfo()).toList()
-
-        assertThat(result.last()).isInstanceOf(ShowAdditionalInfo::class.java)
     }
 
     @Test
