@@ -38,7 +38,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
 
         if (chargeTaxes) {
             val taxPercent = if (feeLine.total > BigDecimal.ZERO) {
-                (order.totalTax / feeLine.total).multiply(BigDecimal(ONE_HUNDRED)).toFloat()
+                (order.totalTax.toFloat() / feeLine.total.toFloat()) * ONE_HUNDRED
             } else {
                 0f
             }
@@ -74,6 +74,6 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     ) : Parcelable
 
     companion object {
-        private const val ONE_HUNDRED = 100
+        private const val ONE_HUNDRED = 100f
     }
 }
