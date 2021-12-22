@@ -1,10 +1,9 @@
 package com.woocommerce.android.ui.mystore
 
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsUiModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
 interface MyStoreStatsListener {
-    fun onRequestLoadStats(period: StatsGranularity)
     fun onChartValueSelected(dateString: String, period: StatsGranularity) {}
-    fun onChartValueUnSelected(revenueStatsModel: WCRevenueStatsModel?, period: StatsGranularity) {}
+    fun onChartValueUnSelected(revenueStatsModel: RevenueStatsUiModel?, period: StatsGranularity) {}
 }

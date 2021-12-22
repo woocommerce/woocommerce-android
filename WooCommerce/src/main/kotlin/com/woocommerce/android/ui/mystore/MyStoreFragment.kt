@@ -32,18 +32,14 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.*
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformerProductUiModel
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState.Content
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState.Error
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState.Loading
 import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
@@ -210,9 +206,17 @@ class MyStoreFragment :
 
         viewModel.topPerformersState.observe(viewLifecycleOwner) { _, newValue ->
             when (newValue) {
-                is Loading -> showTopPerformersLoading()
-                is Error -> showTopPerformersError(activeGranularity) //TODO check why granularity is needed here
-                is Content -> showTopPerformers(newValue.topPerformers, activeGranularity)
+                is TopPerformersViewState.Loading -> showTopPerformersLoading()
+                is TopPerformersViewState.Error -> showTopPerformersError(activeGranularity) //TODO check why granularity is needed here
+                is TopPerformersViewState.Content -> showTopPerformers(newValue.topPerformers, activeGranularity)
+            }
+        }
+        viewModel.revenueStatsState.observe(viewLifecycleOwner) { _, newValue ->
+            when (newValue) {
+                is RevenueStatsViewState.Content -> showStats(newValue.revenueStats, activeGranularity)
+                RevenueStatsViewState.GenericError -> showStatsError(activeGranularity)
+                RevenueStatsViewState.Loading -> showChartSkeleton(true)
+                RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
             }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -295,13 +299,14 @@ class MyStoreFragment :
     }
 
     override fun showStats(
-        revenueStatsModel: WCRevenueStatsModel?,
+        revenueStatsModel: RevenueStatsUiModel?,
         granularity: StatsGranularity
     ) {
         addTabLayoutToAppBar()
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (activeGranularity == granularity) {
             binding.myStoreStats.showErrorView(false)
+            showChartSkeleton(false)
             binding.myStoreStats.updateView(revenueStatsModel, presenter.getStatsCurrency())
             myStoreDateBar.updateDateRangeView(revenueStatsModel, granularity)
         }
@@ -310,6 +315,7 @@ class MyStoreFragment :
     override fun showStatsError(granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             showStats(null, granularity)
+            showChartSkeleton(false)
             binding.myStoreStats.showErrorView(true)
             showErrorSnack()
         }
@@ -319,6 +325,7 @@ class MyStoreFragment :
         binding.myStoreRefreshLayout.visibility = View.GONE
         WooAnimUtils.fadeIn(binding.statsErrorScrollView)
         removeTabLayoutFromAppBar()
+        showChartSkeleton(false)
     }
 
     override fun showTopPerformers(
@@ -387,25 +394,18 @@ class MyStoreFragment :
             binding.myStoreStats.clearChartData()
             myStoreDateBar.clearDateRangeValues()
         }
-        presenter.run {
-            loadStats(activeGranularity, forced)
-        }
     }
 
     override fun showChartSkeleton(show: Boolean) {
-        binding.myStoreStats.showSkeleton(show)
-    }
-
-    override fun onRequestLoadStats(period: StatsGranularity) {
         binding.myStoreStats.showErrorView(false)
-        presenter.loadStats(period)
+        binding.myStoreStats.showSkeleton(show)
     }
 
     override fun onChartValueSelected(dateString: String, period: StatsGranularity) {
         myStoreDateBar.updateDateViewOnScrubbing(dateString, period)
     }
 
-    override fun onChartValueUnSelected(revenueStatsModel: WCRevenueStatsModel?, period: StatsGranularity) {
+    override fun onChartValueUnSelected(revenueStatsModel: RevenueStatsUiModel?, period: StatsGranularity) {
         myStoreDateBar.updateDateRangeView(revenueStatsModel, period)
     }
 

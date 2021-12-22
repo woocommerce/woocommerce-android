@@ -10,8 +10,8 @@ import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
 import com.woocommerce.android.extensions.formatToMonthDateOnly
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsUiModel
 import com.woocommerce.android.util.DateUtils
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
 class MyStoreDateRangeView @JvmOverloads constructor(
@@ -37,18 +37,18 @@ class MyStoreDateRangeView @JvmOverloads constructor(
      * [StatsGranularity.YEARS] would be 2019
      */
     fun updateDateRangeView(
-        revenueStatsModel: WCRevenueStatsModel?,
+        revenueStats: RevenueStatsUiModel?,
         granularity: StatsGranularity
     ) {
-        if (revenueStatsModel?.getIntervalList().isNullOrEmpty()) {
+        if (revenueStats?.intervalList.isNullOrEmpty()) {
             binding.dashboardDateRangeValue.visibility = View.GONE
         } else {
-            val startInterval = revenueStatsModel?.getIntervalList()?.first()?.interval
+            val startInterval = revenueStats?.intervalList?.first()?.interval
             val startDate = startInterval?.let { getDateValue(it, granularity) }
 
             val dateRangeString = when (granularity) {
                 StatsGranularity.WEEKS -> {
-                    val endInterval = revenueStatsModel?.getIntervalList()?.last()?.interval
+                    val endInterval = revenueStats?.intervalList?.last()?.interval
                     val endDate = endInterval?.let { getDateValue(it, granularity) }
                     String.format("%s – %s", startDate, endDate)
                 }

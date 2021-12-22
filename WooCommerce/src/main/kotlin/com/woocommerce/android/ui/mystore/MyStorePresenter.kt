@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -9,10 +8,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import com.woocommerce.android.ui.mystore.domain.GetStats
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -69,41 +65,41 @@ class MyStorePresenter @Inject constructor(
         super.dropView()
     }
 
-    override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
-        if (!networkStatus.isConnected()) {
-            myStoreView?.isRefreshPending = true
-            return
-        }
-
-        val forceRefresh = forced || statsForceRefresh[granularity.ordinal]
-        if (forceRefresh) {
-            statsForceRefresh[granularity.ordinal] = false
-        }
-        myStoreView?.showChartSkeleton(true)
-        coroutineScope.launch {
-            getStats(forced, granularity)
-                .collect {
-                    when (it) {
-                        is RevenueStatsSuccess -> {
-                            myStoreView?.showStats(it.stats, granularity)
-                            AnalyticsTracker.track(
-                                AnalyticsTracker.Stat.DASHBOARD_MAIN_STATS_LOADED,
-                                mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
-                            )
-                        }
-                        is GenericError -> myStoreView?.showStatsError(granularity)
-                        is HasOrders -> myStoreView?.showEmptyView(!it.hasOrder)
-                        is VisitorsStatsError -> myStoreView?.showVisitorStatsError(granularity)
-                        is VisitorsStatsSuccess -> myStoreView?.showVisitorStats(it.stats, granularity)
-                        PluginNotActive -> myStoreView?.updateStatsAvailabilityError()
-                        IsJetPackCPEnabled -> myStoreView?.showEmptyVisitorStatsForJetpackCP()
-                    }
-                    if (it is RevenueStatsSuccess || it is PluginNotActive || it is GenericError) {
-                        myStoreView?.showChartSkeleton(false)
-                    }
-                }
-        }
-    }
+//    override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
+//        if (!networkStatus.isConnected()) {
+//            myStoreView?.isRefreshPending = true
+//            return
+//        }
+//
+//        val forceRefresh = forced || statsForceRefresh[granularity.ordinal]
+//        if (forceRefresh) {
+//            statsForceRefresh[granularity.ordinal] = false
+//        }
+//        myStoreView?.showChartSkeleton(true)
+//        coroutineScope.launch {
+//            getStats(forced, granularity)
+//                .collect {
+//                    when (it) {
+//                        is RevenueStatsSuccess -> {
+//                            myStoreView?.showStats(it.stats, granularity)
+//                            AnalyticsTracker.track(
+//                                AnalyticsTracker.Stat.DASHBOARD_MAIN_STATS_LOADED,
+//                                mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
+//                            )
+//                        }
+//                        is RevenueStatsError -> myStoreView?.showStatsError(granularity)
+//                        is HasOrders -> myStoreView?.showEmptyView(!it.hasOrder)
+//                        is VisitorsStatsError -> myStoreView?.showVisitorStatsError(granularity)
+//                        is VisitorsStatsSuccess -> myStoreView?.showVisitorStats(it.stats, granularity)
+//                        PluginNotActive -> myStoreView?.updateStatsAvailabilityError()
+//                        IsJetPackCPEnabled -> myStoreView?.showEmptyVisitorStatsForJetpackCP()
+//                    }
+//                    if (it is RevenueStatsSuccess || it is PluginNotActive || it is RevenueStatsError) {
+//                        myStoreView?.showChartSkeleton(false)
+//                    }
+//                }
+//        }
+//    }
 
 //    override fun loadTopPerformersStats(
 //        granularity: StatsGranularity,
