@@ -5,6 +5,7 @@ plugins {
     id 'io.gitlab.arturbosch.detekt'
     id 'io.github.wzieba.tracks.plugin'
     id 'io.sentry.android.gradle'
+    id 'com.android.application' apply false
     id 'dagger.hilt.android.plugin' apply false
     id 'androidx.navigation.safeargs.kotlin' apply false
     id 'com.google.gms.google-services' apply false
@@ -81,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2223-5eb2fc04b97ca80f34542b7ac6912aefa4007fbf'
+    fluxCVersion = 'develop-39757e908f358ebf5524673eff72cbf8b5c08cdc'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
