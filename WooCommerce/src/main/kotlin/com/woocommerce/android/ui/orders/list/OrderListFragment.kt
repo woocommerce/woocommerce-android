@@ -253,6 +253,13 @@ class OrderListFragment :
     @Suppress("LongMethod")
     private fun initObservers() {
         // setup observers
+        viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
+            it?.let { options ->
+                // So the order status can be matched to the appropriate label
+                binding.orderListView.setOrderStatusOptions(options)
+            }
+        }
+
         viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
             binding.orderRefreshLayout.isRefreshing = it == true
         }
