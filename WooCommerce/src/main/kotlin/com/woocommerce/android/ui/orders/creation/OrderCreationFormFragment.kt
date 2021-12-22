@@ -6,6 +6,8 @@ import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
@@ -25,6 +27,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val formViewModel by viewModels<OrderCreationFormViewModel>()
+
+    private val productsAdapter: ProductsAdapter by lazy { ProductsAdapter() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,6 +95,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             binding.orderStatusView.updateStatus(it)
         }
 
+        sharedViewModel.products.observe(viewLifecycleOwner) {
+            bindProductsSection(binding.productsSection, it)
+        }
+
         formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 
@@ -105,6 +113,19 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             .let {
                 notesSection.updateContent(it)
             }
+    }
+
+    private fun bindProductsSection(productsSection: OrderCreationSectionView, products: List<ProductUIModel>?) {
+        if (products.isNullOrEmpty()) {
+            productsSection.updateContent(null)
+        } else {
+            // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
+            productsSection.content = productsSection.content ?: RecyclerView(requireContext()).apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = productsAdapter
+            }
+            productsAdapter.products = products
+        }
     }
 
     private fun setupHandleResults() {
