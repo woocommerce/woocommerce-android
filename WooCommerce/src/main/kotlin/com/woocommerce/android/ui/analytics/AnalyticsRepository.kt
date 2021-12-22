@@ -161,7 +161,7 @@ class AnalyticsRepository @Inject constructor(
         }
 
         getCurrentRevenueMutex.withLock {
-            if (shouldUpdateCurrentStats(startDate, endDate)) {
+            if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
                 currentRevenueStats =
                     AnalyticsStatsResultWrapper(
                         startDate = startDate,
@@ -188,7 +188,7 @@ class AnalyticsRepository @Inject constructor(
         }
 
         getPreviousRevenueMutex.withLock {
-            if (shouldUpdatePreviousStats(startDate, endDate)) {
+            if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
                 previousRevenueStats =
                     AnalyticsStatsResultWrapper(
                         startDate = startDate,
@@ -232,13 +232,13 @@ class AnalyticsRepository @Inject constructor(
         else -> DeltaPercentage.Value((round((currentVal - previousVal) / previousVal) * ONE_H_PERCENT).toInt())
     }
 
-    private fun shouldUpdatePreviousStats(startDate: String, endDate: String) =
-        (previousRevenueStats == null || previousRevenueStats?.result?.isCompleted == true) &&
-            (previousRevenueStats?.startDate != startDate || previousRevenueStats?.endDate != endDate)
+    private fun shouldUpdatePreviousStats(startDate: String, endDate: String, forceUpdate: Boolean) =
+        previousRevenueStats?.startDate != startDate || previousRevenueStats?.endDate != endDate
+            || (forceUpdate && previousRevenueStats?.result?.isCompleted == true)
 
-    private fun shouldUpdateCurrentStats(startDate: String, endDate: String) =
-        (currentRevenueStats == null || currentRevenueStats?.result?.isCompleted == true) &&
-            (currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate)
+    private fun shouldUpdateCurrentStats(startDate: String, endDate: String, forceUpdate: Boolean) =
+        currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate
+            || (forceUpdate && currentRevenueStats?.result?.isCompleted == true)
 
     private suspend fun fetchNetworkStats(
         startDate: String,
