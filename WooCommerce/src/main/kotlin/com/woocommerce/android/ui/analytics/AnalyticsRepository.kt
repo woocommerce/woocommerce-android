@@ -45,21 +45,20 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): RevenueResult {
         val granularity = getGranularity(selectedRange)
-        val currentPeriodRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
-        val previousPeriodRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy)
+        val currentPeriodTotalRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val previousPeriodTotalRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
 
-        val resultsAreValid = validateRevenueResults(listOf(currentPeriodRevenue, previousPeriodRevenue)) {
-            it?.isSuccess == true && it.getOrNull() != null
-        }
-
-        if (!resultsAreValid) {
+        if (listOf(currentPeriodTotalRevenue, previousPeriodTotalRevenue).any { it == null } ||
+            currentPeriodTotalRevenue?.totalSales == null ||
+            currentPeriodTotalRevenue.netRevenue == null
+        ) {
             return RevenueError
         }
 
-        val previousTotalSales = previousPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales ?: 0.0
-        val previousNetRevenue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue ?: 0.0
-        val currentTotalSales = currentPeriodRevenue.getOrNull()!!.parseTotal()?.totalSales!!
-        val currentNetRevenue = currentPeriodRevenue.getOrNull()!!.parseTotal()?.netRevenue!!
+        val previousTotalSales = previousPeriodTotalRevenue?.totalSales ?: 0.0
+        val previousNetRevenue = previousPeriodTotalRevenue?.netRevenue ?: 0.0
+        val currentTotalSales = currentPeriodTotalRevenue.totalSales!!
+        val currentNetRevenue = currentPeriodTotalRevenue.netRevenue!!
 
         return RevenueData(
             RevenueStat(
@@ -78,21 +77,20 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): OrdersResult {
         val granularity = getGranularity(selectedRange)
-        val currentPeriodRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
-        val previousPeriodRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy)
+        val currentPeriodTotalRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val previousPeriodTotalRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
 
-        val resultsAreValid = validateRevenueResults(listOf(currentPeriodRevenue, previousPeriodRevenue)) {
-            it?.isSuccess == true && it.getOrNull() != null
-        }
-
-        if (!resultsAreValid) {
+        if (listOf(currentPeriodTotalRevenue, previousPeriodTotalRevenue).any { it == null } ||
+            currentPeriodTotalRevenue?.ordersCount == null ||
+            currentPeriodTotalRevenue.avgOrderValue == null
+        ) {
             return OrdersError
         }
 
-        val previousOrdersCount = previousPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount ?: 0
-        val previousOrderValue = previousPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue ?: 0.0
-        val currentOrdersCount = currentPeriodRevenue.getOrNull()!!.parseTotal()?.ordersCount!!
-        val currentAvgOrderValue = currentPeriodRevenue.getOrNull()!!.parseTotal()?.avgOrderValue!!
+        val previousOrdersCount = previousPeriodTotalRevenue?.ordersCount ?: 0
+        val previousOrderValue = previousPeriodTotalRevenue?.avgOrderValue ?: 0.0
+        val currentOrdersCount = currentPeriodTotalRevenue.ordersCount!!
+        val currentAvgOrderValue = currentPeriodTotalRevenue.avgOrderValue!!
 
         return OrdersResult.OrdersData(
             OrdersStat(
@@ -111,21 +109,21 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): ProductsResult {
         val granularity = getGranularity(selectedRange)
-        val currentPeriodRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy)
-        val previousPeriodRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy)
-        val productsStats = getProductStats(dateRange, granularity, TOP_PRODUCTS_LIST_SIZE)
 
-        val resultsAreValid = validateRevenueResults(listOf(currentPeriodRevenue, previousPeriodRevenue)) {
-            it?.isSuccess == true && it.getOrNull() != null && it.getOrNull()!!.parseTotal()?.itemsSold != null
-        }
+        val currentPeriodTotalRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val previousPeriodTotalRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val productsStats = getProductStats(dateRange, granularity, TOP_PRODUCTS_LIST_SIZE).getOrNull()
 
-        if (!resultsAreValid || productsStats.isFailure) {
+        if (listOf(currentPeriodTotalRevenue, previousPeriodTotalRevenue, productsStats).any { it == null } ||
+            currentPeriodTotalRevenue?.itemsSold == null ||
+            previousPeriodTotalRevenue?.itemsSold == null
+        ) {
             return ProductsError
         }
 
-        val previousItemsSold = previousPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
-        val currentItemsSold = currentPeriodRevenue.getOrNull()!!.parseTotal()?.itemsSold!!
-        val productItems = productsStats.getOrNull()?.map {
+        val previousItemsSold = previousPeriodTotalRevenue.itemsSold!!
+        val currentItemsSold = currentPeriodTotalRevenue.itemsSold!!
+        val productItems = productsStats?.map {
             ProductItem(
                 it.product.name,
                 it.total,
@@ -152,7 +150,7 @@ class AnalyticsRepository @Inject constructor(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ): Result<WCRevenueStatsModel?> = coroutineScope {
+    ): Result<WCRevenueStatsModel.Total> = coroutineScope {
         val startDate = when (dateRange) {
             is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
             is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
@@ -162,15 +160,15 @@ class AnalyticsRepository @Inject constructor(
             is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
         }
 
-        if (shouldUpdateCurrentStats(startDate, endDate)) {
-            currentRevenueStats =
-                AnalyticsStatsResultWrapper(
-                    startDate = startDate,
-                    endDate = endDate,
-                    result = getCurrentRevenueMutex.withLock {
-                        async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                    }
-                )
+        getCurrentRevenueMutex.withLock {
+            if (shouldUpdateCurrentStats(startDate, endDate)) {
+                currentRevenueStats =
+                    AnalyticsStatsResultWrapper(
+                        startDate = startDate,
+                        endDate = endDate,
+                        result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
+                    )
+            }
         }
         return@coroutineScope currentRevenueStats!!.result.await()
     }
@@ -179,7 +177,7 @@ class AnalyticsRepository @Inject constructor(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ): Result<WCRevenueStatsModel?> = coroutineScope {
+    ): Result<WCRevenueStatsModel.Total> = coroutineScope {
         val startDate = when (dateRange) {
             is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
             is MultipleDateRange -> dateRange.from.from.formatToYYYYmmDD()
@@ -189,15 +187,15 @@ class AnalyticsRepository @Inject constructor(
             is MultipleDateRange -> dateRange.from.to.formatToYYYYmmDD()
         }
 
-        if (shouldUpdatePreviousStats(startDate, endDate)) {
-            previousRevenueStats =
-                AnalyticsStatsResultWrapper(
-                    startDate = startDate,
-                    endDate = endDate,
-                    result = getPreviousRevenueMutex.withLock {
-                        async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                    }
-                )
+        getPreviousRevenueMutex.withLock {
+            if (shouldUpdatePreviousStats(startDate, endDate)) {
+                previousRevenueStats =
+                    AnalyticsStatsResultWrapper(
+                        startDate = startDate,
+                        endDate = endDate,
+                        result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
+                    )
+            }
         }
         return@coroutineScope previousRevenueStats!!.result.await()
     }
@@ -242,23 +240,18 @@ class AnalyticsRepository @Inject constructor(
         (currentRevenueStats == null || currentRevenueStats?.result?.isCompleted == true) &&
             (currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate)
 
-    private fun validateRevenueResults(
-        revenueResults: List<Result<WCRevenueStatsModel?>>,
-        validator: (Result<WCRevenueStatsModel?>?) -> Boolean
-    ): Boolean = revenueResults.all { validator(it) }
-
     private suspend fun fetchNetworkStats(
         startDate: String,
         endDate: String,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ): Result<WCRevenueStatsModel?> =
+    ): Result<WCRevenueStatsModel.Total> =
         statsRepository.fetchRevenueStats(
             granularity,
             fetchStrategy is FetchStrategy.ForceNew,
             startDate,
             endDate
-        ).flowOn(dispatchers.io).single()
+        ).flowOn(dispatchers.io).single().mapCatching { it!!.parseTotal()!! }
 
     private suspend fun fetchProductLeaderboards(
         startDate: String,
@@ -313,6 +306,6 @@ class AnalyticsRepository @Inject constructor(
     private data class AnalyticsStatsResultWrapper(
         val startDate: String,
         val endDate: String,
-        val result: Deferred<Result<WCRevenueStatsModel?>>
+        val result: Deferred<Result<WCRevenueStatsModel.Total>>
     )
 }
