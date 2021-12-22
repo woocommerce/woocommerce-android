@@ -3,12 +3,7 @@ package com.woocommerce.android.ui.orders.list
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.*
 import androidx.paging.PagedList
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -44,6 +39,7 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
@@ -100,6 +96,9 @@ class OrderListViewModel @Inject constructor(
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
     val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
+    private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
+    val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
+
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
@@ -124,6 +123,10 @@ class OrderListViewModel @Inject constructor(
         dispatcher.register(this)
 
         launch {
+            // Populate any cached order status options immediately since we use this
+            // value in many different places in the order list view.
+            _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
+
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
                 wooCommerceStore.fetchSitePlugins(selectedSite.get())
@@ -166,7 +169,7 @@ class OrderListViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
-                orderListRepository.fetchOrderStatusOptionsFromApi()
+                fetchOrderStatusOptions()
                 fetchPaymentGateways()
             }
         } else {
@@ -185,6 +188,20 @@ class OrderListViewModel @Inject constructor(
                 }
                 else -> {
                     /* do nothing */
+                }
+            }
+        }
+    }
+
+    /**
+     * Refresh the order count by order status list with fresh data from the API
+     */
+    fun fetchOrderStatusOptions() {
+        launch(dispatchers.main) {
+            // Fetch and load order status options
+            when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
+                SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
+                else -> { /* do nothing */
                 }
             }
         }
