@@ -32,7 +32,7 @@ class OrderCreationProductSelectionFragment :
         with(FragmentOrderCreationProductSelectionBinding.bind(view)) {
             productsList.layoutManager = LinearLayoutManager(requireActivity())
             productsList.adapter = ProductListAdapter(
-                clickListener = ::onProductClick,
+                clickListener = { id, _ -> onProductClick(id) },
                 loadMoreListener = this@OrderCreationProductSelectionFragment
             ).apply { currentAdapter = this }
             setupObserversWith(this)
@@ -48,7 +48,7 @@ class OrderCreationProductSelectionFragment :
         }
     }
 
-    private fun onProductClick(remoteProductId: Long, sharedView: View?) {
+    private fun onProductClick(remoteProductId: Long) {
         sharedViewModel.onProductSelected(remoteProductId)
     }
 

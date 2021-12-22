@@ -56,6 +56,7 @@ class OrderCreationViewModel @Inject constructor(
         orderDraft = orderDraft.copy(customerNote = newNote)
     }
 
+    @Suppress("UnusedPrivateMember")
     fun onProductSelected(remoteProductId: Long) {
         // TODO convert Product ID to Line Item and add it to the OrderDraft
     }

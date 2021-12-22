@@ -14,7 +14,7 @@ import com.woocommerce.android.model.Product
 typealias OnProductClickListener = (remoteProductId: Long, sharedView: View?) -> Unit
 
 class ProductListAdapter(
-    private val clickListener: OnProductClickListener? = null,
+    private inline val clickListener: OnProductClickListener? = null,
     private val loadMoreListener: OnLoadMoreListener
 ) : RecyclerView.Adapter<ProductItemViewHolder>() {
     private val productList = ArrayList<Product>()

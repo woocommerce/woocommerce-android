@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductListRepository
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +16,6 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderCreationProductSelectionViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val dispatchers: CoroutineDispatchers,
     private val productListRepository: ProductListRepository
 ) : ScopedViewModel(savedState) {
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -33,7 +31,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     fun fetchProductList(
         loadMore: Boolean = false
     ) {
-        if(loadMore.not()) {
+        if (loadMore.not()) {
             viewState = viewState.copy(isSkeletonShown = true)
         }
         /**
