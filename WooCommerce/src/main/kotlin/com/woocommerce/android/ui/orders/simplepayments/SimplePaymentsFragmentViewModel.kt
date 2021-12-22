@@ -37,7 +37,11 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         val feeLine = order.feesLines[0]
 
         if (chargeTaxes) {
-            val taxPercent = (order.totalTax / feeLine.total).multiply(BigDecimal(ONE_HUNDRED)).toFloat()
+            val taxPercent = if (feeLine.total > BigDecimal.ZERO) {
+                (order.totalTax / feeLine.total).multiply(BigDecimal(ONE_HUNDRED)).toFloat()
+            } else {
+                0f
+            }
             viewState = viewState.copy(
                 chargeTaxes = true,
                 orderSubtotal = feeLine.total,
