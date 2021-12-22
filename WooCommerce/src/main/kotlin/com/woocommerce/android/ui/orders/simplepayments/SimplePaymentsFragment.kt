@@ -69,6 +69,8 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                 binding.textTaxLabel.text = getString(R.string.simple_payments_tax_with_percent, taxPercent)
             }
         }
+
+        // TODO nbradbury - customer note
     }
 
     private fun validateEmail(emailEditText: EditText): Boolean {

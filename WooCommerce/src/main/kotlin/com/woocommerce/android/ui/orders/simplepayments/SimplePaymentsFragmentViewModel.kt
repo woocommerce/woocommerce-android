@@ -31,7 +31,11 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     private fun updateViewState(chargeTaxes: Boolean) {
+        // accessing feesLines[0] is safe to do since a fee line is passed by FluxC when creating the order. also note
+        // the single fee line is the only way to get the price w/o taxes, and FluxC sets the tax status to "taxable"
+        // so when the order is created core automatically sets the total tax if the store has taxes enabled.
         val feeLine = order.feesLines[0]
+
         if (chargeTaxes) {
             val taxPercent = (order.totalTax / feeLine.total).multiply(BigDecimal(ONE_HUNDRED)).intValueExact()
             viewState = viewState.copy(
