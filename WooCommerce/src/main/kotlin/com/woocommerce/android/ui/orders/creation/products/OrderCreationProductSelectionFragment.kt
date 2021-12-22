@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation
+package com.woocommerce.android.ui.orders.creation.products
 
 import android.os.Bundle
 import android.view.View
@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationProductSelectionBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter
 
