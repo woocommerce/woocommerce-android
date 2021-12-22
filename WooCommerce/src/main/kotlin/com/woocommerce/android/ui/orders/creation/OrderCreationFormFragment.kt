@@ -20,15 +20,22 @@ import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val formViewModel by viewModels<OrderCreationFormViewModel>()
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    private val productsAdapter: ProductsAdapter by lazy { ProductsAdapter() }
+    private val productsAdapter: ProductsAdapter by lazy {
+        ProductsAdapter(
+            currencyFormatter = currencyFormatter.buildBigDecimalFormatter(sharedViewModel.currentDraft.currency)
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
