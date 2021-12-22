@@ -49,7 +49,7 @@ class OrderCreationProductSelectionFragment :
     }
 
     private fun onProductClick(remoteProductId: Long, sharedView: View?) {
-
+        sharedViewModel.onProductSelected(remoteProductId)
     }
 
     override fun onRequestLoadMore() {

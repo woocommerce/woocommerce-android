@@ -55,4 +55,8 @@ class OrderCreationViewModel @Inject constructor(
     fun onCustomerNoteEdited(newNote: String) {
         orderDraft = orderDraft.copy(customerNote = newNote)
     }
+
+    fun onProductSelected(remoteProductId: Long) {
+        // TODO convert Product ID to Line Item and add it to the OrderDraft
+    }
 }
