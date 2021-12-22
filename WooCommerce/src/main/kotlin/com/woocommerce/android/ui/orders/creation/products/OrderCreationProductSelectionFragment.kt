@@ -20,6 +20,8 @@ class OrderCreationProductSelectionFragment :
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val productListViewModel by viewModels<OrderCreationProductSelectionViewModel>()
 
+    private var currentAdapter: ProductListAdapter? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(FragmentOrderCreationProductSelectionBinding.bind(view)) {
@@ -27,7 +29,14 @@ class OrderCreationProductSelectionFragment :
             productsList.adapter = ProductListAdapter(
                 clickListener = ::onProductClick,
                 loadMoreListener = this@OrderCreationProductSelectionFragment
-            )
+            ).apply { currentAdapter = this }
+        }
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        productListViewModel.productListData.observe(viewLifecycleOwner) {
+            currentAdapter?.setProductList(it)
         }
     }
 
@@ -36,6 +45,5 @@ class OrderCreationProductSelectionFragment :
     }
 
     override fun onRequestLoadMore() {
-
     }
 }
