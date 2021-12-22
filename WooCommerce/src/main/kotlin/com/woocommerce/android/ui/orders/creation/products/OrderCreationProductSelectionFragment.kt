@@ -7,10 +7,13 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationProductSelectionBinding
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.ViewState
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,6 +22,8 @@ class OrderCreationProductSelectionFragment :
     OnLoadMoreListener {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val productListViewModel by viewModels<OrderCreationProductSelectionViewModel>()
+
+    private val skeletonView = SkeletonView()
 
     private var currentAdapter: ProductListAdapter? = null
 
@@ -30,13 +35,16 @@ class OrderCreationProductSelectionFragment :
                 clickListener = ::onProductClick,
                 loadMoreListener = this@OrderCreationProductSelectionFragment
             ).apply { currentAdapter = this }
+            setupObserversWith(this)
         }
-        setupObservers()
     }
 
-    private fun setupObservers() {
+    private fun setupObserversWith(binding: FragmentOrderCreationProductSelectionBinding) {
         productListViewModel.productListData.observe(viewLifecycleOwner) {
             currentAdapter?.setProductList(it)
+        }
+        productListViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            onViewStateChanged(binding, old, new)
         }
     }
 
@@ -46,5 +54,26 @@ class OrderCreationProductSelectionFragment :
 
     override fun onRequestLoadMore() {
         productListViewModel.fetchProductList(loadMore = true)
+    }
+
+    private fun onViewStateChanged(
+        binding: FragmentOrderCreationProductSelectionBinding,
+        old: ViewState?,
+        new: ViewState
+    ) {
+        new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
+            showSkeleton(binding, it)
+        }
+    }
+
+    private fun showSkeleton(
+        binding: FragmentOrderCreationProductSelectionBinding,
+        show: Boolean
+    ) {
+        if (show) {
+            skeletonView.show(binding.productsList, R.layout.skeleton_product_list, delayed = true)
+        } else {
+            skeletonView.hide()
+        }
     }
 }
