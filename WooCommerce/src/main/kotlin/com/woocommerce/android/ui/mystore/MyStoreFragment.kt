@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -33,6 +34,9 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformerProductUiModel
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState.Content
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState.Error
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState.Loading
 import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -186,12 +190,14 @@ class MyStoreFragment :
 
 
         //NEW VIEWMODEL CODE
-
-        viewModel.viewState.observe(viewLifecycleOwner) { _, newValue ->
-            binding.myStoreTopPerformers.showSkeleton(newValue.isLoadingTopPerformers)
-            when {
-                newValue.topPerformersError -> showTopPerformersError(newValue.activeStatsGranularity)
-                else -> showTopPerformers(newValue.topPerformers, newValue.activeStatsGranularity)
+        viewModel.topPerformersState.observe(viewLifecycleOwner) { _, newValue ->
+            when (newValue) {
+                is Loading -> binding.myStoreTopPerformers.showSkeleton(true)
+                is Error -> showTopPerformersError(activeGranularity)//TODO check why granularity is needed here
+                is Content -> {
+                    binding.myStoreTopPerformers.showSkeleton(false)
+                    showTopPerformers(newValue.topPerformers, activeGranularity)
+                }
             }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -362,6 +368,7 @@ class MyStoreFragment :
         presenter.run {
             loadStats(activeGranularity, forced)
         }
+        viewModel.loadTopPerformersStats(forced)
     }
 
     override fun showChartSkeleton(show: Boolean) {

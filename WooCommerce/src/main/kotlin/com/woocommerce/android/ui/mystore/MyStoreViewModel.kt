@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.mystore
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.NetworkStatus
@@ -21,7 +20,6 @@ import kotlinx.parcelize.Parcelize
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import javax.inject.Inject
@@ -31,8 +29,6 @@ class MyStoreViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val appPrefsWrapper: AppPrefsWrapper,
-    private val wooCommerceStore: WooCommerceStore,
     private val getTopPerformers: GetTopPerformers,
     private val currencyFormatter: CurrencyFormatter,
 ) : ScopedViewModel(savedState) {
@@ -40,55 +36,57 @@ class MyStoreViewModel @Inject constructor(
         const val NUM_TOP_PERFORMERS = 5
     }
 
-    val viewState = LiveDataDelegate(
+    val topPerformersState: LiveDataDelegate<TopPerformersViewState> = LiveDataDelegate(
         savedState,
-        ViewState(
-            activeStatsGranularity = StatsGranularity.DAYS,
-            isLoadingTopPerformers = true
-        )
+        TopPerformersViewState.Loading
     )
-    private var _viewState by viewState
+    private var _topPerformersState by topPerformersState
 
-    private var isRefreshPending = false
+    private val refreshStoreStats = BooleanArray(StatsGranularity.values().size)
     private val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
+
+    private var activeStatsGranularity: StatsGranularity = StatsGranularity.DAYS
 
     init {
         refreshTopPerformerStats.forEachIndexed { index, _ ->
             refreshTopPerformerStats[index] = true
         }
+        refreshStoreStats.forEachIndexed { index, _ ->
+            refreshStoreStats[index] = true
+        }
         loadTopPerformersStats()
     }
 
     fun onStatsGranularityChanged(granularity: StatsGranularity) {
-        _viewState = _viewState.copy(activeStatsGranularity = granularity)
+        activeStatsGranularity = granularity
         loadTopPerformersStats()
     }
 
-    private fun loadTopPerformersStats() {
+    fun loadTopPerformersStats(forced: Boolean = false) {
         if (!networkStatus.isConnected()) {
-            isRefreshPending = true
+            refreshTopPerformerStats[activeStatsGranularity.ordinal] = true
             return
         }
 
-        val forceRefresh = refreshTopPerformerStats[_viewState.activeStatsGranularity.ordinal]
+        val forceRefresh = refreshTopPerformerStats[activeStatsGranularity.ordinal] || forced
         if (forceRefresh) {
-            refreshTopPerformerStats[_viewState.activeStatsGranularity.ordinal] = false
+            refreshTopPerformerStats[activeStatsGranularity.ordinal] = false
         }
 
-        _viewState = _viewState.copy(isLoadingTopPerformers = true)
+        _topPerformersState = TopPerformersViewState.Loading
         launch {
-            getTopPerformers(forceRefresh, _viewState.activeStatsGranularity, NUM_TOP_PERFORMERS)
+            getTopPerformers(forceRefresh, activeStatsGranularity, NUM_TOP_PERFORMERS)
                 .collect {
-                    _viewState = _viewState.copy(isLoadingTopPerformers = false)
                     when (it) {
                         is TopPerformersSuccess -> {
-                            _viewState = _viewState.copy(topPerformers = it.topPerformers.toTopPerformersUiList())
+                            _topPerformersState =
+                                TopPerformersViewState.Content(it.topPerformers.toTopPerformersUiList())
                             AnalyticsTracker.track(
                                 AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
-                                mapOf(AnalyticsTracker.KEY_RANGE to _viewState.activeStatsGranularity.name.lowercase())
+                                mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.name.lowercase())
                             )
                         }
-                        TopPerformersError -> _viewState = _viewState.copy(topPerformersError = true)
+                        TopPerformersError -> _topPerformersState = TopPerformersViewState.Error
                     }
                 }
         }
@@ -99,29 +97,18 @@ class MyStoreViewModel @Inject constructor(
         AnalyticsTracker.track(AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED)
     }
 
-//    private fun getStatsCurrency() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+    sealed class TopPerformersViewState : Parcelable {
+        @Parcelize
+        object Loading : TopPerformersViewState()
 
+        @Parcelize
+        object Error : TopPerformersViewState()
 
-//    @Suppress("unused")
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    fun onEventMainThread(event: ConnectionChangeReceiver.ConnectionChangeEvent) {
-//        if (event.isConnected && isRefreshPending) {
-//            // Refresh data if needed now that a connection is active
-//            myStoreView?.let { view ->
-//                if (view.isRefreshPending) {
-//                    view.refreshMyStoreStats(forced = false)
-//                }
-//            }
-//        }
-//    }
-
-    @Parcelize
-    data class ViewState(
-        val activeStatsGranularity: StatsGranularity = StatsGranularity.DAYS,
-        val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
-        val isLoadingTopPerformers: Boolean = false,
-        val topPerformersError: Boolean = false
-    ) : Parcelable
+        @Parcelize
+        data class Content(
+            val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
+        ) : TopPerformersViewState()
+    }
 
     sealed class MyStoreEvent : MultiLiveEvent.Event() {
         data class OpenTopPerformer(
