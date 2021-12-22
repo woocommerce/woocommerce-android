@@ -174,7 +174,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     }
 }
 
-private fun PluginType.toInPersonPaymentsPluginType(): InPersonPaymentsPluginType = when (this) {
+fun PluginType.toInPersonPaymentsPluginType(): InPersonPaymentsPluginType = when (this) {
     WOOCOMMERCE_PAYMENTS -> InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
     STRIPE_TERMINAL_GATEWAY -> InPersonPaymentsPluginType.STRIPE
 }
