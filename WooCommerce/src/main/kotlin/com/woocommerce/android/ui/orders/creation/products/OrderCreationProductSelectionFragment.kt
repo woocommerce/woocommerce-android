@@ -76,4 +76,6 @@ class OrderCreationProductSelectionFragment :
             skeletonView.hide()
         }
     }
+
+    override fun getFragmentTitle() = getString(R.string.order_creation_add_products)
 }
