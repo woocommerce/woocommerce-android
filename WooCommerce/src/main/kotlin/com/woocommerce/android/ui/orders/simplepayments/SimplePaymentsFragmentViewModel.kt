@@ -9,24 +9,67 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @OpenClassOnDebug
 @HiltViewModel
 class SimplePaymentsFragmentViewModel @Inject constructor(
-    savedState: SavedStateHandle,
+    savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal final var viewState by viewStateLiveData
 
     private val navArgs: SimplePaymentsFragmentArgs by savedState.navArgs()
 
+    private val order: Order
+        get() = navArgs.order
+
     init {
-        viewState = viewState.copy(order = navArgs.order)
+        val hasTaxes = order.totalTax > BigDecimal.ZERO
+        updateViewState(hasTaxes)
+    }
+
+    private fun updateViewState(chargeTaxes: Boolean) {
+        // accessing feesLines[0] is safe to do since a fee line is passed by FluxC when creating the order. also note
+        // the single fee line is the only way to get the price w/o taxes, and FluxC sets the tax status to "taxable"
+        // so when the order is created core automatically sets the total tax if the store has taxes enabled.
+        val feeLine = order.feesLines[0]
+
+        if (chargeTaxes) {
+            val taxPercent = (order.totalTax / feeLine.total).multiply(BigDecimal(ONE_HUNDRED)).intValueExact()
+            viewState = viewState.copy(
+                chargeTaxes = true,
+                orderSubtotal = feeLine.total,
+                orderTotalTax = order.totalTax,
+                orderTaxPercent = taxPercent,
+                orderTotal = order.total
+            )
+        } else {
+            viewState = viewState.copy(
+                chargeTaxes = false,
+                orderSubtotal = feeLine.total,
+                orderTotalTax = BigDecimal.ZERO,
+                orderTaxPercent = 0,
+                orderTotal = feeLine.total
+            )
+        }
+    }
+
+    fun onChargeTaxesChanged(chargeTaxes: Boolean) {
+        updateViewState(chargeTaxes = chargeTaxes)
     }
 
     @Parcelize
     data class ViewState(
-        val order: Order? = null
+        val chargeTaxes: Boolean = false,
+        val orderSubtotal: BigDecimal = BigDecimal.ZERO,
+        val orderTotalTax: BigDecimal = BigDecimal.ZERO,
+        val orderTaxPercent: Int = 0,
+        val orderTotal: BigDecimal = BigDecimal.ZERO,
     ) : Parcelable
+
+    companion object {
+        private const val ONE_HUNDRED = 100
+    }
 }
