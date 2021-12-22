@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -382,7 +383,7 @@ class CardReaderConnectViewModel @Inject constructor(
             if (cardReaderLocationId != null) {
                 cardReaderManager.startConnectionToReader(cardReader, cardReaderLocationId)
             } else {
-                when (val result = locationRepository.getDefaultLocationId()) {
+                when (val result = locationRepository.getDefaultLocationId(getPaymentPluginType())) {
                     is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
                         tracker.track(CARD_READER_LOCATION_SUCCESS)
                         cardReaderManager.startConnectionToReader(cardReader, result.locationId)
@@ -393,6 +394,23 @@ class CardReaderConnectViewModel @Inject constructor(
                 }.exhaustive
             }
         }
+    }
+
+    private fun getPaymentPluginType(): PluginType = when (getCardReaderOnboardingCompletedStatus()) {
+        AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY ->
+            PluginType.WOOCOMMERCE_PAYMENTS
+        AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION ->
+            PluginType.STRIPE_TERMINAL_GATEWAY
+        AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_NOT_COMPLETED ->
+            throw IllegalStateException("Onboarding not completed. Plugin Type is null")
+    }
+
+    private fun getCardReaderOnboardingCompletedStatus(): AppPrefs.CardReaderOnboardingCompletedStatus {
+        return appPrefs.getCardReaderOnboardingCompletedStatus(
+            selectedSite.get().id,
+            selectedSite.get().siteId,
+            selectedSite.get().selfHostedSiteId
+        )
     }
 
     private fun handleLocationFetchingError(result: CardReaderLocationRepository.LocationIdFetchingResult.Error) {

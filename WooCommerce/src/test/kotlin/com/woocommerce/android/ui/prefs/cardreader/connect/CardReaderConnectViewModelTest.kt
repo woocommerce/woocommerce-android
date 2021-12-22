@@ -79,6 +79,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
         on { getIfExists() }.thenReturn(siteModel)
+        on { get() }.thenReturn(siteModel)
     }
 
     private val locationId = "location_id"
@@ -560,7 +561,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given location fetching fails address, when user clicks on connect to reader button, then track failure`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress("")
             )
 
@@ -578,7 +579,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given location fetching invalid postcode, when user clicks on connect to reader button, then track failure`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
             )
 
@@ -596,7 +597,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given location fetching fails, when user clicks on connect to reader button, then track failure event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.Other("selected site missing")
             )
 
@@ -614,7 +615,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given location fetching fails address, when user clicks on update address, then track tapped event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress("")
             )
 
@@ -629,7 +630,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given location fetching passes, when user clicks on connect to reader button, then track success event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Success("")
             )
 
@@ -642,7 +643,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given location fetching fails, when user clicks on connect to reader button, then show error state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.Other("Error")
             )
 
@@ -656,7 +657,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given location fetching missing address, when user clicks on connect button, then show address error state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress("")
             )
 
@@ -672,7 +673,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given location fetching invalid postcode, when user clicks on connect button, then invalid pc error state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
             )
 
@@ -690,7 +691,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             whenever(siteModel.isWPCom).thenReturn(true)
             init()
             val url = "https://wordpress.com"
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
@@ -712,7 +713,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             whenever(siteModel.isWPComAtomic).thenReturn(true)
             init()
             val url = "https://wordpress.com"
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
@@ -740,7 +741,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             whenever(siteModel.isWPCom).thenReturn(false)
             init()
             val url = "https://wordpress.com"
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
@@ -763,7 +764,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             whenever(siteModel.isWPCom).thenReturn(false)
             init()
             val url = "https://wordpress.com"
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
@@ -943,7 +944,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
 
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
             )
 
@@ -1150,7 +1151,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = READER_FOUND)
             readerStatusFlow.emit(CardReaderStatus.NotConnected)
             val url = "https://wordpress.com"
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
 
@@ -1176,7 +1177,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = READER_FOUND)
             readerStatusFlow.emit(CardReaderStatus.NotConnected)
-            whenever(locationRepository.getDefaultLocationId()).thenReturn(
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
             )
 
@@ -1371,13 +1372,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 }
             }
         }
-        whenever(locationRepository.getDefaultLocationId()).thenReturn(
+        whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
             CardReaderLocationRepository.LocationIdFetchingResult.Success(locationId)
         )
         (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
+        whenever(appPrefs.getCardReaderOnboardingCompletedStatus(any(), any(), any())).thenReturn(
+            AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
+        )
     }
 
     private enum class ScanResult {
