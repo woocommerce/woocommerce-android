@@ -691,7 +691,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                     SimpleDateRange(currentDate!!, currentDate)
                 ),
                 ANY_RANGE,
-                anyFetchStrategy
+                AnalyticsRepository.FetchStrategy.Saved
             )
 
             sut.fetchProductsData(
@@ -700,12 +700,48 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                     SimpleDateRange(currentDate, currentDate)
                 ),
                 ANY_RANGE,
-                anyFetchStrategy
+                AnalyticsRepository.FetchStrategy.Saved
             )
 
             // Then
             verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE))
             verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE))
+        }
+
+    @Test
+    fun `when force get new revenue and products data at same time, then stats repository is used twice`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
+                .thenReturn(listOf(Result.success(revenue)).asFlow())
+
+            val productLeaderBoards = Result.success(givenAProductsStats())
+            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
+                .thenReturn(flowOf(productLeaderBoards))
+
+            // When
+            sut.fetchRevenueData(
+                MultipleDateRange(
+                    SimpleDateRange(previousDate!!, previousDate),
+                    SimpleDateRange(currentDate!!, currentDate)
+                ),
+                ANY_RANGE,
+                ForceNew
+            )
+
+            sut.fetchProductsData(
+                MultipleDateRange(
+                    SimpleDateRange(previousDate, previousDate),
+                    SimpleDateRange(currentDate, currentDate)
+                ),
+                ANY_RANGE,
+                ForceNew
+            )
+
+            // Then
+            verify(statsRepository, times(2)).fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE))
+            verify(statsRepository, times(2)).fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE))
         }
 
     @Test
