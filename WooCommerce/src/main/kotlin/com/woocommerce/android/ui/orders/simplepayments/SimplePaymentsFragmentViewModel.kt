@@ -26,6 +26,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         get() = navArgs.order
 
     init {
+        viewState = viewState.copy(customerNote = order.customerNote)
         val hasTaxes = order.totalTax > BigDecimal.ZERO
         updateViewState(hasTaxes)
     }
@@ -71,6 +72,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         val orderTotalTax: BigDecimal = BigDecimal.ZERO,
         val orderTaxPercent: Float = 0f,
         val orderTotal: BigDecimal = BigDecimal.ZERO,
+        val customerNote: String = ""
     ) : Parcelable
 
     companion object {

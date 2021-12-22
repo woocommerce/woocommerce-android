@@ -45,7 +45,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/textCustomAmount"
-                    style="@style/Woo.Card.Body.Bold"
+                    style="@style/Woo.Button.TextButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -166,9 +166,9 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textTaxMessage"
                 style="@style/Woo.TextView.Caption"
-                android:layout_marginTop="@dimen/minor_50"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
                 android:layout_marginBottom="@dimen/major_100"
                 android:text="@string/simple_payments_tax_message" />
 
@@ -200,15 +200,62 @@
 
             <View
                 android:id="@+id/divider4"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
-                android:background="@color/divider_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/containerTotal" />
+                android:background="@color/divider_color" />
 
-            <!-- TODO nbradbury - customer provided note -->
+            <!-- Customer provided note -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_100">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textCustomerNote"
+                    style="@style/Woo.Card.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/major_100"
+                    android:text="@string/orderdetail_customer_provided_note"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textEditCustomerNote"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/major_100"
+                    android:text="@string/edit"
+                    android:textColor="@color/color_secondary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textCustomerNoteContent"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textCustomerNote"
+                    tools:text="This is the customer provided note."
+                    tools:visibility="gone" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textAddCustomerNote"
+                    style="@style/Woo.Button.TextButton.TextStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_add"
+                    android:drawablePadding="@dimen/major_100"
+                    android:text="@string/order_detail_add_customer_note"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textCustomerNote" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>
 

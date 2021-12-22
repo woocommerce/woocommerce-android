@@ -37,6 +37,12 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
             this.switchChargeTaxes.setOnCheckedChangeListener { _, isChecked ->
                 viewModel.onChargeTaxesChanged(isChecked)
             }
+            this.textEditCustomerNote.setOnClickListener {
+                // TODO nbradbury
+            }
+            this.textAddCustomerNote.setOnClickListener {
+                // TODO nbradbury
+            }
         }
     }
 
@@ -70,9 +76,13 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                 val df = DecimalFormat("#.##")
                 binding.textTaxLabel.text = getString(R.string.simple_payments_tax_with_percent, df.format(taxPercent))
             }
+            new.customerNote.takeIfNotEqualTo(old?.customerNote) { customerNote ->
+                binding.textCustomerNoteContent.text = customerNote
+                binding.textCustomerNoteContent.isVisible = customerNote.isNotEmpty()
+                binding.textEditCustomerNote.isVisible = customerNote.isNotEmpty()
+                binding.textAddCustomerNote.isVisible = customerNote.isEmpty()
+            }
         }
-
-        // TODO nbradbury - customer note
     }
 
     private fun validateEmail(emailEditText: EditText): Boolean {
