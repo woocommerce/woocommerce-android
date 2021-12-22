@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -65,6 +66,14 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         updateViewState(chargeTaxes = chargeTaxes)
     }
 
+    fun onAddEditCustomerNoteClicked() {
+        triggerEvent(ShowCustomerNoteEditor)
+    }
+
+    fun onCustomerNoteChanged(customerNote: String) {
+        viewState = viewState.copy(customerNote = customerNote)
+    }
+
     @Parcelize
     data class ViewState(
         val chargeTaxes: Boolean = false,
@@ -74,6 +83,8 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         val orderTotal: BigDecimal = BigDecimal.ZERO,
         val customerNote: String = ""
     ) : Parcelable
+
+    object ShowCustomerNoteEditor : MultiLiveEvent.Event()
 
     companion object {
         private const val ONE_HUNDRED = 100f

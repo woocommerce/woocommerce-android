@@ -6,8 +6,11 @@ import android.widget.EditText
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSimplePaymentsBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.CurrencyFormatter
@@ -26,27 +29,43 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(FragmentSimplePaymentsBinding.bind(view)) {
-            this.buttonDone.setOnClickListener {
-                validateEmail(this.editEmail)
-                // TODO nbradbury - take payment if email is valid
-            }
+        val binding = FragmentSimplePaymentsBinding.bind(view)
+        binding.buttonDone.setOnClickListener {
+            validateEmail(binding.editEmail)
+            // TODO nbradbury - take payment if email is valid
+        }
 
-            setupObservers(this)
+        setupObservers(binding)
+        setupResultHandlers()
 
-            this.switchChargeTaxes.setOnCheckedChangeListener { _, isChecked ->
-                viewModel.onChargeTaxesChanged(isChecked)
-            }
-            this.textEditCustomerNote.setOnClickListener {
-                // TODO nbradbury
-            }
-            this.textAddCustomerNote.setOnClickListener {
-                // TODO nbradbury
-            }
+        binding.switchChargeTaxes.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onChargeTaxesChanged(isChecked)
+        }
+        binding.textEditCustomerNote.setOnClickListener {
+            viewModel.onAddEditCustomerNoteClicked()
+        }
+        binding.textAddCustomerNote.setOnClickListener {
+            viewModel.onAddEditCustomerNoteClicked()
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+    }
+
     private fun setupObservers(binding: FragmentSimplePaymentsBinding) {
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            { event ->
+                when (event) {
+                    is SimplePaymentsFragmentViewModel.ShowCustomerNoteEditor -> {
+                        showCustomerNoteEditor()
+                    }
+                }
+            }
+        )
+
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.orderSubtotal.takeIfNotEqualTo(old?.orderSubtotal) { subtotal ->
                 val subTotalStr = currencyFormatter.formatCurrency(subtotal, sharedViewModel.currencyCode)
@@ -83,6 +102,22 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                 binding.textAddCustomerNote.isVisible = customerNote.isEmpty()
             }
         }
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<String>(SimplePaymentsCustomerNoteFragment.SIMPLE_PAYMENTS_CUSTOMER_NOTE_RESULT) {
+            viewModel.onCustomerNoteChanged(it)
+        }
+    }
+
+    private fun showCustomerNoteEditor() {
+        val bundle = Bundle().also {
+            it.putString("customerNote", viewModel.viewState.customerNote)
+        }
+        findNavController().navigate(
+            R.id.action_simplePaymentsFragment_to_simplePaymentsCustomerNoteFragment,
+            bundle
+        )
     }
 
     private fun validateEmail(emailEditText: EditText): Boolean {
