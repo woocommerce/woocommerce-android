@@ -29,7 +29,6 @@
     <string name="order_total">Order total</string>
     <string name="shipping">Shipping</string>
     <string name="multiple_shipping">multiple shipping lines</string>
-    <string name="multiple_fees">multiple fee lines</string>
     <string name="edit">Edit</string>
     <string name="payment">Payment</string>
     <string name="taxes">Taxes</string>
