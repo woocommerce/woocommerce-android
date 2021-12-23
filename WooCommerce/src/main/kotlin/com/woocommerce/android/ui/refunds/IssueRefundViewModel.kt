@@ -67,6 +67,7 @@ import kotlin.math.min
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
 @HiltViewModel
+@Suppress("LargeClass") // TODO Refactor this class in a follow up PR
 class IssueRefundViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
@@ -248,7 +249,7 @@ class IssueRefundViewModel @Inject constructor(
                 // In the future, to support multiple fees refund, we can replace this
                 // with refundableFeeLineIds.isNotEmpty()
                 isFeesRefundAvailable = refundableFeeLineIds.size == 1,
-                )
+            )
         }
 
         val items = order.items.map {
@@ -364,6 +365,8 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
+    // TODO Refactor this method in a follow up PR
+    @Suppress("ComplexMethod", "LongMethod")
     fun onRefundConfirmed(wasConfirmed: Boolean) {
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {

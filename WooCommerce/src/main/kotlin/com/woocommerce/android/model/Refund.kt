@@ -112,7 +112,7 @@ fun WCRefundFeeLine.toAppModel(): Refund.FeeLine {
     return Refund.FeeLine(
         id = metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1,
         name = name,
-        totalTax = -totalTax.roundError(),  // WCRefundFeeLine.totalTax is NEGATIVE
+        totalTax = -totalTax.roundError(), // WCRefundFeeLine.totalTax is NEGATIVE
         total = (total).roundError(), // WCRefundFeeLine.total is NEGATIVE
     )
 }

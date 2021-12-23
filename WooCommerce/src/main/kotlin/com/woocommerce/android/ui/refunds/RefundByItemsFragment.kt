@@ -38,7 +38,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class RefundByItemsFragment :
     BaseFragment(R.layout.fragment_refund_by_items),
-    OnCheckedChangeListener, OnFeeLineCheckedChangeListener {
+    OnCheckedChangeListener,
+    OnFeeLineCheckedChangeListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
 
