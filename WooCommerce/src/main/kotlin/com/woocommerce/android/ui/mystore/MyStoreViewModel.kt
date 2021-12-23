@@ -7,6 +7,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.domain.GetStats
@@ -24,7 +25,6 @@ import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -38,7 +38,6 @@ import javax.inject.Inject
 class MyStoreViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
-    private val dispatcher: Dispatcher,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!
     private val getStats: GetStats,
@@ -75,21 +74,20 @@ class MyStoreViewModel @Inject constructor(
     private val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
 
     init {
-        dispatcher.register(this)
+        ConnectionChangeReceiver.getEventBus().register(this)
         refreshAll()
         showJetpackBenefitsIfNeeded()
     }
 
     override fun onCleared() {
-        dispatcher.unregister(this)
+        ConnectionChangeReceiver.getEventBus().register(this)
         super.onCleared()
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: ConnectionChangeReceiver.ConnectionChangeEvent) {
+    fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
-            // Refresh data if needed now that a connection is active
             if (refreshStoreStats.any { it } || refreshTopPerformerStats.any { it }) {
                 refreshAll()
             }
