@@ -58,6 +58,27 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         notesSection.setOnEditButtonClicked {
             formViewModel.onCustomerNoteClicked()
         }
+
+        customerSection.setAddButtons(
+            listOf(
+                AddButton(
+                    text = getString(R.string.order_creation_add_customer),
+                    onClickListener = {
+                        formViewModel.onCustomerClicked()
+                    }
+                )
+            )
+        )
+        productsSection.setAddButtons(
+            listOf(
+                AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        formViewModel.onAddSimpleProductsClicked()
+                    }
+                )
+            )
+        )
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {

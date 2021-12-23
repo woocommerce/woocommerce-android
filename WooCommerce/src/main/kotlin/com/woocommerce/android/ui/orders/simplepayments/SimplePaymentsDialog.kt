@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -24,7 +25,8 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: SimplePaymentsViewModel by viewModels()
+    private val viewModel: SimplePaymentsDialogViewModel by viewModels()
+    private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +49,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         }
 
         val binding = DialogSimplePaymentsBinding.bind(view)
-        binding.editPrice.initView(viewModel.currencyCode, viewModel.decimals, currencyFormatter)
+        binding.editPrice.initView(sharedViewModel.currencyCode, sharedViewModel.decimals, currencyFormatter)
         binding.buttonDone.setOnClickListener {
             viewModel.onDoneButtonClicked()
         }

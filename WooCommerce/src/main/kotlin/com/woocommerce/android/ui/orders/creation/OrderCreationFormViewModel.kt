@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.AddSimpleProduct
 import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -35,7 +36,15 @@ class OrderCreationFormViewModel @Inject constructor(
         ).let { triggerEvent(it) }
     }
 
+    fun onCustomerClicked() {
+        triggerEvent(OrderCreationNavigationTarget.EditCustomer)
+    }
+
     fun onCustomerNoteClicked() {
         triggerEvent(EditCustomerNote)
+    }
+
+    fun onAddSimpleProductsClicked() {
+        triggerEvent(AddSimpleProduct)
     }
 }

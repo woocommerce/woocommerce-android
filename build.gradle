@@ -5,6 +5,7 @@ plugins {
     id 'io.gitlab.arturbosch.detekt'
     id 'io.github.wzieba.tracks.plugin'
     id 'io.sentry.android.gradle'
+    id 'com.android.application' apply false
     id 'dagger.hilt.android.plugin' apply false
     id 'androidx.navigation.safeargs.kotlin' apply false
     id 'com.google.gms.google-services' apply false

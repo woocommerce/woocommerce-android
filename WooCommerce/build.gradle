@@ -64,9 +64,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.2-rc-2"
+            versionName "8.2-rc-3"
         }
-        versionCode 267
+        versionCode 269
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -167,6 +167,7 @@ dependencies {
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
+    implementation "androidx.core:core-ktx:$coreKtxVersion"
     implementation "androidx.constraintlayout:constraintlayout:2.1.1"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"

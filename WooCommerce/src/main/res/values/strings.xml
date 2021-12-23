@@ -23,6 +23,7 @@
     <string name="my_store">My store</string>
     <string name="orders">Orders</string>
     <string name="email_address">Email address</string>
+    <string name="email">Email</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="order_total">Order total</string>
@@ -303,8 +304,13 @@
          Simple Payments
     -->
     <string name="simple_payments_dialog_title">Take payment</string>
+    <string name="simple_payments_title">Simple payment</string>
     <string name="simple_payments_enter_amount">Enter amount</string>
     <string name="simple_payments_creation_error">Unable to create order</string>
+    <string name="simple_payments_edit_email_hint">Enter email</string>
+    <string name="simple_payments_custom_amount">Custom amount</string>
+    <string name="simple_payments_charge_taxes">Charge taxes</string>
+    <string name="simple_payments_take_payment_button"> Take payment (%s)</string>
     <!--
          Order Creation
     -->
@@ -1004,13 +1010,13 @@
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Refresh after updating</string>
 
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Finish setup WooCommerce Stripe Payment Gateway in your store admin</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Stripe Payment Gateway to start accepting In-Person Payments.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Refresh</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Finish Stripe setup on your store admin</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">You’re almost there! Please finish setting up Stripe to start accepting Card-Present Payments.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Refresh</string>
 
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Update WooCommerce Stripe Payment Gateway</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Outdated version of the WooCommerce Stripe Payment Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Refresh after updating</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Update Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Outdated version of the WooCommerce Stripe Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Refresh after updating</string>
 
 
     <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
@@ -2125,6 +2131,11 @@
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
     <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
+    <string name="order_creation_customer">Customer</string>
     <string name="order_creation_customer_note">Customer Note</string>
+    <string name="order_creation_add_customer">Add customer</string>
     <string name="order_creation_add_customer_note">Add note</string>
+    <string name="order_creation_products">Products</string>
+    <string name="order_creation_add_products">Add Product</string>
+    <string name="order_creation_new_customer">New customer</string>
 </resources>
