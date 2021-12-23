@@ -195,7 +195,7 @@ class OrderDetailRepository @Inject constructor(
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
     fun getOrderById(orderId: Long) =
-        orderStore.getOrderByRemoteIdAndSite(LocalOrRemoteId.RemoteId(orderId), selectedSite.get())?.toAppModel()
+        orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {
         return (
