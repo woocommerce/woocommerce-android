@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.mystore
 
-import android.os.Parcelable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -13,14 +14,12 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersError
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersSuccess
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
@@ -46,72 +45,61 @@ class MyStoreViewModel @Inject constructor(
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
         const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
+        const val ACTIVE_STATS_GRANULARITY_KEY = "active_stats_granularity_key"
     }
 
-    private var activeStatsGranularity: StatsGranularity = StatsGranularity.DAYS
+    private var activeStatsGranularity: StatsGranularity =
+        savedState.get<StatsGranularity>(ACTIVE_STATS_GRANULARITY_KEY) ?: StatsGranularity.DAYS
 
-    val revenueStatsState: LiveDataDelegate<RevenueStatsViewState> = LiveDataDelegate(
-        savedState,
-        RevenueStatsViewState.Loading
-    )
-    private var _revenueStatsState by revenueStatsState
+    private var _revenueStatsState = MutableLiveData<RevenueStatsViewState>()
+    val revenueStatsState: LiveData<RevenueStatsViewState> = _revenueStatsState
 
-    val visitorStatsState: LiveDataDelegate<VisitorStatsViewState> = LiveDataDelegate(
-        savedState,
-        VisitorStatsViewState.Content(emptyMap())
-    )
-    private var _visitorStatsState by visitorStatsState
+    private var _visitorStatsState = MutableLiveData<VisitorStatsViewState>()
+    val visitorStatsState: LiveData<VisitorStatsViewState> = _visitorStatsState
 
-    val topPerformersState: LiveDataDelegate<TopPerformersViewState> = LiveDataDelegate(
-        savedState,
-        TopPerformersViewState.Loading
-    )
-    private var _topPerformersState by topPerformersState
+    private var _topPerformersState = MutableLiveData<TopPerformersViewState>()
+    val topPerformersState: LiveData<TopPerformersViewState> = _topPerformersState
 
-    val hasOrders: LiveDataDelegate<OrderState> = LiveDataDelegate(
-        savedState,
-        OrderState.AtLeastOne
-    )
-    private var _hasOrders by hasOrders
+    private var _hasOrders = MutableLiveData<OrderState>()
+    val hasOrders: LiveData<OrderState> = _hasOrders
 
-    val jetpackBenefitsBanerState: LiveDataDelegate<JetpackBenefitsBannerState> = LiveDataDelegate(
-        savedState,
-        JetpackBenefitsBannerState.Hide
-    )
-    private var _jetpackBenefitsBanerState by jetpackBenefitsBanerState
-
+    private var _jetpackBenefitsBanerState = MutableLiveData<JetpackBenefitsBannerState>()
+    val jetpackBenefitsBanerState: LiveData<JetpackBenefitsBannerState> = _jetpackBenefitsBanerState
 
     private val refreshStoreStats = BooleanArray(StatsGranularity.values().size)
     private val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
 
     init {
-        resetForceRefresh()
-        loadStoreStats()
-        loadTopPerformersStats()
+        refreshAll()
         showJetpackBenefitsIfNeeded()
     }
 
     fun onStatsGranularityChanged(granularity: StatsGranularity) {
         activeStatsGranularity = granularity
+        savedState[ACTIVE_STATS_GRANULARITY_KEY] = granularity
         loadStoreStats()
         loadTopPerformersStats()
     }
 
     fun onSwipeToRefresh() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.DASHBOARD_PULLED_TO_REFRESH)
-        resetForceRefresh()
-        loadStoreStats()
-        loadTopPerformersStats()
+        refreshAll()
     }
 
-    fun getSelectedSiteName(): String? =
+    fun getSelectedSiteName(): String =
         selectedSite.getIfExists()?.let { site ->
             if (!site.displayName.isNullOrBlank()) {
                 site.displayName
             } else {
                 site.name
             }
-        }
+        } ?: ""
+
+    private fun refreshAll() {
+        resetForceRefresh()
+        loadStoreStats()
+        loadTopPerformersStats()
+    }
 
     private fun showJetpackBenefitsIfNeeded() {
         val showBanner = if (selectedSite.getIfExists()?.isJetpackCPConnected == true) {
@@ -122,11 +110,11 @@ class MyStoreViewModel @Inject constructor(
         } else false
 
         when (showBanner) {
-            false -> _jetpackBenefitsBanerState = JetpackBenefitsBannerState.Hide
+            false -> _jetpackBenefitsBanerState.value = JetpackBenefitsBannerState.Hide
             else -> {
-                _jetpackBenefitsBanerState = JetpackBenefitsBannerState.Show(
+                _jetpackBenefitsBanerState.value = JetpackBenefitsBannerState.Show(
                     onDismiss = {
-                        _jetpackBenefitsBanerState = JetpackBenefitsBannerState.Hide
+                        _jetpackBenefitsBanerState.value = JetpackBenefitsBannerState.Hide
                         appPrefsWrapper.recordJetpackBenefitsDismissal()
                     }
                 )
@@ -144,24 +132,24 @@ class MyStoreViewModel @Inject constructor(
         if (forceRefresh) {
             refreshStoreStats[activeStatsGranularity.ordinal] = false
         }
-        _revenueStatsState = RevenueStatsViewState.Loading
+        _revenueStatsState.value = RevenueStatsViewState.Loading
         launch {
             getStats(forceRefresh, activeStatsGranularity)
                 .collect {
                     when (it) {
                         is RevenueStatsSuccess -> {
-                            _revenueStatsState = RevenueStatsViewState.Content(it.stats?.toStoreStatsUiModel())
+                            _revenueStatsState.value = RevenueStatsViewState.Content(it.stats?.toStoreStatsUiModel())
                             AnalyticsTracker.track(
                                 AnalyticsTracker.Stat.DASHBOARD_MAIN_STATS_LOADED,
                                 mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.name.lowercase())
                             )
                         }
-                        is RevenueStatsError -> _revenueStatsState = RevenueStatsViewState.GenericError
-                        PluginNotActive -> _revenueStatsState = RevenueStatsViewState.PluginNotActiveError
-                        is VisitorsStatsSuccess -> _visitorStatsState = VisitorStatsViewState.Content(it.stats)
-                        is VisitorsStatsError -> _visitorStatsState = VisitorStatsViewState.Error
-                        IsJetPackCPEnabled -> _visitorStatsState = VisitorStatsViewState.JetPackCPEmpty
-                        is HasOrders -> _hasOrders =
+                        is RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
+                        PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
+                        is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
+                        is VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
+                        IsJetPackCPEnabled -> _visitorStatsState.value = VisitorStatsViewState.JetPackCPEmpty
+                        is HasOrders -> _hasOrders.value =
                             if (it.hasOrder) OrderState.AtLeastOne
                             else OrderState.Empty
                     }
@@ -180,20 +168,20 @@ class MyStoreViewModel @Inject constructor(
             refreshTopPerformerStats[activeStatsGranularity.ordinal] = false
         }
 
-        _topPerformersState = TopPerformersViewState.Loading
+        _topPerformersState.value = TopPerformersViewState.Loading
         launch {
             getTopPerformers(forceRefresh, activeStatsGranularity, NUM_TOP_PERFORMERS)
                 .collect {
                     when (it) {
                         is TopPerformersSuccess -> {
-                            _topPerformersState =
+                            _topPerformersState.value =
                                 TopPerformersViewState.Content(it.topPerformers.toTopPerformersUiList())
                             AnalyticsTracker.track(
                                 AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
                                 mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.name.lowercase())
                             )
                         }
-                        TopPerformersError -> _topPerformersState = TopPerformersViewState.Error
+                        TopPerformersError -> _topPerformersState.value = TopPerformersViewState.Error
                     }
                 }
         }
@@ -213,66 +201,43 @@ class MyStoreViewModel @Inject constructor(
         AnalyticsTracker.track(AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED)
     }
 
-    sealed class RevenueStatsViewState : Parcelable {
-        @Parcelize
+    sealed class RevenueStatsViewState {
         object Loading : RevenueStatsViewState()
-
-        @Parcelize
         object GenericError : RevenueStatsViewState()
-
-        @Parcelize
         object PluginNotActiveError : RevenueStatsViewState()
-
-        @Parcelize
         data class Content(
             val revenueStats: RevenueStatsUiModel?
         ) : RevenueStatsViewState()
     }
 
-    sealed class VisitorStatsViewState : Parcelable {
-        @Parcelize
+    sealed class VisitorStatsViewState {
         object Error : VisitorStatsViewState()
-
-        @Parcelize
         object JetPackCPEmpty : VisitorStatsViewState()
-
-        @Parcelize
         data class Content(
             val stats: Map<String, Int>
         ) : VisitorStatsViewState()
     }
 
-    sealed class TopPerformersViewState : Parcelable {
-        @Parcelize
+    sealed class TopPerformersViewState {
         object Loading : TopPerformersViewState()
-
-        @Parcelize
         object Error : TopPerformersViewState()
-
-        @Parcelize
         data class Content(
             val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
         ) : TopPerformersViewState()
     }
 
-    sealed class OrderState : Parcelable {
-        @Parcelize
+    sealed class OrderState {
         object Empty : OrderState()
-
-        @Parcelize
         object AtLeastOne : OrderState()
     }
 
-    sealed class JetpackBenefitsBannerState : Parcelable {
-        @Parcelize
+    sealed class JetpackBenefitsBannerState {
         data class Show(
             val onDismiss: () -> Unit
         ) : JetpackBenefitsBannerState()
 
-        @Parcelize
         object Hide : JetpackBenefitsBannerState()
     }
-
 
     sealed class MyStoreEvent : MultiLiveEvent.Event() {
         data class OpenTopPerformer(
@@ -280,22 +245,19 @@ class MyStoreViewModel @Inject constructor(
         ) : MyStoreEvent()
     }
 
-    @Parcelize
     data class RevenueStatsUiModel(
         val intervalList: List<StatsIntervalUiModel> = emptyList(),
         val totalOrdersCount: Int? = null,
         val totalSales: Double? = null,
         val currencyCode: String?
-    ) : Parcelable
+    )
 
-    @Parcelize
     data class StatsIntervalUiModel(
         val interval: String? = null,
         val ordersCount: Long? = null,
         val sales: Double? = null
-    ) : Parcelable
+    )
 
-    @Parcelize
     data class TopPerformerProductUiModel(
         val productId: Long,
         val name: String,
@@ -303,7 +265,7 @@ class MyStoreViewModel @Inject constructor(
         val totalSpend: String,
         val imageUrl: String?,
         val onClick: (Long) -> Unit
-    ) : Parcelable
+    )
 
     private fun WCRevenueStatsModel.toStoreStatsUiModel(): RevenueStatsUiModel {
         val totals = parseTotal()
@@ -345,5 +307,4 @@ class MyStoreViewModel @Inject constructor(
             resourceProvider.getDimensionPixelSize(R.dimen.image_minor_100),
             0
         )
-
 }

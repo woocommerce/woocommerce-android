@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -17,14 +16,12 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
-import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -188,40 +185,40 @@ class MyStoreFragment :
 
 
 
-        viewModel.revenueStatsState.observe(viewLifecycleOwner) { _, newValue ->
-            when (newValue) {
-                is RevenueStatsViewState.Content -> showStats(newValue.revenueStats, activeGranularity)
+        viewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
+            when (revenueStats) {
+                is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats, activeGranularity)
                 RevenueStatsViewState.GenericError -> showStatsError(activeGranularity)
                 RevenueStatsViewState.Loading -> showChartSkeleton(true)
                 RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
             }
         }
-        viewModel.visitorStatsState.observe(viewLifecycleOwner) { _, newValue ->
-            when (newValue) {
-                is VisitorStatsViewState.Content -> showVisitorStats(newValue.stats, activeGranularity)
+        viewModel.visitorStatsState.observe(viewLifecycleOwner) { visitorStats ->
+            when (visitorStats) {
+                is VisitorStatsViewState.Content -> showVisitorStats(visitorStats.stats, activeGranularity)
                 VisitorStatsViewState.Error -> showVisitorStatsError(activeGranularity)
                 VisitorStatsViewState.JetPackCPEmpty -> showEmptyVisitorStatsForJetpackCP()
             }
         }
-        viewModel.topPerformersState.observe(viewLifecycleOwner) { _, newValue ->
-            when (newValue) {
+        viewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
+            when (topPerformers) {
                 is TopPerformersViewState.Loading -> showTopPerformersLoading()
                 is TopPerformersViewState.Error -> showTopPerformersError(activeGranularity) //TODO check why granularity is needed here
-                is TopPerformersViewState.Content -> showTopPerformers(newValue.topPerformers, activeGranularity)
+                is TopPerformersViewState.Content -> showTopPerformers(topPerformers.topPerformers, activeGranularity)
             }
         }
-        viewModel.hasOrders.observe(viewLifecycleOwner) { _, newValue ->
+        viewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
             when (newValue) {
                 OrderState.Empty -> showEmptyView(true)
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
-        viewModel.jetpackBenefitsBanerState.observe(viewLifecycleOwner) { _, newValue ->
-            when (newValue) {
+        viewModel.jetpackBenefitsBanerState.observe(viewLifecycleOwner) { showBanner ->
+            when (showBanner) {
                 JetpackBenefitsBannerState.Hide -> showJetpackBenefitsBanner(false)
                 is JetpackBenefitsBannerState.Show -> {
                     binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
-                        newValue.onDismiss.invoke()
+                        showBanner.onDismiss.invoke()
                     }
                     showJetpackBenefitsBanner(true)
                 }
@@ -384,7 +381,7 @@ class MyStoreFragment :
 
     override fun getFragmentTitle() = getString(R.string.my_store)
 
-    override fun getFragmentSubtitle(): String = viewModel.getSelectedSiteName() ?: ""
+    override fun getFragmentSubtitle(): String = viewModel.getSelectedSiteName()
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
