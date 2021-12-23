@@ -16,7 +16,6 @@ import com.woocommerce.android.databinding.TopPerformersListItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformerProductUiModel
-import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
@@ -28,19 +27,16 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     private val binding = MyStoreTopPerformersBinding.inflate(LayoutInflater.from(ctx), this, true)
 
     private lateinit var selectedSite: SelectedSite
-    private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
 
     private var listener: MyStoreStatsListener? = null
     private var skeletonView = SkeletonView()
 
     fun initView(
         listener: MyStoreStatsListener,
-        selectedSite: SelectedSite,
-        formatCurrencyForDisplay: FormatCurrencyRounded
+        selectedSite: SelectedSite
     ) {
         this.listener = listener
         this.selectedSite = selectedSite
-        this.formatCurrencyForDisplay = formatCurrencyForDisplay
 
         binding.topPerformersRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         binding.topPerformersRecycler.adapter = TopPerformersAdapter()
