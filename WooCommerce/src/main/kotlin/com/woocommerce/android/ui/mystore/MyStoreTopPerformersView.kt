@@ -29,7 +29,6 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
-    private lateinit var statsCurrencyCode: String
 
     private var listener: MyStoreStatsListener? = null
     private var skeletonView = SkeletonView()
@@ -37,13 +36,11 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     fun initView(
         listener: MyStoreStatsListener,
         selectedSite: SelectedSite,
-        formatCurrencyForDisplay: FormatCurrencyRounded,
-        statsCurrencyCode: String
+        formatCurrencyForDisplay: FormatCurrencyRounded
     ) {
         this.listener = listener
         this.selectedSite = selectedSite
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
-        this.statsCurrencyCode = statsCurrencyCode
 
         binding.topPerformersRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         binding.topPerformersRecycler.adapter = TopPerformersAdapter()

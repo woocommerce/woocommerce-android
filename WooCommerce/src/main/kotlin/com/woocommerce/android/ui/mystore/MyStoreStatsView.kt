@@ -68,7 +68,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
-    private var chartCurrencyCode: String? = null
 
     private var skeletonView = SkeletonView()
 
@@ -302,9 +301,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.chart.highlightValue(null)
     }
 
-    fun updateView(revenueStatsModel: RevenueStatsUiModel?, currencyCode: String?) {
+    fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
         this.revenueStatsModel = revenueStatsModel
-        chartCurrencyCode = currencyCode
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
         // https://github.com/woocommerce/woocommerce-android/issues/1455#issuecomment-540401646
@@ -369,7 +367,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         val wasEmpty = binding.chart.barData?.let { it.dataSetCount == 0 } ?: true
 
         val grossRevenue = revenueStatsModel?.totalSales ?: 0.0
-        val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
+        val revenue = formatCurrencyForDisplay(grossRevenue, revenueStatsModel?.currencyCode.orEmpty())
 
         val orderCount = revenueStatsModel?.totalOrdersCount ?: 0
         val orders = orderCount.toString()
@@ -438,7 +436,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun getFormattedRevenueValue(revenue: Double) =
-        formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
+        formatCurrencyForDisplay(revenue, revenueStatsModel?.currencyCode.orEmpty())
 
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 

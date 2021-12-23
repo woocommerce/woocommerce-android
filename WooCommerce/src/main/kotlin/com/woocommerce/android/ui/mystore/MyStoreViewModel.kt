@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.mystore
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
@@ -23,8 +25,10 @@ import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,12 +36,16 @@ class MyStoreViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
+    private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!
     private val getStats: GetStats,
     private val getTopPerformers: GetTopPerformers,
     private val currencyFormatter: CurrencyFormatter,
+    private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState) {
-    companion object {
+    private companion object {
         const val NUM_TOP_PERFORMERS = 5
+        const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
     }
 
     private var activeStatsGranularity: StatsGranularity = StatsGranularity.DAYS
@@ -66,6 +74,12 @@ class MyStoreViewModel @Inject constructor(
     )
     private var _hasOrders by hasOrders
 
+    val jetpackBenefitsBanerState: LiveDataDelegate<JetpackBenefitsBannerState> = LiveDataDelegate(
+        savedState,
+        JetpackBenefitsBannerState.Hide
+    )
+    private var _jetpackBenefitsBanerState by jetpackBenefitsBanerState
+
 
     private val refreshStoreStats = BooleanArray(StatsGranularity.values().size)
     private val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
@@ -74,6 +88,7 @@ class MyStoreViewModel @Inject constructor(
         resetForceRefresh()
         loadStoreStats()
         loadTopPerformersStats()
+        showJetpackBenefitsIfNeeded()
     }
 
     fun onStatsGranularityChanged(granularity: StatsGranularity) {
@@ -87,6 +102,36 @@ class MyStoreViewModel @Inject constructor(
         resetForceRefresh()
         loadStoreStats()
         loadTopPerformersStats()
+    }
+
+    fun getSelectedSiteName(): String? =
+        selectedSite.getIfExists()?.let { site ->
+            if (!site.displayName.isNullOrBlank()) {
+                site.displayName
+            } else {
+                site.name
+            }
+        }
+
+    private fun showJetpackBenefitsIfNeeded() {
+        val showBanner = if (selectedSite.getIfExists()?.isJetpackCPConnected == true) {
+            val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
+                System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
+            )
+            daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
+        } else false
+
+        when (showBanner) {
+            false -> _jetpackBenefitsBanerState = JetpackBenefitsBannerState.Hide
+            else -> {
+                _jetpackBenefitsBanerState = JetpackBenefitsBannerState.Show(
+                    onDismiss = {
+                        _jetpackBenefitsBanerState = JetpackBenefitsBannerState.Hide
+                        appPrefsWrapper.recordJetpackBenefitsDismissal()
+                    }
+                )
+            }
+        }
     }
 
     private fun loadStoreStats() {
@@ -218,6 +263,17 @@ class MyStoreViewModel @Inject constructor(
         object AtLeastOne : OrderState()
     }
 
+    sealed class JetpackBenefitsBannerState : Parcelable {
+        @Parcelize
+        data class Show(
+            val onDismiss: () -> Unit
+        ) : JetpackBenefitsBannerState()
+
+        @Parcelize
+        object Hide : JetpackBenefitsBannerState()
+    }
+
+
     sealed class MyStoreEvent : MultiLiveEvent.Event() {
         data class OpenTopPerformer(
             val productId: Long
@@ -228,7 +284,8 @@ class MyStoreViewModel @Inject constructor(
     data class RevenueStatsUiModel(
         val intervalList: List<StatsIntervalUiModel> = emptyList(),
         val totalOrdersCount: Int? = null,
-        val totalSales: Double? = null
+        val totalSales: Double? = null,
+        val currencyCode: String?
     ) : Parcelable
 
     @Parcelize
@@ -253,7 +310,8 @@ class MyStoreViewModel @Inject constructor(
         return RevenueStatsUiModel(
             intervalList = getIntervalList().toStatsIntervalUiModelList(),
             totalOrdersCount = totals?.ordersCount,
-            totalSales = totals?.totalSales
+            totalSales = totals?.totalSales,
+            currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
         )
     }
 
@@ -273,7 +331,10 @@ class MyStoreViewModel @Inject constructor(
             productId = product.remoteProductId,
             name = StringEscapeUtils.unescapeHtml4(product.name),
             timesOrdered = FormatUtils.formatDecimal(quantity),
-            totalSpend = currencyFormatter.formatCurrencyRounded(total, currency),
+            totalSpend = currencyFormatter.formatCurrencyRounded(
+                total,
+                wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: currency
+            ),
             imageUrl = product.getFirstImageUrl()?.toImageUrl(),
             onClick = ::onTopPerformerSelected
         )

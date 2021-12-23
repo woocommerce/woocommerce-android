@@ -65,6 +65,10 @@ class MyStorePresenter @Inject constructor(
         super.dropView()
     }
 
+    override fun getStatsCurrency(): String? {
+        TODO("Not yet implemented")
+    }
+
 //    override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
 //        if (!networkStatus.isConnected()) {
 //            myStoreView?.isRefreshPending = true
@@ -142,7 +146,6 @@ class MyStorePresenter @Inject constructor(
             }
         }
 
-    override fun getStatsCurrency() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
     private fun showJetpackBenefitsIfNeeded() {
         if (selectedSite.getIfExists()?.isJetpackCPConnected == true) {

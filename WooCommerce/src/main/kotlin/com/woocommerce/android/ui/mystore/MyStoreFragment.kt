@@ -64,7 +64,6 @@ class MyStoreFragment :
 
     private val viewModel: MyStoreViewModel by viewModels()
 
-    @Inject lateinit var presenter: MyStoreContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -122,7 +121,6 @@ class MyStoreFragment :
         _binding = FragmentMyStoreBinding.bind(view)
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
-            MyStorePresenter.resetForceRefresh()
             binding.myStoreRefreshLayout.isRefreshing = false
             refreshMyStoreStats(forced = true)
             viewModel.onSwipeToRefresh()
@@ -135,8 +133,6 @@ class MyStoreFragment :
                 showEmptyView(true)
             }
         }
-
-        presenter.takeView(this)
 
         // Create tabs and add to appbar
         StatsGranularity.values().forEach { granularity ->
@@ -165,8 +161,7 @@ class MyStoreFragment :
         binding.myStoreTopPerformers.initView(
             listener = this,
             selectedSite = selectedSite,
-            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
-            statsCurrencyCode = presenter.getStatsCurrency().orEmpty()
+            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
         )
 
         val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
@@ -221,6 +216,17 @@ class MyStoreFragment :
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
+        viewModel.jetpackBenefitsBanerState.observe(viewLifecycleOwner) { _, newValue ->
+            when (newValue) {
+                JetpackBenefitsBannerState.Hide -> showJetpackBenefitsBanner(false)
+                is JetpackBenefitsBannerState.Show -> {
+                    binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
+                        newValue.onDismiss.invoke()
+                    }
+                    showJetpackBenefitsBanner(true)
+                }
+            }
+        }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenTopPerformer -> mainNavigationRouter?.showProductDetail(event.productId)
@@ -235,9 +241,6 @@ class MyStoreFragment :
     }
 
     private fun prepareJetpackBenefitsBanner() {
-        binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
-            presenter.dismissJetpackBenefitsBanner()
-        }
         binding.jetpackBenefitsBanner.root.setOnClickListener {
             findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
         }
@@ -273,7 +276,6 @@ class MyStoreFragment :
         removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         _tabLayout = null
-        presenter.dropView()
         super.onDestroyView()
         _binding = null
     }
@@ -309,7 +311,7 @@ class MyStoreFragment :
         if (activeGranularity == granularity) {
             binding.myStoreStats.showErrorView(false)
             showChartSkeleton(false)
-            binding.myStoreStats.updateView(revenueStatsModel, presenter.getStatsCurrency())
+            binding.myStoreStats.updateView(revenueStatsModel)
             myStoreDateBar.updateDateRangeView(revenueStatsModel, granularity)
         }
     }
@@ -382,7 +384,7 @@ class MyStoreFragment :
 
     override fun getFragmentTitle() = getString(R.string.my_store)
 
-    override fun getFragmentSubtitle(): String = presenter.getSelectedSiteName() ?: ""
+    override fun getFragmentSubtitle(): String = viewModel.getSelectedSiteName() ?: ""
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
