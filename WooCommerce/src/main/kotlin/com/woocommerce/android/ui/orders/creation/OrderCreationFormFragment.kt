@@ -127,6 +127,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun bindProductsSection(productsSection: OrderCreationSectionView, products: List<ProductUIModel>?) {
+        productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.isNullOrEmpty()) {
             productsSection.updateContent(null)
         } else {

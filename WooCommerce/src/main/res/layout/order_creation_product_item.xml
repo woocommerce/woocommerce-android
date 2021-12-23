@@ -10,6 +10,7 @@
         android:layout_width="@dimen/image_major_50"
         android:layout_height="@dimen/image_major_50"
         android:layout_gravity="center"
+        android:layout_marginStart="@dimen/major_100"
         android:layout_marginTop="@dimen/minor_100"
         android:contentDescription="@string/orderdetail_product_image_contentdesc"
         android:scaleType="centerCrop"
@@ -58,13 +59,16 @@
         android:id="@+id/stepper_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
         style="@style/Woo.Divider"
+        android:layout_width="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/product_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
