@@ -11,7 +11,7 @@
     <a href="https://github.com/woocommerce/woocommerce-android/releases">
         <img alt="Release" src="https://img.shields.io/github/v/tag/woocommerce/woocommerce-android?label=release&sort=semver">
     </a>
-    <a href="https://github.com/woocommerce/woocommerce-android/blob/develop/LICENSE.md">
+    <a href="https://github.com/woocommerce/woocommerce-android/blob/trunk/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/woocommerce/woocommerce-android">
     </a>
 </p>
@@ -114,7 +114,7 @@ General usage and development questions:
 
 ## 📜 License
 
-WooCommerce for Android is an Open Source project covered by the [GNU General Public License version 2](https://github.com/woocommerce/woocommerce-android/blob/develop/LICENSE.md).
+WooCommerce for Android is an Open Source project covered by the [GNU General Public License version 2](https://github.com/woocommerce/woocommerce-android/blob/trunk/LICENSE.md).
 
 
 <p align="center">

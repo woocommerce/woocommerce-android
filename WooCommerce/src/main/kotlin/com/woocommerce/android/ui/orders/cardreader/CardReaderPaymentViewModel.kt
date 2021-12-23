@@ -173,7 +173,7 @@ class CardReaderPaymentViewModel
         cardReaderManager.collectPayment(
             PaymentInfo(
                 paymentDescription = order.getPaymentDescription(),
-                orderId = order.remoteId,
+                orderId = order.id,
                 amount = order.total,
                 currency = order.currency,
                 orderKey = order.orderKey,
@@ -183,7 +183,7 @@ class CardReaderPaymentViewModel
                 siteUrl = selectedSite.get().url.ifEmpty { null },
             )
         ).collect { paymentStatus ->
-            onPaymentStatusChanged(order.remoteId, customerEmail, paymentStatus, order.getAmountLabel())
+            onPaymentStatusChanged(order.id, customerEmail, paymentStatus, order.getAmountLabel())
         }
     }
 
@@ -240,7 +240,7 @@ class CardReaderPaymentViewModel
     }
 
     private suspend fun fetchOrder(): Order? {
-        return orderRepository.fetchOrder(arguments.orderIdentifier)
+        return orderRepository.fetchOrderById(arguments.orderId)
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
@@ -271,10 +271,10 @@ class CardReaderPaymentViewModel
 
     private fun showPaymentSuccessfulState() {
         launch {
-            val order = orderRepository.getOrder(arguments.orderIdentifier)
+            val order = orderRepository.getOrderById(arguments.orderId)
                 ?: throw IllegalStateException("Order URL not available.")
             val amountLabel = order.getAmountLabel()
-            val receiptUrl = getReceiptUrl(order.remoteId)
+            val receiptUrl = getReceiptUrl(order.id)
 
             viewState.postValue(
                 PaymentSuccessfulState(
@@ -325,9 +325,9 @@ class CardReaderPaymentViewModel
     }
 
     private fun startPrintingFlow() {
-        val order = orderRepository.getOrder(arguments.orderIdentifier)
+        val order = orderRepository.getOrderById(arguments.orderId)
             ?: throw IllegalStateException("Order URL not available.")
-        triggerEvent(PrintReceipt(getReceiptUrl(order.remoteId), order.getReceiptDocumentName()))
+        triggerEvent(PrintReceipt(getReceiptUrl(order.id), order.getReceiptDocumentName()))
     }
 
     private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {
@@ -444,7 +444,7 @@ class CardReaderPaymentViewModel
     private fun Order.getAmountLabel(): String = currencyFormatter
         .formatAmountWithCurrency(this.currency, this.total.toDouble())
 
-    private fun Order.getReceiptDocumentName() = "receipt-order-$remoteId"
+    private fun Order.getReceiptDocumentName() = "receipt-order-$id"
 
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 

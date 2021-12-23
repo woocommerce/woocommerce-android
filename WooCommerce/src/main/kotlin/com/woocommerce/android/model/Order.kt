@@ -19,11 +19,10 @@ import java.util.*
 
 @Parcelize
 data class Order(
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
+    val id: Long,
+    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val identifier: OrderIdentifier,
     private val rawLocalOrderId: Int,
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
-    val remoteId: Long,
     val number: String,
     val dateCreated: Date,
     val dateModified: Date,
@@ -53,6 +52,7 @@ data class Order(
     val feesLines: List<FeeLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
+    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val localId
         get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
 
@@ -248,9 +248,9 @@ data class Order(
     companion object {
         val EMPTY by lazy {
             Order(
+                id = 0,
                 identifier = OrderIdentifier(),
                 rawLocalOrderId = 0,
-                remoteId = 0,
                 number = "",
                 dateCreated = Date(),
                 dateModified = Date(),
@@ -285,10 +285,11 @@ data class Order(
 }
 
 fun WCOrderModel.toAppModel(): Order {
+    @Suppress("DEPRECATION_ERROR")
     return Order(
         identifier = OrderIdentifier(this),
         rawLocalOrderId = this.id,
-        remoteId = this.remoteOrderId,
+        id = this.remoteOrderId.value,
         number = this.number,
         dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
         dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),

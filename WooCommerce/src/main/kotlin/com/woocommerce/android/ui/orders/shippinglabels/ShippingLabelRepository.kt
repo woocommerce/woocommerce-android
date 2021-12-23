@@ -100,7 +100,7 @@ class ShippingLabelRepository @Inject constructor(
     ): WooResult<List<WCShippingRatesResult.ShippingPackage>> {
         val carrierRates = shippingLabelStore.getShippingRates(
             site = selectedSite.get(),
-            orderId = order.remoteId,
+            orderId = order.id,
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
             packages = packages.mapIndexed { i, box ->

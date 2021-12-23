@@ -74,9 +74,9 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
 
         assertThat(transition?.sideEffect).isEqualTo(SideEffect.NoOp)
 
-        stateMachine.start(order.remoteId.toString())
+        stateMachine.start(order.id.toString())
 
-        assertThat(transition?.state).isEqualTo(State.DataLoading(order.remoteId.toString()))
+        assertThat(transition?.state).isEqualTo(State.DataLoading(order.id.toString()))
 
         stateMachine.handleEvent(
             Event.DataLoaded(
@@ -100,7 +100,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
             }
         }
 
-        stateMachine.start(order.remoteId.toString())
+        stateMachine.start(order.id.toString())
         stateMachine.handleEvent(Event.DataLoaded(order, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.OriginAddressValidationStarted)
 

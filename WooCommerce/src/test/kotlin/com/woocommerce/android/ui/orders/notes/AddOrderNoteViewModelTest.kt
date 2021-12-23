@@ -136,8 +136,8 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             doReturn(true).whenever(networkStatus).isConnected()
             doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
             doReturn(
-                OnOrderChanged(0)
-            ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), any())
+                OnOrderChanged()
+            ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.id), any())
 
             initViewModel()
 
@@ -149,7 +149,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.pushOrderNote()
 
             verify(repository, times(1)).addOrderNote(
-                eq(REMOTE_ORDER_ID), eq(testOrder.remoteId),
+                eq(REMOTE_ORDER_ID), eq(testOrder.id),
                 argThat {
                     this.note == note
                     this.isCustomerNote == isCustomerNote
@@ -191,8 +191,8 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             doReturn(true).whenever(networkStatus).isConnected()
             doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
             doReturn(
-                OnOrderChanged(0).apply { this.error = OrderError(GENERIC_ERROR) }
-            ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), any())
+                OnOrderChanged().apply { this.error = OrderError(GENERIC_ERROR) }
+            ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.id), any())
 
             initViewModel()
 
@@ -204,7 +204,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.pushOrderNote()
 
             verify(repository, times(1)).addOrderNote(
-                eq(REMOTE_ORDER_ID), eq(testOrder.remoteId),
+                eq(REMOTE_ORDER_ID), eq(testOrder.id),
                 argThat {
                     this.note == note
                     this.isCustomerNote == isCustomerNote
