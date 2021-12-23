@@ -96,10 +96,10 @@ class MyStoreFragment :
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
             tabStatsPosition = tab.position
+            viewModel.onStatsGranularityChanged(activeGranularity)
             myStoreDateBar.clearDateRangeValues()
             binding.myStoreStats.loadDashboardStats(activeGranularity)
-            binding.myStoreTopPerformers.loadTopPerformerStats(activeGranularity)
-            viewModel.onStatsGranularityChanged(activeGranularity)
+            binding.myStoreTopPerformers.onDateGranularityChanged(activeGranularity)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -117,8 +117,10 @@ class MyStoreFragment :
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
-            refreshMyStoreStats(forced = true)
             viewModel.onSwipeToRefresh()
+            binding.myStoreStats.clearLabelValues()
+            binding.myStoreStats.clearChartData()
+            myStoreDateBar.clearDateRangeValues()
         }
 
         savedInstanceState?.let { bundle ->
@@ -167,24 +169,24 @@ class MyStoreFragment :
 
         viewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
             when (revenueStats) {
-                is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats, activeGranularity)
-                RevenueStatsViewState.GenericError -> showStatsError(activeGranularity)
+                is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats)
+                RevenueStatsViewState.GenericError -> showStatsError()
                 RevenueStatsViewState.Loading -> showChartSkeleton(true)
                 RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
             }
         }
         viewModel.visitorStatsState.observe(viewLifecycleOwner) { visitorStats ->
             when (visitorStats) {
-                is VisitorStatsViewState.Content -> showVisitorStats(visitorStats.stats, activeGranularity)
-                VisitorStatsViewState.Error -> showVisitorStatsError(activeGranularity)
+                is VisitorStatsViewState.Content -> showVisitorStats(visitorStats.stats)
+                VisitorStatsViewState.Error -> binding.myStoreStats.showVisitorStatsError()
                 VisitorStatsViewState.JetPackCPEmpty -> showEmptyVisitorStatsForJetpackCP()
             }
         }
         viewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
             when (topPerformers) {
                 is TopPerformersViewState.Loading -> showTopPerformersLoading()
-                is TopPerformersViewState.Error -> showTopPerformersError(activeGranularity) //TODO check why granularity is needed here
-                is TopPerformersViewState.Content -> showTopPerformers(topPerformers.topPerformers, activeGranularity)
+                is TopPerformersViewState.Error -> showTopPerformersError()
+                is TopPerformersViewState.Content -> showTopPerformers(topPerformers.topPerformers)
             }
         }
         viewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
@@ -287,27 +289,19 @@ class MyStoreFragment :
         outState.putInt(STATE_KEY_TAB_POSITION, tabStatsPosition)
     }
 
-    private fun showStats(
-        revenueStatsModel: RevenueStatsUiModel?,
-        granularity: StatsGranularity
-    ) {
+    private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
         addTabLayoutToAppBar()
-        // Only update the order stats view if the new stats match the currently selected timeframe
-        if (activeGranularity == granularity) {
-            binding.myStoreStats.showErrorView(false)
-            showChartSkeleton(false)
-            binding.myStoreStats.updateView(revenueStatsModel)
-            myStoreDateBar.updateDateRangeView(revenueStatsModel, granularity)
-        }
+        binding.myStoreStats.showErrorView(false)
+        showChartSkeleton(false)
+        binding.myStoreStats.updateView(revenueStatsModel)
+        myStoreDateBar.updateDateRangeView(revenueStatsModel, activeGranularity)
     }
 
-    private fun showStatsError(granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            showStats(null, granularity)
-            showChartSkeleton(false)
-            binding.myStoreStats.showErrorView(true)
-            showErrorSnack()
-        }
+    private fun showStatsError() {
+        showStats(null)//TODO CHECK IF CAN BE REMOVED
+        showChartSkeleton(false)
+        binding.myStoreStats.showErrorView(true)
+        showErrorSnack()
     }
 
     private fun updateStatsAvailabilityError() {
@@ -317,38 +311,24 @@ class MyStoreFragment :
         showChartSkeleton(false)
     }
 
-    private fun showTopPerformers(
-        topPerformers: List<TopPerformerProductUiModel>,
-        granularity: StatsGranularity
-    ) {
-        if (activeGranularity == granularity) {
-            binding.myStoreTopPerformers.showSkeleton(false)
-            binding.myStoreTopPerformers.showErrorView(false)
-            binding.myStoreTopPerformers.updateView(topPerformers)
-        }
+    private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>) {
+        binding.myStoreTopPerformers.showSkeleton(false)
+        binding.myStoreTopPerformers.showErrorView(false)
+        binding.myStoreTopPerformers.updateView(topPerformers)
+
     }
 
-    private fun showTopPerformersError(granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            binding.myStoreTopPerformers.updateView(emptyList())
-            binding.myStoreTopPerformers.showSkeleton(false)
-            binding.myStoreTopPerformers.showErrorView(true)
-            showErrorSnack()
-        }
+    private fun showTopPerformersError() {
+        binding.myStoreTopPerformers.updateView(emptyList()) //TODO CHECK IF CAN BE REMOVED
+        binding.myStoreTopPerformers.showSkeleton(false)
+        binding.myStoreTopPerformers.showErrorView(true)
+        showErrorSnack()
     }
 
-    fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            binding.myStoreStats.showVisitorStats(visitorStats)
-            if (granularity == StatsGranularity.DAYS) {
-                binding.emptyStatsView.updateVisitorCount(visitorStats.values.sum())
-            }
-        }
-    }
-
-    private fun showVisitorStatsError(granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            binding.myStoreStats.showVisitorStatsError()
+    private fun showVisitorStats(visitorStats: Map<String, Int>) {
+        binding.myStoreStats.showVisitorStats(visitorStats)
+        if (activeGranularity == StatsGranularity.DAYS) {
+            binding.emptyStatsView.updateVisitorCount(visitorStats.values.sum())
         }
     }
 
@@ -375,17 +355,7 @@ class MyStoreFragment :
         binding.statsScrollView.smoothScrollTo(0, 0)
     }
 
-    fun refreshMyStoreStats(forced: Boolean) {
-        // If this fragment is currently active, force a refresh of data. If not, set
-        // a flag to force a refresh when it becomes active
-        if (forced) {
-            binding.myStoreStats.clearLabelValues()
-            binding.myStoreStats.clearChartData()
-            myStoreDateBar.clearDateRangeValues()
-        }
-    }
-
-    fun showChartSkeleton(show: Boolean) {
+    private fun showChartSkeleton(show: Boolean) {
         binding.myStoreStats.showErrorView(false)
         binding.myStoreStats.showSkeleton(show)
     }
@@ -454,7 +424,7 @@ class MyStoreFragment :
         }
     }
 
-    fun showEmptyView(show: Boolean) {
+    private fun showEmptyView(show: Boolean) {
         val dashboardVisibility: Int
         if (show) {
             dashboardVisibility = View.GONE

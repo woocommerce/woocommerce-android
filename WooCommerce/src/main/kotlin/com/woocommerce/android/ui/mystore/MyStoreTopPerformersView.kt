@@ -52,18 +52,17 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         listener = null
     }
 
-    /**
-     * Load top performers stats when tab is selected in [MyStoreStatsView]
-     */
-    fun loadTopPerformerStats(granularity: StatsGranularity) {
-        // Track range change
-        //TODO CHECK if this tracking can be moved out of here to viewmodel onStatsGranularityChanged()
+    fun onDateGranularityChanged(granularity: StatsGranularity) {
+        trackDateRangeChanged(granularity)
+        binding.topPerformersRecycler.adapter = TopPerformersAdapter()
+        showEmptyView(false)
+    }
+
+    private fun trackDateRangeChanged(granularity: StatsGranularity) {
         AnalyticsTracker.track(
             Stat.DASHBOARD_TOP_PERFORMERS_DATE,
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase())
         )
-        binding.topPerformersRecycler.adapter = TopPerformersAdapter()
-        showEmptyView(false)
     }
 
     fun showSkeleton(show: Boolean) {
