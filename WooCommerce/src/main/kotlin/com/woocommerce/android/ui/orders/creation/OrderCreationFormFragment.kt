@@ -34,15 +34,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var productImageMap: ProductImageMap
 
-    private val productsAdapter: ProductsAdapter by lazy {
-        ProductsAdapter(
-            productImageMap = productImageMap,
-            currencyFormatter = currencyFormatter.buildBigDecimalFormatter(sharedViewModel.currentDraft.currency),
-            onIncreaseQuantity = sharedViewModel::onIncreaseProductsQuantity,
-            onDecreaseQuantity = sharedViewModel::onDecreaseProductsQuantity
-        )
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(FragmentOrderCreationFormBinding.bind(view)) {
@@ -124,21 +115,28 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 textView
             }
             .let {
-                notesSection.updateContent(it)
+                notesSection.content = it
             }
     }
 
     private fun bindProductsSection(productsSection: OrderCreationSectionView, products: List<ProductUIModel>?) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.isNullOrEmpty()) {
-            productsSection.updateContent(null)
+            productsSection.content = null
         } else {
             // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
             productsSection.content = productsSection.content ?: RecyclerView(requireContext()).apply {
                 layoutManager = LinearLayoutManager(requireContext())
-                adapter = productsAdapter
+                adapter =         ProductsAdapter(
+                    productImageMap = productImageMap,
+                    currencyFormatter = currencyFormatter.buildBigDecimalFormatter(
+                        currencyCode = sharedViewModel.currentDraft.currency
+                    ),
+                    onIncreaseQuantity = sharedViewModel::onIncreaseProductsQuantity,
+                    onDecreaseQuantity = sharedViewModel::onDecreaseProductsQuantity
+                )
             }
-            productsAdapter.products = products
+            ((productsSection.content as RecyclerView).adapter as ProductsAdapter).products = products
         }
     }
 

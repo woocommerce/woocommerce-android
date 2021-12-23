@@ -522,8 +522,8 @@
         android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
         android:label="CardReaderPaymentDialog">
         <argument
-            android:name="orderIdentifier"
-            app:argType="string" />
+            android:name="orderId"
+            app:argType="long" />
     </dialog>
     <dialog
         android:id="@+id/cardReaderConnectDialogFragment"
