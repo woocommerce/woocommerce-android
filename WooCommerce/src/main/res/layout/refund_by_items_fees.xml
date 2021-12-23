@@ -29,7 +29,6 @@
             <View
                 android:id="@+id/issueRefund_dividerBelowFees"
                 style="@style/Woo.Divider"
-                android:layout_marginTop="@dimen/major_75"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/minor_00"
                 app:layout_constraintStart_toStartOf="parent"
