@@ -1154,7 +1154,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
 
             // Then
-            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.identifier), viewModel.event.value)
+            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id), viewModel.event.value)
         }
 
     @Test
@@ -1226,7 +1226,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // Then
-            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.identifier), viewModel.event.value)
+            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id), viewModel.event.value)
         }
 
     @Test
