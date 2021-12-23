@@ -37,7 +37,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private val productsAdapter: ProductsAdapter by lazy {
         ProductsAdapter(
             productImageMap = productImageMap,
-            currencyFormatter = currencyFormatter.buildBigDecimalFormatter(sharedViewModel.currentDraft.currency)
+            currencyFormatter = currencyFormatter.buildBigDecimalFormatter(sharedViewModel.currentDraft.currency),
+            onIncreaseQuantity = sharedViewModel::onIncreaseProductsQuantity,
+            onDecreaseQuantity = sharedViewModel::onDecreaseProductsQuantity
         )
     }
 

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -15,13 +16,15 @@ import java.math.BigDecimal
 
 class ProductsAdapter(
     private val productImageMap: ProductImageMap,
-    private val currencyFormatter: (BigDecimal) -> String
+    private val currencyFormatter: (BigDecimal) -> String,
+    private val onIncreaseQuantity: (Long) -> Unit,
+    private val onDecreaseQuantity: (Long) -> Unit
 ) : RecyclerView.Adapter<ProductViewHolder>() {
     var products: List<ProductUIModel> = emptyList()
         set(value) {
+            val diffResult = DiffUtil.calculateDiff(ProductUIModelDiffCallback(field, value))
             field = value
-            // TODO
-            notifyDataSetChanged()
+            diffResult.dispatchUpdatesTo(this)
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
@@ -39,9 +42,19 @@ class ProductsAdapter(
     inner class ProductViewHolder(private val binding: OrderCreationProductItemBinding) : ViewHolder(binding.root) {
         private val context = binding.root.context
 
+        init {
+            binding.stepperView.init(
+                onPlusButtonClick = { onIncreaseQuantity(products[adapterPosition].item.uniqueId) },
+                onMinusButtonClick = { onDecreaseQuantity(products[adapterPosition].item.uniqueId) }
+            )
+        }
+
         fun bind(productModel: ProductUIModel) {
             binding.productName.text = productModel.item.name
-            binding.stepperView.value = productModel.item.quantity.toInt()
+            binding.stepperView.apply {
+                value = productModel.item.quantity.toInt()
+                isMinusButtonEnabled = productModel.canDecreaseQuantity
+            }
 
             binding.productAttributes.text = buildString {
                 if (productModel.isStockManaged) {
@@ -70,6 +83,24 @@ class ProductsAdapter(
                     .placeholder(R.drawable.ic_product)
                     .into(binding.productIcon)
             }
+
+        }
+    }
+
+    private data class ProductUIModelDiffCallback(
+        private val oldItems: List<ProductUIModel>,
+        private val newItems: List<ProductUIModel>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldItems.size
+
+        override fun getNewListSize(): Int = newItems.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldItems[oldItemPosition].item.uniqueId == newItems[newItemPosition].item.uniqueId
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldItems[oldItemPosition] == newItems[newItemPosition]
         }
     }
 }
