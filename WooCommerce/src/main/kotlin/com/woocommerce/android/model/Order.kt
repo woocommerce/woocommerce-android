@@ -384,8 +384,8 @@ fun WCOrderModel.toAppModel(): Order {
             FeeLine(
                 id = it.id!!,
                 name = it.name ?: StringUtils.EMPTY,
-                total = it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                totalTax = it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                totalTax = it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                total = it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
             )
         },
         metaData = getMetaDataList().mapNotNull { it.toAppModel() }
