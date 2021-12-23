@@ -16,7 +16,8 @@
         style="@style/Woo.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:header="@string/products" />
+        app:header="@string/products"
+        app:keepAddButtons="true"/>
 
     <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
         android:id="@+id/customer_section"
