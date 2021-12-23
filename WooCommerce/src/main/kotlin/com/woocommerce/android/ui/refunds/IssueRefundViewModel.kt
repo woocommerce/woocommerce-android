@@ -224,7 +224,6 @@ class IssueRefundViewModel @Inject constructor(
                 feesSubtotal = formatCurrency(order.feesTotal),
                 feesTaxes = formatCurrency(order.feesLines.sumByBigDecimal { it.totalTax }),
                 formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
-                isFeesVisible = order.feesTotal > BigDecimal.ZERO,
                 isNextButtonEnabled = false,
                 formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO),
                 formattedFeesRefundTotal = formatCurrency(BigDecimal.ZERO),
@@ -871,7 +870,6 @@ class IssueRefundViewModel @Inject constructor(
         val isShippingRefundAvailable: Boolean? = null,
         val isShippingMainSwitchChecked: Boolean = shippingRefund > BigDecimal.ZERO,
         val selectedShippingLines: List<Long>? = null,
-        val isFeesVisible: Boolean? = null,
         val selectedItemsHeader: String? = null,
         val selectButtonTitle: String? = null,
         val refundNotice: String? = null

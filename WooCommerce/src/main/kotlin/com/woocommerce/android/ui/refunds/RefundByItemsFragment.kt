@@ -211,13 +211,6 @@ class RefundByItemsFragment :
             new.refundNotice.takeIfNotEqualTo(old?.refundNotice) { notice ->
                 notice?.let { updateRefundNoticeView(it) }
             }
-            new.isFeesVisible?.takeIfNotEqualTo(old?.isFeesVisible) { isVisible ->
-                if (isVisible) {
-                    productsBinding.issueRefundFeesGroup.show()
-                } else {
-                    productsBinding.issueRefundFeesGroup.hide()
-                }
-            }
         }
 
         viewModel.refundItems.observe(
