@@ -28,7 +28,7 @@ class OrderCreationViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val variationDetailRepository: VariationDetailRepository,
-    private val parameterRepository: ParameterRepository
+    parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
@@ -51,50 +51,6 @@ class OrderCreationViewModel @Inject constructor(
         updateOrderStatus(orderDraft.status)
         orderDraft = orderDraft.copy(
             currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencySymbol.orEmpty()
-        )
-
-        orderDraft = orderDraft.copy(
-            items = listOf(
-                Order.Item(
-                    0L,
-                    productId = 44,
-                    "Test Product",
-                    price = BigDecimal.TEN,
-                    sku = "SKU123",
-                    quantity = 2f,
-                    subtotal = BigDecimal.ONE,
-                    totalTax = BigDecimal.TEN,
-                    total = BigDecimal.TEN,
-                    variationId = 0L,
-                    attributesList = emptyList()
-                ),
-                Order.Item(
-                    0L,
-                    productId = 44,
-                    "Test Product",
-                    price = BigDecimal.TEN,
-                    sku = "SKU123",
-                    quantity = 2f,
-                    subtotal = BigDecimal.ONE,
-                    totalTax = BigDecimal.TEN,
-                    total = BigDecimal.TEN,
-                    variationId = 0L,
-                    attributesList = emptyList()
-                ),
-                Order.Item(
-                    0L,
-                    productId = 44,
-                    "Test Product",
-                    price = BigDecimal.TEN,
-                    sku = "SKU123",
-                    quantity = 2f,
-                    subtotal = BigDecimal.ONE,
-                    totalTax = BigDecimal.TEN,
-                    total = BigDecimal.TEN,
-                    variationId = 0L,
-                    attributesList = emptyList()
-                )
-            )
         )
     }
 
