@@ -134,10 +134,18 @@ class MyStoreViewModel @Inject constructor(
         when (showBanner) {
             false -> _jetpackBenefitsBanerState.value = JetpackBenefitsBannerState.Hide
             else -> {
+                AnalyticsTracker.track(
+                    stat = AnalyticsTracker.Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                    properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
+                )
                 _jetpackBenefitsBanerState.value = JetpackBenefitsBannerState.Show(
                     onDismiss = {
                         _jetpackBenefitsBanerState.value = JetpackBenefitsBannerState.Hide
                         appPrefsWrapper.recordJetpackBenefitsDismissal()
+                        AnalyticsTracker.track(
+                            stat = AnalyticsTracker.Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                            properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
+                        )
                     }
                 )
             }
