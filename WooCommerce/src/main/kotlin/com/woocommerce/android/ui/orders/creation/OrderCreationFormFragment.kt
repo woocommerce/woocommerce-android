@@ -34,13 +34,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var productImageMap: ProductImageMap
 
-    private val productsAdapter: ProductsAdapter by lazy {
-        ProductsAdapter(
-            productImageMap = productImageMap,
-            currencyFormatter = currencyFormatter.buildBigDecimalFormatter(sharedViewModel.currentDraft.currency)
-        )
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(FragmentOrderCreationFormBinding.bind(view)) {
@@ -134,9 +127,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
             productsSection.content = productsSection.content ?: RecyclerView(requireContext()).apply {
                 layoutManager = LinearLayoutManager(requireContext())
-                adapter = productsAdapter
+                adapter = ProductsAdapter(
+                    productImageMap = productImageMap,
+                    currencyFormatter = currencyFormatter.buildBigDecimalFormatter(
+                        currencyCode = sharedViewModel.currentDraft.currency
+                    )
+                )
             }
-            productsAdapter.products = products
+            ((productsSection.content as RecyclerView).adapter as ProductsAdapter).products = products
         }
     }
 
