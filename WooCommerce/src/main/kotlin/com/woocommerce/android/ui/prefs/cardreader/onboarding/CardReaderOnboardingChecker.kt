@@ -44,6 +44,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             .also {
                 when (it) {
                     is OnboardingCompleted -> updateOnboardingCompletedStatus(it.pluginType)
+                    is StripeAccountPendingRequirement -> updateOnboardingPendingStatus(it.pluginType)
                     else -> updateOnboardingCompletedStatus(null)
                 }
             }
@@ -86,7 +87,8 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
         if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
         if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
-            paymentAccount.currentDeadline
+            paymentAccount.currentDeadline,
+            preferredPlugin.type
         )
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected
         if (isInUndefinedState(paymentAccount)) return GenericError
@@ -172,6 +174,16 @@ class CardReaderOnboardingChecker @Inject constructor(
             pluginType
         )
     }
+
+    private fun updateOnboardingPendingStatus(pluginType: PluginType?) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderOnboardingPending(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+            pluginType
+        )
+    }
 }
 
 private fun PluginType.toInPersonPaymentsPluginType(): InPersonPaymentsPluginType = when (this) {
@@ -235,9 +247,12 @@ sealed class CardReaderOnboardingState {
 
     /**
      * There are some pending requirements on the connected Stripe account. The merchant still has some time before the
-     * deadline to fix them expires. In-Person Payments should work without issues.
+     * deadline to fix them expires. In-Person Payments should work without issues. We pass along a PluginType for which
+     * the Stripe account requirement is pending
      */
-    data class StripeAccountPendingRequirement(val dueDate: Long?) : CardReaderOnboardingState()
+    data class StripeAccountPendingRequirement(
+        val dueDate: Long?,
+        val pluginType: PluginType) : CardReaderOnboardingState()
 
     /**
      * There are some overdue requirements on the connected Stripe account. Connecting to a reader or accepting
