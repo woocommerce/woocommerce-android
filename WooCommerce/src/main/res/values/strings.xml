@@ -2140,4 +2140,5 @@
     <string name="order_creation_products">Products</string>
     <string name="order_creation_add_products">Add Product</string>
     <string name="order_creation_new_customer">New customer</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
 </resources>
