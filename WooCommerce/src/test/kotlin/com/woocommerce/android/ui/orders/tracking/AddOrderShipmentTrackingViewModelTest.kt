@@ -52,7 +52,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
         verify(repository, times(1))
             .addOrderShipmentTracking(
-                orderIdentifier = eq(ORDER_IDENTIFIER),
+                orderId = eq(ORDER_IDENTIFIER),
                 shipmentTrackingModel = argThat {
                     trackingProvider == "test" &&
                         trackingNumber == "123456" && !isCustomProvider
@@ -77,7 +77,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
         verify(repository, times(1))
             .addOrderShipmentTracking(
-                orderIdentifier = eq(ORDER_IDENTIFIER),
+                orderId = eq(ORDER_IDENTIFIER),
                 shipmentTrackingModel = argThat {
                     trackingProvider == "test" &&
                         trackingNumber == "123456" && !isCustomProvider

@@ -22,7 +22,7 @@ data class Order(
     val id: Long,
     @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val identifier: OrderIdentifier,
-    private val rawLocalOrderId: Int,
+    val rawLocalOrderId: Int,
     val number: String,
     val dateCreated: Date,
     val dateModified: Date,

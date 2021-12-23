@@ -43,14 +43,11 @@ class OrderEditingViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    private val orderIdentifier: String
-        get() = navArgs.orderId
-
     lateinit var order: Order
 
     fun start() {
         launch {
-            orderDetailRepository.getOrder(orderIdentifier)?.let {
+            orderDetailRepository.getOrderById(navArgs.orderId)?.let {
                 order = it
             } ?: WooLog.w(WooLog.T.ORDERS, "Order ${navArgs.orderId} not found in the database.")
         }
