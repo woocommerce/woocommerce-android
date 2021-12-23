@@ -14,14 +14,23 @@ import com.woocommerce.android.ui.orders.fulfill.OrderFulfillFragmentArgs
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import kotlin.test.assertNotNull
@@ -30,7 +39,9 @@ import kotlin.test.assertNull
 @ExperimentalCoroutinesApi
 class OrderFullfillViewModelTest : BaseUnitTest() {
     companion object {
-        private const val ORDER_IDENTIFIER = "1-1-1"
+        private const val ORDER_ID = 1L
+        private const val ORDER_LOCAL_ID = 1
+        private const val ORDER_SITE_ID = 1
     }
 
     private val networkStatus: NetworkStatus = mock()
@@ -41,13 +52,18 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
     private val resources: ResourceProvider = mock()
 
-    private val savedState = OrderFulfillFragmentArgs(orderIdentifier = ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState =
+        OrderFulfillFragmentArgs(orderId = ORDER_ID, orderLocalId = ORDER_LOCAL_ID).initSavedStateHandle()
 
-    private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
-    private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(5, ORDER_IDENTIFIER)
+    private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
+    private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(
+        totalCount = 5,
+        localOrderId = ORDER_ID.toInt(),
+        localSiteId = ORDER_SITE_ID,
+    )
     private val orderShippingLabels = OrderTestUtils.generateShippingLabels(
         5,
-        ORDER_IDENTIFIER
+        ORDER_ID
     )
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderFulfillViewModel

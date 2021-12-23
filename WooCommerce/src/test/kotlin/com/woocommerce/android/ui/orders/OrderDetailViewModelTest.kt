@@ -47,7 +47,8 @@ import kotlin.test.assertEquals
 @ExperimentalCoroutinesApi
 class OrderDetailViewModelTest : BaseUnitTest() {
     companion object {
-        private const val ORDER_IDENTIFIER = "1-1-1"
+        private const val ORDER_ID = 1L
+        private const val ORDER_SITE_ID = 1
     }
 
     private val networkStatus: NetworkStatus = mock()
@@ -68,14 +69,26 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val dispatcher: Dispatcher = mock()
 
-    private val savedState = OrderDetailFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState = OrderDetailFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
 
-    private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
-    private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER))
+    private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
+    private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_ID))
     private val orderStatus = OrderStatus(order.status.value, order.status.value)
-    private val testOrderNotes = OrderTestUtils.generateTestOrderNotes(5, ORDER_IDENTIFIER)
-    private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(5, ORDER_IDENTIFIER)
-    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(5, ORDER_IDENTIFIER)
+    private val testOrderNotes = OrderTestUtils.generateTestOrderNotes(
+        totalNotes = 5,
+        localOrderId = ORDER_ID.toInt(),
+        localSiteId = ORDER_SITE_ID,
+    )
+    private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(
+        totalCount = 5,
+        localOrderId = ORDER_ID.toInt(),
+        localSiteId = ORDER_SITE_ID,
+    )
+    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(
+        totalCount = 5,
+        remoteOrderId = ORDER_ID,
+        localSiteId = ORDER_SITE_ID,
+    )
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderDetailViewModel
 
@@ -596,8 +609,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Display error message on fetch order error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(repository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
-        whenever(repository.getOrder(ORDER_IDENTIFIER)).thenReturn(null)
+        whenever(repository.fetchOrderById(ORDER_ID)).thenReturn(null)
+        whenever(repository.getOrderById(ORDER_ID)).thenReturn(null)
 
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
@@ -606,7 +619,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(repository, times(1)).fetchOrder(ORDER_IDENTIFIER)
+        verify(repository, times(1)).fetchOrderById(ORDER_ID)
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.order_error_fetch_generic))
     }
@@ -639,8 +652,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(repository, times(1)).getOrder(ORDER_IDENTIFIER)
-        verify(repository, times(0)).fetchOrder(any())
+        verify(repository, times(1)).getOrderById(ORDER_ID)
+        verify(repository, times(0)).fetchOrderById(any())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
     }
@@ -1036,7 +1049,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            doReturn(ContinuationWrapper.ContinuationResult.Success<Boolean>(true)).whenever(repository)
+            doReturn(ContinuationWrapper.ContinuationResult.Success(true)).whenever(repository)
                 .updateOrderStatus(any(), any())
             var snackbar: ShowSnackbar? = null
             viewModel.event.observeForever {

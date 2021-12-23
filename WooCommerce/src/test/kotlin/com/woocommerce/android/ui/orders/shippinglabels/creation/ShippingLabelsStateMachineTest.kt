@@ -74,12 +74,12 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
 
         assertThat(transition?.sideEffect).isEqualTo(SideEffect.NoOp)
 
-        stateMachine.start(order.id.toString())
+        stateMachine.start(order.id)
 
-        assertThat(transition?.state).isEqualTo(State.DataLoading(order.id.toString()))
+        assertThat(transition?.state).isEqualTo(State.DataLoading(order.id))
 
         stateMachine.handleEvent(
-            Event.DataLoaded(
+            DataLoaded(
                 order,
                 originAddress,
                 shippingAddress,
@@ -100,8 +100,8 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
             }
         }
 
-        stateMachine.start(order.id.toString())
-        stateMachine.handleEvent(Event.DataLoaded(order, originAddress, shippingAddress, null))
+        stateMachine.start(order.id)
+        stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.OriginAddressValidationStarted)
 
         assertThat(transition?.state).isEqualTo(State.OriginAddressValidation(data))
@@ -134,8 +134,8 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
             )
         )
 
-        stateMachine.start(order.toString())
-        stateMachine.handleEvent(Event.DataLoaded(order, originAddress, shippingAddress, null))
+        stateMachine.start(order.id)
+        stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.OriginAddressValidationStarted)
         stateMachine.handleEvent(Event.AddressValidated(originAddress))
         stateMachine.handleEvent(Event.ShippingAddressValidationStarted)
@@ -163,7 +163,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
             state = "AA",
             country = "US"
         )
-        stateMachine.start(order.identifier)
+        stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
 
         val machineState = stateMachine.transitions.value.state
@@ -176,7 +176,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
             state = "AA",
             country = "US"
         )
-        stateMachine.start(order.identifier)
+        stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
 
         val machineState = stateMachine.transitions.value.state
@@ -191,7 +191,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
         val shippingAddress = shippingAddress.copy(
             country = "UK"
         )
-        stateMachine.start(order.identifier)
+        stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
 
         val machineState = stateMachine.transitions.value.state
@@ -206,7 +206,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
         val shippingAddress = shippingAddress.copy(
             country = "UK"
         )
-        stateMachine.start(order.identifier)
+        stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
 
         val machineState = stateMachine.transitions.value.state

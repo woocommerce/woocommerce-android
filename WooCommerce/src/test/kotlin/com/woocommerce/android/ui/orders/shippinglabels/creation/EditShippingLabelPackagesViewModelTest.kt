@@ -25,7 +25,7 @@ import java.math.BigDecimal
 @ExperimentalCoroutinesApi
 class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     companion object {
-        private const val ORDER_ID = "1-1-1"
+        private const val ORDER_ID = 1L
     }
 
     private val availablePackages = listOf(
@@ -58,7 +58,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
             shippingLabelPackages = currentPackages
         ).initSavedStateHandle()
         whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
-        whenever(orderDetailRepository.getOrder(ORDER_ID)).thenReturn(testOrder)
+        whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(testOrder)
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
         viewModel = EditShippingLabelPackagesViewModel(
             savedState,
