@@ -42,7 +42,7 @@ class ProductsAdapter(
         fun bind(productModel: ProductUIModel) {
             binding.productName.text = productModel.item.name
             binding.stepperView.value = productModel.item.quantity.toInt()
-            
+
             binding.productAttributes.text = buildString {
                 if (productModel.isStockManaged) {
                     append(
