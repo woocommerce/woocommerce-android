@@ -196,12 +196,6 @@ class IssueRefundViewModel @Inject constructor(
     private fun initRefundByItemsState() {
         fun getRefundNotice(): String? {
             val refundOptions = mutableListOf<String>()
-            if (order.feesTotal > BigDecimal.ZERO) {
-                val fees = resourceProvider.getString(R.string.orderdetail_payment_fees)
-                    .toLowerCase(Locale.getDefault())
-                refundOptions.add(fees)
-            }
-
             // Inform user that multiple shipping lines can only be refunded in wp-admin.
             if (refundableShippingLineIds.size > 1) {
                 val shipping = resourceProvider.getString(R.string.multiple_shipping).toLowerCase(Locale.getDefault())
