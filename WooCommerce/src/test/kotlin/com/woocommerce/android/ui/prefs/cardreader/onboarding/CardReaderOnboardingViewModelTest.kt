@@ -307,7 +307,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
-                    0L,
+                        0L,
                         PluginType.WOOCOMMERCE_PAYMENTS
                     )
                 )

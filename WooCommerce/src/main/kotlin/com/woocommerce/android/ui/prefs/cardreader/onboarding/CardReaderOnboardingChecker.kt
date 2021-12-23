@@ -252,7 +252,8 @@ sealed class CardReaderOnboardingState {
      */
     data class StripeAccountPendingRequirement(
         val dueDate: Long?,
-        val pluginType: PluginType) : CardReaderOnboardingState()
+        val pluginType: PluginType
+    ) : CardReaderOnboardingState()
 
     /**
      * There are some overdue requirements on the connected Stripe account. Connecting to a reader or accepting

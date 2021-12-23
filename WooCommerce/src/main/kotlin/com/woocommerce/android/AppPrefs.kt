@@ -446,7 +446,7 @@ object AppPrefs {
             selfHostedSiteId
         )
         return completedStatus == CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY ||
-        completedStatus == CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
+            completedStatus == CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
     }
 
     fun setCardReaderOnboardingCompleted(
