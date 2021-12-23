@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -30,6 +31,11 @@ class AddressViewModel @Inject constructor(
     fun statesAvailableFor(type: AddressType): List<Location> {
         val selectedCountry = selectedCountryLocationFor(type)
         return dataStore.getStates(selectedCountry.code)
+            .map { it.toAppModel() }
+    }
+
+    private fun statesFor(countryCode: LocationCode): List<Location> {
+        return dataStore.getStates(countryCode)
             .map { it.toAppModel() }
     }
 
@@ -95,45 +101,64 @@ class AddressViewModel @Inject constructor(
 
     fun onCountrySelected(type: AddressType, countryCode: LocationCode) {
         viewState = viewState.copy(
-            countryStatePairs = viewState.countryStatePairs.toMutableMap().apply {
-                put(
-                    type,
-                    CountryStatePair(
+            countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
+                if (entry.key == type) {
+                    entry.value.copy(
                         countryLocation = getCountryLocationFromCode(countryCode),
-                        stateLocation = Location.EMPTY
+                        stateLocation = Location.EMPTY,
+                        stateSpinnerStatus = if (statesFor(countryCode).isEmpty()) {
+                            StateSpinnerStatus.RAW_VALUE
+                        } else {
+                            StateSpinnerStatus.HAVING_LOCATIONS
+                        }
                     )
-                )
+                } else {
+                    entry.value
+                }
             },
             isStateSelectionEnabled = true
         )
     }
 
+    fun onViewDestroyed(currentFormsState: Map<AddressType, Address>) {
+        viewState = viewState.copy(
+            countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
+                entry.value.copy(
+                    inputFormValues = currentFormsState.getValue(entry.key)
+                )
+            }
+        )
+    }
+
     fun onStateSelected(type: AddressType, stateCode: LocationCode) {
-        val initialLocation = viewState.countryStatePairs.getValue(type)
-        if (stateCode != initialLocation.stateLocation.code) {
-            viewState = viewState.copy(
-                countryStatePairs = viewState.countryStatePairs.toMutableMap().apply {
-                    put(
-                        type,
-                        initialLocation.copy(
-                            stateLocation = getStateLocationFromCode(initialLocation.countryLocation.code, stateCode)
-                        )
+        viewState = viewState.copy(
+            countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
+                if (entry.key == type) {
+                    entry.value.copy(
+                        stateLocation = getStateLocationFromCode(entry.value.countryLocation.code, stateCode)
                     )
+                } else {
+                    entry.value
                 }
-            )
-        }
+            }
+        )
     }
 
     private fun initializeCountriesAndStates(countryCode: LocationCode, stateCode: LocationCode) {
+        // TODO handle correct initialization in #5290
         viewState = viewState.copy(
             countryStatePairs = mapOf(
-                AddressType.BILLING to CountryStatePair(
+                AddressType.BILLING to AddressSelectionState(
                     countryLocation = getCountryLocationFromCode(countryCode),
-                    stateLocation = getStateLocationFromCode(countryCode, stateCode)
+                    stateLocation = getStateLocationFromCode(countryCode, stateCode),
+                    inputFormValues = Address.EMPTY,
+                    stateSpinnerStatus = StateSpinnerStatus.DISABLED
                 ),
-                AddressType.SHIPPING to CountryStatePair(
+                AddressType.SHIPPING to AddressSelectionState(
                     countryLocation = getCountryLocationFromCode(countryCode),
-                    stateLocation = getStateLocationFromCode(countryCode, stateCode)
+                    stateLocation = getStateLocationFromCode(countryCode, stateCode),
+                    inputFormValues = Address.EMPTY,
+                    stateSpinnerStatus = StateSpinnerStatus.DISABLED
                 )
             ),
             isStateSelectionEnabled = countryCode.isNotEmpty()
@@ -142,17 +167,22 @@ class AddressViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val countryStatePairs: Map<AddressType, CountryStatePair> = mapOf(
-            AddressType.BILLING to CountryStatePair(
+        val countryStatePairs: Map<AddressType, AddressSelectionState> = mapOf(
+            AddressType.BILLING to AddressSelectionState(
+                inputFormValues = Address.EMPTY,
                 countryLocation = Location.EMPTY,
-                stateLocation = Location.EMPTY
+                stateLocation = Location.EMPTY,
+                stateSpinnerStatus = StateSpinnerStatus.DISABLED,
             ),
-            AddressType.SHIPPING to CountryStatePair(
+            AddressType.SHIPPING to AddressSelectionState(
+                inputFormValues = Address.EMPTY,
                 countryLocation = Location.EMPTY,
-                stateLocation = Location.EMPTY
+                stateLocation = Location.EMPTY,
+                stateSpinnerStatus = StateSpinnerStatus.DISABLED,
             ),
         ),
         val isLoading: Boolean = false,
+        @Deprecated("Use stateSpinnerStatus of corresponding AddressSelectionState")
         val isStateSelectionEnabled: Boolean = false
     ) : Parcelable
 
@@ -160,6 +190,15 @@ class AddressViewModel @Inject constructor(
         SHIPPING, BILLING
     }
 
+    enum class StateSpinnerStatus {
+        HAVING_LOCATIONS, RAW_VALUE, DISABLED
+    }
+
     @Parcelize
-    data class CountryStatePair(val countryLocation: Location, val stateLocation: Location) : Parcelable
+    data class AddressSelectionState(
+        val inputFormValues: Address,
+        val countryLocation: Location,
+        val stateLocation: Location,
+        val stateSpinnerStatus: StateSpinnerStatus
+    ) : Parcelable
 }
