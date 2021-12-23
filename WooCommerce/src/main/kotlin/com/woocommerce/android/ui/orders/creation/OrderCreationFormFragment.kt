@@ -122,14 +122,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 textView
             }
             .let {
-                notesSection.updateContent(it)
+                notesSection.content = it
             }
     }
 
     private fun bindProductsSection(productsSection: OrderCreationSectionView, products: List<ProductUIModel>?) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.isNullOrEmpty()) {
-            productsSection.updateContent(null)
+            productsSection.content = null
         } else {
             // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
             productsSection.content = productsSection.content ?: RecyclerView(requireContext()).apply {

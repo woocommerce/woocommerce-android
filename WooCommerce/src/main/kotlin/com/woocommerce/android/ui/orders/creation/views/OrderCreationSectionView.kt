@@ -63,7 +63,7 @@ class OrderCreationSectionView @JvmOverloads constructor(
         }
     }
 
-    fun updateContent(content: View?) {
+    private fun updateContent(content: View?) {
         binding.editButton.isVisible = content != null
         binding.contentLayout.isVisible = content != null
         binding.contentLayout.removeAllViews()
