@@ -10,7 +10,8 @@ import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.ui.orders.creation.ProductsAdapter.ProductViewHolder
 import java.math.BigDecimal
 
-class ProductsAdapter(private val currencyFormatter: (BigDecimal) -> String) : RecyclerView.Adapter<ProductViewHolder>() {
+class ProductsAdapter(private val currencyFormatter: (BigDecimal) -> String) :
+    RecyclerView.Adapter<ProductViewHolder>() {
     var products: List<ProductUIModel> = emptyList()
         set(value) {
             field = value
@@ -46,6 +47,8 @@ class ProductsAdapter(private val currencyFormatter: (BigDecimal) -> String) : R
                 append(" • ")
                 append(currencyFormatter(productModel.item.total))
             }
+            binding.productSku.text =
+                context.getString(R.string.orderdetail_product_lineitem_sku_value, productModel.item.sku)
         }
     }
 }
