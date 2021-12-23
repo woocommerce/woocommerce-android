@@ -396,22 +396,11 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun getPaymentPluginType(): PluginType = when (getCardReaderOnboardingCompletedStatus()) {
-        AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY ->
-            PluginType.WOOCOMMERCE_PAYMENTS
-        AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION ->
-            PluginType.STRIPE_TERMINAL_GATEWAY
-        AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_NOT_COMPLETED ->
-            throw IllegalStateException("Onboarding not completed. Plugin Type is null")
-    }
-
-    private fun getCardReaderOnboardingCompletedStatus(): AppPrefs.CardReaderOnboardingCompletedStatus {
-        return appPrefs.getCardReaderOnboardingCompletedStatus(
-            selectedSite.get().id,
-            selectedSite.get().siteId,
-            selectedSite.get().selfHostedSiteId
-        )
-    }
+    private fun getPaymentPluginType(): PluginType = appPrefs.getPaymentPluginType(
+        selectedSite.get().id,
+        selectedSite.get().siteId,
+        selectedSite.get().selfHostedSiteId
+    )
 
     private fun handleLocationFetchingError(result: CardReaderLocationRepository.LocationIdFetchingResult.Error) {
         this@CardReaderConnectViewModel.coroutineContext.cancelChildren()
