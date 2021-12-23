@@ -127,7 +127,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
             productsSection.content = productsSection.content ?: RecyclerView(requireContext()).apply {
                 layoutManager = LinearLayoutManager(requireContext())
-                adapter =         ProductsAdapter(
+                adapter = ProductsAdapter(
                     productImageMap = productImageMap,
                     currencyFormatter = currencyFormatter.buildBigDecimalFormatter(
                         currencyCode = sharedViewModel.currentDraft.currency
