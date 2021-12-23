@@ -16,6 +16,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -39,19 +40,7 @@ class OrderCreationViewModel @Inject constructor(
     val orderStatusData: LiveData<OrderStatus> = orderStatus
 
     val products: LiveData<List<ProductUIModel>> = orderDraftData.liveData.mapAsync { order ->
-        order.items.map { item ->
-            val stockQuantity = if (item.isVariation) {
-                val variation = variationDetailRepository.getVariation(item.productId, item.variationId)
-                if (variation?.isStockManaged == false) Double.MAX_VALUE else variation?.stockQuantity ?: 0.0
-            } else {
-                val product = productDetailRepository.getProduct(item.productId)
-                if (product?.isStockManaged == false) Double.MAX_VALUE else product?.stockQuantity ?: 0.0
-            }
-            ProductUIModel(
-                item = item,
-                stockQuantity = stockQuantity
-            )
-        }
+        order.items.map { item -> item.toProductUIModel() }
     }
 
     val currentDraft
@@ -130,9 +119,27 @@ class OrderCreationViewModel @Inject constructor(
     fun onCustomerNoteEdited(newNote: String) {
         orderDraft = orderDraft.copy(customerNote = newNote)
     }
+
+    private suspend fun Order.Item.toProductUIModel(): ProductUIModel {
+        val (isStockManaged, stockQuantity) = withContext(dispatchers.io) {
+            if (isVariation) {
+                val variation = variationDetailRepository.getVariation(productId, variationId)
+                Pair(variation?.isStockManaged, variation?.stockQuantity)
+            } else {
+                val product = productDetailRepository.getProduct(productId)
+                Pair(product?.isStockManaged, product?.stockQuantity)
+            }
+        }
+        return ProductUIModel(
+            item = this,
+            isStockManaged = isStockManaged ?: false,
+            stockQuantity = stockQuantity ?: 0.0
+        )
+    }
 }
 
 data class ProductUIModel(
     val item: Order.Item,
+    val isStockManaged: Boolean,
     val stockQuantity: Double
 )

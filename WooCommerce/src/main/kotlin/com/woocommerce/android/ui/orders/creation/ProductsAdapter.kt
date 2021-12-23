@@ -9,6 +9,7 @@ import com.woocommerce.android.databinding.OrderCreationProductItemBinding
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.ui.orders.creation.ProductsAdapter.ProductViewHolder
 import java.math.BigDecimal
+import kotlin.Double.Companion
 
 class ProductsAdapter(private val currencyFormatter: (BigDecimal) -> String) :
     RecyclerView.Adapter<ProductViewHolder>() {
@@ -38,12 +39,16 @@ class ProductsAdapter(private val currencyFormatter: (BigDecimal) -> String) :
             binding.productName.text = productModel.item.name
             binding.stepperView.value = productModel.item.quantity.toInt()
             binding.productAttributes.text = buildString {
-                append(
-                    context.getString(
-                        R.string.order_creation_product_quantity,
-                        productModel.stockQuantity.formatToString()
+                if (productModel.isStockManaged) {
+                    append(
+                        context.getString(
+                            R.string.order_creation_product_stock_quantity,
+                            productModel.stockQuantity.formatToString()
+                        )
                     )
-                )
+                } else {
+                    append(context.getString(R.string.order_creation_product_instock))
+                }
                 append(" • ")
                 append(currencyFormatter(productModel.item.total))
             }
