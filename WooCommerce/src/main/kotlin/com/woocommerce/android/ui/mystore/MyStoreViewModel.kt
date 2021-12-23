@@ -80,7 +80,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        ConnectionChangeReceiver.getEventBus().register(this)
+        ConnectionChangeReceiver.getEventBus().unregister(this)
         super.onCleared()
     }
 
