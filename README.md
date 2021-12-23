@@ -48,6 +48,7 @@
 1. Open and modify the newly created `gradle.properties` files. See the [Configuration Files](docs/project-overview.md#configuration-files) section for a breakdown of the properties.
 1. In Android Studio, open the project from the local repository. This will auto-generate `local.properties` with the SDK location.
 1. Go to Tools → AVD Manager and create an emulated device.
+1. Before running the app, in the terminal run `./gradlew configureApply`. This will generate `WooCommerce/google-services.json` with usable values.
 1. Run.
 
 ## Build & Test
@@ -61,6 +62,14 @@ $ ./gradlew installVanillaDebug                           # install the debug ap
 $ ./gradlew :WooCommerce:testVanillaDebugUnitTest         # assemble, install and run unit tests
 $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install and run Android tests
 ```
+
+## Troubleshooting
+
+### Unknown client_id
+If you can run the app but not log in, and get an error `Unknown client_id` in a toast when you try, you may have sample data in your `WooCommerce/google-services.json` file. 
+1. Check it for sample values in `WooCommerce/google-services.json`, such as `abc` `123`, and delete the file if that is present. 
+1. In the terminal, run `./gradlew configureApply` to regenerate the file
+2. Run the app
 
 ## 📚 Documentation
 
