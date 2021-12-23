@@ -207,11 +207,6 @@ class IssueRefundViewModel @Inject constructor(
                 val shipping = resourceProvider.getString(R.string.multiple_shipping).toLowerCase(Locale.getDefault())
                 refundOptions.add(shipping)
             }
-            // TODO remove this since we should support refunding multiple fees
-            if (refundableFeeLineIds.size > 1) {
-                val fees = resourceProvider.getString(R.string.multiple_fees).toLowerCase(Locale.getDefault())
-                refundOptions.add(fees)
-            }
             if (order.totalTax > BigDecimal.ZERO) {
                 val taxes = resourceProvider.getString(R.string.taxes).toLowerCase(Locale.getDefault())
                 refundOptions.add(taxes)
@@ -245,10 +240,7 @@ class IssueRefundViewModel @Inject constructor(
                 // In the future, to support multiple shipping refund, we can replace this
                 // with refundableShippingLineIds.isNotEmpty()
                 isShippingRefundAvailable = refundableShippingLineIds.size == 1,
-                // We only support refunding an Order with one fees refund for now.
-                // In the future, to support multiple fees refund, we can replace this
-                // with refundableFeeLineIds.isNotEmpty()
-                isFeesRefundAvailable = refundableFeeLineIds.size == 1,
+                isFeesRefundAvailable = refundableFeeLineIds.isNotEmpty(),
             )
         }
 
