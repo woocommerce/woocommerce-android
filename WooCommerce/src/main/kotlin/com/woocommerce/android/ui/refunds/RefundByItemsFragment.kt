@@ -144,13 +144,13 @@ class RefundByItemsFragment :
             new.shippingSubtotal?.takeIfNotEqualTo(old?.shippingSubtotal) {
                 shippingLinesBinding.issueRefundShippingSubtotal.text = it
             }
-            new.shippingTaxes?.takeIfNotEqualTo(old?.shippingSubtotal) {
+            new.shippingTaxes?.takeIfNotEqualTo(old?.shippingTaxes) {
                 shippingLinesBinding.issueRefundShippingTax.text = it
             }
             new.feesSubtotal?.takeIfNotEqualTo(old?.feesSubtotal) {
                 feeLinesBinding.issueRefundFeesSubtotal.text = it
             }
-            new.feesTaxes?.takeIfNotEqualTo(old?.feesSubtotal) {
+            new.feesTaxes?.takeIfNotEqualTo(old?.feesTaxes) {
                 feeLinesBinding.issueRefundFeesTax.text = it
             }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
