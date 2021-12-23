@@ -52,7 +52,7 @@ sealed class OrderNavigationTarget : Event() {
     data class StartShippingLabelCreationFlow(val orderIdentifier: String) : OrderNavigationTarget()
     data class StartCardReaderConnectFlow(val skipOnboarding: Boolean) : OrderNavigationTarget()
     object ShowCardReaderWelcomeDialog : OrderNavigationTarget()
-    data class StartCardReaderPaymentFlow(val orderRemoteId: Long) : OrderNavigationTarget()
+    data class StartCardReaderPaymentFlow(val orderId: Long) : OrderNavigationTarget()
     object ViewPrintingInstructions : OrderNavigationTarget()
     data class PreviewReceipt(val billingEmail: String, val receiptUrl: String, val orderId: Long) :
         OrderNavigationTarget()
