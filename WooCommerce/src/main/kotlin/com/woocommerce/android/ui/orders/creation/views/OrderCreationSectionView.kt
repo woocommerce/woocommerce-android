@@ -6,6 +6,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DimenRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.use
 import androidx.core.view.children
@@ -75,6 +76,16 @@ class OrderCreationSectionView @JvmOverloads constructor(
         }
 
         binding.addButtonsLayout.isVisible = keepAddButtons || content == null
+    }
+
+    fun setContentHorizontalPadding(@DimenRes padding: Int) {
+        val paddingSize = context.resources.getDimensionPixelSize(padding)
+        binding.contentLayout.setPadding(
+            paddingSize,
+            binding.contentLayout.paddingTop,
+            paddingSize,
+            binding.contentLayout.paddingBottom
+        )
     }
 
     fun setOnEditButtonClicked(listener: () -> Unit) {
