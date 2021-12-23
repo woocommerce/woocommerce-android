@@ -1379,8 +1379,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
-        whenever(appPrefs.getCardReaderOnboardingCompletedStatus(any(), any(), any())).thenReturn(
-            AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
+        whenever(appPrefs.getPaymentPluginType(any(), any(), any())).thenReturn(
+            PluginType.WOOCOMMERCE_PAYMENTS
         )
     }
 
