@@ -14,6 +14,7 @@ import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
@@ -29,10 +30,13 @@ import javax.inject.Inject
 class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val formViewModel by viewModels<OrderCreationFormViewModel>()
+
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var productImageMap: ProductImageMap
 
     private val productsAdapter: ProductsAdapter by lazy {
         ProductsAdapter(
+            productImageMap = productImageMap,
             currencyFormatter = currencyFormatter.buildBigDecimalFormatter(sharedViewModel.currentDraft.currency)
         )
     }

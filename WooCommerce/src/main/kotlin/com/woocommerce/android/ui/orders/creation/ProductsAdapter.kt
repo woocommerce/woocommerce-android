@@ -6,13 +6,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationProductItemBinding
+import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.creation.ProductsAdapter.ProductViewHolder
+import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
-import kotlin.Double.Companion
 
-class ProductsAdapter(private val currencyFormatter: (BigDecimal) -> String) :
-    RecyclerView.Adapter<ProductViewHolder>() {
+class ProductsAdapter(
+    private val productImageMap: ProductImageMap,
+    private val currencyFormatter: (BigDecimal) -> String
+) : RecyclerView.Adapter<ProductViewHolder>() {
     var products: List<ProductUIModel> = emptyList()
         set(value) {
             field = value
@@ -38,6 +42,7 @@ class ProductsAdapter(private val currencyFormatter: (BigDecimal) -> String) :
         fun bind(productModel: ProductUIModel) {
             binding.productName.text = productModel.item.name
             binding.stepperView.value = productModel.item.quantity.toInt()
+            
             binding.productAttributes.text = buildString {
                 if (productModel.isStockManaged) {
                     append(
@@ -52,8 +57,19 @@ class ProductsAdapter(private val currencyFormatter: (BigDecimal) -> String) :
                 append(" • ")
                 append(currencyFormatter(productModel.item.total))
             }
+
             binding.productSku.text =
                 context.getString(R.string.orderdetail_product_lineitem_sku_value, productModel.item.sku)
+
+            val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_major_50)
+            PhotonUtils.getPhotonImageUrl(
+                productImageMap.get(productModel.item.uniqueId), imageSize, imageSize
+            )?.let { imageUrl ->
+                GlideApp.with(context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(binding.productIcon)
+            }
         }
     }
 }

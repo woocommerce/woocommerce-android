@@ -17,6 +17,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
