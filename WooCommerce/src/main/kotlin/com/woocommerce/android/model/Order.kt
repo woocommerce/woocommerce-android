@@ -19,11 +19,10 @@ import java.util.*
 
 @Parcelize
 data class Order(
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
+    val id: Long,
+    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val identifier: OrderIdentifier,
     private val rawLocalOrderId: Int,
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
-    val remoteId: Long,
     val number: String,
     val dateCreated: Date,
     val dateModified: Date,
@@ -50,8 +49,10 @@ data class Order(
     val shippingMethods: List<ShippingMethod>,
     val items: List<Item>,
     val shippingLines: List<ShippingLine>,
+    val feesLines: List<FeeLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
+    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val localId
         get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
 
@@ -60,7 +61,7 @@ data class Order(
 
     // Allow refunding only integer quantities
     @IgnoredOnParcel
-    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt()
+    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
@@ -161,6 +162,12 @@ data class Order(
         val total: BigDecimal
     ) : Parcelable
 
+    @Parcelize
+    data class FeeLine(
+        val name: String,
+        val total: BigDecimal
+    ) : Parcelable
+
     fun getBillingName(defaultValue: String): String {
         return when {
             billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty() -> defaultValue
@@ -237,13 +244,52 @@ data class Order(
         @Parcelize
         data class Custom(private val customValue: String) : Status(customValue)
     }
+
+    companion object {
+        val EMPTY by lazy {
+            Order(
+                id = 0,
+                identifier = OrderIdentifier(),
+                rawLocalOrderId = 0,
+                number = "",
+                dateCreated = Date(),
+                dateModified = Date(),
+                datePaid = null,
+                status = Status.Pending,
+                total = BigDecimal(0),
+                productsTotal = BigDecimal(0),
+                totalTax = BigDecimal(0),
+                shippingTotal = BigDecimal(0),
+                discountTotal = BigDecimal(0),
+                refundTotal = BigDecimal(0),
+                feesTotal = BigDecimal(0),
+                currency = "",
+                orderKey = "",
+                customerNote = "",
+                discountCodes = "",
+                paymentMethod = "",
+                paymentMethodTitle = "",
+                isCashPayment = false,
+                pricesIncludeTax = false,
+                multiShippingLinesAvailable = false,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY,
+                shippingMethods = emptyList(),
+                items = emptyList(),
+                shippingLines = emptyList(),
+                metaData = emptyList(),
+                feesLines = emptyList()
+            )
+        }
+    }
 }
 
 fun WCOrderModel.toAppModel(): Order {
+    @Suppress("DEPRECATION_ERROR")
     return Order(
         identifier = OrderIdentifier(this),
         rawLocalOrderId = this.id,
-        remoteId = this.remoteOrderId,
+        id = this.remoteOrderId.value,
         number = this.number,
         dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
         dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
@@ -329,6 +375,12 @@ fun WCOrderModel.toAppModel(): Order {
                 it.methodId ?: StringUtils.EMPTY,
                 it.methodTitle ?: StringUtils.EMPTY,
                 it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+            )
+        },
+        feesLines = this.getFeeLineList().map {
+            FeeLine(
+                it.name ?: StringUtils.EMPTY,
                 it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
             )
         },

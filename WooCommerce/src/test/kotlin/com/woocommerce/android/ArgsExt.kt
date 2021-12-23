@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavArgs
 
 /**
- * Creates a SavedStateHandel with the intial state matching the passed arguments
+ * Creates a SavedStateHandel with the initial state matching the passed arguments
  *
  * This function just proxies the call to the generated function `toSavedStateHandel`, we use it
  * just because Android Studio Arctic Fox doesn't support it yet, and highlights it as an error.

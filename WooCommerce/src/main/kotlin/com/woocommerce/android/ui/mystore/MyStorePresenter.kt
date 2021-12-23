@@ -1,5 +1,12 @@
 package com.woocommerce.android.ui.mystore
 
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,10 +23,6 @@ class MyStorePresenter @Inject constructor(
 
     override fun dropView() {
         super.dropView()
-    }
-
-    override fun getStatsCurrency(): String? {
-        TODO("Not yet implemented")
     }
 
 //    override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
@@ -90,8 +93,43 @@ class MyStorePresenter @Inject constructor(
 //        }
 //    }
 
+    override fun getStatsCurrency() = ""
+
+    private fun showJetpackBenefitsIfNeeded() {
+        if (selectedSite.getIfExists()?.isJetpackCPConnected == true) {
+            val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
+                System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
+            )
+            myStoreView?.showJetpackBenefitsBanner(daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER)
+            AnalyticsTracker.track(
+                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
+            )
+        } else {
+            myStoreView?.showJetpackBenefitsBanner(false)
+        }
+    }
     override fun getSelectedSiteName(): String = ""
 
     override fun dismissJetpackBenefitsBanner() {
+        myStoreView?.showJetpackBenefitsBanner(false)
+        appPrefsWrapper.recordJetpackBenefitsDismissal()
+        AnalyticsTracker.track(
+            stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
+        )
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: ConnectionChangeEvent) {
+        if (event.isConnected) {
+            // Refresh data if needed now that a connection is active
+            myStoreView?.let { view ->
+                if (view.isRefreshPending) {
+                    view.refreshMyStoreStats(forced = false)
+                }
+            }
+        }
     }
 }

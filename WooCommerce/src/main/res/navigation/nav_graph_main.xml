@@ -8,7 +8,7 @@
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
         android:label="fragment_my_store"
-        tools:layout="@layout/fragment_my_store" >
+        tools:layout="@layout/fragment_my_store">
         <action
             android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
             app:destination="@id/jetpackBenefitsDialog" />
@@ -18,15 +18,22 @@
         android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
         android:label="SimplePaymentsDialog" />
     <fragment
+        android:id="@+id/simplePaymentsFragment"
+        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsFragment"
+        android:label="SimplePaymentsFragment">
+        <argument
+            android:name="order"
+            app:argType="com.woocommerce.android.model.Order"
+            app:nullable="false" />
+    </fragment>
+    <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
         android:label="fragment_order_list"
         tools:layout="@layout/fragment_order_list">
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
-            app:destination="@id/nav_graph_orders"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/nav_graph_orders">
             <argument
                 android:name="orderId"
                 android:defaultValue='""'
@@ -47,10 +54,20 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
+            android:id="@+id/action_orderListFragment_to_simplePaymentsFragment"
+            app:destination="@id/simplePaymentsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
             android:id="@+id/action_orderListFragment_to_orderCreationBottomSheet"
             app:destination="@id/orderCreationBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"/>
+        <action
+            android:id="@+id/action_orderListFragment_to_orderCreationFragment"
+            app:destination="@id/nav_graph_order_creations"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/products"
@@ -98,18 +115,46 @@
         android:id="@+id/reviews"
         android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
         android:label="fragment_reviews_list"
-        tools:layout="@layout/fragment_reviews_list" >
+        tools:layout="@layout/fragment_reviews_list">
         <action
             android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
-            app:destination="@id/reviewDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:destination="@id/reviewDetailFragment"/>
     </fragment>
     <fragment
         android:id="@+id/analytics"
         android:name="com.woocommerce.android.ui.analytics.AnalyticsFragment"
         android:label="fragment_analytics"
-        tools:layout="@layout/fragment_analytics" />
+        tools:layout="@layout/fragment_analytics">
+        <action
+            android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
+            app:destination="@id/analyticsDateRangeSelectorDialog"/>
+    </fragment>
+    <dialog
+        android:id="@+id/analyticsDateRangeSelectorDialog"
+        android:name="com.woocommerce.android.ui.ItemSelectorDialog"
+        android:label="ItemSelectorDialog">
+        <argument
+            android:name="selectedItem"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="keys"
+            app:argType="string[]" />
+        <argument
+            android:name="values"
+            app:argType="string[]" />
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true"  />
+    </dialog>
+    <action
+        android:id="@+id/action_global_item_selector_dialog"
+        app:destination="@id/itemSelectorDialog" />
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
@@ -128,6 +173,7 @@
             app:popUpTo="@id/feedbackSurveyFragment"
             app:popUpToInclusive="true" />
     </fragment>
+
     <action
         android:id="@+id/action_global_feedbackSurveyFragment"
         app:destination="@id/feedbackSurveyFragment"
@@ -146,9 +192,7 @@
 
     <action
         android:id="@+id/action_global_productDetailFragment"
-        app:destination="@id/nav_graph_products"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right">
+        app:destination="@id/nav_graph_products">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
@@ -186,6 +230,7 @@
     <include app:graph="@navigation/nav_graph_order_filters" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
+    <include app:graph="@navigation/nav_graph_order_creations" />
 
     <fragment
         android:id="@+id/infoScreenFragment"
@@ -266,7 +311,7 @@
     <dialog
         android:id="@+id/featureAnnouncementDialogFragmentOnMain"
         android:name="com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment"
-        android:label="FeatureAnnouncementDialogFragment" >
+        android:label="FeatureAnnouncementDialogFragment">
         <argument
             android:name="announcement"
             app:argType="com.woocommerce.android.model.FeatureAnnouncement"
@@ -280,7 +325,7 @@
     <dialog
         android:id="@+id/jetpackBenefitsDialog"
         android:name="com.woocommerce.android.ui.jetpack.JetpackBenefitsDialog"
-        android:label="JetpackBenefitsDialog" >
+        android:label="JetpackBenefitsDialog">
         <action
             android:id="@+id/action_jetpackBenefitsDialog_to_jetpackInstallStartDialog"
             app:destination="@id/jetpackInstallStartDialog" />
@@ -298,7 +343,7 @@
         android:id="@+id/jetpackInstallProgressDialog"
         android:name="com.woocommerce.android.ui.jetpack.JetpackInstallProgressDialog"
         android:label="JetpackInstallProgressDialog"
-        tools:layout="@layout/dialog_jetpack_install_progress" >
+        tools:layout="@layout/dialog_jetpack_install_progress">
         <action
             android:id="@+id/action_jetpackInstallProgressDialog_to_dashboard"
             app:destination="@id/dashboard" />

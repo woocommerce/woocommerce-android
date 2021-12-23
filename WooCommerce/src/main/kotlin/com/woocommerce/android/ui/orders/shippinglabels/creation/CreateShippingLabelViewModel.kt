@@ -441,7 +441,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         var result: WooResult<List<ShippingLabel>>
         val duration = measureTimeMillis {
             result = shippingLabelRepository.purchaseLabels(
-                orderId = data.order.remoteId,
+                orderId = data.order.id,
                 origin = data.stepsState.originAddressStep.data,
                 destination = data.stepsState.shippingAddressStep.data,
                 packages = data.stepsState.packagingStep.data,
@@ -462,7 +462,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         } else {
             if (fulfillOrder) {
                 orderDetailRepository.updateOrderStatus(
-                    orderLocalId = data.order.localId,
+                    remoteOrderId = data.order.id,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 ).collect { result ->
                     when (result) {

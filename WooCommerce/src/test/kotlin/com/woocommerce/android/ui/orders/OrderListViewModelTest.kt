@@ -47,6 +47,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
+    private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
@@ -99,6 +100,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         verify(viewModel.activePagedListWrapper, times(1))?.fetchFirstPage()
         verify(orderListRepository, times(1)).fetchPaymentGateways()
+        verify(orderListRepository, times(1)).fetchOrderStatusOptionsFromApi()
     }
 
     @Test
@@ -140,6 +142,33 @@ class OrderListViewModelTest : BaseUnitTest() {
         }
         assertTrue(isRefreshPending)
     }
+
+    /* Test order status options are emitted via [OrderListViewModel.orderStatusOptions]
+    * once fetched, and verify expected methods are called the correct number of
+    * times.
+    */
+    @Test
+    fun `Request to fetch order status options emits options`() = testBlocking {
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
+
+        clearInvocations(orderListRepository)
+        viewModel.fetchOrderStatusOptions()
+
+        verify(orderListRepository, times(1)).fetchOrderStatusOptionsFromApi()
+        verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
+        assertEquals(orderStatusOptions, viewModel.orderStatusOptions.getOrAwaitValue())
+    }
+
+    @Test
+    fun `Given network is connected, when fetching orders and dependencies, then load order status list from api`() =
+        testBlocking {
+            doReturn(true).whenever(networkStatus).isConnected()
+
+            viewModel.fetchOrdersAndOrderDependencies()
+
+            verify(orderListRepository).fetchOrderStatusOptionsFromApi()
+        }
 
     /**
      * Test the logic that generates the "No orders yet" empty view for the ALL tab

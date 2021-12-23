@@ -402,15 +402,20 @@ class SitePickerActivity :
             }
         }
 
+        val eventProperties = mapOf(
+            AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id,
+            AnalyticsTracker.KEY_IS_JETPACK_CP_CONNECTED to site.isJetpackCPConnected,
+            AnalyticsTracker.KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS to site.activeJetpackConnectionPlugins.orEmpty()
+        )
         if (isAutoLogin) {
             AnalyticsTracker.track(
                 Stat.SITE_PICKER_AUTO_LOGIN_SUBMITTED,
-                mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
+                eventProperties
             )
         } else {
             AnalyticsTracker.track(
                 Stat.SITE_PICKER_CONTINUE_TAPPED,
-                mapOf(AnalyticsTracker.KEY_SELECTED_STORE_ID to site.id)
+                eventProperties
             )
         }
 

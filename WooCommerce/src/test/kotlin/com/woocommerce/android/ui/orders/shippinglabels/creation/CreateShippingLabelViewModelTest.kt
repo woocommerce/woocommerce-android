@@ -300,7 +300,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     fun `Purchase a label successfully`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId, shippingLabelId = 1
+                remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
             )
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
@@ -316,7 +316,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     fun `Show print screen after purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId, shippingLabelId = 1
+                remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
             )
         )
 
@@ -325,16 +325,16 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             event = it
         }
 
-        stateFlow.value = Transition(State.Idle, SideEffect.ShowLabelsPrint(doneData.order.remoteId, purchasedLabels))
+        stateFlow.value = Transition(Idle, SideEffect.ShowLabelsPrint(doneData.order.id, purchasedLabels))
 
-        assertThat(event).isEqualTo(ShowPrintShippingLabels(doneData.order.remoteId, purchasedLabels))
+        assertThat(event).isEqualTo(ShowPrintShippingLabels(doneData.order.id, purchasedLabels))
     }
 
     @Test
     fun `fulfill order after successful purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId, shippingLabelId = 1
+                remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
             )
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
@@ -350,7 +350,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
         verify(orderDetailRepository).updateOrderStatus(
-            doneData.order.localId, CoreOrderStatus.COMPLETED.value
+            doneData.order.id, CoreOrderStatus.COMPLETED.value
         )
     }
 
@@ -359,7 +359,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val purchasedLabels = listOf(
                 OrderTestUtils.generateShippingLabel(
-                    remoteOrderId = order.remoteOrderId, shippingLabelId = 1
+                    remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
                 )
             )
             whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
