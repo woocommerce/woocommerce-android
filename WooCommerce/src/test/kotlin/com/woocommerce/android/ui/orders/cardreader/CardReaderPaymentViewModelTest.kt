@@ -55,7 +55,7 @@ private const val DUMMY_ORDER_NUMBER = "123"
 @ExperimentalCoroutinesApi
 class CardReaderPaymentViewModelTest : BaseUnitTest() {
     companion object {
-        private const val ORDER_IDENTIFIER = "1-1-1"
+        private const val ORDER_ID = 1L
     }
 
     private lateinit var viewModel: CardReaderPaymentViewModel
@@ -78,9 +78,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         DeclinedByBackendError.AmountTooSmall, mock(), "dummy msg"
     )
 
-    private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
-        ORDER_IDENTIFIER
-    ).initSavedStateHandle()
+    private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(ORDER_ID).initSavedStateHandle()
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()
 
@@ -100,7 +98,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         )
 
         val mockedOrder = mock<Order>()
-        whenever(orderRepository.getOrder(any())).thenReturn(mockedOrder)
+        whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("GBP")
         whenever(currencyFormatter.formatAmountWithCurrency("GBP", DUMMY_TOTAL.toDouble()))
@@ -112,8 +110,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(address.lastName).thenReturn("Test")
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
-        whenever(mockedOrder.id).thenReturn(1)
-        whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(mockedOrder)
+        whenever(mockedOrder.id).thenReturn(ORDER_ID)
+        whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
             flow<CardPaymentStatus> { }
@@ -283,7 +281,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given fetching order fails, when payment screen shown, then FailedPayment state is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
 
             viewModel.start()
 
@@ -293,7 +291,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when fetching order fails, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
 
             viewModel.start()
 
@@ -305,7 +303,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(ORDER_IDENTIFIER)).thenReturn(null)
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
 
             viewModel.start()
 
@@ -1399,7 +1397,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `when re-fetching order fails, then SnackBar shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderRepository.fetchOrder(any())).thenReturn(null)
+            whenever(orderRepository.fetchOrderById(any())).thenReturn(null)
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)
@@ -1622,12 +1620,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
         if (inProgress) {
-            whenever(orderRepository.fetchOrder(any())).doSuspendableAnswer {
+            whenever(orderRepository.fetchOrderById(any())).doSuspendableAnswer {
                 delay(1000)
                 mock()
             }
         } else {
-            whenever(orderRepository.fetchOrder(any())).doReturn(mock())
+            whenever(orderRepository.fetchOrderById(any())).doReturn(mock())
         }
         viewModel.reFetchOrder()
     }
