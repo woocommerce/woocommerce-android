@@ -216,6 +216,11 @@ abstract class BaseAddressEditingFragment :
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setupResultHandlers() {
         handleResult<String>(SELECT_COUNTRY_REQUEST) {
             addressViewModel.onCountrySelected(addressType, it)
