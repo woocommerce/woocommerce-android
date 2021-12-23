@@ -20,7 +20,6 @@ fun Double.formatToString(): String {
     }
 }
 
-
 fun Double?.isInteger() = this?.rem(1) == 0.0
 
 infix fun <T> Comparable<T>?.greaterThan(other: T) =
