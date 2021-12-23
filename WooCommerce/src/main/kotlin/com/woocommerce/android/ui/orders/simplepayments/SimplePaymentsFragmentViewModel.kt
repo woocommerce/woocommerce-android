@@ -37,7 +37,11 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         val feeLine = order.feesLines[0]
 
         if (chargeTaxes) {
-            val taxPercent = (order.totalTax / feeLine.total).multiply(BigDecimal(ONE_HUNDRED)).intValueExact()
+            val taxPercent = if (feeLine.total > BigDecimal.ZERO) {
+                (order.totalTax.toFloat() / feeLine.total.toFloat()) * ONE_HUNDRED
+            } else {
+                0f
+            }
             viewState = viewState.copy(
                 chargeTaxes = true,
                 orderSubtotal = feeLine.total,
@@ -50,7 +54,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 chargeTaxes = false,
                 orderSubtotal = feeLine.total,
                 orderTotalTax = BigDecimal.ZERO,
-                orderTaxPercent = 0,
+                orderTaxPercent = 0f,
                 orderTotal = feeLine.total
             )
         }
@@ -65,11 +69,11 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         val chargeTaxes: Boolean = false,
         val orderSubtotal: BigDecimal = BigDecimal.ZERO,
         val orderTotalTax: BigDecimal = BigDecimal.ZERO,
-        val orderTaxPercent: Int = 0,
+        val orderTaxPercent: Float = 0f,
         val orderTotal: BigDecimal = BigDecimal.ZERO,
     ) : Parcelable
 
     companion object {
-        private const val ONE_HUNDRED = 100
+        private const val ONE_HUNDRED = 100f
     }
 }
