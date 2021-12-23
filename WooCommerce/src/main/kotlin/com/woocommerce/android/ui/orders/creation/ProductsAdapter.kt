@@ -83,7 +83,6 @@ class ProductsAdapter(
                     .placeholder(R.drawable.ic_product)
                     .into(binding.productIcon)
             }
-
         }
     }
 
