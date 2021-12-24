@@ -18,6 +18,7 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -195,7 +196,7 @@ class MyStoreFragment :
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
-        viewModel.jetpackBenefitsBanerState.observe(viewLifecycleOwner) { showBanner ->
+        viewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { showBanner ->
             when (showBanner) {
                 JetpackBenefitsBannerState.Hide -> showJetpackBenefitsBanner(false)
                 is JetpackBenefitsBannerState.Show -> {
@@ -208,7 +209,12 @@ class MyStoreFragment :
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OpenTopPerformer -> mainNavigationRouter?.showProductDetail(event.productId)
+                is OpenTopPerformer -> findNavController().navigateSafely(
+                    NavGraphMainDirections.actionGlobalProductDetailFragment(
+                        remoteProductId = event.productId,
+                        isTrashEnabled = false
+                    )
+                )
                 else -> event.isHandled = false
             }
         }

@@ -68,7 +68,7 @@ class MyStoreViewModel @Inject constructor(
     val hasOrders: LiveData<OrderState> = _hasOrders
 
     private var _jetpackBenefitsBanerState = MutableLiveData<JetpackBenefitsBannerState>()
-    val jetpackBenefitsBanerState: LiveData<JetpackBenefitsBannerState> = _jetpackBenefitsBanerState
+    val jetpackBenefitsBannerState: LiveData<JetpackBenefitsBannerState> = _jetpackBenefitsBanerState
 
     private val refreshStoreStats = BooleanArray(StatsGranularity.values().size)
     private val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
