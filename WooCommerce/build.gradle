@@ -8,6 +8,7 @@ plugins {
     id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
     id 'io.sentry.android.gradle'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'io.gitlab.arturbosch.detekt'
     id 'com.google.gms.google-services'
 }
 
@@ -152,6 +153,24 @@ android {
 
     testOptions {
         animationsDisabled = true
+    }
+}
+
+tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
+    description = "Custom DETEKT build for all modules"
+    parallel = true
+    ignoreFailures = false
+    buildUponDefaultConfig = true
+    setSource(file(rootDir))
+    baseline.set(file("$rootDir/config/detekt/baseline.xml"))
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    include("**/*.kt")
+    exclude("**/resources/**", "**/build/**")
+
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        txt.enabled = false
     }
 }
 
@@ -316,6 +335,7 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
     }
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$gradle.ext.detektVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
