@@ -1,11 +1,14 @@
 package com.woocommerce.android.di
 
 import android.app.Application
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.toInPersonPaymentsPluginType
 import com.woocommerce.android.util.CapturePaymentResponseMapper
 import com.woocommerce.android.util.WooLog
 import dagger.Module
@@ -30,10 +33,19 @@ class CardReaderModule {
     fun provideInPersonPaymentsStore(
         selectedSite: SelectedSite,
         inPersonPaymentsStore: WCInPersonPaymentsStore,
-        responseMapper: CapturePaymentResponseMapper
+        responseMapper: CapturePaymentResponseMapper,
+        appPrefs: AppPrefs
     ) = object : CardReaderStore {
         override suspend fun fetchCustomerIdByOrderId(orderId: Long): String? {
-            return inPersonPaymentsStore.createCustomerByOrderId(selectedSite.get(), orderId).model?.customerId
+            return inPersonPaymentsStore.createCustomerByOrderId(
+                appPrefs.getPaymentPluginType(
+                    selectedSite.get().id,
+                    selectedSite.get().siteId,
+                    selectedSite.get().selfHostedSiteId
+                ).toInPersonPaymentsPluginType(),
+                selectedSite.get(),
+                orderId
+            ).model?.customerId
         }
 
         override suspend fun fetchConnectionToken(): String {
