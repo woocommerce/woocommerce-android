@@ -31,7 +31,7 @@ class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     fun setup() {
         repository = OrderShipmentProvidersRepository(selectedSite, orderStore)
         whenever(selectedSite.get()).thenReturn(siteModel)
-        whenever(orderStore.getOrderByIdentifier(ORDER_IDENTIFIER)).thenReturn(order)
+        whenever(orderStore.getOrderByIdAndSite(ORDER_ID, siteModel)).thenReturn(order)
     }
 
     @Test
