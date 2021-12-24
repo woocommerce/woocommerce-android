@@ -4,20 +4,18 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.*
-import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.*
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.BILLING
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.SHIPPING
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.store.WCDataStore
 import kotlin.test.assertFalse
@@ -27,12 +25,22 @@ import kotlin.test.assertTrue
 class AddressViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val selectedSite: SelectedSite = mock()
-    private val dataStore: WCDataStore = mock()
-
-    private val location = WCLocationModel().apply {
+    private val country = WCLocationModel().apply {
         name = "Brazil"
         code = "BR"
     }
+
+    private val state = WCLocationModel().apply {
+        name = "Acre"
+        code = "AC"
+        parentCode = "BR"
+    }
+
+    private val dataStore: WCDataStore = mock {
+        on { getCountries() } doReturn listOf(country)
+        on { getStates(country.code) } doReturn listOf(state)
+    }
+
     private val addressViewModel = AddressViewModel(savedStateHandle, selectedSite, dataStore)
     private val viewStateObserver: Observer<ViewState> = mock()
     private val addressType = SHIPPING
@@ -89,9 +97,7 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should reset view state when onScreenDetached is called`() {
-        whenever(dataStore.getCountries()).thenReturn(listOf(location))
-        val countryCode = location.code
-        addressViewModel.onCountrySelected(addressType, countryCode)
+        addressViewModel.onCountrySelected(addressType, country.code)
         addressViewModel.onScreenDetached()
         // Default view state is first emitted in the test setup (observeForever) and again on onScreenDetached.
         // That's why we're verifying if default view state was emitted 2 times.
@@ -100,7 +106,6 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should NOT fetch countries and states on start if countries have already been fetched`() {
-        whenever(dataStore.getCountries()).thenReturn(listOf(location))
         coroutinesTestRule.testDispatcher.runBlockingTest {
             addressViewModel.start(
                 countryCode = "countryCode",
@@ -138,20 +143,8 @@ class AddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Should return true on hasCountries if countries list is NOT empty`() {
-        whenever(dataStore.getCountries()).thenReturn(listOf(location))
-        assertTrue(addressViewModel.hasCountries())
-    }
-
-    @Test
-    fun `Should return false on hasCountries if countries list is empty`() {
-        whenever(dataStore.getCountries()).thenReturn(emptyList())
-        assertFalse(addressViewModel.hasCountries())
-    }
-
-    @Test
     fun `Should return true on hasStates if states list is NOT empty`() {
-        whenever(dataStore.getStates(any())).thenReturn(listOf(location))
+        whenever(dataStore.getStates(any())).thenReturn(listOf(country))
         assertTrue(addressViewModel.hasStatesFor(addressType))
     }
 
@@ -163,9 +156,7 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should update viewState with selected country, reset state and enable state selection on country selection`() {
-        whenever(dataStore.getCountries()).thenReturn(listOf(location))
-        val countryCode = location.code
-        addressViewModel.onCountrySelected(SHIPPING, countryCode)
+        addressViewModel.onCountrySelected(SHIPPING, country.code)
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
             ViewState(
@@ -177,10 +168,10 @@ class AddressViewModelTest : BaseUnitTest() {
                         stateSpinnerStatus = StateSpinnerStatus.DISABLED,
                     ),
                     SHIPPING to AddressSelectionState(
-                        countryLocation = Location(countryCode, location.name),
+                        countryLocation = Location(country.code, country.name),
                         stateLocation = Location("", ""),
                         inputFormValues = Address.EMPTY,
-                        stateSpinnerStatus = StateSpinnerStatus.RAW_VALUE,
+                        stateSpinnerStatus = StateSpinnerStatus.HAVING_LOCATIONS,
                     )
                 ),
                 isStateSelectionEnabled = true
@@ -216,11 +207,11 @@ class AddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Should update viewState with selected state on onCountrySelected`() {
-        whenever(dataStore.getStates(any())).thenReturn(listOf(location))
-        val stateCode = location.code
-        addressViewModel.onStateSelected(SHIPPING, stateCode)
-        verify(viewStateObserver).onChanged(
+    fun `Should update viewState with selected state on state selection`() {
+        addressViewModel.onCountrySelected(SHIPPING, country.code)
+        addressViewModel.onStateSelected(SHIPPING, state.code)
+
+        assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
             ViewState(
                 countryStatePairs = mapOf(
                     BILLING to AddressSelectionState(
@@ -230,12 +221,13 @@ class AddressViewModelTest : BaseUnitTest() {
                         stateSpinnerStatus = StateSpinnerStatus.DISABLED,
                     ),
                     SHIPPING to AddressSelectionState(
-                        countryLocation = Location.EMPTY,
-                        stateLocation = Location(stateCode, location.name),
+                        countryLocation = Location(country.code, country.name),
+                        stateLocation = Location(state.code, state.name),
                         inputFormValues = Address.EMPTY,
-                        stateSpinnerStatus = StateSpinnerStatus.DISABLED,
+                        stateSpinnerStatus = StateSpinnerStatus.HAVING_LOCATIONS,
                     )
                 ),
+                isStateSelectionEnabled = true
             )
         )
     }
@@ -263,5 +255,20 @@ class AddressViewModelTest : BaseUnitTest() {
                 ),
             )
         )
+    }
+
+    @Test
+    fun `Should trigger country selection event if country selector clicked`() {
+        addressViewModel.onCountrySpinnerClicked(SHIPPING)
+
+        assertThat(addressViewModel.event.value).isEqualTo(ShowCountrySelector(SHIPPING, listOf(country.toAppModel())))
+    }
+
+    @Test
+    fun `Should trigger state selection event if state selector clicked`() {
+        addressViewModel.onCountrySelected(SHIPPING, countryCode = country.code)
+        addressViewModel.onStateSpinnerClicked(SHIPPING)
+
+        assertThat(addressViewModel.event.value).isEqualTo(ShowStateSelector(SHIPPING, listOf(state.toAppModel())))
     }
 }
