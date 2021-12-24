@@ -664,11 +664,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             .thenReturn(null)
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
             .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
-        whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
-            buildPaymentAccountResult(
-                hasPendingRequirements = true
-            )
-        )
         whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
 
         checker.getOnboardingState()
