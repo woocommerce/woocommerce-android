@@ -28,7 +28,7 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val locationId = "locationId"
-            whenever(store.getStoreLocationForSite(any())).thenReturn(
+            whenever(store.getStoreLocationForSite(any(), any())).thenReturn(
                 WCTerminalStoreLocationResult(
                     locationId,
                     null,
@@ -38,7 +38,7 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
             )
 
             // WHEN
-            val result = repository.getDefaultLocationId()
+            val result = repository.getDefaultLocationId(mock())
 
             // THEN
             assertThat(result).isEqualTo(CardReaderLocationRepository.LocationIdFetchingResult.Success(locationId))
@@ -48,14 +48,14 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
     fun `given store returns generic error, when get default location, then other error returned`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            whenever(store.getStoreLocationForSite(any())).thenReturn(
+            whenever(store.getStoreLocationForSite(any(), any())).thenReturn(
                 WCTerminalStoreLocationResult(
                     WCTerminalStoreLocationError(),
                 )
             )
 
             // WHEN
-            val result = repository.getDefaultLocationId()
+            val result = repository.getDefaultLocationId(mock())
 
             // THEN
             assertThat(result).isInstanceOf(
@@ -68,14 +68,14 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val url = "https://wordpress.com"
-            whenever(store.getStoreLocationForSite(any())).thenReturn(
+            whenever(store.getStoreLocationForSite(any(), any())).thenReturn(
                 WCTerminalStoreLocationResult(
                     WCTerminalStoreLocationError(WCTerminalStoreLocationErrorType.MissingAddress(url)),
                 )
             )
 
             // WHEN
-            val result = repository.getDefaultLocationId()
+            val result = repository.getDefaultLocationId(mock())
 
             // THEN
             assertThat(result).isEqualTo(
@@ -87,14 +87,14 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
     fun `given store returns invalid postcode error, when get default location, then invalid pc error returned`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            whenever(store.getStoreLocationForSite(any())).thenReturn(
+            whenever(store.getStoreLocationForSite(any(), any())).thenReturn(
                 WCTerminalStoreLocationResult(
                     WCTerminalStoreLocationError(WCTerminalStoreLocationErrorType.InvalidPostalCode),
                 )
             )
 
             // WHEN
-            val result = repository.getDefaultLocationId()
+            val result = repository.getDefaultLocationId(mock())
 
             // THEN
             assertThat(result).isEqualTo(
