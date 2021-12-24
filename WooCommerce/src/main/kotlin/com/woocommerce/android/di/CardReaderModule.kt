@@ -68,7 +68,8 @@ class CardReaderModule {
                 ).toInPersonPaymentsPluginType(),
                 selectedSite.get(),
                 paymentId,
-                orderId)
+                orderId
+            )
             return responseMapper.mapResponse(response)
         }
     }
