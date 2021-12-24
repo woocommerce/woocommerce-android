@@ -7,6 +7,7 @@ import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -25,10 +26,10 @@ class AddressViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val countries: List<Location>
+    private val countries: List<Location>
         get() = dataStore.getCountries().map { it.toAppModel() }
 
-    fun statesAvailableFor(type: AddressType): List<Location> {
+    private fun statesAvailableFor(type: AddressType): List<Location> {
         val selectedCountry = selectedCountryLocationFor(type)
         return dataStore.getStates(selectedCountry.code)
             .map { it.toAppModel() }
@@ -72,8 +73,7 @@ class AddressViewModel @Inject constructor(
         }
     }
 
-    fun hasCountries() = countries.isNotEmpty()
-
+    @Deprecated("Use stateSpinnerStatus of corresponding AddressSelectionState")
     fun hasStatesFor(type: AddressType) = statesAvailableFor(type).isNotEmpty()
 
     /**
@@ -165,6 +165,16 @@ class AddressViewModel @Inject constructor(
         )
     }
 
+    fun onCountrySpinnerClicked(type: AddressType) {
+        val event = ShowCountrySelector(type, countries)
+        triggerEvent(event)
+    }
+
+    fun onStateSpinnerClicked(type: AddressType) {
+        val event = ShowStateSelector(type, statesAvailableFor(type))
+        triggerEvent(event)
+    }
+
     @Parcelize
     data class ViewState(
         val countryStatePairs: Map<AddressType, AddressSelectionState> = mapOf(
@@ -201,4 +211,14 @@ class AddressViewModel @Inject constructor(
         val stateLocation: Location,
         val stateSpinnerStatus: StateSpinnerStatus
     ) : Parcelable
+
+    data class ShowCountrySelector(
+        val type: AddressType,
+        val countries: List<Location>
+    ) : MultiLiveEvent.Event()
+
+    data class ShowStateSelector(
+        val type: AddressType,
+        val states: List<Location>
+    ) : MultiLiveEvent.Event()
 }

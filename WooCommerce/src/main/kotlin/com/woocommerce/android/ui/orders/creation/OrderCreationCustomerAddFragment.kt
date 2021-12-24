@@ -13,6 +13,7 @@ import com.woocommerce.android.databinding.LayoutAddressFormBinding
 import com.woocommerce.android.databinding.LayoutAddressSwitchBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.views.textFieldsState
 import com.woocommerce.android.ui.orders.creation.views.update
@@ -49,10 +50,10 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
             addressSectionHeader.setText(R.string.order_detail_billing_address_section)
             countrySpinner.setClickListener {
-                showCountrySearchScreen(BILLING)
+                addressViewModel.onCountrySpinnerClicked(BILLING)
             }
             stateSpinner.setClickListener {
-                showStateSearchScreen(BILLING)
+                addressViewModel.onStateSpinnerClicked(BILLING)
             }
         }
 
@@ -81,6 +82,13 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         AddressViewModel.AddressType.values().forEach {
             setupHandlingCountrySelection(it)
             setupHandlingStateSelection(it)
+        }
+
+        addressViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is AddressViewModel.ShowStateSelector -> showStateSearchScreen(event.type, event.states)
+                is AddressViewModel.ShowCountrySelector -> showCountrySearchScreen(event.type, event.countries)
+            }
         }
     }
 
@@ -113,10 +121,10 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                     addressSectionHeader.setText(R.string.order_detail_shipping_address_section)
                     email.visibility = View.GONE
                     countrySpinner.setClickListener {
-                        showCountrySearchScreen(SHIPPING)
+                        addressViewModel.onCountrySpinnerClicked(SHIPPING)
                     }
                     stateSpinner.setClickListener {
-                        showStateSearchScreen(SHIPPING)
+                        addressViewModel.onStateSpinnerClicked(SHIPPING)
                     }
                     updateLocationStateViews(AddressViewModel.StateSpinnerStatus.DISABLED)
                 }.also {
@@ -129,8 +137,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         }
     }
 
-    private fun showCountrySearchScreen(addressType: AddressViewModel.AddressType) {
-        val countries = addressViewModel.countries
+    private fun showCountrySearchScreen(addressType: AddressViewModel.AddressType, countries: List<Location>) {
         val action = OrderCreationCustomerAddFragmentDirections.actionSearchFilterFragment(
             items = countries.map {
                 SearchFilterItem(
@@ -148,8 +155,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         findNavController().navigateSafely(action)
     }
 
-    private fun showStateSearchScreen(addressType: AddressViewModel.AddressType) {
-        val states = addressViewModel.statesAvailableFor(addressType)
+    private fun showStateSearchScreen(addressType: AddressViewModel.AddressType, states: List<Location>) {
         val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
             items = states.map {
                 SearchFilterItem(
