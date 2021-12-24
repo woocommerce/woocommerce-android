@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.tracking
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.OrderTestUtils.ORDER_IDENTIFIER
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
