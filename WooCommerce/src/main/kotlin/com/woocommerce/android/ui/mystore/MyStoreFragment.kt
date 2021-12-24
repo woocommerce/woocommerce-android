@@ -309,7 +309,6 @@ class MyStoreFragment :
     }
 
     private fun showStatsError() {
-        showStats(null, activeGranularity)//TODO CHECK IF CAN BE REMOVED
         showChartSkeleton(false)
         binding.myStoreStats.showErrorView(true)
         showErrorSnack()
@@ -331,7 +330,6 @@ class MyStoreFragment :
     }
 
     private fun showTopPerformersError() {
-        binding.myStoreTopPerformers.updateView(emptyList()) //TODO CHECK IF CAN BE REMOVED
         binding.myStoreTopPerformers.showSkeleton(false)
         binding.myStoreTopPerformers.showErrorView(true)
         showErrorSnack()
