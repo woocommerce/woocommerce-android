@@ -449,6 +449,19 @@ object AppPrefs {
             completedStatus == CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
     }
 
+    fun getPaymentPluginType(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): PluginType {
+        return when (getCardReaderOnboardingCompletedStatus(localSiteId, remoteSiteId, selfHostedSiteId)) {
+            CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY,
+            CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY ->
+                PluginType.WOOCOMMERCE_PAYMENTS
+            CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION,
+            CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION ->
+                PluginType.STRIPE_TERMINAL_GATEWAY
+            CARD_READER_ONBOARDING_NOT_COMPLETED ->
+                throw IllegalStateException("Onboarding not completed. Plugin Type is null")
+        }
+    }
+
     fun setCardReaderOnboardingCompleted(
         localSiteId: Int,
         remoteSiteId: Long,
