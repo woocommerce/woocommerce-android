@@ -19,10 +19,10 @@ import java.util.*
 
 @Parcelize
 data class Order(
+    val id: Long,
     @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val identifier: OrderIdentifier,
     private val rawLocalOrderId: Int,
-    private val rawRemoteOrderId: Long,
     val number: String,
     val dateCreated: Date,
     val dateModified: Date,
@@ -55,9 +55,6 @@ data class Order(
     @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val localId
         get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
-
-    val remoteId
-        get() = LocalOrRemoteId.RemoteId(this.rawRemoteOrderId)
 
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -251,9 +248,9 @@ data class Order(
     companion object {
         val EMPTY by lazy {
             Order(
+                id = 0,
                 identifier = OrderIdentifier(),
                 rawLocalOrderId = 0,
-                rawRemoteOrderId = 0,
                 number = "",
                 dateCreated = Date(),
                 dateModified = Date(),
@@ -292,7 +289,7 @@ fun WCOrderModel.toAppModel(): Order {
     return Order(
         identifier = OrderIdentifier(this),
         rawLocalOrderId = this.id,
-        rawRemoteOrderId = this.remoteOrderId.value,
+        id = this.remoteOrderId.value,
         number = this.number,
         dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
         dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),

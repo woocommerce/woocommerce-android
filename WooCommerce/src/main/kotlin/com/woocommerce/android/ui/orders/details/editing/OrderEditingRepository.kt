@@ -16,26 +16,34 @@ class OrderEditingRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     suspend fun updateCustomerOrderNote(
-        remoteOrderId: LocalOrRemoteId.RemoteId,
+        remoteOrderId: Long,
         customerOrderNote: String
     ): Flow<WCOrderStore.UpdateOrderResult> {
-        return orderUpdateStore.updateCustomerOrderNote(remoteOrderId, selectedSite.get(), customerOrderNote)
+        return orderUpdateStore.updateCustomerOrderNote(
+            LocalOrRemoteId.RemoteId(remoteOrderId),
+            selectedSite.get(),
+            customerOrderNote
+        )
     }
 
     suspend fun updateOrderAddress(
-        remoteOrderId: LocalOrRemoteId.RemoteId,
+        remoteOrderId: Long,
         orderAddress: OrderAddress
     ): Flow<WCOrderStore.UpdateOrderResult> {
-        return orderUpdateStore.updateOrderAddress(remoteOrderId, selectedSite.get().localId(), orderAddress)
+        return orderUpdateStore.updateOrderAddress(
+            LocalOrRemoteId.RemoteId(remoteOrderId),
+            selectedSite.get().localId(),
+            orderAddress
+        )
     }
 
     suspend fun updateBothOrderAddresses(
-        remoteOrderId: LocalOrRemoteId.RemoteId,
+        remoteOrderId: Long,
         shippingAddress: OrderAddress.Shipping,
         billingAddress: OrderAddress.Billing
     ): Flow<WCOrderStore.UpdateOrderResult> {
         return orderUpdateStore.updateBothOrderAddresses(
-            remoteOrderId,
+            LocalOrRemoteId.RemoteId(remoteOrderId),
             selectedSite.get().localId(),
             shippingAddress,
             billingAddress

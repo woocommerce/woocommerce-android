@@ -29,7 +29,7 @@ sealed class OrderNavigationTarget : Event() {
     }
 
     data class IssueOrderRefund(val remoteOrderId: Long) : OrderNavigationTarget()
-    data class ViewRefundedProducts(val remoteOrderId: Long) : OrderNavigationTarget()
+    data class ViewRefundedProducts(val orderId: Long) : OrderNavigationTarget()
     data class ViewOrderFulfillInfo(val orderIdentifier: String) : OrderNavigationTarget()
     data class AddOrderNote(val orderIdentifier: String, val orderNumber: String) : OrderNavigationTarget()
     data class RefundShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
@@ -52,7 +52,7 @@ sealed class OrderNavigationTarget : Event() {
     data class StartShippingLabelCreationFlow(val orderIdentifier: String) : OrderNavigationTarget()
     data class StartCardReaderConnectFlow(val skipOnboarding: Boolean) : OrderNavigationTarget()
     object ShowCardReaderWelcomeDialog : OrderNavigationTarget()
-    data class StartCardReaderPaymentFlow(val orderIdentifier: String) : OrderNavigationTarget()
+    data class StartCardReaderPaymentFlow(val orderId: Long) : OrderNavigationTarget()
     object ViewPrintingInstructions : OrderNavigationTarget()
     data class PreviewReceipt(val billingEmail: String, val receiptUrl: String, val orderId: Long) :
         OrderNavigationTarget()

@@ -382,7 +382,7 @@ class OrderListFragment :
             }
             findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsFragment, bundle)
         } else {
-            openOrderDetail(order.localId.value, order.remoteId.value, order.status.value)
+            openOrderDetail(order.localId.value, order.id, order.status.value)
         }
     }
 

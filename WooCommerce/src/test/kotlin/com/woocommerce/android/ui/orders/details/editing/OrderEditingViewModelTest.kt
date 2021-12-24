@@ -58,7 +58,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.remoteId,
+                    testOrder.id,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("")
                 )
@@ -81,7 +81,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.remoteId,
+                    testOrder.id,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("")
                 )
@@ -152,7 +152,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.remoteId,
+                    testOrder.id,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("original@email.com")
                 )
@@ -229,7 +229,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         var eventWasCalled = false
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.remoteId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 UpdateOrderResult.OptimisticUpdateResult(
                     OnOrderChanged()
@@ -254,7 +254,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should emit generic error event for errors other than empty billing mail error`() {
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.remoteId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 RemoteUpdateResult(
                     OnOrderChanged(orderError = OrderError(type = OrderErrorType.INVALID_RESPONSE))
@@ -276,7 +276,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should emit empty mail failure if store returns empty billing mail error`() {
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.remoteId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 RemoteUpdateResult(
                     OnOrderChanged(orderError = OrderError(type = OrderErrorType.EMPTY_BILLING_EMAIL))

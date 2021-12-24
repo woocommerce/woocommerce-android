@@ -25,7 +25,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import javax.inject.Inject
 import kotlin.math.ceil
@@ -308,7 +307,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     private fun Order.getShippableItems(): List<Order.Item> {
-        val refunds = orderDetailRepository.getOrderRefunds(identifier.toIdSet().remoteOrderId)
+        val refunds = orderDetailRepository.getOrderRefunds(id)
         return refunds.getNonRefundedProducts(items)
             .filter {
                 val product = productDetailRepository.getProduct(it.productId)

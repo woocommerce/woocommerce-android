@@ -17,6 +17,7 @@ Dotenv.load('~/.wcandroid-env.default')
 ENV[GHHELPER_REPO="woocommerce/woocommerce-android"]
 ENV["PROJECT_NAME"]="WooCommerce"
 ENV["PROJECT_ROOT_FOLDER"]="./"
+ENV['FL_RELEASE_TOOLKIT_DEFAULT_BRANCH'] = 'trunk'
 REPOSITORY_NAME="woocommerce-android"
 GH_ORG_NAME="woocommerce"
 
@@ -61,7 +62,7 @@ platform :android do
   # bundle exec fastlane code_freeze
   # bundle exec fastlane code_freeze skip_confirm:true
   #####################################################################################
-  desc "Creates a new release branch from the current develop"
+  desc "Creates a new release branch from the current trunk"
   lane :code_freeze do | options |
     old_version = android_codefreeze_prechecks(options)
 
@@ -91,7 +92,7 @@ platform :android do
   # bundle exec fastlane complete_code_freeze
   # bundle exec fastlane complete_code_freeze skip_confirm:true
   #####################################################################################
-  desc "Creates a new release branch from the current develop"
+  desc "Creates a new release branch from the current trunk"
   lane :complete_code_freeze do | options |
     android_completecodefreeze_prechecks(options)
     new_version = android_get_app_version()
@@ -403,8 +404,8 @@ platform :android do
       else
         UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
         lib_to_merge = [ {
-          library: lib[:name], 
-          strings_path: download_path, 
+          library: lib[:name],
+          strings_path: download_path,
           exclusions: lib[:exclusions]
         }]
         an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: lib_to_merge)
