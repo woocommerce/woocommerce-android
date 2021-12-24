@@ -39,7 +39,7 @@ class MyStoreViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!
+    private val wooCommerceStore: WooCommerceStore,
     private val getStats: GetStats,
     private val getTopPerformers: GetTopPerformers,
     private val currencyFormatter: CurrencyFormatter,
@@ -153,7 +153,7 @@ class MyStoreViewModel @Inject constructor(
     private fun loadStoreStats() {
         if (!networkStatus.isConnected()) {
             refreshStoreStats[activeStatsGranularity.ordinal] = true
-            _revenueStatsState.value = RevenueStatsViewState.Content(null)
+            _revenueStatsState.value = RevenueStatsViewState.Content(null, activeStatsGranularity)
             _visitorStatsState.value = VisitorStatsViewState.Content(emptyMap())
             return
         }
@@ -163,12 +163,16 @@ class MyStoreViewModel @Inject constructor(
             refreshStoreStats[activeStatsGranularity.ordinal] = false
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
+        val selectedGranularity = activeStatsGranularity
         launch {
-            getStats(forceRefresh, activeStatsGranularity)
+            getStats(forceRefresh, selectedGranularity)
                 .collect {
                     when (it) {
                         is RevenueStatsSuccess -> {
-                            _revenueStatsState.value = RevenueStatsViewState.Content(it.stats?.toStoreStatsUiModel())
+                            _revenueStatsState.value = RevenueStatsViewState.Content(
+                                it.stats?.toStoreStatsUiModel(),
+                                selectedGranularity
+                            )
                             AnalyticsTracker.track(
                                 AnalyticsTracker.Stat.DASHBOARD_MAIN_STATS_LOADED,
                                 mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.name.lowercase())
@@ -190,7 +194,7 @@ class MyStoreViewModel @Inject constructor(
     private fun loadTopPerformersStats() {
         if (!networkStatus.isConnected()) {
             refreshTopPerformerStats[activeStatsGranularity.ordinal] = true
-            _topPerformersState.value = TopPerformersViewState.Content(emptyList())
+            _topPerformersState.value = TopPerformersViewState.Content(emptyList(), activeStatsGranularity)
             return
         }
 
@@ -200,13 +204,17 @@ class MyStoreViewModel @Inject constructor(
         }
 
         _topPerformersState.value = TopPerformersViewState.Loading
+        val selectedGranularity = activeStatsGranularity
         launch {
-            getTopPerformers(forceRefresh, activeStatsGranularity, NUM_TOP_PERFORMERS)
+            getTopPerformers(forceRefresh, selectedGranularity, NUM_TOP_PERFORMERS)
                 .collect {
                     when (it) {
                         is TopPerformersSuccess -> {
                             _topPerformersState.value =
-                                TopPerformersViewState.Content(it.topPerformers.toTopPerformersUiList())
+                                TopPerformersViewState.Content(
+                                    it.topPerformers.toTopPerformersUiList(),
+                                    selectedGranularity
+                                )
                             AnalyticsTracker.track(
                                 AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
                                 mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.name.lowercase())
@@ -237,7 +245,8 @@ class MyStoreViewModel @Inject constructor(
         object GenericError : RevenueStatsViewState()
         object PluginNotActiveError : RevenueStatsViewState()
         data class Content(
-            val revenueStats: RevenueStatsUiModel?
+            val revenueStats: RevenueStatsUiModel?,
+            val granularity: StatsGranularity
         ) : RevenueStatsViewState()
     }
 
@@ -254,6 +263,7 @@ class MyStoreViewModel @Inject constructor(
         object Error : TopPerformersViewState()
         data class Content(
             val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
+            val granularity: StatsGranularity
         ) : TopPerformersViewState()
     }
 
