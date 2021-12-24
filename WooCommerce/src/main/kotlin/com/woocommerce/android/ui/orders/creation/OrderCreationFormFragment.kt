@@ -6,6 +6,7 @@ import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
@@ -125,16 +126,22 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             productsSection.content = null
         } else {
             // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
-            productsSection.content = productsSection.content ?: RecyclerView(requireContext()).apply {
-                layoutManager = LinearLayoutManager(requireContext())
-                adapter = ProductsAdapter(
-                    productImageMap = productImageMap,
-                    currencyFormatter = currencyFormatter.buildBigDecimalFormatter(
-                        currencyCode = sharedViewModel.currentDraft.currency
-                    ),
-                    onIncreaseQuantity = sharedViewModel::onIncreaseProductsQuantity,
-                    onDecreaseQuantity = sharedViewModel::onDecreaseProductsQuantity
-                )
+            if (productsSection.content == null) {
+                productsSection.content = RecyclerView(requireContext()).apply {
+                    layoutManager = LinearLayoutManager(requireContext())
+                    adapter = ProductsAdapter(
+                        productImageMap = productImageMap,
+                        currencyFormatter = currencyFormatter.buildBigDecimalFormatter(
+                            currencyCode = sharedViewModel.currentDraft.currency
+                        ),
+                        onIncreaseQuantity = sharedViewModel::onIncreaseProductsQuantity,
+                        onDecreaseQuantity = sharedViewModel::onDecreaseProductsQuantity
+                    )
+                    itemAnimator = DefaultItemAnimator().apply {
+                        // Disable change animations to avoid duplicating viewholders
+                        supportsChangeAnimations = false
+                    }
+                }
             }
             ((productsSection.content as RecyclerView).adapter as ProductsAdapter).products = products
         }
