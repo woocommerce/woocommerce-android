@@ -127,6 +127,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         } else {
             // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
             if (productsSection.content == null) {
+                val animator = DefaultItemAnimator().apply {
+                    // Disable change animations to avoid duplicating viewholders
+                    supportsChangeAnimations = false
+                }
                 productsSection.content = RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = ProductsAdapter(
@@ -137,10 +141,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                         onIncreaseQuantity = sharedViewModel::onIncreaseProductsQuantity,
                         onDecreaseQuantity = sharedViewModel::onDecreaseProductsQuantity
                     )
-                    itemAnimator = DefaultItemAnimator().apply {
-                        // Disable change animations to avoid duplicating viewholders
-                        supportsChangeAnimations = false
-                    }
+                    itemAnimator = animator
                 }
             }
             ((productsSection.content as RecyclerView).adapter as ProductsAdapter).products = products
