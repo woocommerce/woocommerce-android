@@ -11,7 +11,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -21,7 +20,6 @@ import java.util.*
 data class Order(
     val id: Long,
     @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
-    val identifier: OrderIdentifier,
     val rawLocalOrderId: Int,
     val number: String,
     val dateCreated: Date,
@@ -249,7 +247,6 @@ data class Order(
         val EMPTY by lazy {
             Order(
                 id = 0,
-                identifier = OrderIdentifier(),
                 rawLocalOrderId = 0,
                 number = "",
                 dateCreated = Date(),
@@ -287,7 +284,6 @@ data class Order(
 fun WCOrderModel.toAppModel(): Order {
     @Suppress("DEPRECATION_ERROR")
     return Order(
-        identifier = OrderIdentifier(this),
         rawLocalOrderId = this.id,
         id = this.remoteOrderId.value,
         number = this.number,
