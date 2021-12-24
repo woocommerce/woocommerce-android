@@ -7,7 +7,6 @@ import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.toInPersonPaymentsPluginType
 import com.woocommerce.android.util.CapturePaymentResponseMapper
 import com.woocommerce.android.util.WooLog
