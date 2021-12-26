@@ -240,6 +240,7 @@ class MyStoreFragment :
 
     @Suppress("ForbiddenComment")
     private fun prepareJetpackBenefitsBanner() {
+        binding.jetpackBenefitsBanner.root.isVisible = false
         binding.jetpackBenefitsBanner.root.setOnClickListener {
             AnalyticsTracker.track(
                 stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
