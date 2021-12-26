@@ -56,8 +56,11 @@ class OrderCreationViewModel @Inject constructor(
         orderDraft = orderDraft.copy(customerNote = newNote)
     }
 
-    @Suppress("UnusedPrivateMember")
     fun onProductSelected(remoteProductId: Long) {
-        // TODO convert Product ID to Line Item and add it to the OrderDraft
+        orderDraft.items.toMutableList().apply {
+            find { it.productId == remoteProductId }
+                ?.let { set(indexOf(it), it.copy(quantity = it.quantity + 1)) }
+                ?: add(Order.Item.EMPTY.copy(productId = remoteProductId))
+        }
     }
 }
