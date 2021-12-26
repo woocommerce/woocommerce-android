@@ -168,6 +168,11 @@ class MyStoreFragment :
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
+        setupStateObservers()
+    }
+
+    @Suppress("ComplexMethod")
+    private fun setupStateObservers() {
         viewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
             when (revenueStats) {
                 is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats, revenueStats.granularity)
@@ -176,11 +181,11 @@ class MyStoreFragment :
                 RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
             }
         }
-        viewModel.visitorStatsState.observe(viewLifecycleOwner) { visitorStats ->
-            when (visitorStats) {
-                is VisitorStatsViewState.Content -> showVisitorStats(visitorStats.stats)
+        viewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
+            when (stats) {
+                is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
                 VisitorStatsViewState.Error -> binding.myStoreStats.showVisitorStatsError()
-                VisitorStatsViewState.JetPackCPEmpty -> showEmptyVisitorStatsForJetpackCP()
+                is VisitorStatsViewState.JetpackCpConnected -> onJetpackCpConnected(stats.benefitsBanner)
             }
         }
         viewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
@@ -199,17 +204,6 @@ class MyStoreFragment :
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
-        viewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { showBanner ->
-            when (showBanner) {
-                JetpackBenefitsBannerState.Hide -> showJetpackBenefitsBanner(false)
-                is JetpackBenefitsBannerState.Show -> {
-                    binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
-                        showBanner.onDismiss.invoke()
-                    }
-                    showJetpackBenefitsBanner(true)
-                }
-            }
-        }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
@@ -221,6 +215,22 @@ class MyStoreFragment :
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun onJetpackCpConnected(benefitsBanner: BenefitsBannerUiModel) {
+        showEmptyVisitorStatsForJetpackCP()
+        if (benefitsBanner.show) {
+            binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
+                benefitsBanner.onDismiss()
+            }
+        }
+        if (benefitsBanner.show && !binding.jetpackBenefitsBanner.root.isVisible) {
+            AnalyticsTracker.track(
+                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
+            )
+        }
+        binding.jetpackBenefitsBanner.root.isVisible = benefitsBanner.show
     }
 
     private fun showTopPerformersLoading() {
@@ -351,10 +361,6 @@ class MyStoreFragment :
             errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
             errorSnackbar?.show()
         }
-    }
-
-    private fun showJetpackBenefitsBanner(show: Boolean) {
-        binding.jetpackBenefitsBanner.root.isVisible = show
     }
 
     override fun getFragmentTitle() = getString(R.string.my_store)

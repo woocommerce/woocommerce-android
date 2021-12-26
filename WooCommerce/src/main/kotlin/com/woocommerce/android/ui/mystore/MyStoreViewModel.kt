@@ -67,16 +67,12 @@ class MyStoreViewModel @Inject constructor(
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
 
-    private var _jetpackBenefitsBanerState = MutableLiveData<JetpackBenefitsBannerState>()
-    val jetpackBenefitsBannerState: LiveData<JetpackBenefitsBannerState> = _jetpackBenefitsBanerState
-
     private val refreshStoreStats = BooleanArray(StatsGranularity.values().size)
     private val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
         refreshAll()
-        showJetpackBenefitsIfNeeded()
     }
 
     override fun onCleared() {
@@ -121,35 +117,6 @@ class MyStoreViewModel @Inject constructor(
         loadTopPerformersStats()
     }
 
-    private fun showJetpackBenefitsIfNeeded() {
-        val showBanner = if (selectedSite.getIfExists()?.isJetpackCPConnected == true) {
-            val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
-                System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
-            )
-            daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
-        } else false
-
-        when (showBanner) {
-            false -> _jetpackBenefitsBanerState.value = JetpackBenefitsBannerState.Hide
-            else -> {
-                AnalyticsTracker.track(
-                    stat = AnalyticsTracker.Stat.FEATURE_JETPACK_BENEFITS_BANNER,
-                    properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
-                )
-                _jetpackBenefitsBanerState.value = JetpackBenefitsBannerState.Show(
-                    onDismiss = {
-                        _jetpackBenefitsBanerState.value = JetpackBenefitsBannerState.Hide
-                        appPrefsWrapper.recordJetpackBenefitsDismissal()
-                        AnalyticsTracker.track(
-                            stat = AnalyticsTracker.Stat.FEATURE_JETPACK_BENEFITS_BANNER,
-                            properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
-                        )
-                    }
-                )
-            }
-        }
-    }
-
     private fun loadStoreStats() {
         if (!networkStatus.isConnected()) {
             refreshStoreStats[activeStatsGranularity.ordinal] = true
@@ -182,13 +149,32 @@ class MyStoreViewModel @Inject constructor(
                         PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
                         is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
                         is VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
-                        IsJetPackCPEnabled -> _visitorStatsState.value = VisitorStatsViewState.JetPackCPEmpty
-                        is HasOrders -> _hasOrders.value =
-                            if (it.hasOrder) OrderState.AtLeastOne
-                            else OrderState.Empty
+                        IsJetPackCPEnabled -> onJetPackCpConnected()
+                        is HasOrders -> _hasOrders.value = if (it.hasOrder) OrderState.AtLeastOne else OrderState.Empty
                     }
                 }
         }
+    }
+
+    private fun onJetPackCpConnected() {
+        val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
+            System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
+        )
+        val showBanner = daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
+        val benefitsBanner =
+            BenefitsBannerUiModel(
+                show = showBanner,
+                onDismiss = {
+                    _visitorStatsState.value =
+                        VisitorStatsViewState.JetpackCpConnected(BenefitsBannerUiModel(show = false))
+                    appPrefsWrapper.recordJetpackBenefitsDismissal()
+                    AnalyticsTracker.track(
+                        stat = AnalyticsTracker.Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                        properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
+                    )
+                }
+            )
+        _visitorStatsState.value = VisitorStatsViewState.JetpackCpConnected(benefitsBanner)
     }
 
     private fun loadTopPerformersStats() {
@@ -252,7 +238,10 @@ class MyStoreViewModel @Inject constructor(
 
     sealed class VisitorStatsViewState {
         object Error : VisitorStatsViewState()
-        object JetPackCPEmpty : VisitorStatsViewState()
+        data class JetpackCpConnected(
+            val benefitsBanner: BenefitsBannerUiModel
+        ) : VisitorStatsViewState()
+
         data class Content(
             val stats: Map<String, Int>
         ) : VisitorStatsViewState()
@@ -272,19 +261,16 @@ class MyStoreViewModel @Inject constructor(
         object AtLeastOne : OrderState()
     }
 
-    sealed class JetpackBenefitsBannerState {
-        data class Show(
-            val onDismiss: () -> Unit
-        ) : JetpackBenefitsBannerState()
-
-        object Hide : JetpackBenefitsBannerState()
-    }
-
     sealed class MyStoreEvent : MultiLiveEvent.Event() {
         data class OpenTopPerformer(
             val productId: Long
         ) : MyStoreEvent()
     }
+
+    data class BenefitsBannerUiModel(
+        val show: Boolean = false,
+        val onDismiss: () -> Unit = {}
+    )
 
     data class RevenueStatsUiModel(
         val intervalList: List<StatsIntervalUiModel> = emptyList(),
