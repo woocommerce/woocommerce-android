@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.mystore
 
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsUiModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
 interface MyStoreStatsListener {

@@ -15,7 +15,6 @@ import com.woocommerce.android.databinding.MyStoreTopPerformersBinding
 import com.woocommerce.android.databinding.TopPerformersListItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformerProductUiModel
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 

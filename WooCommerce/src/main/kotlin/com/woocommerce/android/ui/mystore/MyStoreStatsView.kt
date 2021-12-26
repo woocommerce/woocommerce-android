@@ -34,7 +34,6 @@ import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsUiModel
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
