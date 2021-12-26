@@ -119,6 +119,24 @@ data class Order(
                 it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
 
+        companion object {
+            val EMPTY by lazy {
+                Item(
+                    itemId = 0,
+                    productId = 0,
+                    name = "",
+                    price = BigDecimal(0),
+                    sku = "",
+                    quantity = 0f,
+                    subtotal = BigDecimal(0),
+                    totalTax = BigDecimal(0),
+                    total = BigDecimal(0),
+                    variationId = 0,
+                    attributesList = emptyList()
+                )
+            }
+        }
+
         @Parcelize
         data class Attribute(
             val key: String,
