@@ -10,7 +10,6 @@ import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
 import com.woocommerce.android.extensions.formatToMonthDateOnly
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsUiModel
 import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 

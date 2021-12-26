@@ -226,74 +226,6 @@ class MyStoreViewModel @Inject constructor(
         AnalyticsTracker.track(AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED)
     }
 
-    sealed class RevenueStatsViewState {
-        object Loading : RevenueStatsViewState()
-        object GenericError : RevenueStatsViewState()
-        object PluginNotActiveError : RevenueStatsViewState()
-        data class Content(
-            val revenueStats: RevenueStatsUiModel?,
-            val granularity: StatsGranularity
-        ) : RevenueStatsViewState()
-    }
-
-    sealed class VisitorStatsViewState {
-        object Error : VisitorStatsViewState()
-        data class JetpackCpConnected(
-            val benefitsBanner: BenefitsBannerUiModel
-        ) : VisitorStatsViewState()
-
-        data class Content(
-            val stats: Map<String, Int>
-        ) : VisitorStatsViewState()
-    }
-
-    sealed class TopPerformersViewState {
-        object Loading : TopPerformersViewState()
-        object Error : TopPerformersViewState()
-        data class Content(
-            val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
-            val granularity: StatsGranularity
-        ) : TopPerformersViewState()
-    }
-
-    sealed class OrderState {
-        object Empty : OrderState()
-        object AtLeastOne : OrderState()
-    }
-
-    sealed class MyStoreEvent : MultiLiveEvent.Event() {
-        data class OpenTopPerformer(
-            val productId: Long
-        ) : MyStoreEvent()
-    }
-
-    data class BenefitsBannerUiModel(
-        val show: Boolean = false,
-        val onDismiss: () -> Unit = {}
-    )
-
-    data class RevenueStatsUiModel(
-        val intervalList: List<StatsIntervalUiModel> = emptyList(),
-        val totalOrdersCount: Int? = null,
-        val totalSales: Double? = null,
-        val currencyCode: String?
-    )
-
-    data class StatsIntervalUiModel(
-        val interval: String? = null,
-        val ordersCount: Long? = null,
-        val sales: Double? = null
-    )
-
-    data class TopPerformerProductUiModel(
-        val productId: Long,
-        val name: String,
-        val timesOrdered: String,
-        val totalSpend: String,
-        val imageUrl: String?,
-        val onClick: (Long) -> Unit
-    )
-
     private fun WCRevenueStatsModel.toStoreStatsUiModel(): RevenueStatsUiModel {
         val totals = parseTotal()
         return RevenueStatsUiModel(
@@ -334,4 +266,45 @@ class MyStoreViewModel @Inject constructor(
             resourceProvider.getDimensionPixelSize(R.dimen.image_minor_100),
             0
         )
+
+    sealed class RevenueStatsViewState {
+        object Loading : RevenueStatsViewState()
+        object GenericError : RevenueStatsViewState()
+        object PluginNotActiveError : RevenueStatsViewState()
+        data class Content(
+            val revenueStats: RevenueStatsUiModel?,
+            val granularity: StatsGranularity
+        ) : RevenueStatsViewState()
+    }
+
+    sealed class VisitorStatsViewState {
+        object Error : VisitorStatsViewState()
+        data class JetpackCpConnected(
+            val benefitsBanner: BenefitsBannerUiModel
+        ) : VisitorStatsViewState()
+
+        data class Content(
+            val stats: Map<String, Int>
+        ) : VisitorStatsViewState()
+    }
+
+    sealed class TopPerformersViewState {
+        object Loading : TopPerformersViewState()
+        object Error : TopPerformersViewState()
+        data class Content(
+            val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
+            val granularity: StatsGranularity
+        ) : TopPerformersViewState()
+    }
+
+    sealed class OrderState {
+        object Empty : OrderState()
+        object AtLeastOne : OrderState()
+    }
+
+    sealed class MyStoreEvent : MultiLiveEvent.Event() {
+        data class OpenTopPerformer(
+            val productId: Long
+        ) : MyStoreEvent()
+    }
 }
