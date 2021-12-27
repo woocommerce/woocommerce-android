@@ -67,6 +67,20 @@ class OrderCreationViewModel @Inject constructor(
         orderDraft = orderDraft.copy(customerNote = newNote)
     }
 
+    fun onIncreaseProductsQuantity(id: Long) = adjustProductsQuantity(id, 1)
+
+    fun onDecreaseProductsQuantity(id: Long) = adjustProductsQuantity(id, -1)
+
+    private fun adjustProductsQuantity(id: Long, quantityToAdd: Int) {
+        val items = orderDraft.items.toMutableList()
+        val index = items.indexOfFirst { it.uniqueId == id }
+        if (index == -1) error("Couldn't find the product with id $id")
+        items[index] = with(items[index]) {
+            copy(quantity = quantity + quantityToAdd)
+        }
+        orderDraft = orderDraft.copy(items = items)
+    }
+
     private suspend fun Order.Item.toProductUIModel(): ProductUIModel {
         val (isStockManaged, stockQuantity) = withContext(dispatchers.io) {
             if (isVariation) {
@@ -80,7 +94,9 @@ class OrderCreationViewModel @Inject constructor(
         return ProductUIModel(
             item = this,
             isStockManaged = isStockManaged ?: false,
-            stockQuantity = stockQuantity ?: 0.0
+            stockQuantity = stockQuantity ?: 0.0,
+            canDecreaseQuantity = quantity >= 2
+            // TODO check if we need to disable the plus button depending on stock quantity
         )
     }
 }
@@ -88,5 +104,6 @@ class OrderCreationViewModel @Inject constructor(
 data class ProductUIModel(
     val item: Order.Item,
     val isStockManaged: Boolean,
-    val stockQuantity: Double
+    val stockQuantity: Double,
+    val canDecreaseQuantity: Boolean
 )
