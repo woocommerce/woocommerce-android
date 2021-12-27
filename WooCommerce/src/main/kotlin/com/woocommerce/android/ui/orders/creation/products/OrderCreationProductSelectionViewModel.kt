@@ -40,6 +40,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
          *
          * Also, this is intentionally filtering out Variable products as we need a second
          * view to be able to select the variation itself, not the entire product.
+         * This second view will be tackled in the future
          */
         launch {
             productList.value = productListRepository.fetchProductList(loadMore)
