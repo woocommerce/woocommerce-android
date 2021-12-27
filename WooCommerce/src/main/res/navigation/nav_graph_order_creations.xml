@@ -36,6 +36,9 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationProductDetailsFragment"
+            app:destination="@id/orderCreationProductDetailsFragment" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -90,5 +93,13 @@
         <argument
             android:name="requestKey"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationProductDetailsFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationProductDetailsFragment"
+        android:label="OrderCreationProductDetailsFragment">
+        <argument
+            android:name="item"
+            app:argType="com.woocommerce.android.model.Order$Item" />
     </fragment>
 </navigation>
