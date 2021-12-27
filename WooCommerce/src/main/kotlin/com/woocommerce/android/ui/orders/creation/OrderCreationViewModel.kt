@@ -61,6 +61,6 @@ class OrderCreationViewModel @Inject constructor(
             find { it.productId == remoteProductId }
                 ?.let { set(indexOf(it), it.copy(quantity = it.quantity + 1)) }
                 ?: add(Order.Item.EMPTY.copy(productId = remoteProductId))
-        }
+        }.let { orderDraft = orderDraft.copy(items = it) }
     }
 }
