@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
@@ -41,7 +42,8 @@ class OrderCreationProductDetailsFragment : BaseFragment(R.layout.fragment_order
             loadImage(item)
 
             removeProductButton.setOnClickListener {
-                // TODO
+                sharedViewModel.onRemoveProduct(item)
+                findNavController().navigateUp()
             }
         }
     }

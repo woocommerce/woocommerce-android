@@ -71,6 +71,10 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onDecreaseProductsQuantity(id: Long) = adjustProductsQuantity(id, -1)
 
+    fun onRemoveProduct(item: Order.Item) {
+        orderDraft = orderDraft.copy(items = orderDraft.items - item)
+    }
+
     private fun adjustProductsQuantity(id: Long, quantityToAdd: Int) {
         val items = orderDraft.items.toMutableList()
         val index = items.indexOfFirst { it.uniqueId == id }
