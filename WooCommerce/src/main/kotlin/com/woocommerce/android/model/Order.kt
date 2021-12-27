@@ -251,7 +251,7 @@ data class Order(
         val EMPTY by lazy {
             Order(
                 id = 0,
-                identifier = OrderListItemIdentifier.OrderIdentifier(),
+                identifier = OrderIdentifier(),
                 rawLocalOrderId = 0,
                 number = "",
                 dateCreated = Date(),
@@ -289,7 +289,7 @@ data class Order(
 fun WCOrderModel.toAppModel(): Order {
     @Suppress("DEPRECATION_ERROR")
     return Order(
-        identifier = OrderListItemIdentifier.OrderIdentifier(this),
+        identifier = OrderIdentifier(this),
         rawLocalOrderId = this.id,
         id = this.remoteOrderId.value,
         number = this.number,
