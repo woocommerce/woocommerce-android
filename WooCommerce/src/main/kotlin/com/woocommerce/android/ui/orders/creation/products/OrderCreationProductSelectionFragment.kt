@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationProductSelectionBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.ViewState
@@ -25,27 +26,30 @@ class OrderCreationProductSelectionFragment :
 
     private val skeletonView = SkeletonView()
 
-    private var currentAdapter: ProductListAdapter? = null
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(FragmentOrderCreationProductSelectionBinding.bind(view)) {
             productsList.layoutManager = LinearLayoutManager(requireActivity())
-            productsList.adapter = ProductListAdapter(
-                clickListener = { id, _ -> onProductClick(id) },
-                loadMoreListener = this@OrderCreationProductSelectionFragment
-            ).apply { currentAdapter = this }
             setupObserversWith(this)
         }
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationProductSelectionBinding) {
         productListViewModel.productListData.observe(viewLifecycleOwner) {
-            currentAdapter?.setProductList(it)
+            binding.loadProductsAdapterWith(it)
         }
         productListViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             onViewStateChanged(binding, old, new)
         }
+    }
+
+    private fun FragmentOrderCreationProductSelectionBinding.loadProductsAdapterWith(
+        products: List<Product>
+    ) {
+        productsList.adapter = ProductListAdapter(
+            clickListener = { id, _ -> onProductClick(id) },
+            loadMoreListener = this@OrderCreationProductSelectionFragment
+        ).apply { setProductList(products) }
     }
 
     private fun onProductClick(remoteProductId: Long) {
