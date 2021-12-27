@@ -3,7 +3,6 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Order.*
-import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.StringUtils
