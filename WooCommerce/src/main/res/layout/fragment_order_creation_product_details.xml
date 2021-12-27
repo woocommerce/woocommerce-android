@@ -10,28 +10,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/titleText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_100"
-            android:text="@string/order_creation_product_details_title"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ImageView
             android:id="@+id/productIcon"
             android:layout_width="@dimen/image_major_50"
             android:layout_height="@dimen/image_major_50"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_125"
             android:contentDescription="@string/orderdetail_product_image_contentdesc"
             android:scaleType="centerCrop"
-            app:layout_constraintStart_toStartOf="@id/titleText"
-            app:layout_constraintTop_toBottomOf="@id/titleText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_product" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -69,19 +58,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/productIcon"
             app:layout_constraintTop_toBottomOf="@id/productIcon" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/addDiscountButton"
-            style="@style/Woo.Button.TextButton.Secondary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="start|center_vertical"
-            android:text="@string/order_creation_add_discount"
-            app:icon="@drawable/ic_add"
-            app:iconPadding="@dimen/major_100"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider" />
     </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
 
     <com.google.android.material.button.MaterialButton

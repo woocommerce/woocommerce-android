@@ -40,15 +40,13 @@ class OrderCreationProductDetailsFragment : BaseFragment(R.layout.fragment_order
             )
             loadImage(item)
 
-            addDiscountButton.setOnClickListener {
-                // TODO
-            }
-
             removeProductButton.setOnClickListener {
                 // TODO
             }
         }
     }
+
+    override fun getFragmentTitle(): String = getString(R.string.order_creation_product_details_title)
 
     private fun FragmentOrderCreationProductDetailsBinding.loadImage(item: Order.Item) {
         val imageSize = resources.getDimensionPixelSize(R.dimen.image_major_50)
