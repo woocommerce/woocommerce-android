@@ -212,7 +212,6 @@ class MyStoreStatsView @JvmOverloads constructor(
                 setDrawAxisLine(false)
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
-
                 // Couldn't use the dimension resource here due to the way this component is written :/
                 textSize = 10f
             }
@@ -222,9 +221,9 @@ class MyStoreStatsView @JvmOverloads constructor(
                 setDrawTopYLabelEntry(true)
                 setDrawAxisLine(false)
                 setDrawGridLines(true)
+                axisLineWidth = 0f
                 gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
-
                 // Couldn't use the dimension resource here due to the way this component is written :/
                 textSize = 10f
             }
@@ -252,6 +251,7 @@ class MyStoreStatsView @JvmOverloads constructor(
      */
     override fun onNothingSelected() {
         // update the total values of the chart here
+        binding.chart.highlightValue(null)
         updateChartView()
         if (visitorsLayout.visibility == View.GONE) {
             visitorsLayout.visibility = View.VISIBLE
