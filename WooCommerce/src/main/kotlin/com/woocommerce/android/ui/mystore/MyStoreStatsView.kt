@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.mystore
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -44,7 +45,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DateTimeUtils
 import java.util.ArrayList
 import java.util.Date
-import java.util.Locale
 import kotlin.math.round
 
 class MyStoreStatsView @JvmOverloads constructor(
@@ -74,7 +74,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var skeletonView = SkeletonView()
 
     private lateinit var lastUpdatedRunnable: Runnable
-    private var lastUpdatedHandler: Handler? = null
+    private val lastUpdatedHandler = Handler(Looper.getMainLooper())
     private var lastUpdated: Date? = null
 
     private var isRequestingStats = false
@@ -93,7 +93,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             field = value
         }
 
-    private val fadeHandler = Handler()
+    private val fadeHandler = Handler(Looper.getMainLooper())
 
     private val visitorsLayout
         get() = binding.root.findViewById<ViewGroup>(R.id.visitors_layout)
@@ -122,10 +122,9 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         initChart()
 
-        lastUpdatedHandler = Handler()
         lastUpdatedRunnable = Runnable {
             updateRecencyMessage()
-            lastUpdatedHandler?.postDelayed(
+            lastUpdatedHandler.postDelayed(
                 lastUpdatedRunnable,
                 UPDATE_DELAY_TIME_MS
             )
@@ -141,7 +140,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         // Track range change
         AnalyticsTracker.track(
             Stat.DASHBOARD_MAIN_STATS_DATE,
-            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase(Locale.ROOT))
+            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase())
         )
 
         isRequestingStats = true
@@ -153,7 +152,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         if (visibility == View.VISIBLE) {
             updateRecencyMessage()
         } else {
-            lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
+            lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
         }
     }
 
@@ -517,10 +516,10 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private fun updateRecencyMessage() {
         binding.dashboardRecencyText.text = getRecencyMessage()
-        lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
+        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
 
         if (lastUpdated != null) {
-            lastUpdatedHandler?.postDelayed(
+            lastUpdatedHandler.postDelayed(
                 lastUpdatedRunnable,
                 UPDATE_DELAY_TIME_MS
             )
