@@ -19,7 +19,6 @@ import java.util.*
 @Parcelize
 data class Order(
     val id: Long,
-    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
     val rawLocalOrderId: Int,
     val number: String,
     val dateCreated: Date,
