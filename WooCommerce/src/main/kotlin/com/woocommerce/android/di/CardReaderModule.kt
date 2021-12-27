@@ -48,12 +48,28 @@ class CardReaderModule {
         }
 
         override suspend fun fetchConnectionToken(): String {
-            val result = inPersonPaymentsStore.fetchConnectionToken(selectedSite.get())
+            val result = inPersonPaymentsStore.fetchConnectionToken(
+                appPrefs.getPaymentPluginType(
+                    selectedSite.get().id,
+                    selectedSite.get().siteId,
+                    selectedSite.get().selfHostedSiteId
+                ).toInPersonPaymentsPluginType(),
+                selectedSite.get()
+            )
             return result.model?.token.orEmpty()
         }
 
         override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): CapturePaymentResponse {
-            val response = inPersonPaymentsStore.capturePayment(selectedSite.get(), paymentId, orderId)
+            val response = inPersonPaymentsStore.capturePayment(
+                appPrefs.getPaymentPluginType(
+                    selectedSite.get().id,
+                    selectedSite.get().siteId,
+                    selectedSite.get().selfHostedSiteId
+                ).toInPersonPaymentsPluginType(),
+                selectedSite.get(),
+                paymentId,
+                orderId
+            )
             return responseMapper.mapResponse(response)
         }
     }
