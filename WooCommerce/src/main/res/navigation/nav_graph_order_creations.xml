@@ -16,7 +16,11 @@
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerNoteFragment"
-            app:destination="@id/orderCreationCustomerNoteFragment" />
+            app:destination="@id/orderCreationCustomerNoteFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationProductSelectionFragment"
             app:destination="@id/orderCreationProductSelectionFragment"
@@ -27,7 +31,11 @@
 
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
-            app:destination="@id/orderCreationCustomerFragment" />
+            app:destination="@id/orderCreationCustomerFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -49,7 +57,7 @@
         android:id="@+id/orderCreationProductSelectionFragment"
         android:name="com.woocommerce.android.ui.orders.creation.OrderCreationProductSelectionFragment"
         android:label="OrderCreationProductSelectionFragment"
-        tools:layout="@layout/fragment_order_creation_product_selection"/>
+        tools:layout="@layout/fragment_order_creation_product_selection" />
     <fragment
         android:id="@+id/orderCreationCustomerFragment"
         android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerAddFragment"

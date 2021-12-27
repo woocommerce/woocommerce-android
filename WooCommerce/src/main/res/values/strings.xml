@@ -122,6 +122,8 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
+    <string name="minus">Minus</string>
+    <string name="plus">Plus</string>
 
     <!--
         Date/Time Labels
@@ -310,7 +312,9 @@
     <string name="simple_payments_edit_email_hint">Enter email</string>
     <string name="simple_payments_custom_amount">Custom amount</string>
     <string name="simple_payments_charge_taxes">Charge taxes</string>
-    <string name="simple_payments_take_payment_button"> Take payment (%s)</string>
+    <string name="simple_payments_take_payment_button">Take payment (%s)</string>
+    <string name="simple_payments_tax_with_percent">Tax (%s%%)</string>
+    <string name="simple_payments_tax_message">Taxes are automatically calculated based on your store address</string>
     <!--
          Order Creation
     -->
@@ -320,6 +324,15 @@
     <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
     <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
     <string name="order_creation_fragment_title">New Order</string>
+    <string name="order_creation_customer">Customer</string>
+    <string name="order_creation_customer_note">Customer Note</string>
+    <string name="order_creation_add_customer">Add customer</string>
+    <string name="order_creation_add_customer_note">Add note</string>
+    <string name="order_creation_products">Products</string>
+    <string name="order_creation_add_products">Add Product</string>
+    <string name="order_creation_new_customer">New customer</string>
+    <string name="order_creation_product_stock_quantity">%s in stock</string>
+    <string name="order_creation_product_instock">In stock</string>
     <!--
         Order Filters
     -->
@@ -2131,11 +2144,5 @@
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
     <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
-    <string name="order_creation_customer">Customer</string>
-    <string name="order_creation_customer_note">Customer Note</string>
-    <string name="order_creation_add_customer">Add customer</string>
-    <string name="order_creation_add_customer_note">Add note</string>
-    <string name="order_creation_products">Products</string>
-    <string name="order_creation_add_products">Add Product</string>
-    <string name="order_creation_new_customer">New customer</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
 </resources>
