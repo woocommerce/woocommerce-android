@@ -22,7 +22,7 @@ import java.util.*
 data class Order(
     val id: Long,
     @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
-    val identifier: OrderListItemIdentifier.OrderIdentifier,
+    val identifier: OrderIdentifier,
     @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
     val rawLocalOrderId: Int,
     val number: String,
