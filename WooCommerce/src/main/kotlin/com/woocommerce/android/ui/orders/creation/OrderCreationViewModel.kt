@@ -55,7 +55,7 @@ class OrderCreationViewModel @Inject constructor(
 
     init {
         orderDraft = orderDraft.copy(
-            currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencySymbol.orEmpty()
+            currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencyCode.orEmpty()
         )
     }
 
