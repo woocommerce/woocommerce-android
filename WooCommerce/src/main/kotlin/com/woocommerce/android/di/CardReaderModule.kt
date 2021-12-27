@@ -48,7 +48,14 @@ class CardReaderModule {
         }
 
         override suspend fun fetchConnectionToken(): String {
-            val result = inPersonPaymentsStore.fetchConnectionToken(selectedSite.get())
+            val result = inPersonPaymentsStore.fetchConnectionToken(
+                appPrefs.getPaymentPluginType(
+                    selectedSite.get().id,
+                    selectedSite.get().siteId,
+                    selectedSite.get().selfHostedSiteId
+                ).toInPersonPaymentsPluginType(),
+                selectedSite.get()
+            )
             return result.model?.token.orEmpty()
         }
 
