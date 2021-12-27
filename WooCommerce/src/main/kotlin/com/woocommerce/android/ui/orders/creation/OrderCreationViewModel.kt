@@ -61,7 +61,7 @@ class OrderCreationViewModel @Inject constructor(
         orderDraft.items.toMutableList().apply {
             find { it.productId == remoteProductId }
                 ?.let { set(indexOf(it), it.copy(quantity = it.quantity + 1)) }
-                ?: add(Order.Item.EMPTY.copy(productId = remoteProductId))
+                ?: add(Order.Item.EMPTY.copy(productId = remoteProductId, quantity = 1f))
         }.let { orderDraft = orderDraft.copy(items = it) }
     }
 }
