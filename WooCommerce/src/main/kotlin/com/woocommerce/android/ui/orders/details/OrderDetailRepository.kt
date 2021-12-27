@@ -174,7 +174,7 @@ class OrderDetailRepository @Inject constructor(
         )
     }
 
-    fun getOrderById(orderId: Long) =
+    suspend fun getOrderById(orderId: Long) =
         orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {

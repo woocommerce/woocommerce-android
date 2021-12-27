@@ -116,15 +116,15 @@ class IssueRefundViewModel @Inject constructor(
     private var refundSummaryState by refundSummaryStateLiveData
     private var productsRefundState by productsRefundLiveData
 
-    private val order: Order
-    private val refunds: List<Refund>
-    private val allShippingLineIds: List<Long>
-    private val refundableShippingLineIds: List<Long> /* Shipping lines that haven't been refunded */
+    private lateinit var order: Order
+    private lateinit var refunds: List<Refund>
+    private lateinit var allShippingLineIds: List<Long>
+    private lateinit var refundableShippingLineIds: List<Long> /* Shipping lines that haven't been refunded */
 
-    private val maxRefund: BigDecimal
-    private val maxQuantities: Map<Long, Float>
-    private val formatCurrency: (BigDecimal) -> String
-    private val gateway: PaymentGateway
+    private lateinit var maxRefund: BigDecimal
+    private lateinit var maxQuantities: Map<Long, Float>
+    private lateinit var formatCurrency: (BigDecimal) -> String
+    private lateinit var gateway: PaymentGateway
     private val arguments: RefundsArgs by savedState.navArgs()
 
     private val selectedQuantities: MutableMap<Long, Int> by lazy {
@@ -138,23 +138,25 @@ class IssueRefundViewModel @Inject constructor(
         get() = refundJob?.isActive ?: false
 
     init {
-        order = loadOrder(arguments.orderId)
-        allShippingLineIds = order.shippingLines.map { it.itemId }
-        refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
-        formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-        maxRefund = order.total - order.refundTotal
-        maxQuantities = refunds.getMaxRefundQuantities(order.items)
-            .map { (id, quantity) -> id to quantity }
-            .toMap()
-        gateway = loadPaymentGateway()
-        refundableShippingLineIds = getRefundableShippingLineIds()
+        launch {
+            order = loadOrder(arguments.orderId)
+            allShippingLineIds = order.shippingLines.map { it.itemId }
+            refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
+            formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
+            maxRefund = order.total - order.refundTotal
+            maxQuantities = refunds.getMaxRefundQuantities(order.items)
+                .map { (id, quantity) -> id to quantity }
+                .toMap()
+            gateway = loadPaymentGateway()
+            refundableShippingLineIds = getRefundableShippingLineIds()
 
-        initRefundByAmountState()
-        initRefundByItemsState()
-        initRefundSummaryState()
+            initRefundByAmountState()
+            initRefundByItemsState()
+            initRefundSummaryState()
+        }
     }
 
-    private fun loadOrder(orderId: Long): Order =
+    private suspend fun loadOrder(orderId: Long): Order =
         requireNotNull(orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.toAppModel())
 
     private fun updateRefundTotal(amount: BigDecimal) {
@@ -293,7 +295,7 @@ class IssueRefundViewModel @Inject constructor(
         AnalyticsTracker.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
+                AnalyticsTracker.KEY_REFUND_TYPE to RefundType.ITEMS.name,
                 AnalyticsTracker.KEY_ORDER_ID to order.id
             )
         )

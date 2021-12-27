@@ -54,17 +54,19 @@ class RefundDetailViewModel @Inject constructor(
     private val navArgs: RefundDetailFragmentArgs by savedState.navArgs()
 
     init {
-        val orderModel = orderStore.getOrderByIdAndSite(navArgs.orderId, selectedSite.get())
-        orderModel?.toAppModel()?.let { order ->
-            formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-            if (navArgs.refundId > 0) {
-                refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)
-                    ?.toAppModel()?.let { refund ->
-                        displayRefundDetails(refund, order)
-                    }
-            } else {
-                val refunds = refundStore.getAllRefunds(selectedSite.get(), navArgs.orderId).map { it.toAppModel() }
-                displayRefundedProducts(order, refunds)
+        launch {
+            val orderModel = orderStore.getOrderByIdAndSite(navArgs.orderId, selectedSite.get())
+            orderModel?.toAppModel()?.let { order ->
+                formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
+                if (navArgs.refundId > 0) {
+                    refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)
+                        ?.toAppModel()?.let { refund ->
+                            displayRefundDetails(refund, order)
+                        }
+                } else {
+                    val refunds = refundStore.getAllRefunds(selectedSite.get(), navArgs.orderId).map { it.toAppModel() }
+                    displayRefundedProducts(order, refunds)
+                }
             }
         }
     }

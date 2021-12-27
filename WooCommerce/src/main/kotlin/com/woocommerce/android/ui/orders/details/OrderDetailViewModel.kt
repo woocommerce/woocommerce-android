@@ -124,9 +124,9 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun start() {
-        val orderInDb = orderDetailRepository.getOrderById(navArgs.orderId)
-        val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
         launch {
+            val orderInDb = orderDetailRepository.getOrderById(navArgs.orderId)
+            val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
             if (needToFetch) {
                 fetchOrder(true)
             } else {
@@ -330,12 +330,14 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onShippingLabelsPurchased() {
-        // Refresh UI from the database, as new labels are cached by FluxC after the purchase,
-        // if for any reason, the order wasn't found, refetch it
-        orderDetailRepository.getOrderById(navArgs.orderId)?.let {
-            order = it
-            displayOrderDetails()
-        } ?: launch { fetchOrder(true) }
+        launch {
+            // Refresh UI from the database, as new labels are cached by FluxC after the purchase,
+            // if for any reason, the order wasn't found, refetch it
+            orderDetailRepository.getOrderById(navArgs.orderId)?.let {
+                order = it
+                displayOrderDetails()
+            } ?: fetchOrder(true)
+        }
     }
 
     fun onOrderItemRefunded() {
