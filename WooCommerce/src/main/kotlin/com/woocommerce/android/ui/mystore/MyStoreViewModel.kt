@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -67,8 +68,8 @@ class MyStoreViewModel @Inject constructor(
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
 
-    private val refreshStoreStats = BooleanArray(StatsGranularity.values().size)
-    private val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
+    @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size)
+    @VisibleForTesting val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
@@ -135,16 +136,7 @@ class MyStoreViewModel @Inject constructor(
             getStats(forceRefresh, selectedGranularity)
                 .collect {
                     when (it) {
-                        is RevenueStatsSuccess -> {
-                            _revenueStatsState.value = RevenueStatsViewState.Content(
-                                it.stats?.toStoreStatsUiModel(),
-                                selectedGranularity
-                            )
-                            AnalyticsTracker.track(
-                                AnalyticsTracker.Stat.DASHBOARD_MAIN_STATS_LOADED,
-                                mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.name.lowercase())
-                            )
-                        }
+                        is RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedGranularity)
                         is RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
                         PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
                         is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
@@ -154,6 +146,20 @@ class MyStoreViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    private fun onRevenueStatsSuccess(
+        it: RevenueStatsSuccess,
+        selectedGranularity: StatsGranularity
+    ) {
+        _revenueStatsState.value = RevenueStatsViewState.Content(
+            it.stats?.toStoreStatsUiModel(),
+            selectedGranularity
+        )
+        AnalyticsTracker.track(
+            AnalyticsTracker.Stat.DASHBOARD_MAIN_STATS_LOADED,
+            mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.name.lowercase())
+        )
     }
 
     private fun onJetPackCpConnected() {
