@@ -3,6 +3,7 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Order.*
+import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.StringUtils
@@ -21,7 +22,8 @@ import java.util.*
 data class Order(
     val id: Long,
     @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
-    val identifier: OrderIdentifier,
+    val identifier: OrderListItemIdentifier.OrderIdentifier,
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
     val rawLocalOrderId: Int,
     val number: String,
     val dateCreated: Date,
@@ -52,7 +54,7 @@ data class Order(
     val feesLines: List<FeeLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
-    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
     val localId
         get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
 
@@ -249,7 +251,7 @@ data class Order(
         val EMPTY by lazy {
             Order(
                 id = 0,
-                identifier = OrderIdentifier(),
+                identifier = OrderListItemIdentifier.OrderIdentifier(),
                 rawLocalOrderId = 0,
                 number = "",
                 dateCreated = Date(),
@@ -287,7 +289,7 @@ data class Order(
 fun WCOrderModel.toAppModel(): Order {
     @Suppress("DEPRECATION_ERROR")
     return Order(
-        identifier = OrderIdentifier(this),
+        identifier = OrderListItemIdentifier.OrderIdentifier(this),
         rawLocalOrderId = this.id,
         id = this.remoteOrderId.value,
         number = this.number,
