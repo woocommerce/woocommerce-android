@@ -26,7 +26,7 @@ object OrderCustomerHelper {
         AnalyticsTracker.track(
             Stat.ORDER_CONTACT_ACTION,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_TYPE to Action.EMAIL.name.toLowerCase(Locale.US)
             )
@@ -55,7 +55,7 @@ object OrderCustomerHelper {
         AnalyticsTracker.track(
             Stat.ORDER_CONTACT_ACTION,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_TYPE to Action.CALL.name.toLowerCase(Locale.US)
             )
@@ -84,7 +84,7 @@ object OrderCustomerHelper {
         AnalyticsTracker.track(
             Stat.ORDER_CONTACT_ACTION,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_TYPE to Action.SMS.name.toLowerCase(Locale.US)
             )

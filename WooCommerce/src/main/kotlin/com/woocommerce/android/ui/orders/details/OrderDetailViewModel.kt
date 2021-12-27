@@ -214,7 +214,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onIssueOrderRefundClicked() {
-        triggerEvent(IssueOrderRefund(remoteOrderId = order.remoteId.value))
+        triggerEvent(IssueOrderRefund(remoteOrderId = order.id))
     }
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
@@ -222,7 +222,7 @@ class OrderDetailViewModel @Inject constructor(
         val site = selectedSite.get()
         when {
             cardReaderManager.readerStatus.value is Connected -> {
-                triggerEvent(StartCardReaderPaymentFlow(order.identifier))
+                triggerEvent(StartCardReaderPaymentFlow(order.id))
             }
             !appPrefs.isCardReaderOnboardingCompleted(site.id, site.siteId, site.selfHostedSiteId) -> {
                 triggerEvent(ShowCardReaderWelcomeDialog)
@@ -239,7 +239,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onSeeReceiptClicked() {
         loadReceiptUrl()?.let {
-            triggerEvent(PreviewReceipt(order.billingAddress.email, it, order.remoteId.value))
+            triggerEvent(PreviewReceipt(order.billingAddress.email, it, order.id))
         } ?: WooLog.e(T.ORDERS, "ReceiptUrl is null, but SeeReceipt button is visible")
     }
 
@@ -264,7 +264,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun loadReceiptUrl(): String? {
         return selectedSite.getIfExists()?.let {
-            appPrefs.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, order.remoteId.value)
+            appPrefs.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, order.id)
         }
     }
 
@@ -274,13 +274,13 @@ class OrderDetailViewModel @Inject constructor(
             // transaction when a result is received
             delay(1)
             if (connected) {
-                triggerEvent(StartCardReaderPaymentFlow(order.identifier))
+                triggerEvent(StartCardReaderPaymentFlow(order.id))
             }
         }
     }
 
     fun onViewRefundedProductsClicked() {
-        triggerEvent(ViewRefundedProducts(remoteOrderId = order.remoteId.value))
+        triggerEvent(ViewRefundedProducts(orderId = order.id))
     }
 
     fun onAddOrderNoteClicked() {
@@ -288,11 +288,11 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onRefundShippingLabelClick(shippingLabelId: Long) {
-        triggerEvent(RefundShippingLabel(remoteOrderId = order.remoteId.value, shippingLabelId = shippingLabelId))
+        triggerEvent(RefundShippingLabel(remoteOrderId = order.id, shippingLabelId = shippingLabelId))
     }
 
     fun onPrintShippingLabelClicked(shippingLabelId: Long) {
-        triggerEvent(PrintShippingLabel(remoteOrderId = order.remoteId.value, shippingLabelId = shippingLabelId))
+        triggerEvent(PrintShippingLabel(remoteOrderId = order.id, shippingLabelId = shippingLabelId))
     }
 
     fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
@@ -315,7 +315,7 @@ class OrderDetailViewModel @Inject constructor(
         AnalyticsTracker.track(
             ORDER_TRACKING_ADD,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider
             )
@@ -351,7 +351,7 @@ class OrderDetailViewModel @Inject constructor(
         AnalyticsTracker.track(
             Stat.ORDER_STATUS_CHANGE,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_FROM to order.status.value,
                 AnalyticsTracker.KEY_TO to updateSource.newStatus
             )
@@ -441,7 +441,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
-                orderDetailRepository.updateOrderStatus(order.remoteId, newStatus)
+                orderDetailRepository.updateOrderStatus(order.id, newStatus)
                     .collect { result ->
                         when (result) {
                             is OptimisticUpdateResult -> reloadOrderDetails()
@@ -549,7 +549,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchSLCreationEligibilityAsync() = async {
         if (isShippingPluginReady) {
-            orderDetailRepository.fetchSLCreationEligibility(order.remoteId.value)
+            orderDetailRepository.fetchSLCreationEligibility(order.id)
         }
     }
 
@@ -620,7 +620,7 @@ class OrderDetailViewModel @Inject constructor(
             FeatureFlag.CARD_READER.isEnabled()
 
         val isOrderEligibleForSLCreation = isShippingPluginReady &&
-            orderDetailRepository.isOrderEligibleForSLCreation(order.remoteId.value) &&
+            orderDetailRepository.isOrderEligibleForSLCreation(order.id) &&
             !orderEligibleForInPersonPayments
 
         if (isOrderEligibleForSLCreation &&

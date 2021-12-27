@@ -235,7 +235,7 @@ workflows:
             branches:
               only:
                 - develop
-                - /^release.*/          
+                - /^release.*/
   Optional UI Tests:
     unless: << pipeline.parameters.release_build >>
     #Optionally run connected tests on PRs
@@ -251,7 +251,7 @@ workflows:
       - Connected Tests:
           post-to-slack: true
           name: UI Tests (Pixel 2 | API 28)
-          requires: [Hold]      
+          requires: [Hold]
   Release Build:
     when: << pipeline.parameters.release_build >>
     jobs:

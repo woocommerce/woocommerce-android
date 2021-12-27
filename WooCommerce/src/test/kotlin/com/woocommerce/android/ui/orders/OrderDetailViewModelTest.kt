@@ -443,8 +443,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
                 )
             ).whenever(repository).getWooServicesPluginInfo()
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
-            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.id)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.id)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -491,8 +491,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             ).whenever(repository).getWooServicesPluginInfo()
 
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
-            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.id)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.id)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -572,8 +572,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             ).whenever(repository).getWooServicesPluginInfo()
 
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
-            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.id)
+            doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.id)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -690,7 +690,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         snackbar?.undoAction?.onClick(mock())
         assertThat(snackbar?.message).isEqualTo(resources.getString(string.order_status_updated))
 
-        verify(repository, times(2)).updateOrderStatus(eq(order.remoteId), statusChangeCaptor.capture())
+        verify(repository, times(2)).updateOrderStatus(eq(order.id), statusChangeCaptor.capture())
 
         assertThat(listOf(initialStatus) + statusChangeCaptor.allValues).containsExactly(
             initialStatus, newStatus, initialStatus
@@ -800,8 +800,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
             .whenever(repository).getWooServicesPluginInfo()
-        doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
-        doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
+        doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.id)
+        doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.id)
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
@@ -863,8 +863,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             )
                 .whenever(repository).getWooServicesPluginInfo()
-            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.remoteId.value)
-            doReturn(false).whenever(repository).isOrderEligibleForSLCreation(order.remoteId.value)
+            doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.id)
+            doReturn(false).whenever(repository).isOrderEligibleForSLCreation(order.id)
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
@@ -1154,7 +1154,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
 
             // Then
-            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.identifier), viewModel.event.value)
+            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id), viewModel.event.value)
         }
 
     @Test
@@ -1226,7 +1226,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // Then
-            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.identifier), viewModel.event.value)
+            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id), viewModel.event.value)
         }
 
     @Test
