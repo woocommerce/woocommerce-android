@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -46,10 +47,10 @@ class OrderEditingViewModel @Inject constructor(
     lateinit var order: Order
 
     fun start() {
-        launch {
-            orderDetailRepository.getOrderById(navArgs.orderId)?.let {
-                order = it
-            } ?: WooLog.w(WooLog.T.ORDERS, "Order ${navArgs.orderId} not found in the database.")
+        runBlocking {
+            order = requireNotNull(orderDetailRepository.getOrderById(navArgs.orderId)) {
+                "Order ${navArgs.orderId} not found in the database."
+            }
         }
     }
 
