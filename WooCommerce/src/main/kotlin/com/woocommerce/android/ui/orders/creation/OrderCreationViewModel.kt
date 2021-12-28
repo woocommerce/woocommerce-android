@@ -72,7 +72,7 @@ class OrderCreationViewModel @Inject constructor(
     fun onDecreaseProductsQuantity(id: Long) = adjustProductsQuantity(id, -1)
 
     fun onRemoveProduct(item: Order.Item) {
-        orderDraft = orderDraft.copy(items = orderDraft.items - item)
+        updateOrderItems(orderDraft.items - item)
     }
 
     private fun adjustProductsQuantity(id: Long, quantityToAdd: Int) {
