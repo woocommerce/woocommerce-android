@@ -19,6 +19,7 @@ import java.util.*
 @Parcelize
 data class Order(
     val id: Long,
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
     val rawLocalOrderId: Int,
     val number: String,
     val dateCreated: Date,
@@ -49,7 +50,7 @@ data class Order(
     val feesLines: List<FeeLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
-    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
     val localId
         get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
 
@@ -161,8 +162,10 @@ data class Order(
 
     @Parcelize
     data class FeeLine(
+        val id: Long,
         val name: String,
-        val total: BigDecimal
+        val total: BigDecimal,
+        val totalTax: BigDecimal,
     ) : Parcelable
 
     fun getBillingName(defaultValue: String): String {
@@ -375,8 +378,10 @@ fun WCOrderModel.toAppModel(): Order {
         },
         feesLines = this.getFeeLineList().map {
             FeeLine(
-                it.name ?: StringUtils.EMPTY,
-                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+                id = it.id!!,
+                name = it.name ?: StringUtils.EMPTY,
+                totalTax = it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                total = it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
             )
         },
         metaData = getMetaDataList().mapNotNull { it.toAppModel() }
