@@ -235,13 +235,14 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val illustration = R.drawable.img_products_error
         }
 
+        // TODO Handle this state properly when designs are ready
         data class WcPayAndStripeInstalledState(
             val refreshButtonAction: () -> Unit,
             val onLearnMoreActionClicked: (() -> Unit)
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_generic_error) {
-            val contactSupportLabel: Nothing = TODO("Add proper logic after designs are ready")
-            val learnMoreLabel: Nothing = TODO("Add proper logic after designs are ready")
-            val illustration: Nothing = TODO("Add proper logic after designs are ready")
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
+            val headerLabel = UiString.UiStringText("Both WCPay and Stripe Extension plugin are active")
+            val illustration = R.drawable.img_hot_air_balloon
+            val hintLabel = UiString.UiStringText("Remove one of the plugin and try again")
         }
 
         class NoConnectionErrorState(
