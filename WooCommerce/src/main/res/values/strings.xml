@@ -333,6 +333,11 @@
     <string name="order_creation_new_customer">New customer</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
     <string name="order_creation_product_instock">In stock</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
+    <string name="order_creation_product_details_title">Product</string>
+    <string name="order_creation_add_discount">Add discount</string>
+    <string name="order_creation_remove_product">Remove product from order</string>
+
     <!--
         Order Filters
     -->
@@ -2146,5 +2151,4 @@
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
     <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
-    <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
 </resources>

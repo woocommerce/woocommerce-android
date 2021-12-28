@@ -55,7 +55,7 @@ class OrderCreationViewModel @Inject constructor(
 
     init {
         orderDraft = orderDraft.copy(
-            currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencySymbol.orEmpty()
+            currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencyCode.orEmpty()
         )
     }
 
@@ -70,6 +70,10 @@ class OrderCreationViewModel @Inject constructor(
     fun onIncreaseProductsQuantity(id: Long) = adjustProductsQuantity(id, 1)
 
     fun onDecreaseProductsQuantity(id: Long) = adjustProductsQuantity(id, -1)
+
+    fun onRemoveProduct(item: Order.Item) {
+        updateOrderItems(orderDraft.items - item)
+    }
 
     private fun adjustProductsQuantity(id: Long, quantityToAdd: Int) {
         val items = orderDraft.items.toMutableList()

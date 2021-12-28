@@ -134,6 +134,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 productsSection.content = RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = ProductsAdapter(
+                        onProductClicked = formViewModel::onProductClicked,
                         productImageMap = productImageMap,
                         currencyFormatter = currencyFormatter.buildBigDecimalFormatter(
                             currencyCode = sharedViewModel.currentDraft.currency
