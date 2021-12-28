@@ -83,7 +83,14 @@ class OrderCreationViewModel @Inject constructor(
                 total = price.multiply(newQuantity.toBigDecimal())
             )
         }
-        orderDraft = orderDraft.copy(items = items)
+        updateOrderItems(items)
+    }
+
+    private fun updateOrderItems(items: List<Order.Item>) {
+        orderDraft = orderDraft.copy(
+            items = items,
+            total = items.sumOf { it.subtotal }
+        )
     }
 
     private suspend fun Order.Item.toProductUIModel(): ProductUIModel {
