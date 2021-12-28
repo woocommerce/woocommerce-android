@@ -28,6 +28,6 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         AnalyticsTracker.trackViewShown(this)
     }
 
-    // TODO nbradbury show payment amount in title
-    override fun getFragmentTitle() = getString(R.string.simple_payments_take_payment_button)
+    // TODO nbradbury show payment amount in title via simple_payments_take_payment_button
+    override fun getFragmentTitle() = getString(R.string.simple_payments_dialog_title)
 }
