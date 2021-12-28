@@ -165,17 +165,17 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun addOrderShipmentTracking(
-        orderIdentifier: OrderIdentifier,
+        orderId: Long,
+        orderLocalId: Int,
         shipmentTrackingModel: OrderShipmentTracking
     ): OnOrderChanged {
-        val orderIdSet = orderIdentifier.toIdSet()
         return orderStore.addOrderShipmentTracking(
             AddOrderShipmentTrackingPayload(
-                selectedSite.get(),
-                orderIdSet.id,
-                orderIdSet.remoteOrderId,
-                shipmentTrackingModel.toDataModel(),
-                shipmentTrackingModel.isCustomProvider
+                site = selectedSite.get(),
+                localOrderId = orderLocalId,
+                remoteOrderId = orderId,
+                tracking = shipmentTrackingModel.toDataModel(),
+                isCustomProvider = shipmentTrackingModel.isCustomProvider
             )
         )
     }
@@ -235,8 +235,8 @@ class OrderDetailRepository @Inject constructor(
         } else false
     }
 
-    fun getOrderRefunds(remoteOrderId: Long) = refundStore
-        .getAllRefunds(selectedSite.get(), remoteOrderId)
+    fun getOrderRefunds(orderId: Long) = refundStore
+        .getAllRefunds(selectedSite.get(), orderId)
         .map { it.toAppModel() }
         .reversed()
         .sortedBy { it.id }
