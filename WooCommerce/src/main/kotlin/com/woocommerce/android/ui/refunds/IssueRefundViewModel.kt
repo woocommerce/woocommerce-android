@@ -125,8 +125,8 @@ class IssueRefundViewModel @Inject constructor(
     private lateinit var refunds: List<Refund>
     private lateinit var allShippingLineIds: List<Long>
     private lateinit var refundableShippingLineIds: List<Long> /* Shipping lines that haven't been refunded */
-    private val allFeeLineIds: List<Long>
-    private val refundableFeeLineIds: List<Long> /* Fees lines that haven't been refunded */
+    private lateinit var allFeeLineIds: List<Long>
+    private lateinit var refundableFeeLineIds: List<Long> /* Fees lines that haven't been refunded */
 
     private lateinit var maxRefund: BigDecimal
     private lateinit var maxQuantities: Map<Long, Float>
@@ -148,14 +148,16 @@ class IssueRefundViewModel @Inject constructor(
         launch {
             order = loadOrder(arguments.orderId)
             allShippingLineIds = order.shippingLines.map { it.itemId }
-            allFeeLineIds = order.feesLines.map { it.id }refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
+            allFeeLineIds = order.feesLines.map { it.id }
+            refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
             formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
             maxRefund = order.total - order.refundTotal
             maxQuantities = refunds.getMaxRefundQuantities(order.items)
                 .map { (id, quantity) -> id to quantity }
                 .toMap()
             gateway = loadPaymentGateway()
-            refundableShippingLineIds = getRefundableShippingLineIds()refundableFeeLineIds = getRefundableFeeLineIds()
+            refundableShippingLineIds = getRefundableShippingLineIds()
+            refundableFeeLineIds = getRefundableFeeLineIds()
 
             initRefundByAmountState()
             initRefundByItemsState()
