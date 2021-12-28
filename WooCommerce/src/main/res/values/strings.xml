@@ -124,6 +124,8 @@
     <string name="analytics">Analytics</string>
     <string name="minus">Minus</string>
     <string name="plus">Plus</string>
+    <string name="card">Card</string>
+    <string name="cash">Cash</string>
 
     <!--
         Date/Time Labels
@@ -315,6 +317,7 @@
     <string name="simple_payments_take_payment_button">Take payment (%s)</string>
     <string name="simple_payments_tax_with_percent">Tax (%s%%)</string>
     <string name="simple_payments_tax_message">Taxes are automatically calculated based on your store address</string>
+    <string name="simple_payments_choose_method">Choose your payment method</string>
     <!--
          Order Creation
     -->
