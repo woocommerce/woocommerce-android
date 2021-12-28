@@ -36,7 +36,7 @@ class OrderCreationProductDetailsFragment : BaseFragment(R.layout.fragment_order
 
             productAttributes.text = getString(
                 R.string.orderdetail_product_lineitem_qty_and_price,
-                item.quantity,
+                item.quantity.toString(),
                 priceFormatter(item.price)
             )
             loadImage(item)
