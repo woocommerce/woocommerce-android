@@ -55,7 +55,7 @@ class OrderCreationViewModel @Inject constructor(
 
     init {
         orderDraft = orderDraft.copy(
-            currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencySymbol.orEmpty()
+            currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencyCode.orEmpty()
         )
     }
 
@@ -71,14 +71,30 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onDecreaseProductsQuantity(id: Long) = adjustProductsQuantity(id, -1)
 
+    fun onRemoveProduct(item: Order.Item) {
+        updateOrderItems(orderDraft.items - item)
+    }
+
     private fun adjustProductsQuantity(id: Long, quantityToAdd: Int) {
         val items = orderDraft.items.toMutableList()
         val index = items.indexOfFirst { it.uniqueId == id }
         if (index == -1) error("Couldn't find the product with id $id")
         items[index] = with(items[index]) {
-            copy(quantity = quantity + quantityToAdd)
+            val newQuantity = quantity + quantityToAdd
+            copy(
+                quantity = newQuantity,
+                subtotal = price.multiply(newQuantity.toBigDecimal()),
+                total = price.multiply(newQuantity.toBigDecimal())
+            )
         }
-        orderDraft = orderDraft.copy(items = items)
+        updateOrderItems(items)
+    }
+
+    private fun updateOrderItems(items: List<Order.Item>) {
+        orderDraft = orderDraft.copy(
+            items = items,
+            total = items.sumOf { it.subtotal }
+        )
     }
 
     private suspend fun Order.Item.toProductUIModel(): ProductUIModel {
