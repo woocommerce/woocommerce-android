@@ -6,18 +6,19 @@
     android:background="@color/color_surface"
     android:orientation="vertical">
 
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/default_window_background"
+        android:padding="@dimen/major_100"
+        android:text="@string/simple_payments_choose_method" />
+
     <View
         android:id="@+id/divider1"
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_marginBottom="@dimen/major_100"
         android:background="@color/divider_color" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/major_100"
-        android:text="@string/simple_payments_choose_method" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textCash"
@@ -27,6 +28,7 @@
         android:drawableStart="@drawable/ic_gridicons_money"
         android:drawableEnd="@drawable/ic_arrow_right"
         android:drawablePadding="@dimen/major_100"
+        android:paddingBottom="@dimen/major_100"
         android:text="@string/cash" />
 
     <View
@@ -44,5 +46,12 @@
         android:drawableStart="@drawable/ic_gridicons_credit_card"
         android:drawableEnd="@drawable/ic_arrow_right"
         android:drawablePadding="@dimen/major_100"
+        android:paddingBottom="@dimen/major_100"
         android:text="@string/card" />
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:background="@color/divider_color" />
 </LinearLayout>
