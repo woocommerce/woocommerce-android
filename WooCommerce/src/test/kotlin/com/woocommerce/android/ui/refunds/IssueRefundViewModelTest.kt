@@ -131,15 +131,17 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when order has multiple shipping, multiple shipping are mentioned in the notice`() {
-        val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines()
-        whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines()
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
 
-        initViewModel()
+            initViewModel()
 
-        var viewState: RefundByItemsViewState? = null
-        viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+            var viewState: RefundByItemsViewState? = null
+            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
 
-        assertTrue(viewState!!.isRefundNoticeVisible)
-        assertEquals("You can refund multiple shipping lines", viewState!!.refundNotice)
+            assertTrue(viewState!!.isRefundNoticeVisible)
+            assertEquals("You can refund multiple shipping lines", viewState!!.refundNotice)
+        }
     }
 }
