@@ -434,7 +434,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
     /**
      * Starts the initial event sequence (see the diagram)
      */
-    fun start(orderId: String) {
+    fun start(orderId: Long) {
         stateMachine.transition(Event.FlowStarted(orderId))
     }
 
@@ -700,7 +700,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object DataLoadingFailure : State()
 
         @Parcelize
-        data class DataLoading(val orderId: String) : State()
+        data class DataLoading(val orderId: Long) : State()
 
         @Parcelize
         data class WaitingForInput(override val data: StateMachineData) : State()
@@ -742,7 +742,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
     sealed class Event {
         abstract class UserInput : Event()
 
-        data class FlowStarted(val orderId: String) : Event()
+        data class FlowStarted(val orderId: Long) : Event()
         data class DataLoaded(
             val order: Order,
             val originAddress: Address,

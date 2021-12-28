@@ -435,6 +435,18 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
     </style>
 
+    <style name="Woo.Button.Icon" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minHeight">@dimen/min_tap_target</item>
+        <item name="android:minWidth">@dimen/min_tap_target</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconTint">@color/button_fg_selector</item>
+    </style>
+
     <style name="Woo.Button.TextButton.Expander">
         <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
         <item name="android:textColor">@color/color_on_surface_medium</item>

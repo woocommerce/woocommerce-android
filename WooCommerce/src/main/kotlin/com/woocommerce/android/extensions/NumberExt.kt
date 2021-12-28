@@ -11,6 +11,15 @@ fun Float.formatToString(): String {
     }
 }
 
+fun Double.formatToString(): String {
+    val int = this.roundToInt()
+    return if (this != int.toDouble()) {
+        this.toString()
+    } else {
+        int.toString()
+    }
+}
+
 fun Double?.isInteger() = this?.rem(1) == 0.0
 
 infix fun <T> Comparable<T>?.greaterThan(other: T) =

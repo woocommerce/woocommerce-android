@@ -14,14 +14,23 @@ import com.woocommerce.android.ui.orders.fulfill.OrderFulfillFragmentArgs
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import kotlin.test.assertNotNull
@@ -30,7 +39,9 @@ import kotlin.test.assertNull
 @ExperimentalCoroutinesApi
 class OrderFullfillViewModelTest : BaseUnitTest() {
     companion object {
-        private const val ORDER_IDENTIFIER = "1-1-1"
+        private const val ORDER_ID = 1L
+        private const val ORDER_LOCAL_ID = 1
+        private const val ORDER_SITE_ID = 1
     }
 
     private val networkStatus: NetworkStatus = mock()
@@ -41,13 +52,18 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
     private val resources: ResourceProvider = mock()
 
-    private val savedState = OrderFulfillFragmentArgs(orderIdentifier = ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState =
+        OrderFulfillFragmentArgs(orderId = ORDER_ID, orderLocalId = ORDER_LOCAL_ID).initSavedStateHandle()
 
-    private val order = OrderTestUtils.generateTestOrder(ORDER_IDENTIFIER)
-    private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(5, ORDER_IDENTIFIER)
+    private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
+    private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(
+        totalCount = 5,
+        localOrderId = ORDER_LOCAL_ID,
+        localSiteId = ORDER_SITE_ID,
+    )
     private val orderShippingLabels = OrderTestUtils.generateShippingLabels(
         5,
-        ORDER_IDENTIFIER
+        ORDER_ID
     )
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderFulfillViewModel
@@ -86,7 +102,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
         val expectedViewState = orderWithParameters.copy(order = order.copy(refundTotal = nonRefundedOrder.refundTotal))
 
-        doReturn(nonRefundedOrder).whenever(repository).getOrder(any())
+        doReturn(nonRefundedOrder).whenever(repository).getOrderById(any())
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
         doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
 
@@ -120,7 +136,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     fun `hasVirtualProductsOnly returns false if there are no products for the order`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = order.copy(items = emptyList())
-            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).getOrderById(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             viewModel.start()
@@ -135,7 +151,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
             val virtualOrder = order.copy(items = virtualItems)
 
             doReturn(true).whenever(repository).hasVirtualProductsOnly(listOf(3, 4))
-            doReturn(virtualOrder).whenever(repository).getOrder(any())
+            doReturn(virtualOrder).whenever(repository).getOrderById(any())
 
             viewModel.start()
 
@@ -150,7 +166,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
             val mixedOrder = order.copy(items = mixedItems)
 
             doReturn(false).whenever(repository).hasVirtualProductsOnly(listOf(1, 2))
-            doReturn(mixedOrder).whenever(repository).getOrder(any())
+            doReturn(mixedOrder).whenever(repository).getOrderById(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             viewModel.start()
@@ -161,7 +177,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     @Test
     fun `Do not display product list when all products are refunded`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).getOrderById(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
             doReturn(testOrderRefunds).whenever(repository).getOrderRefunds(any())
 
@@ -179,7 +195,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     @Test
     fun `Do not display shipment tracking when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).getOrderById(any())
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
 
             var orderData: ViewState? = null
@@ -191,7 +207,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Update order status when network connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(order).whenever(repository).getOrder(any())
+        doReturn(order).whenever(repository).getOrderById(any())
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
         var snackBar: ShowSnackbar? = null
@@ -239,7 +255,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
             dateShipped = DateUtils.getCurrentDateString()
         )
 
-        doReturn(order).whenever(repository).getOrder(any())
+        doReturn(order).whenever(repository).getOrderById(any())
 
         val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
         addedShipmentTrackings.add(shipmentTracking)
@@ -266,7 +282,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
             dateShipped = DateUtils.getCurrentDateString()
         )
 
-        doReturn(order).whenever(repository).getOrder(any())
+        doReturn(order).whenever(repository).getOrderById(any())
 
         val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
         addedShipmentTrackings.add(shipmentTracking)
@@ -302,7 +318,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     @Test
     fun `handle onBackButtonClicked when no shipment is added`() = runBlockingTest {
-        doReturn(order).whenever(repository).getOrder(any())
+        doReturn(order).whenever(repository).getOrderById(any())
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
         var exit: Exit? = null
