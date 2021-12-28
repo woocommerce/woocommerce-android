@@ -82,11 +82,18 @@ internal class CreatePaymentAction(
         paymentInfo.orderKey.takeUnless { it.isNullOrBlank() }
             ?.let { map[MetaDataKeys.ORDER_KEY.key] = it }
 
-        val readerId = terminal.getConnectedReader()?.id
-        if (readerId == null) {
-            logWrapper.e(LOG_TAG, "collecting payment with reader without serial number")
+        val connectedReader = terminal.getConnectedReader()
+        if (connectedReader != null) {
+            val readerId = connectedReader.id
+            if (readerId == null) {
+                logWrapper.e(LOG_TAG, "collecting payment with reader without serial number")
+            } else {
+                map[MetaDataKeys.READER_ID.key] = readerId
+            }
+
+            map[MetaDataKeys.READER_MODEL.key] = connectedReader.type
         } else {
-            map[MetaDataKeys.READER_ID.key] = readerId
+            logWrapper.e(LOG_TAG, "collecting payment with connected reader which is null")
         }
 
         map[MetaDataKeys.ORDER_ID.key] = paymentInfo.orderId.toString()

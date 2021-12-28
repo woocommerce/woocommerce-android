@@ -50,8 +50,7 @@
             app:destination="@id/nav_graph_orders">
             <argument
                 android:name="orderId"
-                android:defaultValue='""'
-                app:argType="string" />
+                app:argType="long" />
             <argument
                 android:name="remoteNoteId"
                 android:defaultValue="0L"

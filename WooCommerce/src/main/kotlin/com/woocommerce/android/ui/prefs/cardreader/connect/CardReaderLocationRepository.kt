@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.toInPersonPaymentsPluginType
 import org.wordpress.android.fluxc.model.payments.inperson.WCTerminalStoreLocationErrorType
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import javax.inject.Inject
@@ -9,11 +11,14 @@ class CardReaderLocationRepository @Inject constructor(
     private val inPersonPaymentsStore: WCInPersonPaymentsStore,
     private val selectedSite: SelectedSite
 ) {
-    suspend fun getDefaultLocationId(): LocationIdFetchingResult {
+    suspend fun getDefaultLocationId(pluginType: PluginType): LocationIdFetchingResult {
         val selectedSite = selectedSite.getIfExists() ?: return LocationIdFetchingResult.Error.Other(
             "Missing selected site"
         )
-        val result = inPersonPaymentsStore.getStoreLocationForSite(selectedSite)
+        val result = inPersonPaymentsStore.getStoreLocationForSite(
+            pluginType.toInPersonPaymentsPluginType(),
+            selectedSite
+        )
         return if (result.isError) {
             when (val type = result.error?.type) {
                 is WCTerminalStoreLocationErrorType.MissingAddress -> {

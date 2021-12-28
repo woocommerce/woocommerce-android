@@ -10,6 +10,8 @@ import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
@@ -438,11 +440,26 @@ object AppPrefs {
     }
 
     fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): Boolean {
-        return getCardReaderOnboardingCompletedStatus(
+        val completedStatus = getCardReaderOnboardingCompletedStatus(
             localSiteId,
             remoteSiteId,
             selfHostedSiteId
-        ) != CARD_READER_ONBOARDING_NOT_COMPLETED
+        )
+        return completedStatus == CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY ||
+            completedStatus == CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
+    }
+
+    fun getPaymentPluginType(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): PluginType {
+        return when (getCardReaderOnboardingCompletedStatus(localSiteId, remoteSiteId, selfHostedSiteId)) {
+            CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY,
+            CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY ->
+                PluginType.WOOCOMMERCE_PAYMENTS
+            CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION,
+            CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION ->
+                PluginType.STRIPE_TERMINAL_GATEWAY
+            CARD_READER_ONBOARDING_NOT_COMPLETED ->
+                throw IllegalStateException("Onboarding not completed. Plugin Type is null")
+        }
     }
 
     fun setCardReaderOnboardingCompleted(
@@ -454,6 +471,24 @@ object AppPrefs {
         val pluginName = when (pluginType) {
             PluginType.WOOCOMMERCE_PAYMENTS -> CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
             PluginType.STRIPE_TERMINAL_GATEWAY -> CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
+            null -> CARD_READER_ONBOARDING_NOT_COMPLETED
+        }
+        PreferenceUtils.setString(
+            getPreferences(),
+            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            pluginName.name
+        )
+    }
+
+    fun setCardReaderOnboardingPending(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        pluginType: PluginType?
+    ) {
+        val pluginName = when (pluginType) {
+            PluginType.WOOCOMMERCE_PAYMENTS -> CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY
+            PluginType.STRIPE_TERMINAL_GATEWAY -> CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION
             null -> CARD_READER_ONBOARDING_NOT_COMPLETED
         }
         PreferenceUtils.setString(
@@ -636,6 +671,8 @@ object AppPrefs {
     enum class CardReaderOnboardingCompletedStatus {
         CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY,
         CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION,
+        CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY,
+        CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION,
         CARD_READER_ONBOARDING_NOT_COMPLETED,
     }
 }

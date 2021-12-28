@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -382,7 +383,7 @@ class CardReaderConnectViewModel @Inject constructor(
             if (cardReaderLocationId != null) {
                 cardReaderManager.startConnectionToReader(cardReader, cardReaderLocationId)
             } else {
-                when (val result = locationRepository.getDefaultLocationId()) {
+                when (val result = locationRepository.getDefaultLocationId(getPaymentPluginType())) {
                     is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
                         tracker.track(CARD_READER_LOCATION_SUCCESS)
                         cardReaderManager.startConnectionToReader(cardReader, result.locationId)
@@ -394,6 +395,12 @@ class CardReaderConnectViewModel @Inject constructor(
             }
         }
     }
+
+    private fun getPaymentPluginType(): PluginType = appPrefs.getPaymentPluginType(
+        selectedSite.get().id,
+        selectedSite.get().siteId,
+        selectedSite.get().selfHostedSiteId
+    )
 
     private fun handleLocationFetchingError(result: CardReaderLocationRepository.LocationIdFetchingResult.Error) {
         this@CardReaderConnectViewModel.coroutineContext.cancelChildren()

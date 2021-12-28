@@ -26,7 +26,7 @@ android.enableJetifier=false
 
 
 # For more details on what these properties do visit
-# https://github.com/woocommerce/woocommerce-android/blob/develop/README.md
+# https://github.com/woocommerce/woocommerce-android/blob/trunk/README.md
 
 wc.oauth.app_id = woocommerce
 wc.oauth.app_secret = woocommerce

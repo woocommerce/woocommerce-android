@@ -11,7 +11,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -20,9 +19,8 @@ import java.util.*
 @Parcelize
 data class Order(
     val id: Long,
-    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
-    val identifier: OrderIdentifier,
-    private val rawLocalOrderId: Int,
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
+    val rawLocalOrderId: Int,
     val number: String,
     val dateCreated: Date,
     val dateModified: Date,
@@ -52,7 +50,7 @@ data class Order(
     val feesLines: List<FeeLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
-    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
     val localId
         get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
 
@@ -164,8 +162,10 @@ data class Order(
 
     @Parcelize
     data class FeeLine(
+        val id: Long,
         val name: String,
-        val total: BigDecimal
+        val total: BigDecimal,
+        val totalTax: BigDecimal,
     ) : Parcelable
 
     fun getBillingName(defaultValue: String): String {
@@ -249,7 +249,6 @@ data class Order(
         val EMPTY by lazy {
             Order(
                 id = 0,
-                identifier = OrderIdentifier(),
                 rawLocalOrderId = 0,
                 number = "",
                 dateCreated = Date(),
@@ -287,7 +286,6 @@ data class Order(
 fun WCOrderModel.toAppModel(): Order {
     @Suppress("DEPRECATION_ERROR")
     return Order(
-        identifier = OrderIdentifier(this),
         rawLocalOrderId = this.id,
         id = this.remoteOrderId.value,
         number = this.number,
@@ -380,8 +378,10 @@ fun WCOrderModel.toAppModel(): Order {
         },
         feesLines = this.getFeeLineList().map {
             FeeLine(
-                it.name ?: StringUtils.EMPTY,
-                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+                id = it.id!!,
+                name = it.name ?: StringUtils.EMPTY,
+                totalTax = it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                total = it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
             )
         },
         metaData = getMetaDataList().mapNotNull { it.toAppModel() }
