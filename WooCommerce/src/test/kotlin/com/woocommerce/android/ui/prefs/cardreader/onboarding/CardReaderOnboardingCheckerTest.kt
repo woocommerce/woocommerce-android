@@ -633,6 +633,31 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given wcpay installed, when onboarding pending, then onboarding pending status saved`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(null)
+        whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+            buildPaymentAccountResult(
+                hasPendingRequirements = true,
+                status = WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
+            )
+        )
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingPending(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            eq(PluginType.WOOCOMMERCE_PAYMENTS)
+        )
+    }
+
+    @Test
     fun `given stripe ext installed, when onboarding completed, then onboarding status saved`() = testBlocking {
         whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
@@ -644,6 +669,31 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         checker.getOnboardingState()
 
         verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            eq(PluginType.STRIPE_TERMINAL_GATEWAY)
+        )
+    }
+
+    @Test
+    fun `given stripe ext installed, when onboarding pending, then pending status saved`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(null)
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+        whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+            buildPaymentAccountResult(
+                hasPendingRequirements = true,
+                status = WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
+            )
+        )
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingPending(
             anyInt(),
             anyLong(),
             anyLong(),

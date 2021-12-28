@@ -6,25 +6,34 @@ import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val formViewModel by viewModels<OrderCreationFormViewModel>()
+
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var productImageMap: ProductImageMap
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,6 +100,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             binding.orderStatusView.updateStatus(it)
         }
 
+        sharedViewModel.products.observe(viewLifecycleOwner) {
+            bindProductsSection(binding.productsSection, it)
+        }
+
         formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 
@@ -103,8 +116,37 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 textView
             }
             .let {
-                notesSection.updateContent(it)
+                notesSection.content = it
             }
+    }
+
+    private fun bindProductsSection(productsSection: OrderCreationSectionView, products: List<ProductUIModel>?) {
+        productsSection.setContentHorizontalPadding(R.dimen.minor_00)
+        if (products.isNullOrEmpty()) {
+            productsSection.content = null
+        } else {
+            // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
+            if (productsSection.content == null) {
+                val animator = DefaultItemAnimator().apply {
+                    // Disable change animations to avoid duplicating viewholders
+                    supportsChangeAnimations = false
+                }
+                productsSection.content = RecyclerView(requireContext()).apply {
+                    layoutManager = LinearLayoutManager(requireContext())
+                    adapter = ProductsAdapter(
+                        onProductClicked = formViewModel::onProductClicked,
+                        productImageMap = productImageMap,
+                        currencyFormatter = currencyFormatter.buildBigDecimalFormatter(
+                            currencyCode = sharedViewModel.currentDraft.currency
+                        ),
+                        onIncreaseQuantity = sharedViewModel::onIncreaseProductsQuantity,
+                        onDecreaseQuantity = sharedViewModel::onDecreaseProductsQuantity
+                    )
+                    itemAnimator = animator
+                }
+            }
+            ((productsSection.content as RecyclerView).adapter as ProductsAdapter).products = products
+        }
     }
 
     private fun setupHandleResults() {

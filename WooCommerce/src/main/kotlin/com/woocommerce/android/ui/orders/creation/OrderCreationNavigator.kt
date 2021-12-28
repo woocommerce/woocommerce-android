@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.AddProduct
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.EditCustomer
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.EditCustomerNote
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.*
 
 object OrderCreationNavigator {
     fun navigate(fragment: Fragment, target: OrderCreationNavigationTarget) {
@@ -17,6 +15,9 @@ object OrderCreationNavigator {
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             AddProduct ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
+            is ShowProductDetails ->
+                OrderCreationFormFragmentDirections
+                    .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(target.item)
         }
 
         navController.navigate(action)

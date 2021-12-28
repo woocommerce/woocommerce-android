@@ -253,6 +253,13 @@ class OrderListFragment :
     @Suppress("LongMethod")
     private fun initObservers() {
         // setup observers
+        viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
+            it?.let { options ->
+                // So the order status can be matched to the appropriate label
+                binding.orderListView.setOrderStatusOptions(options)
+            }
+        }
+
         viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
             binding.orderRefreshLayout.isRefreshing = it == true
         }
@@ -375,16 +382,16 @@ class OrderListFragment :
             }
             findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsFragment, bundle)
         } else {
-            openOrderDetail(order.localId.value, order.remoteId.value, order.status.value)
+            openOrderDetail(order.id, order.status.value)
         }
     }
 
-    override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String, sharedView: View?) {
+    override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
         // Track user clicked to open an order and the status of that order
         AnalyticsTracker.track(
             Stat.ORDER_OPEN,
             mapOf(
-                AnalyticsTracker.KEY_ID to remoteOrderId,
+                AnalyticsTracker.KEY_ID to orderId,
                 AnalyticsTracker.KEY_STATUS to orderStatus
             )
         )
@@ -402,13 +409,11 @@ class OrderListFragment :
         (activity as? MainNavigationRouter)?.run {
             if (sharedView != null) {
                 showOrderDetailWithSharedTransition(
-                    localSiteId = selectedSite.get().id,
-                    localOrderId = localOrderId,
-                    remoteOrderId = remoteOrderId,
+                    orderId = orderId,
                     sharedView = sharedView
                 )
             } else {
-                showOrderDetail(selectedSite.get().id, localOrderId, remoteOrderId)
+                showOrderDetail(orderId)
             }
         }
     }

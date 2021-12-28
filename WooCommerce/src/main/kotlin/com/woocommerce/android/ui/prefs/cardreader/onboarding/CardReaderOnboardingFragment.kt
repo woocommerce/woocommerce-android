@@ -91,8 +91,19 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showWCStripeError(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError ->
                 showStripeTerminalErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState -> TODO()
+            is CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState ->
+                showBothPluginsInstalledState(layout, state)
         }.exhaustive
+    }
+
+    private fun showBothPluginsInstalledState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
+    ) {
+        val binding = FragmentCardReaderOnboardingStripeBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
+        UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
     }
 
     private fun showLoadingState(
