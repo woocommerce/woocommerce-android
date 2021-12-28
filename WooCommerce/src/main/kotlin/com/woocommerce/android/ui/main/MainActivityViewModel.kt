@@ -96,9 +96,9 @@ class MainActivityViewModel @Inject constructor(
         if (notification.channelType == NotificationChannelType.REVIEW) {
             triggerEvent(ViewReviewDetail(notification.uniqueId))
         } else if (notification.channelType == NotificationChannelType.NEW_ORDER) {
-            siteStore.getSiteBySiteId(notification.remoteSiteId)?.let {
+            if (siteStore.getSiteBySiteId(notification.remoteSiteId) != null) {
                 triggerEvent(ViewOrderDetail(notification.uniqueId, notification.remoteNoteId))
-            } ?: run {
+            } else {
                 // the site does not exist locally, open order list
                 triggerEvent(ViewOrderList)
             }
