@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.orders.creation
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.updateMargins
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -12,9 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
+import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.UiDimen
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -23,6 +29,7 @@ import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -90,10 +97,19 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         )
     }
 
+    private fun LayoutOrderCreationCustomerInfoBinding.changeState() {
+        if (root.currentState == R.id.start) {
+            root.transitionToEnd()
+        } else {
+            root.transitionToStart()
+        }
+    }
+
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
         sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
             binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
+            bindCustomerAddressSection(binding.customerSection, newOrderData)
         }
 
         sharedViewModel.orderStatusData.observe(viewLifecycleOwner) {
@@ -117,6 +133,13 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             .let {
                 notesSection.content = it
+                it?.apply {
+                    val verticalMargin = UiHelpers.getPxOfUiDimen(context, UiDimen.UiDimenRes(R.dimen.major_100))
+                    (layoutParams as ViewGroup.MarginLayoutParams).updateMargins(
+                        left = verticalMargin,
+                        right = verticalMargin
+                    )
+                }
             }
     }
 
@@ -146,6 +169,25 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             ((productsSection.content as RecyclerView).adapter as ProductsAdapter).products = products
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun bindCustomerAddressSection(customerAddressSection: OrderCreationSectionView, order: Order) {
+        order.takeIf { it.shippingAddress != Address.EMPTY }
+            ?.let {
+                val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
+                view.name.text = "${order.billingAddress.firstName} ${order.billingAddress.lastName}"
+                view.email.text = order.billingAddress.email
+                view.shippingAddressDetails.text = order.formatShippingInformationForDisplay()
+                view.billingAddressDetails.text = order.formatBillingInformationForDisplay()
+                view.customerInfoViewMoreButtonTitle.setOnClickListener {
+                    view.changeState()
+                }
+                view.root
+            }
+            .let {
+                customerAddressSection.content = it
+            }
     }
 
     private fun setupHandleResults() {
