@@ -31,8 +31,10 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
         val binding = FragmentSimplePaymentsBinding.bind(view)
         binding.buttonDone.setOnClickListener {
-            validateEmail(binding.editEmail)
-            // TODO nbradbury - take payment if email is valid
+            // TODO nbradbury - save changes to order
+            if (validateEmail(binding.editEmail)) {
+                showTakePaymentScreen()
+            }
         }
 
         setupObservers(binding)
@@ -118,6 +120,10 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
             R.id.action_simplePaymentsFragment_to_simplePaymentsCustomerNoteFragment,
             bundle
         )
+    }
+
+    private fun showTakePaymentScreen() {
+        findNavController().navigate(R.id.action_simplePaymentsFragment_to_takePaymentFragment)
     }
 
     private fun validateEmail(emailEditText: EditText): Boolean {

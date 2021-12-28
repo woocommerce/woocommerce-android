@@ -30,6 +30,11 @@
             app:destination="@id/simplePaymentsCustomerNoteFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_simplePaymentsFragment_to_takePaymentFragment"
+            app:destination="@id/takePaymentFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/simplePaymentsCustomerNoteFragment"
@@ -40,6 +45,10 @@
             android:defaultValue='""'
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/takePaymentFragment"
+        android:name="com.woocommerce.android.ui.orders.simplepayments.TakePaymentFragment"
+        android:label="TakePaymentFragment" />
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
