@@ -14,7 +14,6 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.github.mikephil.charting.charts.Chart
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.MarkerImage
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.Entry
@@ -218,11 +217,9 @@ class MyStoreStatsView @JvmOverloads constructor(
 
             axisRight.isEnabled = false
             with(axisLeft) {
-                setDrawTopYLabelEntry(true)
-                setDrawAxisLine(false)
-                setDrawGridLines(true)
-                axisLineWidth = 0f
                 gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
+                setDrawGridLines(true)
+                setDrawAxisLine(false)
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
                 // Couldn't use the dimension resource here due to the way this component is written :/
                 textSize = 10f
@@ -426,8 +423,8 @@ class MyStoreStatsView @JvmOverloads constructor(
                 if (minRevenue < 0f) {
                     setDrawZeroLine(true)
                     zeroLineColor = ContextCompat.getColor(context, R.color.divider_color)
-                    setLabelCount(3, true)
-                } else labelCount = 3
+                }
+                labelCount = 3
                 valueFormatter = RevenueAxisFormatter()
             }
             val dot = MarkerImage(context, R.drawable.chart_highlight_dot)
@@ -579,14 +576,14 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private inner class StartEndDateAxisFormatter : ValueFormatter() {
-        override fun getFormattedValue(value: Float, axis: AxisBase): String {
+        override fun getFormattedValue(value: Float): String {
             var index = round(value).toInt() - 1
             index = if (index == -1) index + 1 else index
             return if (index > -1 && index < chartRevenueStats.keys.size) {
                 // if this is the first entry in the chart, then display the month as well as the date
                 // for weekly and monthly stats
                 val dateString = chartRevenueStats.keys.elementAt(index)
-                if (value == axis.mEntries.first()) {
+                if (index == 0) {
                     getEntryValue(dateString)
                 } else {
                     getLabelValue(dateString)
@@ -631,8 +628,8 @@ class MyStoreStatsView @JvmOverloads constructor(
      * the maximum, minimum and 0 value labels
      */
     private inner class RevenueAxisFormatter : ValueFormatter() {
-        override fun getFormattedValue(value: Float, axis: AxisBase): String {
-            return getFormattedRevenueValue(value.toDouble())
+        override fun getFormattedValue(value: Float): String {
+            return formatCurrencyForDisplay(value.toDouble(), chartCurrencyCode.orEmpty())
         }
     }
 }
