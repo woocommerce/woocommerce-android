@@ -179,7 +179,6 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showSSR() {
-        AnalyticsTracker.track(Stat.SUPPORT_SSR_OPENED)
         startActivity(Intent(this, SSRActivity::class.java))
     }
 

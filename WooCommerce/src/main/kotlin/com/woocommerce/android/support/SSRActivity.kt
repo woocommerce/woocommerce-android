@@ -44,6 +44,12 @@ class SSRActivity : AppCompatActivity() {
         setupObservers(binding)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        AnalyticsTracker.track(Stat.SUPPORT_SSR_OPENED)
+    }
+
     private fun setupObservers(binding: ActivitySsrBinding) {
         viewModel.viewStateData.observe(this) { old, new ->
             new.formattedSSR.takeIfNotEqualTo(old?.formattedSSR) {
