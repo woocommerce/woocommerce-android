@@ -54,8 +54,12 @@ class ProductsAdapter(
                 }
             }
             binding.stepperView.init(
-                onPlusButtonClick = { onIncreaseQuantity(products[adapterPosition].item.uniqueId) },
-                onMinusButtonClick = { onDecreaseQuantity(products[adapterPosition].item.uniqueId) }
+                onPlusButtonClick = {
+                    safePosition?.let { onIncreaseQuantity(products[it].item.uniqueId) }
+                },
+                onMinusButtonClick = {
+                    safePosition?.let { onDecreaseQuantity(products[it].item.uniqueId) }
+                }
             )
         }
 
