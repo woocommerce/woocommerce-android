@@ -45,7 +45,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/textCustomAmount"
-                    style="@style/Woo.Button.TextButton"
+                    style="@style/Woo.Card.Body.Bold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
