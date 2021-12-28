@@ -231,8 +231,8 @@ class MyStoreStatsView @JvmOverloads constructor(
             description.isEnabled = false
             legend.isEnabled = false
 
-            // touch has to be enabled in order to show a marker when a bar is tapped, but we don't want
-            // pinch/zoom, drag, or scaling to be enabled
+            // touch has to be enabled in order to show a marker when dragging across the line chart to view
+            //specific values at each point
             setTouchEnabled(true)
             setPinchZoom(false)
             isScaleXEnabled = false
@@ -387,9 +387,13 @@ class MyStoreStatsView @JvmOverloads constructor(
             highlightLineWidth = 1.5f
             setDrawHorizontalHighlightIndicator(false)
             setDrawCircles(false)
-            fillDrawable = ContextCompat.getDrawable(context, R.drawable.line_chart_fill)
-            setDrawFilled(true)
             lineWidth = 2f
+            if (chartRevenueStats.all { it.value <= 0 }) {
+                setDrawFilled(false)
+            } else {
+                fillDrawable = ContextCompat.getDrawable(context, R.drawable.line_chart_fill_gradient)
+                setDrawFilled(true)
+            }
         }
 
         // determine the min revenue so we can set the min value for the left axis, which should be zero unless
