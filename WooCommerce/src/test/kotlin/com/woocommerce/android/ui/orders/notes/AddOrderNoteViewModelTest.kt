@@ -30,7 +30,6 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = 1L
         private const val REMOTE_ORDER_NUMBER = "100"
-        private const val ORDER_IDENTIFIER = "1-1-1"
     }
 
     private val repository: OrderDetailRepository = mock()
@@ -138,7 +137,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
             doReturn(
                 OnOrderChanged()
-            ).whenever(repository).addOrderNote(eq(ORDER_IDENTIFIER), eq(testOrder.id), any())
+            ).whenever(repository).addOrderNote(eq(testOrder.id), any())
 
             initViewModel()
 
@@ -150,7 +149,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.pushOrderNote()
 
             verify(repository, times(1)).addOrderNote(
-                eq(ORDER_IDENTIFIER), eq(testOrder.id),
+                eq(testOrder.id),
                 argThat {
                     this.note == note
                     this.isCustomerNote == isCustomerNote
@@ -177,7 +176,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.onOrderTextEntered("note")
             viewModel.pushOrderNote()
 
-            verify(repository, times(0)).addOrderNote(any(), any(), any())
+            verify(repository, times(0)).addOrderNote(any(), any())
             assertThat(event).isInstanceOf(ShowSnackbar::class.java)
             assertEquals(R.string.offline_error, (event as ShowSnackbar).message)
         }
@@ -193,7 +192,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
             doReturn(
                 OnOrderChanged().apply { this.error = OrderError(GENERIC_ERROR) }
-            ).whenever(repository).addOrderNote(eq(ORDER_IDENTIFIER), eq(testOrder.id), any())
+            ).whenever(repository).addOrderNote(eq(testOrder.id), any())
 
             initViewModel()
 
@@ -205,7 +204,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.pushOrderNote()
 
             verify(repository, times(1)).addOrderNote(
-                eq(ORDER_IDENTIFIER), eq(testOrder.id),
+                eq(testOrder.id),
                 argThat {
                     this.note == note
                     this.isCustomerNote == isCustomerNote

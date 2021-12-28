@@ -95,7 +95,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        verify(orderDetailRepository, never()).getOrder(any())
+        verify(orderDetailRepository, never()).getOrderById(any())
         verify(shippingLabelRepository, never()).getAccountSettings()
         assertThat(viewState!!.packages).isEqualTo(currentShippingPackages.toList())
     }

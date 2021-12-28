@@ -91,7 +91,7 @@ class AddOrderNoteViewModel @Inject constructor(
 
         val note = addOrderNoteViewState.draftNote
         launch {
-            val onOrderChanged = orderDetailRepository.addOrderNote(order.identifier, order.id, note)
+            val onOrderChanged = orderDetailRepository.addOrderNote(order.id, note)
             if (!onOrderChanged.isError) {
                 AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
                 addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)

@@ -50,7 +50,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -156,7 +155,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private fun loadOrder(orderId: Long): Order =
-        requireNotNull(orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, orderId))?.toAppModel())
+        requireNotNull(orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.toAppModel())
 
     private fun updateRefundTotal(amount: BigDecimal) {
         commonState = commonState.copy(
@@ -444,8 +443,7 @@ class IssueRefundViewModel @Inject constructor(
 
     private suspend fun addOrderNote(reason: String) {
         val note = OrderNote(note = reason, isCustomerNote = false)
-        val onOrderChanged = orderDetailRepository
-            .addOrderNote(order.identifier, order.id, note)
+        val onOrderChanged = orderDetailRepository.addOrderNote(order.id, note)
         if (!onOrderChanged.isError) {
             AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
         } else {
