@@ -162,8 +162,10 @@ data class Order(
 
     @Parcelize
     data class FeeLine(
+        val id: Long,
         val name: String,
-        val total: BigDecimal
+        val total: BigDecimal,
+        val totalTax: BigDecimal,
     ) : Parcelable
 
     fun getBillingName(defaultValue: String): String {
@@ -376,8 +378,10 @@ fun WCOrderModel.toAppModel(): Order {
         },
         feesLines = this.getFeeLineList().map {
             FeeLine(
-                it.name ?: StringUtils.EMPTY,
-                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+                id = it.id!!,
+                name = it.name ?: StringUtils.EMPTY,
+                totalTax = it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                total = it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
             )
         },
         metaData = getMetaDataList().mapNotNull { it.toAppModel() }

@@ -259,6 +259,14 @@ object OrderTestUtils {
                             total = BigDecimal.valueOf(13.00),
                             totalTax = BigDecimal.valueOf(3.00)
                         )
+                    ),
+                    feeLines = listOf(
+                        Refund.FeeLine(
+                            id = 30,
+                            name = "$30 fee",
+                            total = BigDecimal.valueOf(399.00),
+                            totalTax = BigDecimal.valueOf(39.90)
+                        )
                     )
                 )
             )
