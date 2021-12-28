@@ -20,7 +20,7 @@ import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
@@ -569,12 +569,12 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
 
         // otherwise date & time
-        val dateStr = DateFormat.getDateFormat(context).format(lastUpdated)
-        val timeStr = DateFormat.getTimeFormat(context).format(lastUpdated)
+        val dateStr = DateFormat.getDateFormat(context).format(lastUpdated!!)
+        val timeStr = DateFormat.getTimeFormat(context).format(lastUpdated!!)
         return String.format(context.getString(R.string.dashboard_stats_updated_date_time), "$dateStr $timeStr")
     }
 
-    private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
+    private inner class StartEndDateAxisFormatter : ValueFormatter() {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
             var index = round(value).toInt() - 1
             index = if (index == -1) index + 1 else index
@@ -626,7 +626,7 @@ class MyStoreStatsView @JvmOverloads constructor(
      * Custom AxisFormatter for the Y-axis which only displays 3 labels:
      * the maximum, minimum and 0 value labels
      */
-    private inner class RevenueAxisFormatter : IAxisValueFormatter {
+    private inner class RevenueAxisFormatter : ValueFormatter() {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
             return getFormattedRevenueValue(value.toDouble())
         }
