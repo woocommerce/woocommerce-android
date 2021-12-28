@@ -76,7 +76,12 @@ class OrderCreationViewModel @Inject constructor(
         val index = items.indexOfFirst { it.uniqueId == id }
         if (index == -1) error("Couldn't find the product with id $id")
         items[index] = with(items[index]) {
-            copy(quantity = quantity + quantityToAdd)
+            val newQuantity = quantity + quantityToAdd
+            copy(
+                quantity = newQuantity,
+                subtotal = price.multiply(newQuantity.toBigDecimal()),
+                total = price.multiply(newQuantity.toBigDecimal())
+            )
         }
         orderDraft = orderDraft.copy(items = items)
     }
