@@ -96,7 +96,12 @@ class MainActivityViewModel @Inject constructor(
         if (notification.channelType == NotificationChannelType.REVIEW) {
             triggerEvent(ViewReviewDetail(notification.uniqueId))
         } else if (notification.channelType == NotificationChannelType.NEW_ORDER) {
-            triggerEvent(ViewOrderDetail(notification.uniqueId, notification.remoteNoteId))
+            if (siteStore.getSiteBySiteId(notification.remoteSiteId) != null) {
+                triggerEvent(ViewOrderDetail(notification.uniqueId, notification.remoteNoteId))
+            } else {
+                // the site does not exist locally, open order list
+                triggerEvent(ViewOrderList)
+            }
         }
     }
 
