@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.simplepayments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
@@ -16,8 +17,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     private val viewModel: TakePaymentViewModel by viewModels()
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
+
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,6 +61,8 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         WooDialog.onCleared()
     }
 
-    // TODO nbradbury show payment amount in title via simple_payments_take_payment_button
-    override fun getFragmentTitle() = getString(R.string.simple_payments_dialog_title)
+    override fun getFragmentTitle(): String {
+        val totalStr = sharedViewModel.formatAmount(viewModel.orderTotal)
+        return getString(R.string.simple_payments_take_payment_button, totalStr)
+    }
 }

@@ -9,6 +9,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -18,6 +20,9 @@ class TakePaymentViewModel @Inject constructor(
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
     private val navArgs: TakePaymentFragmentArgs by savedState.navArgs()
+
+    val orderTotal: BigDecimal
+        get() = navArgs.order.total
 
     fun onCashPaymentClicked() {
         triggerEvent(
@@ -38,7 +43,11 @@ class TakePaymentViewModel @Inject constructor(
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
             return
         }
+
         val order = navArgs.order.copy(status = Order.Status.Completed)
-        // TODO update order
+        // TODO nbradbury update order
+        launch {
+
+        }
     }
 }
