@@ -64,7 +64,11 @@
         android:id="@+id/orderCreationProductSelectionFragment"
         android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragment"
         android:label="OrderCreationProductSelectionFragment"
-        tools:layout="@layout/fragment_order_creation_product_selection" />
+        tools:layout="@layout/fragment_order_creation_product_selection" >
+        <action
+            android:id="@+id/action_orderCreationProductSelectionFragment_to_orderCreationVariationSelectionFragment"
+            app:destination="@id/orderCreationVariationSelectionFragment" />
+    </fragment>
     <fragment
         android:id="@+id/orderCreationCustomerFragment"
         android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerAddFragment"
@@ -101,9 +105,19 @@
     <fragment
         android:id="@+id/orderCreationProductDetailsFragment"
         android:name="com.woocommerce.android.ui.orders.creation.OrderCreationProductDetailsFragment"
-        android:label="OrderCreationProductDetailsFragment">
+        android:label="OrderCreationProductDetailsFragment"
+        tools:layout="@layout/fragment_order_creation_product_details">
         <argument
             android:name="item"
             app:argType="com.woocommerce.android.model.Order$Item" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationVariationSelectionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.variations.OrderCreationVariationSelectionFragment"
+        android:label="OrderCreationVariationSelectionFragment"
+        tools:layout="@layout/fragment_order_creation_product_selection">
+        <argument
+            android:name="productId"
+            app:argType="long" />
     </fragment>
 </navigation>
