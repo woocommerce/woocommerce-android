@@ -41,8 +41,8 @@ class AboutConfigBuilder @Inject constructor(
     )
 
     private fun createAnalyticsConfig() = AnalyticsConfig(
-        trackScreenShown = {
-            analyticsTrackerWrapper.trackViewShown(this)
+        trackScreenShown = { name ->
+            analyticsTrackerWrapper.trackViewShown("about_screen_$name")
         },
         trackScreenDismissed = {
             // noop

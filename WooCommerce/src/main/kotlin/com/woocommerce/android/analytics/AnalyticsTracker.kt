@@ -905,7 +905,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param view The view to be tracked
          */
         fun trackViewShown(view: Any) {
-            track(VIEW_SHOWN, mapOf(KEY_NAME to view::class.java.simpleName))
+            val name = if (view is String) {
+                view
+            } else {
+                view::class.java.simpleName
+            }
+            track(VIEW_SHOWN, mapOf(KEY_NAME to name))
         }
 
         /**
