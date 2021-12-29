@@ -131,8 +131,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
     private fun updateInstallProgressUi(status: InstallStatus, binding: DialogJetpackInstallProgressBinding) {
         when (status) {
             is Installing -> {
-                setViewVisibility(View.INVISIBLE, iconStep1, progressStep2, progressStep3)
-                setViewVisibility(View.VISIBLE, iconStep2, iconStep3, iconStep4, progressStep1)
+                binding.step1Views.show()
+                binding.step1Hide.hide()
                 setViewImage(ICON_NOT_DONE, iconStep2, iconStep3, iconStep4)
                 setTextWeight(Typeface.BOLD, messageStep1)
                 setTextWeight(Typeface.NORMAL, messageStep2, messageStep3, messageStep4)
@@ -140,8 +140,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.jetpackProgressActionButton.hide()
             }
             is Activating -> {
-                setViewVisibility(View.INVISIBLE, iconStep2, progressStep1, progressStep3)
-                setViewVisibility(View.VISIBLE, iconStep1, iconStep3, iconStep4, progressStep2)
+                binding.step2Views.show()
+                binding.step2Hide.hide()
                 setViewImage(ICON_NOT_DONE, iconStep3, iconStep4)
                 setViewImage(ICON_DONE, iconStep1)
                 setTextWeight(Typeface.BOLD, messageStep1, messageStep2)
@@ -150,8 +150,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.jetpackProgressActionButton.hide()
             }
             is Connecting -> {
-                setViewVisibility(View.INVISIBLE, iconStep3, progressStep1, progressStep2)
-                setViewVisibility(View.VISIBLE, iconStep1, iconStep2, iconStep4, progressStep3)
+                binding.step3Views.show()
+                binding.step3Hide.hide()
                 setViewImage(ICON_NOT_DONE, iconStep4)
                 setViewImage(ICON_DONE, iconStep1, iconStep2)
                 setTextWeight(Typeface.BOLD, messageStep1, messageStep2, messageStep3)
@@ -160,8 +160,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.jetpackProgressActionButton.hide()
             }
             is Finished -> {
-                setViewVisibility(View.INVISIBLE, progressStep1, progressStep2, progressStep3)
-                setViewVisibility(View.VISIBLE, iconStep1, iconStep2, iconStep3, iconStep4)
+                binding.step4Views.show()
+                binding.step4Hide.hide()
                 setViewImage(ICON_DONE, iconStep1, iconStep2, iconStep3, iconStep4)
                 setTextWeight(Typeface.BOLD, messageStep1, messageStep2, messageStep3, messageStep4)
 
@@ -235,9 +235,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         binding.openAdminOrRetryButton.text = btnText
 
         // Visibilities
-        setViewVisibility(View.GONE, iconStep1, iconStep2, iconStep3, iconStep4)
-        setViewVisibility(View.GONE, messageStep1, messageStep2, messageStep3, messageStep4)
-        setViewVisibility(View.GONE, progressStep1, progressStep2, progressStep3)
+        binding.failureHide.hide()
         binding.contactButton.show()
         binding.openAdminOrRetryButton.show()
         binding.jetpackProgressActionButton.hide()
@@ -268,7 +266,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         }
     }
 
-    private fun setViewVisibility(visibility: Int, vararg views: View) = views.forEach { it.visibility = visibility }
     private fun setViewImage(resId: Int, vararg views: ImageView) = views.forEach { it.setImageResource(resId) }
     private fun setTextWeight(weight: Int, vararg views: TextView) = views.forEach { it.setTypeface(null, weight) }
 
