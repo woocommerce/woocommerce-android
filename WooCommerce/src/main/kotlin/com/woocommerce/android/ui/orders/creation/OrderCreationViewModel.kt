@@ -94,7 +94,7 @@ class OrderCreationViewModel @Inject constructor(
                 ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationProductId ?: 0L)
 
             add(item)
-        }.let { orderDraft = orderDraft.copy(items = it) }
+        }.let { updateOrderItems(it) }
     }
 
     private fun adjustProductsQuantity(id: Long, quantityToAdd: Int) {
