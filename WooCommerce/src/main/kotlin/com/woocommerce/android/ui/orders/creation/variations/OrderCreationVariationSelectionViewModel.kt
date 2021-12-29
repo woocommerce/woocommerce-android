@@ -2,17 +2,18 @@ package com.woocommerce.android.ui.orders.creation.variations
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.liveData
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -28,9 +29,10 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
     private val loadMoreTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val parentProductLiveData = flow {
-        withContext(dispatchers.io) {
-            emit(productRepository.getProduct(navArgs.productId))
+        val parentProduct = withContext(dispatchers.io) {
+            productRepository.getProduct(navArgs.productId)
         }
+        emit(parentProduct)
     }
 
     private val variationsList = flow {

@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -44,8 +46,16 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
          */
         launch {
             productList.value = productListRepository.fetchProductList(loadMore)
-                .filter { it.numVariations == 0 }
             viewState = viewState.copy(isSkeletonShown = false)
+        }
+    }
+
+    fun onProductSelected(productId: Long) {
+        val product = productList.value!!.first { it.remoteId == productId }
+        if (product.numVariations == 0) {
+            triggerEvent(AddProduct(productId))
+        } else {
+            triggerEvent(ShowProductVariations(productId))
         }
     }
 
@@ -53,4 +63,6 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     data class ViewState(
         val isSkeletonShown: Boolean? = null
     ) : Parcelable
+
+    data class AddProduct(val productId: Long): MultiLiveEvent.Event()
 }

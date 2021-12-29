@@ -12,7 +12,9 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class OrderCreationVariationSelectionFragment : Fragment(R.layout.fragment_order_creation_product_selection) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val viewModel by viewModels<OrderCreationVariationSelectionViewModel>()

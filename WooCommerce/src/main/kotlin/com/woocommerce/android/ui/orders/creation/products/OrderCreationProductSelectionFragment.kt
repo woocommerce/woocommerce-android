@@ -4,13 +4,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationProductSelectionBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigator
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.ViewState
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter
@@ -41,19 +45,24 @@ class OrderCreationProductSelectionFragment :
         productListViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             onViewStateChanged(binding, old, new)
         }
+        productListViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is AddProduct -> {
+                    sharedViewModel.onProductSelected(event.productId)
+                    findNavController().navigateUp()
+                }
+                is ShowProductVariations -> OrderCreationNavigator.navigate(this, event)
+            }
+        }
     }
 
     private fun FragmentOrderCreationProductSelectionBinding.loadProductsAdapterWith(
         products: List<Product>
     ) {
         productsList.adapter = ProductListAdapter(
-            clickListener = { id, _ -> onProductClick(id) },
+            clickListener = { id, _ -> productListViewModel.onProductSelected(id) },
             loadMoreListener = this@OrderCreationProductSelectionFragment
         ).apply { setProductList(products) }
-    }
-
-    private fun onProductClick(remoteProductId: Long) {
-        sharedViewModel.onProductSelected(remoteProductId)
     }
 
     override fun onRequestLoadMore() {
