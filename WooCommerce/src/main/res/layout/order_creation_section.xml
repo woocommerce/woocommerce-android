@@ -32,6 +32,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
+        android:paddingHorizontal="@dimen/major_100"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/add_buttons_layout"
         app:layout_constraintEnd_toEndOf="parent"

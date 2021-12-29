@@ -133,13 +133,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             .let {
                 notesSection.content = it
-                it?.apply {
-                    val verticalMargin = UiHelpers.getPxOfUiDimen(context, UiDimen.UiDimenRes(R.dimen.major_100))
-                    (layoutParams as ViewGroup.MarginLayoutParams).updateMargins(
-                        left = verticalMargin,
-                        right = verticalMargin
-                    )
-                }
             }
     }
 
@@ -173,6 +166,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     @SuppressLint("SetTextI18n")
     private fun bindCustomerAddressSection(customerAddressSection: OrderCreationSectionView, order: Order) {
+        customerAddressSection.setContentHorizontalPadding(R.dimen.minor_00)
         order.takeIf { it.shippingAddress != Address.EMPTY }
             ?.let {
                 val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
