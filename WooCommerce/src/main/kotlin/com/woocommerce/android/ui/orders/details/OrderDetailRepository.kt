@@ -27,8 +27,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
@@ -54,21 +52,6 @@ class OrderDetailRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers
 ) {
-    suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
-        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            orderStore.fetchSingleOrder(
-                selectedSite.get(),
-                orderIdentifier.toIdSet().remoteOrderId
-            )
-        }
-
-        return if (result?.isError == false) {
-            getOrder(orderIdentifier)
-        } else {
-            null
-        }
-    }
-
     suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
             orderStore.fetchSingleOrder(
@@ -146,36 +129,35 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun addOrderNote(
-        orderIdentifier: OrderIdentifier,
-        remoteOrderId: Long,
+        orderId: Long,
         noteModel: OrderNote
     ): OnOrderChanged {
-        val order = orderStore.getOrderByIdentifier(orderIdentifier)
+        val order = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
         if (order == null) {
-            WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
+            WooLog.e(ORDERS, "Can't find order with id $orderId")
             return OnOrderChanged(
-                orderError = OrderError(GENERIC_ERROR, "Can't find order with identifier $orderIdentifier")
+                orderError = OrderError(GENERIC_ERROR, "Can't find order with id $orderId")
             )
         }
         val dataModel = noteModel.toDataModel()
         val payload = PostOrderNotePayload(
-            @Suppress("DEPRECATION_ERROR") order.id, remoteOrderId, selectedSite.get(), dataModel
+            @Suppress("DEPRECATION_ERROR") order.id, orderId, selectedSite.get(), dataModel
         )
         return orderStore.postOrderNote(payload)
     }
 
     suspend fun addOrderShipmentTracking(
-        orderIdentifier: OrderIdentifier,
+        orderId: Long,
+        orderLocalId: Int,
         shipmentTrackingModel: OrderShipmentTracking
     ): OnOrderChanged {
-        val orderIdSet = orderIdentifier.toIdSet()
         return orderStore.addOrderShipmentTracking(
             AddOrderShipmentTrackingPayload(
-                selectedSite.get(),
-                orderIdSet.id,
-                orderIdSet.remoteOrderId,
-                shipmentTrackingModel.toDataModel(),
-                shipmentTrackingModel.isCustomProvider
+                site = selectedSite.get(),
+                localOrderId = orderLocalId,
+                remoteOrderId = orderId,
+                tracking = shipmentTrackingModel.toDataModel(),
+                isCustomProvider = shipmentTrackingModel.isCustomProvider
             )
         )
     }
@@ -191,8 +173,6 @@ class OrderDetailRepository @Inject constructor(
             )
         )
     }
-
-    fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
     fun getOrderById(orderId: Long) =
         orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.toAppModel()
@@ -235,8 +215,8 @@ class OrderDetailRepository @Inject constructor(
         } else false
     }
 
-    fun getOrderRefunds(remoteOrderId: Long) = refundStore
-        .getAllRefunds(selectedSite.get(), remoteOrderId)
+    fun getOrderRefunds(orderId: Long) = refundStore
+        .getAllRefunds(selectedSite.get(), orderId)
         .map { it.toAppModel() }
         .reversed()
         .sortedBy { it.id }

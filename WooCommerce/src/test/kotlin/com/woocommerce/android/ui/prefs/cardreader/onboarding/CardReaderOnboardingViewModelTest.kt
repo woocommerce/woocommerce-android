@@ -276,7 +276,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.drawable.img_stripe_extension)
         }
 
-    @Test(expected = AssertionError::class)
+    @Test
     fun `when wcpay and stripe terminal installed-activated, then wcpay and stripe terminal activated state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(

@@ -224,6 +224,30 @@ internal class CreatePaymentActionTest {
     }
 
     @Test
+    fun `given connected reader, when creating payment intent, then reader model set`() = runBlockingTest {
+        val readerModel = "STRIPE_M2"
+        val captor = argumentCaptor<Map<String, String>>()
+        val reader = mock<CardReader> { on { type }.thenReturn(readerModel) }
+        whenever(terminal.getConnectedReader()).thenReturn(reader)
+
+        action.createPaymentIntent(createPaymentInfo()).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue["reader_model"]).isEqualTo(readerModel)
+    }
+
+    @Test
+    fun `given no connected reader, when creating payment intent, then reader model is not set`() = runBlockingTest {
+        val captor = argumentCaptor<Map<String, String>>()
+        whenever(terminal.getConnectedReader()).thenReturn(null)
+
+        action.createPaymentIntent(createPaymentInfo()).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue["reader_model"]).isNull()
+    }
+
+    @Test
     fun `when creating payment intent, then payment type set`() = runBlockingTest {
         whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())

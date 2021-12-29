@@ -24,7 +24,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     private val orderEditingRepository: OrderEditingRepository = mock()
     private val orderDetailRepository: OrderDetailRepository = mock {
-        on { getOrder(any()) } doReturn testOrder
+        on { getOrderById(any()) } doReturn testOrder
     }
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
@@ -33,7 +33,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         sut = OrderEditingViewModel(
-            SavedStateHandle(),
+            SavedStateHandle().apply { set("orderId", 1L) },
             coroutinesTestRule.testDispatchers,
             orderDetailRepository,
             orderEditingRepository,
@@ -135,7 +135,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             )
 
             orderDetailRepository.stub {
-                on { getOrder(any()) } doReturn originalOrder
+                on { getOrderById(any()) } doReturn originalOrder
             }
 
             orderEditingRepository.stub {
