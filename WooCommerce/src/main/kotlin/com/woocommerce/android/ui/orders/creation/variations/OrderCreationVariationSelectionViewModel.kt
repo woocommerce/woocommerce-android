@@ -47,9 +47,11 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
         }
     }
 
-    val viewState = parentProductLiveData.combine(variationsList) { parentProduct, variationList ->
-        ViewState(parentProduct, variationList)
-    }.asLiveData()
+    val viewState = parentProductLiveData
+        .combine(variationsList) { parentProduct, variationList ->
+            ViewState(parentProduct, variationList)
+        }
+        .asLiveData()
 
     fun onLoadMore() {
         if (!variationRepository.canLoadMoreProductVariations) return
@@ -59,5 +61,7 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
     data class ViewState(
         val parentProduct: Product?,
         val variationsList: List<ProductVariation>
-    )
+    ) {
+        val isSkeletonShown: Boolean = variationsList.isEmpty()
+    }
 }

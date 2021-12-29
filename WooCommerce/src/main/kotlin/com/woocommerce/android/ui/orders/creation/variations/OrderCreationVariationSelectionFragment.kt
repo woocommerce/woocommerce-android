@@ -5,19 +5,25 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationProductSelectionBinding
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListAdapter
+import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OrderCreationVariationSelectionFragment : Fragment(R.layout.fragment_order_creation_product_selection) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val viewModel by viewModels<OrderCreationVariationSelectionViewModel>()
+
+    private val skeletonView = SkeletonView()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -29,23 +35,43 @@ class OrderCreationVariationSelectionFragment : Fragment(R.layout.fragment_order
     }
 
     private fun setupObservers(binding: FragmentOrderCreationProductSelectionBinding) {
-        viewModel.viewState.observe(viewLifecycleOwner) {
-            if (binding.productsList.adapter == null) {
-                binding.productsList.adapter = VariationListAdapter(
-                    requireContext(),
-                    GlideApp.with(requireContext()),
-                    parentProduct = it.parentProduct,
-                    loadMoreListener = object : OnLoadMoreListener {
-                        override fun onRequestLoadMore() {
-                            viewModel.onLoadMore()
-                        }
-                    },
-                    onItemClick = {
-                        // TODO
+        viewModel.viewState.observe(viewLifecycleOwner) { state ->
+            binding.bindVariationsList(state.variationsList, state.parentProduct)
+
+            binding.showSkeleton(state.isSkeletonShown)
+        }
+    }
+
+    private fun FragmentOrderCreationProductSelectionBinding.bindVariationsList(
+        variationsList: List<ProductVariation>,
+        parentProduct: Product?
+    ) {
+        if (productsList.adapter == null) {
+            productsList.adapter = VariationListAdapter(
+                requireContext(),
+                GlideApp.with(requireContext()),
+                parentProduct = parentProduct,
+                loadMoreListener = object : OnLoadMoreListener {
+                    override fun onRequestLoadMore() {
+                        viewModel.onLoadMore()
                     }
-                )
-            }
-            (binding.productsList.adapter as VariationListAdapter).setVariationList(it.variationsList)
+                },
+                onItemClick = {
+                    sharedViewModel.onProductSelected(it.remoteProductId, it.remoteVariationId)
+                    findNavController().popBackStack(R.id.orderCreationFragment, false)
+                }
+            )
+        }
+        (productsList.adapter as VariationListAdapter).setVariationList(variationsList)
+    }
+
+    private fun FragmentOrderCreationProductSelectionBinding.showSkeleton(
+        show: Boolean
+    ) {
+        if (show) {
+            skeletonView.show(productsList, R.layout.skeleton_product_list, delayed = true)
+        } else {
+            skeletonView.hide()
         }
     }
 }
