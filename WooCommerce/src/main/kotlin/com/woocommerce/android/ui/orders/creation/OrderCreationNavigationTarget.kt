@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 sealed class OrderCreationNavigationTarget : Event() {

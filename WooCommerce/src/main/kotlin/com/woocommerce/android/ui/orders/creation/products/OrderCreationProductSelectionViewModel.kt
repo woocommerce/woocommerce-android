@@ -64,5 +64,5 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         val isSkeletonShown: Boolean? = null
     ) : Parcelable
 
-    data class AddProduct(val productId: Long): MultiLiveEvent.Event()
+    data class AddProduct(val productId: Long) : MultiLiveEvent.Event()
 }

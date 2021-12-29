@@ -82,17 +82,18 @@ class OrderCreationViewModel @Inject constructor(
             if (index != -1) {
                 val item = get(index)
                 set(index, item.copy(quantity = item.quantity + 1))
-            } else {
-                val product = productDetailRepository.getProduct(remoteProductId)
-                val item = variationProductId?.let {
-                    if (product != null) {
-                        variationDetailRepository.getVariation(remoteProductId, it)?.createItem(product)
-                    } else null
-                } ?: product?.createItem()
-                    ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationProductId ?: 0L)
-
-                add(item)
+                return@apply
             }
+            // Create a new item
+            val product = productDetailRepository.getProduct(remoteProductId)
+            val item = variationProductId?.let {
+                if (product != null) {
+                    variationDetailRepository.getVariation(remoteProductId, it)?.createItem(product)
+                } else null
+            } ?: product?.createItem()
+                ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationProductId ?: 0L)
+
+            add(item)
         }.let { orderDraft = orderDraft.copy(items = it) }
     }
 
