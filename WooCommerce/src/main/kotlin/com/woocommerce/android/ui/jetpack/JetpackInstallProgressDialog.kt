@@ -69,17 +69,17 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         val binding = DialogJetpackInstallProgressBinding.bind(view)
 
         with(binding) {
-            iconStep1 = firstStepIcon
-            iconStep2 = secondStepIcon
-            iconStep3 = thirdStepIcon
-            iconStep4 = fourthStepIcon
-            progressStep1 = firstStepProgressBar
-            progressStep2 = secondStepProgressBar
-            progressStep3 = thirdStepProgressBar
-            messageStep1 = firstStepMessage
-            messageStep2 = secondStepMessage
-            messageStep3 = thirdStepMessage
-            messageStep4 = fourthStepMessage
+            iconStep1 = icon1
+            iconStep2 = icon2
+            iconStep3 = icon3
+            iconStep4 = icon4
+            progressStep1 = progress1
+            progressStep2 = progress2
+            progressStep3 = progress3
+            messageStep1 = message1
+            messageStep2 = message2
+            messageStep3 = message3
+            messageStep4 = message4
         }
 
         with(binding.subtitle) {
