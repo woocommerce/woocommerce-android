@@ -9,8 +9,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class UnifiedAboutScreenActivity : AppCompatActivity(), AboutConfigProvider {
-    @Inject
-    lateinit var aboutConfigBuilder: AboutConfigBuilder
+    @Inject lateinit var aboutConfigBuilder: AboutConfigBuilder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
