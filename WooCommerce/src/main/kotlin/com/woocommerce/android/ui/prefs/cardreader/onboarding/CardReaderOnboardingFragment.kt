@@ -89,7 +89,21 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showWCPayErrorState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WCStripeError ->
                 showWCStripeError(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError ->
+                showStripeTerminalErrorState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState ->
+                showBothPluginsInstalledState(layout, state)
         }.exhaustive
+    }
+
+    private fun showBothPluginsInstalledState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
+    ) {
+        val binding = FragmentCardReaderOnboardingStripeBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
+        UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
     }
 
     private fun showLoadingState(
@@ -157,6 +171,24 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     private fun showWCPayErrorState(
         view: View,
         state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
+    ) {
+        val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
+        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
+        UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
+        binding.refreshButton.setOnClickListener {
+            state.refreshButtonAction.invoke()
+        }
+        binding.learnMoreContainer.learnMore.setOnClickListener {
+            state.onLearnMoreActionClicked.invoke()
+        }
+    }
+
+    private fun showStripeTerminalErrorState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError
     ) {
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)

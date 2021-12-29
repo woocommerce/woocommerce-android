@@ -1,7 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+8.3
+-----
+- [**] Refunds: Add support for refunding fees
+
 8.2
 -----
+- [*] In-Person Payments: Better error handling
 
 
 8.1

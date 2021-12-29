@@ -160,7 +160,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(
             ViewOrderDetail(
                 testOrderNotification.uniqueId,
-                siteModel.id,
                 testOrderNotification.remoteNoteId
             )
         )

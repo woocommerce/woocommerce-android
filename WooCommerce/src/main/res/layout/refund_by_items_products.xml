@@ -48,26 +48,6 @@
         tools:text="$45.00" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/issueRefund_lblFees"
-        style="@style/Woo.Card.Body.High"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_50"
-        android:text="@string/orderdetail_payment_fees"
-        app:layout_constraintEnd_toStartOf="@+id/issueRefund_feesTotal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/issueRefund_subtotal" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/issueRefund_feesTotal"
-        style="@style/Woo.Card.Body.High"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/issueRefund_lblFees"
-        tools:text="$5.00" />
-
-    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_lblTaxes"
         style="@style/Woo.Card.Body.High"
         android:layout_width="0dp"
@@ -76,7 +56,7 @@
         android:text="@string/taxes"
         app:layout_constraintEnd_toStartOf="@+id/issueRefund_taxesTotal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/issueRefund_feesTotal" />
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_subtotal" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_taxesTotal"
@@ -144,13 +124,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:constraint_referenced_ids="issueRefund_refundNotice,issueRefund_dividerBelowList,issueRefund_dividerBelowTaxes,issueRefund_taxesTotal,issueRefund_subtotal,issueRefund_productsTotal,issueRefund_lblProductsTotal,issueRefund_lblTaxes,issueRefund_lblSubtotal" />
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/issueRefund_feesGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="issueRefund_feesTotal,issueRefund_lblFees" />
 
     <!--     TODO: Temporarily disabled, this will be used in a future release - do not remove -->
     <!--        <com.google.android.material.button.MaterialButton-->

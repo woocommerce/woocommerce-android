@@ -26,8 +26,7 @@ import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import org.wordpress.android.util.ToastUtils
 import java.lang.String.format
-import java.util.ArrayList
-import java.util.Locale
+import java.util.*
 
 class WooLogViewerActivity : AppCompatActivity() {
     companion object {
@@ -127,7 +126,7 @@ class WooLogViewerActivity : AppCompatActivity() {
     }
 
     private inner class LogAdapter constructor(context: Context) : RecyclerView.Adapter<LogViewHolder>() {
-        private val entries: ArrayList<String> =
+        private val entries: List<String> =
             WooLog.toHtmlList(AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity))
         private val inflater: LayoutInflater = LayoutInflater.from(context)
 

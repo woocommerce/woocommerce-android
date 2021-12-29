@@ -24,36 +24,38 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_00"
-            tools:text="George Carlin"/>
+            tools:text="George Carlin" />
 
-        <RelativeLayout
+        <FrameLayout
             android:id="@+id/orderStatus_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:paddingEnd="@dimen/major_100"
-            android:paddingStart="@dimen/major_100"
-            android:paddingBottom="@dimen/major_75"
             android:contentDescription="@string/orderdetail_change_order_status"
-            android:background="?attr/selectableItemBackground">
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/major_75"
+            android:paddingEnd="@dimen/major_100"
+            android:paddingStart="@dimen/major_100">
 
-            <com.woocommerce.android.widgets.FlowLayout
+        <com.woocommerce.android.widgets.FlowLayout
                 android:id="@+id/orderStatus_orderTags"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
+                android:layout_gravity="start"
                 android:contentDescription="@string/orderstatus_contentDesc" />
 
-            <ImageView
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/orderStatus_editAction"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:focusable="false"
+                android:layout_gravity="end"
+                android:background="@drawable/ic_edit_pencil"
                 android:clickable="false"
-                android:layout_alignParentEnd="true"
+                android:focusable="false"
                 android:importantForAccessibility="no"
-                android:background="@drawable/ic_edit_pencil" />
-        </RelativeLayout>
+                android:textColor="@color/button_fg_selector" />
+        </FrameLayout>
     </LinearLayout>
 </merge>

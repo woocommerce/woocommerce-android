@@ -5,6 +5,7 @@ import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -145,11 +146,19 @@ class OrderListAdapter(
             viewBinding.orderTags.removeAllViews()
             processTagView(orderItemUI.status, this)
 
+            ViewCompat.setTransitionName(
+                viewBinding.root,
+                String.format(
+                    ctx.getString(R.string.order_card_transition_name),
+                    orderItemUI.localOrderId
+                )
+            )
+
             this.itemView.setOnClickListener {
                 listener.openOrderDetail(
-                    orderItemUI.localOrderId.value,
-                    orderItemUI.remoteOrderId.value,
-                    orderItemUI.status
+                    orderId = orderItemUI.remoteOrderId.value,
+                    orderStatus = orderItemUI.status,
+                    sharedView = viewBinding.root
                 )
             }
         }

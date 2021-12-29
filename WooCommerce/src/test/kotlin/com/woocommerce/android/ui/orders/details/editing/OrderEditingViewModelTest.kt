@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.orders.details.editing
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -15,7 +15,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 
@@ -25,7 +24,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     private val orderEditingRepository: OrderEditingRepository = mock()
     private val orderDetailRepository: OrderDetailRepository = mock {
-        on { getOrder(any()) } doReturn testOrder
+        on { getOrderById(any()) } doReturn testOrder
     }
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
@@ -34,7 +33,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         sut = OrderEditingViewModel(
-            SavedStateHandle(),
+            SavedStateHandle().apply { set("orderId", 1L) },
             coroutinesTestRule.testDispatchers,
             orderDetailRepository,
             orderEditingRepository,
@@ -59,7 +58,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.localId,
+                    testOrder.id,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("")
                 )
@@ -82,7 +81,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.localId,
+                    testOrder.id,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("")
                 )
@@ -136,7 +135,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             )
 
             orderDetailRepository.stub {
-                on { getOrder(any()) } doReturn originalOrder
+                on { getOrderById(any()) } doReturn originalOrder
             }
 
             orderEditingRepository.stub {
@@ -153,7 +152,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.localId,
+                    testOrder.id,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("original@email.com")
                 )
@@ -230,10 +229,10 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         var eventWasCalled = false
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 UpdateOrderResult.OptimisticUpdateResult(
-                    OnOrderChanged(0)
+                    OnOrderChanged()
                 )
             )
         }
@@ -255,12 +254,10 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should emit generic error event for errors other than empty billing mail error`() {
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 RemoteUpdateResult(
-                    OnOrderChanged(0).apply {
-                        error = OrderError(type = OrderErrorType.INVALID_RESPONSE)
-                    }
+                    OnOrderChanged(orderError = OrderError(type = OrderErrorType.INVALID_RESPONSE))
                 )
             )
         }
@@ -279,12 +276,10 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should emit empty mail failure if store returns empty billing mail error`() {
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.localId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 RemoteUpdateResult(
-                    OnOrderChanged(0).apply {
-                        error = OrderError(type = OrderErrorType.EMPTY_BILLING_EMAIL)
-                    }
+                    OnOrderChanged(orderError = OrderError(type = OrderErrorType.EMPTY_BILLING_EMAIL))
                 )
             )
         }
@@ -317,6 +312,6 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             email = ""
         )
 
-        val testOrder = WCOrderModel().toAppModel()
+        val testOrder = OrderTestUtils.generateTestOrder()
     }
 }

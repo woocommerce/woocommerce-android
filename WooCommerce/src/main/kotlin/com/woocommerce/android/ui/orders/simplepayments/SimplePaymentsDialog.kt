@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -24,7 +25,8 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: SimplePaymentsViewModel by viewModels()
+    private val viewModel: SimplePaymentsDialogViewModel by viewModels()
+    private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,9 +36,9 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val isLandscape = DisplayUtils.isLandscape(requireContext())
         requireDialog().window?.let { window ->
             window.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
-            val isLandscape = DisplayUtils.isLandscape(requireContext())
             val widthRatio = if (isLandscape) WIDTH_RATIO_LANDSCAPE else WIDTH_RATIO
             val heightRatio = if (isLandscape) HEIGHT_RATIO_LANDSCAPE else HEIGHT_RATIO
 
@@ -47,13 +49,22 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         }
 
         val binding = DialogSimplePaymentsBinding.bind(view)
-        binding.editPrice.initView(viewModel.currencyCode, viewModel.decimals, currencyFormatter)
+        binding.editPrice.initView(sharedViewModel.currencyCode, sharedViewModel.decimals, currencyFormatter)
         binding.buttonDone.setOnClickListener {
             viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
             AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_CANCELED)
             findNavController().navigateUp()
+        }
+
+        if (!isLandscape && binding.editPrice.requestFocus()) {
+            binding.editPrice.postDelayed(
+                {
+                    ActivityUtils.showKeyboard(binding.editPrice)
+                },
+                KEYBOARD_DELAY
+            )
         }
 
         setupObservers(binding)
@@ -101,5 +112,6 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         private const val WIDTH_RATIO = 0.9
         private const val HEIGHT_RATIO_LANDSCAPE = 0.9
         private const val WIDTH_RATIO_LANDSCAPE = 0.6
+        private const val KEYBOARD_DELAY = 100L
     }
 }

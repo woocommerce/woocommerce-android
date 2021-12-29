@@ -213,7 +213,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                 is ShowPackageDetails -> {
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToEditShippingLabelPackagesFragment(
-                            orderId = event.orderIdentifier,
+                            orderId = event.orderId,
                             shippingLabelPackages = event.shippingLabelPackages.toTypedArray()
                         )
                     findNavController().navigateSafely(action)

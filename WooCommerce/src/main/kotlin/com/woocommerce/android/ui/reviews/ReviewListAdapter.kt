@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -33,7 +34,7 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
     private val removedRemoteIds = HashSet<Long>()
 
     interface OnReviewClickListener {
-        fun onReviewClick(review: ProductReview) {}
+        fun onReviewClick(review: ProductReview, sharedView: View? = null) {}
     }
 
     fun setReviews(reviews: List<ProductReview>) {
@@ -355,7 +356,7 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
                 reviewStatus = ProductReviewStatus.fromString(review.status)
             )
             itemHolder.itemView.setOnClickListener {
-                clickListener.onReviewClick(review)
+                clickListener.onReviewClick(review, itemHolder.itemView)
             }
         }
 
@@ -395,6 +396,14 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
             viewBinding.notifRating.visibility = View.GONE
             viewBinding.notifIcon.setImageResource(R.drawable.ic_comment)
             viewBinding.notifDesc.maxLines = 2
+
+            ViewCompat.setTransitionName(
+                viewBinding.root,
+                String.format(
+                    context.getString(R.string.review_card_transition_name),
+                    review.remoteId
+                )
+            )
 
             if (review.rating > 0) {
                 viewBinding.notifRating.numStars = review.rating

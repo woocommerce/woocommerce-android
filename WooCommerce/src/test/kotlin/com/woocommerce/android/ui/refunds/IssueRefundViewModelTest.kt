@@ -35,9 +35,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val gatewayStore: WCGatewayStore = mock()
     private val refundStore: WCRefundStore = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
-    private val resourceProvider: ResourceProvider = mock() {
+    private val resourceProvider: ResourceProvider = mock {
         on(it.getString(R.string.taxes)).thenAnswer { "Taxes" }
-        on(it.getString(R.string.orderdetail_payment_fees)).thenAnswer { "Fees" }
         on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
         on(it.getString(R.string.and)).thenAnswer { "and" }
         on(it.getString(any(), any())).thenAnswer {
@@ -72,7 +71,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     @Test
     fun `when order has zero taxes and no shipping and fees, then refund notice is not visible`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(orderStore.getOrderByIdentifier(any())).thenReturn(OrderTestUtils.generateOrder())
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(OrderTestUtils.generateOrder())
 
             initViewModel()
 
@@ -84,10 +83,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when order has taxes and no shipping and fees, only the taxes are mentioned in the notice`() {
+    fun `when order has taxes and no shipping and fees, then only the taxes are mentioned in the notice`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val orderWithTax = OrderTestUtils.generateOrder().apply { totalTax = "4.00" }
-            whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithTax)
+            val orderWithTax = OrderTestUtils.generateOrder().copy(totalTax = "4.00")
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithTax)
 
             initViewModel()
 
@@ -100,26 +99,25 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when order has one shipping and fees, the taxes are not mentioned in the notice`() {
+    fun `when order has one shipping and fees without taxes, then the notice not visible`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee()
-            whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithFeesAndShipping)
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithFeesAndShipping)
 
             initViewModel()
 
             var viewState: RefundByItemsViewState? = null
             viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
 
-            assertTrue(viewState!!.isRefundNoticeVisible)
-            assertEquals("You can refund fees", viewState!!.refundNotice)
+            assertFalse(viewState!!.isRefundNoticeVisible)
         }
     }
 
     @Test
-    fun `when order has one shipping, and fees and taxes, shipping are mentioned in the notice`() {
+    fun `when order has one shipping, and fees and taxes, then taxes are mentioned in the notice`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee().apply { totalTax = "4.00" }
-            whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithFeesAndShipping)
+            val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee().copy(totalTax = "4.00")
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithFeesAndShipping)
 
             initViewModel()
 
@@ -127,14 +125,14 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
 
             assertTrue(viewState!!.isRefundNoticeVisible)
-            assertEquals("You can refund fees and taxes", viewState!!.refundNotice)
+            assertEquals("You can refund taxes", viewState!!.refundNotice)
         }
     }
 
     @Test
     fun `when order has multiple shipping, multiple shipping are mentioned in the notice`() {
         val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines()
-        whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithMultipleShipping)
+        whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
 
         initViewModel()
 
