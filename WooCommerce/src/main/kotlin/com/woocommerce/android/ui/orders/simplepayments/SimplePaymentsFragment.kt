@@ -141,7 +141,9 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     }
 
     private fun showTakePaymentScreen() {
-        findNavController().navigate(R.id.action_simplePaymentsFragment_to_takePaymentFragment)
+        SimplePaymentsFragmentDirections
+            .actionSimplePaymentsFragmentToTakePaymentFragment()
+            .let { findNavController().navigateSafely(it) }
     }
 
     private fun validateEmail(emailEditText: EditText): Boolean {
