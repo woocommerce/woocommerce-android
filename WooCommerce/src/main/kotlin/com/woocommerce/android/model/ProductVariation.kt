@@ -29,6 +29,7 @@ data class ProductVariation(
     val remoteVariationId: Long,
     val sku: String,
     val image: Product.Image?,
+    val price: BigDecimal?,
     val regularPrice: BigDecimal?,
     val salePrice: BigDecimal?,
     val saleEndDateGmt: Date?,
@@ -185,10 +186,10 @@ data class VariantOption(
 
 fun WCProductVariationModel.toAppModel(): ProductVariation {
     return ProductVariation(
-        this.remoteProductId,
-        this.remoteVariationId,
-        this.sku,
-        this.getImageModel()?.let {
+        remoteProductId = this.remoteProductId,
+        remoteVariationId = this.remoteVariationId,
+        sku = this.sku,
+        image = this.getImageModel()?.let {
             Product.Image(
                 it.id,
                 it.name,
@@ -196,15 +197,16 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
                 DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
             )
         },
-        this.regularPrice.toBigDecimalOrNull()?.roundError(),
-        this.salePrice.toBigDecimalOrNull()?.roundError(),
-        this.dateOnSaleToGmt.formatDateToISO8601Format(),
-        this.dateOnSaleFromGmt.formatDateToISO8601Format(),
-        this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
-        ProductStockStatus.fromString(this.stockStatus),
-        ProductBackorderStatus.fromString(this.backorders),
-        this.stockQuantity,
-        this.getProductVariantOptions()
+        price = this.price.toBigDecimalOrNull(),
+        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
+        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
+        saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
+        saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
+        isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
+        stockStatus = ProductStockStatus.fromString(this.stockStatus),
+        backorderStatus = ProductBackorderStatus.fromString(this.backorders),
+        stockQuantity = this.stockQuantity,
+        options = this.getProductVariantOptions()
             .filter { it.name != null && it.option != null }
             .map { Option(it.name!!, it.option!!) },
         isPurchasable = this.purchasable,
