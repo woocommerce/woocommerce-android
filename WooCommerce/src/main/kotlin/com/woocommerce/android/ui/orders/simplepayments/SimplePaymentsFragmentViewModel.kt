@@ -74,6 +74,14 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         viewState = viewState.copy(customerNote = customerNote)
     }
 
+    fun getDraftOrder(): Order {
+        return order.copy(
+            total = viewState.orderTotal,
+            totalTax = viewState.orderTotalTax,
+            customerNote = viewState.customerNote
+        )
+    }
+
     @Parcelize
     data class ViewState(
         val chargeTaxes: Boolean = false,

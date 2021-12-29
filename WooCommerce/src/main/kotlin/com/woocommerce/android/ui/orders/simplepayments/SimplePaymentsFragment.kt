@@ -142,7 +142,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
     private fun showTakePaymentScreen() {
         SimplePaymentsFragmentDirections
-            .actionSimplePaymentsFragmentToTakePaymentFragment()
+            .actionSimplePaymentsFragmentToTakePaymentFragment(viewModel.getDraftOrder())
             .let { findNavController().navigateSafely(it) }
     }
 
