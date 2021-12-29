@@ -94,7 +94,7 @@ ext {
     googlePlayCoreVersion = '1.10.2'
     coroutinesVersion = '1.5.2'
     lifecycleVersion = '2.4.0'
-    assertjVersion = '3.11.1'
+    assertjVersion = '3.21.0'
     aztecVersion = 'v1.3.45'
     flipperVersion = '0.125.0'
     stateMachineVersion = '0.2.0'
