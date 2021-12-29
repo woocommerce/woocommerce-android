@@ -41,10 +41,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
         binding.switchChargeTaxes.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onChargeTaxesChanged(isChecked)
         }
-        binding.textEditCustomerNote.setOnClickListener {
-            viewModel.onCustomerNoteClicked()
-        }
-        binding.textAddCustomerNote.setOnClickListener {
+        binding.containerCustomerNote.setOnClickListener {
             viewModel.onCustomerNoteClicked()
         }
     }
