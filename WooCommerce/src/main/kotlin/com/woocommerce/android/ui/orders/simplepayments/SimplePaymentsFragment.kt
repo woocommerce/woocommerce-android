@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSimplePaymentsBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.CurrencyFormatter
@@ -108,13 +109,9 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     }
 
     private fun showCustomerNoteEditor() {
-        val bundle = Bundle().also {
-            it.putString("customerNote", viewModel.viewState.customerNote)
-        }
-        findNavController().navigate(
-            R.id.action_simplePaymentsFragment_to_simplePaymentsCustomerNoteFragment,
-            bundle
-        )
+        SimplePaymentsFragmentDirections
+            .actionSimplePaymentsFragmentToSimplePaymentsCustomerNoteFragment(viewModel.viewState.customerNote)
+            .let { findNavController().navigateSafely(it) }
     }
 
     private fun validateEmail(emailEditText: EditText): Boolean {
