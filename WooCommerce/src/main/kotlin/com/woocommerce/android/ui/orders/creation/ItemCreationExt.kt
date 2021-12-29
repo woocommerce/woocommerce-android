@@ -11,10 +11,10 @@ fun Product.createItem(): Order.Item = Order.Item(
     variationId = 0L,
     quantity = 1f,
     name = name,
-    price = regularPrice ?: BigDecimal.ZERO, // TODO add a price property to the Product
-    subtotal = regularPrice ?: BigDecimal.ZERO,
+    price = price ?: BigDecimal.ZERO,
+    subtotal = price ?: BigDecimal.ZERO,
     totalTax = BigDecimal.ZERO,
-    total = regularPrice ?: BigDecimal.ZERO,
+    total = price ?: BigDecimal.ZERO,
     sku = sku,
     attributesList = emptyList(),
 )
@@ -25,10 +25,10 @@ fun ProductVariation.createItem(parentProduct: Product): Order.Item = Order.Item
     variationId = remoteVariationId,
     quantity = 1f,
     name = parentProduct.name,
-    price = regularPrice ?: BigDecimal.ZERO, // TODO add a price property to the Product
-    subtotal = regularPrice ?: BigDecimal.ZERO,
+    price = price ?: BigDecimal.ZERO,
+    subtotal = price ?: BigDecimal.ZERO,
     totalTax = BigDecimal.ZERO,
-    total = regularPrice ?: BigDecimal.ZERO,
+    total = price ?: BigDecimal.ZERO,
     sku = sku,
     attributesList = attributes
         .filterNot { it.name.isNullOrEmpty() || it.option.isNullOrEmpty() }
