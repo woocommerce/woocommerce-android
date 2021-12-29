@@ -75,6 +75,27 @@ class OrderCreationViewModel @Inject constructor(
         updateOrderItems(orderDraft.items - item)
     }
 
+    fun onProductSelected(remoteProductId: Long, variationProductId: Long? = null) {
+        val uniqueId = variationProductId ?: remoteProductId
+        orderDraft.items.toMutableList().apply {
+            val index = indexOfFirst { it.uniqueId == uniqueId }
+            if (index != -1) {
+                val item = get(index)
+                set(index, item.copy(quantity = item.quantity + 1))
+            } else {
+                val product = productDetailRepository.getProduct(remoteProductId)
+                val item = variationProductId?.let {
+                    if (product != null) {
+                        variationDetailRepository.getVariation(remoteProductId, it)?.createItem(product)
+                    } else null
+                } ?: product?.createItem()
+                    ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationProductId ?: 0L)
+
+                add(item)
+            }
+        }.let { orderDraft = orderDraft.copy(items = it) }
+    }
+
     private fun adjustProductsQuantity(id: Long, quantityToAdd: Int) {
         val items = orderDraft.items.toMutableList()
         val index = items.indexOfFirst { it.uniqueId == id }
@@ -114,15 +135,6 @@ class OrderCreationViewModel @Inject constructor(
             canDecreaseQuantity = quantity >= 2
             // TODO check if we need to disable the plus button depending on stock quantity
         )
-    }
-
-    fun onProductSelected(remoteProductId: Long) {
-        // TODO the variation scenario is not handled yet
-        orderDraft.items.toMutableList().apply {
-            find { it.productId == remoteProductId }
-                ?.let { set(indexOf(it), it.copy(quantity = it.quantity + 1)) }
-                ?: add(Order.Item.EMPTY.copy(productId = remoteProductId, quantity = 1f))
-        }.let { orderDraft = orderDraft.copy(items = it) }
     }
 }
 
