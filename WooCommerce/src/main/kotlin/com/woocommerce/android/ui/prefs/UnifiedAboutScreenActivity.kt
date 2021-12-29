@@ -17,5 +17,5 @@ class UnifiedAboutScreenActivity : AppCompatActivity(), AboutConfigProvider {
         setContentView(R.layout.unified_about_screen_activity)
     }
 
-    override fun getAboutConfig() = aboutConfigBuilder.createAboutConfig(applicationContext)
+    override fun getAboutConfig() = aboutConfigBuilder.createAboutConfig(this)
 }

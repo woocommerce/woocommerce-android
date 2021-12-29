@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
 import com.automattic.about.model.*
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppUrls
@@ -12,10 +13,10 @@ import javax.inject.Inject
 class AboutConfigBuilder @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
-    fun createAboutConfig(appCtx: Context) =
+    fun createAboutConfig(activity: AppCompatActivity) =
         AboutConfig(
-            headerConfig = HeaderConfig.fromContext(appCtx),
-            rateUsConfig = RateUsConfig.fromContext(appCtx),
+            headerConfig = HeaderConfig.fromContext(activity),
+            rateUsConfig = RateUsConfig.fromContext(activity),
             socialsConfig = SocialsConfig(
                 twitterUsername = AppConstants.TWITTER_USERNAME,
                 instagramUsername = AppConstants.INSTAGRAM_USERNAME,
@@ -25,18 +26,18 @@ class AboutConfigBuilder @Inject constructor(
                 privacyPolicyUrl = AppUrls.AUTOMATTIC_PRIVACY_POLICY,
                 californiaPrivacyNoticeUrl = AppUrls.AUTOMATTIC_PRIVACY_POLICY_CA,
             ),
-            shareConfigFactory = { createShareConfig(appCtx) },
+            shareConfigFactory = { createShareConfig(activity) },
             analyticsConfig = createAnalyticsConfig(),
             onDismiss = {
-                // noop
+                activity.finish()
             },
         )
 
-    private fun createShareConfig(appCtx: Context) = ShareConfig(
-        subject = appCtx.getString(R.string.settings_about_recommend_app_subject),
-        message = appCtx.getString(
+    private fun createShareConfig(context: Context) = ShareConfig(
+        subject = context.getString(R.string.settings_about_recommend_app_subject),
+        message = context.getString(
             R.string.settings_about_recommend_app_message,
-            AppUrls.PLAY_STORE_APP_PREFIX + appCtx.packageName
+            AppUrls.PLAY_STORE_APP_PREFIX + context.packageName
         ),
     )
 
