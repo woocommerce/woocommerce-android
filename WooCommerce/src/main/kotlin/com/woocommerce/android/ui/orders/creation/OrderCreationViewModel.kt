@@ -119,17 +119,18 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     private suspend fun Order.Item.toProductUIModel(): ProductUIModel {
-        val (isStockManaged, stockQuantity) = withContext(dispatchers.io) {
+        val (imageUrl, isStockManaged, stockQuantity) = withContext(dispatchers.io) {
             if (isVariation) {
                 val variation = variationDetailRepository.getVariation(productId, variationId)
-                Pair(variation?.isStockManaged, variation?.stockQuantity)
+                Triple(variation?.image?.source, variation?.isStockManaged, variation?.stockQuantity)
             } else {
                 val product = productDetailRepository.getProduct(productId)
-                Pair(product?.isStockManaged, product?.stockQuantity)
+                Triple(product?.firstImageUrl, product?.isStockManaged, product?.stockQuantity)
             }
         }
         return ProductUIModel(
             item = this,
+            imageUrl = imageUrl.orEmpty(),
             isStockManaged = isStockManaged ?: false,
             stockQuantity = stockQuantity ?: 0.0,
             canDecreaseQuantity = quantity >= 2
@@ -140,6 +141,7 @@ class OrderCreationViewModel @Inject constructor(
 
 data class ProductUIModel(
     val item: Order.Item,
+    val imageUrl: String,
     val isStockManaged: Boolean,
     val stockQuantity: Double,
     val canDecreaseQuantity: Boolean

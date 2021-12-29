@@ -11,14 +11,12 @@ import com.woocommerce.android.databinding.OrderCreationProductItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.creation.ProductsAdapter.ProductViewHolder
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 class ProductsAdapter(
     private val onProductClicked: (Order.Item) -> Unit,
-    private val productImageMap: ProductImageMap,
     private val currencyFormatter: (BigDecimal) -> String,
     private val onIncreaseQuantity: (Long) -> Unit,
     private val onDecreaseQuantity: (Long) -> Unit
@@ -89,9 +87,7 @@ class ProductsAdapter(
                 context.getString(R.string.orderdetail_product_lineitem_sku_value, productModel.item.sku)
 
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_major_50)
-            PhotonUtils.getPhotonImageUrl(
-                productImageMap.get(productModel.item.uniqueId), imageSize, imageSize
-            )?.let { imageUrl ->
+            PhotonUtils.getPhotonImageUrl(productModel.imageUrl, imageSize, imageSize)?.let { imageUrl ->
                 GlideApp.with(context)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_product)
