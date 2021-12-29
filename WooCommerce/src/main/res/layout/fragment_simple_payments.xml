@@ -206,58 +206,12 @@
                 android:background="@color/divider_color" />
 
             <!-- Customer provided note -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/containerCustomerNote"
+            <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
+                android:id="@+id/notes_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/major_100"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true">
+                app:header="@string/order_creation_customer_note" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/textCustomerNote"
-                    style="@style/Woo.Card.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/major_100"
-                    android:text="@string/orderdetail_customer_provided_note"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/textEditCustomerNote"
-                    style="@style/Woo.Card.Body.High"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/major_100"
-                    android:text="@string/edit"
-                    android:textColor="@color/color_secondary"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/textCustomerNoteContent"
-                    style="@style/Woo.Card.Body.High"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/major_100"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textCustomerNote" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/textAddCustomerNote"
-                    style="@style/Woo.Button.TextButton.TextStart"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_add"
-                    android:drawablePadding="@dimen/major_100"
-                    android:text="@string/order_detail_add_customer_note"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textCustomerNote" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>
 
