@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -45,6 +47,9 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     }
                     is MultiLiveEvent.Event.ShowSnackbar -> {
                         uiMessageResolver.showSnack(event.message)
+                    }
+                    is MultiLiveEvent.Event.Exit -> {
+                        findNavController().navigateSafely(R.id.orders)
                     }
                 }
             }
