@@ -19,6 +19,7 @@ repositories {
             includeGroup "org.wordpress.fluxc"
             includeGroup "org.wordpress.fluxc.plugins"
             includeGroup "org.wordpress.mediapicker"
+            includeGroup "com.automattic"
         }
     }
     maven {
@@ -220,6 +221,8 @@ dependencies {
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+
+    implementation 'com.automattic:about:29-97ab40c15d3f4e5fb4f6870e35c04ad280021579'
 
     // Dagger
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
