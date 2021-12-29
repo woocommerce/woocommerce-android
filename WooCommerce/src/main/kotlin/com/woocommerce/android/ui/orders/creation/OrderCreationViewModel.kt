@@ -75,8 +75,8 @@ class OrderCreationViewModel @Inject constructor(
         updateOrderItems(orderDraft.items - item)
     }
 
-    fun onProductSelected(remoteProductId: Long, variationProductId: Long? = null) {
-        val uniqueId = variationProductId ?: remoteProductId
+    fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
+        val uniqueId = variationId ?: remoteProductId
         orderDraft.items.toMutableList().apply {
             val index = indexOfFirst { it.uniqueId == uniqueId }
             if (index != -1) {
@@ -86,12 +86,12 @@ class OrderCreationViewModel @Inject constructor(
             }
             // Create a new item
             val product = productDetailRepository.getProduct(remoteProductId)
-            val item = variationProductId?.let {
+            val item = variationId?.let {
                 if (product != null) {
                     variationDetailRepository.getVariation(remoteProductId, it)?.createItem(product)
                 } else null
             } ?: product?.createItem()
-                ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationProductId ?: 0L)
+                ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
 
             add(item)
         }.let { updateOrderItems(it) }

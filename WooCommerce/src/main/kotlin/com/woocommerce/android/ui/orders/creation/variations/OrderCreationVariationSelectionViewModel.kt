@@ -28,14 +28,14 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
 
     private val loadMoreTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
-    private val parentProductLiveData = flow {
+    private val parentProductFlow = flow {
         val parentProduct = withContext(dispatchers.io) {
             productRepository.getProduct(navArgs.productId)
         }
         emit(parentProduct)
     }
 
-    private val variationsList = flow {
+    private val variationsListFlow = flow {
         // Let's start with the cached variations
         emit(variationRepository.getProductVariationList(navArgs.productId))
         // Then fetch from network
@@ -47,8 +47,8 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
         }
     }
 
-    val viewState = parentProductLiveData
-        .combine(variationsList) { parentProduct, variationList ->
+    val viewState = parentProductFlow
+        .combine(variationsListFlow) { parentProduct, variationList ->
             ViewState(parentProduct, variationList)
         }
         .asLiveData()
