@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.creation.variations
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -12,6 +11,7 @@ import com.woocommerce.android.databinding.FragmentOrderCreationProductSelection
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListAdapter
@@ -19,11 +19,17 @@ import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderCreationVariationSelectionFragment : Fragment(R.layout.fragment_order_creation_product_selection) {
+class OrderCreationVariationSelectionFragment : BaseFragment(R.layout.fragment_order_creation_product_selection) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val viewModel by viewModels<OrderCreationVariationSelectionViewModel>()
 
     private val skeletonView = SkeletonView()
+
+    private var screenTitle = ""
+        set(value) {
+            field = value
+            updateActivityTitle()
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,6 +42,8 @@ class OrderCreationVariationSelectionFragment : Fragment(R.layout.fragment_order
 
     private fun setupObservers(binding: FragmentOrderCreationProductSelectionBinding) {
         viewModel.viewState.observe(viewLifecycleOwner) { state ->
+            screenTitle = state.parentProduct?.name ?: getString(R.string.order_creation_variations_screen_title)
+
             binding.bindVariationsList(state.variationsList, state.parentProduct)
 
             binding.showSkeleton(state.isSkeletonShown)
@@ -74,4 +82,6 @@ class OrderCreationVariationSelectionFragment : Fragment(R.layout.fragment_order
             skeletonView.hide()
         }
     }
+
+    override fun getFragmentTitle() = screenTitle
 }
