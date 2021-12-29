@@ -35,9 +35,8 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
         val binding = FragmentSimplePaymentsBinding.bind(view)
         binding.buttonDone.setOnClickListener {
-            // TODO nbradbury - save changes to order
             if (validateEmail(binding.editEmail)) {
-                showTakePaymentScreen()
+                viewModel.onDoneButtonClicked()
             }
         }
 
@@ -75,6 +74,9 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                 when (event) {
                     is SimplePaymentsFragmentViewModel.ShowCustomerNoteEditor -> {
                         showCustomerNoteEditor()
+                    }
+                    is SimplePaymentsFragmentViewModel.ShowTakePaymentScreen -> {
+                        showTakePaymentScreen()
                     }
                 }
             }
@@ -142,7 +144,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
     private fun showTakePaymentScreen() {
         SimplePaymentsFragmentDirections
-            .actionSimplePaymentsFragmentToTakePaymentFragment(viewModel.getDraftOrder())
+            .actionSimplePaymentsFragmentToTakePaymentFragment(viewModel.orderDraft)
             .let { findNavController().navigateSafely(it) }
     }
 
