@@ -44,7 +44,9 @@ class OrderCreationVariationSelectionFragment : BaseFragment(R.layout.fragment_o
         viewModel.viewState.observe(viewLifecycleOwner) { state ->
             screenTitle = state.parentProduct?.name ?: getString(R.string.order_creation_variations_screen_title)
 
-            binding.bindVariationsList(state.variationsList, state.parentProduct)
+            state.variationsList?.let { variations ->
+                binding.bindVariationsList(variations, state.parentProduct)
+            }
 
             binding.showSkeleton(state.isSkeletonShown)
         }

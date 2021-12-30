@@ -10,10 +10,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -37,7 +34,7 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
 
     private val variationsListFlow = flow {
         // Let's start with the cached variations
-        emit(variationRepository.getProductVariationList(navArgs.productId))
+        emit(variationRepository.getProductVariationList(navArgs.productId).takeIf { it.isNotEmpty() })
         // Then fetch from network
         emit(variationRepository.fetchProductVariations(navArgs.productId))
 
@@ -45,7 +42,7 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
         loadMoreTrigger.collect {
             emit(variationRepository.fetchProductVariations(navArgs.productId, loadMore = true))
         }
-    }
+    }.map { variations -> variations?.filter { it.price != null } }
 
     val viewState = parentProductFlow
         .combine(variationsListFlow) { parentProduct, variationList ->
@@ -60,8 +57,8 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
 
     data class ViewState(
         val parentProduct: Product?,
-        val variationsList: List<ProductVariation>
+        val variationsList: List<ProductVariation>?
     ) {
-        val isSkeletonShown: Boolean = variationsList.isEmpty()
+        val isSkeletonShown: Boolean = variationsList == null
     }
 }
