@@ -558,6 +558,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         JETPACK_INSTALL_BUTTON_TAPPED,
         JETPACK_INSTALL_SUCCEEDED,
         JETPACK_INSTALL_FAILED,
+        JETPACK_INSTALL_IN_WPADMIN_BUTTON_TAPPED,
+        JETPACK_INSTALL_CONTACT_SUPPORT_BUTTON_TAPPED,
 
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
