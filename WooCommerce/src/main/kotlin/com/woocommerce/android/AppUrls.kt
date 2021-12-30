@@ -44,4 +44,6 @@ object AppUrls {
     const val BBPOS_MANUAL_CARD_READER =
         "https://developer.bbpos.com/quick_start_guide/Chipper%202X%20BT%20Quick%20Start%20Guide.pdf"
     const val M2_MANUAL_CARD_READER = "https://stripe.com/files/docs/terminal/m2_product_sheet.pdf"
+
+    const val PLAY_STORE_APP_PREFIX = "http://play.google.com/store/apps/details?id="
 }
