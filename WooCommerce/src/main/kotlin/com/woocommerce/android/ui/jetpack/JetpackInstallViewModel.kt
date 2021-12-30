@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collect
 import kotlinx.parcelize.Parcelize
@@ -22,9 +21,9 @@ class JetpackInstallViewModel @Inject constructor(
     private val repository: PluginRepository
 ) : ScopedViewModel(savedState) {
     companion object {
-        const val CONNECTION_DELAY = 1000L
         const val JETPACK_SLUG = "jetpack"
         const val JETPACK_NAME = "jetpack/jetpack"
+        const val CONNECTION_ERROR = "Connection error."
     }
 
     val viewStateLiveData = LiveDataDelegate(savedState, JetpackInstallProgressViewState())
@@ -63,7 +62,7 @@ class JetpackInstallViewModel @Inject constructor(
 
                     is PluginActivated -> {
                         AnalyticsTracker.track(Stat.JETPACK_INSTALL_SUCCEEDED)
-                        simulateConnectingAndFinishedSteps()
+                        checkJetpackConnection()
                     }
 
                     is PluginActivationFailed -> {
@@ -80,11 +79,15 @@ class JetpackInstallViewModel @Inject constructor(
         }
     }
 
-    private fun simulateConnectingAndFinishedSteps() {
+    private fun checkJetpackConnection() {
         launch {
             viewState = viewState.copy(installStatus = Connecting)
-            delay(CONNECTION_DELAY)
-            viewState = viewState.copy(installStatus = Finished)
+            val isJetpackConnected = repository.isJetpackConnectedAfterInstallation()
+            viewState = if (isJetpackConnected) {
+                viewState.copy(installStatus = Finished)
+            } else {
+                viewState.copy(installStatus = Failed(CONNECTION, CONNECTION_ERROR))
+            }
         }
     }
 

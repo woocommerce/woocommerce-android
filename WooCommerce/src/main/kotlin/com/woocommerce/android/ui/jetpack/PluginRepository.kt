@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginAc
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.parcelize.Parcelize
@@ -26,16 +27,19 @@ import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.PluginStore
 import org.wordpress.android.fluxc.store.PluginStore.*
 import org.wordpress.android.fluxc.store.Store
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.lang.Exception
 
 class PluginRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore,
     @Suppress("unused") private val pluginStore: PluginStore
 ) {
     companion object {
         const val GENERIC_ERROR = "Unknown issue."
         const val ATTEMPT_LIMIT = 2
+        const val SYNC_CHECK_DELAY = 1000L
     }
 
     init {
@@ -49,7 +53,7 @@ class PluginRepository @Inject constructor(
     private var continuationFetchJetpackSitePlugin = ContinuationWrapper<SitePluginModel?>(WooLog.T.WP)
 
     // Note that the `newInstallSitePluginAction` action automatically tries to activate the plugin after
-    // installation is successful, so when using this function, there's no need to call `activateJetpackPlugin()
+    // installation is successful, so when using this function, there's no need to call `activatePlugin()`
     // separately.
     fun installPlugin(slug: String, name: String) = callbackFlow<PluginStatus> {
         val listener = PluginActionListener(this)
@@ -159,6 +163,26 @@ class PluginRepository @Inject constructor(
         } else {
             continuationFetchJetpackSitePlugin.continueWith(null)
         }
+    }
+
+    // After Jetpack-the-plugin is installed and activated on the site via the app, it will do a site sync.
+    // The app needs the sync to be finished before the entire installation is considered finished and the site
+    // can be used as a full WooCommerce site in the app.
+    // We check that by making sure `woocommerce_is_active` is true (returned by `hasWooCommerce` in the
+    // SiteModel).
+    suspend fun isJetpackConnectedAfterInstallation(): Boolean {
+        var attempt = 0
+        while (attempt < ATTEMPT_LIMIT) {
+            val result = wooCommerceStore.fetchWooCommerceSite(selectedSite.get())
+            val siteModel = result.model
+            if (siteModel != null && siteModel.hasWooCommerce) {
+                return true
+            } else {
+                attempt++
+                delay(SYNC_CHECK_DELAY)
+            }
+        }
+        return false
     }
 
     sealed class PluginStatus : Parcelable {
