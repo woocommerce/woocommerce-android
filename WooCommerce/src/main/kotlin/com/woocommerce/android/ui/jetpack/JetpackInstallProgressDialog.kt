@@ -258,7 +258,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
     override fun onResume() {
         super.onResume()
 
-        if(isReturningFromWpAdmin) {
+        if (isReturningFromWpAdmin) {
             // If installation / activation fails and a merchant ends up installing / activating directly in wp-admin,
             // when they return to the app from wp-admin we want to check Jetpack's installation status and either
             // proceed with installation process or keep the error message shown.
