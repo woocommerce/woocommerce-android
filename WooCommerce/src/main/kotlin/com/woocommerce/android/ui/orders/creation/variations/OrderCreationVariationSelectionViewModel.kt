@@ -42,7 +42,9 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
         loadMoreTrigger.collect {
             emit(variationRepository.fetchProductVariations(navArgs.productId, loadMore = true))
         }
-    }.map { variations -> variations?.filter { it.price != null } }
+    }.map { variations ->
+        variations?.filter { it.price != null }
+    }
 
     val viewState = parentProductFlow
         .combine(variationsListFlow) { parentProduct, variationList ->
