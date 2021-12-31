@@ -13,36 +13,22 @@
             android:id="@+id/action_orderCreationFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerNoteFragment"
-            app:destination="@id/orderCreationCustomerNoteFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/orderCreationCustomerNoteFragment" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationProductSelectionFragment"
-            app:destination="@id/orderCreationProductSelectionFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/orderCreationProductSelectionFragment" />
 
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
-            app:destination="@id/orderCreationCustomerFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/orderCreationCustomerFragment" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationProductDetailsFragment"
-            app:destination="@id/orderCreationProductDetailsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:destination="@id/orderCreationProductDetailsFragment" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -72,11 +58,7 @@
         tools:layout="@layout/fragment_base_edit_address">
         <action
             android:id="@+id/action_search_filter_fragment"
-            app:destination="@id/searchFilterFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/searchFilterFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFilterFragment"
