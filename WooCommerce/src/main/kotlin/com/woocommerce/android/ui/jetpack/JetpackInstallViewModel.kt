@@ -2,8 +2,11 @@ package com.woocommerce.android.ui.jetpack
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +24,7 @@ class JetpackInstallViewModel @Inject constructor(
     companion object {
         const val CONNECTION_DELAY = 1000L
         const val JETPACK_SLUG = "jetpack"
+        const val JETPACK_NAME = "jetpack/jetpack"
     }
 
     val viewStateLiveData = LiveDataDelegate(savedState, JetpackInstallProgressViewState())
@@ -41,22 +45,35 @@ class JetpackInstallViewModel @Inject constructor(
 
     private fun installJetpackPlugin() {
         launch {
-            repository.installPlugin(JETPACK_SLUG).collect {
+            repository.installPlugin(JETPACK_SLUG, JETPACK_NAME).collect {
                 when (it) {
                     is PluginInstalled -> {
                         viewState = viewState.copy(installStatus = Activating)
                     }
 
                     is PluginInstallFailed -> {
-                        viewState = viewState.copy(installStatus = Failed(it.error))
+                        AnalyticsTracker.track(
+                            Stat.JETPACK_INSTALL_FAILED,
+                            errorContext = this@JetpackInstallViewModel.javaClass.simpleName,
+                            errorType = it.errorType,
+                            errorDescription = it.errorDescription
+                        )
+                        viewState = viewState.copy(installStatus = Failed(INSTALLATION, it.errorDescription))
                     }
 
                     is PluginActivated -> {
+                        AnalyticsTracker.track(Stat.JETPACK_INSTALL_SUCCEEDED)
                         simulateConnectingAndFinishedSteps()
                     }
 
                     is PluginActivationFailed -> {
-                        viewState = viewState.copy(installStatus = Failed(it.error))
+                        AnalyticsTracker.track(
+                            Stat.JETPACK_INSTALL_FAILED,
+                            errorContext = this@JetpackInstallViewModel.javaClass.simpleName,
+                            errorType = it.errorType,
+                            errorDescription = it.errorDescription
+                        )
+                        viewState = viewState.copy(installStatus = Failed(ACTIVATION, it.errorDescription))
                     }
                 }
             }
@@ -90,6 +107,12 @@ class JetpackInstallViewModel @Inject constructor(
         object Finished : InstallStatus()
 
         @Parcelize
-        data class Failed(val error: String) : InstallStatus()
+        data class Failed(val errorType: FailureType, val errorDescription: String) : InstallStatus()
+    }
+
+    enum class FailureType {
+        INSTALLATION,
+        ACTIVATION,
+        CONNECTION
     }
 }

@@ -16,14 +16,17 @@ org.gradle.jvmargs=-Xmx1536m
 # http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects
 # org.gradle.parallel=true
 
+# Enables Gradle Build Cache - https://docs.gradle.org/current/userguide/build_cache.html
+org.gradle.caching=true
+
 # WooCommerce for Android properties.
 
 android.useAndroidX=true
-android.enableJetifier=true
+android.enableJetifier=false
 
 
 # For more details on what these properties do visit
-# https://github.com/woocommerce/woocommerce-android/blob/develop/README.md
+# https://github.com/woocommerce/woocommerce-android/blob/trunk/README.md
 
 wc.oauth.app_id = woocommerce
 wc.oauth.app_secret = woocommerce

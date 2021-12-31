@@ -327,25 +327,6 @@
             app:argType="long" />
     </fragment>
     <fragment
-        android:id="@+id/wpMediaPickerFragment"
-        android:name="com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment"
-        android:label="WPMediaPickerFragment"
-        tools:layout="@layout/fragment_wpmedia_picker">
-        <argument
-            android:name="allowMultiple"
-            app:argType="boolean" />
-    </fragment>
-    <fragment
-        android:id="@+id/wpMediaViewerFragment"
-        android:name="com.woocommerce.android.ui.wpmediapicker.WPMediaViewerFragment"
-        android:label="WPMediaViewerFragment"
-        tools:layout="@layout/fragment_wpmedia_viewer">
-        <argument
-            android:name="imageUrl"
-            app:argType="string"
-            app:nullable="false" />
-    </fragment>
-    <fragment
         android:id="@+id/productCategoriesFragment"
         android:name="com.woocommerce.android.ui.products.categories.ProductCategoriesFragment"
         tools:layout="@layout/fragment_product_categories_list">
@@ -448,15 +429,6 @@
         android:id="@+id/action_global_aztecEditorFragment"
         app:destination="@id/aztecEditorFragment" />
 
-    <action
-        android:id="@+id/action_global_wpMediaFragment"
-        app:destination="@id/wpMediaPickerFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
-
-    <action
-        android:id="@+id/action_global_wpMediaViewerFragment"
-        app:destination="@id/wpMediaViewerFragment" />
     <action
         android:id="@+id/action_global_productDetailBottomSheetFragment"
         app:destination="@id/productDetailBottomSheetFragment"

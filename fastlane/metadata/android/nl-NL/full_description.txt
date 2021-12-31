@@ -1,0 +1,22 @@
+Beheer je bedrijf onderweg met de mobiele WooCommerce-app. Producten aanmaken, bestellingen verwerken en je belangrijkste cijfers in de gaten houden; allemaal in realtime.
+
+Producten toevoegen
+Maak producten aan, en groepeer en publiceer ze rechtstreeks vanaf je favoriete mobiele Android-apparaten. Maak meteen werk van nieuwe ingevingen en zet ze direct om in producten, of sla de producten op als concept voor later.
+
+Ontvang een melding
+Mis nooit meer een bestelling of een beoordeling. Bang dat je iets mist? Schakel dan realtime meldingen in en wacht op dat verslavende 'katsjing!' iedere keer als je iets hebt verkocht!
+
+BEKIJK BESTELLINGEN EN PAS ZE AAN
+Scrol door de overzichten, of zoek op klant of bestellingsgegevens. Tik op de gegevens om de factuur te bekijken, de levering in gang te zetten en de bestelstatus te wijzigen. Voeg opmerkingen toe aan de bestelling of stuur direct een e-mail met een update naar de klant.
+
+VOLG JE STATISTIEKEN
+Bekijk in één oogopslag welke producten het beste verkopen. Check je totale winst, aantal bestellingen en bezoekersgegevens per week, maand en jaar. Kennis is macht!
+
+SCHAKELEN TUSSEN WINKELS
+Heb je meer dan één winkel? Schakel dan eenvoudig over van de ene naar de andere.
+
+WooCommerce is 's werelds meest aanpasbare opensource eCommerce-platform. Of je nu een bedrijf start, een fysieke winkel online wilt starten of sites voor cliënten wilt ontwikkelen: gebruik WooCommerce voor een winkel waarin content en handel gecombineerd worden.
+
+Vereisten: WooCommerce v3.5+, de Jetpack-plugin.
+
+Bekijk de privacyverklaring voor gebruikers in Californië op https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

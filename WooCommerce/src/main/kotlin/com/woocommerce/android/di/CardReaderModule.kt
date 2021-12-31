@@ -1,18 +1,20 @@
 package com.woocommerce.android.di
 
 import android.app.Application
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.toInPersonPaymentsPluginType
 import com.woocommerce.android.util.CapturePaymentResponseMapper
 import com.woocommerce.android.util.WooLog
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.wordpress.android.fluxc.store.WCPayStore
+import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -27,22 +29,47 @@ class CardReaderModule {
     ) = CardReaderManagerFactory.createCardReaderManager(application, cardReaderStore, logWrapper)
 
     @Provides
-    fun provideCardReaderStore(
+    fun provideInPersonPaymentsStore(
         selectedSite: SelectedSite,
-        payStore: WCPayStore,
-        responseMapper: CapturePaymentResponseMapper
+        inPersonPaymentsStore: WCInPersonPaymentsStore,
+        responseMapper: CapturePaymentResponseMapper,
+        appPrefs: AppPrefs
     ) = object : CardReaderStore {
         override suspend fun fetchCustomerIdByOrderId(orderId: Long): String? {
-            return payStore.createCustomerByOrderId(selectedSite.get(), orderId).model?.customerId
+            return inPersonPaymentsStore.createCustomerByOrderId(
+                appPrefs.getPaymentPluginType(
+                    selectedSite.get().id,
+                    selectedSite.get().siteId,
+                    selectedSite.get().selfHostedSiteId
+                ).toInPersonPaymentsPluginType(),
+                selectedSite.get(),
+                orderId
+            ).model?.customerId
         }
 
         override suspend fun fetchConnectionToken(): String {
-            val result = payStore.fetchConnectionToken(selectedSite.get())
+            val result = inPersonPaymentsStore.fetchConnectionToken(
+                appPrefs.getPaymentPluginType(
+                    selectedSite.get().id,
+                    selectedSite.get().siteId,
+                    selectedSite.get().selfHostedSiteId
+                ).toInPersonPaymentsPluginType(),
+                selectedSite.get()
+            )
             return result.model?.token.orEmpty()
         }
 
         override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): CapturePaymentResponse {
-            val response = payStore.capturePayment(selectedSite.get(), paymentId, orderId)
+            val response = inPersonPaymentsStore.capturePayment(
+                appPrefs.getPaymentPluginType(
+                    selectedSite.get().id,
+                    selectedSite.get().siteId,
+                    selectedSite.get().selfHostedSiteId
+                ).toInPersonPaymentsPluginType(),
+                selectedSite.get(),
+                paymentId,
+                orderId
+            )
             return responseMapper.mapResponse(response)
         }
     }

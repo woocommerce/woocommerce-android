@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.jetpack
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus
 import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -21,7 +22,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val installationStateFlow = MutableSharedFlow<PluginStatus>(extraBufferCapacity = Int.MAX_VALUE)
     private val pluginRepository: PluginRepository = mock {
-        on { installPlugin(any()) } doReturn installationStateFlow
+        on { installPlugin(any(), any()) } doReturn installationStateFlow
     }
     private val siteModel: SiteModel = mock()
     private lateinit var viewModel: JetpackInstallViewModel
@@ -66,11 +67,11 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstallFailed(EXAMPLE_ERROR))
+        installationStateFlow.tryEmit(PluginInstallFailed(EXAMPLE_ERROR, EXAMPLE_ERROR))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).contains(
-            Failed(EXAMPLE_ERROR)
+            Failed(INSTALLATION, EXAMPLE_ERROR)
         )
     }
 
@@ -81,11 +82,30 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR))
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME, siteModel))
+        installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR, EXAMPLE_ERROR))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).contains(
-            Failed(EXAMPLE_ERROR)
+            Installing,
+            Activating,
+            Failed(ACTIVATION, EXAMPLE_ERROR)
+        )
+    }
+
+    @Test
+    fun `when a plugin to install already exists, then set activating state`() = testBlocking {
+        val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
+        }
+
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME, siteModel))
+        advanceUntilIdle()
+
+        Assertions.assertThat(installStates).containsExactly(
+            Installing,
+            Activating
         )
     }
 }

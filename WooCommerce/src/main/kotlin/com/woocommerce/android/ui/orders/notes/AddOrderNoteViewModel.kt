@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.notes
 
-import android.content.DialogInterface
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
@@ -23,7 +22,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
@@ -39,7 +37,7 @@ class AddOrderNoteViewModel @Inject constructor(
 
     private val navArgs: AddOrderNoteFragmentArgs by savedState.navArgs()
 
-    private val orderId: OrderIdentifier
+    private val orderId: Long
         get() = navArgs.orderId
 
     private val orderNumber: String
@@ -52,9 +50,6 @@ class AddOrderNoteViewModel @Inject constructor(
         get() = addOrderNoteViewState.canAddNote
 
     init {
-        if (orderId.isEmpty() || orderNumber.isEmpty()) {
-            triggerEvent(Exit)
-        }
         checkIfHasBillingMail()
     }
 
@@ -73,7 +68,7 @@ class AddOrderNoteViewModel @Inject constructor(
     }
 
     private fun checkIfHasBillingMail() {
-        val email = orderDetailRepository.getOrder(orderId)?.billingAddress?.email
+        val email = orderDetailRepository.getOrderById(orderId)?.billingAddress?.email
         addOrderNoteViewState = addOrderNoteViewState.copy(showCustomerNoteSwitch = email?.isNotEmpty() == true)
     }
 
@@ -85,18 +80,18 @@ class AddOrderNoteViewModel @Inject constructor(
             return
         }
 
-        val order = orderDetailRepository.getOrder(orderId)
+        val order = orderDetailRepository.getOrderById(orderId)
         if (order == null) {
             triggerEvent(ShowSnackbar(R.string.add_order_note_error))
             return
         }
-        AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to order.remoteId))
+        AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to order.id))
 
         addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = true)
 
         val note = addOrderNoteViewState.draftNote
         launch {
-            val onOrderChanged = orderDetailRepository.addOrderNote(order.identifier, order.remoteId, note)
+            val onOrderChanged = orderDetailRepository.addOrderNote(order.id, note)
             if (!onOrderChanged.isError) {
                 AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
                 addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
@@ -123,7 +118,7 @@ class AddOrderNoteViewModel @Inject constructor(
         if (addOrderNoteViewState.draftNote.note.trim().isNotEmpty()) {
             triggerEvent(
                 ShowDialog.buildDiscardDialogEvent(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    positiveBtnAction = { _, _ ->
                         triggerEvent(Exit)
                     }
                 )

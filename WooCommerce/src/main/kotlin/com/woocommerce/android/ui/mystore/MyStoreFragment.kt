@@ -35,9 +35,7 @@ import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -182,21 +180,31 @@ class MyStoreFragment :
         refreshMyStoreStats(forced = this.isRefreshPending)
     }
 
+    @Suppress("ForbiddenComment")
     private fun prepareJetpackBenefitsBanner() {
         binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
             presenter.dismissJetpackBenefitsBanner()
         }
         binding.jetpackBenefitsBanner.root.setOnClickListener {
+            AnalyticsTracker.track(
+                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
+            )
             findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
         }
         val appBarLayout = appBarLayout ?: return
         // For the banner to be above the bottom navigation view when the toolbar is expanded
-        appBarLayout.verticalOffsetChanges()
-            .onEach { verticalOffset ->
-                binding.jetpackBenefitsBanner.root.translationY =
-                    (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
-            }
-            .launchIn(viewLifecycleOwner.lifecycleScope)
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
+            // we are using `launchWhenCreated` here, since if this view doesn't reach the created state,
+            // the scope will not get cancelled.
+            // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
+            appBarLayout.verticalOffsetChanges()
+                .collect { verticalOffset ->
+                    binding.jetpackBenefitsBanner.root.translationY =
+                        (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
+                }
+        }
     }
 
     private fun initTabLayout() {
@@ -338,9 +346,7 @@ class MyStoreFragment :
         }
         presenter.run {
             loadStats(activeGranularity, forced)
-            coroutineScope.launch {
-                presenter.loadTopPerformersStats(activeGranularity, forced)
-            }
+            loadTopPerformersStats(activeGranularity, forced)
         }
     }
 
@@ -359,9 +365,7 @@ class MyStoreFragment :
 
     override fun onRequestLoadTopPerformersStats(period: StatsGranularity) {
         binding.myStoreTopPerformers.showErrorView(false)
-        presenter.coroutineScope.launch {
-            presenter.loadTopPerformersStats(period)
-        }
+        presenter.loadTopPerformersStats(period)
     }
 
     override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {

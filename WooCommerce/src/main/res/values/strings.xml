@@ -23,6 +23,7 @@
     <string name="my_store">My store</string>
     <string name="orders">Orders</string>
     <string name="email_address">Email address</string>
+    <string name="email">Email</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="order_total">Order total</string>
@@ -121,6 +122,8 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
+    <string name="minus">Minus</string>
+    <string name="plus">Plus</string>
 
     <!--
         Date/Time Labels
@@ -128,6 +131,14 @@
     <string name="date_timeframe_future">Upcoming</string>
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
+    <string name="date_timeframe_last_week">Last Week</string>
+    <string name="date_timeframe_last_month">Last Month</string>
+    <string name="date_timeframe_last_quarter">Last Quarter</string>
+    <string name="date_timeframe_last_year">Last Year</string>
+    <string name="date_timeframe_week_to_date">Week to Date</string>
+    <string name="date_timeframe_month_to_date">Month to Date</string>
+    <string name="date_timeframe_quarter_to_date">Quarter to Date</string>
+    <string name="date_timeframe_year_to_date">Year to Date</string>
     <string name="date_timeframe_older_two_days">Older than 2 days</string>
     <string name="date_timeframe_older_week">Older than a week</string>
     <string name="date_timeframe_older_month">Older than a month</string>
@@ -251,6 +262,26 @@
     <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
+
+    <!--
+        Analytics View
+    -->
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
+    <string name="analytics_date_range_selector_description">Selector for date range filter</string>
+    <string-array name="date_range_selectors">
+        <item translatable="false">@string/date_timeframe_today</item>
+        <item translatable="false">@string/date_timeframe_yesterday</item>
+        <item translatable="false">@string/date_timeframe_last_week</item>
+        <item translatable="false">@string/date_timeframe_last_month</item>
+        <item translatable="false">@string/date_timeframe_last_quarter</item>
+        <item translatable="false">@string/date_timeframe_last_year</item>
+        <item translatable="false">@string/date_timeframe_week_to_date</item>
+        <item translatable="false">@string/date_timeframe_month_to_date</item>
+        <item translatable="false">@string/date_timeframe_quarter_to_date</item>
+        <item translatable="false">@string/date_timeframe_year_to_date</item>
+    </string-array>
+
     <!--
         Order List View
     -->
@@ -269,12 +300,21 @@
     <string name="orderlist_simple_payments_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
     <string name="orderlist_simple_payments_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
     <!--
          Simple Payments
     -->
     <string name="simple_payments_dialog_title">Take payment</string>
+    <string name="simple_payments_title">Simple payment</string>
     <string name="simple_payments_enter_amount">Enter amount</string>
     <string name="simple_payments_creation_error">Unable to create order</string>
+    <string name="simple_payments_edit_email_hint">Enter email</string>
+    <string name="simple_payments_custom_amount">Custom amount</string>
+    <string name="simple_payments_charge_taxes">Charge taxes</string>
+    <string name="simple_payments_take_payment_button">Take payment (%s)</string>
+    <string name="simple_payments_tax_with_percent">Tax (%s%%)</string>
+    <string name="simple_payments_tax_message">Taxes are automatically calculated based on your store address</string>
     <!--
          Order Creation
     -->
@@ -283,6 +323,21 @@
     <string name="orderlist_bottom_sheet_create_order_description">Create a new manual order</string>
     <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
     <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
+    <string name="order_creation_fragment_title">New Order</string>
+    <string name="order_creation_customer">Customer</string>
+    <string name="order_creation_customer_note">Customer Note</string>
+    <string name="order_creation_add_customer">Add customer</string>
+    <string name="order_creation_add_customer_note">Add note</string>
+    <string name="order_creation_products">Products</string>
+    <string name="order_creation_add_products">Add Product</string>
+    <string name="order_creation_new_customer">New customer</string>
+    <string name="order_creation_product_stock_quantity">%s in stock</string>
+    <string name="order_creation_product_instock">In stock</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
+    <string name="order_creation_product_details_title">Product</string>
+    <string name="order_creation_add_discount">Add discount</string>
+    <string name="order_creation_remove_product">Remove product from order</string>
+
     <!--
         Order Filters
     -->
@@ -735,8 +790,10 @@
     <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
+    <string name="order_refunds_fees_refund">Fees refund</string>
     <string name="order_refunds_select_quantity">Select quantity</string>
     <string name="order_refunds_refund_shipping">Refund shipping</string>
+    <string name="order_refunds_refund_fees">Refund fees</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
     <string name="order_refunds_refund_info_description_one">%d item</string>
     <string name="order_refunds_refund_info_description_many">%d items</string>
@@ -839,10 +896,25 @@
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
     <string name="card_reader_payment_failed_no_network_state">No internet connection</string>
     <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
-    <string name="card_reader_payment_failed_card_declined_state">Card declined</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
     <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50 usd</string>
+    <string name="card_reader_payment_failed_temporary">Trying again may succeed</string>
+    <string name="card_reader_payment_failed_fraud">Try another means of payment</string>
+    <string name="card_reader_payment_failed_generic">Payment was declined for an unspecified reason</string>
+    <string name="card_reader_payment_failed_invalid_account">The card or card account is invalid</string>
+    <string name="card_reader_payment_failed_card_not_supported">The card does not support this type of purchase</string>
+    <string name="card_reader_payment_failed_currency_not_supported">The card does not support this currency</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">An identical transaction was submitted recently</string>
+    <string name="card_reader_payment_failed_expired_card">The card has expired</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">The transaction postal code and card postal code do not match</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Payment declined due to insufficient funds</string>
+    <string name="card_reader_payment_failed_invalid_amount">The payment amount is not allowed for the card presented</string>
+    <string name="card_reader_payment_failed_pin_required">This card requires a PIN code and thus cannot be processed</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">An incorrect PIN has been entered too many times</string>
+    <string name="card_reader_payment_failed_test_card">System test cards are not permitted for payment</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">A live card was used on a site in test mode</string>
+    <string name="card_reader_payment_failed_unknown">Payment was declined for an unknown reason</string>
 
     <string name="card_reader_payment_retry_card_prompt">Retry with the same card</string>
     <string name="card_reader_payment_remove_card_prompt">Remove the card</string>
@@ -951,12 +1023,21 @@
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Refresh after activating</string>
 
     <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting Card-Present Payments.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refresh</string>
 
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Update WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Refresh after updating</string>
+
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Finish Stripe setup on your store admin</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">You’re almost there! Please finish setting up Stripe to start accepting Card-Present Payments.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Refresh</string>
+
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Update Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Outdated version of the WooCommerce Stripe Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Refresh after updating</string>
+
 
     <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
     <string name="card_reader_onboarding_account_rejected_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
@@ -1019,6 +1100,8 @@
     <string name="wc_load_review_error">Error loading product review detail</string>
     <string name="wc_moderate_review_error">Error updating product review status</string>
     <string name="wc_review_title">Review</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
     <!--
         Product Reviews List
     -->
@@ -1254,7 +1337,8 @@
     <string name="upsell_product_count_one">%d upsell product</string>
     <string name="upsell_product_count_many">%d upsell products</string>
     <string name="product_detail_background_image_upload">Image uploading will continue in the background</string>
-
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -1400,6 +1484,8 @@
     <string name="settings_app_theme_option_battery_saver">Set by Battery Saver</string>
     <string name="settings_app_theme_option_default" translatable="false">@string/settings_app_theme_option_battery_saver</string>
     <string name="settings_about_title">About WooCommerce</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <!--
         WCToggleSingleOptionView
     -->
@@ -1690,6 +1776,18 @@
     <string name="jetpack_install_progress_step_two_message">Activating</string>
     <string name="jetpack_install_progress_step_three_message">Connecting your store</string>
     <string name="jetpack_install_progress_step_four_message">All done</string>
+    <string name ="jetpack_install_progress_failed_title">Sorry, something went wrong during %s</string>
+    <string name ="jetpack_install_progress_failed_reason_installation">installation</string>
+    <string name ="jetpack_install_progress_failed_reason_activation">activation</string>
+    <string name ="jetpack_install_progress_failed_reason_connection">connecting</string>
+    <string name ="jetpack_install_progress_failed_try">Please try again.</string>
+    <string name ="jetpack_install_progress_failed_alternative">Alternatively, you can %s Jetpack in WP Admin.</string>
+    <string name ="jetpack_install_progress_failed_alternative_install">install</string>
+    <string name ="jetpack_install_progress_failed_alternative_activate">activate</string>
+    <string name ="jetpack_install_progress_failed_option_wp_admin">%s Jetpack in WP Admin</string>
+    <string name ="jetpack_install_progress_option_wp_admin_install">Install</string>
+    <string name ="jetpack_install_progress_option_wp_admin_activate">Activate</string>
+    <string name ="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

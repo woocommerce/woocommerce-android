@@ -168,7 +168,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionAbout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_aboutFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_aboutActivity)
         }
 
         binding.optionLicenses.setOnClickListener {

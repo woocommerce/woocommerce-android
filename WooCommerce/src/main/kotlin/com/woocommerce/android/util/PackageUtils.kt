@@ -29,6 +29,15 @@ object PackageUtils {
         return isTesting!!
     }
 
+    fun isUITesting(): Boolean {
+        return try {
+            Class.forName("com.woocommerce.android.helpers.TestBase")
+            true
+        } catch (e: ClassNotFoundException) {
+            false
+        }
+    }
+
     fun isBetaBuild(context: Context): Boolean {
         val versionName = getVersionName(context).toLowerCase(Locale.ROOT)
         return (versionName.contains("beta") || versionName.contains("rc"))
