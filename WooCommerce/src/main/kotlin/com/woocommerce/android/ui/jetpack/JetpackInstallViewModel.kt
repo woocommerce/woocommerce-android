@@ -79,7 +79,7 @@ class JetpackInstallViewModel @Inject constructor(
         }
     }
 
-    private fun checkJetpackConnection() {
+    fun checkJetpackConnection() {
         launch {
             viewState = viewState.copy(installStatus = Connecting)
             val isJetpackConnected = repository.isJetpackConnectedAfterInstallation()
