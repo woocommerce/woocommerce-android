@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/issueRefund_feeLines"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            tools:itemCount="2"
+            android:visibility="gone"
+            tools:listitem="@layout/refund_fee_list_item"
+            tools:targetApi="lollipop" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:id="@+id/issueRefund_dividerBelowFees"
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/minor_00"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/issueRefund_feesSubtotalSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowFees">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/issueRefund_lblFeesSubtotal"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginTop="@dimen/major_75"
+                    android:text="@string/subtotal" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/issueRefund_feesSubtotal"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_marginTop="@dimen/major_75"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="$45.00" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/issueRefund_feesTaxesSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/issueRefund_feesSubtotalSection">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/issueRefund_lblFeesTax"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginTop="@dimen/minor_50"
+                    android:text="@string/taxes" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/issueRefund_feesTax"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/minor_50"
+                    tools:text="$45.00" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/issueRefund_dividerBelowFeesTaxes"
+                style="@style/Woo.Divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/minor_00"
+                android:layout_marginTop="@dimen/major_75"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/issueRefund_feesTaxesSection" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/issueRefund_feesRefundSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/issueRefund_lblFeesRefundTotal"
+            style="@style/Woo.Card.Body.Bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/major_75"
+            android:layout_marginBottom="@dimen/major_75"
+            android:text="@string/order_refunds_fees_refund" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/issueRefund_feesTotal"
+            style="@style/Woo.Card.Body.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_75"
+            android:layout_marginBottom="@dimen/major_75"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"
+            tools:text="$1.00" />
+
+            <!-- This button is used later on, to support partial refund on fees line. -->
+            <!--
+            <com.google.android.material.button.MaterialButton
+            android:id="@+id/issueRefund_feesRefundTotalButton"
+            style="@style/Woo.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/major_100"
+            android:paddingStart="@dimen/major_100"
+            android:includeFontPadding="false"
+            android:textAllCaps="false"
+            tools:text="$49.00" />
+            -->
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -51,6 +51,26 @@ class AppPrefsTest {
     }
 
     @Test
+    fun whenCardReaderOnboardingPendingRequirementWithStripeExtThenCorrectOnboardingStatusIsStored() {
+        AppPrefs.setCardReaderOnboardingPending(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderOnboardingCompletedStatus(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(
+            CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION
+        )
+    }
+
+    @Test
     fun whenCardReaderOnboardingCompletedWithWCPayThenCorrectOnboardingStatusIsStored() {
         AppPrefs.setCardReaderOnboardingCompleted(
             localSiteId = 0,
@@ -66,6 +86,24 @@ class AppPrefsTest {
                 selfHostedSiteId = 0L
             )
         ).isEqualTo(CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementsWithWCPayThenCorrectOnboardingStatusIsStored() {
+        AppPrefs.setCardReaderOnboardingPending(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            pluginType = PluginType.WOOCOMMERCE_PAYMENTS
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderOnboardingCompletedStatus(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY)
     }
 
     @Test
@@ -98,6 +136,24 @@ class AppPrefsTest {
     }
 
     @Test
+    fun whenCardReaderOnboardingPendingRequirementsWithWCPayThenCorrectOnboardingStatusFlagIsReturned() {
+        AppPrefs.setCardReaderOnboardingPending(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            pluginType = PluginType.WOOCOMMERCE_PAYMENTS
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderOnboardingCompleted(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isFalse
+    }
+
+    @Test
     fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusFlagIsReturned() {
         AppPrefs.setCardReaderOnboardingCompleted(
             localSiteId = 0,
@@ -113,6 +169,24 @@ class AppPrefsTest {
                 selfHostedSiteId = 0L
             )
         ).isTrue
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementsWithStripeExtThenCorrectOnboardingStatusFlagIsReturned() {
+        AppPrefs.setCardReaderOnboardingPending(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderOnboardingCompleted(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isFalse
     }
 
     @Test

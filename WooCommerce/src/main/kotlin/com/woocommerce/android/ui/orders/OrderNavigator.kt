@@ -50,20 +50,23 @@ class OrderNavigator @Inject constructor() {
             }
             is ViewRefundedProducts -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToRefundDetailFragment(target.remoteOrderId)
+                    .actionOrderDetailFragmentToRefundDetailFragment(target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
             is AddOrderNote -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToAddOrderNoteFragment(
-                        orderId = target.orderIdentifier,
+                        orderId = target.orderId,
                         orderNumber = target.orderNumber
                     )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewOrderFulfillInfo -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToOrderFulfillFragment(target.orderIdentifier)
+                    .actionOrderDetailFragmentToOrderFulfillFragment(
+                        orderId = target.orderId,
+                        orderLocalId = target.localOrderId
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
             is RefundShippingLabel -> {
@@ -76,16 +79,17 @@ class OrderNavigator @Inject constructor() {
             is AddOrderShipmentTracking -> {
                 val action = OrderDetailFragmentDirections
                     .actionGlobalAddOrderShipmentTrackingFragment(
-                        orderId = target.orderIdentifier,
+                        orderId = target.orderId,
+                        orderLocalId = target.orderLocalId,
                         orderTrackingProvider = target.orderTrackingProvider,
-                        isCustomProvider = target.isCustomProvider
+                        isCustomProvider = target.isCustomProvider,
                     )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewShipmentTrackingProviders -> {
                 val action = AddOrderShipmentTrackingFragmentDirections
                     .actionAddOrderShipmentTrackingFragmentToAddOrderTrackingProviderListFragment(
-                        orderId = target.orderIdentifier, selectedProvider = target.selectedProvider
+                        orderId = target.orderId, selectedProvider = target.selectedProvider
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -144,7 +148,7 @@ class OrderNavigator @Inject constructor() {
             }
             is StartShippingLabelCreationFlow -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderIdentifier)
+                    .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
             is OrderNavigationTarget.ShowCardReaderWelcomeDialog -> {
@@ -158,7 +162,7 @@ class OrderNavigator @Inject constructor() {
             }
             is StartCardReaderPaymentFlow -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToCardReaderPaymentDialog(target.orderIdentifier)
+                    .actionOrderDetailFragmentToCardReaderPaymentDialog(target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewPrintingInstructions -> {

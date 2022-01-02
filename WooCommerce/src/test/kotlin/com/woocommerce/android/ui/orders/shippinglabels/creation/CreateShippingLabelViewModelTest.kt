@@ -148,7 +148,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = true
     )
 
-    private val savedState = CreateShippingLabelFragmentArgs(order.getIdentifier()).initSavedStateHandle()
+    private val savedState = CreateShippingLabelFragmentArgs(order.remoteOrderId.value).initSavedStateHandle()
 
     private lateinit var viewModel: CreateShippingLabelViewModel
 
@@ -202,7 +202,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             paymentStep = otherNotDone
         )
 
-        stateFlow.value = Transition(State.WaitingForInput(data), null)
+        stateFlow.value = Transition(WaitingForInput(data), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
@@ -226,7 +226,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             shippingAddressStep = data.stepsState.shippingAddressStep.copy(status = READY)
         )
         val newData = data.copy(stepsState = newStepsState)
-        stateFlow.value = Transition(State.WaitingForInput(newData), null)
+        stateFlow.value = Transition(WaitingForInput(newData), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
@@ -255,14 +255,14 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         )
 
         val newData = data.copy(stepsState = newStepsState)
-        stateFlow.value = Transition(State.WaitingForInput(newData), null)
+        stateFlow.value = Transition(WaitingForInput(newData), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
 
     @Test
     fun `Continue click in origin address triggers validation`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        stateFlow.value = Transition(State.WaitingForInput(data), null)
+        stateFlow.value = Transition(WaitingForInput(data), null)
 
         viewModel.onContinueButtonTapped(FlowStep.ORIGIN_ADDRESS)
 
@@ -325,9 +325,9 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             event = it
         }
 
-        stateFlow.value = Transition(Idle, SideEffect.ShowLabelsPrint(doneData.order.remoteId.value, purchasedLabels))
+        stateFlow.value = Transition(Idle, SideEffect.ShowLabelsPrint(doneData.order.id, purchasedLabels))
 
-        assertThat(event).isEqualTo(ShowPrintShippingLabels(doneData.order.remoteId.value, purchasedLabels))
+        assertThat(event).isEqualTo(ShowPrintShippingLabels(doneData.order.id, purchasedLabels))
     }
 
     @Test
@@ -350,7 +350,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
         verify(orderDetailRepository).updateOrderStatus(
-            doneData.order.remoteId, CoreOrderStatus.COMPLETED.value
+            doneData.order.id, CoreOrderStatus.COMPLETED.value
         )
     }
 

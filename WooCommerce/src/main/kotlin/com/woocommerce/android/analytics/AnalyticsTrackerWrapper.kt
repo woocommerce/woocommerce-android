@@ -26,6 +26,12 @@ class AnalyticsTrackerWrapper
         AnalyticsTracker.track(stat, errorContext, errorType, errorDescription)
     }
 
+    /**
+     * A convenience method for tracking views shown during a session.
+     * @param view The view to be tracked
+     */
+    fun trackViewShown(view: Any) = AnalyticsTracker.trackViewShown(view)
+
     fun flush() {
         AnalyticsTracker.flush()
     }
