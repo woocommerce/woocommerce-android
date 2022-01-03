@@ -60,7 +60,6 @@ class ProductDetailRepository @Inject constructor(
     private val taxStore: WCTaxStore
 ) {
     private var continuationUpdateProduct: Continuation<Boolean>? = null
-    private var continuationFetchProduct = ContinuationWrapper<Boolean>(PRODUCTS)
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
     private var continuationUpdateProductPassword = ContinuationWrapper<Boolean>(PRODUCTS)
     private var continuationFetchProductShippingClass = ContinuationWrapper<Boolean>(PRODUCTS)
@@ -82,12 +81,16 @@ class ProductDetailRepository @Inject constructor(
     }
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
-        lastFetchProductErrorType = null
         this.remoteProductId = remoteProductId
-        continuationFetchProduct.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
-            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+        val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+        val result = productStore.fetchSingleProduct(payload)
+
+        if (result.isError) {
+            lastFetchProductErrorType = result.error.type
+        } else {
+            AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
         }
+
         return getProduct(remoteProductId)
     }
 
@@ -273,22 +276,6 @@ class ProductDetailRepository @Inject constructor(
      */
     fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
         productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
-            if (continuationFetchProduct.isWaiting) {
-                if (event.isError) {
-                    lastFetchProductErrorType = event.error.type
-                    continuationFetchProduct.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
-                    continuationFetchProduct.continueWith(true)
-                }
-            }
-        }
-    }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
