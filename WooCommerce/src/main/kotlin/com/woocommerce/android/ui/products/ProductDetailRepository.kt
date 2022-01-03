@@ -80,7 +80,7 @@ class ProductDetailRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchProduct(remoteProductId: Long): Product? {
+    suspend fun fetchProductOrLoadFromCache(remoteProductId: Long): Product? {
         this.remoteProductId = remoteProductId
         val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
         val result = productStore.fetchSingleProduct(payload)
