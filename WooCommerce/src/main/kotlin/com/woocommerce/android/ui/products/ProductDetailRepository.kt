@@ -81,7 +81,6 @@ class ProductDetailRepository @Inject constructor(
     }
 
     suspend fun fetchProductOrLoadFromCache(remoteProductId: Long): Product? {
-        this.remoteProductId = remoteProductId
         val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
         val result = productStore.fetchSingleProduct(payload)
 
@@ -95,6 +94,7 @@ class ProductDetailRepository @Inject constructor(
     }
 
     suspend fun fetchProductPassword(remoteProductId: Long): String? {
+        this.remoteProductId = remoteProductId
         val result = continuationFetchProductPassword.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = WCProductStore.FetchProductPasswordPayload(selectedSite.get(), remoteProductId)
             dispatcher.dispatch(WCProductActionBuilder.newFetchProductPasswordAction(payload))
@@ -151,6 +151,7 @@ class ProductDetailRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun updateProductPassword(remoteProductId: Long, password: String?): Boolean {
+        this.remoteProductId = remoteProductId
         val result = continuationUpdateProductPassword.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = WCProductStore.UpdateProductPasswordPayload(
                 selectedSite.get(),
