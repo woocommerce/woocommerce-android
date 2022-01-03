@@ -37,11 +37,6 @@ class ReviewDetailViewModel @Inject constructor(
         loadProductReview(remoteReviewId, launchedFromNotification)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.onCleanup()
-    }
-
     fun moderateReview(newStatus: ProductReviewStatus) {
         if (networkStatus.isConnected()) {
             viewState.productReview?.let { review ->
