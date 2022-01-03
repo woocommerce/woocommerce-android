@@ -112,8 +112,7 @@
         tools:layout="@layout/dialog_order_tracking_provider_list">
         <argument
             android:name="orderId"
-            android:defaultValue='""'
-            app:argType="string" />
+            app:argType="long" />
         <argument
             android:name="selectedProvider"
             android:defaultValue=""
@@ -125,8 +124,7 @@
         tools:layout="@layout/fragment_add_order_note">
         <argument
             android:name="orderId"
-            android:defaultValue='""'
-            app:argType="string" />
+            app:argType="long" />
         <argument
             android:name="orderNumber"
             android:defaultValue='""'
@@ -137,9 +135,11 @@
         android:name="com.woocommerce.android.ui.orders.fulfill.OrderFulfillFragment"
         tools:layout="@layout/fragment_order_fulfill">
         <argument
-            android:name="orderIdentifier"
-            android:defaultValue='""'
-            app:argType="string" />
+            android:name="orderId"
+            app:argType="long" />
+        <argument
+            android:name="orderLocalId"
+            app:argType="integer" />
     </fragment>
     <include app:graph="@navigation/nav_graph_refunds" />
     <dialog
@@ -176,8 +176,7 @@
         tools:layout="@layout/fragment_order_detail">
         <argument
             android:name="orderId"
-            android:defaultValue='""'
-            app:argType="string" />
+            app:argType="long" />
         <argument
             android:name="remoteNoteId"
             android:defaultValue="0L"
@@ -343,8 +342,8 @@
         android:label="CreateShippingLabelFragment"
         tools:layout="@layout/fragment_create_shipping_label">
         <argument
-            android:name="orderIdentifier"
-            app:argType="string" />
+            android:name="orderId"
+            app:argType="long" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelAddressFragment"
             app:destination="@id/editShippingLabelAddressFragment"
@@ -405,8 +404,10 @@
         tools:layout="@layout/fragment_add_shipment_tracking">
         <argument
             android:name="orderId"
-            android:defaultValue='""'
-            app:argType="string" />
+            app:argType="long" />
+        <argument
+            android:name="orderLocalId"
+            app:argType="integer" />
         <argument
             android:name="orderTrackingProvider"
             android:defaultValue="null"
@@ -431,8 +432,7 @@
         tools:layout="@layout/fragment_edit_shipping_label_packages">
         <argument
             android:name="orderId"
-            android:defaultValue='""'
-            app:argType="string" />
+            app:argType="long" />
         <argument
             android:name="shippingLabelPackages"
             app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
@@ -522,8 +522,8 @@
         android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
         android:label="CardReaderPaymentDialog">
         <argument
-            android:name="orderIdentifier"
-            app:argType="string" />
+            android:name="orderId"
+            app:argType="long" />
     </dialog>
     <dialog
         android:id="@+id/cardReaderConnectDialogFragment"

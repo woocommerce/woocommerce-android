@@ -96,9 +96,9 @@ class MainActivityViewModel @Inject constructor(
         if (notification.channelType == NotificationChannelType.REVIEW) {
             triggerEvent(ViewReviewDetail(notification.uniqueId))
         } else if (notification.channelType == NotificationChannelType.NEW_ORDER) {
-            siteStore.getSiteBySiteId(notification.remoteSiteId)?.let { siteModel ->
-                triggerEvent(ViewOrderDetail(notification.uniqueId, siteModel.id, notification.remoteNoteId))
-            } ?: run {
+            if (siteStore.getSiteBySiteId(notification.remoteSiteId) != null) {
+                triggerEvent(ViewOrderDetail(notification.uniqueId, notification.remoteNoteId))
+            } else {
                 // the site does not exist locally, open order list
                 triggerEvent(ViewOrderList)
             }
@@ -137,5 +137,5 @@ class MainActivityViewModel @Inject constructor(
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
-    data class ViewOrderDetail(val uniqueId: Long, val localSiteId: Int, val remoteNoteId: Long) : Event()
+    data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
 }

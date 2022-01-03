@@ -235,13 +235,14 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val illustration = R.drawable.img_products_error
         }
 
+        // TODO Handle this state properly when designs are ready
         data class WcPayAndStripeInstalledState(
             val refreshButtonAction: () -> Unit,
             val onLearnMoreActionClicked: (() -> Unit)
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_generic_error) {
-            val contactSupportLabel: Nothing = TODO("Add proper logic after designs are ready")
-            val learnMoreLabel: Nothing = TODO("Add proper logic after designs are ready")
-            val illustration: Nothing = TODO("Add proper logic after designs are ready")
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
+            val headerLabel = UiString.UiStringText("Both WCPay and Stripe Extension plugin are active")
+            val illustration = R.drawable.img_hot_air_balloon
+            val hintLabel = UiString.UiStringText("Remove one of the plugin and try again")
         }
 
         class NoConnectionErrorState(
@@ -406,14 +407,14 @@ class CardReaderOnboardingViewModel @Inject constructor(
             abstract val onLearnMoreActionClicked: (() -> Unit)
 
             @DrawableRes
-            val illustration = R.drawable.img_woo_payments
+            val illustration = R.drawable.img_stripe_extension
 
             data class StripeTerminalNotSetupState(
                 override val refreshButtonAction: () -> Unit,
                 override val onLearnMoreActionClicked: (() -> Unit)
             ) : StripeTerminalError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_terminal_not_setup_header),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_terminal_not_setup_hint),
+                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_header),
+                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_hint),
                 learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
                 refreshButtonLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
@@ -424,10 +425,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 override val onLearnMoreActionClicked: (() -> Unit)
             ) : StripeTerminalError(
                 headerLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_stripe_terminal_unsupported_version_header
+                    R.string.card_reader_onboarding_stripe_extension_unsupported_version_header
                 ),
                 hintLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_stripe_terminal_unsupported_version_hint
+                    R.string.card_reader_onboarding_stripe_extension_unsupported_version_hint
                 ),
                 learnMoreLabel = UiString.UiStringRes(
                     R.string.card_reader_onboarding_learn_more, containsHtml = true

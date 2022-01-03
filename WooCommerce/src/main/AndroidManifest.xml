@@ -66,6 +66,10 @@
             android:theme="@style/Theme.Woo.DayNight"/>
 
         <activity
+            android:name=".ui.prefs.UnifiedAboutScreenActivity"
+            android:theme="@style/Theme.Woo.UnifiedAbout"/>
+
+        <activity
             android:label="@string/logviewer_activity_title"
             android:name=".support.WooLogViewerActivity"
             android:theme="@style/Theme.Woo.DayNight"/>

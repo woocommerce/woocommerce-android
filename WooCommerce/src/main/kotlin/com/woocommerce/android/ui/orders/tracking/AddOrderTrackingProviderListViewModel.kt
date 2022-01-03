@@ -18,7 +18,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,9 +37,6 @@ class AddOrderTrackingProviderListViewModel @Inject constructor(
 
     private var providersList = emptyList<OrderShipmentProvider>()
 
-    val orderId: OrderIdentifier
-        get() = navArgs.orderId
-
     val currentSelectedProvider: String
         get() = navArgs.selectedProvider
 
@@ -54,7 +50,7 @@ class AddOrderTrackingProviderListViewModel @Inject constructor(
     private fun fetchProviders() {
         trackingProviderListViewState = trackingProviderListViewState.copy(showSkeleton = true)
         launch {
-            val shipmentProviders = shipmentProvidersRepository.fetchOrderShipmentProviders(orderId)
+            val shipmentProviders = shipmentProvidersRepository.fetchOrderShipmentProviders(navArgs.orderId)
             trackingProviderListViewState = trackingProviderListViewState.copy(showSkeleton = false)
             when {
                 shipmentProviders == null -> {

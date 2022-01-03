@@ -206,13 +206,17 @@ object OrderTestUtils {
         }.toAppModel()
     }
 
-    fun generateShippingLabels(totalCount: Int = 5, orderIdentifier: OrderIdentifier): List<ShippingLabel> {
+    fun generateShippingLabels(
+        totalCount: Int = 5,
+        remoteOrderId: Long = 1L,
+        localSiteId: Int = 1
+    ): List<ShippingLabel> {
         val result = ArrayList<ShippingLabel>()
         for (i in totalCount downTo 1) {
             result.add(
                 WCShippingLabelModel().apply {
-                    localSiteId = orderIdentifier.toIdSet().localSiteId
-                    this.remoteOrderId = orderIdentifier.toIdSet().remoteOrderId
+                    this.localSiteId = localSiteId
+                    this.remoteOrderId = remoteOrderId
                     remoteShippingLabelId = i.toLong()
                     packageName = "Package$i"
                     serviceName = "Service$i"
@@ -255,6 +259,14 @@ object OrderTestUtils {
                             total = BigDecimal.valueOf(13.00),
                             totalTax = BigDecimal.valueOf(3.00)
                         )
+                    ),
+                    feeLines = listOf(
+                        Refund.FeeLine(
+                            id = 30,
+                            name = "$30 fee",
+                            total = BigDecimal.valueOf(399.00),
+                            totalTax = BigDecimal.valueOf(39.90)
+                        )
                     )
                 )
             )
@@ -262,16 +274,15 @@ object OrderTestUtils {
         return result
     }
 
-    fun generateTestOrder(orderIdentifier: OrderIdentifier = "1-1-1"): Order {
-        val orderIdSet = orderIdentifier.toIdSet()
+    fun generateTestOrder(orderId: Long = 1, localSiteId: Int = 1): Order {
         return WCOrderModel(
-            id = orderIdSet.id,
+            id = 1,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(orderIdSet.localSiteId),
-            remoteOrderId = LocalOrRemoteId.RemoteId(orderIdSet.remoteOrderId),
+            localSiteId = LocalOrRemoteId.LocalId(localSiteId),
+            remoteOrderId = LocalOrRemoteId.RemoteId(orderId),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -401,19 +412,18 @@ object OrderTestUtils {
 
     fun generateTestOrderNotes(
         totalNotes: Int,
-        orderIdentifier: OrderIdentifier = "1-1-1"
+        localOrderId: Int = 1,
+        localSiteId: Int = 1
     ): List<OrderNote> {
-        val orderIdSet = orderIdentifier.toIdSet()
-
         val result = ArrayList<OrderNote>()
         for (i in totalNotes downTo 1) {
             result.add(
                 WCOrderNoteModel(totalNotes).apply {
-                    isCustomerNote = false
-                    dateCreated = "2018-02-02T16:11:13Z"
-                    localOrderId = orderIdSet.id
-                    localSiteId = orderIdSet.localSiteId
-                    note = "This is a test note $i"
+                    this.isCustomerNote = false
+                    this.dateCreated = "2018-02-02T16:11:13Z"
+                    this.localOrderId = localOrderId
+                    this.localSiteId = localSiteId
+                    this.note = "This is a test note $i"
                 }.toAppModel()
             )
         }
@@ -422,19 +432,19 @@ object OrderTestUtils {
 
     fun generateTestOrderShipmentTrackings(
         totalCount: Int,
-        orderIdentifier: OrderIdentifier = "1-1-1"
+        localOrderId: Int = 1,
+        localSiteId: Int = 1
     ): List<OrderShipmentTracking> {
-        val orderIdSet = orderIdentifier.toIdSet()
         val result = ArrayList<OrderShipmentTracking>()
         for (i in totalCount downTo 1) {
             result.add(
                 WCOrderShipmentTrackingModel(totalCount).apply {
-                    trackingProvider = "TNT Express $i"
-                    trackingNumber = "$i"
-                    dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
-                    trackingLink = "www.somelink$i.com"
-                    localOrderId = orderIdSet.id
-                    localSiteId = orderIdSet.localSiteId
+                    this.trackingProvider = "TNT Express $i"
+                    this.trackingNumber = "$i"
+                    this.dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
+                    this.trackingLink = "www.somelink$i.com"
+                    this.localOrderId = localOrderId
+                    this.localSiteId = localSiteId
                 }.toAppModel()
             )
         }
