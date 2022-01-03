@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.jetpack
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus
 import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -70,7 +71,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).contains(
-            Failed(EXAMPLE_ERROR)
+            Failed(INSTALLATION, EXAMPLE_ERROR)
         )
     }
 
@@ -88,7 +89,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
         Assertions.assertThat(installStates).contains(
             Installing,
             Activating,
-            Failed(EXAMPLE_ERROR)
+            Failed(ACTIVATION, EXAMPLE_ERROR)
         )
     }
 

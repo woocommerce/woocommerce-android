@@ -420,7 +420,8 @@ class MainActivity :
                 R.id.editCustomerOrderNoteFragment,
                 R.id.shippingAddressEditingFragment,
                 R.id.billingAddressEditingFragment,
-                R.id.orderFilterCategoriesFragment -> {
+                R.id.orderFilterCategoriesFragment,
+                R.id.orderCreationProductDetailsFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {

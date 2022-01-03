@@ -316,6 +316,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED,
         SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED,
         SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED,
+        SETTINGS_ABOUT_BUTTON_TAPPED,
         SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED,
         SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED,
         SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED,
@@ -558,6 +559,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         JETPACK_INSTALL_BUTTON_TAPPED,
         JETPACK_INSTALL_SUCCEEDED,
         JETPACK_INSTALL_FAILED,
+        JETPACK_INSTALL_IN_WPADMIN_BUTTON_TAPPED,
+        JETPACK_INSTALL_CONTACT_SUPPORT_BUTTON_TAPPED,
 
         // -- Other
         UNFULFILLED_ORDERS_LOADED,
@@ -906,7 +909,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param view The view to be tracked
          */
         fun trackViewShown(view: Any) {
-            track(VIEW_SHOWN, mapOf(KEY_NAME to view::class.java.simpleName))
+            val name = if (view is String) {
+                view
+            } else {
+                view::class.java.simpleName
+            }
+            track(VIEW_SHOWN, mapOf(KEY_NAME to name))
         }
 
         /**
