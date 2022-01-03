@@ -166,9 +166,9 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textTaxMessage"
                 style="@style/Woo.TextView.Caption"
-                android:layout_marginTop="@dimen/minor_50"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
                 android:layout_marginBottom="@dimen/major_100"
                 android:text="@string/simple_payments_tax_message" />
 
@@ -200,15 +200,18 @@
 
             <View
                 android:id="@+id/divider4"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
-                android:background="@color/divider_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/containerTotal" />
+                android:background="@color/divider_color" />
 
-            <!-- TODO nbradbury - customer provided note -->
+            <!-- Customer provided note -->
+            <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
+                android:id="@+id/notes_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:header="@string/order_creation_customer_note" />
+
         </LinearLayout>
     </ScrollView>
 
