@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationProductSelectionBinding
@@ -57,6 +58,7 @@ class OrderCreationProductSelectionFragment :
 
     private fun onProductClick(remoteProductId: Long) {
         sharedViewModel.onProductSelected(remoteProductId)
+        findNavController().navigateUp()
     }
 
     override fun onRequestLoadMore() {
