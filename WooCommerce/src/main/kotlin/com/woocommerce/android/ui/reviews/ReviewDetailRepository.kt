@@ -33,13 +33,10 @@ class ReviewDetailRepository @Inject constructor(
         private const val TAG = "ReviewDetailRepository"
     }
 
-    private var remoteReviewId: Long = 0L
-
-    suspend fun fetchProductReview(remoteId: Long): RequestResult {
-        remoteReviewId = remoteId
-        if (fetchProductReviewFromApi(remoteId)) {
-            getProductReviewFromDb(remoteId)?.let {
-                if (fetchProductByRemoteId(it.remoteProductId)) {
+    suspend fun fetchProductReview(remoteReviewId: Long): RequestResult {
+        if (fetchProductReviewFromApi(remoteReviewId)) {
+            getProductReviewFromDb(remoteReviewId)?.let {
+                if (fetchProductByRemoteId(it.remoteProductId, remoteReviewId)) {
                     return SUCCESS
                 }
             }
@@ -64,16 +61,16 @@ class ReviewDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun markNotificationAsRead(notification: NotificationModel) {
+    suspend fun markNotificationAsRead(notification: NotificationModel, remoteReviewId: Long) {
         if (!notification.read) {
             notification.read = true
-            trackMarkNotificationAsReadStarted(notification)
+            trackMarkNotificationAsReadStarted(notification, remoteReviewId)
             val result = notificationStore.markNotificationsRead(MarkNotificationsReadPayload(listOf(notification)))
             trackMarkNotificationReadResult(result)
         }
     }
 
-    private fun trackMarkNotificationAsReadStarted(notification: NotificationModel) {
+    private fun trackMarkNotificationAsReadStarted(notification: NotificationModel, remoteReviewId: Long) {
         AnalyticsTracker.track(
             Stat.REVIEW_MARK_READ,
             mapOf(
@@ -104,7 +101,7 @@ class ReviewDetailRepository @Inject constructor(
         }
     }
 
-    private suspend fun fetchProductByRemoteId(remoteProductId: Long): Boolean {
+    private suspend fun fetchProductByRemoteId(remoteProductId: Long, remoteReviewId: Long): Boolean {
         val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
         val result = productStore.fetchSingleProduct(payload)
 
@@ -129,15 +126,15 @@ class ReviewDetailRepository @Inject constructor(
                 Stat.REVIEW_PRODUCT_LOADED,
                 mapOf(
                     AnalyticsTracker.KEY_ID to remoteProductId,
-                    AnalyticsTracker.KEY_REVIEW_ID to this.remoteReviewId
+                    AnalyticsTracker.KEY_REVIEW_ID to remoteReviewId
                 )
             )
             true
         }
     }
 
-    private suspend fun fetchProductReviewFromApi(remoteId: Long): Boolean {
-        val payload = WCProductStore.FetchSingleProductReviewPayload(selectedSite.get(), remoteId)
+    private suspend fun fetchProductReviewFromApi(remoteReviewId: Long): Boolean {
+        val payload = WCProductStore.FetchSingleProductReviewPayload(selectedSite.get(), remoteReviewId)
         val result = productStore.fetchSingleProductReview(payload)
         if (result.isError) {
             AnalyticsTracker.track(
