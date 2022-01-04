@@ -118,11 +118,11 @@
                 android:layout_width="@dimen/image_minor_60"
                 android:layout_height="@dimen/image_minor_60"
                 android:importantForAccessibility="no"
-                android:src="@drawable/ic_progress_circle_loading"
+                android:src="@drawable/ic_progress_circle_start"
                 android:layout_marginTop="@dimen/major_125"
                 app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
                 app:layout_constraintTop_toBottomOf="@id/icon1"
-                android:visibility="invisible"/>
+                android:visibility="visible"/>
 
             <ProgressBar
                 android:id="@+id/progress2"
@@ -132,7 +132,7 @@
                 android:layout_marginTop="@dimen/major_125"
                 app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
                 app:layout_constraintTop_toBottomOf="@id/icon1"
-                android:visibility="visible"/>
+                android:visibility="invisible"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/message2"
@@ -254,7 +254,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="icon1, icon2, icon3, icon4, message1, message2, message3, message4, progress1, progress2, progress3" />
-
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/jetpack_progress_guideline_start"
