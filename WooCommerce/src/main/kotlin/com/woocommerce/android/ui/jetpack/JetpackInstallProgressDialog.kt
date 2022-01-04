@@ -136,6 +136,10 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2, binding.message3)
                 setTextWeight(Typeface.NORMAL, binding.message4)
 
+                if (status.retry) {
+                    binding.messages.show()
+                }
+
                 binding.jetpackProgressActionButton.hide()
             }
             is Finished -> {
@@ -145,6 +149,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2, binding.message3, binding.message4)
 
                 binding.jetpackProgressActionButton.show()
+                binding.openAdminOrRetryButton.visibility = View.INVISIBLE
+                binding.contactButton.visibility = View.INVISIBLE
             }
             is Failed -> {
                 handleFailedState(status.errorType, binding)
@@ -215,6 +221,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
 
         // Visibilities
         binding.failureHide.visibility = View.INVISIBLE
+        binding.messages.visibility = View.INVISIBLE
         binding.contactButton.show()
         binding.openAdminOrRetryButton.show()
         binding.jetpackProgressActionButton.hide()
@@ -245,7 +252,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             }
             CONNECTION -> {
                 button.setOnClickListener {
-                    viewModel.checkJetpackConnection()
+                    viewModel.checkJetpackConnection(retry = true)
                 }
             }
         }

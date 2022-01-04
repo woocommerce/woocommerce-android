@@ -79,9 +79,9 @@ class JetpackInstallViewModel @Inject constructor(
         }
     }
 
-    fun checkJetpackConnection() {
+    fun checkJetpackConnection(retry: Boolean = false) {
         launch {
-            viewState = viewState.copy(installStatus = Connecting)
+            viewState = viewState.copy(installStatus = Connecting(retry))
             val isJetpackConnected = repository.isJetpackConnectedAfterInstallation()
             viewState = if (isJetpackConnected) {
                 viewState.copy(installStatus = Finished)
@@ -104,7 +104,7 @@ class JetpackInstallViewModel @Inject constructor(
         object Activating : InstallStatus()
 
         @Parcelize
-        object Connecting : InstallStatus()
+        data class Connecting(val retry: Boolean = false) : InstallStatus()
 
         @Parcelize
         object Finished : InstallStatus()
