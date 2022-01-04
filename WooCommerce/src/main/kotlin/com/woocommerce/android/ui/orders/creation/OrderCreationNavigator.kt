@@ -13,7 +13,7 @@ object OrderCreationNavigator {
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
             EditCustomerNote ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
-            AddSimpleProduct ->
+            AddProduct ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
             is ShowProductDetails ->
                 OrderCreationFormFragmentDirections

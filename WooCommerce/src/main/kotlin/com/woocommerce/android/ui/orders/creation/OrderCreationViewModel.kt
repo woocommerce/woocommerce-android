@@ -115,6 +115,15 @@ class OrderCreationViewModel @Inject constructor(
             // TODO check if we need to disable the plus button depending on stock quantity
         )
     }
+
+    fun onProductSelected(remoteProductId: Long) {
+        // TODO the variation scenario is not handled yet
+        orderDraft.items.toMutableList().apply {
+            find { it.productId == remoteProductId }
+                ?.let { set(indexOf(it), it.copy(quantity = it.quantity + 1)) }
+                ?: add(Order.Item.EMPTY.copy(productId = remoteProductId, quantity = 1f))
+        }.let { orderDraft = orderDraft.copy(items = it) }
+    }
 }
 
 data class ProductUIModel(

@@ -62,7 +62,7 @@
         tools:layout="@layout/fragment_edit_customer_order_note" />
     <fragment
         android:id="@+id/orderCreationProductSelectionFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationProductSelectionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragment"
         android:label="OrderCreationProductSelectionFragment"
         tools:layout="@layout/fragment_order_creation_product_selection" />
     <fragment
