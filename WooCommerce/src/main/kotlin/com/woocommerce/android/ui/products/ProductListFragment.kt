@@ -453,7 +453,7 @@ class ProductListFragment :
         }
     }
 
-    fun onProductClick(remoteProductId: Long, sharedView: View?) {
+    private fun onProductClick(remoteProductId: Long, sharedView: View?) {
         (activity as? MainNavigationRouter)?.let { router ->
             if (sharedView == null) {
                 router.showProductDetail(remoteProductId, enableTrash = true)
