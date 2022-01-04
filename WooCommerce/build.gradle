@@ -220,7 +220,7 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
-    implementation 'com.automattic:about:main-cf4b0efcfa5b5904771e7713986eced12e650d2b'
+    implementation "com.automattic:about:$aboutAutomatticVersion"
 
     // Dagger
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
