@@ -59,10 +59,13 @@ class OrderCreationProductSelectionFragment :
     private fun FragmentOrderCreationProductSelectionBinding.loadProductsAdapterWith(
         products: List<Product>
     ) {
-        productsList.adapter = ProductListAdapter(
-            clickListener = { id, _ -> productListViewModel.onProductSelected(id) },
-            loadMoreListener = this@OrderCreationProductSelectionFragment
-        ).apply { setProductList(products) }
+        val adapter = productsList.adapter
+            .let { it as? ProductListAdapter }
+            ?: ProductListAdapter(
+                clickListener = { id, _ -> productListViewModel.onProductSelected(id) },
+                loadMoreListener = this@OrderCreationProductSelectionFragment
+            ).also { productsList.adapter = it }
+        adapter.setProductList(products)
     }
 
     override fun onRequestLoadMore() {

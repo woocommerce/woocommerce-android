@@ -48,16 +48,16 @@ so that's the baseline as defined in `major_100`.
     <dimen name="text_major_200">96sp</dimen>
 
     <!-- Regular text line heights -->
-    <dimen name="line_height_minor_70">16dp</dimen>
-    <dimen name="line_height_minor_80">20dp</dimen>
-    <dimen name="line_height_minor_100">24dp</dimen>
+    <dimen name="line_height_minor_70">16sp</dimen>
+    <dimen name="line_height_minor_80">20sp</dimen>
+    <dimen name="line_height_minor_100">24sp</dimen>
 
     <!-- Large text line heights -->
-    <dimen name="line_height_major_25">24dp</dimen>
-    <dimen name="line_height_major_50">36dp</dimen>
-    <dimen name="line_height_major_100">56dp</dimen>
-    <dimen name="line_height_major_150">72dp</dimen>
-    <dimen name="line_height_major_200">112dp</dimen>
+    <dimen name="line_height_major_25">24sp</dimen>
+    <dimen name="line_height_major_50">36sp</dimen>
+    <dimen name="line_height_major_100">56sp</dimen>
+    <dimen name="line_height_major_150">72sp</dimen>
+    <dimen name="line_height_major_200">112sp</dimen>
 
     <!-- Line spacing extra -->
     <dimen name="line_spacing_extra_50">2sp</dimen>
