@@ -141,7 +141,7 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
     private val cardBuilder by lazy {
-        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters, addonRepository)
+        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters, addonRepository, variationRepository)
     }
 
     private val _productDetailBottomSheetList = MutableLiveData<List<ProductDetailBottomSheetUiItem>>()
