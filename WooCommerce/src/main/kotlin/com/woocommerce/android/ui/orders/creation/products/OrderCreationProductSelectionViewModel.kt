@@ -41,8 +41,14 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
          * is already available on database before relying directly on this call
          */
         launch {
-            productList.value = productListRepository.fetchProductList(loadMore)
-            viewState = viewState.copy(isSkeletonShown = false)
+            productListRepository.getProductList()
+                .takeIf { it.isNotEmpty() }
+                ?.let {
+                    productList.value = it
+                    viewState = viewState.copy(isSkeletonShown = false)
+                }
+
+            productListRepository.fetchProductList(loadMore)
         }
     }
 
