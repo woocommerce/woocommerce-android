@@ -40,7 +40,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 false -> getMediumDate(context)
                 null -> ""
             }.let { dateStr ->
-                binding.subtitleLabel.text =
+                binding.orderStatusSubtitle.text =
                     when (mode) {
                         Mode.OrderEdit -> context.getString(
                             R.string.orderdetail_orderstatus_date_and_ordernum,
@@ -54,12 +54,12 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
 
         when (mode) {
             Mode.OrderEdit -> {
-                binding.headerLabel.text =
+                binding.orderStatusHeader.text =
                     order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
             }
             Mode.OrderCreation -> {
                 // TODO
-                binding.headerLabel.isVisible = false
+                binding.orderStatusHeader.isVisible = false
             }
         }
     }
