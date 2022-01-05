@@ -162,7 +162,7 @@ dependencies {
     }
 
     implementation 'com.google.firebase:firebase-messaging-ktx:23.0.0'
-    implementation 'com.google.android.gms:play-services-auth:19.2.0'
+    implementation 'com.google.android.gms:play-services-auth:20.0.0'
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
