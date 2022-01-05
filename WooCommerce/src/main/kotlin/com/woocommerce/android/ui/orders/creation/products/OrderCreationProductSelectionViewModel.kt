@@ -39,10 +39,6 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         /**
          * We will probably want to improve this call to check if the product list
          * is already available on database before relying directly on this call
-         *
-         * Also, this is intentionally filtering out Variable products as we need a second
-         * view to be able to select the variation itself, not the entire product.
-         * This second view will be tackled in the future
          */
         launch {
             productList.value = productListRepository.fetchProductList(loadMore)
