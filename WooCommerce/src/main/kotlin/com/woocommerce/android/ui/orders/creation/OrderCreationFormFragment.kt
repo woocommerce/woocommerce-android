@@ -18,7 +18,6 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
@@ -36,7 +35,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private val formViewModel by viewModels<OrderCreationFormViewModel>()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var productImageMap: ProductImageMap
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -147,7 +145,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = ProductsAdapter(
                         onProductClicked = formViewModel::onProductClicked,
-                        productImageMap = productImageMap,
                         currencyFormatter = currencyFormatter.buildBigDecimalFormatter(
                             currencyCode = sharedViewModel.currentDraft.currency
                         ),
