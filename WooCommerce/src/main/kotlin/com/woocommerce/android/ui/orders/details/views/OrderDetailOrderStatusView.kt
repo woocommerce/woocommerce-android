@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
@@ -54,7 +55,8 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
 
         when (mode) {
             Mode.OrderEdit -> {
-                binding.headerLabel.text = order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
+                binding.headerLabel.text =
+                    order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
             }
             Mode.OrderCreation -> {
                 // TODO
@@ -77,7 +79,25 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
 
     fun initView(mode: Mode, editOrderStatusClickListener: EditStatusClickListener) {
         this.mode = mode
-        binding.orderStatusEdit.setOnClickListener(editOrderStatusClickListener)
+        when (mode) {
+            Mode.OrderEdit -> {
+                binding.orderStatusEditButton.isVisible = false
+                binding.orderStatusEditImage.isVisible = true
+                with(binding.orderStatusEdit) {
+                    isClickable = true
+                    isFocusable = true
+                    setOnClickListener(editOrderStatusClickListener)
+                }
+            }
+            Mode.OrderCreation -> {
+                binding.orderStatusEditImage.isVisible = false
+                with(binding.orderStatusEditButton) {
+                    isVisible = true
+                    text = context.getString(R.string.edit)
+                    setOnClickListener(editOrderStatusClickListener)
+                }
+            }
+        }
     }
 
     enum class Mode {
