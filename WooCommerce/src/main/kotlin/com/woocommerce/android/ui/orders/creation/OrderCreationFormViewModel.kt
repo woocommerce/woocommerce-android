@@ -45,7 +45,7 @@ class OrderCreationFormViewModel @Inject constructor(
     }
 
     fun onAddSimpleProductsClicked() {
-        triggerEvent(AddSimpleProduct)
+        triggerEvent(AddProduct)
     }
 
     fun onProductClicked(item: Order.Item) {

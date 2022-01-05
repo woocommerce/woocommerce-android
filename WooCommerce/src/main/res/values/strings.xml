@@ -343,6 +343,7 @@
     <string name="order_creation_product_details_title">Product</string>
     <string name="order_creation_add_discount">Add discount</string>
     <string name="order_creation_remove_product">Remove product from order</string>
+    <string name="order_creation_variations_screen_title">Select variation</string>
 
     <!--
         Order Filters
@@ -1490,6 +1491,8 @@
     <string name="settings_app_theme_option_battery_saver">Set by Battery Saver</string>
     <string name="settings_app_theme_option_default" translatable="false">@string/settings_app_theme_option_battery_saver</string>
     <string name="settings_about_title">About WooCommerce</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <!--
         WCToggleSingleOptionView
     -->
@@ -1780,6 +1783,18 @@
     <string name="jetpack_install_progress_step_two_message">Activating</string>
     <string name="jetpack_install_progress_step_three_message">Connecting your store</string>
     <string name="jetpack_install_progress_step_four_message">All done</string>
+    <string name ="jetpack_install_progress_failed_title">Sorry, something went wrong during %s</string>
+    <string name ="jetpack_install_progress_failed_reason_installation">installation</string>
+    <string name ="jetpack_install_progress_failed_reason_activation">activation</string>
+    <string name ="jetpack_install_progress_failed_reason_connection">connecting</string>
+    <string name ="jetpack_install_progress_failed_try">Please try again.</string>
+    <string name ="jetpack_install_progress_failed_alternative">Alternatively, you can %s Jetpack in WP Admin.</string>
+    <string name ="jetpack_install_progress_failed_alternative_install">install</string>
+    <string name ="jetpack_install_progress_failed_alternative_activate">activate</string>
+    <string name ="jetpack_install_progress_failed_option_wp_admin">%s Jetpack in WP Admin</string>
+    <string name ="jetpack_install_progress_option_wp_admin_install">Install</string>
+    <string name ="jetpack_install_progress_option_wp_admin_activate">Activate</string>
+    <string name ="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
