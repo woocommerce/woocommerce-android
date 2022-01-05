@@ -11,7 +11,7 @@
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/orderStatus_dateAndOrderNum"
+            android:id="@+id/subtitle_label"
             style="@style/Woo.TextView.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
             tools:text="Nov 3, 2020 \u2022 #120"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/orderStatus_name"
+            android:id="@+id/header_label"
             style="@style/Woo.TextView.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

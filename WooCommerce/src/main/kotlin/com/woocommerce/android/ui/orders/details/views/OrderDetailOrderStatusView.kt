@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailOrderStatusBinding
@@ -25,12 +26,11 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailOrderStatusBinding.inflate(LayoutInflater.from(ctx), this)
 
-    private var shouldDisplayOrderNumber = false
+    private var mode: Mode = Mode.OrderEdit
 
-    fun updateStatus(orderStatus: OrderStatus, onEditClickListener: EditStatusClickListener? = null) {
+    fun updateStatus(orderStatus: OrderStatus) {
         binding.orderStatusOrderTags.removeAllViews()
         binding.orderStatusOrderTags.addView(getTagView(orderStatus))
-        onEditClickListener?.let { binding.orderStatusEdit.setOnClickListener(it) }
     }
 
     fun updateOrder(order: Order) {
@@ -40,20 +40,27 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 false -> getMediumDate(context)
                 null -> ""
             }.let { dateStr ->
-                binding.orderStatusDateAndOrderNum.text =
-                    when (shouldDisplayOrderNumber) {
-                        true -> context.getString(
+                binding.subtitleLabel.text =
+                    when (mode) {
+                        Mode.OrderEdit -> context.getString(
                             R.string.orderdetail_orderstatus_date_and_ordernum,
                             dateStr,
                             order.number
                         )
-                        false -> dateStr
+                        Mode.OrderCreation -> dateStr
                     }
             }
         }
 
-        binding.orderStatusName.text =
-            order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
+        when (mode) {
+            Mode.OrderEdit -> {
+                binding.headerLabel.text = order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
+            }
+            Mode.OrderCreation -> {
+                // TODO
+                binding.headerLabel.isVisible = false
+            }
+        }
     }
 
     private fun getTagView(orderStatus: OrderStatus): TagView {
@@ -68,18 +75,12 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         return tagView
     }
 
-    fun customizeViewBehavior(
-        displayOrderNumber: Boolean,
-        editActionAsText: Boolean,
-        customEditClickListener: EditStatusClickListener? = null
-    ) {
-        shouldDisplayOrderNumber = displayOrderNumber
-        if (editActionAsText) {
-            binding.orderStatusEditAction.text = context.getString(R.string.edit)
-            binding.orderStatusEditAction.background = null
-        }
-        customEditClickListener?.let {
-            binding.orderStatusEdit.setOnClickListener(it)
-        }
+    fun initView(mode: Mode, editOrderStatusClickListener: EditStatusClickListener) {
+        this.mode = mode
+        binding.orderStatusEdit.setOnClickListener(editOrderStatusClickListener)
+    }
+
+    enum class Mode {
+        OrderCreation, OrderEdit
     }
 }
