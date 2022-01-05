@@ -48,7 +48,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
                     viewState = viewState.copy(isSkeletonShown = false)
                 }
 
-            productListRepository.fetchProductList(loadMore)
+            productList.value = productListRepository.fetchProductList(loadMore)
+            viewState = viewState.copy(isSkeletonShown = false)
         }
     }
 
