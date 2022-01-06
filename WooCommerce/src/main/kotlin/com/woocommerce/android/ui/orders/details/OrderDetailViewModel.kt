@@ -115,12 +115,10 @@ final class OrderDetailViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        dispatcher.unregister(this)
         productImageMap.unsubscribeFromOnProductFetchedEvents(this)
     }
 
     init {
-        dispatcher.register(this)
         productImageMap.subscribeToOnProductFetchedEvents(this)
     }
 
