@@ -121,6 +121,10 @@ class AddressViewModel @Inject constructor(
     }
 
     fun onViewDestroyed(currentFormsState: Map<AddressType, Address>) {
+        updateInputFormValues(currentFormsState)
+    }
+
+    private fun updateInputFormValues(currentFormsState: Map<AddressType, Address>) {
         viewState = viewState.copy(
             countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
                 entry.value.copy(
@@ -175,6 +179,30 @@ class AddressViewModel @Inject constructor(
         triggerEvent(event)
     }
 
+    fun onDoneSelected(currentFormsState: Map<AddressType, Address>) {
+        updateInputFormValues(currentFormsState)
+        val billingAddress = getRichAddressFromViewState(AddressType.BILLING)
+        val shippingAddress = getRichAddressFromViewState(AddressType.SHIPPING)
+        triggerEvent(
+            Exit(
+                billingAddress = billingAddress,
+                shippingAddress = shippingAddress.takeIf { shippingAddress != Address.EMPTY } ?: billingAddress
+            )
+        )
+    }
+
+    private fun getRichAddressFromViewState(addressType: AddressType) =
+        viewState.countryStatePairs.getValue(addressType).let { state ->
+            state.inputFormValues.copy(
+                state = when (state.stateSpinnerStatus) {
+                    StateSpinnerStatus.HAVING_LOCATIONS -> state.stateLocation.name
+                    StateSpinnerStatus.RAW_VALUE -> state.inputFormValues.state
+                    StateSpinnerStatus.DISABLED -> ""
+                },
+                country = state.countryLocation.name
+            )
+        }
+
     @Parcelize
     data class ViewState(
         val countryStatePairs: Map<AddressType, AddressSelectionState> = mapOf(
@@ -220,5 +248,10 @@ class AddressViewModel @Inject constructor(
     data class ShowStateSelector(
         val type: AddressType,
         val states: List<Location>
+    ) : MultiLiveEvent.Event()
+
+    data class Exit(
+        val billingAddress: Address,
+        val shippingAddress: Address
     ) : MultiLiveEvent.Event()
 }
