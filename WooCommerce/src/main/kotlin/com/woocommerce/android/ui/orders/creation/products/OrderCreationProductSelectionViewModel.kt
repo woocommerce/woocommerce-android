@@ -36,10 +36,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         if (loadMore.not()) {
             viewState = viewState.copy(isSkeletonShown = true)
         }
-        /**
-         * We will probably want to improve this call to check if the product list
-         * is already available on database before relying directly on this call
-         */
+
         launch {
             productListRepository.getProductList()
                 .takeIf { it.isNotEmpty() }
