@@ -31,7 +31,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAILABILITY
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_SHIPPING_CLASS
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
@@ -39,7 +38,6 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductCreated
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductPasswordChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged

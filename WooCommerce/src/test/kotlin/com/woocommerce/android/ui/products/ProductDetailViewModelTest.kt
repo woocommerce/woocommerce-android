@@ -628,7 +628,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             assertThat(productData?.productDraft?.numVariations).isZero()
 
             doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
-            doReturn(product.copy(numVariations = 1_914)).whenever(productRepository).fetchProductOrLoadFromCache(eq(product.remoteId))
+            doReturn(product.copy(numVariations = 1_914)).whenever(productRepository)
+                .fetchProductOrLoadFromCache(eq(product.remoteId))
 
             // When
             viewModel.onGenerateVariationClicked()

@@ -23,7 +23,6 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING

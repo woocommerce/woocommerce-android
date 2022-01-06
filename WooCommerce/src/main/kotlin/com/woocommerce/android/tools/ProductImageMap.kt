@@ -65,7 +65,7 @@ class ProductImageMap @Inject constructor(
                         observers.forEach { weakReference ->
                             // notify the observer
                             weakReference.get()?.onProductFetched(remoteProductId)
-                            // remove the weak reference if the observer was garbage collected
+                                // remove the weak reference if the observer was garbage collected
                                 ?: observers.remove(weakReference)
                         }
                     }
