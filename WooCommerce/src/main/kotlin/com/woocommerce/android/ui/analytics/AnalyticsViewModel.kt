@@ -1,10 +1,16 @@
 package com.woocommerce.android.ui.analytics
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
@@ -17,6 +23,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -25,10 +32,12 @@ import com.zendesk.util.DateUtils.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
@@ -40,26 +49,32 @@ class AnalyticsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val mutableState =
-        MutableStateFlow(
-            AnalyticsViewState(
-                NotShowIndicator,
-                buildAnalyticsDateRangeSelectorViewState(),
-                LoadingViewState,
-                LoadingViewState
-            )
+    private val mutableState = MutableStateFlow(
+        AnalyticsViewState(
+            NotShowIndicator,
+            buildAnalyticsDateRangeSelectorViewState(),
+            LoadingViewState,
+            LoadingViewState,
+            LoadingProductsViewState
         )
+    )
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
     init {
-        updateRevenue(isRefreshing = false, showSkeleton = true)
-        updateOrders(isRefreshing = false, showSkeleton = true)
+        viewModelScope.launch {
+            updateRevenue(isRefreshing = false, showSkeleton = true)
+            updateOrders(isRefreshing = false, showSkeleton = true)
+            updateProducts(isRefreshing = false, showSkeleton = true)
+        }
     }
 
     fun onRefreshRequested() {
-        updateRevenue(isRefreshing = true, showSkeleton = false)
-        updateOrders(isRefreshing = true, showSkeleton = false)
+        viewModelScope.launch {
+            updateRevenue(isRefreshing = true, showSkeleton = false)
+            updateOrders(isRefreshing = true, showSkeleton = false)
+            updateProducts(isRefreshing = true, showSkeleton = false)
+        }
     }
 
     fun onSelectedTimePeriodChanged(newSelection: String) {
@@ -68,8 +83,11 @@ class AnalyticsViewModel @Inject constructor(
         saveSelectedTimePeriod(selectedTimePeriod)
         saveSelectedDateRange(dateRange)
         updateDateSelector()
-        updateRevenue(isRefreshing = false, showSkeleton = true)
-        updateOrders(isRefreshing = false, showSkeleton = true)
+        viewModelScope.launch {
+            updateRevenue(isRefreshing = false, showSkeleton = true)
+            updateOrders(isRefreshing = false, showSkeleton = true)
+            updateProducts(isRefreshing = false, showSkeleton = true)
+        }
     }
 
     fun onRevenueSeeReportClick() {
@@ -88,18 +106,27 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
+    fun onProductsSeeReportClick() {
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(OpenWPComWebView(analyticsRepository.getProductsAdminPanelUrl()))
+        } else {
+            triggerEvent(OpenUrl(analyticsRepository.getProductsAdminPanelUrl()))
+        }
+    }
+
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
+            val fetchStrategy = getFetchStrategy(isRefreshing)
 
             if (showSkeleton) mutableState.value = state.value.copy(revenueState = LoadingViewState)
             mutableState.value = state.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
-            analyticsRepository.fetchRevenueData(dateRange, timePeriod)
-                .collect {
+            analyticsRepository.fetchRevenueData(dateRange, timePeriod, fetchStrategy)
+                .let {
                     when (it) {
                         is RevenueData -> mutableState.value = state.value.copy(
                             refreshIndicator = NotShowIndicator,
@@ -122,12 +149,14 @@ class AnalyticsViewModel @Inject constructor(
         launch {
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
+            val fetchStrategy = getFetchStrategy(isRefreshing)
+
             if (showSkeleton) mutableState.value = state.value.copy(ordersState = LoadingViewState)
             mutableState.value = state.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
-            analyticsRepository.fetchOrdersData(dateRange, timePeriod)
-                .collect {
+            analyticsRepository.fetchOrdersData(dateRange, timePeriod, fetchStrategy)
+                .let {
                     when (it) {
                         is OrdersData -> mutableState.value = state.value.copy(
                             ordersState = buildOrdersDataViewState(
@@ -139,6 +168,34 @@ class AnalyticsViewModel @Inject constructor(
                         )
                         is OrdersError -> mutableState.value = state.value.copy(
                             ordersState = NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
+                        )
+                    }
+                }
+        }
+
+    private fun updateProducts(isRefreshing: Boolean, showSkeleton: Boolean) =
+        launch {
+            val timePeriod = getSavedTimePeriod()
+            val dateRange = getSavedDateRange()
+            val fetchStrategy = getFetchStrategy(isRefreshing)
+            if (showSkeleton) mutableState.value = state.value.copy(productsState = LoadingProductsViewState)
+            mutableState.value = state.value.copy(
+                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
+            )
+            analyticsRepository.fetchProductsData(dateRange, timePeriod, fetchStrategy)
+                .let {
+                    when (it) {
+                        is ProductsData -> mutableState.value = state.value.copy(
+                            productsState = buildProductsDataState(
+                                it.productsStat.itemsSold,
+                                it.productsStat.itemsSoldDelta,
+                                it.productsStat.products
+                            )
+                        )
+                        ProductsError -> mutableState.value = state.value.copy(
+                            productsState = ProductsNoDataState(
+                                resourceProvider.getString(R.string.analytics_products_no_data)
+                            )
                         )
                     }
                 }
@@ -206,10 +263,7 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
     private fun getDefaultTimePeriod() = AnalyticTimePeriod.TODAY
-    private fun getDefaultDateRange() = SimpleDateRange(
-        Date(dateUtils.getCurrentDateTimeMinusDays(1)),
-        dateUtils.getCurrentDate()
-    )
+    private fun getDefaultDateRange() = analyticsDateRange.getAnalyticsDateRangeFrom(getDefaultTimePeriod())
 
     private fun getTimePeriodDescription(analyticTimeRange: AnalyticTimePeriod): String =
         when (analyticTimeRange) {
@@ -247,14 +301,12 @@ class AnalyticsViewModel @Inject constructor(
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
                 totalValue,
-                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null,
-                netDelta is DeltaPercentage.Value
+                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_net_sales_title),
                 netValue,
-                if (netDelta is DeltaPercentage.Value) netDelta.value else null,
-                netDelta is DeltaPercentage.Value
+                if (netDelta is DeltaPercentage.Value) netDelta.value else null
             )
         )
 
@@ -269,16 +321,40 @@ class AnalyticsViewModel @Inject constructor(
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_orders_title),
                 totalOrders,
-                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null,
-                totalDelta is DeltaPercentage.Value
+                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_avg_orders_title),
                 avgValue,
-                if (avgDelta is DeltaPercentage.Value) avgDelta.value else null,
-                avgDelta is DeltaPercentage.Value
+                if (avgDelta is DeltaPercentage.Value) avgDelta.value else null
             )
         )
+
+    private fun buildProductsDataState(itemsSold: Int, delta: DeltaPercentage, products: List<ProductItem>) =
+        ProductsViewState.DataViewState(
+            title = resourceProvider.getString(R.string.analytics_products_card_title),
+            subTitle = resourceProvider.getString(R.string.analytics_products_list_items_sold),
+            subTitleValue = itemsSold.toString(),
+            delta = if (delta is DeltaPercentage.Value) delta.value else null,
+            listLeftHeader = resourceProvider.getString(R.string.analytics_products_list_header_title),
+            listRightHeader = resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
+            items = products
+                .sortedByDescending { it.quantity }
+                .mapIndexed { index, it ->
+                    AnalyticsListCardItemViewState(
+                        it.image,
+                        it.name,
+                        it.quantity.toString(),
+                        resourceProvider.getString(
+                            R.string.analytics_products_list_item_description,
+                            formatValue(it.netSales.toString(), it.currencyCode)
+                        ),
+                        index != products.size - 1
+                    )
+                }
+        )
+
+    private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
 
     private fun saveSelectedTimePeriod(range: AnalyticTimePeriod) {
         savedState[TIME_PERIOD_SELECTED_KEY] = range

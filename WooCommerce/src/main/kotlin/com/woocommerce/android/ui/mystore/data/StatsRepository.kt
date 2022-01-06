@@ -75,13 +75,17 @@ class StatsRepository @Inject constructor(
     suspend fun fetchProductLeaderboards(
         forced: Boolean,
         granularity: StatsGranularity,
-        quantity: Int
+        quantity: Int,
+        startDate: String = "",
+        endDate: String = ""
     ): Flow<Result<List<WCTopPerformerProductModel>>> = flow {
         when (forced) {
             true -> wcLeaderboardsStore.fetchProductLeaderboards(
                 site = selectedSite.get(),
                 unit = granularity,
-                quantity = quantity
+                quantity = quantity,
+                startDate = startDate,
+                endDate = endDate
             )
             false -> wcLeaderboardsStore.fetchCachedProductLeaderboards(
                 site = selectedSite.get(),

@@ -57,7 +57,9 @@ class GetTopPerformersTest : BaseUnitTest() {
             statsRepository.fetchProductLeaderboards(
                 anyBoolean(),
                 any(),
-                anyInt()
+                anyInt(),
+                any(),
+                any()
             )
         ).thenReturn(flow { emit(result) })
     }

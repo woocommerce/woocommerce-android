@@ -3,28 +3,31 @@ package com.woocommerce.android.ui.analytics
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.OrdersStat
+import com.woocommerce.android.model.ProductItem
+import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.DATE_RANGE_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.TIME_PERIOD_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.*
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
@@ -34,14 +37,11 @@ import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class AnalyticsViewModelTest : BaseUnitTest() {
     private val dateUtil: DateUtils = mock {
-        on { getCurrentDate() } doReturn ANY_DATE
-        on { getCurrentDateTimeMinusDays(1) } doReturn ANY_OTHER_DATE.time
         on { getYearMonthDayStringFromDate(any()) } doReturn ANY_YEAR_VALUE
         on { getShortMonthDayAndYearString(any()) } doReturn ANY_SORT_FORMAT_VALUE
     }
@@ -51,6 +51,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
             SimpleDateRange(ANY_OTHER_DATE, ANY_OTHER_DATE),
         )
+
+        on { getAnalyticsDateRangeFrom(TODAY) } doReturn
+            SimpleDateRange(ANY_DATE, ANY_OTHER_DATE)
     }
 
     private val currencyFormatter: CurrencyFormatter = mock {
@@ -60,6 +63,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         on { formatCurrency(OTHER_NET_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_NET_CURRENCY_VALUE
         on { formatCurrency(AVG_ORDER_VALUE.toString(), CURRENCY_CODE) } doReturn AVG_CURRENCY_VALUE
         on { formatCurrency(OTHER_AVG_ORDER_VALUE.toString(), OTHER_CURRENCY_CODE) } doReturn OTHER_AVG_CURRENCY_VALUE
+        on { formatCurrency(PRODUCT_NET_SALES.toString(), CURRENCY_CODE) } doReturn PRODUCT_CURRENCY_VALUE
+        on { formatCurrency(OTHER_PRODUCT_NET_SALES.toString(), OTHER_CURRENCY_CODE) } doReturn
+            OTHER_PRODUCT_CURRENCY_VALUE
     }
 
     private val analyticsRepository: AnalyticsRepository = mock {
@@ -100,6 +106,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 assertTrue(this is LoadingViewState)
             }
 
+            with(sut.state.value.productsState) {
+                assertTrue(this is AnalyticsListViewState.LoadingViewState)
+            }
+
             with(sut.state.value.refreshIndicator) {
                 assertTrue(this is NotShowIndicator)
             }
@@ -109,8 +119,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `when ViewModel is with savedState is created, then has the expected values`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
-                onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
+                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(getRevenueStats())
+                onBlocking { fetchOrdersData(any(), any(), eq(Saved)) }.doReturn(getOrdersStats())
             }
 
             val resourceProvider: ResourceProvider = mock {
@@ -142,8 +152,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then has the expected date range selector values`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
-                onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
+                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(getRevenueStats())
+                onBlocking { fetchOrdersData(any(), any(), eq(Saved)) }.doReturn(getOrdersStats())
             }
 
             val resourceProvider: ResourceProvider = mock {
@@ -169,7 +179,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then has expected revenue values`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
+                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(getRevenueStats())
             }
 
             sut = givenAViewModel()
@@ -192,14 +202,12 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model with on existent delta then delta is not shown`() =
         testBlocking {
-            whenever(analyticsRepository.fetchRevenueData(any(), any()))
+            whenever(analyticsRepository.fetchRevenueData(any(), any(), eq(Saved)))
                 .thenReturn(
-                    listOf(
-                        getRevenueStats(
-                            netDelta = DeltaPercentage.NotExist,
-                            totalDelta = DeltaPercentage.NotExist
-                        )
-                    ).asFlow()
+                    getRevenueStats(
+                        netDelta = DeltaPercentage.NotExist,
+                        totalDelta = DeltaPercentage.NotExist
+                    )
                 )
 
             sut = givenAViewModel()
@@ -207,8 +215,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             with(sut.state.value.revenueState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
-                assertFalse(leftSection.showDelta)
-                assertFalse(rightSection.showDelta)
+                assertTrue(leftSection.delta == null)
+                assertTrue(rightSection.delta == null)
             }
         }
 
@@ -216,7 +224,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then has expected refresh indicator value`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
+                onBlocking { fetchRevenueData(any(), any(), eq(Saved)) }.doReturn(getRevenueStats())
             }
 
             sut = givenAViewModel()
@@ -245,7 +253,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
         analyticsRepository.stub {
-            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE) }.doReturn(flowOf(weekRevenueStats))
+            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(weekRevenueStats)
         }
 
         sut = givenAViewModel()
@@ -269,7 +277,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then has expected orders values`() =
         testBlocking {
             analyticsRepository.stub {
-                onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
+                onBlocking { fetchOrdersData(any(), any(), eq(Saved)) }.doReturn(getOrdersStats())
             }
 
             sut = givenAViewModel()
@@ -285,6 +293,32 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 assertEquals(ORDERS_COUNT_DELTA, leftSection.delta)
                 assertEquals(AVG_CURRENCY_VALUE, rightSection.value)
                 assertEquals(AVG_ORDER_VALUE_DELTA, rightSection.delta)
+            }
+        }
+
+    @Test
+    fun `given a view model, when selected date range changes, then product has values`() =
+        testBlocking {
+            analyticsRepository.stub {
+                onBlocking { fetchProductsData(any(), any(), eq(Saved)) }.doReturn(getProductsStats())
+            }
+
+            sut = givenAViewModel()
+            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+
+            val resourceProvider = givenAResourceProvider()
+            with(sut.state.value.productsState) {
+                assertTrue(this is AnalyticsListViewState.DataViewState)
+                assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
+                assertEquals(PRODUCT_ITEMS_SOLD_DELTA, delta)
+                assertEquals(resourceProvider.getString(R.string.analytics_products_list_items_sold), subTitle)
+                assertEquals(PRODUCT_ITEMS_SOLD.toString(), subTitleValue)
+                assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_title), listLeftHeader)
+                assertEquals(
+                    resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
+                    listRightHeader
+                )
+                assertEquals(PRODUCT_LIST.size, items.size)
             }
         }
 
@@ -305,7 +339,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
         analyticsRepository.stub {
-            onBlocking { fetchOrdersData(weekToDateRange, WEEK_TO_DATE) }.doReturn(flowOf(weekOrdersData))
+            onBlocking { fetchOrdersData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(weekOrdersData)
         }
 
         sut = givenAViewModel()
@@ -342,7 +376,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
         analyticsRepository.stub {
-            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE) }.doReturn(flowOf(weekRevenueStats))
+            onBlocking { fetchRevenueData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(weekRevenueStats)
         }
 
         sut = givenAViewModel()
@@ -359,10 +393,49 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given a week to date selected, when refresh is requested, then has expected product values`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekOrdersData = getProductsStats(
+            OTHER_PRODUCT_ITEMS_SOLD,
+            OTHER_PRODUCT_ITEMS_SOLD_DELTA,
+            OTHER_PRODUCT_LIST
+        )
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchProductsData(weekToDateRange, WEEK_TO_DATE, ForceNew) }.doReturn(weekOrdersData)
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onRefreshRequested()
+
+        val resourceProvider = givenAResourceProvider()
+        with(sut.state.value.productsState) {
+            assertTrue(this is AnalyticsListViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
+            assertEquals(OTHER_PRODUCT_ITEMS_SOLD_DELTA, delta)
+            assertEquals(resourceProvider.getString(R.string.analytics_products_list_items_sold), subTitle)
+            assertEquals(OTHER_PRODUCT_ITEMS_SOLD.toString(), subTitleValue)
+            assertEquals(resourceProvider.getString(R.string.analytics_products_list_header_title), listLeftHeader)
+            assertEquals(
+                resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
+                listRightHeader
+            )
+            assertEquals(OTHER_PRODUCT_LIST.size, items.size)
+        }
+    }
+
+    @Test
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
         analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), any()) }.doReturn(flowOf(getRevenueStats()))
-            onBlocking { fetchOrdersData(any(), any()) }.doReturn(flowOf(getOrdersStats()))
+            onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(getRevenueStats())
+            onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(getOrdersStats())
+            onBlocking { fetchProductsData(any(), any(), any()) }.doReturn(getProductsStats())
         }
 
         sut = givenAViewModel()
@@ -444,6 +517,12 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
     )
 
+    private fun getProductsStats(
+        itemsSold: Int = PRODUCT_ITEMS_SOLD,
+        itemsSoldDelta: Int = PRODUCT_ITEMS_SOLD_DELTA,
+        productList: List<ProductItem> = PRODUCT_LIST
+    ) = ProductsData(ProductsStat(itemsSold, DeltaPercentage.Value(itemsSoldDelta), productList))
+
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
         private const val ANY_OTHER_DATE_TIME_VALUE = "2021-11-20 00:00:00"
@@ -481,6 +560,48 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         const val OTHER_CURRENCY_CODE = "DOL"
         const val OTHER_TOTAL_CURRENCY_VALUE = "20 USD"
         const val OTHER_NET_CURRENCY_VALUE = "10 USD"
+
+        const val PRODUCT_ITEMS_SOLD = 1
+        const val PRODUCT_ITEMS_SOLD_DELTA = 50
+        const val PRODUCT_CURRENCY_VALUE = "50 E"
+        const val OTHER_PRODUCT_ITEMS_SOLD = 3
+        const val OTHER_PRODUCT_ITEMS_SOLD_DELTA = 10
+        const val OTHER_PRODUCT_CURRENCY_VALUE = "55 E"
+
+        private const val PRODUCT_ONE_QUANTITY = 1
+        private const val PRODUCT_MORE_THAN_ONE_QUANTITY = 10
+        private const val PRODUCT_NET_SALES = 1.toDouble()
+        private const val OTHER_PRODUCT_NET_SALES = 2.toDouble()
+        private const val PRODUCT_ITEM_IMAGE = "image"
+        private const val PRODUCT_ITEM_NAME = "product"
+        private const val PRODUCT_CURRENCY_CODE = "EUR"
+
+        val PRODUCT_LIST = listOf(
+            ProductItem(
+                PRODUCT_ITEM_NAME,
+                PRODUCT_NET_SALES,
+                PRODUCT_ITEM_IMAGE,
+                PRODUCT_ONE_QUANTITY,
+                PRODUCT_CURRENCY_CODE
+            ),
+            ProductItem(
+                PRODUCT_ITEM_NAME,
+                PRODUCT_NET_SALES,
+                PRODUCT_ITEM_IMAGE,
+                PRODUCT_MORE_THAN_ONE_QUANTITY,
+                PRODUCT_CURRENCY_CODE
+            )
+        ).sortedByDescending { it.quantity }
+
+        val OTHER_PRODUCT_LIST = listOf(
+            ProductItem(
+                PRODUCT_ITEM_NAME,
+                PRODUCT_NET_SALES,
+                PRODUCT_ITEM_IMAGE,
+                PRODUCT_ONE_QUANTITY,
+                PRODUCT_CURRENCY_CODE
+            )
+        ).sortedByDescending { it.quantity }
 
         const val ANY_URL = "https://a8c.com"
         const val ORDERS_COUNT = 5

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true">
+
+    <View
+        android:id="@+id/title"
+        android:layout_width="@dimen/image_major_64"
+        android:layout_height="@dimen/major_125"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
+        android:background="@color/skeleton_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/leftTitle"
+        android:layout_width="@dimen/image_major_72"
+        android:layout_height="@dimen/major_125"
+        android:layout_marginTop="@dimen/major_100"
+        android:background="@color/skeleton_color"
+        app:layout_constraintStart_toStartOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <View
+        android:id="@+id/leftVal"
+        android:layout_width="@dimen/image_major_100"
+        android:layout_height="@dimen/major_150"
+        android:layout_marginTop="@dimen/major_100"
+        android:background="@color/skeleton_color"
+        app:layout_constraintStart_toStartOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@+id/leftTitle" />
+
+    <View
+        android:id="@+id/rightVal"
+        android:layout_width="@dimen/image_major_72"
+        android:layout_height="@dimen/major_125"
+        android:background="@color/skeleton_color"
+        app:layout_constraintBottom_toBottomOf="@+id/leftPlot"
+        app:layout_constraintEnd_toEndOf="@+id/rightTitle"
+        app:layout_constraintTop_toTopOf="@+id/leftPlot" />
+
+    <View
+        android:id="@+id/rightTitle"
+        android:layout_width="@dimen/image_major_64"
+        android:layout_height="@dimen/major_125"
+        android:layout_marginEnd="16dp"
+        android:background="@color/skeleton_color"
+        app:layout_constraintBottom_toBottomOf="@+id/leftVal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/leftVal" />
+
+    <View
+        android:id="@+id/leftPlot"
+        android:layout_width="@dimen/image_major_64"
+        android:layout_height="@dimen/major_125"
+        android:layout_marginTop="@dimen/major_100"
+        android:background="@color/skeleton_color"
+        app:layout_constraintStart_toStartOf="@+id/leftTitle"
+        app:layout_constraintTop_toBottomOf="@+id/leftVal" />
+
+    <include
+        android:id="@+id/listItem1"
+        layout="@layout/skeleton_analytics_list_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rightVal" />
+
+    <include
+        android:id="@+id/listItem2"
+        layout="@layout/skeleton_analytics_list_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listItem1" />
+
+    <include
+        android:id="@+id/listItem3"
+        layout="@layout/skeleton_analytics_list_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listItem2" />
+
+    <include
+        android:id="@+id/listItem4"
+        layout="@layout/skeleton_analytics_list_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listItem3" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
