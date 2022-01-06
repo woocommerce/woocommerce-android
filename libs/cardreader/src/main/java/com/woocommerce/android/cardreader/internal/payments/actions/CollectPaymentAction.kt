@@ -27,13 +27,13 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
                         logWrapper.d(LOG_TAG, "Payment collected")
-                        this@callbackFlow.sendAndLog(logWrapper, Success(paymentIntent))
+                        this@callbackFlow.sendAndLog(Success(paymentIntent), logWrapper)
                         this@callbackFlow.close()
                     }
 
                     override fun onFailure(e: TerminalException) {
                         logWrapper.d(LOG_TAG, "Payment collection failed")
-                        this@callbackFlow.sendAndLog(logWrapper, Failure(e))
+                        this@callbackFlow.sendAndLog(Failure(e), logWrapper)
                         this@callbackFlow.close()
                     }
                 }

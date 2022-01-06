@@ -26,7 +26,7 @@ internal class ProcessPaymentAction(private val terminal: TerminalWrapper, priva
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
                         logWrapper.d(LOG_TAG, "Processing payment succeeded")
-                        this@callbackFlow.sendAndLog(logWrapper, Success(paymentIntent))
+                        this@callbackFlow.sendAndLog(Success(paymentIntent), logWrapper)
                         this@callbackFlow.close()
                     }
 
@@ -36,7 +36,7 @@ internal class ProcessPaymentAction(private val terminal: TerminalWrapper, priva
                             "Processing payment failed. " +
                                 "Message: ${exception.errorMessage}, DeclineCode: ${exception.apiError?.declineCode}"
                         )
-                        this@callbackFlow.sendAndLog(logWrapper, Failure(exception))
+                        this@callbackFlow.sendAndLog(Failure(exception), logWrapper)
                         this@callbackFlow.close()
                     }
                 }

@@ -6,7 +6,7 @@ import kotlinx.coroutines.channels.onClosed
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.channels.trySendBlocking
 
-fun <T> ProducerScope<T>.sendAndLog(logWrapper: LogWrapper, status: T) {
+fun <T> ProducerScope<T>.sendAndLog(status: T, logWrapper: LogWrapper) {
     trySendBlocking(status)
         .onClosed { logWrapper.e(LOG_TAG, it?.message.orEmpty()) }
         .onFailure { logWrapper.e(LOG_TAG, it?.message.orEmpty()) }
