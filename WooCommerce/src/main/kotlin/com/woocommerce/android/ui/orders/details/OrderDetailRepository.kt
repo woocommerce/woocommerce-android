@@ -141,7 +141,7 @@ class OrderDetailRepository @Inject constructor(
         }
         val dataModel = noteModel.toDataModel()
         val payload = PostOrderNotePayload(
-            @Suppress("DEPRECATION_ERROR") order.id, orderId, selectedSite.get(), dataModel
+            orderId, selectedSite.get(), dataModel
         )
         return orderStore.postOrderNote(payload)
     }
@@ -155,7 +155,7 @@ class OrderDetailRepository @Inject constructor(
             AddOrderShipmentTrackingPayload(
                 site = selectedSite.get(),
                 localOrderId = orderLocalId,
-                remoteOrderId = orderId,
+                orderId = orderId,
                 tracking = shipmentTrackingModel.toDataModel(),
                 isCustomProvider = shipmentTrackingModel.isCustomProvider
             )

@@ -286,8 +286,8 @@ data class Order(
 fun WCOrderModel.toAppModel(): Order {
     @Suppress("DEPRECATION_ERROR")
     return Order(
-        rawLocalOrderId = this.id,
-        id = this.remoteOrderId.value,
+        rawLocalOrderId = 0,
+        id = this.orderId.value,
         number = this.number,
         dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
         dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),

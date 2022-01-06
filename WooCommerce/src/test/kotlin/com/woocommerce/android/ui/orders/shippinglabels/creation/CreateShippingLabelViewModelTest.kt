@@ -148,7 +148,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = true
     )
 
-    private val savedState = CreateShippingLabelFragmentArgs(order.remoteOrderId.value).initSavedStateHandle()
+    private val savedState = CreateShippingLabelFragmentArgs(order.orderId.value).initSavedStateHandle()
 
     private lateinit var viewModel: CreateShippingLabelViewModel
 
@@ -300,7 +300,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     fun `Purchase a label successfully`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
+                remoteOrderId = order.orderId.value, shippingLabelId = 1
             )
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
@@ -316,7 +316,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     fun `Show print screen after purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
+                remoteOrderId = order.orderId.value, shippingLabelId = 1
             )
         )
 
@@ -334,7 +334,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     fun `fulfill order after successful purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
+                remoteOrderId = order.orderId.value, shippingLabelId = 1
             )
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
@@ -359,7 +359,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val purchasedLabels = listOf(
                 OrderTestUtils.generateShippingLabel(
-                    remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
+                    remoteOrderId = order.orderId.value, shippingLabelId = 1
                 )
             )
             whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))

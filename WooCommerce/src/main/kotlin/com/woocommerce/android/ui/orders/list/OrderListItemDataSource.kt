@@ -57,7 +57,7 @@ class OrderListItemDataSource(
         // Fetch missing items
         fetcher.fetchOrders(
             site = listDescriptor.site,
-            remoteItemIds = remoteItemIds.filter { !ordersMap.containsKey(it) }
+            orderIds = remoteItemIds.filter { !ordersMap.containsKey(it) }
         )
 
         val mapSummary = { remoteOrderId: RemoteId ->
@@ -68,7 +68,7 @@ class OrderListItemDataSource(
                     @Suppress("DEPRECATION_ERROR")
                     OrderListItemUI(
                         localOrderId = LocalId(order.id),
-                        remoteOrderId = order.remoteOrderId,
+                        remoteOrderId = order.orderId,
                         orderNumber = order.number,
                         orderName = order.getBillingName(
                             resourceProvider.getString(R.string.orderdetail_customer_name_default)
@@ -77,7 +77,7 @@ class OrderListItemDataSource(
                         status = order.status,
                         dateCreated = order.dateCreated,
                         currencyCode = order.currency,
-                        isLastItemInSection = isLastItemByRemoteIdMap[order.remoteOrderId] ?: false
+                        isLastItemInSection = isLastItemByRemoteIdMap[order.orderId] ?: false
                     )
                 }
             }
@@ -105,7 +105,7 @@ class OrderListItemDataSource(
                     // a matching order has not yet been downloaded. This prevents the user from seeing
                     // a "loading" view for that item indefinitely.
                     val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, remoteItemIds)
-                    summaries.filter { cachedOrders.containsKey(RemoteId(it.remoteOrderId)) }
+                    summaries.filter { cachedOrders.containsKey(RemoteId(it.orderId)) }
                 } else summaries
             }
 
@@ -116,7 +116,7 @@ class OrderListItemDataSource(
         val listWeek = mutableListOf<OrderIdentifier>()
         val listMonth = mutableListOf<OrderIdentifier>()
         val mapToRemoteOrderIdentifier = { summary: WCOrderSummaryModel ->
-            OrderIdentifier(RemoteId(summary.remoteOrderId))
+            OrderIdentifier(RemoteId(summary.orderId))
         }
         orderSummaries.forEach {
             // Default to today if the date cannot be parsed. This date is in UTC.

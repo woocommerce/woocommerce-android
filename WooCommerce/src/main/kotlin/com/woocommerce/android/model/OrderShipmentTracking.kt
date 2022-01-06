@@ -18,7 +18,7 @@ data class OrderShipmentTracking(
 ) : Parcelable {
     fun toDataModel() = WCOrderShipmentTrackingModel().also { orderShipmentTrackingModel ->
         orderShipmentTrackingModel.id = this.id
-        orderShipmentTrackingModel.localOrderId = this.localOrderId
+        orderShipmentTrackingModel.orderId = this.localOrderId
         orderShipmentTrackingModel.localSiteId = this.localSiteId
         orderShipmentTrackingModel.remoteTrackingId = this.remoteTrackingId
         orderShipmentTrackingModel.trackingNumber = this.trackingNumber
@@ -31,7 +31,7 @@ fun WCOrderShipmentTrackingModel.toAppModel(): OrderShipmentTracking {
     return OrderShipmentTracking(
         id,
         localSiteId,
-        localOrderId,
+        orderId,
         remoteTrackingId,
         trackingNumber,
         trackingProvider,

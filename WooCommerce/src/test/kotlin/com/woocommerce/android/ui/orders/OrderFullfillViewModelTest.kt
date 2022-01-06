@@ -58,7 +58,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(
         totalCount = 5,
-        localOrderId = ORDER_LOCAL_ID,
+        orderId = ORDER_LOCAL_ID,
         localSiteId = ORDER_SITE_ID,
     )
     private val orderShippingLabels = OrderTestUtils.generateShippingLabels(

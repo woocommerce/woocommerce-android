@@ -76,12 +76,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderStatus = OrderStatus(order.status.value, order.status.value)
     private val testOrderNotes = OrderTestUtils.generateTestOrderNotes(
         totalNotes = 5,
-        localOrderId = ORDER_ID.toInt(),
+        orderId = ORDER_ID.toInt(),
         localSiteId = ORDER_SITE_ID,
     )
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(
         totalCount = 5,
-        localOrderId = ORDER_ID.toInt(),
+        orderId = ORDER_ID.toInt(),
         localSiteId = ORDER_SITE_ID,
     )
     private val orderShippingLabels = OrderTestUtils.generateShippingLabels(

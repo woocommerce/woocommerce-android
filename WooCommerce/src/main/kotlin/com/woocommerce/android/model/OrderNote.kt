@@ -30,7 +30,7 @@ fun WCOrderNoteModel.toAppModel(): OrderNote {
         DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
         isCustomerNote,
         isSystemNote,
-        localOrderId,
+        orderId,
         localSiteId,
         note
     )

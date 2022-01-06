@@ -29,78 +29,72 @@ object OrderTestUtils {
     fun generateOrders(): List<WCOrderModel> {
         val result = ArrayList<WCOrderModel>()
         val om1 = WCOrderModel(
-            id = 1,
             billingFirstName = "John",
             billingLastName = "Peters",
             currency = "USD",
             dateCreated = "2018-01-05T05:14:30Z",
             localSiteId = TEST_LOCAL_SITE_ID,
-            remoteOrderId = TEST_REMOTE_ORDER_ID,
+            orderId = TEST_REMOTE_ORDER_ID,
             number = "51",
             status = "processing",
             total = "14.53",
         )
 
         val om2 = WCOrderModel(
-            id = 2,
             billingFirstName = "Jane",
             billingLastName = "Masterson",
             currency = "CAD",
             dateCreated = "2017-12-08T16:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
-            remoteOrderId = TEST_REMOTE_ORDER_ID,
+            orderId = TEST_REMOTE_ORDER_ID,
             number = "63",
             status = "pending",
             total = "106.00",
         )
 
         val om3 = WCOrderModel(
-            id = 2,
             billingFirstName = "Mandy",
             billingLastName = "Sykes",
             currency = "USD",
             dateCreated = "2018-02-05T16:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
-            remoteOrderId = TEST_REMOTE_ORDER_ID,
+            orderId = TEST_REMOTE_ORDER_ID,
             number = "14",
             status = "processing",
             total = "25.73",
         )
 
         val om4 = WCOrderModel(
-            id = 2,
             billingFirstName = "Jennifer",
             billingLastName = "Johnson",
             currency = "CAD",
             dateCreated = "2018-02-06T09:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
-            remoteOrderId = TEST_REMOTE_ORDER_ID,
+            orderId = TEST_REMOTE_ORDER_ID,
             number = "15",
             status = "pending, on-hold, complete",
             total = "106.00",
         )
 
         val om5 = WCOrderModel(
-            id = 2,
             billingFirstName = "Christopher",
             billingLastName = "Jones",
             currency = "USD",
             dateCreated = "2018-02-05T16:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
-            remoteOrderId = TEST_REMOTE_ORDER_ID,
+            orderId = TEST_REMOTE_ORDER_ID,
             number = "3",
             status = "pending",
             total = "106.00",
         )
 
         val om6 = WCOrderModel(
-            id = 2,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
-            remoteOrderId = TEST_REMOTE_ORDER_ID,
+            orderId = TEST_REMOTE_ORDER_ID,
             number = "55",
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
@@ -118,20 +112,19 @@ object OrderTestUtils {
 
     fun generateOrder(): WCOrderModel {
         return WCOrderModel(
-            id = 2,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = TEST_LOCAL_SITE_ID,
-            remoteOrderId = TEST_REMOTE_ORDER_ID,
+            orderId = TEST_REMOTE_ORDER_ID,
             number = "55",
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
         )
     }
 
-    fun generateOrderNotes(totalNotes: Int, lOrderId: Int, lSiteId: Int): List<WCOrderNoteModel> {
+    fun generateOrderNotes(totalNotes: Int, orderId: Long, lSiteId: Int): List<WCOrderNoteModel> {
         val result = ArrayList<WCOrderNoteModel>()
 
         for (i in totalNotes downTo 1) {
@@ -139,7 +132,7 @@ object OrderTestUtils {
                 WCOrderNoteModel(totalNotes).apply {
                     isCustomerNote = false
                     dateCreated = "2018-02-02T16:11:13Z"
-                    localOrderId = lOrderId
+                    this.orderId = orderId
                     localSiteId = lSiteId
                     note = "This is a test note $i"
                 }
@@ -148,7 +141,7 @@ object OrderTestUtils {
         return result
     }
 
-    fun generateOrderShipmentTrackings(totalCount: Int, lOrderId: Int): List<WCOrderShipmentTrackingModel> {
+    fun generateOrderShipmentTrackings(totalCount: Int, orderId: Long): List<WCOrderShipmentTrackingModel> {
         val result = ArrayList<WCOrderShipmentTrackingModel>()
         for (i in totalCount downTo 1) {
             result.add(
@@ -157,7 +150,7 @@ object OrderTestUtils {
                     trackingNumber = "$i"
                     dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
                     trackingLink = "www.somelink$i.com"
-                    localOrderId = lOrderId
+                    this.orderId = orderId
                 }
             )
         }
@@ -273,13 +266,12 @@ object OrderTestUtils {
 
     fun generateTestOrder(orderId: Long = 1, localSiteId: Int = 1): Order {
         return WCOrderModel(
-            id = 1,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = LocalOrRemoteId.LocalId(localSiteId),
-            remoteOrderId = LocalOrRemoteId.RemoteId(orderId),
+            orderId = LocalOrRemoteId.RemoteId(orderId),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -320,13 +312,12 @@ object OrderTestUtils {
             "  }]"
 
         return WCOrderModel(
-            id = 1,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = LocalOrRemoteId.LocalId(1),
-            remoteOrderId = LocalOrRemoteId.RemoteId(1),
+            orderId = LocalOrRemoteId.RemoteId(1),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -353,13 +344,12 @@ object OrderTestUtils {
 
     fun generateOrderWithMultipleShippingLines(): WCOrderModel {
         return WCOrderModel(
-            id = 1,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = LocalOrRemoteId.LocalId(1),
-            remoteOrderId = LocalOrRemoteId.RemoteId(1),
+            orderId = LocalOrRemoteId.RemoteId(1),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -406,7 +396,7 @@ object OrderTestUtils {
 
     fun generateTestOrderNotes(
         totalNotes: Int,
-        localOrderId: Int = 1,
+        orderId: Long = 1,
         localSiteId: Int = 1
     ): List<OrderNote> {
         val result = ArrayList<OrderNote>()
@@ -415,7 +405,7 @@ object OrderTestUtils {
                 WCOrderNoteModel(totalNotes).apply {
                     this.isCustomerNote = false
                     this.dateCreated = "2018-02-02T16:11:13Z"
-                    this.localOrderId = localOrderId
+                    this.orderId = orderId
                     this.localSiteId = localSiteId
                     this.note = "This is a test note $i"
                 }.toAppModel()
@@ -426,7 +416,7 @@ object OrderTestUtils {
 
     fun generateTestOrderShipmentTrackings(
         totalCount: Int,
-        localOrderId: Int = 1,
+        orderId: Long = 1,
         localSiteId: Int = 1
     ): List<OrderShipmentTracking> {
         val result = ArrayList<OrderShipmentTracking>()
@@ -437,7 +427,7 @@ object OrderTestUtils {
                     this.trackingNumber = "$i"
                     this.dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
                     this.trackingLink = "www.somelink$i.com"
-                    this.localOrderId = localOrderId
+                    this.orderId = orderId
                     this.localSiteId = localSiteId
                 }.toAppModel()
             )
