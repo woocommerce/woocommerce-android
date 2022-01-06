@@ -175,7 +175,7 @@ class MyStoreFragment :
     private fun setupStateObservers() {
         viewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
             when (revenueStats) {
-                is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats, revenueStats.granularity)
+                is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats)
                 RevenueStatsViewState.GenericError -> showStatsError()
                 RevenueStatsViewState.Loading -> showChartSkeleton(true)
                 RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
@@ -192,10 +192,7 @@ class MyStoreFragment :
             when (topPerformers) {
                 is TopPerformersViewState.Loading -> showTopPerformersLoading()
                 is TopPerformersViewState.Error -> showTopPerformersError()
-                is TopPerformersViewState.Content -> showTopPerformers(
-                    topPerformers.topPerformers,
-                    topPerformers.granularity
-                )
+                is TopPerformersViewState.Content -> showTopPerformers(topPerformers.topPerformers)
             }
         }
         viewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
@@ -309,14 +306,12 @@ class MyStoreFragment :
         outState.putInt(STATE_KEY_TAB_POSITION, tabStatsPosition)
     }
 
-    private fun showStats(revenueStatsModel: RevenueStatsUiModel?, granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            addTabLayoutToAppBar()
-            binding.myStoreStats.showErrorView(false)
-            showChartSkeleton(false)
-            binding.myStoreStats.updateView(revenueStatsModel)
-            myStoreDateBar.updateDateRangeView(revenueStatsModel, activeGranularity)
-        }
+    private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
+        addTabLayoutToAppBar()
+        binding.myStoreStats.showErrorView(false)
+        showChartSkeleton(false)
+        binding.myStoreStats.updateView(revenueStatsModel)
+        myStoreDateBar.updateDateRangeView(revenueStatsModel, activeGranularity)
     }
 
     private fun showStatsError() {
@@ -332,12 +327,10 @@ class MyStoreFragment :
         showChartSkeleton(false)
     }
 
-    private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>, granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            binding.myStoreTopPerformers.showSkeleton(false)
-            binding.myStoreTopPerformers.showErrorView(false)
-            binding.myStoreTopPerformers.updateView(topPerformers)
-        }
+    private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>) {
+        binding.myStoreTopPerformers.showSkeleton(false)
+        binding.myStoreTopPerformers.showErrorView(false)
+        binding.myStoreTopPerformers.updateView(topPerformers)
     }
 
     private fun showTopPerformersError() {

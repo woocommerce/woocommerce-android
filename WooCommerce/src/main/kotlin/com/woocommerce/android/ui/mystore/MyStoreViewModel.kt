@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -21,7 +22,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
@@ -53,9 +54,6 @@ class MyStoreViewModel @Inject constructor(
         const val ACTIVE_STATS_GRANULARITY_KEY = "active_stats_granularity_key"
     }
 
-    private var activeStatsGranularity: StatsGranularity =
-        savedState.get<StatsGranularity>(ACTIVE_STATS_GRANULARITY_KEY) ?: StatsGranularity.DAYS
-
     private var _revenueStatsState = MutableLiveData<RevenueStatsViewState>()
     val revenueStatsState: LiveData<RevenueStatsViewState> = _revenueStatsState
 
@@ -68,12 +66,25 @@ class MyStoreViewModel @Inject constructor(
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
 
-    @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size)
-    @VisibleForTesting val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size)
+    private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private var activeStatsGranularity = MutableStateFlow(
+        savedState.get<StatsGranularity>(ACTIVE_STATS_GRANULARITY_KEY) ?: StatsGranularity.DAYS
+    )
+
+    @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
+    @VisibleForTesting val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
-        refreshAll()
+        viewModelScope.launch {
+            merge(
+                refreshTrigger,
+                activeStatsGranularity
+            ).collectLatest {
+                loadStoreStats()
+                loadTopPerformersStats()
+            }
+        }
     }
 
     override fun onCleared() {
@@ -86,21 +97,20 @@ class MyStoreViewModel @Inject constructor(
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             if (refreshStoreStats.any { it } || refreshTopPerformerStats.any { it }) {
-                refreshAll()
+                refreshTrigger.tryEmit(Unit)
             }
         }
     }
 
     fun onStatsGranularityChanged(granularity: StatsGranularity) {
-        activeStatsGranularity = granularity
+        activeStatsGranularity.update { granularity }
         savedState[ACTIVE_STATS_GRANULARITY_KEY] = granularity
-        loadStoreStats()
-        loadTopPerformersStats()
     }
 
     fun onSwipeToRefresh() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.DASHBOARD_PULLED_TO_REFRESH)
-        refreshAll()
+        resetForceRefresh()
+        refreshTrigger.tryEmit(Unit)
     }
 
     fun getSelectedSiteName(): String =
@@ -112,28 +122,22 @@ class MyStoreViewModel @Inject constructor(
             }
         } ?: ""
 
-    private fun refreshAll() {
-        resetForceRefresh()
-        loadStoreStats()
-        loadTopPerformersStats()
-    }
-
     private fun loadStoreStats() {
         if (!networkStatus.isConnected()) {
-            refreshStoreStats[activeStatsGranularity.ordinal] = true
-            _revenueStatsState.value = RevenueStatsViewState.Content(null, activeStatsGranularity)
+            refreshStoreStats[activeStatsGranularity.value.ordinal] = true
+            _revenueStatsState.value = RevenueStatsViewState.Content(null, activeStatsGranularity.value)
             _visitorStatsState.value = VisitorStatsViewState.Content(emptyMap())
             return
         }
 
-        val forceRefresh = refreshStoreStats[activeStatsGranularity.ordinal]
+        val forceRefresh = refreshStoreStats[activeStatsGranularity.value.ordinal]
         if (forceRefresh) {
-            refreshStoreStats[activeStatsGranularity.ordinal] = false
+            refreshStoreStats[activeStatsGranularity.value.ordinal] = false
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
-        val selectedGranularity = activeStatsGranularity
+        val selectedGranularity = activeStatsGranularity.value
         launch {
-            getStats(forceRefresh, selectedGranularity)
+            getStats(forceRefresh, activeStatsGranularity.value)
                 .collect {
                     when (it) {
                         is RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedGranularity)
@@ -158,7 +162,7 @@ class MyStoreViewModel @Inject constructor(
         )
         AnalyticsTracker.track(
             AnalyticsTracker.Stat.DASHBOARD_MAIN_STATS_LOADED,
-            mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.name.lowercase())
+            mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.value.name.lowercase())
         )
     }
 
@@ -185,20 +189,20 @@ class MyStoreViewModel @Inject constructor(
 
     private fun loadTopPerformersStats() {
         if (!networkStatus.isConnected()) {
-            refreshTopPerformerStats[activeStatsGranularity.ordinal] = true
-            _topPerformersState.value = TopPerformersViewState.Content(emptyList(), activeStatsGranularity)
+            refreshTopPerformerStats[activeStatsGranularity.value.ordinal] = true
+            _topPerformersState.value = TopPerformersViewState.Content(emptyList(), activeStatsGranularity.value)
             return
         }
 
-        val forceRefresh = refreshTopPerformerStats[activeStatsGranularity.ordinal]
+        val forceRefresh = refreshTopPerformerStats[activeStatsGranularity.value.ordinal]
         if (forceRefresh) {
-            refreshTopPerformerStats[activeStatsGranularity.ordinal] = false
+            refreshTopPerformerStats[activeStatsGranularity.value.ordinal] = false
         }
 
         _topPerformersState.value = TopPerformersViewState.Loading
-        val selectedGranularity = activeStatsGranularity
+        val selectedGranularity = activeStatsGranularity.value
         launch {
-            getTopPerformers(forceRefresh, selectedGranularity, NUM_TOP_PERFORMERS)
+            getTopPerformers(forceRefresh, activeStatsGranularity.value, NUM_TOP_PERFORMERS)
                 .collect {
                     when (it) {
                         is TopPerformersSuccess -> {
@@ -209,7 +213,7 @@ class MyStoreViewModel @Inject constructor(
                                 )
                             AnalyticsTracker.track(
                                 AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
-                                mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.name.lowercase())
+                                mapOf(AnalyticsTracker.KEY_RANGE to activeStatsGranularity.value.name.lowercase())
                             )
                         }
                         TopPerformersError -> _topPerformersState.value = TopPerformersViewState.Error
