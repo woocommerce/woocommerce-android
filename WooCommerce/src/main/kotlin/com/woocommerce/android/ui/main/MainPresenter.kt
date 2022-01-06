@@ -9,7 +9,6 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.util.WooLog
@@ -38,7 +37,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -228,16 +226,6 @@ class MainPresenter @Inject constructor(
         if (event.channel == NEW_ORDER) {
             fetchUnfilledOrderCount()
         }
-    }
-
-    /**
-     * A request to fetch a product has been sent - dispatch the action to fetch it
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: RequestFetchProductEvent) {
-        val payload = WCProductStore.FetchSingleProductPayload(event.site, event.remoteProductId)
-        dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
     }
 
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
