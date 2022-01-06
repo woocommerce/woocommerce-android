@@ -12,6 +12,7 @@ import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
@@ -71,6 +72,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     private val savedState = OrderDetailFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
 
+    private val productImageMap = mock<ProductImageMap>()
+
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_ID))
     private val orderStatus = OrderStatus(order.status.value, order.status.value)
@@ -122,7 +125,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel = spy(
             OrderDetailViewModel(
-                dispatcher,
                 coroutinesTestRule.testDispatchers,
                 savedState,
                 appPrefsWrapper,
@@ -131,7 +133,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 repository,
                 addonsRepository,
                 selectedSite,
-                paymentCollectibilityChecker
+                productImageMap,
+                paymentCollectibilityChecker,
             )
         )
 
