@@ -54,7 +54,6 @@ import javax.inject.Inject
 @OpenClassOnDebug
 @HiltViewModel
 final class OrderDetailViewModel @Inject constructor(
-    private val dispatcher: Dispatcher,
     private val coroutineDispatchers: CoroutineDispatchers,
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
