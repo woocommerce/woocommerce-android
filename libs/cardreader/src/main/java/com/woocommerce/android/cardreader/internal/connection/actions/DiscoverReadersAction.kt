@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Started
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.internal.sendAndLog
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
@@ -38,7 +39,7 @@ internal class DiscoverReadersAction(
 
     fun discoverReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> {
         return callbackFlow {
-            sendAndLog(Started)
+            sendAndLog(logWrapper, Started)
             val config = DiscoveryConfiguration(
                 DISCOVERY_TIMEOUT_IN_SECONDS,
                 DiscoveryMethod.BLUETOOTH_SCAN,
@@ -51,18 +52,18 @@ internal class DiscoverReadersAction(
                     override fun onUpdateDiscoveredReaders(readers: List<Reader>) {
                         if (readers != foundReaders) {
                             foundReaders = readers
-                            this@callbackFlow.sendAndLog(FoundReaders(readers))
+                            this@callbackFlow.sendAndLog(logWrapper, FoundReaders(readers))
                         }
                     }
                 },
                 object : Callback {
                     override fun onFailure(e: TerminalException) {
-                        this@callbackFlow.sendAndLog(Failure(e))
+                        this@callbackFlow.sendAndLog(logWrapper, Failure(e))
                         this@callbackFlow.close()
                     }
 
                     override fun onSuccess() {
-                        this@callbackFlow.sendAndLog(Success)
+                        this@callbackFlow.sendAndLog(logWrapper, Success)
                         this@callbackFlow.close()
                     }
                 }
@@ -71,12 +72,6 @@ internal class DiscoverReadersAction(
                 cancelable.takeIf { !it.isCompleted }?.cancel(noopCallback)
             }
         }
-    }
-
-    private fun ProducerScope<DiscoverReadersStatus>.sendAndLog(status: DiscoverReadersStatus) {
-        trySendBlocking(status)
-            .onClosed { logWrapper.e(LOG_TAG, it?.message.orEmpty()) }
-            .onFailure { logWrapper.e(LOG_TAG, it?.message.orEmpty()) }
     }
 }
 
