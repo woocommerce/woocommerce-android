@@ -18,13 +18,13 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
+import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +36,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private val formViewModel by viewModels<OrderCreationFormViewModel>()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var productImageMap: ProductImageMap
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,10 +47,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun FragmentOrderCreationFormBinding.initView() {
-        orderStatusView.customizeViewBehavior(
-            displayOrderNumber = false,
-            editActionAsText = true,
-            customEditClickListener = {
+        orderStatusView.initView(
+            mode = OrderDetailOrderStatusView.Mode.OrderCreation,
+            editOrderStatusClickListener = {
                 sharedViewModel.orderStatusData.value?.let {
                     formViewModel.onEditOrderStatusClicked(it)
                 }
@@ -147,7 +145,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = ProductsAdapter(
                         onProductClicked = formViewModel::onProductClicked,
-                        productImageMap = productImageMap,
                         currencyFormatter = currencyFormatter.buildBigDecimalFormatter(
                             currencyCode = sharedViewModel.currentDraft.currency
                         ),

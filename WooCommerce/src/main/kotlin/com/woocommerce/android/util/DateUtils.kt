@@ -379,7 +379,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MINUTE)
             set(Calendar.HOUR_OF_DAY, ZERO)
             set(Calendar.DAY_OF_MONTH, ONE)
-            set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) / THREE * THREE)
+            set(Calendar.MONTH, get(Calendar.MONTH) / THREE * THREE)
         }.time
 
     /**
@@ -435,7 +435,7 @@ class DateUtils @Inject constructor(
             clear(Calendar.MINUTE)
             set(Calendar.HOUR_OF_DAY, ZERO)
             set(Calendar.DAY_OF_MONTH, 1)
-            set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) / THREE * THREE)
+            set(Calendar.MONTH, get(Calendar.MONTH) / THREE * THREE)
             add(Calendar.MONTH, -minusQuarter * THREE)
         }.time
 

@@ -386,6 +386,14 @@ platform :android do
         github_release_prefix: "",
         exclusions: ["default_web_client_id"]
       },
+      {
+        name: "About Library",
+        import_key: "aboutAutomatticVersion", # key used in build.gradle to reference the version
+        repository: "Automattic/about-automattic-android",
+        strings_file_path: "library/src/main/res/values/strings.xml",
+        github_release_prefix: "",
+        exclusions: []
+      },
     ]
 
     binary_imported_libraries.each do  | lib |
@@ -394,7 +402,8 @@ platform :android do
         import_key: lib[:import_key],
         repository: lib[:repository],
         file_path: lib[:strings_file_path],
-        github_release_prefix: lib[:github_release_prefix])
+        github_release_prefix: lib[:github_release_prefix]
+      )
 
       if download_path.nil?
         error_message = "Can't download strings file for #{lib[:name]}.\r\n"
@@ -403,7 +412,7 @@ platform :android do
         UI.user_error! "Abort." unless UI.confirm(error_message)
       else
         UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
-        lib_to_merge = [ {
+        lib_to_merge = [{
           library: lib[:name],
           strings_path: download_path,
           exclusions: lib[:exclusions]
