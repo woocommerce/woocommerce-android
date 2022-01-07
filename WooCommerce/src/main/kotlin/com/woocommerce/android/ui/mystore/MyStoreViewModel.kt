@@ -122,7 +122,7 @@ class MyStoreViewModel @Inject constructor(
             }
         } ?: ""
 
-    private fun loadStoreStats() {
+    private suspend fun loadStoreStats() {
         if (!networkStatus.isConnected()) {
             refreshStoreStats[activeStatsGranularity.value.ordinal] = true
             _revenueStatsState.value = RevenueStatsViewState.Content(null, activeStatsGranularity.value)
@@ -136,20 +136,18 @@ class MyStoreViewModel @Inject constructor(
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
         val selectedGranularity = activeStatsGranularity.value
-        launch {
-            getStats(forceRefresh, activeStatsGranularity.value)
-                .collect {
-                    when (it) {
-                        is RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedGranularity)
-                        is RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
-                        PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
-                        is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
-                        is VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
-                        IsJetPackCPEnabled -> onJetPackCpConnected()
-                        is HasOrders -> _hasOrders.value = if (it.hasOrder) OrderState.AtLeastOne else OrderState.Empty
-                    }
+        getStats(forceRefresh, activeStatsGranularity.value)
+            .collect {
+                when (it) {
+                    is RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedGranularity)
+                    is RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
+                    PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
+                    is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
+                    is VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
+                    IsJetPackCPEnabled -> onJetPackCpConnected()
+                    is HasOrders -> _hasOrders.value = if (it.hasOrder) OrderState.AtLeastOne else OrderState.Empty
                 }
-        }
+            }
     }
 
     private fun onRevenueStatsSuccess(
