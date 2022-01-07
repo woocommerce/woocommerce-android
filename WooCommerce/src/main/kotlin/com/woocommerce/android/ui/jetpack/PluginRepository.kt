@@ -173,13 +173,15 @@ class PluginRepository @Inject constructor(
     suspend fun isJetpackConnectedAfterInstallation(): Boolean {
         var attempt = 0
         while (attempt < ATTEMPT_LIMIT) {
-            val result = wooCommerceStore.fetchWooCommerceSite(selectedSite.get())
-            val siteModel = result.model
-            if (siteModel != null && siteModel.hasWooCommerce) {
-                return true
-            } else {
-                attempt++
-                delay(SYNC_CHECK_DELAY)
+            val result = wooCommerceStore.fetchWooCommerceSites().model
+            if (result != null) {
+                val syncedSite = result.first { it.siteId == selectedSite.get().siteId }
+                if (syncedSite.hasWooCommerce) {
+                    return true
+                } else {
+                    attempt++
+                    delay(SYNC_CHECK_DELAY)
+                }
             }
         }
         return false
