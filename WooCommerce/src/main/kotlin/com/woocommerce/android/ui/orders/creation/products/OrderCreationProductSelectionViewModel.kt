@@ -27,10 +27,10 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     val productListData: LiveData<List<Product>> = productList
 
     init {
-        fetchProductList()
+        loadProductList()
     }
 
-    fun fetchProductList(
+    fun loadProductList(
         loadMore: Boolean = false
     ) {
         if (loadMore.not()) {
