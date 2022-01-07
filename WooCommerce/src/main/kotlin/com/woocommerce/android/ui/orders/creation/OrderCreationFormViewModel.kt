@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.orders.creation
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.runWithContext
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.AddSimpleProduct
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.EditCustomerNote
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,6 +45,10 @@ class OrderCreationFormViewModel @Inject constructor(
     }
 
     fun onAddSimpleProductsClicked() {
-        triggerEvent(AddSimpleProduct)
+        triggerEvent(AddProduct)
+    }
+
+    fun onProductClicked(item: Order.Item) {
+        triggerEvent(ShowProductDetails(item))
     }
 }

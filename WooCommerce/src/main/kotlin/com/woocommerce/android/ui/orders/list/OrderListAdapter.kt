@@ -156,10 +156,9 @@ class OrderListAdapter(
 
             this.itemView.setOnClickListener {
                 listener.openOrderDetail(
-                    orderItemUI.localOrderId.value,
-                    orderItemUI.remoteOrderId.value,
-                    orderItemUI.status,
-                    viewBinding.root
+                    orderId = orderItemUI.remoteOrderId.value,
+                    orderStatus = orderItemUI.status,
+                    sharedView = viewBinding.root
                 )
             }
         }

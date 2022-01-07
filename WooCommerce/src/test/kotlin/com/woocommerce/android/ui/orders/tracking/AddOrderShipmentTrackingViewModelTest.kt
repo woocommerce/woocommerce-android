@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.tracking
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.OrderTestUtils.ORDER_IDENTIFIER
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -15,7 +14,14 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
@@ -23,10 +29,18 @@ import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
+    companion object {
+        private const val ORDER_ID = 1L
+        private const val ORDER_LOCAL_ID = 1
+    }
+
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
 
-    private val savedState = AddOrderShipmentTrackingFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState = AddOrderShipmentTrackingFragmentArgs(
+        orderId = ORDER_ID,
+        orderLocalId = ORDER_LOCAL_ID
+    ).initSavedStateHandle()
 
     private lateinit var viewModel: AddOrderShipmentTrackingViewModel
 
@@ -42,7 +56,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Add order shipment tracking when network is available - success`() = runBlockingTest {
-        doReturn(OnOrderChanged()).whenever(repository).addOrderShipmentTracking(any(), any())
+        doReturn(OnOrderChanged()).whenever(repository).addOrderShipmentTracking(any(), any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -52,7 +66,8 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
         verify(repository, times(1))
             .addOrderShipmentTracking(
-                orderIdentifier = eq(ORDER_IDENTIFIER),
+                orderId = eq(ORDER_ID),
+                orderLocalId = eq(ORDER_LOCAL_ID),
                 shipmentTrackingModel = argThat {
                     trackingProvider == "test" &&
                         trackingNumber == "123456" && !isCustomProvider
@@ -67,7 +82,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     @Test
     fun `Add order shipment tracking fails`() = runBlockingTest {
         doReturn(OnOrderChanged().also { it.error = OrderError(type = GENERIC_ERROR, message = "") })
-            .whenever(repository).addOrderShipmentTracking(any(), any())
+            .whenever(repository).addOrderShipmentTracking(any(), any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -77,7 +92,8 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
         verify(repository, times(1))
             .addOrderShipmentTracking(
-                orderIdentifier = eq(ORDER_IDENTIFIER),
+                orderId = eq(ORDER_ID),
+                orderLocalId = eq(ORDER_LOCAL_ID),
                 shipmentTrackingModel = argThat {
                     trackingProvider == "test" &&
                         trackingNumber == "123456" && !isCustomProvider
@@ -98,7 +114,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
         viewModel.onTrackingNumberEntered("123456")
         viewModel.onAddButtonTapped()
 
-        verify(repository, times(0)).addOrderShipmentTracking(any(), any())
+        verify(repository, times(0)).addOrderShipmentTracking(any(), any(), any())
         assertEquals(R.string.offline_error, (event as ShowSnackbar).message)
     }
 }

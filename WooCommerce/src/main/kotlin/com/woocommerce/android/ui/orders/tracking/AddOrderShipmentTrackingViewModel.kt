@@ -23,7 +23,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
@@ -47,9 +46,6 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
 
     val currentSelectedDate: String
         get() = addOrderShipmentTrackingViewState.date
-
-    val orderId: OrderIdentifier
-        get() = navArgs.orderId
 
     fun onCarrierSelected(carrier: Carrier) {
         addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(
@@ -85,7 +81,7 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
     fun onCarrierClicked() {
         triggerEvent(
             ViewShipmentTrackingProviders(
-                orderIdentifier = orderId,
+                orderId = navArgs.orderId,
                 selectedProvider = addOrderShipmentTrackingViewState.carrier.name
             )
         )
@@ -130,7 +126,8 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
                 trackingLink = addOrderShipmentTrackingViewState.trackingLink
             )
 
-            val onOrderChanged = orderDetailRepository.addOrderShipmentTracking(orderId, shipmentTracking)
+            val onOrderChanged =
+                orderDetailRepository.addOrderShipmentTracking(navArgs.orderId, navArgs.orderLocalId, shipmentTracking)
             if (!onOrderChanged.isError) {
                 AnalyticsTracker.track(Stat.ORDER_TRACKING_ADD_SUCCESS)
                 addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(showLoadingProgress = false)

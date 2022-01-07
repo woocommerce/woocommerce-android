@@ -4,18 +4,19 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationProductItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
-import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.ProductsAdapter.ProductViewHolder
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 class ProductsAdapter(
-    private val productImageMap: ProductImageMap,
+    private val onProductClicked: (Order.Item) -> Unit,
     private val currencyFormatter: (BigDecimal) -> String,
     private val onIncreaseQuantity: (Long) -> Unit,
     private val onDecreaseQuantity: (Long) -> Unit
@@ -41,11 +42,22 @@ class ProductsAdapter(
 
     inner class ProductViewHolder(private val binding: OrderCreationProductItemBinding) : ViewHolder(binding.root) {
         private val context = binding.root.context
+        private val safePosition: Int?
+            get() = adapterPosition.takeIf { it != NO_POSITION }
 
         init {
+            binding.root.setOnClickListener {
+                safePosition?.let {
+                    onProductClicked(products[it].item)
+                }
+            }
             binding.stepperView.init(
-                onPlusButtonClick = { onIncreaseQuantity(products[adapterPosition].item.uniqueId) },
-                onMinusButtonClick = { onDecreaseQuantity(products[adapterPosition].item.uniqueId) }
+                onPlusButtonClick = {
+                    safePosition?.let { onIncreaseQuantity(products[it].item.uniqueId) }
+                },
+                onMinusButtonClick = {
+                    safePosition?.let { onDecreaseQuantity(products[it].item.uniqueId) }
+                }
             )
         }
 
@@ -75,9 +87,7 @@ class ProductsAdapter(
                 context.getString(R.string.orderdetail_product_lineitem_sku_value, productModel.item.sku)
 
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_major_50)
-            PhotonUtils.getPhotonImageUrl(
-                productImageMap.get(productModel.item.uniqueId), imageSize, imageSize
-            )?.let { imageUrl ->
+            PhotonUtils.getPhotonImageUrl(productModel.imageUrl, imageSize, imageSize)?.let { imageUrl ->
                 GlideApp.with(context)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_product)

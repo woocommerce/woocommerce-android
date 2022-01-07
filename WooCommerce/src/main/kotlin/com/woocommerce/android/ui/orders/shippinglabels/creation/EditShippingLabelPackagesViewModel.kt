@@ -84,7 +84,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     private suspend fun createDefaultPackage(): List<ShippingLabelPackage> {
         val lastUsedPackage = shippingLabelRepository.getLastUsedPackage()
-        val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
+        val order = requireNotNull(orderDetailRepository.getOrderById(arguments.orderId))
         loadProductsWeightsIfNeeded(order)
 
         val items = order.getShippableItems().map { it.toShippingItem() }
@@ -255,7 +255,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             val updatedPackages = removeItemFromCurrentPackage()
 
             // We fetch products when this screen is opened, so we can retrieve details from DB
-            val product: IProduct? = orderDetailRepository.getOrder(arguments.orderId)
+            val product: IProduct? = orderDetailRepository.getOrderById(arguments.orderId)
                 ?.items
                 ?.find { it.uniqueId == item.productId }
                 ?.let {

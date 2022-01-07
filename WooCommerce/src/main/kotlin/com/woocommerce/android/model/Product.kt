@@ -47,6 +47,7 @@ data class Product(
     val permalink: String,
     val externalUrl: String,
     val buttonText: String,
+    val price: BigDecimal?,
     val salePrice: BigDecimal?,
     val regularPrice: BigDecimal?,
     val taxClass: String,
@@ -483,6 +484,7 @@ fun WCProductModel.toAppModel(): Product {
         permalink = this.permalink,
         externalUrl = this.externalUrl,
         buttonText = this.buttonText,
+        price = this.price.toBigDecimalOrNull(),
         salePrice = this.salePrice.toBigDecimalOrNull(),
         regularPrice = this.regularPrice.toBigDecimalOrNull(),
         // In Core, if a tax class is empty it is considered as standard and we are following the same
