@@ -55,6 +55,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     companion object {
         private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
+        private const val LINE_CHART_DOT_OFFSET = -5
     }
 
     private lateinit var activeGranularity: StatsGranularity
@@ -228,8 +229,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             description.isEnabled = false
             legend.isEnabled = false
 
-            // touch has to be enabled in order to show a marker when dragging across the line chart to view
-            //specific values at each point
+            // touch has to be enabled in order to show a marker when dragging across the line chart
             setTouchEnabled(true)
             setPinchZoom(false)
             isScaleXEnabled = false
@@ -428,7 +428,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                 valueFormatter = RevenueAxisFormatter()
             }
             val dot = MarkerImage(context, R.drawable.chart_highlight_dot)
-            val offset = DisplayUtils.dpToPx(context, -5).toFloat()
+            val offset = DisplayUtils.dpToPx(context, LINE_CHART_DOT_OFFSET).toFloat()
             dot.setOffset(offset, offset)
             marker = dot
         }
