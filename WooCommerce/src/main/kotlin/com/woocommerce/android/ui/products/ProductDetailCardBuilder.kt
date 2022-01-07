@@ -49,10 +49,12 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import java.math.BigDecimal
 
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
@@ -60,6 +62,7 @@ class ProductDetailCardBuilder(
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters,
     private val addonRepository: AddonRepository,
+    private val variationRepository: VariationRepository
 ) {
     private lateinit var originalSku: String
 
@@ -149,6 +152,7 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
+                product.warning(),
                 product.variations(),
                 product.variationAttributes(),
                 product.productReviews(),
@@ -637,4 +641,14 @@ class ProductDetailCardBuilder(
                 }
             )
         }
+    private fun Product.warning(): ProductProperty? {
+        val variations = variationRepository.getProductVariationList(this.remoteId)
+
+        val missingPriceVariation = variations
+            .find { it.regularPrice == null || it.regularPrice == BigDecimal.ZERO }
+
+        return missingPriceVariation?.let {
+            ProductProperty.Warning(resources.getString(string.variation_detail_price_warning))
+        }
+    }
 }

@@ -55,6 +55,7 @@ object ProductHelper {
             permalink = "",
             externalUrl = "",
             buttonText = "",
+            price = BigDecimal.ZERO,
             salePrice = BigDecimal.ZERO,
             regularPrice = BigDecimal.ZERO,
             taxClass = Product.TAX_CLASS_DEFAULT,

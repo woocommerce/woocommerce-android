@@ -31,7 +31,14 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"  />
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_simplePaymentsFragment_to_takePaymentFragment"
+            app:destination="@id/takePaymentFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/simplePaymentsCustomerNoteFragment"
@@ -41,6 +48,15 @@
             android:name="customerNote"
             android:defaultValue='""'
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/takePaymentFragment"
+        android:name="com.woocommerce.android.ui.orders.simplepayments.TakePaymentFragment"
+        android:label="TakePaymentFragment">
+        <argument
+            android:name="order"
+            app:argType="com.woocommerce.android.model.Order"
+            app:nullable="false" />
     </fragment>
     <fragment
         android:id="@+id/orders"

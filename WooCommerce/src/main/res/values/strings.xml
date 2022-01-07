@@ -124,6 +124,8 @@
     <string name="analytics">Analytics</string>
     <string name="minus">Minus</string>
     <string name="plus">Plus</string>
+    <string name="card">Card</string>
+    <string name="cash">Cash</string>
 
     <!--
         Date/Time Labels
@@ -315,6 +317,10 @@
     <string name="simple_payments_take_payment_button">Take payment (%s)</string>
     <string name="simple_payments_tax_with_percent">Tax (%s%%)</string>
     <string name="simple_payments_tax_message">Taxes are automatically calculated based on your store address</string>
+    <string name="simple_payments_choose_method">Choose your payment method</string>
+    <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
+    <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
+    <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <!--
          Order Creation
     -->
@@ -337,6 +343,7 @@
     <string name="order_creation_product_details_title">Product</string>
     <string name="order_creation_add_discount">Add discount</string>
     <string name="order_creation_remove_product">Remove product from order</string>
+    <string name="order_creation_variations_screen_title">Select variation</string>
 
     <!--
         Order Filters

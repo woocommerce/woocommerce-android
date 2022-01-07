@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragm
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
+import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
@@ -135,6 +136,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
 
+        binding.orderDetailOrderStatus.initView(mode = Mode.OrderEdit) {
+            viewModel.onEditOrderStatusSelected()
+        }
         binding.orderRefreshLayout.apply {
             scrollUpChild = binding.scrollView
             setOnRefreshListener { viewModel.onRefreshRequested() }
@@ -340,9 +344,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun showOrderStatus(orderStatus: OrderStatus) {
-        binding.orderDetailOrderStatus.updateStatus(orderStatus) {
-            viewModel.onEditOrderStatusSelected()
-        }
+        binding.orderDetailOrderStatus.updateStatus(orderStatus)
     }
 
     private fun showMarkOrderCompleteButton(isVisible: Boolean) {
