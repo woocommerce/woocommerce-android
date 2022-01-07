@@ -168,8 +168,6 @@ class PluginRepository @Inject constructor(
     // After Jetpack-the-plugin is installed and activated on the site via the app, it will do a site sync.
     // The app needs the sync to be finished before the entire installation is considered finished and the site
     // can be used as a full WooCommerce site in the app.
-    // We check that by making sure `woocommerce_is_active` is true (returned by `hasWooCommerce` in the
-    // SiteModel).
     suspend fun isJetpackConnectedAfterInstallation(): Boolean {
         var attempt = 0
         while (attempt < ATTEMPT_LIMIT) {

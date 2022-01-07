@@ -15,6 +15,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
@@ -31,6 +32,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
         const val EXAMPLE_SLUG = "plugin-slug"
         const val EXAMPLE_NAME = "plugin-name"
         const val EXAMPLE_ERROR = "error-message"
+        const val CONNECTION_ERROR = "Connection error."
     }
 
     @Before
@@ -44,6 +46,8 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
     @Test
     fun `when installation is successful, then set proper install states`() = testBlocking {
         val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
+        doReturn(true).whenever(pluginRepository).isJetpackConnectedAfterInstallation()
+
         viewModel.viewStateLiveData.observeForever { old, new ->
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
@@ -55,7 +59,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
         Assertions.assertThat(installStates).containsExactly(
             Installing,
             Activating,
-            Connecting,
+            Connecting(false),
             Finished
         )
     }
@@ -106,6 +110,27 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
         Assertions.assertThat(installStates).containsExactly(
             Installing,
             Activating
+        )
+    }
+
+    @Test
+    fun `when connecting is failed, then set failed state`() = testBlocking {
+        val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
+        doReturn(false).whenever(pluginRepository).isJetpackConnectedAfterInstallation()
+
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
+        }
+
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_SLUG, siteModel))
+        installationStateFlow.tryEmit(PluginActivated(EXAMPLE_NAME, siteModel))
+        advanceUntilIdle()
+
+        Assertions.assertThat(installStates).containsExactly(
+            Installing,
+            Activating,
+            Connecting(false),
+            Failed(CONNECTION, CONNECTION_ERROR)
         )
     }
 }
