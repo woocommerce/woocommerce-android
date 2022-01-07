@@ -22,6 +22,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
@@ -82,11 +83,12 @@ class MyStoreViewModel @Inject constructor(
                 refreshTrigger.onStart { emit(Unit) }
             ) { granularity, _ ->
                 granularity
-            }
-                .collectLatest {
-                    loadStoreStats(it)
-                    loadTopPerformersStats(it)
+            }.collectLatest { granularity ->
+                coroutineScope {
+                    launch { loadStoreStats(granularity) }
+                    launch { loadTopPerformersStats(granularity) }
                 }
+            }
         }
     }
 
@@ -138,11 +140,10 @@ class MyStoreViewModel @Inject constructor(
             refreshStoreStats[granularity.ordinal] = false
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
-        val selectedGranularity = granularity
         getStats(forceRefresh, granularity)
             .collect {
                 when (it) {
-                    is RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedGranularity)
+                    is RevenueStatsSuccess -> onRevenueStatsSuccess(it, granularity)
                     is RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
                     PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
                     is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
@@ -201,7 +202,6 @@ class MyStoreViewModel @Inject constructor(
         }
 
         _topPerformersState.value = TopPerformersViewState.Loading
-        val selectedGranularity = granularity
         getTopPerformers(forceRefresh, granularity, NUM_TOP_PERFORMERS)
             .collect {
                 when (it) {
@@ -209,7 +209,7 @@ class MyStoreViewModel @Inject constructor(
                         _topPerformersState.value =
                             TopPerformersViewState.Content(
                                 it.topPerformers.toTopPerformersUiList(),
-                                selectedGranularity
+                                granularity
                             )
                         AnalyticsTracker.track(
                             AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
