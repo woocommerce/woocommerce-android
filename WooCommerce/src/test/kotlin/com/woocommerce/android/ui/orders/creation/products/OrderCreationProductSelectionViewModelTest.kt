@@ -6,16 +6,21 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
 
 @ExperimentalCoroutinesApi
 class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     private lateinit var sut: OrderCreationProductSelectionViewModel
+    private lateinit var productListRepository: ProductListRepository
 
-    private val productListRepository: ProductListRepository = mock {
-        on { getProductList() } doReturn ProductTestUtils.generateProductList()
-        onBlocking { fetchProductList() } doReturn ProductTestUtils.generateProductList()
+    @Before
+    fun setUp() {
+        productListRepository = mock {
+            on { getProductList() } doReturn ProductTestUtils.generateProductList()
+            onBlocking { fetchProductList() } doReturn ProductTestUtils.generateProductList()
+        }
     }
 
     @Test
@@ -41,12 +46,9 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         whenever(productListRepository.getProductList()).thenReturn(emptyList())
         startSut()
         sut.productListData.observeForever { productListUpdateCalls++ }
+        productListUpdateCalls = 0
+        sut.loadProductList()
         assertThat(productListUpdateCalls).isEqualTo(1)
-    }
-
-    @Test
-    fun `when loading products, then hide skeleton if there are cached products`() {
-
     }
 
     //onProductSelected trigger AddProduct when numVariations == 0
