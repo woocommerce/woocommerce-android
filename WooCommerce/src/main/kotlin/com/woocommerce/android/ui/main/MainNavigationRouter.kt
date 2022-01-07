@@ -15,17 +15,13 @@ interface MainNavigationRouter {
     fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long)
 
     fun showOrderDetail(
-        localSiteId: Int,
-        localOrderId: Int = 0,
-        remoteOrderId: Long,
+        orderId: Long,
         remoteNoteId: Long = 0,
         launchedFromNotification: Boolean = false
     )
 
     fun showOrderDetailWithSharedTransition(
-        localSiteId: Int,
-        localOrderId: Int = 0,
-        remoteOrderId: Long,
+        orderId: Long,
         remoteNoteId: Long = 0,
         sharedView: View
     )

@@ -2,7 +2,8 @@
 
 8.3
 -----
-
+- [*] App Settings: Updated the About screen
+- [**] Refunds: Add support for refunding fees
 
 8.2
 -----
