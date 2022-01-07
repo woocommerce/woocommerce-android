@@ -298,7 +298,7 @@ object OrderTestUtils {
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
                 "  }]",
-            refundTotal = -10.0,
+            refundTotal = -BigDecimal.TEN,
         ).toAppModel()
     }
 
@@ -332,7 +332,7 @@ object OrderTestUtils {
             total = "106.00",
             shippingTotal = "4.00",
             lineItems = lineItems,
-            refundTotal = -10.0,
+            refundTotal = -BigDecimal.TEN,
             feeLines = lineItems,
 //                "[{\n" +
 //                "    \"name\":\"A fee\",\n" +
@@ -380,7 +380,7 @@ object OrderTestUtils {
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
                 "  }]",
-            refundTotal = -10.0,
+            refundTotal = -BigDecimal.TEN,
             shippingLines =
             "[{" +
                 "\"id\":119,\n" +

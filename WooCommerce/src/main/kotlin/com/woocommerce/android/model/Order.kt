@@ -316,7 +316,7 @@ fun WCOrderModel.toAppModel(): Order {
         totalTax = this.totalTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
         shippingTotal = this.shippingTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
         discountTotal = this.discountTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-        refundTotal = -this.refundTotal.toBigDecimal(), // WCOrderModel.refundTotal is NEGATIVE
+        refundTotal = -this.refundTotal, // WCOrderModel.refundTotal is NEGATIVE
         feesTotal = this.getFeeLineList()
             .sumByBigDecimal { it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO },
         currency = this.currency,
