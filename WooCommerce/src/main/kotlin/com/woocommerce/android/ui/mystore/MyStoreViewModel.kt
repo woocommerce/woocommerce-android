@@ -188,7 +188,7 @@ class MyStoreViewModel @Inject constructor(
         _visitorStatsState.value = VisitorStatsViewState.JetpackCpConnected(benefitsBanner)
     }
 
-    private fun loadTopPerformersStats(granularity: StatsGranularity) {
+    private suspend fun loadTopPerformersStats(granularity: StatsGranularity) {
         if (!networkStatus.isConnected()) {
             refreshTopPerformerStats[granularity.ordinal] = true
             _topPerformersState.value = TopPerformersViewState.Content(emptyList(), granularity)
@@ -202,25 +202,23 @@ class MyStoreViewModel @Inject constructor(
 
         _topPerformersState.value = TopPerformersViewState.Loading
         val selectedGranularity = granularity
-        launch {
-            getTopPerformers(forceRefresh, granularity, NUM_TOP_PERFORMERS)
-                .collect {
-                    when (it) {
-                        is TopPerformersSuccess -> {
-                            _topPerformersState.value =
-                                TopPerformersViewState.Content(
-                                    it.topPerformers.toTopPerformersUiList(),
-                                    selectedGranularity
-                                )
-                            AnalyticsTracker.track(
-                                AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
-                                mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
+        getTopPerformers(forceRefresh, granularity, NUM_TOP_PERFORMERS)
+            .collect {
+                when (it) {
+                    is TopPerformersSuccess -> {
+                        _topPerformersState.value =
+                            TopPerformersViewState.Content(
+                                it.topPerformers.toTopPerformersUiList(),
+                                selectedGranularity
                             )
-                        }
-                        TopPerformersError -> _topPerformersState.value = TopPerformersViewState.Error
+                        AnalyticsTracker.track(
+                            AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
+                            mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
+                        )
                     }
+                    TopPerformersError -> _topPerformersState.value = TopPerformersViewState.Error
                 }
-        }
+            }
     }
 
     private fun resetForceRefresh() {
