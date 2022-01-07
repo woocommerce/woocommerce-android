@@ -311,14 +311,14 @@ fun WCOrderModel.toAppModel(): Order {
         dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
         datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
         status = Status.fromValue(status),
-        total = this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        productsTotal = this.getOrderSubtotal().toBigDecimal().roundError(),
-        totalTax = this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        shippingTotal = this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        discountTotal = this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        refundTotal = -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
+        total = this.total.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        productsTotal = this.getOrderSubtotal().toBigDecimal(),
+        totalTax = this.totalTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        shippingTotal = this.shippingTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        discountTotal = this.discountTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        refundTotal = -this.refundTotal.toBigDecimal(), // WCOrderModel.refundTotal is NEGATIVE
         feesTotal = this.getFeeLineList()
-            .sumByBigDecimal { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO },
+            .sumByBigDecimal { it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO },
         currency = this.currency,
         orderKey = this.orderKey,
         customerNote = this.customerNote,
@@ -373,12 +373,12 @@ fun WCOrderModel.toAppModel(): Order {
                     it.id!!,
                     it.productId!!,
                     it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
-                    it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                    it.price?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.sku ?: "",
                     it.quantity ?: 0f,
-                    it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                    it.subtotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.variationId ?: 0,
                     it.getAttributeList().map { attribute ->
                         Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
@@ -390,16 +390,16 @@ fun WCOrderModel.toAppModel(): Order {
                 it.id!!,
                 it.methodId ?: StringUtils.EMPTY,
                 it.methodTitle ?: StringUtils.EMPTY,
-                it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+                it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
             )
         },
         feesLines = this.getFeeLineList().map {
             FeeLine(
                 id = it.id!!,
                 name = it.name ?: StringUtils.EMPTY,
-                totalTax = it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                total = it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             )
         },
         metaData = getMetaDataList().mapNotNull { it.toAppModel() }
