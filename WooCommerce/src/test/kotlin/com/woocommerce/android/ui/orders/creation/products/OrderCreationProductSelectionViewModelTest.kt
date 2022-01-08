@@ -5,6 +5,8 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.ProductTestUtils.generateProductList
+import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithVariations
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,7 +23,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         productListRepository = mock {
-            val products = ProductTestUtils.generateProductList()
+            val products = generateProductList()
             on { getProductList() } doReturn products
             onBlocking { fetchProductList() } doReturn products
         }
@@ -50,14 +52,16 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         whenever(productListRepository.getProductList()).thenReturn(emptyList())
         startSut()
         sut.productListData.observeForever { productListUpdateCalls++ }
+        // to avoid a race condition between starting the sut and subscribing the observer
+        productListUpdateCalls = 0
+        sut.loadProductList()
         assertThat(productListUpdateCalls).isEqualTo(1)
     }
 
     @Test
     fun `when non variable product is selected, then trigger AddProduct event`() = testBlocking {
         var lastReceivedEvent: Event? = null
-        whenever(productListRepository.fetchProductList())
-            .thenReturn(ProductTestUtils.generateProductListWithVariations())
+        whenever(productListRepository.fetchProductList()).thenReturn(generateProductListWithVariations())
         startSut()
         sut.event.observeForever {
             lastReceivedEvent = it
@@ -70,8 +74,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     @Test
     fun `when variable product is selected, then trigger ShowProductVariations event`() = testBlocking {
         var lastReceivedEvent: Event? = null
-        whenever(productListRepository.fetchProductList())
-            .thenReturn(ProductTestUtils.generateProductListWithVariations())
+        whenever(productListRepository.fetchProductList()).thenReturn(generateProductListWithVariations())
         startSut()
         sut.event.observeForever {
             lastReceivedEvent = it
@@ -87,6 +90,21 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         startSut()
         sut.productListData.observeForever { productListUpdateCalls++ }
         assertThat(productListUpdateCalls).isEqualTo(1)
+    }
+
+    @Test
+    fun `when loaded product list differs from fetched products, then apply the result again`() = testBlocking {
+        var productListUpdateCalls = 0
+        whenever(productListRepository.getProductList()).thenReturn(generateProductList())
+        whenever(productListRepository.fetchProductList()).thenReturn(generateProductList())
+        startSut()
+        sut.productListData.observeForever {
+            productListUpdateCalls++
+        }
+        // to avoid a race condition between starting the sut and subscribing the observer
+        productListUpdateCalls = 0
+        sut.loadProductList()
+        assertThat(productListUpdateCalls).isEqualTo(2)
     }
 
     private fun startSut() {
