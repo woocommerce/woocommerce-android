@@ -50,7 +50,6 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         whenever(productListRepository.getProductList()).thenReturn(emptyList())
         startSut()
         sut.productListData.observeForever { productListUpdateCalls++ }
-        sut.loadProductList()
         assertThat(productListUpdateCalls).isEqualTo(1)
     }
 
@@ -87,8 +86,6 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         var productListUpdateCalls = 0
         startSut()
         sut.productListData.observeForever { productListUpdateCalls++ }
-        productListUpdateCalls = 0
-        sut.loadProductList()
         assertThat(productListUpdateCalls).isEqualTo(1)
     }
 
