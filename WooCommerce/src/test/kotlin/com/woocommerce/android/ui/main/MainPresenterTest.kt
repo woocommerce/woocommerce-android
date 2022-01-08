@@ -50,9 +50,7 @@ class MainPresenterTest : BaseUnitTest() {
 
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
-    private val siteStore: SiteStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val notificationStore: NotificationStore = mock()
     private val selectedSite: SelectedSite = mock {
         val siteModel = SiteModel()
         on { get() } doReturn siteModel
@@ -76,9 +74,7 @@ class MainPresenterTest : BaseUnitTest() {
             MainPresenter(
                 dispatcher,
                 accountStore,
-                siteStore,
                 wooCommerceStore,
-                notificationStore,
                 selectedSite,
                 productImageMap,
                 appPrefs,
