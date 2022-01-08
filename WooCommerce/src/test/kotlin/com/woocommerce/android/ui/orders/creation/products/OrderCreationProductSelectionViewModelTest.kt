@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget
 import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -22,8 +21,9 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         productListRepository = mock {
-            on { getProductList() } doReturn ProductTestUtils.generateProductList()
-            onBlocking { fetchProductList() } doReturn ProductTestUtils.generateProductList()
+            val products = ProductTestUtils.generateProductList()
+            on { getProductList() } doReturn products
+            onBlocking { fetchProductList() } doReturn products
         }
     }
 
@@ -50,7 +50,6 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         whenever(productListRepository.getProductList()).thenReturn(emptyList())
         startSut()
         sut.productListData.observeForever { productListUpdateCalls++ }
-        productListUpdateCalls = 0
         sut.loadProductList()
         assertThat(productListUpdateCalls).isEqualTo(1)
     }
@@ -83,7 +82,15 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         assertThat(lastReceivedEvent).isInstanceOf(ShowProductVariations::class.java)
     }
 
-    //if fetched list is the same as the cached list, ignore the update
+    @Test
+    fun `when loaded product list equals fetched products, then ignore the result`() = testBlocking {
+        var productListUpdateCalls = 0
+        startSut()
+        sut.productListData.observeForever { productListUpdateCalls++ }
+        productListUpdateCalls = 0
+        sut.loadProductList()
+        assertThat(productListUpdateCalls).isEqualTo(1)
+    }
 
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(
