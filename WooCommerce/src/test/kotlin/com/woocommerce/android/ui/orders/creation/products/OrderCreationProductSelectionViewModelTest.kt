@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.creation.products
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -56,17 +58,30 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     @Test
     fun `when non variable product is selected, then trigger AddProduct event`() = testBlocking {
         var lastReceivedEvent: Event? = null
-        whenever(productListRepository.fetchProductList()).thenReturn(ProductTestUtils.generateProductListWithVariations())
+        whenever(productListRepository.fetchProductList())
+            .thenReturn(ProductTestUtils.generateProductListWithVariations())
         startSut()
         sut.event.observeForever {
             lastReceivedEvent = it
         }
-        sut.onProductSelected(1)
+        sut.onProductSelected(NON_VARIABLE_PRODUCT_ID)
         assertThat(lastReceivedEvent).isNotNull
         assertThat(lastReceivedEvent).isInstanceOf(AddProduct::class.java)
     }
 
-    //onProductSelected trigger ShowProductVariations when numVariations > 0
+    @Test
+    fun `when variable product is selected, then trigger ShowProductVariations event`() = testBlocking {
+        var lastReceivedEvent: Event? = null
+        whenever(productListRepository.fetchProductList())
+            .thenReturn(ProductTestUtils.generateProductListWithVariations())
+        startSut()
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+        sut.onProductSelected(VARIABLE_PRODUCT_ID)
+        assertThat(lastReceivedEvent).isNotNull
+        assertThat(lastReceivedEvent).isInstanceOf(ShowProductVariations::class.java)
+    }
 
     //if fetched list is the same as the cached list, ignore the update
 
@@ -75,5 +90,10 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
             SavedStateHandle(),
             productListRepository
         )
+    }
+
+    companion object {
+        const val VARIABLE_PRODUCT_ID = 6L
+        const val NON_VARIABLE_PRODUCT_ID = 1L
     }
 }
