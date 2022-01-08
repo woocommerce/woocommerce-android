@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders.creation.products
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -51,9 +53,22 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         assertThat(productListUpdateCalls).isEqualTo(1)
     }
 
-    //onProductSelected trigger AddProduct when numVariations == 0
+    @Test
+    fun `when non variable product is selected, then trigger AddProduct event`() = testBlocking {
+        var lastReceivedEvent: Event? = null
+        whenever(productListRepository.fetchProductList()).thenReturn(ProductTestUtils.generateProductListWithVariations())
+        startSut()
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+        sut.onProductSelected(1)
+        assertThat(lastReceivedEvent).isNotNull
+        assertThat(lastReceivedEvent).isInstanceOf(AddProduct::class.java)
+    }
 
     //onProductSelected trigger ShowProductVariations when numVariations > 0
+
+    //if fetched list is the same as the cached list, ignore the update
 
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(
