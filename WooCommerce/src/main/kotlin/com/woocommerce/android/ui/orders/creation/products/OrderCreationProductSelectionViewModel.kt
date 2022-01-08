@@ -38,15 +38,15 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
 
         launch {
-            productListRepository.getProductList()
+            val cachedProducts = productListRepository.getProductList()
                 .takeIf { it.isNotEmpty() }
-                ?.let {
-                    productList.value = it
+                ?.apply {
+                    productList.value = this
                     viewState = viewState.copy(isSkeletonShown = false)
                 }
 
             productListRepository.fetchProductList(loadMore)
-                .takeIf { it != productList.value }
+                .takeIf { it != cachedProducts }
                 ?.let { productList.value = it }
 
             viewState = viewState.copy(isSkeletonShown = false)
