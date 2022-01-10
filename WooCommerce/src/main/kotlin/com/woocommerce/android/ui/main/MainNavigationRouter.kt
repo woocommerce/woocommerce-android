@@ -17,13 +17,15 @@ interface MainNavigationRouter {
     fun showOrderDetail(
         orderId: Long,
         remoteNoteId: Long = 0,
-        launchedFromNotification: Boolean = false
+        launchedFromNotification: Boolean = false,
+        collectPayment: Boolean = false
     )
 
     fun showOrderDetailWithSharedTransition(
         orderId: Long,
         remoteNoteId: Long = 0,
-        sharedView: View
+        sharedView: View,
+        collectPayment: Boolean = false
     )
 
     fun showAddProduct()

@@ -749,7 +749,8 @@ class MainActivity :
                         showOrderDetail(
                             orderId = event.uniqueId,
                             remoteNoteId = event.remoteNoteId,
-                            launchedFromNotification = true
+                            launchedFromNotification = true,
+                            collectPayment = event.collectPayment
                         )
                     }
                     is ViewReviewDetail -> {
@@ -864,7 +865,8 @@ class MainActivity :
     override fun showOrderDetail(
         orderId: Long,
         remoteNoteId: Long,
-        launchedFromNotification: Boolean
+        launchedFromNotification: Boolean,
+        collectPayment: Boolean
     ) {
         if (launchedFromNotification) {
             showBottomNav()
@@ -872,19 +874,28 @@ class MainActivity :
             binding.bottomNav.active(ORDERS.position)
         }
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
+            orderId,
+            remoteNoteId,
+            collectPayment
+        )
         navController.navigateSafely(action)
     }
 
     override fun showOrderDetailWithSharedTransition(
         orderId: Long,
         remoteNoteId: Long,
-        sharedView: View
+        sharedView: View,
+        collectPayment: Boolean
     ) {
         val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
         val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
+            orderId,
+            remoteNoteId,
+            collectPayment
+        )
         navController.navigateSafely(directions = action, extras = extras)
     }
 

@@ -134,6 +134,10 @@ final class OrderDetailViewModel @Inject constructor(
                 }
             }
         }
+
+        if (navArgs.collectPayment) {
+            triggerEvent(StartCardReaderPaymentFlow(order.id))
+        }
     }
 
     private suspend fun fetchAndDisplayOrderDetails() {

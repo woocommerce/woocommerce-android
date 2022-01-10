@@ -58,6 +58,7 @@
             app:argType="com.woocommerce.android.model.Order"
             app:nullable="false" />
     </fragment>
+
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -73,6 +74,10 @@
                 android:name="remoteNoteId"
                 android:defaultValue="0L"
                 app:argType="long" />
+            <argument
+                android:name="collectPayment"
+                android:defaultValue="false"
+                app:argType="boolean" />
         </action>
         <action
             android:id="@+id/action_orderListFragment_to_orderFilterListFragment"

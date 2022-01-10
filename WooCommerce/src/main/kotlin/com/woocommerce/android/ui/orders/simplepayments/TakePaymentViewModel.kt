@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.simplepayments
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.room.FtsOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order

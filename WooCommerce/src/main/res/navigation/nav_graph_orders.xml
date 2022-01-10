@@ -181,6 +181,10 @@
             android:name="remoteNoteId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="collectPayment"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_orderDetailFragment_to_addOrderNoteFragment"
             app:destination="@id/addOrderNoteFragment"

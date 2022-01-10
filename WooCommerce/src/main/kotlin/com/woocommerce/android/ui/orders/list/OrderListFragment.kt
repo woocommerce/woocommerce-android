@@ -329,7 +329,9 @@ class OrderListFragment :
             }
         }
         handleResult<Order>(TakePaymentFragment.KEY_SIMPLE_PAYMENTS_CARD_PAYMENT_RESULT) { order ->
-            // TODO nbradbury
+            binding.orderListView.post {
+                openOrderDetail(order.id, orderStatus = order.status.value, collectPayment = true)
+            }
         }
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
             binding.orderListView.post {
@@ -378,7 +380,7 @@ class OrderListFragment :
         }
     }
 
-    private fun openSimpleOrder(order: Order) {
+    private fun openSimpleOrder(order: Order, ) {
         if (FeatureFlag.SIMPLE_PAYMENT_I2.isEnabled()) {
             // TODO nbradbury - tracks?
             val bundle = Bundle().also {
@@ -390,7 +392,12 @@ class OrderListFragment :
         }
     }
 
-    override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
+    override fun openOrderDetail(
+        orderId: Long,
+        orderStatus: String,
+        sharedView: View?,
+        collectPayment: Boolean
+    ) {
         // Track user clicked to open an order and the status of that order
         AnalyticsTracker.track(
             Stat.ORDER_OPEN,
@@ -414,10 +421,11 @@ class OrderListFragment :
             if (sharedView != null) {
                 showOrderDetailWithSharedTransition(
                     orderId = orderId,
-                    sharedView = sharedView
+                    sharedView = sharedView,
+                    collectPayment = collectPayment
                 )
             } else {
-                showOrderDetail(orderId)
+                showOrderDetail(orderId, collectPayment = collectPayment)
             }
         }
     }

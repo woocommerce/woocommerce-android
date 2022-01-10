@@ -6,6 +6,7 @@ interface OrderListListener {
     fun openOrderDetail(
         orderId: Long,
         orderStatus: String,
-        sharedView: View? = null
+        sharedView: View? = null,
+        collectPayment: Boolean = false
     )
 }
