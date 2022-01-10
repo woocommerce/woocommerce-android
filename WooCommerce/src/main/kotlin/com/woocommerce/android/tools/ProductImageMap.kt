@@ -4,6 +4,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductPayload
 import java.lang.ref.WeakReference
@@ -61,11 +62,13 @@ class ProductImageMap @Inject constructor(
                     // fetch the product, the method also stores it into the local database
                     val result = productStore.fetchSingleProduct(FetchSingleProductPayload(site, remoteProductId))
                     if (!result.isError) {
-                        observers.forEach { weakReference ->
-                            // notify the observer
-                            weakReference.get()?.onProductFetched(remoteProductId)
+                        withContext(dispatchers.main) {
+                            observers.forEach { weakReference ->
+                                // notify the observer
+                                weakReference.get()?.onProductFetched(remoteProductId)
                                 // remove the weak reference if the observer was garbage collected
-                                ?: observers.remove(weakReference)
+                                    ?: observers.remove(weakReference)
+                            }
                         }
                     }
                 }
