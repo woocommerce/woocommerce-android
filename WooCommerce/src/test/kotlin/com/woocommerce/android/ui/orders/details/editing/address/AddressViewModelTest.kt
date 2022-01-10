@@ -36,8 +36,13 @@ class AddressViewModelTest : BaseUnitTest() {
         parentCode = "BR"
     }
 
+    private val countryWithoutStates = WCLocationModel().apply {
+        name = "Country without states"
+        code = "123"
+    }
+
     private val dataStore: WCDataStore = mock {
-        on { getCountries() } doReturn listOf(country)
+        on { getCountries() } doReturn listOf(country, countryWithoutStates)
         on { getStates(country.code) } doReturn listOf(state)
     }
 
@@ -261,7 +266,12 @@ class AddressViewModelTest : BaseUnitTest() {
     fun `Should trigger country selection event if country selector clicked`() {
         addressViewModel.onCountrySpinnerClicked(SHIPPING)
 
-        assertThat(addressViewModel.event.value).isEqualTo(ShowCountrySelector(SHIPPING, listOf(country.toAppModel())))
+        assertThat(addressViewModel.event.value).isEqualTo(
+            ShowCountrySelector(
+                SHIPPING,
+                listOf(country.toAppModel(), countryWithoutStates.toAppModel())
+            )
+        )
     }
 
     @Test
@@ -270,5 +280,70 @@ class AddressViewModelTest : BaseUnitTest() {
         addressViewModel.onStateSpinnerClicked(SHIPPING)
 
         assertThat(addressViewModel.event.value).isEqualTo(ShowStateSelector(SHIPPING, listOf(state.toAppModel())))
+    }
+
+    @Test
+    fun `Should prepare rich billing address if country and state are selected from predefined values`() {
+        // when
+        addressViewModel.onCountrySelected(BILLING, countryCode = country.code)
+        addressViewModel.onStateSelected(BILLING, stateCode = state.code)
+        addressViewModel.onDoneSelected(
+            currentFormsState = mapOf(
+                BILLING to onlyInputFieldsValues,
+                SHIPPING to Address.EMPTY
+            )
+        )
+
+        // then
+        val expectedAddress = onlyInputFieldsValues.copy(country = country.name, state = state.name)
+        assertThat(addressViewModel.event.value).isEqualTo(
+            Exit(
+                billingAddress = expectedAddress,
+                shippingAddress = expectedAddress
+            )
+        )
+    }
+
+    @Test
+    fun `Should prepare rich billing address if state is plain text`() {
+        // given
+        val inputFieldsWithState = onlyInputFieldsValues.copy(state = "plain text state")
+
+        // when
+        addressViewModel.onCountrySelected(BILLING, countryCode = countryWithoutStates.code)
+        addressViewModel.onDoneSelected(
+            currentFormsState = mapOf(
+                BILLING to inputFieldsWithState,
+                SHIPPING to Address.EMPTY
+            )
+        )
+
+        // then
+        val expectedAddress = onlyInputFieldsValues.copy(
+            country = countryWithoutStates.name,
+            state = inputFieldsWithState.state
+        )
+        assertThat(addressViewModel.event.value).isEqualTo(
+            Exit(
+                billingAddress = expectedAddress,
+                shippingAddress = expectedAddress
+            )
+        )
+    }
+
+    companion object {
+        val onlyInputFieldsValues = Address(
+            "Company",
+            "First name",
+            "Last name",
+            "Phone",
+            country = "",
+            state = "",
+            "Address1",
+            "Address2",
+            "City",
+            "Postcode",
+            "Email"
+        )
     }
 }

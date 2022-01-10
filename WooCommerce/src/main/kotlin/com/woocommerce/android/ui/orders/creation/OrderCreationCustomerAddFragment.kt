@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCreationEditCustomerAddressBinding
@@ -36,6 +37,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     }
 
     private val addressViewModel: AddressViewModel by viewModels()
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
 
     private var shippingBinding: LayoutAddressFormBinding? = null
     private var billingBinding: LayoutAddressFormBinding? = null
@@ -88,6 +90,10 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             when (event) {
                 is AddressViewModel.ShowStateSelector -> showStateSearchScreen(event.type, event.states)
                 is AddressViewModel.ShowCountrySelector -> showCountrySearchScreen(event.type, event.countries)
+                is AddressViewModel.Exit -> {
+                    sharedViewModel.onCustomerAddressEdited(event.billingAddress, event.shippingAddress)
+                    findNavController().navigateUp()
+                }
             }
         }
     }
@@ -184,7 +190,12 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                findNavController().navigateUp()
+                addressViewModel.onDoneSelected(
+                    mapOf(
+                        SHIPPING to shippingBinding.textFieldsState,
+                        BILLING to billingBinding.textFieldsState
+                    )
+                )
                 true
             }
             else -> super.onOptionsItemSelected(item)
