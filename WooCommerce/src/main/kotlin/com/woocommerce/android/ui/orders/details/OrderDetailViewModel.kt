@@ -102,6 +102,8 @@ final class OrderDetailViewModel @Inject constructor(
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
 
+    private var didShowSimplePaymentCardReader = false
+
     private val isShippingPluginReady: Boolean by lazy {
         val pluginInfo = orderDetailRepository.getWooServicesPluginInfo()
         pluginInfo.isInstalled && pluginInfo.isActive &&
@@ -130,15 +132,14 @@ final class OrderDetailViewModel @Inject constructor(
                     fetchAndDisplayOrderDetails()
                 }
             }
-        }
 
-        // if the user came to order detail after creating a simple payment and chose to take a card payment,
-        // start the payment flow after a brief delay
-        if (navArgs.collectPayment) {
-            launch {
+            // if the user came to order detail after creating a simple payment and chose to take a card payment,
+            // start the payment flow after a brief delay
+            if (navArgs.collectPayment && !didShowSimplePaymentCardReader) {
                 delay(500)
                 withContext(Dispatchers.Main) {
                     triggerEvent(StartSimplePaymentCardReaderFlow(navArgs.orderId))
+                    didShowSimplePaymentCardReader = true
                 }
             }
         }

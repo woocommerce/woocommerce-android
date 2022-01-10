@@ -66,7 +66,7 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onCardPaymentClicked() {
-        triggerEvent(OrderNavigationTarget.StartSimplePaymentCardReaderFlow())
+        triggerEvent(OrderNavigationTarget.StartSimplePaymentCardReaderFlow(order.id))
     }
 
     suspend fun markOrderCompleted() {
