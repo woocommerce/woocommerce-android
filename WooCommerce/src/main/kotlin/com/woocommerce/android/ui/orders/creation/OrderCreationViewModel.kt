@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import com.woocommerce.android.extensions.mapAsync
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -136,6 +137,13 @@ class OrderCreationViewModel @Inject constructor(
             stockQuantity = stockQuantity ?: 0.0,
             canDecreaseQuantity = quantity >= 2
             // TODO check if we need to disable the plus button depending on stock quantity
+        )
+    }
+
+    fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
+        orderDraft = orderDraft.copy(
+            billingAddress = billingAddress,
+            shippingAddress = shippingAddress
         )
     }
 }

@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-07 17:54:03+0000
+Translation-Revision-Date: 2021-12-29 12:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="order_creation_add_customer_note">Añadir nota</string>
+    <string name="order_creation_customer_note">Nota para el cliente</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Recarga la página después de actualizar</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Se ha instalado una versión obsoleta de la extensión WooCommerce Stripe Payment Gateway en tu tienda. Actualízala para aceptar pagos en persona.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Actualizar WooCommerce Stripe Payment Gateway</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Recargar</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Ya casi has acabado. Termina de configurar WooCommerce Stripe Payment Gateway para empezar a aceptar pagos en persona.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Termina de configurar WooCommerce Stripe Payment Gateway en la administración de tu tienda.</string>
+    <string name="card_reader_payment_failed_unknown">Se ha rechazado el pago por motivos desconocidos.</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">Se ha utilizado una tarjeta real en un sitio que se encuentra en modo de prueba.</string>
+    <string name="card_reader_payment_failed_test_card">No se pueden realizar pagos con las tarjetas de prueba del sistema.</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">Se ha introducido un PIN incorrecto demasiadas veces.</string>
+    <string name="card_reader_payment_failed_pin_required">Esta tarjeta necesita un código PIN y, por lo tanto, no se puede procesar.</string>
+    <string name="card_reader_payment_failed_invalid_amount">La tarjeta presentada no permite realizar un pago por esta cantidad.</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Se ha rechazado el pago porque no hay fondos suficientes.</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">El código postal de la transacción y el de la tarjeta no coinciden.</string>
+    <string name="card_reader_payment_failed_expired_card">La tarjeta ha caducado.</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">Recientemente, se ha emitido una transacción idéntica.</string>
+    <string name="card_reader_payment_failed_currency_not_supported">La tarjeta no admite esta moneda.</string>
+    <string name="card_reader_payment_failed_card_not_supported">La tarjeta no admite este tipo de compras.</string>
+    <string name="card_reader_payment_failed_invalid_account">La tarjeta o la cuenta de la tarjeta no es válida.</string>
+    <string name="card_reader_payment_failed_generic">Se ha rechazado el pago por motivos que no se han especificado.</string>
+    <string name="card_reader_payment_failed_fraud">Prueba otro método de pago.</string>
+    <string name="card_reader_payment_failed_temporary">Es posible que funcione si lo intentas de nuevo.</string>
+    <string name="order_creation_fragment_title">Nuevo pedido</string>
+    <string name="analytics_date_range_selector_description">Selector para el filtro del rango de fechas</string>
+    <string name="analytics_date_range_from_date">o el periodo anterior (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">Desde hace un año</string>
+    <string name="date_timeframe_quarter_to_date">Desde hace un trimestre</string>
+    <string name="date_timeframe_month_to_date">Desde hace un mes</string>
+    <string name="date_timeframe_week_to_date">Desde hace una semana</string>
+    <string name="date_timeframe_last_year">Último año</string>
+    <string name="date_timeframe_last_quarter">Último trimestre</string>
+    <string name="date_timeframe_last_month">Último mes</string>
+    <string name="date_timeframe_last_week">Última semana</string>
     <string name="settings_enable_order_creation_teaser_message">Prueba a crear pedidos con toda la información mientras nos preparamos para la publicación.</string>
     <string name="settings_enable_order_creation_teaser_title">Creación de pedidos</string>
     <string name="settings_enable_simple_payments_teaser_title">Pagos simples</string>
@@ -213,7 +249,7 @@ Language: es
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Se ha instalado una versión obsoleta de la extensión WooCommerce Payments en tu tienda. Actualízala para aceptar Pagos en Persona.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Actualizar WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refrescar</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">Ya casi has acabado. Termina de configurar WooCommerce Payments para empezar a aceptar Pagos con Tarjeta.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Ya casi has acabado. Termina de configurar WooCommerce Payments para empezar a aceptar pagos en persona.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Termina de configurar WooCommerce Payments en la administración de tu tienda</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Recarga la página después de activar</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">La extensión WooCommerce Payments está instalada en tu tienda, pero no está activada. Actívala para aceptar Pagos en Persona.</string>
@@ -291,7 +327,6 @@ Language: es
     <string name="card_reader_connect_multiple_readers_found_header">Se han encontrado varios lectores</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">El pedido ya se ha pagado</string>
     <string name="card_reader_payment_receipt_email_content">¡Gracias por tu compra! Haz clic en el siguiente enlace para obtener el recibo de pago.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">Tarjeta rechazada</string>
     <string name="shipping_label_print_customs_form_download_failed">Error al descargar el formulario de aduanas</string>
     <string name="shipping_label_print_customs_form_screen_title">Imprimir factura de aduanas</string>
     <string name="shipping_label_print_customs_form">Imprimir formulario de aduanas</string>
@@ -1735,6 +1770,18 @@ Language: es
     <string name="all">Todo</string>
     <string name="notification_channel_general_title">General</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>Se está procesando</item>
         <item>Todos los pedidos</item>
