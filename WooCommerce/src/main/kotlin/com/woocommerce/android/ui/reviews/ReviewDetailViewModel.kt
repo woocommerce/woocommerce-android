@@ -37,11 +37,6 @@ class ReviewDetailViewModel @Inject constructor(
         loadProductReview(remoteReviewId, launchedFromNotification)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.onCleanup()
-    }
-
     fun moderateReview(newStatus: ProductReviewStatus) {
         if (networkStatus.isConnected()) {
             viewState.productReview?.let { review ->
@@ -117,7 +112,7 @@ class ReviewDetailViewModel @Inject constructor(
             triggerEvent(MarkNotificationAsRead(it.remoteNoteId))
 
             // send request to mark notification as read to the server
-            repository.markNotificationAsRead(it)
+            repository.markNotificationAsRead(it, remoteReviewId)
 
             if (launchedFromNotification) {
                 // Send the track event that a product review notification was opened
