@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -58,6 +59,10 @@ class TakePaymentViewModel @Inject constructor(
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
         }
+    }
+
+    fun onCardPaymentClicked() {
+        triggerEvent(OrderNavigationTarget.StartCardReaderConnectFlow(skipOnboarding = true))
     }
 
     suspend fun markOrderCompleted() {

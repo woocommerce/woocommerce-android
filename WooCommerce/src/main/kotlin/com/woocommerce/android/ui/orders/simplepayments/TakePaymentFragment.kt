@@ -12,6 +12,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -33,7 +34,7 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
             viewModel.onCashPaymentClicked()
         }
         binding.textCard.setOnClickListener {
-            // TODO nbradbury
+            viewModel.onCardPaymentClicked()
         }
     }
 
@@ -50,6 +51,9 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     }
                     is MultiLiveEvent.Event.Exit -> {
                         findNavController().navigateSafely(R.id.orders)
+                    }
+                    is OrderNavigationTarget.StartCardReaderConnectFlow -> {
+                        // TODO nbradbury
                     }
                 }
             }
