@@ -136,7 +136,8 @@ final class OrderDetailViewModel @Inject constructor(
         }
 
         if (navArgs.collectPayment) {
-            triggerEvent(StartCardReaderPaymentFlow(order.id))
+            triggerEvent(StartCardReaderConnectFlow(skipOnboarding = true))
+            // triggerEvent(StartCardReaderPaymentFlow(order.id))
         }
     }
 

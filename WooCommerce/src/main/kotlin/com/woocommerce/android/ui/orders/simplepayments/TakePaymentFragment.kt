@@ -8,8 +8,8 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.navigateToParentWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -54,8 +54,8 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                         findNavController().navigateSafely(R.id.orders)
                     }
                     is OrderNavigationTarget.StartCardReaderConnectFlow -> {
-                        navigateToParentWithResult(
-                            SimplePaymentsDialog.KEY_SIMPLE_PAYMENTS_RESULT,
+                        navigateBackWithResult(
+                            KEY_SIMPLE_PAYMENTS_CARD_PAYMENT_RESULT,
                             viewModel.order,
                             R.id.orders
                         )
