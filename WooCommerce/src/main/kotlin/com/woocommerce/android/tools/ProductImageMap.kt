@@ -21,7 +21,6 @@ class ProductImageMap @Inject constructor(
     private val productStore: WCProductStore,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val dispatchers: CoroutineDispatchers,
-    private val wcProductStore: WCProductStore,
 ) {
     interface OnProductFetchedListener {
         fun onProductFetched(remoteProductId: Long)
@@ -60,7 +59,7 @@ class ProductImageMap @Inject constructor(
             if (!pendingRequestIds.contains(remoteProductId)) {
                 appCoroutineScope.launch(dispatchers.io) {
                     // fetch the product, the method also stores it into the local database
-                    val result = wcProductStore.fetchSingleProduct(FetchSingleProductPayload(site, remoteProductId))
+                    val result = productStore.fetchSingleProduct(FetchSingleProductPayload(site, remoteProductId))
                     if (!result.isError) {
                         observers.forEach { weakReference ->
                             // notify the observer
