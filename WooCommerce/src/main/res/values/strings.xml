@@ -32,6 +32,7 @@
     <string name="edit">Edit</string>
     <string name="payment">Payment</string>
     <string name="taxes">Taxes</string>
+    <string name="tax">Tax</string>
     <string name="subtotal">Subtotal</string>
     <string name="products_total">Products total</string>
     <string name="discount">Discount</string>
@@ -318,6 +319,9 @@
     <string name="simple_payments_tax_with_percent">Tax (%s%%)</string>
     <string name="simple_payments_tax_message">Taxes are automatically calculated based on your store address</string>
     <string name="simple_payments_choose_method">Choose your payment method</string>
+    <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
+    <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
+    <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <!--
          Order Creation
     -->

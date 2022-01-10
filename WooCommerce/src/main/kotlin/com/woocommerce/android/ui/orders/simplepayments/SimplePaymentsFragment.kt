@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.DecimalFormat
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,9 +34,8 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
         val binding = FragmentSimplePaymentsBinding.bind(view)
         binding.buttonDone.setOnClickListener {
-            // TODO nbradbury - save changes to order
             if (validateEmail(binding.editEmail)) {
-                showTakePaymentScreen()
+                viewModel.onDoneButtonClicked()
             }
         }
 
@@ -76,6 +74,9 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                     is SimplePaymentsFragmentViewModel.ShowCustomerNoteEditor -> {
                         showCustomerNoteEditor()
                     }
+                    is SimplePaymentsFragmentViewModel.ShowTakePaymentScreen -> {
+                        showTakePaymentScreen()
+                    }
                 }
             }
         )
@@ -104,10 +105,6 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                     binding.containerTaxes.isVisible = false
                     binding.textTaxMessage.isVisible = false
                 }
-            }
-            new.orderTaxPercent.takeIfNotEqualTo(old?.orderTaxPercent) { taxPercent ->
-                val df = DecimalFormat("#.##")
-                binding.textTaxLabel.text = getString(R.string.simple_payments_tax_with_percent, df.format(taxPercent))
             }
             new.customerNote.takeIfNotEqualTo(old?.customerNote) { customerNote ->
                 bindNotesSection(binding.notesSection, customerNote)
@@ -142,7 +139,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
     private fun showTakePaymentScreen() {
         SimplePaymentsFragmentDirections
-            .actionSimplePaymentsFragmentToTakePaymentFragment()
+            .actionSimplePaymentsFragmentToTakePaymentFragment(viewModel.orderDraft)
             .let { findNavController().navigateSafely(it) }
     }
 

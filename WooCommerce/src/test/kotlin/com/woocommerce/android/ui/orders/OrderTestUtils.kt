@@ -22,7 +22,6 @@ object OrderTestUtils {
     val TEST_LOCAL_SITE_ID = LocalOrRemoteId.LocalId(1)
     val TEST_REMOTE_ORDER_ID = LocalOrRemoteId.RemoteId(2)
     const val TEST_ORDER_STATUS_COUNT = 20
-    const val ORDER_IDENTIFIER = "1-1-1"
 
     /**
      * Generates an array containing multiple [WCOrderModel] objects.
@@ -303,7 +302,7 @@ object OrderTestUtils {
         ).toAppModel()
     }
 
-    fun generateOrderWithFee(): WCOrderModel {
+    fun generateOrderWithFee(remoteOrderId: Long = 1L): WCOrderModel {
         val lineItems = "[{\n" +
             "    \"id\":1,\n" +
             "    \"name\":\"A test\",\n" +
@@ -327,7 +326,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = LocalOrRemoteId.LocalId(1),
-            remoteOrderId = LocalOrRemoteId.RemoteId(1L),
+            remoteOrderId = LocalOrRemoteId.RemoteId(remoteOrderId),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -352,7 +351,7 @@ object OrderTestUtils {
         )
     }
 
-    fun generateOrderWithMultipleShippingLines(): WCOrderModel {
+    fun generateOrderWithMultipleShippingLines(remoteOrderId: Long = 1): WCOrderModel {
         return WCOrderModel(
             id = 1,
             billingFirstName = "Carissa",
@@ -360,7 +359,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = LocalOrRemoteId.LocalId(1),
-            remoteOrderId = LocalOrRemoteId.RemoteId(1L),
+            remoteOrderId = LocalOrRemoteId.RemoteId(remoteOrderId),
             number = "55",
             status = "pending",
             total = "106.00",
