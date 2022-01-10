@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@+id/cardReaderConnectDialogFragment"
+    android:id="@+id/nav_graph_simple_payments_card_payment">
+
+    <dialog
+        android:id="@+id/cardReaderPaymentDialog"
+        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
+        android:label="CardReaderPaymentDialog">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/cardReaderConnectDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
+        android:label="CardReaderConnectDialogFragment">
+        <argument
+            android:name="skipOnboarding"
+            app:argType="boolean"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
+            app:destination="@id/cardReaderTutorialDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
+            app:destination="@id/cardReaderUpdateDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment"
+            app:destination="@id/cardReaderOnboardingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+    </dialog>
+</navigation>
