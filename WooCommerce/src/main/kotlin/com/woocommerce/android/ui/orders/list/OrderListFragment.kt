@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.O
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog.Companion.KEY_SIMPLE_PAYMENTS_RESULT
+import com.woocommerce.android.ui.orders.simplepayments.TakePaymentFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -326,6 +327,9 @@ class OrderListFragment :
             binding.orderListView.post {
                 openSimpleOrder(order)
             }
+        }
+        handleResult<Order>(TakePaymentFragment.KEY_SIMPLE_PAYMENTS_CARD_PAYMENT_RESULT) { order ->
+            // TODO nbradbury
         }
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
             binding.orderListView.post {

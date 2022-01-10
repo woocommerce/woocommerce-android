@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.orders.simplepayments
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.room.FtsOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
@@ -31,8 +33,11 @@ class TakePaymentViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val navArgs: TakePaymentFragmentArgs by savedState.navArgs()
 
+    val order: Order
+        get() = navArgs.order
+
     val orderTotal: BigDecimal
-        get() = navArgs.order.total
+        get() = order.total
 
     fun onCashPaymentClicked() {
         triggerEvent(
