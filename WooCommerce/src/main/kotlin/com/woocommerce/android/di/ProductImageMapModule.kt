@@ -18,6 +18,5 @@ class ProductImageMapModule {
         productStore: WCProductStore,
         @AppCoroutineScope appCoroutineScope: CoroutineScope,
         coroutineDispatchers: CoroutineDispatchers,
-        wcProductStore: WCProductStore,
-    ) = ProductImageMap(selectedSite, productStore, appCoroutineScope, coroutineDispatchers, wcProductStore)
+    ) = ProductImageMap(selectedSite, productStore, appCoroutineScope, coroutineDispatchers)
 }
