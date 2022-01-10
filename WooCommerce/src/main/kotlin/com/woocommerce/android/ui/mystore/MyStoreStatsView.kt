@@ -74,7 +74,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var skeletonView = SkeletonView()
 
     private lateinit var lastUpdatedRunnable: Runnable
-    private val lastUpdatedHandler = Handler(Looper.getMainLooper())
+    private var lastUpdatedHandler: Handler? = null
     private var lastUpdated: Date? = null
 
     private var isRequestingStats = false
@@ -122,9 +122,10 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         initChart()
 
+        lastUpdatedHandler = Handler(Looper.getMainLooper())
         lastUpdatedRunnable = Runnable {
             updateRecencyMessage()
-            lastUpdatedHandler.postDelayed(
+            lastUpdatedHandler?.postDelayed(
                 lastUpdatedRunnable,
                 UPDATE_DELAY_TIME_MS
             )
@@ -152,7 +153,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         if (visibility == View.VISIBLE) {
             updateRecencyMessage()
         } else {
-            lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+            lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
         }
     }
 
@@ -499,10 +500,10 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private fun updateRecencyMessage() {
         binding.dashboardRecencyText.text = getRecencyMessage()
-        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+        lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
 
         if (lastUpdated != null) {
-            lastUpdatedHandler.postDelayed(
+            lastUpdatedHandler?.postDelayed(
                 lastUpdatedRunnable,
                 UPDATE_DELAY_TIME_MS
             )
