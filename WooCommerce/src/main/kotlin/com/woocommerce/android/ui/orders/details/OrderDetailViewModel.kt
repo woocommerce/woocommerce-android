@@ -37,11 +37,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -135,8 +132,15 @@ final class OrderDetailViewModel @Inject constructor(
             }
         }
 
+        // if the user came to order detail after creating a simple payment and chose to take a card payment,
+        // start the payment flow after a brief delay
         if (navArgs.collectPayment) {
-            triggerEvent(StartSimplePaymentCardReaderFlow(navArgs.orderId))
+            launch {
+                delay(500)
+                withContext(Dispatchers.Main) {
+                    triggerEvent(StartSimplePaymentCardReaderFlow(navArgs.orderId))
+                }
+            }
         }
     }
 
