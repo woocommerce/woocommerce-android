@@ -405,7 +405,6 @@ class MyStoreStatsView @JvmOverloads constructor(
             with(xAxis) {
                 labelCount = getChartXAxisLabelCount()
                 valueFormatter = StartEndDateAxisFormatter()
-
             }
             with(axisLeft) {
                 if (minRevenue < 0) {
