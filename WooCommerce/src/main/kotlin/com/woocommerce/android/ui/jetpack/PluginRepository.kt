@@ -39,7 +39,7 @@ class PluginRepository @Inject constructor(
     companion object {
         const val GENERIC_ERROR = "Unknown issue."
         const val ATTEMPT_LIMIT = 2
-        const val SYNC_CHECK_DELAY = 1000L
+        const val SYNC_CHECK_DELAY = 3000L
     }
 
     init {
