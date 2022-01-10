@@ -242,6 +242,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                     is ShowUndoSnackbar -> {
                         displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                     }
+                    is OrderNavigationTarget.StartSimplePaymentCardReaderFlow -> {
+                        cardReaderManager.let {
+                            viewModel.startSimplePaymentCardReaderFlow(it)
+                        }
+                    }
                     is OrderNavigationTarget -> navigator.navigate(this, event)
                     else -> event.isHandled = false
                 }

@@ -53,7 +53,7 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     is MultiLiveEvent.Event.Exit -> {
                         findNavController().navigateSafely(R.id.orders)
                     }
-                    is OrderNavigationTarget.StartCardReaderConnectFlow -> {
+                    is OrderNavigationTarget.StartSimplePaymentCardReaderFlow -> {
                         navigateBackWithResult(
                             KEY_SIMPLE_PAYMENTS_CARD_PAYMENT_RESULT,
                             viewModel.order,

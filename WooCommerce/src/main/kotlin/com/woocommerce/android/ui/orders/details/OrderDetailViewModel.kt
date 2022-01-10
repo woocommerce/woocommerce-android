@@ -136,8 +136,7 @@ final class OrderDetailViewModel @Inject constructor(
         }
 
         if (navArgs.collectPayment) {
-            triggerEvent(StartCardReaderConnectFlow(skipOnboarding = true))
-            // triggerEvent(StartCardReaderPaymentFlow(order.id))
+            triggerEvent(StartSimplePaymentCardReaderFlow(navArgs.orderId))
         }
     }
 
@@ -226,6 +225,14 @@ final class OrderDetailViewModel @Inject constructor(
             else -> {
                 triggerEvent(StartCardReaderConnectFlow(skipOnboarding = false))
             }
+        }
+    }
+
+    fun startSimplePaymentCardReaderFlow(cardReaderManager: CardReaderManager) {
+        if (cardReaderManager.readerStatus.value is Connected) {
+            triggerEvent(StartCardReaderPaymentFlow(order.id))
+        } else {
+            triggerEvent(StartCardReaderConnectFlow(skipOnboarding = true))
         }
     }
 
