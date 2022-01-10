@@ -187,7 +187,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         return context.resources.getDimensionPixelSize(resId)
     }
 
-    private fun getBarLabelCount(): Int {
+    private fun getChartXAxisLabelCount(): Int {
         val resId = when (activeGranularity) {
             StatsGranularity.DAYS -> R.integer.stats_label_count_days
             StatsGranularity.WEEKS -> R.integer.stats_label_count_weeks
@@ -395,11 +395,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         // determine the min revenue so we can set the min value for the left axis, which should be zero unless
         // the stats contain any negative revenue
-        var minRevenue = 0f
-        for (value in dataSet.values) {
-            if (value.y < minRevenue) minRevenue = value.y
-        }
-
+        val minRevenue = dataSet.values.minOf { it.y }
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(binding.chart) {
             data = LineData(dataSet)
@@ -407,20 +403,12 @@ class MyStoreStatsView @JvmOverloads constructor(
                 animateY(duration)
             }
             with(xAxis) {
-                // Added axis minimum offset & axis max offset in order to align the bar chart with the x-axis labels
-                // Related fix: https://github.com/PhilJay/MPAndroidChart/issues/2566
-                val axisValue = 0.5f
-                axisMinimum = data.xMin - axisValue
-                axisMaximum = data.xMax + axisValue
-                labelCount = getBarLabelCount()
-                setCenterAxisLabels(false)
+                labelCount = getChartXAxisLabelCount()
                 valueFormatter = StartEndDateAxisFormatter()
-                yOffset = if (minRevenue < 0f) {
-                    resources.getDimension(R.dimen.chart_axis_bottom_padding)
-                } else 0f
+
             }
             with(axisLeft) {
-                if (minRevenue < 0f) {
+                if (minRevenue < 0) {
                     setDrawZeroLine(true)
                     zeroLineColor = ContextCompat.getColor(context, R.color.divider_color)
                 }
@@ -432,7 +420,6 @@ class MyStoreStatsView @JvmOverloads constructor(
             dot.setOffset(offset, offset)
             marker = dot
         }
-
         resetLastUpdated()
         isRequestingStats = false
     }
@@ -583,7 +570,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                 // if this is the first entry in the chart, then display the month as well as the date
                 // for weekly and monthly stats
                 val dateString = chartRevenueStats.keys.elementAt(index)
-                if (index == 0) {
+                if (value == binding.chart.xAxis.mEntries.first()) {
                     getEntryValue(dateString)
                 } else {
                     getLabelValue(dateString)
