@@ -34,8 +34,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -50,9 +48,7 @@ class MainPresenterTest : BaseUnitTest() {
 
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
-    private val siteStore: SiteStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val notificationStore: NotificationStore = mock()
     private val selectedSite: SelectedSite = mock {
         val siteModel = SiteModel()
         on { get() } doReturn siteModel
@@ -76,9 +72,7 @@ class MainPresenterTest : BaseUnitTest() {
             MainPresenter(
                 dispatcher,
                 accountStore,
-                siteStore,
                 wooCommerceStore,
-                notificationStore,
                 selectedSite,
                 productImageMap,
                 appPrefs,
