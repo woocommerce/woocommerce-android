@@ -1047,14 +1047,14 @@
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Refresh after updating</string>
 
 
-    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
+    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_rejected_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
 
     <string name="card_reader_onboarding_account_under_review_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_under_review_hint">You\’ll be able to accept In-Person Payments as soon as we finish reviewing your account.</string>
 
     <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments.</string>
 
     <string name="card_reader_onboarding_account_pending_requirements_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
