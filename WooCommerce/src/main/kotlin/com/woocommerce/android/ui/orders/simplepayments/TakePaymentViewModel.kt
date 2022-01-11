@@ -104,7 +104,7 @@ class TakePaymentViewModel @Inject constructor(
         }
     }
 
-    suspend private fun markOrderCompleted() {
+    private suspend fun markOrderCompleted() {
         val status = withContext(dispatchers.io) {
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), CoreOrderStatus.COMPLETED.value)
                 ?: error("Couldn't find a status with key ${CoreOrderStatus.COMPLETED.value}")
