@@ -5,7 +5,6 @@ import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -15,7 +14,6 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
-import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -56,24 +54,26 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                         findNavController().navigateSafely(R.id.orders)
                     }
                     is OrderNavigationTarget.StartCardReaderConnectFlow -> {
-                        switchToCardReaderGraph(R.id.simplePayment_cardReaderConnectDialogFragment)
+                        val bundle = Bundle().also { it.putBoolean("skipOnboarding", true)}
+                        switchToCardReaderGraph(R.id.cardReaderConnectDialogFragment, bundle)
                     }
                     is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
-                        switchToCardReaderGraph(R.id.simplePayment_cardReaderPaymentDialog)
+                        val bundle = Bundle().also { it.putLong("orderId", viewModel.order.id)}
+                        switchToCardReaderGraph(R.id.cardReaderPaymentDialog, bundle)
                     }
                 }
             }
         )
     }
 
-    private fun switchToCardReaderGraph(@IdRes startDestinationId: Int, directions: NavDirections? = null) {
+    private fun switchToCardReaderGraph(@IdRes startDestinationId: Int, bundle: Bundle) {
         val navController = findNavController()
         if (findNavController().graph.id == R.navigation.nav_graph_simple_payments_card_payment) {
-            navController.navigateSafely(startDestinationId, directions)
+            navController.navigateSafely(startDestinationId, bundle)
         } else {
             val graph = navController.navInflater.inflate(R.navigation.nav_graph_simple_payments_card_payment)
             graph.setStartDestination(startDestinationId)
-            navController.setGraph(graph, directions?.arguments)
+            navController.setGraph(graph, bundle)
         }
     }
 
