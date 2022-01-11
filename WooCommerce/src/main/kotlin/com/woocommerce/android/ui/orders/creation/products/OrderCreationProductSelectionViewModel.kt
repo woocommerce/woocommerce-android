@@ -64,12 +64,18 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
 
     fun onSearchQuerySubmitted(query: String) {
         viewState = viewState.copy(query = query)
+        launch {
+            productListRepository.searchProductList(query)
+                ?.takeIf { query == productListRepository.lastSearchQuery }
+                ?.let { productList.value = it }
+        }
 
     }
 
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
+        val isSearchActive: Boolean? = null,
         val query: String? = null
     ) : Parcelable
 
