@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:startDestination="@+id/cardReaderConnectDialogFragment"
-    android:id="@+id/nav_graph_simple_payments_card_payment">
-
-    <dialog
-        android:id="@+id/cardReaderPaymentDialog"
-        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
-        android:label="CardReaderPaymentDialog">
-        <argument
-            android:name="orderId"
-            app:argType="long" />
-    </dialog>
+    android:id="@+id/nav_graph_simple_payments_card_payment"
+    app:startDestination="@+id/cardReaderConnectDialogFragment">
 
     <dialog
         android:id="@+id/cardReaderConnectDialogFragment"
@@ -19,8 +10,8 @@
         android:label="CardReaderConnectDialogFragment">
         <argument
             android:name="skipOnboarding"
-            app:argType="boolean"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
             app:destination="@id/cardReaderTutorialDialogFragment"
@@ -56,7 +47,7 @@
     <dialog
         android:id="@+id/cardReaderUpdateDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
-        android:label="CardReaderUpdateDialogFragment" >
+        android:label="CardReaderUpdateDialogFragment">
         <argument
             android:name="requiredUpdate"
             android:defaultValue="false"

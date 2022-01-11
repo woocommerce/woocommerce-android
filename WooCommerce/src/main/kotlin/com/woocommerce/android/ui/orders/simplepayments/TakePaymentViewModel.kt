@@ -15,6 +15,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,8 +32,7 @@ class TakePaymentViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
     private val dispatchers: CoroutineDispatchers,
-    private val networkStatus: NetworkStatus,
-    private val cardReaderManager: CardReaderManager
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
     private val navArgs: TakePaymentFragmentArgs by savedState.navArgs()
     private var paymentFlowJob: Job? = null
@@ -70,11 +70,22 @@ class TakePaymentViewModel @Inject constructor(
         }
     }
 
-    fun onCardPaymentClicked() {
+    fun onCardPaymentClicked(cardReaderManager: CardReaderManager) {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected && paymentFlowJob == null) {
             triggerEvent(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id))
         } else {
             triggerEvent(OrderNavigationTarget.StartCardReaderConnectFlow(skipOnboarding = true))
+        }
+    }
+
+    fun onConnectToReaderResultReceived(connected: Boolean) {
+        launch {
+            // this dummy delay needs to be here since the navigation component hasn't finished the previous
+            // transaction when a result is received
+            delay(1)
+            if (connected) {
+                triggerEvent(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id))
+            }
         }
     }
 

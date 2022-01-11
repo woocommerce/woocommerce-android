@@ -268,6 +268,23 @@
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
     <include app:graph="@navigation/nav_graph_order_creations" />
+
+    <!--
+        This section is used for taking a payment in the simple payments flow
+    -->
+    <action
+        android:id="@+id/action_global_card_reader_payment_dialog"
+        app:destination="@+id/cardReaderPaymentDialog"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out" />
+    <dialog
+        android:id="@+id/cardReaderPaymentDialog"
+        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
+        android:label="CardReaderPaymentDialog">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+    </dialog>
     <include app:graph="@navigation/nav_graph_simple_payments_card_payment" />
 
     <fragment

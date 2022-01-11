@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.IdRes
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -10,11 +9,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -31,13 +32,15 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         super.onViewCreated(view, savedInstanceState)
 
         setUpObservers()
+        setupResultHandlers()
+
         val binding = FragmentTakePaymentBinding.bind(view)
 
         binding.textCash.setOnClickListener {
             viewModel.onCashPaymentClicked()
         }
         binding.textCard.setOnClickListener {
-            viewModel.onCardPaymentClicked()
+            viewModel.onCardPaymentClicked(cardReaderManager)
         }
     }
 
@@ -57,27 +60,20 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     }
                     is OrderNavigationTarget.StartCardReaderConnectFlow -> {
                         val action = TakePaymentFragmentDirections.takePaymentFragmentToCardReaderGraph()
-                        findNavController().navigate(action)
-                        // val bundle = Bundle().also { it.putBoolean("skipOnboarding", true)}
-                        // switchToCardReaderGraph(R.id.cardReaderConnectDialogFragment, bundle)
+                        findNavController().navigateSafely(action)
                     }
                     is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
-                        val bundle = Bundle().also { it.putLong("orderId", viewModel.order.id)}
-                        switchToCardReaderGraph(R.id.cardReaderPaymentDialog, bundle)
+                        val bundle = Bundle().also { it.putLong("orderId", viewModel.order.id) }
+                        findNavController().navigateSafely(R.id.action_global_card_reader_payment_dialog, bundle)
                     }
                 }
             }
         )
     }
 
-    private fun switchToCardReaderGraph(@IdRes startDestinationId: Int, bundle: Bundle) {
-        val navController = findNavController()
-        if (findNavController().graph.id == R.navigation.nav_graph_simple_payments_card_payment) {
-            navController.navigateSafely(startDestinationId, bundle)
-        } else {
-            val graph = navController.navInflater.inflate(R.navigation.nav_graph_simple_payments_card_payment)
-            graph.setStartDestination(startDestinationId)
-            navController.setGraph(graph, bundle)
+    private fun setupResultHandlers() {
+        handleResult<Boolean>(CardReaderConnectDialogFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
+            viewModel.onConnectToReaderResultReceived(connected)
         }
     }
 
