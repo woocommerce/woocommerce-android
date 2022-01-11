@@ -10,9 +10,9 @@ object OrderCreationNavigator {
         val navController = fragment.findNavController()
 
         val action = when (target) {
-            EditCustomer ->
+            is EditCustomer ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
-            EditCustomerNote ->
+            is EditCustomerNote ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             AddProduct ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
