@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -12,6 +13,7 @@ import com.woocommerce.android.databinding.FragmentTakePaymentBinding
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -33,20 +35,26 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setUpObservers()
-        setupResultHandlers()
-
         val binding = FragmentTakePaymentBinding.bind(view)
-
         binding.textCash.setOnClickListener {
             viewModel.onCashPaymentClicked()
         }
         binding.textCard.setOnClickListener {
             viewModel.onCardPaymentClicked(cardReaderManager)
         }
+
+        setUpObservers(binding)
+        setupResultHandlers()
     }
 
-    private fun setUpObservers() {
+    private fun setUpObservers(binding: FragmentTakePaymentBinding) {
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isProgressShowing?.takeIfNotEqualTo(old?.isProgressShowing) { showProgress ->
+                binding.progressBar.isVisible = showProgress
+                binding.container.isEnabled = !showProgress
+            }
+        }
+
         viewModel.event.observe(
             viewLifecycleOwner,
             { event ->
@@ -61,7 +69,7 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                         findNavController().navigateSafely(R.id.orders)
                     }
                     is OrderNavigationTarget.StartCardReaderConnectFlow -> {
-                        val action = TakePaymentFragmentDirections.takePaymentFragmentToCardReaderGraph()
+                        val action = TakePaymentFragmentDirections.takePaymentFragmentToCardReaderConnectGraph()
                         findNavController().navigateSafely(action)
                     }
                     is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
@@ -80,7 +88,7 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
 
         handleDialogNotice<String>(
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
-            entryId = R.id.orderDetailFragment
+            entryId = R.id.takePaymentFragment
         ) {
             viewModel.onCardReaderPaymentCompleted()
         }

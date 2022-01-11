@@ -58,8 +58,8 @@
             app:argType="com.woocommerce.android.model.Order"
             app:nullable="false" />
         <action
-            android:id="@+id/takePaymentFragment_to_cardReader_graph"
-            app:destination="@+id/nav_graph_simple_payments_card_payment"
+            android:id="@+id/takePaymentFragment_to_cardReaderConnect_graph"
+            app:destination="@+id/nav_graph_simple_payments_card_connect"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
