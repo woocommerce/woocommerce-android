@@ -90,6 +90,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     }
 
     fun showSkeleton(show: Boolean) {
+        val show = true
         if (show) {
             skeletonView.show(
                 binding.dashboardTopPerformersContainer,
@@ -99,6 +100,9 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         } else {
             skeletonView.hide()
         }
+        binding.topPerformersTitle.isVisible = !show
+        binding.topPerformersDescription.isVisible = !show
+        binding.topPerformersListHeader.isVisible = !show
     }
 
     private fun showEmptyView(show: Boolean) {

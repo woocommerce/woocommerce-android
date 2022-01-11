@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.MarkerImage
-import com.github.mikephil.charting.components.XAxis.XAxisPosition
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -157,6 +157,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun showSkeleton(show: Boolean) {
+        val show = true
         if (show) {
             // inflate the skeleton view and adjust the bar widths based on the granularity
             val inflater = LayoutInflater.from(context)
@@ -170,7 +171,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         } else {
             skeletonView.hide()
         }
-        binding.statsViewRow.statsHeaderLinearlayout.isVisible = !show
+        binding.statsViewRow.statsHeaderLinearlayout.visibility = GONE
     }
 
     private fun getChartXAxisLabelCount(): Int {
@@ -193,7 +194,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun initChart() {
         with(binding.chart) {
             with(xAxis) {
-                position = XAxisPosition.BOTTOM
+                position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
                 granularity = 1f // Don't break x axis values down further than 1 unit of time

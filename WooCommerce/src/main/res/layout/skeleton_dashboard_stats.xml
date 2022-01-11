@@ -5,8 +5,7 @@
     android:layout_gravity="center_horizontal"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingTop="@dimen/major_200"
-    android:paddingBottom="@dimen/major_300">
+    android:paddingTop="@dimen/major_200">
 
     <View
         android:layout_width="104dp"
