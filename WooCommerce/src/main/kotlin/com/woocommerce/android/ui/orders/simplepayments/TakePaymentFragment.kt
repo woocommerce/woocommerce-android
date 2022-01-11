@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -73,8 +74,10 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                         findNavController().navigateSafely(action)
                     }
                     is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
-                        val bundle = Bundle().also { it.putLong("orderId", viewModel.order.id) }
-                        findNavController().navigateSafely(R.id.action_global_card_reader_payment_dialog, bundle)
+                        val action = NavGraphMainDirections.actionGlobalCardReaderPaymentDialog(
+                            viewModel.order.id
+                        )
+                        findNavController().navigateSafely(action)
                     }
                 }
             }
