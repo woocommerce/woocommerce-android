@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 09:54:03+0000
+Translation-Revision-Date: 2021-12-21 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="order_creation_add_customer_note">新增備註</string>
+    <string name="order_creation_customer_note">顧客備註</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">在更新後重新整理</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">貴店安裝的 WooCommerce Stripe Payment Gateway 擴充功能版本已過期。 若要使用親自收款功能，請更新擴充功能。</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">更新 WooCommerce Stripe Payment Gateway</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">更新</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">快完成了！ 請完成 WooCommerce Stripe Payment Gateway 設定以開始接受親自收款。</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">在商店管理員中完成 WooCommerce Stripe Payment Gateway 設定</string>
+    <string name="card_reader_payment_failed_unknown">付款因不明原因遭拒</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">在測試模式下的網站上使用了有效信用卡</string>
+    <string name="card_reader_payment_failed_test_card">不允許使用系統測試卡片付款</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">錯誤的 PIN 輸入次數過多</string>
+    <string name="card_reader_payment_failed_pin_required">這張卡片需要 PIN 碼，因此無法處理</string>
+    <string name="card_reader_payment_failed_invalid_amount">顯示的卡片不允許該支付金額</string>
+    <string name="card_reader_payment_failed_insufficient_funds">因餘額不足導致付款遭拒</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">交易郵遞區號和卡片郵遞區號不符</string>
+    <string name="card_reader_payment_failed_expired_card">卡片已到期</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">近期有一筆完全相同的交易</string>
+    <string name="card_reader_payment_failed_currency_not_supported">卡片不支援此幣別</string>
+    <string name="card_reader_payment_failed_card_not_supported">卡片不支援這類購買項目</string>
+    <string name="card_reader_payment_failed_invalid_account">卡片或卡片帳號無效</string>
+    <string name="card_reader_payment_failed_generic">付款因不明原因遭拒</string>
+    <string name="card_reader_payment_failed_fraud">請嘗試其他付款方式</string>
+    <string name="card_reader_payment_failed_temporary">再試一次可能會成功</string>
+    <string name="order_creation_fragment_title">新訂單</string>
+    <string name="analytics_date_range_selector_description">日期範圍篩選條件選取器</string>
+    <string name="analytics_date_range_from_date">vs 上個期間 (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">年初至今</string>
+    <string name="date_timeframe_quarter_to_date">季度初至今</string>
+    <string name="date_timeframe_month_to_date">月初至今</string>
+    <string name="date_timeframe_week_to_date">週初至今</string>
+    <string name="date_timeframe_last_year">去年</string>
+    <string name="date_timeframe_last_quarter">上個季度</string>
+    <string name="date_timeframe_last_month">上個月</string>
+    <string name="date_timeframe_last_week">上週</string>
     <string name="settings_enable_order_creation_teaser_message">測試即將推出的「建立完整詳細資訓的訂單」功能</string>
     <string name="settings_enable_order_creation_teaser_title">建立訂單</string>
     <string name="settings_enable_simple_payments_teaser_title">輕鬆付款</string>
@@ -213,7 +249,6 @@ Language: zh_TW
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">貴店安裝的 WooCommerce Payments 擴充功能版本已過期。 若要使用親自收款功能，請更新擴充功能。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">更新 WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">重新整理</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">快完成了！ 請完成 WooCommerce Payments 設定以開始接受卡片付款。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">在商店管理員中完成 WooCommerce Payments 設定</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">在啟用後重新整理</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">貴店已安裝 WooCommerce Payments 擴充功能，但尚未啟用。 若要使用親自收款功能，請啟用此擴充功能。</string>
@@ -291,7 +326,6 @@ Language: zh_TW
     <string name="card_reader_connect_multiple_readers_found_header">找到數個讀卡機</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">此訂單已付款</string>
     <string name="card_reader_payment_receipt_email_content">感謝你的購買！ 點按下方連結即可查看付款收據。\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">卡片遭到拒絕</string>
     <string name="shipping_label_print_customs_form_download_failed">下載海關表格時發生錯誤</string>
     <string name="shipping_label_print_customs_form_screen_title">列印海關發票</string>
     <string name="shipping_label_print_customs_form">列印海關表格</string>
@@ -1735,6 +1769,18 @@ Language: zh_TW
     <string name="all">全部</string>
     <string name="notification_channel_general_title">一般</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>處理中</item>
         <item>全部訂單</item>

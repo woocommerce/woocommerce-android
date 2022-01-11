@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
+import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,10 +47,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun FragmentOrderCreationFormBinding.initView() {
-        orderStatusView.customizeViewBehavior(
-            displayOrderNumber = false,
-            editActionAsText = true,
-            customEditClickListener = {
+        orderStatusView.initView(
+            mode = OrderDetailOrderStatusView.Mode.OrderCreation,
+            editOrderStatusClickListener = {
                 sharedViewModel.orderStatusData.value?.let {
                     formViewModel.onEditOrderStatusClicked(it)
                 }
