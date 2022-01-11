@@ -231,7 +231,7 @@ final class OrderDetailViewModel @Inject constructor(
      * payment and chose to take a card payment
      */
     fun checkSimplePaymentCardReaderFlow(cardReaderManager: CardReaderManager) {
-        if (navArgs.collectPayment && !didShowSimplePaymentCardReader) {
+        if (navArgs.collectPayment && !didShowSimplePaymentCardReader && order.status == Order.Status.Pending) {
             if (cardReaderManager.readerStatus.value is Connected) {
                 triggerEvent(StartCardReaderPaymentFlow(order.id))
             } else {

@@ -20,27 +20,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
-import com.woocommerce.android.extensions.handleDialogNotice
-import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.handleNotice
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.show
-import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.extensions.whenNotNullNorEmpty
-import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABELS_M4
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.*
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -149,7 +134,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             getString(R.string.order_card_detail_transition_name)
         )
 
-        viewModel.checkSimplePaymentCardReaderFlow(cardReaderManager)
+        binding.root.post {
+            viewModel.checkSimplePaymentCardReaderFlow(cardReaderManager)
+        }
     }
 
     override fun onDestroyView() {
