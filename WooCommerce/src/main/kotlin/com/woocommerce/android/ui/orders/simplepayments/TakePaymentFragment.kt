@@ -8,6 +8,7 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -24,6 +25,7 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var cardReaderManager: CardReaderManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,8 +56,10 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                         findNavController().navigateSafely(R.id.orders)
                     }
                     is OrderNavigationTarget.StartCardReaderConnectFlow -> {
-                        val bundle = Bundle().also { it.putBoolean("skipOnboarding", true)}
-                        switchToCardReaderGraph(R.id.cardReaderConnectDialogFragment, bundle)
+                        val action = TakePaymentFragmentDirections.takePaymentFragmentToCardReaderGraph()
+                        findNavController().navigate(action)
+                        // val bundle = Bundle().also { it.putBoolean("skipOnboarding", true)}
+                        // switchToCardReaderGraph(R.id.cardReaderConnectDialogFragment, bundle)
                     }
                     is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
                         val bundle = Bundle().also { it.putLong("orderId", viewModel.order.id)}

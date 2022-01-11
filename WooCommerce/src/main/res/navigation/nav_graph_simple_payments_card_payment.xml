@@ -20,7 +20,7 @@
         <argument
             android:name="skipOnboarding"
             app:argType="boolean"
-            app:nullable="false" />
+            android:defaultValue="true" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
             app:destination="@id/cardReaderTutorialDialogFragment"
