@@ -84,30 +84,30 @@ class CardReaderOnboardingViewModel @Inject constructor(
                             )
                     }
                 CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount ->
-                    viewState.value = OnboardingViewState.WCStripeError.WCPayInTestModeWithLiveAccountState(
+                    viewState.value = OnboardingViewState.StripeAcountError.WCPayInTestModeWithLiveAccountState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.StripeAccountUnderReview ->
-                    viewState.value = OnboardingViewState.WCStripeError.WCPayAccountUnderReviewState(
+                    viewState.value = OnboardingViewState.StripeAcountError.StripeAccountUnderReviewState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 is CardReaderOnboardingState.StripeAccountPendingRequirement ->
-                    viewState.value = OnboardingViewState.WCStripeError
-                        .WCPayAccountPendingRequirementsState(
+                    viewState.value = OnboardingViewState.StripeAcountError
+                        .StripeAccountPendingRequirementsState(
                             onContactSupportActionClicked = ::onContactSupportClicked,
                             onLearnMoreActionClicked = ::onLearnMoreClicked,
                             onButtonActionClicked = ::onSkipPendingRequirementsClicked,
                             dueDate = formatDueDate(state)
                         )
                 CardReaderOnboardingState.StripeAccountOverdueRequirement ->
-                    viewState.value = OnboardingViewState.WCStripeError.WCPayAccountOverdueRequirementsState(
+                    viewState.value = OnboardingViewState.StripeAcountError.StripeAccountOverdueRequirementsState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
                 CardReaderOnboardingState.StripeAccountRejected ->
-                    viewState.value = OnboardingViewState.WCStripeError.WCPayAccountRejectedState(
+                    viewState.value = OnboardingViewState.StripeAcountError.StripeAccountRejectedState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
@@ -274,7 +274,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             )
         }
 
-        sealed class WCStripeError(
+        sealed class StripeAcountError(
             val headerLabel: UiString,
             val hintLabel: UiString,
             val buttonLabel: UiString? = null
@@ -290,26 +290,26 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val learnMoreLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
 
-            data class WCPayAccountUnderReviewState(
+            data class StripeAccountUnderReviewState(
                 override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit
-            ) : WCStripeError(
+            ) : StripeAcountError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint),
             )
 
-            data class WCPayAccountRejectedState(
+            data class StripeAccountRejectedState(
                 override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit
-            ) : WCStripeError(
+            ) : StripeAcountError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
             )
 
-            data class WCPayAccountOverdueRequirementsState(
+            data class StripeAccountOverdueRequirementsState(
                 override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit
-            ) : WCStripeError(
+            ) : StripeAcountError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
             )
@@ -317,19 +317,19 @@ class CardReaderOnboardingViewModel @Inject constructor(
             data class WCPayInTestModeWithLiveAccountState(
                 override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit
-            ) : WCStripeError(
+            ) : StripeAcountError(
                 headerLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_header),
                 hintLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint)
             )
 
-            data class WCPayAccountPendingRequirementsState(
+            data class StripeAccountPendingRequirementsState(
                 override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit,
                 override val onButtonActionClicked: () -> Unit,
                 val dueDate: String
-            ) : WCStripeError(
+            ) : StripeAcountError(
                 headerLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header),
                 hintLabel = UiString.UiStringRes(
