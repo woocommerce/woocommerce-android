@@ -380,7 +380,7 @@ class OrderListFragment :
         }
     }
 
-    private fun openSimpleOrder(order: Order, ) {
+    private fun openSimpleOrder(order: Order) {
         if (FeatureFlag.SIMPLE_PAYMENT_I2.isEnabled()) {
             // TODO nbradbury - tracks?
             val bundle = Bundle().also {

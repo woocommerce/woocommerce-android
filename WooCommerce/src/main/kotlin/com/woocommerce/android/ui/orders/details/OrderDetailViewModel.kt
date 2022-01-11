@@ -37,8 +37,11 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -132,16 +135,6 @@ final class OrderDetailViewModel @Inject constructor(
                     fetchAndDisplayOrderDetails()
                 }
             }
-
-            // if the user came to order detail after creating a simple payment and chose to take a card payment,
-            // start the payment flow after a brief delay
-            if (navArgs.collectPayment && !didShowSimplePaymentCardReader) {
-                delay(500)
-                withContext(Dispatchers.Main) {
-                    triggerEvent(StartSimplePaymentCardReaderFlow(navArgs.orderId))
-                    didShowSimplePaymentCardReader = true
-                }
-            }
         }
     }
 
@@ -233,11 +226,18 @@ final class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    fun startSimplePaymentCardReaderFlow(cardReaderManager: CardReaderManager) {
-        if (cardReaderManager.readerStatus.value is Connected) {
-            triggerEvent(StartCardReaderPaymentFlow(order.id))
-        } else {
-            triggerEvent(StartCardReaderConnectFlow(skipOnboarding = true))
+    /**
+     * start the payment flow if the user came to order detail after creating a simple
+     * payment and chose to take a card payment
+     */
+    fun checkSimplePaymentCardReaderFlow(cardReaderManager: CardReaderManager) {
+        if (navArgs.collectPayment && !didShowSimplePaymentCardReader) {
+            if (cardReaderManager.readerStatus.value is Connected) {
+                triggerEvent(StartCardReaderPaymentFlow(order.id))
+            } else {
+                triggerEvent(StartCardReaderConnectFlow(skipOnboarding = true))
+            }
+            didShowSimplePaymentCardReader = true
         }
     }
 

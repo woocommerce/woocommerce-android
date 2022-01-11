@@ -148,6 +148,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             binding.scrollView,
             getString(R.string.order_card_detail_transition_name)
         )
+
+        viewModel.checkSimplePaymentCardReaderFlow(cardReaderManager)
     }
 
     override fun onDestroyView() {
@@ -241,11 +243,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                     }
                     is ShowUndoSnackbar -> {
                         displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
-                    }
-                    is OrderNavigationTarget.StartSimplePaymentCardReaderFlow -> {
-                        cardReaderManager.let {
-                            viewModel.startSimplePaymentCardReaderFlow(it)
-                        }
                     }
                     is OrderNavigationTarget -> {
                         navigator.navigate(this, event)

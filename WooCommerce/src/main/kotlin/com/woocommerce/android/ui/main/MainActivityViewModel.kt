@@ -137,5 +137,9 @@ class MainActivityViewModel @Inject constructor(
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
-    data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long, val collectPayment: Boolean = false) : Event()
+    data class ViewOrderDetail(
+        val uniqueId: Long,
+        val remoteNoteId: Long,
+        val collectPayment: Boolean = false
+    ) : Event()
 }
