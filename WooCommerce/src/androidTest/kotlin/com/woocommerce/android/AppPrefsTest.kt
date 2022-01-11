@@ -38,7 +38,7 @@ class AppPrefsTest {
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
-            pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
+            pluginType = PluginType.STRIPE_EXTENSION_GATEWAY
         )
 
         assertThat(
@@ -56,7 +56,7 @@ class AppPrefsTest {
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
-            pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
+            pluginType = PluginType.STRIPE_EXTENSION_GATEWAY
         )
 
         assertThat(
@@ -159,7 +159,7 @@ class AppPrefsTest {
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
-            pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
+            pluginType = PluginType.STRIPE_EXTENSION_GATEWAY
         )
 
         assertThat(
@@ -177,7 +177,7 @@ class AppPrefsTest {
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
-            pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
+            pluginType = PluginType.STRIPE_EXTENSION_GATEWAY
         )
 
         assertThat(
