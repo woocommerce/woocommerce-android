@@ -53,6 +53,8 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     is MultiLiveEvent.Event.Exit -> {
                         findNavController().navigateSafely(R.id.orders)
                     }
+                    // return to the order list and tell it to show the order dertail and start
+                    // the card payment flow
                     is OrderNavigationTarget.StartSimplePaymentCardReaderFlow -> {
                         navigateBackWithResult(
                             KEY_SIMPLE_PAYMENTS_CARD_PAYMENT_RESULT,

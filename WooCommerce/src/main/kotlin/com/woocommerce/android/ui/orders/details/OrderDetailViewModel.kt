@@ -228,10 +228,10 @@ final class OrderDetailViewModel @Inject constructor(
 
     /**
      * Start the payment flow if the user came to order detail after creating a simple payment and chose to take
-     * a card payment if the order status is still pending (which it will be following simple payment creation)
+     * a card payment
      */
     fun checkSimplePaymentCardReaderFlow(cardReaderManager: CardReaderManager) {
-        if (navArgs.collectPayment && !didShowSimplePaymentCardReader && order.status == Order.Status.Pending) {
+        if (navArgs.collectPayment && !didShowSimplePaymentCardReader) {
             if (cardReaderManager.readerStatus.value is Connected) {
                 triggerEvent(StartCardReaderPaymentFlow(order.id))
             } else {
