@@ -65,9 +65,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.2"
+            versionName "8.3-rc-1"
         }
-        versionCode 270
+        versionCode 271
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
