@@ -9,7 +9,6 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleResult
@@ -31,7 +30,6 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var cardReaderManager: CardReaderManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,7 +39,7 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
             viewModel.onCashPaymentClicked()
         }
         binding.textCard.setOnClickListener {
-            viewModel.onCardPaymentClicked(cardReaderManager)
+            viewModel.onCardPaymentClicked()
         }
 
         setUpObservers(binding)

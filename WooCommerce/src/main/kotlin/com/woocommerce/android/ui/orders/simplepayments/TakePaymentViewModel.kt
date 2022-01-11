@@ -35,7 +35,8 @@ class TakePaymentViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
     private val dispatchers: CoroutineDispatchers,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val cardReaderManager: CardReaderManager
 ) : ScopedViewModel(savedState) {
     private val navArgs: TakePaymentFragmentArgs by savedState.navArgs()
 
@@ -75,7 +76,7 @@ class TakePaymentViewModel @Inject constructor(
         }
     }
 
-    fun onCardPaymentClicked(cardReaderManager: CardReaderManager) {
+    fun onCardPaymentClicked() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
             triggerEvent(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id))
         } else {
