@@ -22,8 +22,8 @@
         <View
             android:layout_width="191dp"
             android:layout_height="20dp"
-            android:background="@color/skeleton_color"
-            android:layout_marginBottom="@dimen/minor_50" />
+            android:layout_marginBottom="@dimen/minor_50"
+            android:background="@color/skeleton_color" />
 
         <View
             android:layout_width="130dp"

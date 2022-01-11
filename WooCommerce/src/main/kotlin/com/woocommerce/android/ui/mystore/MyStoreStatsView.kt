@@ -157,21 +157,16 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun showSkeleton(show: Boolean) {
-        val show = true
         if (show) {
-            // inflate the skeleton view and adjust the bar widths based on the granularity
-            val inflater = LayoutInflater.from(context)
-            val skeleton = inflater.inflate(
+            skeletonView.show(
+                binding.myStoreStatsLinearLayout,
                 R.layout.skeleton_dashboard_stats,
-                binding.chartContainer,
-                false
-            ) as ViewGroup
-            skeletonView.show(binding.chartContainer, skeleton, delayed = true)
+                delayed = true
+            )
             binding.dashboardRecencyText.text = null
         } else {
             skeletonView.hide()
         }
-        binding.statsViewRow.statsHeaderLinearlayout.visibility = GONE
     }
 
     private fun getChartXAxisLabelCount(): Int {
