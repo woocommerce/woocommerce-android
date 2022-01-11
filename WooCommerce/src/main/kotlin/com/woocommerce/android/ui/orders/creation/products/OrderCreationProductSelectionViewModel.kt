@@ -62,9 +62,15 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
+    fun onSearchQuerySubmitted(query: String) {
+        viewState = viewState.copy(query = query)
+
+    }
+
     @Parcelize
     data class ViewState(
-        val isSkeletonShown: Boolean? = null
+        val isSkeletonShown: Boolean? = null,
+        val query: String? = null
     ) : Parcelable
 
     data class AddProduct(val productId: Long) : MultiLiveEvent.Event()
