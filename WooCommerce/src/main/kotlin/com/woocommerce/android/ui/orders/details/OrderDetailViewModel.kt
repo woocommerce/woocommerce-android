@@ -227,8 +227,8 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     /**
-     * start the payment flow if the user came to order detail after creating a simple
-     * payment and chose to take a card payment
+     * Start the payment flow if the user came to order detail after creating a simple payment and chose to take
+     * a card payment if the order status is still pending (which it will be following simple payment creation)
      */
     fun checkSimplePaymentCardReaderFlow(cardReaderManager: CardReaderManager) {
         if (navArgs.collectPayment && !didShowSimplePaymentCardReader && order.status == Order.Status.Pending) {
