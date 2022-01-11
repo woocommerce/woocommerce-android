@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup.GONE
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -40,7 +41,7 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -351,6 +352,7 @@ class MyStoreFragment :
     }
 
     override fun showChartSkeleton(show: Boolean) {
+        binding.myStoreDateBar.visibility = GONE
         binding.myStoreStats.showSkeleton(show)
     }
 

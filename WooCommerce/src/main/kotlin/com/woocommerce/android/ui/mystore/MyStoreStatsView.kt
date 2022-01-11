@@ -165,26 +165,12 @@ class MyStoreStatsView @JvmOverloads constructor(
                 binding.chartContainer,
                 false
             ) as ViewGroup
-            val barWidth = getSkeletonBarWidth()
-            for (i in 0 until skeleton.childCount) {
-                skeleton.getChildAt(i).layoutParams.width = barWidth
-            }
-
             skeletonView.show(binding.chartContainer, skeleton, delayed = true)
             binding.dashboardRecencyText.text = null
         } else {
             skeletonView.hide()
         }
-    }
-
-    private fun getSkeletonBarWidth(): Int {
-        val resId = when (activeGranularity) {
-            StatsGranularity.DAYS -> R.dimen.skeleton_bar_chart_bar_width_days
-            StatsGranularity.WEEKS -> R.dimen.skeleton_bar_chart_bar_width_weeks
-            StatsGranularity.MONTHS -> R.dimen.skeleton_bar_chart_bar_width_months
-            StatsGranularity.YEARS -> R.dimen.skeleton_bar_chart_bar_width_years
-        }
-        return context.resources.getDimensionPixelSize(resId)
+        binding.statsViewRow.statsHeaderLinearlayout.isVisible = !show
     }
 
     private fun getChartXAxisLabelCount(): Int {
