@@ -65,9 +65,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                                     ::refreshState,
                                     ::onLearnMoreClicked
                                 )
-                        PluginType.STRIPE_TERMINAL_GATEWAY ->
+                        PluginType.STRIPE_EXTENSION_GATEWAY ->
                             viewState.value =
-                                OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState(
+                                OnboardingViewState.StripeExtensionError.StripeExtensionUnsupportedVersionState(
                                     ::refreshState, ::onLearnMoreClicked
                                 )
                     }
@@ -78,8 +78,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value = when (state.pluginType) {
                         PluginType.WOOCOMMERCE_PAYMENTS ->
                             OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
-                        PluginType.STRIPE_TERMINAL_GATEWAY ->
-                            OnboardingViewState.StripeTerminalError.StripeTerminalNotSetupState(
+                        PluginType.STRIPE_EXTENSION_GATEWAY ->
+                            OnboardingViewState.StripeExtensionError.StripeExtensionNotSetupState(
                                 ::refreshState, ::onLearnMoreClicked
                             )
                     }
@@ -167,7 +167,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun getPluginNameForAnalyticsFrom(pluginType: PluginType): String {
         return when (pluginType) {
             PluginType.WOOCOMMERCE_PAYMENTS -> "wcpay"
-            PluginType.STRIPE_TERMINAL_GATEWAY -> "stripe_extension"
+            PluginType.STRIPE_EXTENSION_GATEWAY -> "stripe_extension"
         }
     }
 
@@ -397,7 +397,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             )
         }
 
-        sealed class StripeTerminalError(
+        sealed class StripeExtensionError(
             val headerLabel: UiString,
             val hintLabel: UiString,
             val learnMoreLabel: UiString,
@@ -409,10 +409,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
             @DrawableRes
             val illustration = R.drawable.img_stripe_extension
 
-            data class StripeTerminalNotSetupState(
+            data class StripeExtensionNotSetupState(
                 override val refreshButtonAction: () -> Unit,
                 override val onLearnMoreActionClicked: (() -> Unit)
-            ) : StripeTerminalError(
+            ) : StripeExtensionError(
                 headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_header),
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_hint),
                 learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
@@ -420,10 +420,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     .UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
             )
 
-            data class StripeTerminalUnsupportedVersionState(
+            data class StripeExtensionUnsupportedVersionState(
                 override val refreshButtonAction: () -> Unit,
                 override val onLearnMoreActionClicked: (() -> Unit)
-            ) : StripeTerminalError(
+            ) : StripeExtensionError(
                 headerLabel = UiString.UiStringRes(
                     R.string.card_reader_onboarding_stripe_extension_unsupported_version_header
                 ),
