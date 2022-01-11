@@ -14,11 +14,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -89,7 +86,17 @@ class TakePaymentViewModel @Inject constructor(
         }
     }
 
-    suspend fun markOrderCompleted() {
+    fun onCardReaderPaymentCompleted() {
+        launch {
+            markOrderCompleted()
+
+            withContext(Dispatchers.Main) {
+                triggerEvent(MultiLiveEvent.Event.Exit)
+            }
+        }
+    }
+
+    suspend private fun markOrderCompleted() {
         val status = withContext(dispatchers.io) {
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), CoreOrderStatus.COMPLETED.value)
                 ?: error("Couldn't find a status with key ${CoreOrderStatus.COMPLETED.value}")

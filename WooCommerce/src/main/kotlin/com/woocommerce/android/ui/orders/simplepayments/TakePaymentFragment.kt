@@ -9,12 +9,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
+import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -74,6 +76,13 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     private fun setupResultHandlers() {
         handleResult<Boolean>(CardReaderConnectDialogFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
             viewModel.onConnectToReaderResultReceived(connected)
+        }
+
+        handleDialogNotice<String>(
+            key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
+            entryId = R.id.orderDetailFragment
+        ) {
+            viewModel.onCardReaderPaymentCompleted()
         }
     }
 
