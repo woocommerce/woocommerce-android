@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.IdRes
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -54,14 +56,25 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                         findNavController().navigateSafely(R.id.orders)
                     }
                     is OrderNavigationTarget.StartCardReaderConnectFlow -> {
-                        findNavController().navigate(R.id.nav_graph_simple_payments_card_payment)
+                        switchToCardReaderGraph(R.id.simplePayment_cardReaderConnectDialogFragment)
                     }
                     is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
-                        // TODO nbradbury
+                        switchToCardReaderGraph(R.id.simplePayment_cardReaderPaymentDialog)
                     }
                 }
             }
         )
+    }
+
+    private fun switchToCardReaderGraph(@IdRes startDestinationId: Int, directions: NavDirections? = null) {
+        val navController = findNavController()
+        if (findNavController().graph.id == R.navigation.nav_graph_simple_payments_card_payment) {
+            navController.navigateSafely(startDestinationId, directions)
+        } else {
+            val graph = navController.navInflater.inflate(R.navigation.nav_graph_simple_payments_card_payment)
+            graph.setStartDestination(startDestinationId)
+            navController.setGraph(graph, directions?.arguments)
+        }
     }
 
     override fun onResume() {

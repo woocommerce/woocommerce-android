@@ -41,10 +41,10 @@ fun NavController.navigateSafely(
     }
 }
 
-fun NavController.navigateSafely(@IdRes resId: Int) {
+fun NavController.navigateSafely(@IdRes resId: Int, directions: NavDirections? = null) {
     CallThrottler.throttle {
         if (currentDestination?.id != resId) {
-            navigate(resId, null)
+            navigate(resId, directions?.arguments)
         }
     }
 }

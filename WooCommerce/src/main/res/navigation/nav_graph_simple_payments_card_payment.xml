@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:startDestination="@+id/cardReaderConnectDialogFragment"
+    app:startDestination="@+id/simplePayment_cardReaderConnectDialogFragment"
     android:id="@+id/nav_graph_simple_payments_card_payment">
 
     <dialog
-        android:id="@+id/cardReaderPaymentDialog"
+        android:id="@+id/simplePayment_cardReaderPaymentDialog"
         android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
         android:label="CardReaderPaymentDialog">
         <argument
@@ -14,7 +14,7 @@
     </dialog>
 
     <dialog
-        android:id="@+id/cardReaderConnectDialogFragment"
+        android:id="@+id/simplePayment_cardReaderConnectDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
         android:label="CardReaderConnectDialogFragment">
         <argument
