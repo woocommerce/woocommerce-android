@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph_main"
+    android:id="@+id/nav_graph_simple_payments"
     app:startDestination="@id/simplePaymentsDialog">
     <dialog
         android:id="@+id/simplePaymentsDialog"
         android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
         android:label="SimplePaymentsDialog" />
     <dialog
-        android:id="@+id/simplePaymentsCardReaderConnectDialogFragment"
+        android:id="@+id/simplePaymentsCardReaderConnectDialog"
         android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
         android:label="CardReaderConnectDialogFragment">
         <argument
@@ -65,12 +65,12 @@
             app:argType="com.woocommerce.android.model.Order"
             app:nullable="false" />
         <action
-            android:id="@+id/takePaymentFragment_to_cardReaderConnect_Dialog"
-            app:destination="@+id/simplePaymentsCardReaderPaymentDialog"
+            android:id="@+id/action_takePaymentFragment_to_cardReaderConnect_Dialog"
+            app:destination="@+id/simplePaymentsCardReaderConnectDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/takePaymentFragment_to_cardReaderPayment_Dialog"
+            android:id="@+id/action_takePaymentFragment_to_cardReaderPayment_Dialog"
             app:destination="@+id/simplePaymentsCardReaderPaymentDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />

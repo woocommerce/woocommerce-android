@@ -343,7 +343,7 @@ class OrderListFragment :
 
     private fun showSimplePaymentsDialog() {
         AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
-        findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsDialog)
+        findNavController().navigate(R.id.action_orderListFragment_to_simplePayments)
     }
 
     private fun showOrderCreationBottomSheet() {
@@ -380,7 +380,7 @@ class OrderListFragment :
             val bundle = Bundle().also {
                 it.putParcelable("order", order)
             }
-            findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsFragment, bundle)
+            findNavController().navigate(R.id.simplePaymentsFragment, bundle)
         } else {
             openOrderDetail(order.id, order.status.value)
         }

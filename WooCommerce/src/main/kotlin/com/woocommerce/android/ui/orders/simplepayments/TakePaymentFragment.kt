@@ -6,7 +6,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
@@ -48,7 +47,7 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
 
     private fun setUpObservers(binding: FragmentTakePaymentBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isProgressShowing?.takeIfNotEqualTo(old?.isProgressShowing) { showProgress ->
+            new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { showProgress ->
                 binding.progressBar.isVisible = showProgress
                 binding.container.isEnabled = !showProgress
             }
@@ -68,12 +67,14 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                         findNavController().navigateSafely(R.id.orders)
                     }
                     is OrderNavigationTarget.StartCardReaderConnectFlow -> {
-                        val action = TakePaymentFragmentDirections.takePaymentFragmentToCardReaderConnectGraph()
+                        val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderConnectDialog(
+                            skipOnboarding = true
+                        )
                         findNavController().navigateSafely(action)
                     }
                     is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
-                        val action = NavGraphMainDirections.actionGlobalCardReaderPaymentDialog(
-                            viewModel.order.id
+                        val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderPaymentDialog(
+                            orderId = viewModel.order.id
                         )
                         findNavController().navigateSafely(action)
                     }
