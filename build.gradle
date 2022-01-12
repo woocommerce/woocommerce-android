@@ -107,7 +107,7 @@ ext {
     wordPressUtilsVersion = "2.3.0"
     mediapickerVersion = 'trunk-00947a9086ecdf2192b0bdc95a22e1647696d0b1'
     wordPressLoginVersion = '0.10.0'
-    aboutAutomatticVersion = '0.0.3'
+    aboutAutomatticVersion = '0.0.4'
 }
 
 // Onboarding and dev env setup tasks
