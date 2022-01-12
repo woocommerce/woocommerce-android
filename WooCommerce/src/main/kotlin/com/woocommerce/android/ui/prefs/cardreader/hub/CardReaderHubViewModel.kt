@@ -32,9 +32,14 @@ class CardReaderHubViewModel @Inject constructor(
             ),
             CardReaderHubListItemViewState(
                 icon = R.drawable.ic_card_reader_manual,
+                label = UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader),
+                onItemClicked = ::onBbposManualCardReaderClicked
+            ),
+            CardReaderHubListItemViewState(
+                icon = R.drawable.ic_card_reader_manual,
                 label = UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader),
                 onItemClicked = ::onM2ManualCardReaderClicked
-            ),
+            )
         )
     )
 
@@ -46,6 +51,10 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onPurchaseCardReaderClicked() {
         triggerEvent(CardReaderHubEvents.NavigateToPurchaseCardReaderFlow)
+    }
+
+    private fun onBbposManualCardReaderClicked() {
+        triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.BBPOS_MANUAL_CARD_READER))
     }
 
     private fun onM2ManualCardReaderClicked() {

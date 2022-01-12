@@ -50,6 +50,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when screen shown, then bbpos manual card reader row present`() {
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader)
+            }
+    }
+
+    @Test
     fun `when screen shown, then manual card reader row icon is present`() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
@@ -67,9 +75,24 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen shown, then m2 manual card reader row present at third position`() {
+    fun `when screen shown, then bbpos chipper manual card reader row present`() {
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader) &&
+                    it.icon == R.drawable.ic_card_reader_manual
+            }
+    }
+
+    @Test
+    fun `when screen shown, then bbpos manual card reader row present on third position`() {
         val rows = (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
-        assertThat(rows[2].label).isEqualTo(UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader))
+        assertThat(rows[2].label).isEqualTo(UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader))
+    }
+
+    @Test
+    fun `when screen shown, then m2 manual card reader row present at fourth last`() {
+        val rows = (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+        assertThat(rows[3].label).isEqualTo(UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader))
     }
 
     @Test
@@ -104,6 +127,21 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         assertThat(
             (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
         ).isEqualTo(AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER)
+    }
+
+    @Test
+    fun `when user clicks on bbpos manual card reader, then app opens external webview with bbpos link`() {
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader)
+            }!!.onItemClicked.invoke()
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToManualCardReaderFlow(
+                    AppUrls.BBPOS_MANUAL_CARD_READER
+                )
+            )
     }
 
     @Test
