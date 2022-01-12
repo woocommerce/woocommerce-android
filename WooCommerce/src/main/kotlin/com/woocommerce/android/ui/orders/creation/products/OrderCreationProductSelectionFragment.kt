@@ -7,7 +7,7 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.widget.SearchView
-import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import android.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ActivityUtils
 
 @AndroidEntryPoint
 class OrderCreationProductSelectionFragment :
@@ -119,7 +120,7 @@ class OrderCreationProductSelectionFragment :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
-                searchMenuItem?.setOnActionExpandListener(this)
+                registerSearchListeners()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -137,12 +138,23 @@ class OrderCreationProductSelectionFragment :
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        TODO("Not yet implemented")
+        query?.let { productListViewModel.onSearchQuerySubmitted(it) }
+        ActivityUtils.hideKeyboard(activity)
+        return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 
+    private fun registerSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(this)
+        searchView?.setOnQueryTextListener(this)
+    }
+
+    private fun removeSearchListener() {
+        searchMenuItem?.setOnActionExpandListener(null)
+        searchView?.setOnQueryTextListener(null)
+    }
     // endregion
 }
