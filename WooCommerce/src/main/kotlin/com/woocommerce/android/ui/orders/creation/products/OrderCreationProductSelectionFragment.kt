@@ -67,10 +67,12 @@ class OrderCreationProductSelectionFragment :
     }
 
     override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+        productListViewModel.onSearchOpened()
         return true
     }
 
     override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+        productListViewModel.onSearchClosed()
         return true
     }
 
