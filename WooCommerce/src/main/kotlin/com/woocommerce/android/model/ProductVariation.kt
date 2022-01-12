@@ -10,7 +10,6 @@ import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
-import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.model.ProductVariation.Option
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -198,8 +197,8 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
             )
         },
         price = this.price.toBigDecimalOrNull(),
-        regularPrice = this.regularPrice.toBigDecimalOrNull()?.roundError(),
-        salePrice = this.salePrice.toBigDecimalOrNull()?.roundError(),
+        regularPrice = this.regularPrice.toBigDecimalOrNull(),
+        salePrice = this.salePrice.toBigDecimalOrNull(),
         saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
         saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),

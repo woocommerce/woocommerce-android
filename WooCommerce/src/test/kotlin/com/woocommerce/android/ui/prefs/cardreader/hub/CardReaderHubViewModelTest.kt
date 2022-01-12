@@ -7,7 +7,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 
 class CardReaderHubViewModelTest : BaseUnitTest() {
@@ -67,7 +66,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    @Ignore
     fun `when screen shown, then m2 manual card reader row present`() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
@@ -92,7 +90,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    @Ignore("Row with M2 reader is temporarily hidden")
     fun `when screen shown, then m2 manual card reader row present at fourth last`() {
         val rows = (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
         assertThat(rows[3].label).isEqualTo(UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader))
@@ -148,7 +145,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    @Ignore("Row with M2 reader is temporarily hidden")
     fun `when user clicks on m2 manual card reader, then app opens external webview with m2 link`() {
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
