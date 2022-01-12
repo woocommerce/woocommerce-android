@@ -1,7 +1,11 @@
 package com.woocommerce.android.ui.orders.creation.products
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import android.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -29,6 +33,8 @@ class OrderCreationProductSelectionFragment :
     private val productListViewModel by viewModels<OrderCreationProductSelectionViewModel>()
 
     private val skeletonView = SkeletonView()
+    private var searchMenuItem: MenuItem? = null
+    private var searchView: SearchView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,6 +42,16 @@ class OrderCreationProductSelectionFragment :
             productsList.layoutManager = LinearLayoutManager(requireActivity())
             setupObserversWith(this)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_product_selection_fragment, menu)
+
+        searchMenuItem = menu.findItem(R.id.menu_search)
+        searchView = searchMenuItem?.actionView as SearchView?
+        searchView?.queryHint = getString(R.string.product_search_hint)
+
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationProductSelectionBinding) {
