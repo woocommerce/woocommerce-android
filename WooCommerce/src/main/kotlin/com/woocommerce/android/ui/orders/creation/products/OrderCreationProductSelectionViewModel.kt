@@ -67,12 +67,11 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         launch {
             productListRepository.searchProductList(query)
                 ?.takeIf { query == productListRepository.lastSearchQuery }
-                ?.let {
-                    if (loadMore) {
-                        productList.value = productList.value.orEmpty() + it
-                    } else {
-                        productList.value = it
-                    }
+                ?.let { searchResult ->
+                    productList.value = productList.value
+                        ?.takeIf { loadMore && it.isNotEmpty() }
+                        ?.let { searchResult + it }
+                        ?: searchResult
                 }
         }
 
