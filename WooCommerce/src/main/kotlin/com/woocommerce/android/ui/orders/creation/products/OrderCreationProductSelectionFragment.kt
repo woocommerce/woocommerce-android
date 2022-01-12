@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.widget.SearchView
 import androidx.fragment.app.viewModels
@@ -28,7 +29,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class OrderCreationProductSelectionFragment :
     BaseFragment(R.layout.fragment_order_creation_product_selection),
-    OnLoadMoreListener {
+    OnLoadMoreListener,
+    OnActionExpandListener {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val productListViewModel by viewModels<OrderCreationProductSelectionViewModel>()
 
@@ -52,6 +54,24 @@ class OrderCreationProductSelectionFragment :
         searchView?.queryHint = getString(R.string.product_search_hint)
 
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_search -> {
+                searchMenuItem?.setOnActionExpandListener(this)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+        return true
+    }
+
+    override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+        return true
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationProductSelectionBinding) {
