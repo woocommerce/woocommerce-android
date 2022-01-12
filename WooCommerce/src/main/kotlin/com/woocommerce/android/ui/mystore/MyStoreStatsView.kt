@@ -39,10 +39,8 @@ import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DateTimeUtils
-import java.util.ArrayList
 import java.util.Date
 import java.util.Locale
 import kotlin.math.round
@@ -65,11 +63,10 @@ class MyStoreStatsView @JvmOverloads constructor(
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
     private lateinit var dateUtils: DateUtils
 
-    private var revenueStatsModel: WCRevenueStatsModel? = null
+    private var revenueStatsModel: RevenueStatsUiModel? = null
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
-    private var chartCurrencyCode: String? = null
 
     private var skeletonView = SkeletonView()
 
@@ -143,9 +140,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             Stat.DASHBOARD_MAIN_STATS_DATE,
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase(Locale.ROOT))
         )
-
         isRequestingStats = true
-        listener?.onRequestLoadStats(granularity)
     }
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
@@ -305,19 +300,18 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.chart.highlightValue(null)
     }
 
-    fun updateView(revenueStatsModel: WCRevenueStatsModel?, currencyCode: String?) {
+    fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
         this.revenueStatsModel = revenueStatsModel
-        chartCurrencyCode = currencyCode
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
         // https://github.com/woocommerce/woocommerce-android/issues/1455#issuecomment-540401646
-        this.chartRevenueStats = revenueStatsModel?.getIntervalList()?.map {
-            it.interval!! to (it.subtotals?.totalSales ?: 0.0)
-        }?.toMap() ?: mapOf()
+        this.chartRevenueStats = revenueStatsModel?.intervalList?.associate {
+            it.interval!! to (it.sales ?: 0.0)
+        } ?: mapOf()
 
-        this.chartOrderStats = revenueStatsModel?.getIntervalList()?.map {
-            it.interval!! to (it.subtotals?.ordersCount ?: 0)
-        }?.toMap() ?: mapOf()
+        this.chartOrderStats = revenueStatsModel?.intervalList?.associate {
+            it.interval!! to (it.ordersCount ?: 0)
+        } ?: mapOf()
 
         updateChartView()
     }
@@ -371,17 +365,16 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun updateChartView() {
         val wasEmpty = binding.chart.barData?.let { it.dataSetCount == 0 } ?: true
 
-        val totalModel = revenueStatsModel?.parseTotal()
-        val grossRevenue = totalModel?.totalSales ?: 0.0
-        val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
+        val grossRevenue = revenueStatsModel?.totalSales ?: 0.0
+        val revenue = formatCurrencyForDisplay(grossRevenue, revenueStatsModel?.currencyCode.orEmpty())
 
-        val orderCount = totalModel?.ordersCount ?: 0
+        val orderCount = revenueStatsModel?.totalOrdersCount ?: 0
         val orders = orderCount.toString()
 
         fadeInLabelValue(revenueValue, revenue)
         fadeInLabelValue(ordersValue, orders)
 
-        if (chartRevenueStats.isEmpty() || totalModel?.totalSales?.toInt() == 0) {
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales?.toInt() == 0) {
             clearLastUpdated()
             isRequestingStats = false
             return
@@ -442,7 +435,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun getFormattedRevenueValue(revenue: Double) =
-        formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
+        formatCurrencyForDisplay(revenue, revenueStatsModel?.currencyCode.orEmpty())
 
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 
