@@ -377,10 +377,8 @@ class OrderListFragment :
     private fun openSimpleOrder(order: Order) {
         if (FeatureFlag.SIMPLE_PAYMENT_I2.isEnabled()) {
             // TODO nbradbury - tracks?
-            val bundle = Bundle().also {
-                it.putParcelable("order", order)
-            }
-            findNavController().navigate(R.id.simplePaymentsFragment, bundle)
+            val action = NavGraphSimplePaymentsDirections.actionGlobalSimplePaymentsFragment(order)
+            findNavController().navigate(action)
         } else {
             openOrderDetail(order.id, order.status.value)
         }

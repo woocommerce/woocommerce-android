@@ -24,6 +24,13 @@
             android:name="orderId"
             app:argType="long" />
     </dialog>
+    <action
+        android:id="@+id/actionGlobalSimplePaymentsFragment"
+        app:destination="@+id/simplePaymentsFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <fragment
         android:id="@+id/simplePaymentsFragment"
         android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsFragment"
