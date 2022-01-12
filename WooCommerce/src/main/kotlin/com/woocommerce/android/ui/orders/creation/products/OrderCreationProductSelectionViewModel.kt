@@ -62,7 +62,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
-    fun onSearchQuerySubmitted(query: String, loadMore: Boolean) {
+    fun onSearchQuerySubmitted(query: String, loadMore: Boolean = false) {
         viewState = viewState.copy(query = query)
         launch {
             productListRepository.searchProductList(query)
