@@ -105,6 +105,7 @@ android {
 
     composeOptions {
         kotlinCompilerExtensionVersion composeVersion
+        kotlinCompilerVersion gradle.ext.kotlinVersion
     }
 
     flavorDimensions "buildType"
