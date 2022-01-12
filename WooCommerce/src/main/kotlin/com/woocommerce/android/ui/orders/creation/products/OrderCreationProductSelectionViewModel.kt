@@ -62,12 +62,18 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
-    fun onSearchQuerySubmitted(query: String) {
+    fun onSearchQuerySubmitted(query: String, loadMore: Boolean) {
         viewState = viewState.copy(query = query)
         launch {
             productListRepository.searchProductList(query)
                 ?.takeIf { query == productListRepository.lastSearchQuery }
-                ?.let { productList.value = it }
+                ?.let {
+                    if (loadMore) {
+                        productList.value = productList.value.orEmpty() + it
+                    } else {
+                        productList.value = it
+                    }
+                }
         }
 
     }
