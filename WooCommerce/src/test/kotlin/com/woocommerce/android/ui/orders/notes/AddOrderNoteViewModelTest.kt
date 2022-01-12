@@ -17,7 +17,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
@@ -56,7 +63,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `hide customer note checkbox if no email`() {
+    fun `hide customer note checkbox if no email`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val testOrder = testOrder.let {
             val address = it.billingAddress.copy(email = "")
             it.copy(billingAddress = address)
@@ -73,7 +80,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `show customer note checkbox if no email`() {
+    fun `show customer note checkbox if no email`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val testOrder = testOrder.let {
             val address = it.billingAddress.copy(email = "test@emai.com")
             it.copy(billingAddress = address)

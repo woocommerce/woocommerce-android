@@ -302,7 +302,7 @@ object OrderTestUtils {
         ).toAppModel()
     }
 
-    fun generateOrderWithFee(remoteOrderId: Long = 1L): WCOrderModel {
+    fun generateOrderWithFee(): WCOrderModel {
         val lineItems = "[{\n" +
             "    \"id\":1,\n" +
             "    \"name\":\"A test\",\n" +
@@ -326,7 +326,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = LocalOrRemoteId.LocalId(1),
-            remoteOrderId = LocalOrRemoteId.RemoteId(remoteOrderId),
+            remoteOrderId = LocalOrRemoteId.RemoteId(1),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -351,7 +351,7 @@ object OrderTestUtils {
         )
     }
 
-    fun generateOrderWithMultipleShippingLines(remoteOrderId: Long = 1): WCOrderModel {
+    fun generateOrderWithMultipleShippingLines(): WCOrderModel {
         return WCOrderModel(
             id = 1,
             billingFirstName = "Carissa",
@@ -359,7 +359,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = LocalOrRemoteId.LocalId(1),
-            remoteOrderId = LocalOrRemoteId.RemoteId(remoteOrderId),
+            remoteOrderId = LocalOrRemoteId.RemoteId(1),
             number = "55",
             status = "pending",
             total = "106.00",
