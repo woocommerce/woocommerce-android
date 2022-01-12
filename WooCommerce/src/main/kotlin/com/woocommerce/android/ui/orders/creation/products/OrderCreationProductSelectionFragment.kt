@@ -16,7 +16,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationProductSelectionBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.orders.creation.OrderCreationNavigator
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
@@ -30,7 +30,7 @@ import org.wordpress.android.util.ActivityUtils
 
 @AndroidEntryPoint
 class OrderCreationProductSelectionFragment :
-    BaseFragment(R.layout.fragment_order_creation_product_selection),
+    TopLevelFragment(R.layout.fragment_order_creation_product_selection),
     OnLoadMoreListener,
     OnQueryTextListener,
     OnActionExpandListener {
@@ -167,4 +167,10 @@ class OrderCreationProductSelectionFragment :
         searchView?.setOnQueryTextListener(null)
     }
     // endregion
+
+    override fun shouldExpandToolbar() = productListViewModel.isSearching
+
+    override fun scrollToTop() {
+
+    }
 }
