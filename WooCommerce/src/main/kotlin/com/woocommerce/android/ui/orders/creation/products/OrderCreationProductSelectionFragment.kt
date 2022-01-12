@@ -49,6 +49,13 @@ class OrderCreationProductSelectionFragment :
         }
     }
 
+    override fun onDestroyView() {
+        removeSearchListener()
+        searchView = null
+        searchMenuItem = null
+        super.onDestroyView()
+    }
+
     private fun setupObserversWith(binding: FragmentOrderCreationProductSelectionBinding) {
         productListViewModel.productListData.observe(viewLifecycleOwner) {
             binding.loadProductsAdapterWith(it)
@@ -134,6 +141,9 @@ class OrderCreationProductSelectionFragment :
 
     override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
         productListViewModel.onSearchClosed()
+        removeSearchListener()
+        updateActivityTitle()
+        searchMenuItem?.collapseActionView()
         return true
     }
 
