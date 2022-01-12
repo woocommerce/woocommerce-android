@@ -6,8 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
-import android.widget.SearchView
-import android.widget.SearchView.OnQueryTextListener
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -32,7 +31,7 @@ import org.wordpress.android.util.ActivityUtils
 class OrderCreationProductSelectionFragment :
     TopLevelFragment(R.layout.fragment_order_creation_product_selection),
     OnLoadMoreListener,
-    OnQueryTextListener,
+    SearchView.OnQueryTextListener,
     OnActionExpandListener {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val productListViewModel by viewModels<OrderCreationProductSelectionViewModel>()
@@ -47,6 +46,7 @@ class OrderCreationProductSelectionFragment :
             productsList.layoutManager = LinearLayoutManager(requireActivity())
             setupObserversWith(this)
         }
+        setHasOptionsMenu(true)
     }
 
     override fun onDestroyView() {
@@ -134,12 +134,12 @@ class OrderCreationProductSelectionFragment :
         }
     }
 
-    override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         productListViewModel.onSearchOpened()
         return true
     }
 
-    override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         productListViewModel.onSearchClosed()
         removeSearchListener()
         updateActivityTitle()
