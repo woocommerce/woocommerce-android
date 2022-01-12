@@ -87,10 +87,10 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showCountryNotSupportedState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayError ->
                 showWCPayErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCStripeError ->
-                showWCStripeError(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError ->
-                showStripeTerminalErrorState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError ->
+                showStripeAccountError(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError ->
+                showStripeExtensionErrorState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState ->
                 showBothPluginsInstalledState(layout, state)
         }.exhaustive
@@ -143,9 +143,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }
     }
 
-    private fun showWCStripeError(
+    private fun showStripeAccountError(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.WCStripeError
+        state: CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError
     ) {
         val binding = FragmentCardReaderOnboardingStripeBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
@@ -186,9 +186,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }
     }
 
-    private fun showStripeTerminalErrorState(
+    private fun showStripeExtensionErrorState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.StripeTerminalError
+        state: CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError
     ) {
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
