@@ -74,7 +74,20 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
                         ?: searchResult
                 }
         }
+    }
 
+    fun onSearchOpened() {
+        productList.value = emptyList()
+        viewState = viewState.copy(
+            isSearchActive = true
+        )
+    }
+
+    fun onSearchClosed() {
+        loadProductList()
+        viewState = viewState.copy(
+            isSearchActive = false
+        )
     }
 
     @Parcelize
