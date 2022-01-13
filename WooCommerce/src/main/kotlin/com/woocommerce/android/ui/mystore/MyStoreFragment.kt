@@ -5,7 +5,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup.GONE
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -352,7 +351,7 @@ class MyStoreFragment :
     }
 
     override fun showChartSkeleton(show: Boolean) {
-        binding.myStoreDateBar.visibility = GONE
+        binding.myStoreDateBar.isVisible = !show
         binding.myStoreStats.showSkeleton(show)
     }
 
