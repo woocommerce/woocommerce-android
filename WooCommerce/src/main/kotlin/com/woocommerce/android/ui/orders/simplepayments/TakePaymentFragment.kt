@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -12,7 +11,6 @@ import com.woocommerce.android.databinding.FragmentTakePaymentBinding
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -46,13 +44,6 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     }
 
     private fun setUpObservers(binding: FragmentTakePaymentBinding) {
-        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { showProgress ->
-                binding.progressBar.isVisible = showProgress
-                binding.container.isEnabled = !showProgress
-            }
-        }
-
         viewModel.event.observe(
             viewLifecycleOwner,
             { event ->
