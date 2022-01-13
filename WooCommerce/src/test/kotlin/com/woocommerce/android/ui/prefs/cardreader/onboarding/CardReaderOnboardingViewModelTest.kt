@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import org.mockito.kotlin.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -9,9 +10,10 @@ import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardi
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCStripeError
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -161,16 +163,41 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when stripe terminal not setup, then stripe terminal not setup state shown`() =
+    fun `when stripe extension not setup, then stripe extension not setup state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(PluginType.STRIPE_TERMINAL_GATEWAY))
+                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(PluginType.STRIPE_EXTENSION_GATEWAY))
 
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                OnboardingViewState.StripeTerminalError.StripeTerminalNotSetupState::class.java
+                StripeExtensionError.StripeExtensionNotSetupState::class.java
             )
+        }
+
+    @Test
+    fun `when stripe extension not setup, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(PluginType.STRIPE_EXTENSION_GATEWAY))
+
+            val viewModel = createVM()
+
+            val state = (
+                viewModel.viewStateData.value as StripeExtensionError.StripeExtensionNotSetupState
+                )
+            assertThat(state.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_header))
+            assertThat(state.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_hint))
+            assertThat(state.refreshButtonLabel)
+                .describedAs("Check refreshButtonLabel")
+                .isEqualTo(UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button))
+            assertThat(state.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_stripe_extension)
         }
 
     @Test
@@ -193,26 +220,64 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                WCStripeError.WCPayInTestModeWithLiveAccountState::class.java
+                StripeAcountError.WCPayInTestModeWithLiveAccountState::class.java
             )
         }
 
     @Test
-    fun `when unsupported stripe terminal installed, then unsupported stripe terminal state shown`() =
+    fun `when unsupported stripe extension installed, then unsupported stripe extension state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_TERMINAL_GATEWAY)
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_EXTENSION_GATEWAY)
             )
 
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                OnboardingViewState.StripeTerminalError.StripeTerminalUnsupportedVersionState::class.java
+                StripeExtensionError.StripeExtensionUnsupportedVersionState::class.java
             )
         }
 
-    @Test(expected = AssertionError::class)
-    fun `when wcpay and stripe terminal installed-activated, then wcpay and stripe terminal activated state shown`() =
+    @Test
+    fun `when stripe extension outdated, then correct labels and illustrations shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_EXTENSION_GATEWAY)
+            )
+
+            val viewModel = createVM()
+
+            val state = (
+                viewModel.viewStateData.value as StripeExtensionError.StripeExtensionUnsupportedVersionState
+                )
+            assertThat(state.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_stripe_extension_unsupported_version_header
+                    )
+                )
+            assertThat(state.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_stripe_extension_unsupported_version_hint
+                    )
+                )
+            assertThat(state.refreshButtonLabel)
+                .describedAs("Check refreshButtonLabel")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button
+                    )
+                )
+            assertThat(state.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_stripe_extension)
+        }
+
+    @Test
+    fun `when wcpay and stripe extension installed-activated, then wcpay and stripe extension activated state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.WcpayAndStripeActivated
@@ -233,19 +298,25 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCStripeError.WCPayAccountRejectedState::class.java)
+            assertThat(viewModel.viewStateData.value)
+                .isInstanceOf(StripeAcountError.StripeAccountRejectedState::class.java)
         }
 
     @Test
     fun `when account pending requirements, then account pending requirements state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountPendingRequirement(0L))
+                .thenReturn(
+                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                        0L,
+                        PluginType.WOOCOMMERCE_PAYMENTS
+                    )
+                )
 
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                WCStripeError.WCPayAccountPendingRequirementsState::class.java
+                StripeAcountError.StripeAccountPendingRequirementsState::class.java
             )
         }
 
@@ -253,12 +324,18 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account pending requirements, then due date not empty`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountPendingRequirement(0L))
+                .thenReturn(
+                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                        0L,
+                        PluginType.WOOCOMMERCE_PAYMENTS
+                    )
+                )
 
             val viewModel = createVM()
 
-            assertThat((viewModel.viewStateData.value as WCStripeError.WCPayAccountPendingRequirementsState).dueDate)
-                .isNotEmpty()
+            assertThat(
+                (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState).dueDate
+            ).isNotEmpty()
         }
 
     @Test
@@ -270,7 +347,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                WCStripeError.WCPayAccountOverdueRequirementsState::class.java
+                StripeAcountError.StripeAccountOverdueRequirementsState::class.java
             )
         }
 
@@ -283,7 +360,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                WCStripeError.WCPayAccountUnderReviewState::class.java
+                StripeAcountError.StripeAccountUnderReviewState::class.java
             )
         }
 
@@ -420,7 +497,12 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account pending requirements, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountPendingRequirement(0L))
+                .thenReturn(
+                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                        0L,
+                        PluginType.WOOCOMMERCE_PAYMENTS
+                    )
+                )
 
             createVM()
 

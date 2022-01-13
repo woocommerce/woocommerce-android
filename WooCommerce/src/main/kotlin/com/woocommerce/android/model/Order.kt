@@ -11,7 +11,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -19,11 +18,9 @@ import java.util.*
 
 @Parcelize
 data class Order(
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
-    val identifier: OrderIdentifier,
-    private val rawLocalOrderId: Int,
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use local id to identify order.")
-    val remoteId: Long,
+    val id: Long,
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
+    val rawLocalOrderId: Int,
     val number: String,
     val dateCreated: Date,
     val dateModified: Date,
@@ -53,6 +50,7 @@ data class Order(
     val feesLines: List<FeeLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
+    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
     val localId
         get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
 
@@ -116,6 +114,24 @@ data class Order(
                 it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
 
+        companion object {
+            val EMPTY by lazy {
+                Item(
+                    itemId = 0,
+                    productId = 0,
+                    name = "",
+                    price = BigDecimal(0),
+                    sku = "",
+                    quantity = 0f,
+                    subtotal = BigDecimal(0),
+                    totalTax = BigDecimal(0),
+                    total = BigDecimal(0),
+                    variationId = 0,
+                    attributesList = emptyList()
+                )
+            }
+        }
+
         @Parcelize
         data class Attribute(
             val key: String,
@@ -164,8 +180,10 @@ data class Order(
 
     @Parcelize
     data class FeeLine(
+        val id: Long,
         val name: String,
-        val total: BigDecimal
+        val total: BigDecimal,
+        val totalTax: BigDecimal,
     ) : Parcelable
 
     fun getBillingName(defaultValue: String): String {
@@ -248,9 +266,8 @@ data class Order(
     companion object {
         val EMPTY by lazy {
             Order(
-                identifier = OrderIdentifier(),
+                id = 0,
                 rawLocalOrderId = 0,
-                remoteId = 0,
                 number = "",
                 dateCreated = Date(),
                 dateModified = Date(),
@@ -285,23 +302,23 @@ data class Order(
 }
 
 fun WCOrderModel.toAppModel(): Order {
+    @Suppress("DEPRECATION_ERROR")
     return Order(
-        identifier = OrderIdentifier(this),
         rawLocalOrderId = this.id,
-        remoteId = this.remoteOrderId,
+        id = this.remoteOrderId.value,
         number = this.number,
         dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
         dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
         datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
         status = Status.fromValue(status),
-        total = this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        productsTotal = this.getOrderSubtotal().toBigDecimal().roundError(),
-        totalTax = this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        shippingTotal = this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        discountTotal = this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        refundTotal = -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
+        total = this.total.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        productsTotal = this.getOrderSubtotal().toBigDecimal(),
+        totalTax = this.totalTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        shippingTotal = this.shippingTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        discountTotal = this.discountTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        refundTotal = -this.refundTotal, // WCOrderModel.refundTotal is NEGATIVE
         feesTotal = this.getFeeLineList()
-            .sumByBigDecimal { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO },
+            .sumByBigDecimal { it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO },
         currency = this.currency,
         orderKey = this.orderKey,
         customerNote = this.customerNote,
@@ -356,12 +373,12 @@ fun WCOrderModel.toAppModel(): Order {
                     it.id!!,
                     it.productId!!,
                     it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
-                    it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                    it.price?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.sku ?: "",
                     it.quantity ?: 0f,
-                    it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+                    it.subtotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.variationId ?: 0,
                     it.getAttributeList().map { attribute ->
                         Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
@@ -373,14 +390,16 @@ fun WCOrderModel.toAppModel(): Order {
                 it.id!!,
                 it.methodId ?: StringUtils.EMPTY,
                 it.methodTitle ?: StringUtils.EMPTY,
-                it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+                it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
             )
         },
         feesLines = this.getFeeLineList().map {
             FeeLine(
-                it.name ?: StringUtils.EMPTY,
-                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
+                id = it.id!!,
+                name = it.name ?: StringUtils.EMPTY,
+                totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             )
         },
         metaData = getMetaDataList().mapNotNull { it.toAppModel() }

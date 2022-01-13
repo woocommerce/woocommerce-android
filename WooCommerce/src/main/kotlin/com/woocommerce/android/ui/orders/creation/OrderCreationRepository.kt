@@ -22,6 +22,7 @@ class OrderCreationRepository @Inject constructor(
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), order.status.value)
                 ?: error("Couldn't find a status with key ${order.status.value}")
         }
+
         val request = CreateOrderRequest(
             status = status,
             lineItems = order.items.map {
@@ -33,7 +34,8 @@ class OrderCreationRepository @Inject constructor(
                 )
             },
             shippingAddress = order.shippingAddress.toShippingAddressModel(),
-            billingAddress = order.billingAddress.toBillingAddressModel()
+            billingAddress = order.billingAddress.toBillingAddressModel(),
+            customerNote = order.customerNote
         )
         val result = orderStore.createOrder(selectedSite.get(), request)
 

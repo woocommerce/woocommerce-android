@@ -58,7 +58,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:imeOptions="flagNoExtractUi"
-        android:textSize="@dimen/text_major_150"
+        android:textSize="@dimen/text_major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

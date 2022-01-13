@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.details.editing
 import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -16,26 +16,35 @@ class OrderEditingRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     suspend fun updateCustomerOrderNote(
-        orderLocalId: LocalId,
+        remoteOrderId: Long,
         customerOrderNote: String
     ): Flow<WCOrderStore.UpdateOrderResult> {
-        return orderUpdateStore.updateCustomerOrderNote(orderLocalId, selectedSite.get(), customerOrderNote)
+        return orderUpdateStore.updateCustomerOrderNote(
+            LocalOrRemoteId.RemoteId(remoteOrderId),
+            selectedSite.get(),
+            customerOrderNote
+        )
     }
 
     suspend fun updateOrderAddress(
-        orderLocalId: LocalId,
+        remoteOrderId: Long,
         orderAddress: OrderAddress
     ): Flow<WCOrderStore.UpdateOrderResult> {
-        return orderUpdateStore.updateOrderAddress(orderLocalId, orderAddress)
+        return orderUpdateStore.updateOrderAddress(
+            LocalOrRemoteId.RemoteId(remoteOrderId),
+            selectedSite.get().localId(),
+            orderAddress
+        )
     }
 
     suspend fun updateBothOrderAddresses(
-        orderLocalId: LocalId,
+        remoteOrderId: Long,
         shippingAddress: OrderAddress.Shipping,
         billingAddress: OrderAddress.Billing
     ): Flow<WCOrderStore.UpdateOrderResult> {
         return orderUpdateStore.updateBothOrderAddresses(
-            orderLocalId,
+            LocalOrRemoteId.RemoteId(remoteOrderId),
+            selectedSite.get().localId(),
             shippingAddress,
             billingAddress
         )

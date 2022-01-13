@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -10,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -21,6 +23,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.*
@@ -49,7 +52,6 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -58,6 +60,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 // TODO Extract logic out of MainActivity to reduce size
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class MainActivity :
     AppUpgradeActivity(),
@@ -115,15 +118,29 @@ class MainActivity :
         }
     }
 
+    private val showSubtitleAnimator by lazy {
+        createCollapsingToolbarMarginBottomAnimator(
+            from = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
+            to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle),
+            duration = 200L
+        )
+    }
+
+    private val hideSubtitleAnimator by lazy {
+        createCollapsingToolbarMarginBottomAnimator(
+            from = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle),
+            to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
+            duration = 200L
+        )
+    }
+
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
             val currentDestination = navController.currentDestination!!
-            val isFullScreenFragment = currentDestination.id == R.id.productImageViewerFragment ||
-                currentDestination.id == R.id.wpMediaViewerFragment
-
+            val isFullScreenFragment = currentDestination.id == R.id.productImageViewerFragment
             val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
 
             if (!isFullScreenFragment && !isDialogDestination) {
@@ -403,7 +420,8 @@ class MainActivity :
                 R.id.editCustomerOrderNoteFragment,
                 R.id.shippingAddressEditingFragment,
                 R.id.billingAddressEditingFragment,
-                R.id.orderFilterCategoriesFragment -> {
+                R.id.orderFilterCategoriesFragment,
+                R.id.orderCreationProductDetailsFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -424,10 +442,9 @@ class MainActivity :
             toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
         }
 
-        val isFullScreenFragment = destination.id == R.id.productImageViewerFragment ||
-            destination.id == R.id.wpMediaViewerFragment
+        val isFullScreenFragment = destination.id == R.id.productImageViewerFragment
 
-        supportActionBar?.let { actionBar ->
+        supportActionBar?.let {
             // the image viewers should be shown full screen
             if (isFullScreenFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
@@ -469,19 +486,30 @@ class MainActivity :
         }
     }
 
+    private fun createCollapsingToolbarMarginBottomAnimator(from: Int, to: Int, duration: Long): ValueAnimator {
+        return ValueAnimator.ofInt(from, to)
+            .also { valueAnimator ->
+                valueAnimator.duration = duration
+                valueAnimator.interpolator = AccelerateDecelerateInterpolator()
+                valueAnimator.addUpdateListener {
+                    binding.collapsingToolbar.expandedTitleMarginBottom = it.animatedValue as Int
+                }
+            }
+    }
+
     private fun removeSubtitle() {
-        binding.toolbarSubtitle.hide()
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
-        binding.collapsingToolbar.expandedTitleMarginBottom =
-            resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin)
+        if (binding.toolbarSubtitle.visibility == View.GONE) return
+        binding.toolbarSubtitle.collapse(duration = 200L)
+        hideSubtitleAnimator.start()
     }
 
     private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
-        binding.collapsingToolbar.expandedTitleMarginBottom =
-            resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle)
         binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         binding.toolbarSubtitle.text = subtitle
-        binding.toolbarSubtitle.show()
+        if (binding.toolbarSubtitle.visibility == View.VISIBLE) return
+        binding.toolbarSubtitle.expand(duration = 200L)
+        showSubtitleAnimator.start()
     }
 
     fun enableToolbarExpansion(enable: Boolean) {
@@ -719,8 +747,7 @@ class MainActivity :
                     }
                     is ViewOrderDetail -> {
                         showOrderDetail(
-                            event.localSiteId,
-                            remoteOrderId = event.uniqueId,
+                            orderId = event.uniqueId,
                             remoteNoteId = event.remoteNoteId,
                             launchedFromNotification = true
                         )
@@ -750,6 +777,17 @@ class MainActivity :
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(action)
+    }
+
+    override fun showProductDetailWithSharedTransition(remoteProductId: Long, sharedView: View, enableTrash: Boolean) {
+        val productCardDetailTransitionName = getString(R.string.product_card_detail_transition_name)
+        val extras = FragmentNavigatorExtras(sharedView to productCardDetailTransitionName)
+
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+            remoteProductId = remoteProductId,
+            isTrashEnabled = enableTrash
+        )
+        navController.navigateSafely(directions = action, extras = extras)
     }
 
     override fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
@@ -788,6 +826,24 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    override fun showReviewDetailWithSharedTransition(
+        remoteReviewId: Long,
+        launchedFromNotification: Boolean,
+        enableModeration: Boolean,
+        sharedView: View,
+        tempStatus: String?
+    ) {
+        val reviewCardDetailTransitionName = getString(R.string.review_card_detail_transition_name)
+        val extras = FragmentNavigatorExtras(sharedView to reviewCardDetailTransitionName)
+        val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
+            remoteReviewId = remoteReviewId,
+            tempStatus = tempStatus,
+            launchedFromNotification = launchedFromNotification,
+            enableModeration = enableModeration
+        )
+        navController.navigateSafely(directions = action, extras = extras)
+    }
+
     override fun showProductFilters(
         stockStatus: String?,
         productType: String?,
@@ -806,9 +862,7 @@ class MainActivity :
     }
 
     override fun showOrderDetail(
-        localSiteId: Int,
-        localOrderId: Int,
-        remoteOrderId: Long,
+        orderId: Long,
         remoteNoteId: Long,
         launchedFromNotification: Boolean
     ) {
@@ -818,9 +872,20 @@ class MainActivity :
             binding.bottomNav.active(ORDERS.position)
         }
 
-        val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
         navController.navigateSafely(action)
+    }
+
+    override fun showOrderDetailWithSharedTransition(
+        orderId: Long,
+        remoteNoteId: Long,
+        sharedView: View
+    ) {
+        val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
+        val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
+
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        navController.navigateSafely(directions = action, extras = extras)
     }
 
     override fun showFeedbackSurvey() {

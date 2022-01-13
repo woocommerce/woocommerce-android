@@ -6,25 +6,40 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
-import org.wordpress.android.fluxc.store.*
-import org.wordpress.android.fluxc.store.WCOrderStore.*
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
+import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class OrderDetailRepository @Inject constructor(
@@ -36,16 +51,16 @@ class OrderDetailRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers
 ) {
-    suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
+    suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
             orderStore.fetchSingleOrder(
                 selectedSite.get(),
-                orderIdentifier.toIdSet().remoteOrderId
+                orderId
             )
         }
 
         return if (result?.isError == false) {
-            getOrder(orderIdentifier)
+            getOrderById(orderId)
         } else {
             null
         }
@@ -54,11 +69,11 @@ class OrderDetailRepository @Inject constructor(
     suspend fun fetchOrderNotes(
         localOrderId: Int,
         remoteOrderId: Long
-    ): Boolean {
+    ): Boolean = withContext(dispatchers.io) {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
             orderStore.fetchOrderNotes(localOrderId, remoteOrderId, selectedSite.get())
         }
-        return result?.isError == false
+        result?.isError == false
     }
 
     suspend fun fetchOrderShipmentTrackingList(
@@ -79,26 +94,26 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun fetchOrderRefunds(remoteOrderId: Long): List<Refund> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatchers.io) {
             refundStore.fetchAllRefunds(selectedSite.get(), remoteOrderId)
-        }.model?.map { it.toAppModel() } ?: emptyList()
+                .model?.map { it.toAppModel() } ?: emptyList()
+        }
     }
 
     suspend fun fetchOrderShippingLabels(remoteOrderId: Long): List<ShippingLabel> {
-        val result = withContext(Dispatchers.IO) {
-            shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
+        return withContext(dispatchers.io) {
+            val result = shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
+
+            val action = if (result.isError) {
+                VALUE_API_FAILED
+            } else VALUE_API_SUCCESS
+            AnalyticsTracker.track(Stat.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
+            result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }?.map { it.toAppModel() } ?: emptyList()
         }
-
-        val action = if (result.isError) {
-            VALUE_API_FAILED
-        } else VALUE_API_SUCCESS
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
-
-        return result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }?.map { it.toAppModel() } ?: emptyList()
     }
 
     suspend fun updateOrderStatus(
-        orderLocalId: LocalId,
+        remoteOrderId: Long,
         newStatus: String
     ): Flow<UpdateOrderResult> {
         val status = withContext(dispatchers.io) {
@@ -106,41 +121,42 @@ class OrderDetailRepository @Inject constructor(
                 ?: error("Couldn't find a status with key $newStatus")
         }
         return orderStore.updateOrderStatus(
-            orderLocalId,
+            LocalOrRemoteId.RemoteId(remoteOrderId),
             selectedSite.get(),
             status
         )
     }
 
     suspend fun addOrderNote(
-        orderIdentifier: OrderIdentifier,
-        remoteOrderId: Long,
+        orderId: Long,
         noteModel: OrderNote
     ): OnOrderChanged {
-        val order = orderStore.getOrderByIdentifier(orderIdentifier)
+        val order = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
         if (order == null) {
-            WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
-            return OnOrderChanged(0).also {
-                it.error = OrderError(GENERIC_ERROR, "Can't find order with identifier $orderIdentifier")
-            }
+            WooLog.e(ORDERS, "Can't find order with id $orderId")
+            return OnOrderChanged(
+                orderError = OrderError(GENERIC_ERROR, "Can't find order with id $orderId")
+            )
         }
         val dataModel = noteModel.toDataModel()
-        val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
+        val payload = PostOrderNotePayload(
+            @Suppress("DEPRECATION_ERROR") order.id, orderId, selectedSite.get(), dataModel
+        )
         return orderStore.postOrderNote(payload)
     }
 
     suspend fun addOrderShipmentTracking(
-        orderIdentifier: OrderIdentifier,
+        orderId: Long,
+        orderLocalId: Int,
         shipmentTrackingModel: OrderShipmentTracking
     ): OnOrderChanged {
-        val orderIdSet = orderIdentifier.toIdSet()
         return orderStore.addOrderShipmentTracking(
             AddOrderShipmentTrackingPayload(
-                selectedSite.get(),
-                orderIdSet.id,
-                orderIdSet.remoteOrderId,
-                shipmentTrackingModel.toDataModel(),
-                shipmentTrackingModel.isCustomProvider
+                site = selectedSite.get(),
+                localOrderId = orderLocalId,
+                remoteOrderId = orderId,
+                tracking = shipmentTrackingModel.toDataModel(),
+                isCustomProvider = shipmentTrackingModel.isCustomProvider
             )
         )
     }
@@ -157,7 +173,9 @@ class OrderDetailRepository @Inject constructor(
         )
     }
 
-    fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
+    suspend fun getOrderById(orderId: Long) = withContext(dispatchers.io) {
+        orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.toAppModel()
+    }
 
     fun getOrderStatus(key: String): OrderStatus {
         return (
@@ -197,8 +215,8 @@ class OrderDetailRepository @Inject constructor(
         } else false
     }
 
-    fun getOrderRefunds(remoteOrderId: Long) = refundStore
-        .getAllRefunds(selectedSite.get(), remoteOrderId)
+    fun getOrderRefunds(orderId: Long) = refundStore
+        .getAllRefunds(selectedSite.get(), orderId)
         .map { it.toAppModel() }
         .reversed()
         .sortedBy { it.id }

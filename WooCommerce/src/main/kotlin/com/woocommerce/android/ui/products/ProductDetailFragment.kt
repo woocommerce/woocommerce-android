@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.SpannableString
@@ -11,6 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -41,7 +44,6 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
-import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -85,12 +87,29 @@ class ProductDetailFragment :
 
     @Inject lateinit var crashLogging: CrashLogging
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val backgroundColor = ContextCompat.getColor(requireContext(), R.color.default_window_background)
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.snack_root
+            duration = transitionDuration
+            scrimColor = Color.TRANSPARENT
+            startContainerColor = backgroundColor
+            endContainerColor = backgroundColor
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductDetailBinding.bind(view)
         setHasOptionsMenu(true)
 
+        ViewCompat.setTransitionName(
+            binding.root,
+            getString(R.string.product_card_detail_transition_name)
+        )
         initializeViews(savedInstanceState)
         initializeViewModel()
     }
@@ -177,14 +196,7 @@ class ProductDetailFragment :
             changesMade()
         }
         handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
-            viewModel.updateProductDraft(
-                images = it
-            )
-            changesMade()
-        }
-
-        handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
-            viewModel.showAddProductDownload(it.first().source)
+            viewModel.updateProductDraft(images = it)
             changesMade()
         }
 

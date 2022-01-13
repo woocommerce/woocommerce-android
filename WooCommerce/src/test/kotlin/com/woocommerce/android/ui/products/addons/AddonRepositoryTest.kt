@@ -17,10 +17,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.times
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -70,7 +73,7 @@ class AddonRepositoryTest {
             ?.let { (productAddons, orderAddons) ->
 
                 verify(orderStoreMock, times(1))
-                    .getOrderByIdentifier(OrderIdentifier(321, 123))
+                    .getOrderByIdAndSite(123L, siteModelMock)
 
                 verify(productStoreMock, times(1))
                     .getProductByRemoteId(siteModelMock, 333)
@@ -91,7 +94,7 @@ class AddonRepositoryTest {
             ?.let { (_, orderAddons) ->
 
                 verify(orderStoreMock, times(1))
-                    .getOrderByIdentifier(OrderIdentifier(321, 123))
+                    .getOrderByIdAndSite(123L, siteModelMock)
 
                 verify(productStoreMock, times(1))
                     .getProductByRemoteId(siteModelMock, 333)
@@ -179,14 +182,12 @@ class AddonRepositoryTest {
         assertThat(repositoryUnderTest.hasAnyProductSpecificAddons(remoteProductID)).isEqualTo(true)
     }
 
-    private fun configureSuccessfulOrderResponse() {
+    private suspend fun configureSuccessfulOrderResponse() {
         mock<WCOrderModel>().apply {
             whenever(getLineItemList()).thenReturn(defaultWCOrderItemList)
         }.let {
             whenever(
-                orderStoreMock.getOrderByIdentifier(
-                    OrderIdentifier(localSiteID, remoteOrderID)
-                )
+                orderStoreMock.getOrderByIdAndSite(remoteOrderID, siteModelMock)
             ).thenReturn(it)
         }
     }

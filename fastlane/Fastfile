@@ -17,6 +17,7 @@ Dotenv.load('~/.wcandroid-env.default')
 ENV[GHHELPER_REPO="woocommerce/woocommerce-android"]
 ENV["PROJECT_NAME"]="WooCommerce"
 ENV["PROJECT_ROOT_FOLDER"]="./"
+ENV['FL_RELEASE_TOOLKIT_DEFAULT_BRANCH'] = 'trunk'
 REPOSITORY_NAME="woocommerce-android"
 GH_ORG_NAME="woocommerce"
 
@@ -61,7 +62,7 @@ platform :android do
   # bundle exec fastlane code_freeze
   # bundle exec fastlane code_freeze skip_confirm:true
   #####################################################################################
-  desc "Creates a new release branch from the current develop"
+  desc "Creates a new release branch from the current trunk"
   lane :code_freeze do | options |
     old_version = android_codefreeze_prechecks(options)
 
@@ -91,7 +92,7 @@ platform :android do
   # bundle exec fastlane complete_code_freeze
   # bundle exec fastlane complete_code_freeze skip_confirm:true
   #####################################################################################
-  desc "Creates a new release branch from the current develop"
+  desc "Creates a new release branch from the current trunk"
   lane :complete_code_freeze do | options |
     android_completecodefreeze_prechecks(options)
     new_version = android_get_app_version()
@@ -385,6 +386,14 @@ platform :android do
         github_release_prefix: "",
         exclusions: ["default_web_client_id"]
       },
+      {
+        name: "About Library",
+        import_key: "aboutAutomatticVersion", # key used in build.gradle to reference the version
+        repository: "Automattic/about-automattic-android",
+        strings_file_path: "library/src/main/res/values/strings.xml",
+        github_release_prefix: "",
+        exclusions: []
+      },
     ]
 
     binary_imported_libraries.each do  | lib |
@@ -393,7 +402,8 @@ platform :android do
         import_key: lib[:import_key],
         repository: lib[:repository],
         file_path: lib[:strings_file_path],
-        github_release_prefix: lib[:github_release_prefix])
+        github_release_prefix: lib[:github_release_prefix]
+      )
 
       if download_path.nil?
         error_message = "Can't download strings file for #{lib[:name]}.\r\n"
@@ -402,9 +412,9 @@ platform :android do
         UI.user_error! "Abort." unless UI.confirm(error_message)
       else
         UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
-        lib_to_merge = [ {
-          library: lib[:name], 
-          strings_path: download_path, 
+        lib_to_merge = [{
+          library: lib[:name],
+          strings_path: download_path,
           exclusions: lib[:exclusions]
         }]
         an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: lib_to_merge)

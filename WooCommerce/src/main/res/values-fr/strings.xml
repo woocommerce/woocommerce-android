@@ -1,11 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-11-19 20:50:13+0000
+Translation-Revision-Date: 2021-12-28 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="order_creation_add_customer_note">Ajouter une note</string>
+    <string name="order_creation_customer_note">Note client</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Rafraîchir après la mise à jour</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Une version obsolète de l’extension WooCommerce Stripe Payment Gateway est installée sur votre boutique. Veuillez mettre à jour afin d’accepter les paiements en personne.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Mettre à jour WooCommerce Stripe Payment Gateway</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Actualiser</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Vous y êtes presque ! Veuillez terminer la configuration de WooCommerce Stripe Payment Gateway pour commencer à accepter les paiements en personne.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Terminez la configuration de WooCommerce Stripe Payment Gateway depuis la page d’administration de votre boutique</string>
+    <string name="card_reader_payment_failed_unknown">Le paiement a été refusé pour une raison inconnue</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">Une carte réelle a été utilisée sur un site en mode test</string>
+    <string name="card_reader_payment_failed_test_card">Les cartes de test système ne sont pas autorisées pour le paiement</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">Un code PIN incorrect a été saisi trop de fois</string>
+    <string name="card_reader_payment_failed_pin_required">Cette carte nécessite un code PIN et ne peut donc pas être traitée</string>
+    <string name="card_reader_payment_failed_invalid_amount">Le montant du paiement n’est pas autorisé pour la carte présentée</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Paiement refusé en raison de fonds insuffisants</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">Les codes postaux de la transaction et de la carte ne correspondent pas</string>
+    <string name="card_reader_payment_failed_expired_card">La carte a expiré</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">Une transaction identique a été soumise récemment</string>
+    <string name="card_reader_payment_failed_currency_not_supported">La carte ne prend pas en charge cette devise</string>
+    <string name="card_reader_payment_failed_card_not_supported">La carte ne permet pas ce type d’achat</string>
+    <string name="card_reader_payment_failed_invalid_account">La carte ou le compte de la carte n’est pas valide</string>
+    <string name="card_reader_payment_failed_generic">Le paiement a été refusé pour une raison non spécifiée</string>
+    <string name="card_reader_payment_failed_fraud">Essayez un autre moyen de paiement</string>
+    <string name="card_reader_payment_failed_temporary">Réessayez</string>
+    <string name="order_creation_fragment_title">Nouvelle commande</string>
+    <string name="analytics_date_range_selector_description">Sélecteur pour le filtre de plage de dates</string>
+    <string name="analytics_date_range_from_date">par rapport à la période précédente (%1$s)</string>
+    <string name="analytics_date_range_to_date"> %1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">Année jusqu’à aujourd’hui</string>
+    <string name="date_timeframe_quarter_to_date">Trimestre jusqu’à aujourd’hui</string>
+    <string name="date_timeframe_month_to_date">Mois jusqu’à aujourd’hui</string>
+    <string name="date_timeframe_week_to_date">Semaine date à date</string>
+    <string name="date_timeframe_last_year">Année dernière</string>
+    <string name="date_timeframe_last_quarter">Trimestre dernier</string>
+    <string name="date_timeframe_last_month">Mois dernier</string>
+    <string name="date_timeframe_last_week">Semaine dernière</string>
+    <string name="settings_enable_order_creation_teaser_message">Testez la création de commandes détaillées, car cette fonctionnalité est prête à être lancée.</string>
+    <string name="settings_enable_order_creation_teaser_title">Création d’une commande</string>
+    <string name="settings_enable_simple_payments_teaser_title">Paiements simplifiés</string>
+    <string name="beta_features_order_creation">Création d’une commande</string>
+    <string name="beta_features_simple_payments">Paiements simplifiés</string>
+    <string name="beta_features_add_ons">Voir les modules</string>
+    <string name="orders_empty_message_for_filtered_orders">Désolés, nous n’avons trouvé aucune commande.</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">Ouvrir les réglages</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">Autorisation manquante pour les appareils à proximité</string>
+    <string name="shipping_label_edit_address_country_search_hint">Filtrer par pays</string>
+    <string name="shipping_label_edit_address_state_search_hint">Filtrer par état(s)/province(s)</string>
+    <string name="order_detail_edit_address_state">État/Province</string>
+    <string name="orderfilters_date_range_end_date">Date de fin</string>
+    <string name="orderfilters_date_range_start_date">Date de début</string>
+    <string name="orderfilters_date_range_picker_title">Sélectionner des dates</string>
+    <string name="orderfilters_date_range_filter_custom_range">Plage personnalisée</string>
+    <string name="orderlist_bottom_sheet_simple_payment_description">Créer une commande avec un minimum d’informations</string>
+    <string name="orderlist_bottom_sheet_simple_payment_action">Paiement simplifié</string>
+    <string name="orderlist_bottom_sheet_create_order_description">Créer une commande manuelle</string>
+    <string name="orderlist_bottom_sheet_create_order_action">Créer une commande</string>
+    <string name="orderlist_create_order_button_description">Créer une commande</string>
+    <string name="simple_payments_creation_error">Impossible de créer la commande</string>
+    <string name="simple_payments_enter_amount">Saisir le montant</string>
+    <string name="simple_payments_dialog_title">Accepter le paiement</string>
+    <string name="orderlist_simple_payments_menu">Paiement simplifié</string>
+    <string name="orderlist_simple_payments_wip_title">Acceptez les paiements sur votre appareil !</string>
+    <string name="analytics">Statistiques</string>
+    <string name="jetpack_install_progress_step_four_message">Terminé</string>
+    <string name="jetpack_install_progress_step_three_message">Connexion à votre boutique</string>
+    <string name="jetpack_install_progress_step_two_message">Activation</string>
+    <string name="jetpack_install_progress_step_one_message">Installation de Jetpack</string>
+    <string name="jetpack_install_progress_subtitle">Veuillez patienter pendant que nous connectons %s à Jetpack.</string>
+    <string name="jetpack_install_progress_title">Installation\nJetpack</string>
+    <string name="jetpack_install_start_default_name">votre site</string>
+    <string name="jetpack_install_start_subtitle">Installez l’extension Jetpack gratuite sur &lt;strong&gt;%s&lt;/strong&gt; pour profiter de la meilleure expérience mobile qui soit.</string>
+    <string name="jetpack_install_start_title">Configurer Jetpack</string>
+    <string name="product_review_list_fetching_failed">Erreur lors de la récupération des avis sur le produit</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">Lecteur déconnecté</string>
+    <string name="card_reader_accessibility_reader_is_connected">Lecteur connecté</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">Il n’est pas recommandé d’annuler une mise à jour logicielle en cours. L’annulation bloquera la connexion de votre lecteur.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">La mise à jour du logiciel du lecteur a échoué, car la batterie du lecteur n’est pas suffisamment chargée. Veuillez charger le lecteur au-dessus de 50 %% avant de réessayer.</string>
+    <string name="card_reader_software_update_progress_description_low_battery">La mise à jour du logiciel du lecteur a échoué, car la batterie du lecteur est chargée à %1$s%%. Veuillez charger le lecteur au-dessus de 50 %% avant de réessayer.</string>
+    <string name="card_reader_software_update_title_battery_low">Veuillez charger le lecteur</string>
+    <string name="card_reader_software_update_description">Le logiciel de votre lecteur de carte doit être mis à jour pour continuer à fonctionner parfaitement.</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">Veuillez indiquer un code postal valide dans les réglages de votre boutique, puis réessayez.</string>
+    <string name="card_reader_connect_invalid_postal_code_header">Le code postal de l’adresse de la boutique n’est pas valide.</string>
+    <string name="card_reader_connect_missing_address_button">Entrer l’adresse</string>
+    <string name="card_reader_connect_missing_address">Veuillez indiquer l’adresse de votre boutique pour continuer.</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">Vérifier votre appareil mobile</string>
+    <string name="card_reader_m2_manual_card_reader">Manuel du lecteur de carte Stripe M2 </string>
+    <string name="card_reader_bbpos_manual_card_reader">Manuel du lecteur de carte BBPOS Chipper</string>
+    <string name="order_error_update_empty_mail">Impossible de remplacer l’adresse par une adresse e-mail vide. Assurez-vous d’utiliser la version la plus récente de WooCommerce.</string>
+    <string name="orderfilters_date_range_filter_last_30_days">30 derniers jours</string>
+    <string name="orderfilters_date_range_filter_last_7_days">7 derniers jours</string>
+    <string name="orderfilters_date_range_filter_last_two_days">Les 2 derniers jours</string>
+    <string name="orderfilters_date_range_filter_today">Aujourd’hui</string>
+    <string name="orderfilters_order_status_with_count_filter_option"> %1$s (%2$d)</string>
+    <string name="orderfilters_default_filter_option">Tous</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">Commandes filtrées</string>
+    <string name="orderfilters_filter_card_title_all_orders">Toutes les commandes</string>
+    <string name="orderlist_simple_payments_wip_message_disabled">Nous mettons tout en œuvre pour vous permettre d’accepter les paiements plus facilement sur votre appareil. Procédez à l’activation dans Réglages &gt; Fonctionnalités bêta.</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Nous mettons tout en œuvre pour vous permettre d’accepter les paiements plus facilement sur votre appareil. En attendant, appuyez sur le bouton « + » pour créer une commande avec le montant que vous souhaitez percevoir.</string>
     <string name="jetpack_benefits_modal_dismiss">Pas maintenant</string>
     <string name="jetpack_benefits_modal_install_jetpack">Configurer Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Autorisez plusieurs utilisateurs à accéder à l’application mobile WooCommerce.</string>
@@ -16,9 +114,7 @@ Language: fr
     <string name="jetpack_benefits_modal_push_notifications_title">Notifications en push</string>
     <string name="jetpack_benefits_modal_subtitle">Installez la nouvelle extension Jetpack gratuite pour profiter de la meilleure expérience mobile qui soit.</string>
     <string name="jetpack_benefits_modal_title">Exploitez au mieux votre boutique</string>
-    <string name="settings_enable_quick_order_teaser_message">Vous pourrez bientôt créer des commandes avec un minimum d’informations grâce à la nouvelle fonctionnalité</string>
-    <string name="settings_enable_quick_order_teaser_title">Commande rapide</string>
-    <string name="beta_features_message">Voir les modules, commande rapide</string>
+    <string name="settings_enable_simple_payments_teaser_message">Testez les commandes avec un minimum d’informations, car cette fonctionnalité est prête à être lancée</string>
     <string name="order_detail_use_as_shipping_address">Utiliser comme adresse de livraison</string>
     <string name="order_detail_use_as_billing_address">Utiliser comme adresse de facturation</string>
     <string name="orderfilters_filters_count_title">Filtres (%d)</string>
@@ -37,7 +133,6 @@ Language: fr
     <string name="product_description_hint_with_title">Dites-nous en plus sur %s…</string>
     <string name="product_description_hint_no_title">Décrivez votre produit pour vos futurs clients…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Numéro de série du lecteur copié dans le presse-papier</string>
-    <string name="card_reader_manual_card_reader">Manuel du lecteur de carte</string>
     <string name="order_detail_add_billing_address">Ajouter l’adresse de facturation</string>
     <string name="order_detail_add_shipping_address">Ajouter l’adresse de livraison</string>
     <string name="order_detail_add_customer_note">Ajouter une note client</string>
@@ -45,7 +140,6 @@ Language: fr
     <string name="order_detail_shipping_address_section">Adresse de livraison</string>
     <string name="order_detail_address_section">Adresse</string>
     <string name="order_detail_edit_address_country">Pays</string>
-    <string name="order_detail_edit_address_state">Région/Département</string>
     <string name="order_detail_edit_address_zip">Code Postal</string>
     <string name="order_detail_edit_address_city">Ville</string>
     <string name="order_detail_edit_address_line2">Adresse 2</string>
@@ -125,7 +219,6 @@ Language: fr
     <string name="card_reader_purchase_card_reader">Commander un lecteur de carte</string>
     <string name="card_reader_manage_card_reader">Gérer le lecteur de carte</string>
     <string name="shipping_label_multiple_customs_form_print_button">Imprimer</string>
-    <string name="shipping_label_edit_address_state">Région/Département</string>
     <string name="shipping_label_edit_address_line2">Adresse ligne 2</string>
     <string name="shipping_label_edit_address_line1">Adresse ligne 1</string>
     <string name="shipping_label_print_multiple_screen_title">Imprimer des étiquettes d’expédition</string>
@@ -156,7 +249,7 @@ Language: fr
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">La version de l’extension WooCommerce Payments installée sur votre boutique est obsolète. Veuillez mettre à jour afin d’accepter les paiements en personne.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Mettre à jour WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Actualiser</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">Vous y êtes presque ! Veuillez finir de configurer WooCommerce Payments afin de commencer à accepter les paiements par carte en personne.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Vous y êtes presque ! Veuillez terminer la configuration de WooCommerce Payments pour commencer à accepter les paiements en personne.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Finir de configurer WooCommerce Payments dans la page d’administration de la boutique</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Rafraîchir après l’activation</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">L’extension WooCommerce Payments est installée sur votre boutique, mais elle n’est pas activée. Veuillez l’activer afin d’accepter les paiements en personne.</string>
@@ -183,7 +276,7 @@ Language: fr
     <string name="product_attributes_created_generate_action_text">Générer une variante</string>
     <string name="product_attributes_created_description">Maintenant que vous avez ajouté des attributs, vous pouvez créer votre première variante !</string>
     <string name="product_attributes_created_title">Attributs créés</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s %%</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% terminé</string>
     <string name="card_reader_software_update_progress_cancel_warning">Il n’est pas recommandé d’annuler une mise à jour logicielle en cours</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Désolé, impossible de traiter ce paiement</string>
     <string name="card_reader_payment_failed_server_error_state">Aucune connexion au serveur</string>
@@ -234,7 +327,6 @@ Language: fr
     <string name="card_reader_connect_multiple_readers_found_header">Plusieurs lecteurs trouvés</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">La commande est déjà payée</string>
     <string name="card_reader_payment_receipt_email_content">Merci pour votre achat ! Cliquez sur le lien ci-dessous pour votre reçu de paiement.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">Carte refusée</string>
     <string name="shipping_label_print_customs_form_download_failed">Erreur lors du téléchargement du formulaire douanier</string>
     <string name="shipping_label_print_customs_form_screen_title">Imprimer la facture de douane</string>
     <string name="shipping_label_print_customs_form">Imprimer le formulaire douanier</string>
@@ -273,7 +365,6 @@ Language: fr
     <string name="shipping_label_rate_included_options_usps_tracking">Suivi USPS</string>
     <string name="card_reader_software_update_in_progress_title">Mise à jour du logiciel de votre lecteur</string>
     <string name="card_reader_software_update_title">Mise à jour du logiciel</string>
-    <string name="card_reader_software_update_description">Le logiciel de votre lecteur de carte doit être mis à jour pour continuer à fonctionner parfaitement. Voulez-vous le mettre à jour maintenant ?</string>
     <string name="card_reader_detail_connected_update_success">Logiciel du lecteur mis à jour</string>
     <string name="card_reader_detail_connected_reader_unknown">NOM DU LECTEUR DE CARTE INCONNU</string>
     <string name="card_reader_detail_connected_disconnect_reader">Déconnecter le lecteur</string>
@@ -344,7 +435,7 @@ Language: fr
     <string name="card_reader_connect_open_permission_settings">Ouvrir les réglages</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Le Bluetooth est désactivé</string>
     <string name="card_reader_connect_location_provider_disabled_header">La localisation est désactivée</string>
-    <string name="card_reader_connect_missing_permissions_header">Autorisation de localisation requise manquante</string>
+    <string name="card_reader_connect_missing_permissions_header">Autorisation de géolocalisation précise requise manquante</string>
     <string name="card_reader_connect_connecting_failed_hint">Nous n’avons pas pu nous connecter au lecteur.</string>
     <string name="card_reader_connect_connecting_header">Connexion au lecteur</string>
     <string name="card_reader_connect_to_reader">Se connecter au lecteur</string>
@@ -487,6 +578,7 @@ Language: fr
     <string name="shipping_label_edit_address_use_address_as_is">Utiliser l’adresse saisie</string>
     <string name="shipping_label_edit_address_country">Pays</string>
     <string name="shipping_label_edit_address_zip">Code postal</string>
+    <string name="shipping_label_edit_address_state">État</string>
     <string name="shipping_label_edit_address_city">Ville</string>
     <string name="shipping_label_edit_address_phone">Téléphone</string>
     <string name="shipping_label_edit_address_company">Entreprise</string>
@@ -840,7 +932,6 @@ Language: fr
     <string name="product_schedule_sale_sublabel">Commencer et terminer automatiquement une vente</string>
     <string name="product_schedule_sale_label">Planifier une vente</string>
     <string name="order_refunds_store_admin_link_text">depuis la page administration de votre boutique</string>
-    <string name="orders_empty_message_with_order_status_filter">Désolé, impossible de trouver les commandes « %s »</string>
     <string name="product_inventory_update_sku_error">Cette UGS est déjà utilisée par un autre produit</string>
     <string name="product_shipping_settings">Paramètres de livraison</string>
     <string name="product_no_shipping_class">Pas de classe de livraison</string>
@@ -1679,6 +1770,18 @@ Language: fr
     <string name="all">Toutes</string>
     <string name="notification_channel_general_title">Général</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>En cours</item>
         <item>Toutes les commandes</item>

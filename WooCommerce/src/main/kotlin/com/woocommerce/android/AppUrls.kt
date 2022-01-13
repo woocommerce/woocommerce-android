@@ -29,8 +29,7 @@ object AppUrls {
     const val CROWDSIGNAL_SHIPPING_LABELS_SURVEY =
         "https://automattic.survey.fm/woo-app-feature-feedback-shipping-labels"
 
-    // TODO nbradbury - change to https://automattic.survey.fm/woo-app-quick-order-production when feature is released
-    const val SIMPLE_PAYMENTS_SURVEY = "https://automattic.survey.fm/woo-app-quick-order-testing"
+    const val SIMPLE_PAYMENTS_SURVEY = "https://automattic.survey.fm/woo-app-quick-order-production"
 
     const val WOOCOMMERCE_USER_ROLES =
         "https://woocommerce.com/posts/a-guide-to-woocommerce-user-roles-permissions-and-security/"
@@ -41,8 +40,10 @@ object AppUrls {
     const val WPCOM_ADD_PAYMENT_METHOD = "https://wordpress.com/me/purchases/add-payment-method"
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS =
         "https://docs.woocommerce.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/"
-    const val WOOCOMMERCE_PURCHASE_CARD_READER = "https://woocommerce.com/in-person-payments/"
+    const val WOOCOMMERCE_PURCHASE_CARD_READER = "https://woocommerce.com/products/m2-card-reader/"
     const val BBPOS_MANUAL_CARD_READER =
         "https://developer.bbpos.com/quick_start_guide/Chipper%202X%20BT%20Quick%20Start%20Guide.pdf"
     const val M2_MANUAL_CARD_READER = "https://stripe.com/files/docs/terminal/m2_product_sheet.pdf"
+
+    const val PLAY_STORE_APP_PREFIX = "http://play.google.com/store/apps/details?id="
 }

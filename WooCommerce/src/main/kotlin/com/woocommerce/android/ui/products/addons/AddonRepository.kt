@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -45,10 +44,8 @@ class AddonRepository @Inject constructor(
         ?.findOrderAttributesWith(orderItemID)
         ?.joinWithAddonsFrom(productID)
 
-    private fun getOrder(orderID: Long) =
-        orderStore.getOrderByIdentifier(
-            OrderIdentifier(selectedSite.get().id, orderID)
-        )
+    private suspend fun getOrder(orderID: Long) =
+        orderStore.getOrderByIdAndSite(orderID, selectedSite.get())
 
     private fun WCOrderModel.findOrderAttributesWith(orderItemID: Long) =
         getLineItemList().find { it.id == orderItemID }
