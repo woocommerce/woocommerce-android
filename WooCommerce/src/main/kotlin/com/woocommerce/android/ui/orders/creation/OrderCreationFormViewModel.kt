@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -11,6 +12,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -69,7 +71,7 @@ class OrderCreationFormViewModel @Inject constructor(
                 },
                 onFailure = {
                     viewState = viewState.copy(isProgressDialogShown = false)
-                    // TODO triggerEvent(ShowSnackbar)
+                    triggerEvent(ShowSnackbar(R.string.order_creation_failed))
                 }
             )
         }
