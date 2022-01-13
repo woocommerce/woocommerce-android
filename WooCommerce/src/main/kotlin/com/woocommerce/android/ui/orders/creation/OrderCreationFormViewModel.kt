@@ -67,11 +67,12 @@ class OrderCreationFormViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = true)
             orderCreationRepository.createOrder(order).fold(
                 onSuccess = {
+                    triggerEvent(ShowSnackbar(R.string.order_creation_success_snackbar))
                     triggerEvent(ShowCreatedOrder(it.id))
                 },
                 onFailure = {
                     viewState = viewState.copy(isProgressDialogShown = false)
-                    triggerEvent(ShowSnackbar(R.string.order_creation_failed))
+                    triggerEvent(ShowSnackbar(R.string.order_creation_failure_snackbar))
                 }
             )
         }

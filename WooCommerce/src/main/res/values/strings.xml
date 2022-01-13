@@ -348,7 +348,8 @@
     <string name="order_creation_variations_screen_title">Select variation</string>
     <string name="order_creation_loading_dialog_title">Creating your order</string>
     <string name="order_creation_loading_dialog_message">Please wait…</string>
-    <string name="order_creation_failed">Order creation failed</string>
+    <string name="order_creation_failure_snackbar">Order creation failed</string>
+    <string name="order_creation_success_snackbar">Order created</string>
 
     <!--
         Order Filters
