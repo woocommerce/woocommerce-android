@@ -9,10 +9,17 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentMoreMenuBinding
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 @ExperimentalFoundationApi
 class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
+    @Inject lateinit var selectedSite: SelectedSite
+
     override fun getFragmentTitle() = getString(R.string.more_menu)
 
     override fun shouldExpandToolbar(): Boolean = false
@@ -31,10 +38,16 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     ): View {
         _binding = FragmentMoreMenuBinding.inflate(inflater, container, false)
         val view = binding.root
+        val wpAdminUrl = selectedSite.get().adminUrl
+        val storeUrl = selectedSite.get().url
 
         val buttons = listOf(
-            MenuButton(R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin),
-            MenuButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
+            MenuButton(R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin) {
+                ChromeCustomTabUtils.launchUrl(requireContext(), wpAdminUrl)
+            },
+            MenuButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store) {
+                ChromeCustomTabUtils.launchUrl(requireContext(), storeUrl)
+            },
             // MenuButton(R.string.more_menu_button_analytics, R.drawable.ic_more_menu_analytics),
             // MenuButton(R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments),
             // MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
