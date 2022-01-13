@@ -89,6 +89,7 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onCardReaderPaymentCompleted() {
+        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.card_reader_payment_completed_payment_header))
         launch {
             delay(DELAY_MS)
             triggerEvent(MultiLiveEvent.Event.Exit)
