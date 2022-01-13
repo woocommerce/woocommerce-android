@@ -27,21 +27,28 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     val productListData: LiveData<List<Product>> = productList
 
     init {
-        fetchProductList()
+        loadProductList()
     }
 
-    fun fetchProductList(
+    fun loadProductList(
         loadMore: Boolean = false
     ) {
         if (loadMore.not()) {
             viewState = viewState.copy(isSkeletonShown = true)
         }
-        /**
-         * We will probably want to improve this call to check if the product list
-         * is already available on database before relying directly on this call
-         */
+
         launch {
-            productList.value = productListRepository.fetchProductList(loadMore)
+            val cachedProducts = productListRepository.getProductList()
+                .takeIf { it.isNotEmpty() }
+                ?.apply {
+                    productList.value = this
+                    viewState = viewState.copy(isSkeletonShown = false)
+                }
+
+            productListRepository.fetchProductList(loadMore)
+                .takeIf { it != cachedProducts }
+                ?.let { productList.value = it }
+
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }

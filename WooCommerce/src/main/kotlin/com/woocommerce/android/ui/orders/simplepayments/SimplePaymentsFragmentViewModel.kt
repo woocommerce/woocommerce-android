@@ -26,6 +26,13 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     private val order: Order
         get() = navArgs.order
 
+    val orderDraft
+        get() = order.copy(
+            total = viewState.orderTotal,
+            totalTax = viewState.orderTotalTax,
+            customerNote = viewState.customerNote
+        )
+
     init {
         viewState = viewState.copy(customerNote = order.customerNote)
         val hasTaxes = order.totalTax > BigDecimal.ZERO
@@ -74,6 +81,11 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         viewState = viewState.copy(customerNote = customerNote)
     }
 
+    fun onDoneButtonClicked() {
+        // TODO nbradbury - save the order draft, waiting for FluxC changes to do that
+        triggerEvent(ShowTakePaymentScreen)
+    }
+
     @Parcelize
     data class ViewState(
         val chargeTaxes: Boolean = false,
@@ -85,6 +97,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     ) : Parcelable
 
     object ShowCustomerNoteEditor : MultiLiveEvent.Event()
+    object ShowTakePaymentScreen : MultiLiveEvent.Event()
 
     companion object {
         private const val ONE_HUNDRED = 100f

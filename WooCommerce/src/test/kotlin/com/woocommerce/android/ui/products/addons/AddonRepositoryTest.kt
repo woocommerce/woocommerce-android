@@ -182,7 +182,7 @@ class AddonRepositoryTest {
         assertThat(repositoryUnderTest.hasAnyProductSpecificAddons(remoteProductID)).isEqualTo(true)
     }
 
-    private fun configureSuccessfulOrderResponse() {
+    private suspend fun configureSuccessfulOrderResponse() {
         mock<WCOrderModel>().apply {
             whenever(getLineItemList()).thenReturn(defaultWCOrderItemList)
         }.let {

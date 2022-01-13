@@ -3,6 +3,7 @@
 8.4
 -----
 - [*] New Home Screen now shows revenue data in a a line chart instead of barchart
+- [*] Fixed an issue which resulted in showing wrong order prices if the store used more than 2 digits for price formatting [https://github.com/woocommerce/woocommerce-android/pull/5612]
 
 8.3
 -----

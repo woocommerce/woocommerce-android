@@ -276,7 +276,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Display error message on fetch product error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(productRepository.fetchProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
+        whenever(productRepository.fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)).thenReturn(null)
         whenever(productRepository.getProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
 
         var snackbar: ShowSnackbar? = null
@@ -286,7 +286,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(productRepository, times(1)).fetchProduct(PRODUCT_REMOTE_ID)
+        verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_fetch_product_error))
     }
@@ -304,7 +304,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(productRepository, times(1)).getProduct(PRODUCT_REMOTE_ID)
-        verify(productRepository, times(0)).fetchProduct(any())
+        verify(productRepository, times(0)).fetchProductOrLoadFromCache(any())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
@@ -591,7 +591,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     /**
      * Protection for a race condition bug in Variations.
      *
-     * We're requiring [ProductDetailRepository.fetchProduct] to be called right after
+     * We're requiring [ProductDetailRepository.fetchProductOrLoadFromCache] to be called right after
      * [VariationRepository.createEmptyVariation] to fix a race condition problem in the Product Details page. The
      * bug can be reproduced inconsistently by following these steps:
      *
@@ -628,7 +628,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             assertThat(productData?.productDraft?.numVariations).isZero()
 
             doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
-            doReturn(product.copy(numVariations = 1_914)).whenever(productRepository).fetchProduct(eq(product.remoteId))
+            doReturn(product.copy(numVariations = 1_914)).whenever(productRepository)
+                .fetchProductOrLoadFromCache(eq(product.remoteId))
 
             // When
             viewModel.onGenerateVariationClicked()
@@ -636,7 +637,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             // Then
             verify(variationRepository, times(1)).createEmptyVariation(eq(product))
             // Prove that we fetched from the API.
-            verify(productRepository, times(1)).fetchProduct(eq(product.remoteId))
+            verify(productRepository, times(1)).fetchProductOrLoadFromCache(eq(product.remoteId))
 
             // The VM state should have been updated with the _fetched_ product's numVariations
             assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
@@ -646,7 +647,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `when there image upload errors, then show a snackbar`() = testBlocking {
         val errorEvents = MutableSharedFlow<List<ProductImageUploadData>>()
         doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
-        doReturn(product).whenever(productRepository).fetchProduct(any())
+        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
         doReturn(product).whenever(productRepository).getProduct(any())
         val errorMessage = "message"
         doReturn(errorMessage).whenever(resources).getString(any(), anyVararg())
@@ -675,7 +676,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `when image uploads gets cleared, then auto-dismiss the snackbar`() = testBlocking {
         val errorEvents = MutableSharedFlow<List<ProductImageUploadData>>()
         doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
-        doReturn(product).whenever(productRepository).fetchProduct(any())
+        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
         doReturn(product).whenever(productRepository).getProduct(any())
 
         viewModel.start()
