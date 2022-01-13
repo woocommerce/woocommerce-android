@@ -12,13 +12,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Date bar -->
-        <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
-            android:id="@+id/my_store_date_bar"
-            style="@style/Woo.Card.WithoutPadding"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
             android:id="@+id/my_store_refresh_layout"
             android:layout_width="match_parent"
