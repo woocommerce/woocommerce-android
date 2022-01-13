@@ -21,14 +21,15 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     private lateinit var sut: OrderCreationProductSelectionViewModel
     private lateinit var productListRepository: ProductListRepository
     private lateinit var searchResult: List<Product>
+    private lateinit var fullProductList: List<Product>
 
     @Before
     fun setUp() {
         productListRepository = mock {
-            val products = generateProductList()
+            fullProductList = generateProductList()
             searchResult = listOf(generateProduct(333))
-            on { getProductList() } doReturn products
-            onBlocking { fetchProductList() } doReturn products
+            on { getProductList() } doReturn fullProductList
+            onBlocking { fetchProductList() } doReturn fullProductList
             onBlocking { searchProductList(SEARCH_QUERY) } doReturn searchResult
             on { lastSearchQuery } doReturn SEARCH_QUERY
         }
@@ -162,6 +163,28 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
 
         assertThat(actualSearchState).isTrue
         assertThat(actualProductList).isEmpty()
+    }
+
+    @Test
+    fun `when onSearchClosed is called, then product full list should be loaded and search should be inactive`() = testBlocking {
+        var actualProductList = emptyList<Product>()
+        var actualSearchState: Boolean? = null
+        var actualQueryString: String? = null
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        sut.viewStateData.observeForever { _, new ->
+            actualSearchState = new.isSearchActive
+            actualQueryString = new.query
+        }
+
+        sut.onSearchOpened()
+        sut.onSearchClosed()
+
+        assertThat(actualQueryString).isNull()
+        assertThat(actualSearchState).isFalse
+        assertThat(actualProductList).isEqualTo(fullProductList)
     }
 
     private fun startSut() {
