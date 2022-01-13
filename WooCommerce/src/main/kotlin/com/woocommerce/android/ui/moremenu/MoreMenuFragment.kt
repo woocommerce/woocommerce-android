@@ -35,9 +35,9 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         val buttons = listOf(
             MenuButton(R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin),
             MenuButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
-            MenuButton(R.string.more_menu_button_analytics, R.drawable.ic_more_menu_analytics),
-            MenuButton(R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments),
-            MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
+            // MenuButton(R.string.more_menu_button_analytics, R.drawable.ic_more_menu_analytics),
+            // MenuButton(R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments),
+            // MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
             MenuButton(R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews)
         )
 
