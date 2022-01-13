@@ -56,7 +56,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_creation, menu)
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
-            isVisible = sharedViewModel.currentDraft.items.isNotEmpty()
+            isVisible = sharedViewModel.currentDraft.isValidForCreation
         }
     }
 
@@ -115,7 +115,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
         sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
-            createOrderMenuItem?.isVisible = newOrderData.items.isNotEmpty()
+            createOrderMenuItem?.isVisible = newOrderData.isValidForCreation
             binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
             bindCustomerAddressSection(binding.customerSection, newOrderData)
