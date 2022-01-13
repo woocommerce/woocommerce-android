@@ -148,44 +148,46 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onSearchOpened is called, then product list should be empty and search should be active`() = testBlocking {
-        var actualProductList = emptyList<Product>()
-        var actualSearchState: Boolean? = null
-        startSut()
-        sut.productListData.observeForever {
-            actualProductList = it
-        }
-        sut.viewStateData.observeForever { _, new ->
-            actualSearchState = new.isSearchActive
-        }
+    fun `when onSearchOpened is called, then product list should be empty and search should be active`() =
+        testBlocking {
+            var actualProductList = emptyList<Product>()
+            var actualSearchState: Boolean? = null
+            startSut()
+            sut.productListData.observeForever {
+                actualProductList = it
+            }
+            sut.viewStateData.observeForever { _, new ->
+                actualSearchState = new.isSearchActive
+            }
 
-        sut.onSearchOpened()
+            sut.onSearchOpened()
 
-        assertThat(actualSearchState).isTrue
-        assertThat(actualProductList).isEmpty()
-    }
+            assertThat(actualSearchState).isTrue
+            assertThat(actualProductList).isEmpty()
+        }
 
     @Test
-    fun `when onSearchClosed is called, then product full list should be loaded and search should be inactive`() = testBlocking {
-        var actualProductList = emptyList<Product>()
-        var actualSearchState: Boolean? = null
-        var actualQueryString: String? = null
-        startSut()
-        sut.productListData.observeForever {
-            actualProductList = it
-        }
-        sut.viewStateData.observeForever { _, new ->
-            actualSearchState = new.isSearchActive
-            actualQueryString = new.query
-        }
+    fun `when onSearchClosed is called, then product full list should be loaded and search should be inactive`() =
+        testBlocking {
+            var actualProductList = emptyList<Product>()
+            var actualSearchState: Boolean? = null
+            var actualQueryString: String? = null
+            startSut()
+            sut.productListData.observeForever {
+                actualProductList = it
+            }
+            sut.viewStateData.observeForever { _, new ->
+                actualSearchState = new.isSearchActive
+                actualQueryString = new.query
+            }
 
-        sut.onSearchOpened()
-        sut.onSearchClosed()
+            sut.onSearchOpened()
+            sut.onSearchClosed()
 
-        assertThat(actualQueryString).isNull()
-        assertThat(actualSearchState).isFalse
-        assertThat(actualProductList).isEqualTo(fullProductList)
-    }
+            assertThat(actualQueryString).isNull()
+            assertThat(actualSearchState).isFalse
+            assertThat(actualProductList).isEqualTo(fullProductList)
+        }
 
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(
