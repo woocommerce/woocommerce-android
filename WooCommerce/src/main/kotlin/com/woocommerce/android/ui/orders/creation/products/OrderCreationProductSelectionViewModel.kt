@@ -68,7 +68,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     fun searchProductList(query: String, loadMore: Boolean = false) {
         viewState = viewState.copy(query = query)
         launch {
-            productListRepository.searchProductList(query)
+            productListRepository.searchProductList(query, loadMore)
                 ?.takeIf { query == productListRepository.lastSearchQuery }
                 ?.let { handleSearchResult(it, loadMore) }
         }
