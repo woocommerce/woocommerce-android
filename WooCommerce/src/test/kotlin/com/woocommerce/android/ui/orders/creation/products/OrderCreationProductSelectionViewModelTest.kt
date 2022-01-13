@@ -124,6 +124,28 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         assertThat(actualProductList).isEqualTo(searchResult)
     }
 
+    @Test
+    fun `when loading more products with search active, then apply the expected result`() = testBlocking {
+        var actualProductList = emptyList<Product>()
+        val loadMoreSearchResponse = listOf(generateProduct(666))
+        whenever(productListRepository.searchProductList(SEARCH_QUERY, true))
+            .thenReturn(loadMoreSearchResponse)
+
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        sut.onSearchOpened()
+
+        sut.searchProductList(SEARCH_QUERY)
+        verify(productListRepository).searchProductList(SEARCH_QUERY)
+        assertThat(actualProductList).isEqualTo(searchResult)
+
+        sut.loadProductList(loadMore = true)
+        verify(productListRepository).searchProductList(SEARCH_QUERY, true)
+        assertThat(actualProductList).isEqualTo(loadMoreSearchResponse + searchResult)
+    }
+
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(
             SavedStateHandle(),
