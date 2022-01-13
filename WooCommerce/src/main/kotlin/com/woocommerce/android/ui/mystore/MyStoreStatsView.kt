@@ -610,7 +610,7 @@ class MyStoreStatsView @JvmOverloads constructor(
      */
     private inner class RevenueAxisFormatter : ValueFormatter() {
         override fun getFormattedValue(value: Float): String {
-            return formatCurrencyForDisplay(value.toDouble(), chartCurrencyCode.orEmpty())
+            return getFormattedRevenueValue(value.toDouble())
         }
     }
 }
