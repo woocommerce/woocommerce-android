@@ -26,20 +26,17 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     private val productList = MutableLiveData<List<Product>>()
     val productListData: LiveData<List<Product>> = productList
 
-    val isSearching
-        get() = viewState.isSearchActive ?: false
-
     init {
         loadProductList()
     }
 
-    fun loadProductList(
-        loadMore: Boolean = false
-    ) {
+    fun loadProductList(loadMore: Boolean = false) {
         if (loadMore.not()) {
             viewState = viewState.copy(isSkeletonShown = true)
         }
-        if (isSearching) viewState.query?.let { searchProductList(it, loadMore) }
+        if (viewState.isSearchActive == true) {
+            viewState.query?.let { searchProductList(it, loadMore) }
+        }
         else loadFullProductList(loadMore)
     }
 
@@ -80,7 +77,10 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun handleSearchResult(searchResult: List<Product>, loadMore: Boolean) {
+    private fun handleSearchResult(
+        searchResult: List<Product>,
+        loadMore: Boolean
+    ) {
         productList.value = productList.value
             ?.takeIf { loadMore && it.isNotEmpty() }
             ?.let { searchResult + it }
