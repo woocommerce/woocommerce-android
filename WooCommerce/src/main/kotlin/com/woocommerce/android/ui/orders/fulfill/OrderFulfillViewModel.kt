@@ -78,11 +78,13 @@ class OrderFulfillViewModel @Inject constructor(
     }
 
     final fun start() {
-        val order = repository.getOrderById(navArgs.orderId)
-        order?.let {
-            displayOrderDetails(it)
-            displayOrderProducts(it)
-            displayShipmentTrackings()
+        launch {
+            val order = repository.getOrderById(navArgs.orderId)
+            order?.let {
+                displayOrderDetails(it)
+                displayOrderProducts(it)
+                displayShipmentTrackings()
+            }
         }
     }
 

@@ -251,7 +251,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
         }
 
-        fun moveItemToIndividualPackage(): List<ShippingLabelPackageUiModel> {
+        suspend fun moveItemToIndividualPackage(): List<ShippingLabelPackageUiModel> {
             val updatedPackages = removeItemFromCurrentPackage()
 
             // We fetch products when this screen is opened, so we can retrieve details from DB

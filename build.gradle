@@ -82,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'develop-0389603aa4aef2ce4ddec3b1f4f9128eae88575e'
+    fluxCVersion = 'develop-5baed7c379f856ea624b94853ed6f8bab74e739c'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
@@ -107,7 +107,7 @@ ext {
     wordPressUtilsVersion = "2.3.0"
     mediapickerVersion = 'trunk-00947a9086ecdf2192b0bdc95a22e1647696d0b1'
     wordPressLoginVersion = '0.10.0'
-    aboutAutomatticVersion = '0.0.3'
+    aboutAutomatticVersion = '0.0.4'
 }
 
 // Onboarding and dev env setup tasks

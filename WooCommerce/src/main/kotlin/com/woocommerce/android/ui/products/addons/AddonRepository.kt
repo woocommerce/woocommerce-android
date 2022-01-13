@@ -44,7 +44,7 @@ class AddonRepository @Inject constructor(
         ?.findOrderAttributesWith(orderItemID)
         ?.joinWithAddonsFrom(productID)
 
-    private fun getOrder(orderID: Long) =
+    private suspend fun getOrder(orderID: Long) =
         orderStore.getOrderByIdAndSite(orderID, selectedSite.get())
 
     private fun WCOrderModel.findOrderAttributesWith(orderItemID: Long) =
