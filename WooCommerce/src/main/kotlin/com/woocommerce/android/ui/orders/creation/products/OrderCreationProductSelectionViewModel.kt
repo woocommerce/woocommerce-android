@@ -94,11 +94,11 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     }
 
     fun onSearchClosed() {
-        loadProductList()
         viewState = viewState.copy(
             isSearchActive = false,
             query = null
         )
+        loadProductList()
     }
 
     @Parcelize
