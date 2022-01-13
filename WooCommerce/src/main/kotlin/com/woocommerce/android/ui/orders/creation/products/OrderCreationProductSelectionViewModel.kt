@@ -63,9 +63,11 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     fun searchProductList(query: String, loadMore: Boolean = false) {
         viewState = viewState.copy(query = query)
         launch {
-            productListRepository.searchProductList(query)
-                ?.takeIf { query == productListRepository.lastSearchQuery }
-                ?.handleSearchResult(loadMore)
+            if (query == productListRepository.lastSearchQuery) {
+                productListRepository.searchProductList(query)
+                    ?.let { handleSearchResult(it, loadMore) }
+            }
+
         }
     }
 
@@ -78,8 +80,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun List<Product>.handleSearchResult(loadMore: Boolean) {
-        val searchResult = this
+    private fun handleSearchResult(searchResult: List<Product>, loadMore: Boolean) {
         productList.value = productList.value
             ?.takeIf { loadMore && it.isNotEmpty() }
             ?.let { searchResult + it }
