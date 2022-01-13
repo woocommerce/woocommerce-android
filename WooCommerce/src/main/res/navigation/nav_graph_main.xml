@@ -174,7 +174,11 @@
         android:id="@+id/more_menu"
         android:name="com.woocommerce.android.ui.moremenu.MoreMenuFragment"
         android:label="fragment_more_menu"
-        tools:layout="@layout/fragment_more_menu" />
+        tools:layout="@layout/fragment_more_menu" >
+        <action
+            android:id="@+id/action_moreMenu_to_reviewList"
+            app:destination="@id/reviews" />
+    </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"

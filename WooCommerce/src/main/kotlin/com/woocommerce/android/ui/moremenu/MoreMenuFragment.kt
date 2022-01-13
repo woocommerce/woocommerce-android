@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentMoreMenuBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -51,7 +53,11 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
             // MenuButton(R.string.more_menu_button_analytics, R.drawable.ic_more_menu_analytics),
             // MenuButton(R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments),
             // MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
-            MenuButton(R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews)
+            MenuButton(R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews) {
+                findNavController().navigateSafely(
+                    MoreMenuFragmentDirections.actionMoreMenuToReviewList()
+                )
+            }
         )
 
         binding.menu.apply {
