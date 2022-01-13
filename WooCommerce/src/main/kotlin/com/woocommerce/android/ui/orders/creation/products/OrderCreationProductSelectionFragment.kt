@@ -136,6 +136,7 @@ class OrderCreationProductSelectionFragment :
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         productListViewModel.onSearchOpened()
+        onSearchViewActiveChanged(isActive = true)
         return true
     }
 
@@ -144,11 +145,12 @@ class OrderCreationProductSelectionFragment :
         removeSearchListener()
         updateActivityTitle()
         searchMenuItem?.collapseActionView()
+        onSearchViewActiveChanged(isActive = false)
         return true
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        query?.let { productListViewModel.onSearchQuerySubmitted(it) }
+        query?.let { productListViewModel.searchProductList(it) }
         ActivityUtils.hideKeyboard(activity)
         return true
     }

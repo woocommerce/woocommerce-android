@@ -38,7 +38,11 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         if (loadMore.not()) {
             viewState = viewState.copy(isSkeletonShown = true)
         }
+        if (isSearching) viewState.query?.let { searchProductList(it, loadMore) }
+        else loadFullProductList(loadMore)
+    }
 
+    private fun loadFullProductList(loadMore: Boolean) {
         launch {
             val cachedProducts = productListRepository.getProductList()
                 .takeIf { it.isNotEmpty() }
@@ -55,6 +59,15 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
+    fun searchProductList(query: String, loadMore: Boolean = false) {
+        viewState = viewState.copy(query = query)
+        launch {
+            productListRepository.searchProductList(query)
+                ?.takeIf { query == productListRepository.lastSearchQuery }
+                ?.handleSearchResult(loadMore)
+        }
+    }
+
     fun onProductSelected(productId: Long) {
         val product = productList.value!!.first { it.remoteId == productId }
         if (product.numVariations == 0) {
@@ -64,18 +77,12 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
-    fun onSearchQuerySubmitted(query: String, loadMore: Boolean = false) {
-        viewState = viewState.copy(query = query)
-        launch {
-            productListRepository.searchProductList(query)
-                ?.takeIf { query == productListRepository.lastSearchQuery }
-                ?.let { searchResult ->
-                    productList.value = productList.value
-                        ?.takeIf { loadMore && it.isNotEmpty() }
-                        ?.let { searchResult + it }
-                        ?: searchResult
-                }
-        }
+    private fun List<Product>.handleSearchResult(loadMore: Boolean) {
+        val searchResult = this
+        productList.value = productList.value
+            ?.takeIf { loadMore && it.isNotEmpty() }
+            ?.let { searchResult + it }
+            ?: searchResult
     }
 
     fun onSearchOpened() {
@@ -88,7 +95,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     fun onSearchClosed() {
         loadProductList()
         viewState = viewState.copy(
-            isSearchActive = false
+            isSearchActive = false,
+            query = null
         )
     }
 
