@@ -1,3 +1,6 @@
+import se.bjurr.violations.comments.github.plugin.gradle.ViolationCommentsToGitHubTask
+import se.bjurr.violations.lib.model.SEVERITY
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -350,7 +353,7 @@ android.buildTypes.all { buildType ->
     }
 }
 
-task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.gradle.ViolationCommentsToGitHubTask) {
+tasks.register("violationCommentsToGitHub", ViolationCommentsToGitHubTask) {
     repositoryOwner = "woocommerce"
     repositoryName = "woocommerce-android"
     pullRequestId = System.properties['GITHUB_PULLREQUESTID']
@@ -361,7 +364,7 @@ task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.
     createCommentWithAllSingleFileComments = false
     createSingleFileComments = true
     commentOnlyChangedContent = true
-    minSeverity = se.bjurr.violations.lib.model.SEVERITY.INFO //ERROR, INFO, WARN
+    minSeverity = SEVERITY.INFO //ERROR, INFO, WARN
     commentTemplate = """
 **Reporter**: {{violation.reporter}}{{#violation.rule}}\n
 **Rule**: {{violation.rule}}{{/violation.rule}}
@@ -373,6 +376,31 @@ task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.
     violations = [
             ["CHECKSTYLE", ".", ".*/build/.*/checkstyle/.*\\.xml\$", "CheckStyle"],
             ["CHECKSTYLE", ".", ".*/build/.*/detekt/.*\\.xml\$", "Detekt"]
+    ]
+}
+
+tasks.register("dependencyTreeDiffCommentToGitHub", ViolationCommentsToGitHubTask) {
+    repositoryOwner = "woocommerce"
+    repositoryName = "woocommerce-android"
+    pullRequestId = System.properties['GITHUB_PULLREQUESTID']
+    oAuth2Token = System.properties['GITHUB_OAUTH2TOKEN']
+    gitHubUrl = "https://api.github.com/"
+    createCommentWithAllSingleFileComments = true
+    createSingleFileComments = false
+    commentOnlyChangedContent = true
+    commentOnlyChangedFiles = false
+    minSeverity = SEVERITY.INFO
+    commentTemplate = """
+### The PR caused the following dependency changes:
+
+```diff
+{{{violation.message}}}
+```
+
+*Please review and act accordingly*
+"""
+    violations = [
+            ["GENERIC", ".", ".*/build/.*/diff/.*\\.txt\$", "DependenciesDiffChecker"],
     ]
 }
 
