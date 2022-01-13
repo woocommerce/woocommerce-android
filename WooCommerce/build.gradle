@@ -353,7 +353,7 @@ android.buildTypes.all { buildType ->
     }
 }
 
-task violationCommentsToGitHub(type: ViolationCommentsToGitHubTask) {
+tasks.register("violationCommentsToGitHub", ViolationCommentsToGitHubTask) {
     repositoryOwner = "woocommerce"
     repositoryName = "woocommerce-android"
     pullRequestId = System.properties['GITHUB_PULLREQUESTID']
@@ -379,7 +379,7 @@ task violationCommentsToGitHub(type: ViolationCommentsToGitHubTask) {
     ]
 }
 
-task dependencyTreeDiffCommentToGitHub(type: ViolationCommentsToGitHubTask) {
+tasks.register("dependencyTreeDiffCommentToGitHub", ViolationCommentsToGitHubTask) {
     repositoryOwner = "woocommerce"
     repositoryName = "woocommerce-android"
     pullRequestId = System.properties['GITHUB_PULLREQUESTID']
