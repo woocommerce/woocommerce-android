@@ -127,6 +127,7 @@
     <string name="plus">Plus</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
+    <string name="create">Create</string>
 
     <!--
         Date/Time Labels

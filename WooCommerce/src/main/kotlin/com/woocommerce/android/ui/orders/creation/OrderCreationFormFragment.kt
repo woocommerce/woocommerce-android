@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.viewModels
@@ -37,12 +40,23 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
+    private var createOrderMenuItem: MenuItem? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         with(FragmentOrderCreationFormBinding.bind(view)) {
             setupObserversWith(this)
             setupHandleResults()
             initView()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_order_creation, menu)
+        createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
+            isVisible = sharedViewModel.currentDraft.items.isNotEmpty()
         }
     }
 
@@ -101,6 +115,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
         sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
+            createOrderMenuItem?.isVisible = newOrderData.items.isNotEmpty()
             binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
             bindCustomerAddressSection(binding.customerSection, newOrderData)
