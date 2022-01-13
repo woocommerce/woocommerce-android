@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders.creation.products
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductList
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithVariations
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -18,13 +20,17 @@ import org.mockito.kotlin.*
 class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     private lateinit var sut: OrderCreationProductSelectionViewModel
     private lateinit var productListRepository: ProductListRepository
+    private lateinit var searchResult: List<Product>
 
     @Before
     fun setUp() {
         productListRepository = mock {
             val products = generateProductList()
+            searchResult = listOf(generateProduct(333))
             on { getProductList() } doReturn products
             onBlocking { fetchProductList() } doReturn products
+            onBlocking { searchProductList(SEARCH_QUERY) } doReturn searchResult
+            on { lastSearchQuery } doReturn SEARCH_QUERY
         }
     }
 
@@ -106,6 +112,18 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         assertThat(productListUpdateCalls).isEqualTo(2)
     }
 
+    @Test
+    fun `when searching for products, then apply the expected result`() = testBlocking {
+        var actualProductList = emptyList<Product>()
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        sut.searchProductList(SEARCH_QUERY)
+        verify(productListRepository).searchProductList(SEARCH_QUERY)
+        assertThat(actualProductList).isEqualTo(searchResult)
+    }
+
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(
             SavedStateHandle(),
@@ -116,5 +134,6 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     companion object {
         const val VARIABLE_PRODUCT_ID = 6L
         const val NON_VARIABLE_PRODUCT_ID = 1L
+        const val SEARCH_QUERY = "search_query"
     }
 }
