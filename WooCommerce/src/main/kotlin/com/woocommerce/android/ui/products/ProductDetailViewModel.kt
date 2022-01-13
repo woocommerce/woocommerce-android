@@ -356,7 +356,7 @@ class ProductDetailViewModel @Inject constructor(
             attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
             variationRepository.createEmptyVariation(draft)
                 ?.let {
-                    productRepository.fetchProduct(draft.remoteId)
+                    productRepository.fetchProductOrLoadFromCache(draft.remoteId)
                         ?.also { updateProductState(productToUpdateFrom = it) }
                 }
         }.also {
@@ -1082,7 +1082,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (checkConnection()) {
-            val fetchedProduct = productRepository.fetchProduct(remoteProductId)
+            val fetchedProduct = productRepository.fetchProductOrLoadFromCache(remoteProductId)
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {

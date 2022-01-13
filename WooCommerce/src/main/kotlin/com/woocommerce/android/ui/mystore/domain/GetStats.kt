@@ -4,7 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.GenericError
+import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,13 +28,13 @@ class GetStats @Inject constructor(
             visitorStats(refresh, granularity)
         ).flowOn(coroutineDispatchers.computation)
 
-    private suspend fun hasOrders(): Flow<LoadStatsResult.HasOrders> =
+    private suspend fun hasOrders(): Flow<HasOrders> =
         statsRepository.checkIfStoreHasNoOrders()
             .transform {
                 if (it.getOrNull() == true) {
-                    emit(LoadStatsResult.HasOrders(false))
+                    emit(HasOrders(false))
                 } else {
-                    emit(LoadStatsResult.HasOrders(true))
+                    emit(HasOrders(true))
                 }
             }
 
@@ -44,14 +44,14 @@ class GetStats @Inject constructor(
                 result.fold(
                     onSuccess = { stats ->
                         appPrefsWrapper.setV4StatsSupported(true)
-                        emit(LoadStatsResult.RevenueStatsSuccess(stats))
+                        emit(RevenueStatsSuccess(stats))
                     },
                     onFailure = {
                         if (isPluginNotActiveError(it)) {
                             appPrefsWrapper.setV4StatsSupported(false)
-                            emit(LoadStatsResult.PluginNotActive)
+                            emit(PluginNotActive)
                         } else {
-                            emit(GenericError)
+                            emit(RevenueStatsError)
                         }
                     }
                 )
@@ -62,14 +62,14 @@ class GetStats @Inject constructor(
             statsRepository.fetchVisitorStats(granularity, forceRefresh)
                 .transform { result ->
                     result.fold(
-                        onSuccess = { stats -> emit(LoadStatsResult.VisitorsStatsSuccess(stats)) },
-                        onFailure = { emit(LoadStatsResult.VisitorsStatsError) }
+                        onSuccess = { stats -> emit(VisitorsStatsSuccess(stats)) },
+                        onFailure = { emit(VisitorsStatsError) }
                     )
                 }
         } else {
             flow {
                 if (FeatureFlag.JETPACK_CP.isEnabled()) {
-                    emit(LoadStatsResult.IsJetPackCPEnabled)
+                    emit(IsJetPackCPEnabled)
                 }
             }
         }
@@ -90,7 +90,7 @@ class GetStats @Inject constructor(
             val hasOrder: Boolean
         ) : LoadStatsResult()
 
-        object GenericError : LoadStatsResult()
+        object RevenueStatsError : LoadStatsResult()
         object VisitorsStatsError : LoadStatsResult()
         object PluginNotActive : LoadStatsResult()
         object IsJetPackCPEnabled : LoadStatsResult()

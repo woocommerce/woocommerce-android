@@ -50,6 +50,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.store.WCGatewayStore
@@ -145,7 +146,7 @@ class IssueRefundViewModel @Inject constructor(
         get() = refundJob?.isActive ?: false
 
     init {
-        order = loadOrder(arguments.orderId)
+        order = runBlocking { loadOrder(arguments.orderId) }
         allShippingLineIds = order.shippingLines.map { it.itemId }
         allFeeLineIds = order.feesLines.map { it.id }
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
@@ -163,7 +164,7 @@ class IssueRefundViewModel @Inject constructor(
         initRefundSummaryState()
     }
 
-    private fun loadOrder(orderId: Long): Order =
+    private suspend fun loadOrder(orderId: Long): Order =
         requireNotNull(orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.toAppModel())
 
     private fun updateRefundTotal(amount: BigDecimal) {
@@ -304,7 +305,7 @@ class IssueRefundViewModel @Inject constructor(
         AnalyticsTracker.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
+                AnalyticsTracker.KEY_REFUND_TYPE to RefundType.ITEMS.name,
                 AnalyticsTracker.KEY_ORDER_ID to order.id
             )
         )

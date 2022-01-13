@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 11:54:04+0000
+Translation-Revision-Date: 2021-12-22 09:54:20+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="order_creation_add_customer_note">メモを追加</string>
+    <string name="order_creation_customer_note">注文メモ</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">更新後に再読み込みする</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Stripe Payment Gateway 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">WooCommerce Stripe Payment Gateway を更新する</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">再読み込み</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">あともう少しです。 オフラインでの支払いを開始するには、WooCommerce Stripe Payment Gateway のセットアップを完了させてください。</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">ストア管理で WooCommerce Stripe Payment Gateway のセットアップを完了させる</string>
+    <string name="card_reader_payment_failed_unknown">不明な理由により支払いが拒否されました</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">本番用カードがテストモードのサイトで使用されました</string>
+    <string name="card_reader_payment_failed_test_card">システムテストカードは支払いが許可されていません</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">上限回数を超えて誤った PIN が入力されました</string>
+    <string name="card_reader_payment_failed_pin_required">このカードには PIN コードが必要であるため、処理できません</string>
+    <string name="card_reader_payment_failed_invalid_amount">この支払い額は提示されたカードで許可されていません</string>
+    <string name="card_reader_payment_failed_insufficient_funds">資金が不足しているため支払いが拒否されました</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">取引の郵便番号とカードの郵便番号が一致しません</string>
+    <string name="card_reader_payment_failed_expired_card">カードの有効期限が過ぎています</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">同一の取引が最近送信されています</string>
+    <string name="card_reader_payment_failed_currency_not_supported">カードはこの通貨をサポートしていません</string>
+    <string name="card_reader_payment_failed_card_not_supported">カードはこの種類の購入をサポートしていません</string>
+    <string name="card_reader_payment_failed_invalid_account">カードまたはカード口座が無効です</string>
+    <string name="card_reader_payment_failed_generic">不明な理由により支払いが拒否されました</string>
+    <string name="card_reader_payment_failed_fraud">別の支払い手段でお試しください</string>
+    <string name="card_reader_payment_failed_temporary">再試行すると完了できる場合があります</string>
+    <string name="order_creation_fragment_title">新しい注文</string>
+    <string name="analytics_date_range_selector_description">日付範囲フィルターのセレクタ</string>
+    <string name="analytics_date_range_from_date">前の期間 (%1$s) との比較</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">今年の現在まで</string>
+    <string name="date_timeframe_quarter_to_date">今四半期の現在まで</string>
+    <string name="date_timeframe_month_to_date">今月の現在まで</string>
+    <string name="date_timeframe_week_to_date">今週の現在まで</string>
+    <string name="date_timeframe_last_year">去年</string>
+    <string name="date_timeframe_last_quarter">前四半期</string>
+    <string name="date_timeframe_last_month">先月</string>
+    <string name="date_timeframe_last_week">先週</string>
     <string name="settings_enable_order_creation_teaser_message">リリースの準備ができ次第、詳細情報で注文の作成をテストしてください</string>
     <string name="settings_enable_order_creation_teaser_title">注文の作成</string>
     <string name="settings_enable_simple_payments_teaser_title">シンプルペイメント</string>
@@ -213,7 +249,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Payments 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments を更新する</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">再読み込み</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">あともう少しです。 カードを使用した支払いを開始するには、WooCommerce Payments のセットアップを完了させてください。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">ストア管理で WooCommerce Payments のセットアップを完了させる</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">有効化後に再読み込みする</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">ご使用のストアには WooCommerce Payments 拡張機能はインストールされていますが、有効化されていません。 オフラインでの支払いを受け取るには、この拡張機能を有効化してください。</string>
@@ -291,7 +326,6 @@ Language: ja_JP
     <string name="card_reader_connect_multiple_readers_found_header">複数の Reader が見つかりました</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">この注文のお支払いは完了しています</string>
     <string name="card_reader_payment_receipt_email_content">ご購入ありがとうございます。 以下のリンクをクリックしてお支払いのレシートをご確認ください。\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">カードが拒否されました</string>
     <string name="shipping_label_print_customs_form_download_failed">税関申告書をダウンロードする際にエラーが発生しました</string>
     <string name="shipping_label_print_customs_form_screen_title">税関送り状を印刷</string>
     <string name="shipping_label_print_customs_form">税関申告書を印刷</string>
@@ -1735,6 +1769,18 @@ Language: ja_JP
     <string name="all">すべて</string>
     <string name="notification_channel_general_title">一般</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>処理中</item>
         <item>すべての注文</item>

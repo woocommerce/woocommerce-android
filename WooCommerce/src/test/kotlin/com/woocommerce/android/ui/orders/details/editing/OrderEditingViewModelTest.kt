@@ -24,7 +24,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     private val orderEditingRepository: OrderEditingRepository = mock()
     private val orderDetailRepository: OrderDetailRepository = mock {
-        on { getOrderById(any()) } doReturn testOrder
+        onBlocking { getOrderById(any()) } doReturn testOrder
     }
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
@@ -135,7 +135,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             )
 
             orderDetailRepository.stub {
-                on { getOrderById(any()) } doReturn originalOrder
+                onBlocking { getOrderById(any()) } doReturn originalOrder
             }
 
             orderEditingRepository.stub {

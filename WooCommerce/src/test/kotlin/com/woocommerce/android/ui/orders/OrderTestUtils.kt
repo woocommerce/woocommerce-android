@@ -12,8 +12,6 @@ import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
@@ -24,7 +22,6 @@ object OrderTestUtils {
     val TEST_LOCAL_SITE_ID = LocalOrRemoteId.LocalId(1)
     val TEST_REMOTE_ORDER_ID = LocalOrRemoteId.RemoteId(2)
     const val TEST_ORDER_STATUS_COUNT = 20
-    const val ORDER_IDENTIFIER = "1-1-1"
 
     /**
      * Generates an array containing multiple [WCOrderModel] objects.
@@ -301,12 +298,11 @@ object OrderTestUtils {
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
                 "  }]",
-            refundTotal = -10.0,
+            refundTotal = -BigDecimal.TEN,
         ).toAppModel()
     }
 
-    fun generateOrderWithFee(orderIdentifier: OrderIdentifier = "1-1-1"): WCOrderModel {
-        val orderIdSet = orderIdentifier.toIdSet()
+    fun generateOrderWithFee(): WCOrderModel {
         val lineItems = "[{\n" +
             "    \"id\":1,\n" +
             "    \"name\":\"A test\",\n" +
@@ -324,19 +320,19 @@ object OrderTestUtils {
             "  }]"
 
         return WCOrderModel(
-            id = orderIdSet.id,
+            id = 1,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(orderIdSet.localSiteId),
-            remoteOrderId = LocalOrRemoteId.RemoteId(orderIdSet.remoteOrderId),
+            localSiteId = LocalOrRemoteId.LocalId(1),
+            remoteOrderId = LocalOrRemoteId.RemoteId(1),
             number = "55",
             status = "pending",
             total = "106.00",
             shippingTotal = "4.00",
             lineItems = lineItems,
-            refundTotal = -10.0,
+            refundTotal = -BigDecimal.TEN,
             feeLines = lineItems,
 //                "[{\n" +
 //                "    \"name\":\"A fee\",\n" +
@@ -355,17 +351,15 @@ object OrderTestUtils {
         )
     }
 
-    fun generateOrderWithMultipleShippingLines(orderIdentifier: OrderIdentifier = "1-1-1"): WCOrderModel {
-        val orderIdSet = orderIdentifier.toIdSet()
-
+    fun generateOrderWithMultipleShippingLines(): WCOrderModel {
         return WCOrderModel(
-            id = orderIdSet.id,
+            id = 1,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(orderIdSet.localSiteId),
-            remoteOrderId = LocalOrRemoteId.RemoteId(orderIdSet.remoteOrderId),
+            localSiteId = LocalOrRemoteId.LocalId(1),
+            remoteOrderId = LocalOrRemoteId.RemoteId(1),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -386,7 +380,7 @@ object OrderTestUtils {
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
                 "  }]",
-            refundTotal = -10.0,
+            refundTotal = -BigDecimal.TEN,
             shippingLines =
             "[{" +
                 "\"id\":119,\n" +

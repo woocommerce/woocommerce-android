@@ -69,7 +69,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         Assertions.assertThat(skeletonShown).containsExactly(true, false)
         Assertions.assertThat(markAsRead).isEqualTo(NOTIF_ID)
         Assertions.assertThat(productReview).isEqualTo(review)
-        verify(repository, times(1)).markNotificationAsRead(any())
+        verify(repository, times(1)).markNotificationAsRead(any(), any())
         assertEquals(NOTIF_ID, markAsRead)
     }
 
@@ -101,7 +101,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             Assertions.assertThat(skeletonShown).containsExactly(true, false)
             assertEquals(NOTIF_ID, markAsRead)
             Assertions.assertThat(productReview).isEqualTo(review)
-            verify(repository, times(1)).markNotificationAsRead(any())
+            verify(repository, times(1)).markNotificationAsRead(any(), any())
             Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
         }
 
