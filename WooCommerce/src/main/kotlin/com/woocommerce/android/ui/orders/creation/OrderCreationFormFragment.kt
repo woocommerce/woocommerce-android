@@ -19,6 +19,7 @@ import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
@@ -30,6 +31,7 @@ import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Compa
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -41,6 +43,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private var createOrderMenuItem: MenuItem? = null
+    private var progressDialog: CustomProgressDialog? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,6 +61,21 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
             isVisible = sharedViewModel.currentDraft.isValidForCreation
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_create -> {
+                formViewModel.onCreateOrderClicked(sharedViewModel.currentDraft)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        progressDialog?.dismiss()
     }
 
     private fun FragmentOrderCreationFormBinding.initView() {
@@ -127,6 +145,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
         sharedViewModel.products.observe(viewLifecycleOwner) {
             bindProductsSection(binding.productsSection, it)
+        }
+
+        formViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { show ->
+                if (show) showProgressDialog() else hideProgressDialog()
+            }
         }
 
         formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
@@ -210,6 +234,20 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                         orderStatusList = event.orderStatusList
                     ).let { findNavController().navigateSafely(it) }
         }
+    }
+
+    private fun showProgressDialog() {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(R.string.order_creation_loading_dialog_title),
+            getString(R.string.order_creation_loading_dialog_message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     override fun getFragmentTitle() = getString(R.string.order_creation_fragment_title)
