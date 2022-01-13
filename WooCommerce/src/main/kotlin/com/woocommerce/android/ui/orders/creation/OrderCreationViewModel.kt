@@ -157,4 +157,6 @@ data class ProductUIModel(
 )
 
 val Order.isValidForCreation: Boolean
-    get() = items.isNotEmpty()
+    get() = items.isNotEmpty() &&
+        shippingAddress != Address.EMPTY &&
+        billingAddress != Address.EMPTY
