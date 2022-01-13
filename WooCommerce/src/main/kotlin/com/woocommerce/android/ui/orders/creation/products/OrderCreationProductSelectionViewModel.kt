@@ -36,8 +36,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
         if (viewState.isSearchActive == true) {
             viewState.query?.let { searchProductList(it, loadMore) }
-        }
-        else loadFullProductList(loadMore)
+        } else loadFullProductList(loadMore)
     }
 
     private fun loadFullProductList(loadMore: Boolean) {
@@ -57,23 +56,21 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
-    fun searchProductList(query: String, loadMore: Boolean = false) {
-        viewState = viewState.copy(query = query)
-        launch {
-            if (query == productListRepository.lastSearchQuery) {
-                productListRepository.searchProductList(query)
-                    ?.let { handleSearchResult(it, loadMore) }
-            }
-
-        }
-    }
-
     fun onProductSelected(productId: Long) {
         val product = productList.value!!.first { it.remoteId == productId }
         if (product.numVariations == 0) {
             triggerEvent(AddProduct(productId))
         } else {
             triggerEvent(ShowProductVariations(productId))
+        }
+    }
+
+    fun searchProductList(query: String, loadMore: Boolean = false) {
+        viewState = viewState.copy(query = query)
+        launch {
+            productListRepository.searchProductList(query)
+                ?.takeIf { query == productListRepository.lastSearchQuery }
+                ?.let { handleSearchResult(it, loadMore) }
         }
     }
 
