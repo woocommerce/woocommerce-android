@@ -39,11 +39,11 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
             viewModel.onCardPaymentClicked()
         }
 
-        setUpObservers(binding)
+        setUpObservers()
         setupResultHandlers()
     }
 
-    private fun setUpObservers(binding: FragmentTakePaymentBinding) {
+    private fun setUpObservers() {
         viewModel.event.observe(
             viewLifecycleOwner,
             { event ->
