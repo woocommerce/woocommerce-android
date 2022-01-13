@@ -1,2 +1,0 @@
-8.1 :
-L’onglet Commandes a fait peau neuve ! À la place des onglets, vous pouvez désormais filtrer les commandes par état ou plage de dates. Cette mise à jour tient compte des commentaires que vous avez formulés au fil des ans. Elle va vous plaire.

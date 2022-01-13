@@ -39,7 +39,6 @@ import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
@@ -65,16 +64,15 @@ class MyStoreStatsView @JvmOverloads constructor(
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
     private lateinit var dateUtils: DateUtils
 
-    private var revenueStatsModel: WCRevenueStatsModel? = null
+    private var revenueStatsModel: RevenueStatsUiModel? = null
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
-    private var chartCurrencyCode: String? = null
 
     private var skeletonView = SkeletonView()
 
     private lateinit var lastUpdatedRunnable: Runnable
-    private val lastUpdatedHandler = Handler(Looper.getMainLooper())
+    private var lastUpdatedHandler: Handler? = null
     private var lastUpdated: Date? = null
 
     private var isRequestingStats = false
@@ -122,9 +120,10 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         initChart()
 
+        lastUpdatedHandler = Handler(Looper.getMainLooper())
         lastUpdatedRunnable = Runnable {
             updateRecencyMessage()
-            lastUpdatedHandler.postDelayed(
+            lastUpdatedHandler?.postDelayed(
                 lastUpdatedRunnable,
                 UPDATE_DELAY_TIME_MS
             )
@@ -142,9 +141,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             Stat.DASHBOARD_MAIN_STATS_DATE,
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase())
         )
-
         isRequestingStats = true
-        listener?.onRequestLoadStats(granularity)
     }
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
@@ -152,7 +149,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         if (visibility == View.VISIBLE) {
             updateRecencyMessage()
         } else {
-            lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+            lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
         }
     }
 
@@ -276,19 +273,18 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    fun updateView(revenueStatsModel: WCRevenueStatsModel?, currencyCode: String?) {
+    fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
         this.revenueStatsModel = revenueStatsModel
-        chartCurrencyCode = currencyCode
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
         // https://github.com/woocommerce/woocommerce-android/issues/1455#issuecomment-540401646
-        this.chartRevenueStats = revenueStatsModel?.getIntervalList()?.map {
-            it.interval!! to (it.subtotals?.totalSales ?: 0.0)
-        }?.toMap() ?: mapOf()
+        this.chartRevenueStats = revenueStatsModel?.intervalList?.associate {
+            it.interval!! to (it.sales ?: 0.0)
+        } ?: mapOf()
 
-        this.chartOrderStats = revenueStatsModel?.getIntervalList()?.map {
-            it.interval!! to (it.subtotals?.ordersCount ?: 0)
-        }?.toMap() ?: mapOf()
+        this.chartOrderStats = revenueStatsModel?.intervalList?.associate {
+            it.interval!! to (it.ordersCount ?: 0)
+        } ?: mapOf()
 
         updateChartView()
     }
@@ -342,17 +338,16 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun updateChartView() {
         val wasEmpty = binding.chart.lineData?.let { it.dataSetCount == 0 } ?: true
 
-        val totalModel = revenueStatsModel?.parseTotal()
-        val grossRevenue = totalModel?.totalSales ?: 0.0
-        val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
+        val grossRevenue = revenueStatsModel?.totalSales ?: 0.0
+        val revenue = formatCurrencyForDisplay(grossRevenue, revenueStatsModel?.currencyCode.orEmpty())
 
-        val orderCount = totalModel?.ordersCount ?: 0
+        val orderCount = revenueStatsModel?.totalOrdersCount ?: 0
         val orders = orderCount.toString()
 
         fadeInLabelValue(revenueValue, revenue)
         fadeInLabelValue(ordersValue, orders)
 
-        if (chartRevenueStats.isEmpty() || totalModel?.totalSales?.toInt() == 0) {
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales?.toInt() == 0) {
             clearLastUpdated()
             isRequestingStats = false
             return
@@ -406,7 +401,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun getFormattedRevenueValue(revenue: Double) =
-        formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
+        formatCurrencyForDisplay(revenue, revenueStatsModel?.currencyCode.orEmpty())
 
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 
@@ -481,10 +476,10 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private fun updateRecencyMessage() {
         binding.dashboardRecencyText.text = getRecencyMessage()
-        lastUpdatedHandler.removeCallbacks(lastUpdatedRunnable)
+        lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
 
         if (lastUpdated != null) {
-            lastUpdatedHandler.postDelayed(
+            lastUpdatedHandler?.postDelayed(
                 lastUpdatedRunnable,
                 UPDATE_DELAY_TIME_MS
             )
@@ -597,7 +592,7 @@ class MyStoreStatsView @JvmOverloads constructor(
      */
     private inner class RevenueAxisFormatter : ValueFormatter() {
         override fun getFormattedValue(value: Float): String {
-            return formatCurrencyForDisplay(value.toDouble(), chartCurrencyCode.orEmpty())
+            return getFormattedRevenueValue(value.toDouble())
         }
     }
 }

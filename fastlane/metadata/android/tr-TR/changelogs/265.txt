@@ -1,2 +1,0 @@
-8.1:
-Siparişler sekmesi bu sürümde güncellendi. Sekmeleri kaldırdık ve duruma veya tarih aralığına göre filtreleme seçeneğini sunduk. Bu değişikliği yıllardır sizden aldığımız geri bildirimlere göre yaptık. Beğeneceğinizi biliyoruz!

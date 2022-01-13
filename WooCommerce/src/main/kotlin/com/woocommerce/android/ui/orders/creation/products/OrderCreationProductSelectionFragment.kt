@@ -69,7 +69,7 @@ class OrderCreationProductSelectionFragment :
     }
 
     override fun onRequestLoadMore() {
-        productListViewModel.fetchProductList(loadMore = true)
+        productListViewModel.loadProductList(loadMore = true)
     }
 
     private fun onViewStateChanged(

@@ -1,7 +1,6 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductHelper
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -73,7 +72,7 @@ fun WCRefundModel.toAppModel(): Refund {
     return Refund(
         id,
         dateCreated,
-        amount.roundError(),
+        amount,
         reason,
         automaticGatewayRefund,
         items.map { it.toAppModel() },
@@ -89,11 +88,11 @@ fun WCRefundItem.toAppModel(): Refund.Item {
         itemId,
         name ?: "",
         variationId ?: -1,
-        -subtotal.roundError(), // WCRefundItem.subtotal is NEGATIVE
-        -(total ?: BigDecimal.ZERO).roundError(), // WCRefundItem.total is NEGATIVE
-        -totalTax.roundError(), // WCRefundItem.totalTax is NEGATIVE
+        -subtotal, // WCRefundItem.subtotal is NEGATIVE
+        -(total ?: BigDecimal.ZERO), // WCRefundItem.total is NEGATIVE
+        -totalTax, // WCRefundItem.totalTax is NEGATIVE
         sku ?: "",
-        price?.roundError() ?: BigDecimal.ZERO,
+        price ?: BigDecimal.ZERO,
         metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1
     )
 }
@@ -103,8 +102,8 @@ fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
         itemId = metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1,
         methodId = methodId ?: "",
         methodTitle = methodTitle ?: "",
-        totalTax = -totalTax.roundError(), // WCRefundShippineLine.totalTax is NEGATIVE
-        total = (total).roundError() // WCREfundShippingLine.total is NEGATIVE
+        totalTax = -totalTax, // WCRefundShippineLine.totalTax is NEGATIVE
+        total = (total) // WCREfundShippingLine.total is NEGATIVE
     )
 }
 
@@ -112,8 +111,8 @@ fun WCRefundFeeLine.toAppModel(): Refund.FeeLine {
     return Refund.FeeLine(
         id = metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1,
         name = name,
-        totalTax = -totalTax.roundError(), // WCRefundFeeLine.totalTax is NEGATIVE
-        total = (total).roundError(), // WCRefundFeeLine.total is NEGATIVE
+        totalTax = -totalTax, // WCRefundFeeLine.totalTax is NEGATIVE
+        total = (total), // WCRefundFeeLine.total is NEGATIVE
     )
 }
 

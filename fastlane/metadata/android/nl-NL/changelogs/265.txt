@@ -1,2 +1,0 @@
-8.1:
-Het bestellingentabblad is in deze versie bijgewerkt. De tabbladen zijn nu weggehaald. We hebben de optie gegeven om te filteren op status of binnen een datumbereik. We hebben dit op basis van jullie feedback van de afgelopen jaren gedaan, dus we verwachten dat deze update met open armen wordt onthaald!

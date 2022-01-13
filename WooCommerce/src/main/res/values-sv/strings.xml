@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 11:54:12+0000
+Translation-Revision-Date: 2021-12-26 19:13:40+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="order_creation_add_customer_note">Lägg till anteckning</string>
+    <string name="order_creation_customer_note">Kundmeddelande</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Uppdatera efter uppdatering</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Stripe Payment Gateway är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Uppdatera WooCommerce Stripe Payment Gateway</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Uppdatera</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Du är nästan där! Slutför konfigurationen av WooCommerce Stripe Payment Gateway för att börja ta emot personliga betalningar.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Slutför konfigurationen av WooCommerce Stripe Payment Gateway i adminpanelen för din butik</string>
+    <string name="card_reader_payment_failed_unknown">Betalningen avvisades av okänd anledning</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">Ett live-kort användes på en webbplats i testläge</string>
+    <string name="card_reader_payment_failed_test_card">Systemtestkort är inte tillåtna för betalning</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">En felaktig PIN-kod har angetts för många gånger</string>
+    <string name="card_reader_payment_failed_pin_required">Detta kort kräver en PIN-kod och kan därför inte behandlas</string>
+    <string name="card_reader_payment_failed_invalid_amount">Betalningsbeloppet är inte tillåtet för det aktuella kortet</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Betalningen avvisades på grund av otillräckliga medel</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">Transaktionens postnummer och kortets postnummer matchar inte</string>
+    <string name="card_reader_payment_failed_expired_card">Kortet har löpt ut</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">En identisk transaktion skickades nyligen</string>
+    <string name="card_reader_payment_failed_currency_not_supported">Kortet stöder inte denna valuta</string>
+    <string name="card_reader_payment_failed_card_not_supported">Kortet stöder inte denna typ av köp</string>
+    <string name="card_reader_payment_failed_invalid_account">Kortet eller kortkontot är ogiltigt</string>
+    <string name="card_reader_payment_failed_generic">Betalningen avvisades av ospecificerad anledning</string>
+    <string name="card_reader_payment_failed_fraud">Prova en annan betalningsmetod</string>
+    <string name="card_reader_payment_failed_temporary">Det kan fungera att prova igen</string>
+    <string name="order_creation_fragment_title">Ny beställning</string>
+    <string name="analytics_date_range_selector_description">Väljare för datumintervallsfilter</string>
+    <string name="analytics_date_range_from_date">kontra föregående period (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">År till datum</string>
+    <string name="date_timeframe_quarter_to_date">Kvartal till datum</string>
+    <string name="date_timeframe_month_to_date">Månad till datum</string>
+    <string name="date_timeframe_week_to_date">Vecka till datum</string>
+    <string name="date_timeframe_last_year">Förra året</string>
+    <string name="date_timeframe_last_quarter">Förra kvartalet</string>
+    <string name="date_timeframe_last_month">Förra månaden</string>
+    <string name="date_timeframe_last_week">Förra veckan</string>
     <string name="settings_enable_order_creation_teaser_message">Testa att skapa beställningar med fullständig information medan vi gör oss redo för lansering</string>
     <string name="settings_enable_order_creation_teaser_title">Skapande av beställning</string>
     <string name="settings_enable_simple_payments_teaser_title">Enkla betalningar</string>
@@ -213,7 +249,7 @@ Language: sv_SE
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Payments är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Uppdatera WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Uppdatera</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">Du är nästan framme! Slutför konfigurationen av WooCommerce Payments för att börja ta emot kortbetalningar.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Du är nästan där! Slutför konfigurationen av WooCommerce Payments för att börja ta emot personliga betalningar.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Slutför konfigurationen av WooCommerce Payments i adminpanelen för din butik</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Uppdatera efter aktivering</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">Utökningen WooCommerce Payments är installerad för din butik, men den har inte aktiverats. Aktivera den för att ta emot personliga betalningar.</string>
@@ -291,7 +327,6 @@ Language: sv_SE
     <string name="card_reader_connect_multiple_readers_found_header">Flera läsare hittade</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">Beställningen är redan betald</string>
     <string name="card_reader_payment_receipt_email_content">Tack för ditt köp! Klicka på länken nedan för att visa ditt betalningskvitto.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">Kort avvisades</string>
     <string name="shipping_label_print_customs_form_download_failed">Det gick inte att ladda ner tullformuläret</string>
     <string name="shipping_label_print_customs_form_screen_title">Skriv ut tullfaktura</string>
     <string name="shipping_label_print_customs_form">Skriv ut tullformulär</string>
@@ -1735,6 +1770,18 @@ Language: sv_SE
     <string name="all">Alla</string>
     <string name="notification_channel_general_title">Allmänt</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>Behandlas</item>
         <item>Alla ordrar</item>
