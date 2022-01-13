@@ -1,36 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
-        android:id="@+id/order_status_view"
-        style="@style/Woo.Card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
-        android:id="@+id/products_section"
-        style="@style/Woo.Card"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:header="@string/products"
-        app:keepAddButtons="true"/>
+        android:orientation="vertical">
 
-    <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
-        android:id="@+id/customer_section"
-        style="@style/Woo.Card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:header="@string/order_creation_customer" />
+        <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
+            android:id="@+id/order_status_view"
+            style="@style/Woo.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
-        android:id="@+id/notes_section"
-        style="@style/Woo.Card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:header="@string/order_creation_customer_note" />
+        <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
+            android:id="@+id/products_section"
+            style="@style/Woo.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:header="@string/products"
+            app:keepAddButtons="true" />
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+        <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
+            android:id="@+id/customer_section"
+            style="@style/Woo.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:header="@string/order_creation_customer" />
+
+        <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
+            android:id="@+id/notes_section"
+            style="@style/Woo.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:header="@string/order_creation_customer_note" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</ScrollView>
