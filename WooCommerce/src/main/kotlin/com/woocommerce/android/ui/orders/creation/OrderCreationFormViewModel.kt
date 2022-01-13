@@ -65,7 +65,7 @@ class OrderCreationFormViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = true)
             orderCreationRepository.createOrder(order).fold(
                 onSuccess = {
-                    // TODO Navigate to order details
+                    triggerEvent(ShowCreatedOrder(it.id))
                 },
                 onFailure = {
                     viewState = viewState.copy(isProgressDialogShown = false)
