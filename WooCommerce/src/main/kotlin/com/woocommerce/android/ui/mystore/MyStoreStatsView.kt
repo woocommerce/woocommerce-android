@@ -29,9 +29,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.MyStoreStatsBinding
-import com.woocommerce.android.extensions.formatDateToYearMonth
-import com.woocommerce.android.extensions.formatToDateOnly
-import com.woocommerce.android.extensions.formatToMonthDateOnly
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.DateUtils
@@ -58,7 +56,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private lateinit var activeGranularity: StatsGranularity
-    private var listener: MyStoreStatsListener? = null
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
@@ -81,7 +78,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             // to appear, and we remove the chart's empty string so it doesn't briefly show
             // up before the chart data is added once the request completes
             if (value) {
-                clearLabelValues()
+                clearStatsHeaderValues()
                 binding.chart.setNoDataText(null)
                 binding.chart.clear()
             } else {
@@ -93,26 +90,30 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private val fadeHandler = Handler(Looper.getMainLooper())
 
-    private val visitorsLayout
-        get() = binding.root.findViewById<ViewGroup>(R.id.visitors_layout)
-
-    private val visitorsValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.visitors_value)
+    private val statsDateValue
+        get() = binding.root.findViewById<MaterialTextView>(R.id.statsDateTextView)
 
     private val revenueValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.revenue_value)
+        get() = binding.root.findViewById<MaterialTextView>(R.id.totalRevenueTextView)
 
     private val ordersValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.orders_value)
+        get() = binding.root.findViewById<MaterialTextView>(R.id.ordersValueTextView)
+
+    private val visitorsValue
+        get() = binding.root.findViewById<MaterialTextView>(R.id.visitorsValueTextview)
+
+    private val visitorsLayout
+        get() = binding.root.findViewById<ViewGroup>(R.id.visitorStatsConstraintLayout)
+
+    private val conversionValue
+        get() = binding.root.findViewById<ViewGroup>(R.id.conversionValue)
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
-        listener: MyStoreStatsListener,
         selectedSite: SelectedSite,
         formatCurrencyForDisplay: FormatCurrencyRounded,
         dateUtils: DateUtils
     ) {
-        this.listener = listener
         this.selectedSite = selectedSite
         this.activeGranularity = period
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
@@ -128,10 +129,6 @@ class MyStoreStatsView @JvmOverloads constructor(
                 UPDATE_DELAY_TIME_MS
             )
         }
-    }
-
-    fun removeListener() {
-        listener = null
     }
 
     fun loadDashboardStats(granularity: StatsGranularity) {
@@ -233,9 +230,60 @@ class MyStoreStatsView @JvmOverloads constructor(
             visitorsLayout.visibility = View.VISIBLE
         }
         fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
+        updateDate(revenueStatsModel, activeGranularity)
+    }
 
-        // update date bar when unselected
-        listener?.onChartValueUnSelected(revenueStatsModel, activeGranularity)
+    /**
+     * Method to update the date value for a given [revenueStatsModel] based on the [granularity]
+     * This is used to display the date bar when the **stats tab is loaded**
+     * [StatsGranularity.DAYS] would be Tuesday, Aug 08
+     * [StatsGranularity.WEEKS] would be Aug 4 - Aug 08
+     * [StatsGranularity.MONTHS] would be August
+     * [StatsGranularity.YEARS] would be 2019
+     */
+    private fun updateDate(
+        revenueStats: RevenueStatsUiModel?,
+        granularity: StatsGranularity
+    ) {
+        if (revenueStats?.intervalList.isNullOrEmpty()) {
+            statsDateValue.visibility = View.GONE
+        } else {
+            val startInterval = revenueStats?.intervalList?.first()?.interval
+            val startDate = startInterval?.let { getDateValue(it, granularity) }
+
+            val dateRangeString = when (granularity) {
+                StatsGranularity.WEEKS -> {
+                    val endInterval = revenueStats?.intervalList?.last()?.interval
+                    val endDate = endInterval?.let { getDateValue(it, granularity) }
+                    String.format("%s – %s", startDate, endDate)
+                }
+                else -> {
+                    startDate
+                }
+            }
+            statsDateValue.visibility = View.VISIBLE
+            statsDateValue.text = dateRangeString
+        }
+    }
+
+    /**
+     * Method to get the date value for a given [dateString] based on the [activeGranularity]
+     * This is used to populate the date bar when the **stats tab is loaded**
+     * [StatsGranularity.DAYS] would be Tuesday, Aug 08
+     * [StatsGranularity.WEEKS] would be Aug 4
+     * [StatsGranularity.MONTHS] would be August
+     * [StatsGranularity.YEARS] would be 2019
+     */
+    private fun getDateValue(
+        dateString: String,
+        activeGranularity: StatsGranularity
+    ): String {
+        return when (activeGranularity) {
+            StatsGranularity.DAYS -> dateUtils.getDayMonthDateString(dateString).orEmpty()
+            StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
+            StatsGranularity.MONTHS -> dateUtils.getMonthString(dateString).orEmpty()
+            StatsGranularity.YEARS -> dateUtils.getYearString(dateString).orEmpty()
+        }
     }
 
     override fun onValueSelected(entry: Entry?, h: Highlight?) {
@@ -258,9 +306,24 @@ class MyStoreStatsView @JvmOverloads constructor(
             visitorsLayout.visibility = View.VISIBLE
             visitorsValue.text = visitorValue
         }
+        updateDateOnScrubbing(date, activeGranularity)
+    }
 
-        // update the date bar
-        listener?.onChartValueSelected(date, activeGranularity)
+    /**
+     * Method to update the date value for a given [dateString] based on the [activeGranularity]
+     * This is used to display the date bar when the **scrubbing interaction is taking place**
+     * [StatsGranularity.DAYS] would be Tuesday, Aug 08›7am
+     * [StatsGranularity.WEEKS] would be Aug 08
+     * [StatsGranularity.MONTHS] would be August›08
+     * [StatsGranularity.YEARS] would be 2019›August
+     */
+    private fun updateDateOnScrubbing(dateString: String, activeGranularity: StatsGranularity) {
+        statsDateValue.text = when (activeGranularity) {
+            StatsGranularity.DAYS -> dateString.formatDateToFriendlyDayHour()
+            StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
+            StatsGranularity.MONTHS -> dateString.formatDateToFriendlyLongMonthDate()
+            StatsGranularity.YEARS -> dateString.formatDateToFriendlyLongMonthYear()
+        }
     }
 
     /**
@@ -274,6 +337,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
+        updateDate(revenueStatsModel, activeGranularity)
         this.revenueStatsModel = revenueStatsModel
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
@@ -302,8 +366,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
 
         // Make sure the empty view is hidden
-        binding.statsViewRow.emptyVisitorStatsGroup.isVisible = false
-        binding.statsViewRow.visitorsValue.isVisible = true
+        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
+        binding.statsViewRow.visitorsValueTextview.isVisible = true
 
         fadeInLabelValue(visitorsValue, visitorStats.values.sum().toString())
     }
@@ -316,11 +380,12 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showEmptyVisitorStatsForJetpackCP() {
         visitorsLayout.isVisible = true
-        binding.statsViewRow.emptyVisitorStatsGroup.isVisible = true
-        binding.statsViewRow.visitorsValue.isVisible = false
+        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
+        binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
-    fun clearLabelValues() {
+    fun clearStatsHeaderValues() {
+        statsDateValue.text = ""
         val color = ContextCompat.getColor(context, R.color.skeleton_color)
         visitorsValue.setTextColor(color)
         revenueValue.setTextColor(color)

@@ -18,23 +18,27 @@ class WCEmptyStatsView @JvmOverloads constructor(
     private val binding = WcEmptyStatsViewBinding.inflate(LayoutInflater.from(ctx), this)
 
     private val visitorValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.visitors_value)
+        get() = binding.root.findViewById<MaterialTextView>(R.id.visitorsValueTextview)
 
-    private val emptyStatsViewDateTitle
-        get() = binding.root.findViewById<MaterialTextView>(R.id.empty_stats_view_date_title)
+    private val statsDateValue
+        get() = binding.root.findViewById<MaterialTextView>(R.id.statsDateTextView)
 
     private val ordersValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.orders_value)
+        get() = binding.root.findViewById<MaterialTextView>(R.id.ordersValueTextView)
 
     private val revenueValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.revenue_value)
+        get() = binding.root.findViewById<MaterialTextView>(R.id.totalRevenueTextView)
+
+    private val conversionValue
+        get() = binding.root.findViewById<MaterialTextView>(R.id.conversionValue)
 
     fun updateVisitorCount(visits: Int) {
         visitorValue.text = visits.toString()
-        emptyStatsViewDateTitle.text = DateUtils.getDayOfWeekWithMonthAndDayFromDate(Date())
+        statsDateValue.text = DateUtils.getDayOfWeekWithMonthAndDayFromDate(Date())
 
         // The empty view is only shown when there are no orders, which means the revenue is also 0
         ordersValue.text = "0"
         revenueValue.text = "0"
+        conversionValue.text = "0%"
     }
 }
