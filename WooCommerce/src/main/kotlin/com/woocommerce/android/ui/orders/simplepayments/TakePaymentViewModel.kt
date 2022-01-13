@@ -81,7 +81,7 @@ class TakePaymentViewModel @Inject constructor(
         launch {
             // this dummy delay needs to be here since the navigation component hasn't finished the previous
             // transaction when a result is received
-            delay(1)
+            delay(DELAY_MS)
             if (connected) {
                 triggerEvent(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id))
             }
@@ -89,7 +89,10 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onCardReaderPaymentCompleted() {
-        triggerEvent(MultiLiveEvent.Event.Exit)
+        launch {
+            delay(DELAY_MS)
+            triggerEvent(MultiLiveEvent.Event.Exit)
+        }
     }
 
     private suspend fun markOrderCompleted() {
@@ -114,5 +117,9 @@ class TakePaymentViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    companion object {
+        private const val DELAY_MS = 1L
     }
 }
