@@ -82,4 +82,4 @@ class OrderCreationFormViewModel @Inject constructor(
 @Parcelize
 data class ViewState(
     val isProgressDialogShown: Boolean = false
-): Parcelable
+) : Parcelable
