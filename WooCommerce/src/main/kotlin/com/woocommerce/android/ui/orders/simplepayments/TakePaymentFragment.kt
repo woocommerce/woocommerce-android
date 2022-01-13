@@ -68,13 +68,13 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     }
                     is OrderNavigationTarget.StartCardReaderConnectFlow -> {
                         val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderConnectDialog(
-                            skipOnboarding = true
+                            skipOnboarding = event.skipOnboarding
                         )
                         findNavController().navigateSafely(action)
                     }
                     is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
                         val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderPaymentDialog(
-                            orderId = viewModel.order.id
+                            orderId = event.orderId
                         )
                         findNavController().navigateSafely(action)
                     }
