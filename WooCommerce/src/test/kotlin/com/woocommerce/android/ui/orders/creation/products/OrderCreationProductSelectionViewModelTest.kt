@@ -146,6 +146,24 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         assertThat(actualProductList).isEqualTo(loadMoreSearchResponse + searchResult)
     }
 
+    @Test
+    fun `when onSearchOpened is called, then product list should be empty and search should be active`() = testBlocking {
+        var actualProductList = emptyList<Product>()
+        var actualSearchState: Boolean? = null
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        sut.viewStateData.observeForever { _, new ->
+            actualSearchState = new.isSearchActive
+        }
+
+        sut.onSearchOpened()
+
+        assertThat(actualSearchState).isTrue
+        assertThat(actualProductList).isEmpty()
+    }
+
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(
             SavedStateHandle(),
