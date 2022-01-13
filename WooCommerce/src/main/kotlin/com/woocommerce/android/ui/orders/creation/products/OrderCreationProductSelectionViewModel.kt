@@ -11,6 +11,8 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -25,6 +27,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
 
     private val productList = MutableLiveData<List<Product>>()
     val productListData: LiveData<List<Product>> = productList
+
+    private var searchJob: Job? = null
 
     init {
         loadProductList()
@@ -67,7 +71,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
 
     fun searchProductList(query: String, loadMore: Boolean = false) {
         viewState = viewState.copy(query = query)
-        launch {
+        searchJob?.cancel()
+        searchJob = launch {
             productListRepository.searchProductList(query, loadMore)
                 ?.takeIf { query == productListRepository.lastSearchQuery }
                 ?.let { handleSearchResult(it, loadMore) }
@@ -79,7 +84,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         loadMore: Boolean
     ) {
         productList.value = productList.value
-            ?.takeIf { loadMore && it.isNotEmpty() }
+            ?.takeIf { loadMore && it != searchResult }
             ?.let { searchResult + it }
             ?: searchResult
     }
@@ -92,6 +97,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     }
 
     fun onSearchClosed() {
+        launch { searchJob?.cancelAndJoin() }
         viewState = viewState.copy(
             isSearchActive = false,
             query = null
