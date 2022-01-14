@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.UiDimen
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
@@ -85,11 +86,11 @@ abstract class BaseAddressEditingFragment :
         )
 
         binding.form.countrySpinner.setClickListener {
-            showCountrySearchScreen()
+            addressViewModel.onCountrySpinnerClicked(addressType)
         }
 
         binding.form.stateSpinner.setClickListener {
-            showStateSearchScreen()
+            addressViewModel.onStateSpinnerClicked(addressType)
         }
 
         setupObservers()
@@ -157,8 +158,7 @@ abstract class BaseAddressEditingFragment :
         binding.form.stateEditText.isVisible = !shouldShowStateSpinner()
     }
 
-    private fun showCountrySearchScreen() {
-        val countries = addressViewModel.countries
+    private fun showCountrySearchScreen(countries: List<Location>) {
         val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
             items = countries.map {
                 SearchFilterItem(
@@ -173,8 +173,7 @@ abstract class BaseAddressEditingFragment :
         findNavController().navigateSafely(action)
     }
 
-    private fun showStateSearchScreen() {
-        val states = addressViewModel.statesAvailableFor(addressType)
+    private fun showStateSearchScreen(states: List<Location>) {
         val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
             items = states.map {
                 SearchFilterItem(
@@ -214,6 +213,18 @@ abstract class BaseAddressEditingFragment :
                 binding.form.stateSpinner.isEnabled = it
             }
         }
+
+        addressViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is AddressViewModel.ShowStateSelector -> showStateSearchScreen(event.states)
+                is AddressViewModel.ShowCountrySelector -> showCountrySearchScreen(event.countries)
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun setupResultHandlers() {

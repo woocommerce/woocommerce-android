@@ -456,7 +456,7 @@ object AppPrefs {
                 PluginType.WOOCOMMERCE_PAYMENTS
             CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION,
             CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION ->
-                PluginType.STRIPE_TERMINAL_GATEWAY
+                PluginType.STRIPE_EXTENSION_GATEWAY
             CARD_READER_ONBOARDING_NOT_COMPLETED ->
                 throw IllegalStateException("Onboarding not completed. Plugin Type is null")
         }
@@ -470,7 +470,7 @@ object AppPrefs {
     ) {
         val pluginName = when (pluginType) {
             PluginType.WOOCOMMERCE_PAYMENTS -> CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
-            PluginType.STRIPE_TERMINAL_GATEWAY -> CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
+            PluginType.STRIPE_EXTENSION_GATEWAY -> CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
             null -> CARD_READER_ONBOARDING_NOT_COMPLETED
         }
         PreferenceUtils.setString(
@@ -488,7 +488,7 @@ object AppPrefs {
     ) {
         val pluginName = when (pluginType) {
             PluginType.WOOCOMMERCE_PAYMENTS -> CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY
-            PluginType.STRIPE_TERMINAL_GATEWAY -> CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION
+            PluginType.STRIPE_EXTENSION_GATEWAY -> CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION
             null -> CARD_READER_ONBOARDING_NOT_COMPLETED
         }
         PreferenceUtils.setString(

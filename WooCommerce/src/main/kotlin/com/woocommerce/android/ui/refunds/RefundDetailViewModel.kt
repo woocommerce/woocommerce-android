@@ -25,7 +25,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
@@ -55,17 +54,19 @@ class RefundDetailViewModel @Inject constructor(
     private val navArgs: RefundDetailFragmentArgs by savedState.navArgs()
 
     init {
-        val orderModel = orderStore.getOrderByIdentifier(OrderIdentifier(selectedSite.get().id, navArgs.orderId))
-        orderModel?.toAppModel()?.let { order ->
-            formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-            if (navArgs.refundId > 0) {
-                refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)
-                    ?.toAppModel()?.let { refund ->
-                        displayRefundDetails(refund, order)
-                    }
-            } else {
-                val refunds = refundStore.getAllRefunds(selectedSite.get(), navArgs.orderId).map { it.toAppModel() }
-                displayRefundedProducts(order, refunds)
+        launch {
+            val orderModel = orderStore.getOrderByIdAndSite(navArgs.orderId, selectedSite.get())
+            orderModel?.toAppModel()?.let { order ->
+                formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
+                if (navArgs.refundId > 0) {
+                    refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)
+                        ?.toAppModel()?.let { refund ->
+                            displayRefundDetails(refund, order)
+                        }
+                } else {
+                    val refunds = refundStore.getAllRefunds(selectedSite.get(), navArgs.orderId).map { it.toAppModel() }
+                    displayRefundedProducts(order, refunds)
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +26,15 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     private val order: Order
         get() = navArgs.order
 
+    val orderDraft
+        get() = order.copy(
+            total = viewState.orderTotal,
+            totalTax = viewState.orderTotalTax,
+            customerNote = viewState.customerNote
+        )
+
     init {
+        viewState = viewState.copy(customerNote = order.customerNote)
         val hasTaxes = order.totalTax > BigDecimal.ZERO
         updateViewState(hasTaxes)
     }
@@ -64,6 +73,19 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         updateViewState(chargeTaxes = chargeTaxes)
     }
 
+    fun onCustomerNoteClicked() {
+        triggerEvent(ShowCustomerNoteEditor)
+    }
+
+    fun onCustomerNoteChanged(customerNote: String) {
+        viewState = viewState.copy(customerNote = customerNote)
+    }
+
+    fun onDoneButtonClicked() {
+        // TODO nbradbury - save the order draft, waiting for FluxC changes to do that
+        triggerEvent(ShowTakePaymentScreen)
+    }
+
     @Parcelize
     data class ViewState(
         val chargeTaxes: Boolean = false,
@@ -71,7 +93,11 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         val orderTotalTax: BigDecimal = BigDecimal.ZERO,
         val orderTaxPercent: Float = 0f,
         val orderTotal: BigDecimal = BigDecimal.ZERO,
+        val customerNote: String = ""
     ) : Parcelable
+
+    object ShowCustomerNoteEditor : MultiLiveEvent.Event()
+    object ShowTakePaymentScreen : MultiLiveEvent.Event()
 
     companion object {
         private const val ONE_HUNDRED = 100f

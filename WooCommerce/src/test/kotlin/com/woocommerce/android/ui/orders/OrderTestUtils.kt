@@ -12,8 +12,6 @@ import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
@@ -24,7 +22,6 @@ object OrderTestUtils {
     val TEST_LOCAL_SITE_ID = LocalOrRemoteId.LocalId(1)
     val TEST_REMOTE_ORDER_ID = LocalOrRemoteId.RemoteId(2)
     const val TEST_ORDER_STATUS_COUNT = 20
-    const val ORDER_IDENTIFIER = "1-1-1"
 
     /**
      * Generates an array containing multiple [WCOrderModel] objects.
@@ -206,13 +203,17 @@ object OrderTestUtils {
         }.toAppModel()
     }
 
-    fun generateShippingLabels(totalCount: Int = 5, orderIdentifier: OrderIdentifier): List<ShippingLabel> {
+    fun generateShippingLabels(
+        totalCount: Int = 5,
+        remoteOrderId: Long = 1L,
+        localSiteId: Int = 1
+    ): List<ShippingLabel> {
         val result = ArrayList<ShippingLabel>()
         for (i in totalCount downTo 1) {
             result.add(
                 WCShippingLabelModel().apply {
-                    localSiteId = orderIdentifier.toIdSet().localSiteId
-                    this.remoteOrderId = orderIdentifier.toIdSet().remoteOrderId
+                    this.localSiteId = localSiteId
+                    this.remoteOrderId = remoteOrderId
                     remoteShippingLabelId = i.toLong()
                     packageName = "Package$i"
                     serviceName = "Service$i"
@@ -255,6 +256,14 @@ object OrderTestUtils {
                             total = BigDecimal.valueOf(13.00),
                             totalTax = BigDecimal.valueOf(3.00)
                         )
+                    ),
+                    feeLines = listOf(
+                        Refund.FeeLine(
+                            id = 30,
+                            name = "$30 fee",
+                            total = BigDecimal.valueOf(399.00),
+                            totalTax = BigDecimal.valueOf(39.90)
+                        )
                     )
                 )
             )
@@ -262,16 +271,15 @@ object OrderTestUtils {
         return result
     }
 
-    fun generateTestOrder(orderIdentifier: OrderIdentifier = "1-1-1"): Order {
-        val orderIdSet = orderIdentifier.toIdSet()
+    fun generateTestOrder(orderId: Long = 1, localSiteId: Int = 1): Order {
         return WCOrderModel(
-            id = orderIdSet.id,
+            id = 1,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(orderIdSet.localSiteId),
-            remoteOrderId = LocalOrRemoteId.RemoteId(orderIdSet.remoteOrderId),
+            localSiteId = LocalOrRemoteId.LocalId(localSiteId),
+            remoteOrderId = LocalOrRemoteId.RemoteId(orderId),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -290,12 +298,11 @@ object OrderTestUtils {
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
                 "  }]",
-            refundTotal = -10.0,
+            refundTotal = -BigDecimal.TEN,
         ).toAppModel()
     }
 
-    fun generateOrderWithFee(orderIdentifier: OrderIdentifier = "1-1-1"): WCOrderModel {
-        val orderIdSet = orderIdentifier.toIdSet()
+    fun generateOrderWithFee(): WCOrderModel {
         val lineItems = "[{\n" +
             "    \"id\":1,\n" +
             "    \"name\":\"A test\",\n" +
@@ -313,19 +320,19 @@ object OrderTestUtils {
             "  }]"
 
         return WCOrderModel(
-            id = orderIdSet.id,
+            id = 1,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(orderIdSet.localSiteId),
-            remoteOrderId = LocalOrRemoteId.RemoteId(orderIdSet.remoteOrderId),
+            localSiteId = LocalOrRemoteId.LocalId(1),
+            remoteOrderId = LocalOrRemoteId.RemoteId(1),
             number = "55",
             status = "pending",
             total = "106.00",
             shippingTotal = "4.00",
             lineItems = lineItems,
-            refundTotal = -10.0,
+            refundTotal = -BigDecimal.TEN,
             feeLines = lineItems,
 //                "[{\n" +
 //                "    \"name\":\"A fee\",\n" +
@@ -344,17 +351,15 @@ object OrderTestUtils {
         )
     }
 
-    fun generateOrderWithMultipleShippingLines(orderIdentifier: OrderIdentifier = "1-1-1"): WCOrderModel {
-        val orderIdSet = orderIdentifier.toIdSet()
-
+    fun generateOrderWithMultipleShippingLines(): WCOrderModel {
         return WCOrderModel(
-            id = orderIdSet.id,
+            id = 1,
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(orderIdSet.localSiteId),
-            remoteOrderId = LocalOrRemoteId.RemoteId(orderIdSet.remoteOrderId),
+            localSiteId = LocalOrRemoteId.LocalId(1),
+            remoteOrderId = LocalOrRemoteId.RemoteId(1),
             number = "55",
             status = "pending",
             total = "106.00",
@@ -375,7 +380,7 @@ object OrderTestUtils {
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
                 "  }]",
-            refundTotal = -10.0,
+            refundTotal = -BigDecimal.TEN,
             shippingLines =
             "[{" +
                 "\"id\":119,\n" +
@@ -401,19 +406,18 @@ object OrderTestUtils {
 
     fun generateTestOrderNotes(
         totalNotes: Int,
-        orderIdentifier: OrderIdentifier = "1-1-1"
+        localOrderId: Int = 1,
+        localSiteId: Int = 1
     ): List<OrderNote> {
-        val orderIdSet = orderIdentifier.toIdSet()
-
         val result = ArrayList<OrderNote>()
         for (i in totalNotes downTo 1) {
             result.add(
                 WCOrderNoteModel(totalNotes).apply {
-                    isCustomerNote = false
-                    dateCreated = "2018-02-02T16:11:13Z"
-                    localOrderId = orderIdSet.id
-                    localSiteId = orderIdSet.localSiteId
-                    note = "This is a test note $i"
+                    this.isCustomerNote = false
+                    this.dateCreated = "2018-02-02T16:11:13Z"
+                    this.localOrderId = localOrderId
+                    this.localSiteId = localSiteId
+                    this.note = "This is a test note $i"
                 }.toAppModel()
             )
         }
@@ -422,19 +426,19 @@ object OrderTestUtils {
 
     fun generateTestOrderShipmentTrackings(
         totalCount: Int,
-        orderIdentifier: OrderIdentifier = "1-1-1"
+        localOrderId: Int = 1,
+        localSiteId: Int = 1
     ): List<OrderShipmentTracking> {
-        val orderIdSet = orderIdentifier.toIdSet()
         val result = ArrayList<OrderShipmentTracking>()
         for (i in totalCount downTo 1) {
             result.add(
                 WCOrderShipmentTrackingModel(totalCount).apply {
-                    trackingProvider = "TNT Express $i"
-                    trackingNumber = "$i"
-                    dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
-                    trackingLink = "www.somelink$i.com"
-                    localOrderId = orderIdSet.id
-                    localSiteId = orderIdSet.localSiteId
+                    this.trackingProvider = "TNT Express $i"
+                    this.trackingNumber = "$i"
+                    this.dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
+                    this.trackingLink = "www.somelink$i.com"
+                    this.localOrderId = localOrderId
+                    this.localSiteId = localSiteId
                 }.toAppModel()
             )
         }

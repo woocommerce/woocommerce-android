@@ -84,7 +84,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     private suspend fun createDefaultPackage(): List<ShippingLabelPackage> {
         val lastUsedPackage = shippingLabelRepository.getLastUsedPackage()
-        val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
+        val order = requireNotNull(orderDetailRepository.getOrderById(arguments.orderId))
         loadProductsWeightsIfNeeded(order)
 
         val items = order.getShippableItems().map { it.toShippingItem() }
@@ -102,7 +102,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     private suspend fun loadProductsWeightsIfNeeded(order: Order) {
         suspend fun fetchProductIfNeeded(productId: Long): Boolean {
             if (productDetailRepository.getProduct(productId) == null) {
-                return productDetailRepository.fetchProduct(productId) != null ||
+                return productDetailRepository.fetchProductOrLoadFromCache(productId) != null ||
                     productDetailRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID
             }
             return true
@@ -251,11 +251,11 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
         }
 
-        fun moveItemToIndividualPackage(): List<ShippingLabelPackageUiModel> {
+        suspend fun moveItemToIndividualPackage(): List<ShippingLabelPackageUiModel> {
             val updatedPackages = removeItemFromCurrentPackage()
 
             // We fetch products when this screen is opened, so we can retrieve details from DB
-            val product: IProduct? = orderDetailRepository.getOrder(arguments.orderId)
+            val product: IProduct? = orderDetailRepository.getOrderById(arguments.orderId)
                 ?.items
                 ?.find { it.uniqueId == item.productId }
                 ?.let {

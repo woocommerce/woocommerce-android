@@ -82,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'develop-bfb486a45e0acb6170d056f15b9df51ddbae994e'
+    fluxCVersion = 'develop-5baed7c379f856ea624b94853ed6f8bab74e739c'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
@@ -90,16 +90,16 @@ ext {
     mockitoVersion = '4.0.0'
     constraintLayoutVersion = '1.2.0'
     libaddressinputVersion = '0.0.2'
-    eventBusVersion = '3.3.0'
+    eventBusVersion = '3.3.1'
     googlePlayCoreVersion = '1.10.2'
     coroutinesVersion = '1.5.2'
     lifecycleVersion = '2.4.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.125.0'
+    flipperVersion = '0.127.0'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.7.0'
-    appCompatVersion = '1.3.1'
+    appCompatVersion = '1.4.0'
     materialVersion = '1.4.0'
     jUnitVersion = '4.13.2'
     jUnitExtVersion = '1.1.3'
@@ -107,6 +107,7 @@ ext {
     wordPressUtilsVersion = "2.3.0"
     mediapickerVersion = 'trunk-00947a9086ecdf2192b0bdc95a22e1647696d0b1'
     wordPressLoginVersion = '0.10.0'
+    aboutAutomatticVersion = '0.0.4'
 }
 
 // Onboarding and dev env setup tasks

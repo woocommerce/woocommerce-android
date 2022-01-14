@@ -12,7 +12,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -22,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -43,16 +43,13 @@ class OrderEditingViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    private val orderIdentifier: String
-        get() = navArgs.orderId
-
     lateinit var order: Order
 
     fun start() {
-        launch {
-            orderDetailRepository.getOrder(orderIdentifier)?.let {
-                order = it
-            } ?: WooLog.w(WooLog.T.ORDERS, "Order ${navArgs.orderId} not found in the database.")
+        runBlocking {
+            order = requireNotNull(orderDetailRepository.getOrderById(navArgs.orderId)) {
+                "Order ${navArgs.orderId} not found in the database."
+            }
         }
     }
 
