@@ -36,6 +36,17 @@ allprojects {
         toolVersion = '8.3'
         configFile file("${project.rootDir}/config/checkstyle.xml")
     }
+
+    configurations.all {
+        // the navigation safe args plugin forces its version of Kotlin
+        // Here we revert to our version
+        // TODO revisit this when we update AGP to 7 and kotlin to 1.6
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlin" && requested.module.name.startsWith("kotlin")) {
+                useVersion(gradle.ext.kotlinVersion)
+            }
+        }
+    }
 }
 
 subprojects {
