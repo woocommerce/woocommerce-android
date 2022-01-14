@@ -133,7 +133,7 @@ class ShippingLabelAddressSuggestionFragment :
         append(this.address1, other.address1)
         append(this.address2, other.address2)
         append(this.city, other.city)
-        append(this.state, other.state, ", ")
+        append(this.state.codeOrRaw, other.state.codeOrRaw, ", ")
         append(this.postcode, other.postcode, " ")
         append(this.getCountryLabelByCountryCode(), other.getCountryLabelByCountryCode())
 

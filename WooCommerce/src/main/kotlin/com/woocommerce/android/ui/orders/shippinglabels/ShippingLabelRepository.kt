@@ -23,7 +23,8 @@ import javax.inject.Singleton
 @Singleton
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val getLocations: GetLocations,
 ) {
     private var accountSettings: ShippingAccountSettings? = null
     private var availablePackages: List<ShippingPackage>? = null
@@ -46,7 +47,7 @@ class ShippingLabelRepository @Inject constructor(
         return shippingLabelStore.getShippingLabelById(
             selectedSite.get(), orderId, shippingLabelId
         )
-            ?.toAppModel()
+            ?.toAppModel(getLocations)
     }
 
     suspend fun printShippingLabels(paperSize: String, shippingLabelIds: List<Long>): WooResult<String> {
@@ -216,7 +217,7 @@ class ShippingLabelRepository @Inject constructor(
         ).let { result ->
             when {
                 result.isError -> WooResult(result.error)
-                result.model != null -> WooResult(result.model!!.map { it.toAppModel() })
+                result.model != null -> WooResult(result.model!!.map { it.toAppModel(getLocations) })
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }

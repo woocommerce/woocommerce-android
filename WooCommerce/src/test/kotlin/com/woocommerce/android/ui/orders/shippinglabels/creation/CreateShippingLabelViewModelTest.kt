@@ -5,6 +5,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.orders.OrderTestUtils.orderMapper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPrintShippingLabels
@@ -59,7 +60,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val order = OrderTestUtils.generateOrder()
 
     private val data = StateMachineData(
-        order = order.toAppModel(),
+        order = orderMapper.toAppModel(order),
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
@@ -75,7 +76,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     )
 
     private val doneData = StateMachineData(
-        order = order.toAppModel(),
+        order = orderMapper.toAppModel(order),
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(READY, shippingAddress),
@@ -169,7 +170,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 wooStore,
                 accountStore,
                 resourceProvider,
-                currencyFormatter
+                currencyFormatter,
+                mock()
             )
         )
 

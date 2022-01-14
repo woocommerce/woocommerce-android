@@ -6,7 +6,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import java.math.BigDecimal
-import java.util.Date
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Parcelize
@@ -58,7 +58,7 @@ data class ShippingLabel(
     ) : Parcelable
 }
 
-fun WCShippingLabelModel.toAppModel(): ShippingLabel {
+fun WCShippingLabelModel.toAppModel(getLocations: GetLocations): ShippingLabel {
     return ShippingLabel(
         id = remoteShippingLabelId,
         trackingNumber = trackingNumber,
@@ -73,21 +73,22 @@ fun WCShippingLabelModel.toAppModel(): ShippingLabel {
         currency = currency,
         productNames = getProductNameList().map { it.trim() },
         productIds = getProductIdsList(),
-        originAddress = getOriginAddress()?.toAppModel(),
-        destinationAddress = getDestinationAddress()?.toAppModel(),
+        originAddress = getOriginAddress()?.toAppModel(getLocations),
+        destinationAddress = getDestinationAddress()?.toAppModel(getLocations),
         refund = getRefundModel()?.toAppModel(),
         commercialInvoiceUrl = commercialInvoiceUrl
     )
 }
 
-fun WCShippingLabelModel.ShippingLabelAddress.toAppModel(): Address {
+fun WCShippingLabelModel.ShippingLabelAddress.toAppModel(getLocations: GetLocations): Address {
+    val (countryLocation, stateLocation) = getLocations(country.orEmpty(), state.orEmpty())
     return Address(
         company = company ?: "",
         firstName = name ?: "",
         lastName = "",
         phone = phone ?: "",
-        country = country ?: "",
-        state = state ?: "",
+        country = countryLocation,
+        state = stateLocation,
         address1 = address ?: "",
         address2 = address2 ?: "",
         city = city ?: "",

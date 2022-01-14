@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import com.woocommerce.android.model.*
 import org.mockito.kotlin.spy
-import com.woocommerce.android.model.PackageDimensions
-import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingLabelPackage.Item
-import com.woocommerce.android.model.ShippingPackage
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.orders.OrderTestUtils.orderMapper
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.DataLoaded
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
@@ -38,7 +36,7 @@ import java.math.BigDecimal
 class ShippingLabelsStateMachineTest : BaseUnitTest() {
     private lateinit var stateMachine: ShippingLabelsStateMachine
 
-    private val order = OrderTestUtils.generateOrder().toAppModel()
+    private val order = OrderTestUtils.generateOrder().let { orderMapper.toAppModel(it) }
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val shippingAddress = originAddress.copy(company = "McDonald's")
     private val data = StateMachineData(
@@ -160,8 +158,8 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     @Test
     fun `when the origin address is a US military state, then require a customs form`() = testBlocking {
         val originAddress = originAddress.copy(
-            state = "AA",
-            country = "US"
+            state = AmbiguousLocation.Raw("AA"),
+            country = Location("US", "US")
         )
         stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
@@ -173,8 +171,8 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     @Test
     fun `when the shipping address is a US military state, then require a customs form`() = testBlocking {
         val shippingAddress = shippingAddress.copy(
-            state = "AA",
-            country = "US"
+            state = AmbiguousLocation.Raw("AA"),
+            country = Location("US", "US")
         )
         stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
@@ -186,10 +184,10 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     @Test
     fun `when the origin and shipping address have same country, then don't require a customs form`() = testBlocking {
         val originAddress = originAddress.copy(
-            country = "UK"
+            country = Location("UK", "UK")
         )
         val shippingAddress = shippingAddress.copy(
-            country = "UK"
+            country = Location("UK", "UK")
         )
         stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
@@ -201,10 +199,10 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     @Test
     fun `when the origin and shipping address have different countries, then require a customs form`() = testBlocking {
         val originAddress = originAddress.copy(
-            country = "US"
+            country = Location("US", "US")
         )
         val shippingAddress = shippingAddress.copy(
-            country = "UK"
+            country = Location("UK", "UK")
         )
         stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))

@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
