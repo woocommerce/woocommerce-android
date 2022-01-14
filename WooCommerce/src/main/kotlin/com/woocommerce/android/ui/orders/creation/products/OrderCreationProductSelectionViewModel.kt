@@ -112,6 +112,12 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         loadProductList()
     }
 
+    fun onSearchQueryCleared() {
+        viewState = viewState.copy(
+            query = null
+        )
+    }
+
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
