@@ -33,7 +33,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         get() = viewState.isSearchActive ?: false
 
     val currentQuery
-        get() = viewState.query
+        get() = viewState.query.orEmpty()
 
     private var searchJob: Job? = null
 
@@ -113,6 +113,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     }
 
     fun onSearchQueryCleared() {
+        productList.value = emptyList()
         viewState = viewState.copy(
             query = null
         )
