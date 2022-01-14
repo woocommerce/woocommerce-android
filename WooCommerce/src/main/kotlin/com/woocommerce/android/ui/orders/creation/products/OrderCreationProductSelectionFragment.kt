@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
+import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -120,6 +121,8 @@ class OrderCreationProductSelectionFragment :
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
+        searchView?.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+            ?.setOnClickListener(::onClearSearchButtonClicked)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -181,6 +184,11 @@ class OrderCreationProductSelectionFragment :
     private fun removeSearchListener() {
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
+    }
+
+    private fun onClearSearchButtonClicked(view: View) {
+        searchView?.setQuery("", false)
+        productListViewModel.onSearchQueryCleared()
     }
     // endregion
 }
