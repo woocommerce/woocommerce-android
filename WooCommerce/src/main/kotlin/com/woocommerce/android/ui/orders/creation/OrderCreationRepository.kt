@@ -14,7 +14,8 @@ import javax.inject.Inject
 class OrderCreationRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val orderMapper: OrderMapper,
 ) {
     suspend fun createOrder(order: Order): Result<Order> {
         val status = withContext(dispatchers.io) {
@@ -41,7 +42,7 @@ class OrderCreationRepository @Inject constructor(
 
         return when {
             result.isError -> Result.failure(WooException(result.error))
-            else -> Result.success(result.model!!.toAppModel())
+            else -> Result.success(orderMapper.toAppModel(result.model!!))
         }
     }
 }
