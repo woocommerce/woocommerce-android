@@ -122,7 +122,7 @@ class OrderCreationProductSelectionFragment :
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
         searchView?.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
-            ?.setOnClickListener(::onClearSearchButtonClicked)
+            ?.setOnClickListener { onClearSearchButtonClicked() }
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -188,7 +188,7 @@ class OrderCreationProductSelectionFragment :
         searchView?.setOnQueryTextListener(null)
     }
 
-    private fun onClearSearchButtonClicked(view: View) {
+    private fun onClearSearchButtonClicked() {
         searchView?.setQuery("", false)
         productListViewModel.onSearchQueryCleared()
     }
