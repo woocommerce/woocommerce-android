@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.extensions.areSameProductsAs
+import com.woocommerce.android.extensions.differsFrom
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -82,10 +82,10 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
 
     private fun handleSearchResult(
         searchResult: List<Product>,
-        loadMore: Boolean
+        loadedMore: Boolean
     ) {
         productList.value = productList.value
-            ?.takeIf { loadMore && searchResult.areSameProductsAs(it).not() }
+            ?.takeIf { loadedMore && searchResult differsFrom it }
             ?.let { searchResult + it }
             ?: searchResult
     }
