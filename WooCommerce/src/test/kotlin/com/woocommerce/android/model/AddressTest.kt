@@ -1,5 +1,7 @@
 package com.woocommerce.android.model
 
+import com.woocommerce.android.ui.orders.details.editing.address.testCountry
+import com.woocommerce.android.ui.orders.details.editing.address.testState
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -16,8 +18,8 @@ class AddressTest {
             city = "City",
             postcode = "",
             email = "email",
-            country = "country",
-            state = "state"
+            country = Location("US", "USA"),
+            state = AmbiguousLocation.Defined(Location("CA", "California", "USA"))
         )
 
         val dataModel = address.toShippingLabelModel()
@@ -37,8 +39,8 @@ class AddressTest {
             city = "City",
             postcode = "",
             email = "email",
-            country = "country",
-            state = "state"
+            country = Location("US", "USA"),
+            state = AmbiguousLocation.Defined(Location("CA", "California", "USA"))
         )
 
         val dataModel = address.toShippingLabelModel()

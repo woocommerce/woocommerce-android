@@ -19,8 +19,8 @@ data class Address(
     val firstName: String,
     val lastName: String,
     val phone: String,
-    val country: String,
-    val state: String,
+    val country: Location,
+    val state: AmbiguousLocation,
     val address1: String,
     val address2: String,
     val city: String,
@@ -32,7 +32,7 @@ data class Address(
             .appendWithIfNotEmpty(this.address1)
             .appendWithIfNotEmpty(this.address2, "\n")
             .appendWithIfNotEmpty(this.city, "\n")
-            .appendWithIfNotEmpty(this.state)
+            .appendWithIfNotEmpty(this.state.codeOrRaw)
             .appendWithIfNotEmpty(this.postcode)
             .toString()
     }
@@ -41,9 +41,9 @@ data class Address(
         return AddressData.builder()
             .setAddressLines(mutableListOf(address1, address2))
             .setLocality(city)
-            .setAdminArea(state)
+            .setAdminArea(state.codeOrRaw)
             .setPostalCode(postcode)
-            .setCountry(country)
+            .setCountry(country.code)
             .setOrganization(company)
             .build()
     }
@@ -72,29 +72,15 @@ data class Address(
     }
 
     fun getCountryLabelByCountryCode(): String {
-        val locale = Locale(Locale.getDefault().language, country)
+        val locale = Locale(Locale.getDefault().language, country.code)
         return locale.displayCountry
     }
 
     fun hasInfo(): Boolean {
         return firstName.isNotEmpty() || lastName.isNotEmpty() ||
-            address1.isNotEmpty() || country.isNotEmpty() ||
+            address1.isNotEmpty() || country != Location.EMPTY ||
             phone.isNotEmpty() || email.isNotEmpty() ||
             state.isNotEmpty() || city.isNotEmpty()
-    }
-
-    fun isEmpty(): Boolean {
-        return company.isEmpty() &&
-            firstName.isEmpty() &&
-            lastName.isEmpty() &&
-            phone.isEmpty() &&
-            country.isEmpty() &&
-            state.isEmpty() &&
-            address1.isEmpty() &&
-            address2.isEmpty() &&
-            city.isEmpty() &&
-            postcode.isEmpty() &&
-            email.isEmpty()
     }
 
     fun toShippingLabelModel(): ShippingLabelAddress {
@@ -106,8 +92,8 @@ data class Address(
             address2 = address2,
             city = city,
             postcode = postcode,
-            state = state,
-            country = country
+            state = state.codeOrRaw,
+            country = country.code
         )
     }
 
@@ -119,9 +105,9 @@ data class Address(
             address1 = address1,
             address2 = address2,
             city = city,
-            state = state,
+            state = state.codeOrRaw,
             postcode = postcode,
-            country = country,
+            country = country.code,
             phone = phone
         )
     }
@@ -135,9 +121,9 @@ data class Address(
             address1 = address1,
             address2 = address2,
             city = city,
-            state = state,
+            state = state.codeOrRaw,
             postcode = postcode,
-            country = country,
+            country = country.code,
             phone = phone
         )
     }
@@ -161,7 +147,7 @@ data class Address(
             .appendWithIfNotEmpty(this.address1, "\n")
             .appendWithIfNotEmpty(this.address2, "\n")
             .appendWithIfNotEmpty(this.city, "\n")
-            .appendWithIfNotEmpty(this.state)
+            .appendWithIfNotEmpty(this.state.codeOrRaw)
             .appendWithIfNotEmpty(this.postcode, " ")
             .appendWithIfNotEmpty(getCountryLabelByCountryCode(), "\n")
             .toString()
@@ -174,8 +160,8 @@ data class Address(
                 firstName = "",
                 lastName = "",
                 phone = "",
-                country = "",
-                state = "",
+                country = Location.EMPTY,
+                state = AmbiguousLocation.EMPTY,
                 address1 = "",
                 address2 = "",
                 city = "",
