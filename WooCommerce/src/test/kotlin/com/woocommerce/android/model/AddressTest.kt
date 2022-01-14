@@ -1,7 +1,5 @@
 package com.woocommerce.android.model
 
-import com.woocommerce.android.ui.orders.details.editing.address.testCountry
-import com.woocommerce.android.ui.orders.details.editing.address.testState
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

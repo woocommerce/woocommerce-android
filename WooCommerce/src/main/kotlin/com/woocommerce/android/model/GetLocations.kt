@@ -9,7 +9,7 @@ class GetLocations @Inject constructor(private val locationStore: WCDataStore) {
         val country = locationStore.getCountries()
             .firstOrNull { it.code == countryCode }
             ?.toAppModel()
-            ?: Location.EMPTY
+            ?: Location(code = countryCode, name = countryCode)
 
         val state = locationStore.getStates(countryCode)
             .firstOrNull { it.code == stateCode }
