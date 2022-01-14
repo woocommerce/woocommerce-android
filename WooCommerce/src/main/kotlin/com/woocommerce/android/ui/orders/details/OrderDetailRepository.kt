@@ -33,7 +33,7 @@ class OrderDetailRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
     private val orderMapper: OrderMapper,
-    private val getLocations: GetLocations
+    private val shippingLabelMapper: ShippingLabelMapper,
 ) {
     suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -93,7 +93,7 @@ class OrderDetailRepository @Inject constructor(
             } else VALUE_API_SUCCESS
             AnalyticsTracker.track(Stat.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
             result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }
-                ?.map { it.toAppModel(getLocations) }
+                ?.map { shippingLabelMapper.toAppModel(it) }
                 ?: emptyList()
         }
     }
@@ -222,7 +222,7 @@ class OrderDetailRepository @Inject constructor(
     fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
         .filter { it.status == LabelItem.STATUS_PURCHASED }
-        .map { it.toAppModel(getLocations) }
+        .map { shippingLabelMapper.toAppModel(it) }
 
     fun getWooServicesPluginInfo(): WooPlugin {
         val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SERVICES)

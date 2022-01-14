@@ -58,45 +58,6 @@ data class ShippingLabel(
     ) : Parcelable
 }
 
-fun WCShippingLabelModel.toAppModel(getLocations: GetLocations): ShippingLabel {
-    return ShippingLabel(
-        id = remoteShippingLabelId,
-        trackingNumber = trackingNumber,
-        carrierId = carrierId,
-        serviceName = serviceName,
-        status = status,
-        createdDate = dateCreated?.let { Date(it) },
-        expiryDate = expiryDate?.let { Date(it) },
-        packageName = packageName,
-        rate = rate.toBigDecimal(),
-        refundableAmount = refundableAmount.toBigDecimal(),
-        currency = currency,
-        productNames = getProductNameList().map { it.trim() },
-        productIds = getProductIdsList(),
-        originAddress = getOriginAddress()?.toAppModel(getLocations),
-        destinationAddress = getDestinationAddress()?.toAppModel(getLocations),
-        refund = getRefundModel()?.toAppModel(),
-        commercialInvoiceUrl = commercialInvoiceUrl
-    )
-}
-
-fun WCShippingLabelModel.ShippingLabelAddress.toAppModel(getLocations: GetLocations): Address {
-    val (countryLocation, stateLocation) = getLocations(country.orEmpty(), state.orEmpty())
-    return Address(
-        company = company ?: "",
-        firstName = name ?: "",
-        lastName = "",
-        phone = phone ?: "",
-        country = countryLocation,
-        state = stateLocation,
-        address1 = address ?: "",
-        address2 = address2 ?: "",
-        city = city ?: "",
-        postcode = postcode ?: "",
-        email = ""
-    )
-}
-
 fun WCShippingLabelModel.WCShippingLabelRefundModel.toAppModel(): ShippingLabel.Refund {
     return ShippingLabel.Refund(
         status ?: "",

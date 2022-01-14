@@ -5,7 +5,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.*
-import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -192,33 +191,27 @@ object OrderTestUtils {
     fun generateOrderStatusOptionsMappedByStatus(): Map<String, WCOrderStatusModel> =
         generateOrderStatusOptions().map { it.statusKey to it }.toMap()
 
-    fun generateShippingLabel(localSiteId: Int = 1, remoteOrderId: Long, shippingLabelId: Long): ShippingLabel {
-        return WCShippingLabelModel().apply {
-            this.localSiteId = localSiteId
-            this.remoteOrderId = remoteOrderId
-            remoteShippingLabelId = shippingLabelId
-            packageName = "Package"
-            serviceName = "Service"
-            dateCreated = Date().time
-        }.toAppModel(mockedGetLocations)
+    fun generateShippingLabel(shippingLabelId: Long): ShippingLabel {
+        return ShippingLabel(
+            id = shippingLabelId,
+            packageName = "Package",
+            serviceName = "Service",
+            createdDate = Date(),
+            commercialInvoiceUrl = "",
+        )
     }
 
-    fun generateShippingLabels(
-        totalCount: Int = 5,
-        remoteOrderId: Long = 1L,
-        localSiteId: Int = 1,
-    ): List<ShippingLabel> {
+    fun generateShippingLabels(totalCount: Int = 5): List<ShippingLabel> {
         val result = ArrayList<ShippingLabel>()
         for (i in totalCount downTo 1) {
             result.add(
-                WCShippingLabelModel().apply {
-                    this.localSiteId = localSiteId
-                    this.remoteOrderId = remoteOrderId
-                    remoteShippingLabelId = i.toLong()
-                    packageName = "Package$i"
-                    serviceName = "Service$i"
-                    dateCreated = Date().time
-                }.toAppModel(mockedGetLocations)
+                ShippingLabel(
+                    id = i.toLong(),
+                    packageName = "Package$i",
+                    serviceName = "Service$i",
+                    createdDate = Date(),
+                    commercialInvoiceUrl = "",
+                )
             )
         }
         return result
