@@ -91,14 +91,14 @@ abstract class BaseAddressEditingFragment :
             addressViewModel.onStateSpinnerClicked(addressType)
         }
 
+        addressViewModel.start(
+            mapOf(addressType to storedAddress)
+        )
+
         setupObservers()
         setupResultHandlers()
         onViewBound(binding)
         updateStateViews()
-
-        addressViewModel.start(
-            mapOf(addressType to storedAddress)
-        )
     }
 
     override fun hasChanges() =
