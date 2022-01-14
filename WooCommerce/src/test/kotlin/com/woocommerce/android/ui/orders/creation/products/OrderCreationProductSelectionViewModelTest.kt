@@ -189,6 +189,21 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
             assertThat(actualProductList).isEqualTo(fullProductList)
         }
 
+    @Test
+    fun `when onSearchQueryCleared is called, then product list and search query should be empty`() =
+        testBlocking {
+            var actualProductList = emptyList<Product>()
+            startSut()
+            sut.productListData.observeForever {
+                actualProductList = it
+            }
+
+            sut.onSearchQueryCleared()
+
+            assertThat(sut.currentQuery).isEmpty()
+            assertThat(actualProductList).isEmpty()
+        }
+
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(
             SavedStateHandle(),
