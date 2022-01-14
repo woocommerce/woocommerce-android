@@ -124,6 +124,13 @@ class OrderCreationProductSelectionFragment :
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        searchMenuItem
+            ?.takeIf { it.isActionViewExpanded != productListViewModel.isSearchActive }
+            ?.restoreSearchMenuItemState()
+        super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
@@ -131,6 +138,15 @@ class OrderCreationProductSelectionFragment :
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun MenuItem.restoreSearchMenuItemState() {
+        if (productListViewModel.isSearchActive) {
+            expandActionView()
+            searchView?.setQuery(productListViewModel.currentQuery, false)
+        } else {
+            collapseActionView()
         }
     }
 
