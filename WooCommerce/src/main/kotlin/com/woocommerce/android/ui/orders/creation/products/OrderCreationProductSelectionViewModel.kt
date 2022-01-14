@@ -29,6 +29,12 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     private val productList = MutableLiveData<List<Product>>()
     val productListData: LiveData<List<Product>> = productList
 
+    val isSearchActive
+        get() = viewState.isSearchActive ?: false
+
+    val currentQuery
+        get() = viewState.query
+
     private var searchJob: Job? = null
 
     init {
