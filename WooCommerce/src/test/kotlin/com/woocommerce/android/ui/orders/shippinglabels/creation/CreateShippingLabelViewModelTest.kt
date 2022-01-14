@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.OrderTestUtils.orderMapper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPrintShippingLabels
@@ -57,6 +59,11 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val shippingAddress = originAddress.copy(company = "McDonald's")
     private val shippingAddressValidated = shippingAddress.copy(city = "DONE")
     private val order = OrderTestUtils.generateOrder()
+    private val orderMapper = OrderMapper(
+        getLocations = mock {
+            on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
+        }
+    )
 
     private val data = StateMachineData(
         order = orderMapper.toAppModel(order),

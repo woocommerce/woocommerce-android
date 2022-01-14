@@ -1,26 +1,12 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.model.*
-import org.mockito.kotlin.spy
 import com.woocommerce.android.model.ShippingLabelPackage.Item
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.OrderTestUtils.orderMapper
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.DataLoaded
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.PackagingStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.PaymentsStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.ShippingAddressStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -30,12 +16,21 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class ShippingLabelsStateMachineTest : BaseUnitTest() {
     private lateinit var stateMachine: ShippingLabelsStateMachine
 
+    private val orderMapper = OrderMapper(
+        getLocations = mock {
+            on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
+        }
+    )
     private val order = OrderTestUtils.generateOrder().let { orderMapper.toAppModel(it) }
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val shippingAddress = originAddress.copy(company = "McDonald's")

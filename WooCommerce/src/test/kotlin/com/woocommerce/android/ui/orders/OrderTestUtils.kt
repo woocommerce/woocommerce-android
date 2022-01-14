@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.model.*
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
@@ -16,11 +13,6 @@ object OrderTestUtils {
     val TEST_LOCAL_SITE_ID = LocalOrRemoteId.LocalId(1)
     val TEST_REMOTE_ORDER_ID = LocalOrRemoteId.RemoteId(2)
     const val TEST_ORDER_STATUS_COUNT = 20
-
-    val mockedGetLocations = mock<GetLocations> {
-        on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
-    }
-    val orderMapper = OrderMapper(mockedGetLocations)
 
     /**
      * Generates an array containing multiple [WCOrderModel] objects.
@@ -115,6 +107,7 @@ object OrderTestUtils {
         return result
     }
 
+    @Deprecated("When generating test objects for ViewModels use app models instead of database entities")
     fun generateOrder(): WCOrderModel {
         return WCOrderModel(
             id = 2,

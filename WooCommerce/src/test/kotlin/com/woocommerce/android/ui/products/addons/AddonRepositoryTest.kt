@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.products.addons
 
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.OrderTestUtils.orderMapper
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultAddonsList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
@@ -38,6 +40,12 @@ class AddonRepositoryTest {
     private val localSiteID = 321
     private val remoteOrderID = 123L
     private val remoteProductID = 333L
+
+    private val orderMapper = OrderMapper(
+        getLocations = mock {
+            on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
+        }
+    )
 
     @Before
     fun setUp() {
