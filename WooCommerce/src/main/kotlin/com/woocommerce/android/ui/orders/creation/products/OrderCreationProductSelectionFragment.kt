@@ -145,12 +145,14 @@ class OrderCreationProductSelectionFragment :
     }
 
     private fun MenuItem.restoreSearchMenuItemState() {
+        removeSearchListener()
         if (productListViewModel.isSearchActive) {
             expandActionView()
             searchView?.setQuery(productListViewModel.currentQuery, false)
         } else {
             collapseActionView()
         }
+        registerSearchListeners()
     }
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
