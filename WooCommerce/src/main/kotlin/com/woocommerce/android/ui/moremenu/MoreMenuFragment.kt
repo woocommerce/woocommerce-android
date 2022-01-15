@@ -67,7 +67,11 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
             setContent {
                 // In Compose world
                 MaterialTheme {
-                    MoreMenu(buttons)
+                    MoreMenu(buttons) {
+                        findNavController().navigateSafely(
+                            MoreMenuFragmentDirections.actionMoreMenuToSettingsActivity()
+                        )
+                    }
                 }
             }
         }
