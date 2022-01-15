@@ -30,10 +30,12 @@ import com.woocommerce.android.R.color
 @Composable
 fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
     Column {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp),
-            horizontalArrangement = Arrangement.End) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
             IconButton(
                 onClick = { settingsOnClick() },
             ) {
@@ -58,7 +60,6 @@ fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
                 )
             }
         }
-
     }
 }
 
