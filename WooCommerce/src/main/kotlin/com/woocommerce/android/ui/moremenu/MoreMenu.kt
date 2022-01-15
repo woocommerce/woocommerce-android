@@ -5,23 +5,13 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells.Fixed
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,24 +22,42 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 
 @ExperimentalFoundationApi
 @Composable
-fun MoreMenu(buttons: List<MenuButton>) {
-    LazyVerticalGrid(
-        cells = Fixed(2),
-        contentPadding = PaddingValues(ButtonDefaults.IconSpacing),
-        horizontalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing),
-        verticalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
-    ) {
-        itemsIndexed(buttons) { _, item ->
-            MoreMenuButton(
-                text = item.text,
-                iconDrawable = item.icon,
-                onClick = item.onClick
-            )
+fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
+    Column {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp),
+            horizontalArrangement = Arrangement.End) {
+            IconButton(
+                onClick = { settingsOnClick() },
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_gridicons_cog_24dp),
+                    contentDescription = stringResource(id = R.string.settings),
+                    tint = colorResource(id = color.woo_pink_50)
+                )
+            }
         }
+        LazyVerticalGrid(
+            cells = Fixed(2),
+            contentPadding = PaddingValues(ButtonDefaults.IconSpacing),
+            horizontalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing),
+            verticalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
+        ) {
+            itemsIndexed(buttons) { _, item ->
+                MoreMenuButton(
+                    text = item.text,
+                    iconDrawable = item.icon,
+                    onClick = item.onClick
+                )
+            }
+        }
+
     }
 }
 
