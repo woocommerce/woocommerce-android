@@ -20,6 +20,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
@@ -105,4 +106,19 @@ private fun MoreMenuButton(
             )
         }
     }
+}
+
+@ExperimentalFoundationApi
+@Preview
+@Composable
+fun MoreMenuPreview() {
+    val buttons = listOf(
+        MenuButton(R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin),
+        MenuButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
+        MenuButton(R.string.more_menu_button_analytics, R.drawable.ic_more_menu_analytics),
+        MenuButton(R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments),
+        MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
+        MenuButton(R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews)
+    )
+    MoreMenu(buttons)
 }
