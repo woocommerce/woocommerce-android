@@ -297,7 +297,6 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     override fun onValueSelected(entry: Entry?, h: Highlight?) {
         if (entry == null) return
-
         // display the revenue for this entry
         val formattedRevenue = getFormattedRevenueValue(entry.y.toDouble())
         revenueValue.text = formattedRevenue
@@ -308,10 +307,16 @@ class MyStoreStatsView @JvmOverloads constructor(
         ordersValue.text = orderCount.toString()
 
         // display the visitor count for this entry only if the text is NOT empty
-        val visitorsValue = getFormattedVisitorValue(date)
-        this.visitorsValue.text = visitorsValue
+        val formattedVisitorsValue = getFormattedVisitorValue(date)
+        visitorsValue.text = formattedVisitorsValue
 
         updateDateOnScrubbing(date, activeGranularity)
+
+        val color = ContextCompat.getColor(context, R.color.color_secondary)
+        revenueValue.setTextColor(color)
+        ordersValue.setTextColor(color)
+        visitorsValue.setTextColor(color)
+        conversionValue.setTextColor(color)
     }
 
     /**
