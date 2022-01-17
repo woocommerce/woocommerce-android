@@ -65,7 +65,7 @@ class MainPresenter @Inject constructor(
         coroutineScope.launch {
             selectedSite.getIfExists()?.let { siteModel ->
                 wcOrderStore.observeOrdersForSite(
-                    LocalOrRemoteId.LocalId(siteModel.id), listOf(PROCESSING.value)
+                    siteModel, listOf(PROCESSING.value)
                 ).collect {
                     AnalyticsTracker.track(
                         AnalyticsTracker.Stat.UNFULFILLED_ORDERS_LOADED,
