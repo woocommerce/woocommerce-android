@@ -17,9 +17,9 @@ import com.woocommerce.android.databinding.DialogJetpackInstallProgressBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils

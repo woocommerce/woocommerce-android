@@ -51,8 +51,8 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
-import javax.inject.Inject
 import java.util.Locale
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductDetailFragment :

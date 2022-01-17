@@ -1,8 +1,5 @@
 package com.woocommerce.android.util.crashlogging
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -10,6 +7,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.store.EncryptedLogStore
 
 @RunWith(MockitoJUnitRunner::class)
