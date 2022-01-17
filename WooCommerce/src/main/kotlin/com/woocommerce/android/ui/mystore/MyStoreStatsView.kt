@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.MarkerImage
 import com.github.mikephil.charting.components.XAxis
@@ -40,6 +41,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
+import java.text.DecimalFormat
 import java.util.Date
 import kotlin.math.round
 
@@ -106,7 +108,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         get() = binding.root.findViewById<ViewGroup>(R.id.visitorStatsConstraintLayout)
 
     private val conversionValue
-        get() = binding.root.findViewById<ViewGroup>(R.id.conversionValue)
+        get() = binding.root.findViewById<MaterialTextView>(R.id.conversionValue)
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -128,6 +130,13 @@ class MyStoreStatsView @JvmOverloads constructor(
                 lastUpdatedRunnable,
                 UPDATE_DELAY_TIME_MS
             )
+        }
+        visitorsValue.addTextChangedListener {
+            updateConversionRate()
+        }
+
+        ordersValue.addTextChangedListener {
+            updateConversionRate()
         }
     }
 
@@ -295,17 +304,13 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         // display the order count for this entry
         val date = getDateFromIndex(entry.x.toInt())
-        val value = chartOrderStats[date]?.toInt() ?: 0
-        ordersValue.text = value.toString()
+        val orderCount = chartOrderStats[date]?.toInt() ?: 0
+        ordersValue.text = orderCount.toString()
 
         // display the visitor count for this entry only if the text is NOT empty
-        val visitorValue = getFormattedVisitorValue(date)
-        if (visitorValue.isEmpty()) {
-            visitorsLayout.visibility = View.GONE
-        } else {
-            visitorsLayout.visibility = View.VISIBLE
-            visitorsValue.text = visitorValue
-        }
+        val visitorsValue = getFormattedVisitorValue(date)
+        this.visitorsValue.text = visitorsValue
+
         updateDateOnScrubbing(date, activeGranularity)
     }
 
@@ -369,7 +374,26 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
         binding.statsViewRow.visitorsValueTextview.isVisible = true
 
-        fadeInLabelValue(visitorsValue, visitorStats.values.sum().toString())
+        val totalVisitors = visitorStats.values.sum()
+        fadeInLabelValue(visitorsValue, totalVisitors.toString())
+    }
+
+    private fun updateConversionRate() {
+        val ordersCount = ordersValue.text.toString().toIntOrNull()
+        val visitorsCount = visitorsValue.text.toString().toIntOrNull()
+
+        val conversionRateDisplayValue = when {
+            visitorsCount == null || ordersCount == null -> context.getString(R.string.emdash)
+            visitorsCount == 0 -> "0%"
+            else -> {
+                val conversionRate = (ordersCount / visitorsCount.toFloat()) * 100
+                DecimalFormat("##.#").format(conversionRate) + "%"
+            }
+        }
+
+        val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
+        conversionValue.setTextColor(color)
+        conversionValue.text = conversionRateDisplayValue
     }
 
     fun showVisitorStatsError() {
@@ -390,10 +414,12 @@ class MyStoreStatsView @JvmOverloads constructor(
         visitorsValue.setTextColor(color)
         revenueValue.setTextColor(color)
         ordersValue.setTextColor(color)
+        conversionValue.setTextColor(color)
 
         visitorsValue.setText(R.string.emdash)
         revenueValue.setText(R.string.emdash)
         ordersValue.setText(R.string.emdash)
+        conversionValue.setText(R.string.emdash)
     }
 
     fun clearChartData() {
@@ -471,7 +497,8 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 
     private fun getFormattedVisitorValue(date: String) =
-        if (activeGranularity == StatsGranularity.DAYS) "" else chartVisitorStats[date]?.toString() ?: "0"
+        if (activeGranularity == StatsGranularity.DAYS) context.getString(R.string.emdash)
+        else chartVisitorStats[date]?.toString() ?: "0"
 
     /**
      * Method to format the incoming visitor stats data
