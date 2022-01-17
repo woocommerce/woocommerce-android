@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -40,6 +41,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.text.DecimalFormat
+import java.util.Locale
 import kotlin.math.round
 
 class MyStoreStatsView @JvmOverloads constructor(
@@ -214,6 +216,15 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
         fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
         updateDate(revenueStatsModel, activeGranularity)
+        updateColorForStatsHeaderValues(R.color.color_on_surface_high)
+    }
+
+    private fun updateColorForStatsHeaderValues(@ColorRes colorRes: Int) {
+        val color = ContextCompat.getColor(context, colorRes)
+        revenueValue.setTextColor(color)
+        ordersValue.setTextColor(color)
+        visitorsValue.setTextColor(color)
+        conversionValue.setTextColor(color)
     }
 
     /**
@@ -238,7 +249,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                 StatsGranularity.WEEKS -> {
                     val endInterval = revenueStats?.intervalList?.last()?.interval
                     val endDate = endInterval?.let { getDateValue(it, granularity) }
-                    String.format("%s – %s", startDate, endDate)
+                    String.format(Locale.getDefault(), "%s – %s", startDate, endDate)
                 }
                 else -> {
                     startDate
@@ -285,12 +296,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         visitorsValue.text = formattedVisitorsValue
 
         updateDateOnScrubbing(date, activeGranularity)
-
-        val color = ContextCompat.getColor(context, R.color.color_secondary)
-        revenueValue.setTextColor(color)
-        ordersValue.setTextColor(color)
-        visitorsValue.setTextColor(color)
-        conversionValue.setTextColor(color)
+        updateColorForStatsHeaderValues(R.color.color_secondary)
     }
 
     /**
@@ -389,11 +395,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun clearStatsHeaderValues() {
         statsDateValue.text = ""
-        val color = ContextCompat.getColor(context, R.color.skeleton_color)
-        visitorsValue.setTextColor(color)
-        revenueValue.setTextColor(color)
-        ordersValue.setTextColor(color)
-        conversionValue.setTextColor(color)
+        updateColorForStatsHeaderValues(R.color.skeleton_color)
 
         visitorsValue.setText(R.string.emdash)
         revenueValue.setText(R.string.emdash)
