@@ -26,7 +26,7 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
@@ -46,7 +46,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReviewListFragment :
-    TopLevelFragment(R.layout.fragment_reviews_list),
+    BaseFragment(R.layout.fragment_reviews_list),
     ItemDecorationListener,
     ReviewListAdapter.OnReviewClickListener {
     companion object {
@@ -362,10 +362,6 @@ class ReviewListFragment :
 
     override fun getFragmentTitle() = getString(R.string.review_notifications)
 
-    override fun scrollToTop() {
-        binding.reviewsList.smoothScrollToPosition(0)
-    }
-
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 
     override fun onReviewClick(review: ProductReview, sharedView: View?) {
@@ -388,6 +384,4 @@ class ReviewListFragment :
             }
         }
     }
-
-    override fun shouldExpandToolbar() = binding.reviewsList.computeVerticalScrollOffset() == 0
 }
