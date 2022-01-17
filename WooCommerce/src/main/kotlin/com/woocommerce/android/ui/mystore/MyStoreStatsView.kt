@@ -33,8 +33,8 @@ import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
@@ -60,8 +60,8 @@ class MyStoreStatsView @JvmOverloads constructor(
     private lateinit var activeGranularity: StatsGranularity
 
     private lateinit var selectedSite: SelectedSite
-    private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
     private lateinit var dateUtils: DateUtils
+    private lateinit var currencyFormatter: CurrencyFormatter
 
     private var revenueStatsModel: RevenueStatsUiModel? = null
     private var chartRevenueStats = mapOf<String, Double>()
@@ -113,13 +113,13 @@ class MyStoreStatsView @JvmOverloads constructor(
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         selectedSite: SelectedSite,
-        formatCurrencyForDisplay: FormatCurrencyRounded,
-        dateUtils: DateUtils
+        dateUtils: DateUtils,
+        currencyFormatter: CurrencyFormatter
     ) {
         this.selectedSite = selectedSite
         this.activeGranularity = period
-        this.formatCurrencyForDisplay = formatCurrencyForDisplay
         this.dateUtils = dateUtils
+        this.currencyFormatter = currencyFormatter
 
         initChart()
 
@@ -435,7 +435,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         val wasEmpty = binding.chart.lineData?.let { it.dataSetCount == 0 } ?: true
 
         val grossRevenue = revenueStatsModel?.totalSales ?: 0.0
-        val revenue = formatCurrencyForDisplay(grossRevenue, revenueStatsModel?.currencyCode.orEmpty())
+        val revenue = getFormattedRevenueValue(grossRevenue)
 
         val orderCount = revenueStatsModel?.totalOrdersCount ?: 0
         val orders = orderCount.toString()
@@ -496,8 +496,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         isRequestingStats = false
     }
 
-    private fun getFormattedRevenueValue(revenue: Double) =
-        formatCurrencyForDisplay(revenue, revenueStatsModel?.currencyCode.orEmpty())
+    private fun getFormattedRevenueValue(revenue: Double) = currencyFormatter
+        .formatCurrency(revenue.toBigDecimal(), revenueStatsModel?.currencyCode.orEmpty())
 
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 

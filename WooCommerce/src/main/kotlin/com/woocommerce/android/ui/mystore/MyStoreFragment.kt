@@ -138,9 +138,9 @@ class MyStoreFragment :
 
         binding.myStoreStats.initView(
             activeGranularity,
-            selectedSite = selectedSite,
-            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
-            dateUtils = dateUtils
+            selectedSite,
+            dateUtils,
+            currencyFormatter
         )
 
         binding.myStoreTopPerformers.initView(selectedSite)
