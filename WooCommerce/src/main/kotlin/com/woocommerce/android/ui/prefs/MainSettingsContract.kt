@@ -11,10 +11,12 @@ interface MainSettingsContract {
         fun hasMultipleStores(): Boolean
         fun isCardReaderOnboardingCompleted(): Boolean
         fun setupAnnouncementOption()
+        fun setupJetpackInstallOption()
     }
 
     interface View : BaseView<Presenter> {
         fun showDeviceAppNotificationSettings()
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
+        fun handleJetpackInstallOption(show: Boolean)
     }
 }

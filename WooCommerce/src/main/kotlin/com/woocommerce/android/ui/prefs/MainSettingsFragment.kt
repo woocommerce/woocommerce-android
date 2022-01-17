@@ -233,6 +233,17 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
     }
 
+    override fun handleJetpackInstallOption(show: Boolean) {
+        if (show) {
+            binding.optionInstallJetpack.visibility = View.VISIBLE
+            binding.optionInstallJetpack.setOnClickListener {
+                // todo
+            }
+        } else {
+            binding.optionInstallJetpack.visibility = View.GONE
+        }
+    }
+
     override fun showLatestAnnouncementOption(announcement: FeatureAnnouncement) {
         binding.optionWhatsNew.show()
         binding.optionWhatsNew.setOnClickListener {
@@ -256,6 +267,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun updateStoreViews() {
         binding.optionStore.optionTitle = presenter.getStoreDomainName()
         binding.optionStore.optionValue = presenter.getUserDisplayName()
+
+        presenter.setupJetpackInstallOption()
     }
 
     private fun updateStoreSettings() {

@@ -2,10 +2,12 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.user.WCUserRole
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -15,7 +17,8 @@ class MainSettingsPresenter @Inject constructor(
     private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
-    private val buildConfigWrapper: BuildConfigWrapper
+    private val buildConfigWrapper: BuildConfigWrapper,
+    private val userEligibilityFetcher: UserEligibilityFetcher
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -44,6 +47,22 @@ class MainSettingsPresenter @Inject constructor(
             result?.let {
                 if (it.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)) {
                     appSettingsFragmentView?.showLatestAnnouncementOption(it)
+                }
+            }
+        }
+    }
+
+    override fun setupJetpackInstallOption() {
+        if (!selectedSite.get().isJetpackCPConnected) {
+            appSettingsFragmentView?.handleJetpackInstallOption(show = false)
+            return
+        }
+
+        coroutineScope.launch {
+            val userModel = userEligibilityFetcher.fetchUserInfo()
+            userModel?.let {
+                if (it.getUserRoles().contains(WCUserRole.ADMINISTRATOR)) {
+                    appSettingsFragmentView?.handleJetpackInstallOption(show = true)
                 }
             }
         }
