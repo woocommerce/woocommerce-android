@@ -47,8 +47,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class MyStoreFragment :
-    TopLevelFragment(R.layout.fragment_my_store) {
+class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
         private const val STATE_KEY_TAB_POSITION = "tab-stats-position"

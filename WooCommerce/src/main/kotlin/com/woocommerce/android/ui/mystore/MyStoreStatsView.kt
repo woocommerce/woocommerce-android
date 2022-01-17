@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.mystore
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -39,10 +38,8 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
 import java.text.DecimalFormat
-import java.util.Date
 import kotlin.math.round
 
 class MyStoreStatsView @JvmOverloads constructor(
@@ -53,7 +50,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val binding = MyStoreStatsBinding.inflate(LayoutInflater.from(ctx), this)
 
     companion object {
-        private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
         private const val LINE_CHART_DOT_OFFSET = -5
     }
 
@@ -69,10 +65,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var chartVisitorStats = mapOf<String, Int>()
 
     private var skeletonView = SkeletonView()
-
-    private lateinit var lastUpdatedRunnable: Runnable
-    private var lastUpdatedHandler: Handler? = null
-    private var lastUpdated: Date? = null
 
     private var isRequestingStats = false
         set(value) {
@@ -123,14 +115,6 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         initChart()
 
-        lastUpdatedHandler = Handler(Looper.getMainLooper())
-        lastUpdatedRunnable = Runnable {
-            updateRecencyMessage()
-            lastUpdatedHandler?.postDelayed(
-                lastUpdatedRunnable,
-                UPDATE_DELAY_TIME_MS
-            )
-        }
         visitorsValue.addTextChangedListener {
             updateConversionRate()
         }
@@ -150,15 +134,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         isRequestingStats = true
     }
 
-    override fun onVisibilityChanged(changedView: View, visibility: Int) {
-        super.onVisibilityChanged(changedView, visibility)
-        if (visibility == View.VISIBLE) {
-            updateRecencyMessage()
-        } else {
-            lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
-        }
-    }
-
     fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(
@@ -166,7 +141,6 @@ class MyStoreStatsView @JvmOverloads constructor(
                 R.layout.skeleton_dashboard_stats,
                 delayed = true
             )
-            binding.dashboardRecencyText.text = null
         } else {
             skeletonView.hide()
         }
@@ -444,7 +418,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         fadeInLabelValue(ordersValue, orders)
 
         if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales?.toInt() == 0) {
-            clearLastUpdated()
             isRequestingStats = false
             return
         }
@@ -492,7 +465,6 @@ class MyStoreStatsView @JvmOverloads constructor(
             dot.setOffset(offset, offset)
             marker = dot
         }
-        resetLastUpdated()
         isRequestingStats = false
     }
 
@@ -561,28 +533,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    private fun clearLastUpdated() {
-        lastUpdated = null
-        updateRecencyMessage()
-    }
-
-    private fun resetLastUpdated() {
-        lastUpdated = Date()
-        updateRecencyMessage()
-    }
-
-    private fun updateRecencyMessage() {
-        binding.dashboardRecencyText.text = getRecencyMessage()
-        lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
-
-        if (lastUpdated != null) {
-            lastUpdatedHandler?.postDelayed(
-                lastUpdatedRunnable,
-                UPDATE_DELAY_TIME_MS
-            )
-        }
-    }
-
     private fun getEntryValue(dateString: String): String {
         return when (activeGranularity) {
             StatsGranularity.DAYS -> dateUtils.getShortHourString(dateString).orEmpty()
@@ -590,49 +540,6 @@ class MyStoreStatsView @JvmOverloads constructor(
             StatsGranularity.MONTHS -> dateString.formatToMonthDateOnly()
             StatsGranularity.YEARS -> dateUtils.getShortMonthString(dateString).orEmpty()
         }
-    }
-
-    /**
-     * Returns the text to use for the "recency message" which tells the user when stats were last updated
-     */
-    private fun getRecencyMessage(): String? {
-        if (lastUpdated == null) {
-            return null
-        }
-
-        val now = Date()
-
-        // up to 2 minutes -> "Updated moments ago"
-        val minutes = DateTimeUtils.minutesBetween(now, lastUpdated)
-        if (minutes <= 2) {
-            return context.getString(R.string.dashboard_stats_updated_now)
-        }
-
-        // up to 59 minutes -> "Updated 5 minutes ago"
-        if (minutes <= 59) {
-            return String.format(context.getString(R.string.dashboard_stats_updated_minutes), minutes)
-        }
-
-        // 1 hour -> "Updated 1 hour ago"
-        val hours = DateTimeUtils.hoursBetween(now, lastUpdated)
-        if (hours == 1) {
-            return context.getString(R.string.dashboard_stats_updated_one_hour)
-        }
-
-        // up to 23 hours -> "Updated 5 hours ago"
-        if (hours <= 23) {
-            return String.format(context.getString(R.string.dashboard_stats_updated_hours), hours)
-        }
-
-        // up to 47 hours -> "Updated 1 day ago"
-        if (hours <= 47) {
-            return context.getString(R.string.dashboard_stats_updated_one_day)
-        }
-
-        // otherwise date & time
-        val dateStr = DateFormat.getDateFormat(context).format(lastUpdated!!)
-        val timeStr = DateFormat.getTimeFormat(context).format(lastUpdated!!)
-        return String.format(context.getString(R.string.dashboard_stats_updated_date_time), "$dateStr $timeStr")
     }
 
     private inner class StartEndDateAxisFormatter : ValueFormatter() {
