@@ -61,7 +61,11 @@ class MainSettingsPresenter @Inject constructor(
         coroutineScope.launch {
             val userModel = userEligibilityFetcher.fetchUserInfo()
             userModel?.let {
-                if (it.getUserRoles().contains(WCUserRole.ADMINISTRATOR)) {
+                val userRoles = it.getUserRoles()
+
+                if (WCUserRole.ADMINISTRATOR in userRoles ||
+                    WCUserRole.SHOP_MANAGER in userRoles
+                ) {
                     appSettingsFragmentView?.handleJetpackInstallOption(show = true)
                 }
             }
