@@ -150,6 +150,7 @@
                 android:layout_height="@dimen/minor_100"
                 android:background="@color/skeleton_color"
                 android:layout_marginBottom="@dimen/minor_100"
+                android:visibility="gone"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/conversionLabelTextView" />

@@ -15,15 +15,7 @@
             layout="@layout/dashboard_main_stats_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100" />
-
-        <com.google.android.material.textview.MaterialTextView
-            style="@style/Woo.TextView.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
-            android:paddingBottom="@dimen/major_100"
-            android:text="@string/dashboard_stats_updated_now"/>
+            android:layout_marginBottom="@dimen/major_100" />
 
     </LinearLayout>
 </merge>
