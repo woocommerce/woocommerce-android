@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues />
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>ComplexCondition:ProductImageViewerFragment.kt$ProductImageViewerFragment$(show &amp;&amp; binding.fakeToolbar.visibility == View.VISIBLE) || (!show &amp;&amp; binding.fakeToolbar.visibility != View.VISIBLE)</ID>
     <ID>ComplexCondition:ReviewListAdapter.kt$ReviewListAdapter$it.remoteId == review.remoteId &amp;&amp; it.review == review.review &amp;&amp; it.read == (review.read != false) &amp;&amp; it.status == review.status</ID>
@@ -11,10 +11,8 @@
     <ID>ComplexMethod:MainActivity.kt$MainActivity$ override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?)</ID>
     <ID>ComplexMethod:MyStoreStatsView.kt$MyStoreStatsView$private fun updateChartView()</ID>
     <ID>ComplexMethod:Order.kt$fun WCOrderModel.toAppModel(): Order</ID>
-    <ID>ComplexMethod:OrderDetailRepository.kt$OrderDetailRepository$@Suppress("unused") @Subscribe(threadMode = MAIN) fun onOrderChanged(event: OnOrderChanged)</ID>
     <ID>ComplexMethod:OrderDetailShippingLabelsAdapter.kt$OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder$fun bind(shippingLabel: ShippingLabel)</ID>
     <ID>ComplexMethod:OrderListItemDataSource.kt$OrderListItemDataSource$override fun getItemIdentifiers( listDescriptor: WCOrderListDescriptor, remoteItemIds: List&lt;RemoteId&gt;, isListFullyFetched: Boolean ): List&lt;OrderListItemIdentifier&gt;</ID>
-    <ID>ComplexMethod:OrderListViewModel.kt$OrderListViewModel$@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) fun createAndPostEmptyViewType(wrapper: PagedListWrapper&lt;OrderListItemUIType&gt;)</ID>
     <ID>ComplexMethod:OrderNavigator.kt$OrderNavigator$fun navigate(fragment: Fragment, target: OrderNavigationTarget)</ID>
     <ID>ComplexMethod:Product.kt$Product$fun isSameProduct(product: Product): Boolean</ID>
     <ID>ComplexMethod:Product.kt$fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductModel</ID>
@@ -29,16 +27,13 @@
     <ID>ComplexMethod:ShippingCustomsViewModel.kt$ShippingCustomsViewModel$private fun CustomsPackage.validate(): PackageValidationState</ID>
     <ID>ComplexMethod:SitePickerActivity.kt$SitePickerActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
     <ID>ComplexMethod:SitePickerActivity.kt$SitePickerActivity$override fun showStoreList(wcSites: List&lt;SiteModel&gt;)</ID>
-    <ID>ComplexMethod:VariationDetailViewModel.kt$VariationDetailViewModel$fun onVariationChanged( remoteProductId: Long? = null, remoteVariationId: Long? = null, sku: String? = null, image: Image? = null, regularPrice: BigDecimal? = null, salePrice: BigDecimal? = null, saleEndDate: Date? = viewState.variation?.saleEndDateGmt, saleStartDate: Date? = viewState.variation?.saleStartDateGmt, isSaleScheduled: Boolean? = null, stockStatus: ProductStockStatus? = null, backorderStatus: ProductBackorderStatus? = null, stockQuantity: Double? = null, options: List&lt;Option&gt;? = null, isPurchasable: Boolean? = null, isVirtual: Boolean? = null, isDownloadable: Boolean? = null, description: String? = null, isVisible: Boolean? = null, isStockManaged: Boolean? = null, shippingClass: String? = null, shippingClassId: Long? = null, attributes: Array&lt;VariantOption&gt;? = null, length: Float? = null, width: Float? = null, height: Float? = null, weight: Float? = null )</ID>
     <ID>ComplexMethod:WCEmptyView.kt$WCEmptyView$fun show( type: EmptyViewType, searchQueryOrFilter: String? = null, onButtonClick: (() -&gt; Unit)? = null )</ID>
     <ID>EmptyDefaultConstructor:DisabledAppBarLayoutBehavior.kt$DisabledAppBarLayoutBehavior$()</ID>
     <ID>EmptyFunctionBlock:AddAttributeTermsFragment.kt$AddAttributeTermsFragment.&lt;no name provided&gt;${}</ID>
     <ID>EmptyFunctionBlock:ApplicationLifecycleMonitor.kt$ApplicationLifecycleMonitor${}</ID>
     <ID>EmptyFunctionBlock:CardReaderManagerImpl.kt$CardReaderManagerImpl.&lt;no name provided&gt;${}</ID>
     <ID>EmptyFunctionBlock:DiscoverReadersAction.kt$&lt;no name provided&gt;${}</ID>
-    <ID>EmptyFunctionBlock:InstallSoftwareUpdateAction.kt$&lt;no name provided&gt;${}</ID>
     <ID>EmptyFunctionBlock:MyStoreFragment.kt$MyStoreFragment.&lt;no name provided&gt;${}</ID>
-    <ID>EmptyFunctionBlock:OrderListFragment.kt$OrderListFragment.&lt;no name provided&gt;${}</ID>
     <ID>EmptyFunctionBlock:ProductReviewsFragment.kt$ProductReviewsFragment.&lt;no name provided&gt;${ }</ID>
     <ID>EmptyFunctionBlock:SequenceExt.kt$OtherwiseIgnore${ }</ID>
     <ID>EnumNaming:WooLog.kt$WooLog.LogLevel.d$d</ID>
@@ -57,7 +52,6 @@
     <ID>ForbiddenComment:LoginActivity.kt$LoginActivity$// TODO: Signup</ID>
     <ID>ForbiddenComment:LoginActivity.kt$LoginActivity$// TODO: Support self-signed SSL sites and show dialog (only needed when XML-RPC support is added)</ID>
     <ID>ForbiddenComment:LoginAnalyticsTracker.kt$LoginAnalyticsTracker$// TODO: Account creation</ID>
-    <ID>ForbiddenComment:MainActivity.kt$MainActivity$// TODO: Extract logic out of MainActivity to reduce size and remove this @Suppress("LargeClass")</ID>
     <ID>ForbiddenComment:MainActivity.kt$MainActivity$// TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this</ID>
     <ID>ForbiddenComment:MainPresenter.kt$MainPresenter$// TODO: Notify the user of the problem</ID>
     <ID>ForbiddenComment:MyStoreStatsView.kt$MyStoreStatsView$// TODO: add a custom empty view</ID>
@@ -76,14 +70,11 @@
     <ID>LongMethod:CreateShippingLabelFragment.kt$CreateShippingLabelFragment$private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding)</ID>
     <ID>LongMethod:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$private fun initializeStateMachine()</ID>
     <ID>LongMethod:EditShippingLabelPaymentFragment.kt$EditShippingLabelPaymentFragment$private fun setupObservers(binding: FragmentEditShippingLabelPaymentBinding)</ID>
-    <ID>LongMethod:IssueRefundViewModel.kt$IssueRefundViewModel$fun onRefundConfirmed(wasConfirmed: Boolean)</ID>
     <ID>LongMethod:LoginNoJetpackFragment.kt$LoginNoJetpackFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
     <ID>LongMethod:MainActivity.kt$MainActivity$ override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?)</ID>
     <ID>LongMethod:MainSettingsFragment.kt$MainSettingsFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
     <ID>LongMethod:Order.kt$fun WCOrderModel.toAppModel(): Order</ID>
-    <ID>LongMethod:OrderDetailCustomerInfoView.kt$OrderDetailCustomerInfoView$fun updateCustomerInfo( order: Order, isVirtualOrder: Boolean // don't display shipping section for virtual products )</ID>
     <ID>LongMethod:OrderDetailFragment.kt$OrderDetailFragment$private fun setupObservers(viewModel: OrderDetailViewModel)</ID>
-    <ID>LongMethod:OrderDetailRepository.kt$OrderDetailRepository$@Suppress("unused") @Subscribe(threadMode = MAIN) fun onOrderChanged(event: OnOrderChanged)</ID>
     <ID>LongMethod:OrderDetailShippingLabelsAdapter.kt$OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder$fun bind(shippingLabel: ShippingLabel)</ID>
     <ID>LongMethod:OrderListItemDataSource.kt$OrderListItemDataSource$override fun getItemIdentifiers( listDescriptor: WCOrderListDescriptor, remoteItemIds: List&lt;RemoteId&gt;, isListFullyFetched: Boolean ): List&lt;OrderListItemIdentifier&gt;</ID>
     <ID>LongMethod:OrderNavigator.kt$OrderNavigator$fun navigate(fragment: Fragment, target: OrderNavigationTarget)</ID>
@@ -91,7 +82,6 @@
     <ID>LongMethod:Product.kt$fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductModel</ID>
     <ID>LongMethod:Product.kt$fun WCProductModel.toAppModel(): Product</ID>
     <ID>LongMethod:ProductDetailFragment.kt$ProductDetailFragment$private fun setupResultHandlers(viewModel: ProductDetailViewModel)</ID>
-    <ID>LongMethod:ProductImagesService.kt$ProductImagesService$override fun onHandleWork(intent: Intent)</ID>
     <ID>LongMethod:ProductInventoryFragment.kt$ProductInventoryFragment$private fun setupObservers(viewModel: ProductInventoryViewModel)</ID>
     <ID>LongMethod:ProductNavigator.kt$ProductNavigator$fun navigate(fragment: Fragment, target: ProductNavigationTarget)</ID>
     <ID>LongMethod:ProductPricingFragment.kt$ProductPricingFragment$private fun setupViews(currency: String, isCurrencyPrefix: Boolean, pricingData: PricingData)</ID>
@@ -103,10 +93,12 @@
     <ID>LongMethod:SitePickerActivity.kt$SitePickerActivity$override fun showSiteNotConnectedJetpackView(url: String)</ID>
     <ID>LongMethod:SitePickerActivity.kt$SitePickerActivity$override fun showStoreList(wcSites: List&lt;SiteModel&gt;)</ID>
     <ID>LongMethod:WCEmptyView.kt$WCEmptyView$fun show( type: EmptyViewType, searchQueryOrFilter: String? = null, onButtonClick: (() -&gt; Unit)? = null )</ID>
+    <ID>LongParameterList:ShippingLabelRepository.kt$ShippingLabelRepository$( orderId: Long, origin: Address, destination: Address, packages: List&lt;ShippingLabelPackage&gt;, rates: List&lt;ShippingRate&gt;, customsPackages: List&lt;CustomsPackage&gt;? )</ID>
+    <ID>LongParameterList:WooNotificationBuilder.kt$WooNotificationBuilder$( channelId: String, inboxMessage: String, subject: String, summaryText: String, notification: Notification, shouldDisplaySummaryText: Boolean, )</ID>
+    <ID>LongParameterList:WooNotificationBuilder.kt$WooNotificationBuilder$( pushId: Int, defaults: Int, channelId: String, notification: Notification, addCustomNotificationSound: Boolean, isGroupNotification: Boolean )</ID>
     <ID>LoopWithTooManyJumpStatements:DashboardStatsBarChart.kt$DashboardStatsBarChart$for (i in mIndicesToHighlight.indices) { val highlight = mIndicesToHighlight[i] // This is the line that causes the crash val set = mData.getDataSetByIndex(highlight.dataSetIndex) ?: continue val e = mData.getEntryForHighlight(mIndicesToHighlight[i]) as? BarEntry ?: continue val entryIndex = set.getEntryIndex(e) // make sure entry not null if (entryIndex &gt; set.entryCount * mAnimator.phaseX) { continue } val pos = getMarkerPosition(highlight) // check bounds if (!mViewPortHandler.isInBounds(pos[0], pos[1])) continue // callbacks to update the content mMarker.refreshContent(e, highlight) // draw the marker mMarker.draw(canvas, pos[0], pos[1]) }</ID>
     <ID>LoopWithTooManyJumpStatements:RoundedBarChartRenderer.kt$RoundedBarChartRenderer$for (high in indices) { val set = barData.getDataSetByIndex(high.dataSetIndex) if (set == null || !set.isHighlightEnabled) continue val e = set.getEntryForXValue(high.x, high.y) if (!isInBoundsX(e, set)) continue val trans = mChart.getTransformer(set.axisDependency) mHighlightPaint.color = set.highLightColor mHighlightPaint.alpha = set.highLightAlpha val isStack = high.stackIndex &gt;= 0 &amp;&amp; e.isStacked val y1: Float val y2: Float if (isStack) { if (mChart.isHighlightFullBarEnabled) { y1 = e.positiveSum y2 = -e.negativeSum } else { val range = e.ranges[high.stackIndex] y1 = range.from y2 = range.to } } else { y1 = e.y y2 = 0f } prepareBarHighlight(e.x, y1, y2, barData.barWidth / 2f, trans) setHighlightDrawPos(high, mBarRect) c.drawRoundRect(mBarRect, mRadius, mRadius, mHighlightPaint) }</ID>
     <ID>MagicNumber:AttributeTermsListAdapter.kt$AttributeTermsListAdapter$300</ID>
-    <ID>MagicNumber:BottomNavigationPosition.kt$BottomNavigationPosition.REVIEWS$3</ID>
     <ID>MagicNumber:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$1000.0</ID>
     <ID>MagicNumber:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$4</ID>
     <ID>MagicNumber:CurrencyAmountDialog.kt$CurrencyAmountDialog$200</ID>
@@ -131,7 +123,6 @@
     <ID>MagicNumber:OrderListFragment.kt$OrderListFragment$100</ID>
     <ID>MagicNumber:OrderListViewModel.kt$OrderListViewModel$1_000</ID>
     <ID>MagicNumber:ProductImagesNotificationHandler.kt$ProductImagesNotificationHandler$100</ID>
-    <ID>MagicNumber:ProductImagesService.kt$ProductImagesService$100</ID>
     <ID>MagicNumber:ProductImagesUtils.kt$ProductImagesUtils$1000</ID>
     <ID>MagicNumber:ProductTagsAdapter.kt$ProductTagsAdapter.ProductTagViewHolder$3</ID>
     <ID>MagicNumber:ReviewDetailFragment.kt$ReviewDetailFragment$256</ID>
@@ -152,14 +143,11 @@
     <ID>MagicNumber:TimeGroup.kt$TimeGroup.Companion$2</ID>
     <ID>MagicNumber:UiHelpers.kt$UiHelpers$0.8</ID>
     <ID>MagicNumber:UnreadItemDecoration.kt$UnreadItemDecoration$3</ID>
-    <ID>MagicNumber:ViewExt.kt$300</ID>
     <ID>MagicNumber:ViewExt.kt$300L</ID>
     <ID>MagicNumber:ViewUtils.kt$0.5f</ID>
     <ID>MagicNumber:WCEmptyView.kt$WCEmptyView$50L</ID>
     <ID>MagicNumber:WCMaterialOutlinedEditTextView.kt$WCMaterialOutlinedEditTextView$100</ID>
     <ID>MagicNumber:WCProductImageGalleryView.kt$WCProductImageGalleryView.ImageViewHolder$0.5F</ID>
-    <ID>MagicNumber:WCPromoDialog.kt$WCPromoDialog.PromoType.SITE_PICKER$34</ID>
-    <ID>MagicNumber:WCPromoTooltip.kt$WCPromoTooltip.Feature.SITE_SWITCHER$34</ID>
     <ID>MagicNumber:WooCommerceGlideModule.kt$WooCommerceGlideModule$1024</ID>
     <ID>MagicNumber:WooWellSqlConfig.kt$WooWellSqlConfig$1024L</ID>
     <ID>MagicNumber:WooWellSqlConfig.kt$WooWellSqlConfig$5L</ID>
@@ -170,33 +158,24 @@
     <ID>MaxLineLength:OrderListItemDataSource.kt$OrderListItemDataSource$*</ID>
     <ID>MaxLineLength:ReviewListRepository.kt$ReviewListRepository$/* * Fetch notifications so we can match them to reviews to get the read state. This * will wait for completion. If this fails we still consider fetching reviews to be successful since it * failing won't block the user. Just log the exception. */</ID>
     <ID>MaxLineLength:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
-    <ID>MaxLineLength:WCTextViewCompat.kt$WCTextViewCompat$*</ID>
     <ID>MayBeConst:ProductListFragment.kt$ProductListFragment.Companion$val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"</ID>
     <ID>MayBeConst:TestBase.kt$TestBase.Companion$val wireMockPort = 8080</ID>
     <ID>MemberNameEqualsClassName:CurrencyFormatter.kt$CurrencyFormatter.Companion$// Formats the value to two decimal places private val currencyFormatter: DecimalFormat by lazy { DecimalFormat("0.00") }</ID>
-    <ID>MemberNameEqualsClassName:SelectedSite.kt$SelectedSite$private var selectedSite: SiteModel? = null</ID>
     <ID>MemberNameEqualsClassName:SkeletonView.kt$SkeletonView$private lateinit var skeletonView: View</ID>
-    <ID>NestedBlockDepth:ProductDetailViewModel.kt$ProductDetailViewModel$ private suspend fun updateProduct(product: Product)</ID>
-    <ID>NestedBlockDepth:ProductImagesFragment.kt$ProductImagesFragment$override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)</ID>
     <ID>NestedBlockDepth:ProductListViewModel.kt$ProductListViewModel$private suspend fun fetchProductList( searchQuery: String? = null, loadMore: Boolean = false, scrollToTop: Boolean = false )</ID>
     <ID>NestedBlockDepth:ProductSelectionListViewModel.kt$ProductSelectionListViewModel$private suspend fun fetchProductList( searchQuery: String? = null, loadMore: Boolean = false )</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
     <ID>NestedBlockDepth:SitePickerActivity.kt$SitePickerActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
     <ID>PrintStackTrace:TestIdler.kt$TestIdler$e</ID>
-    <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val _orderStatusOptions = MutableLiveData&lt;Map&lt;String, WCOrderStatusModel&gt;&gt;()</ID>
-    <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val _pagedListData = MediatorLiveData&lt;PagedOrdersList&gt;()</ID>
     <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val lifecycleRegistry: LifecycleRegistry by lazy { LifecycleRegistry(this) }</ID>
-    <ID>ReturnCount:AddOrderNoteViewModel.kt$AddOrderNoteViewModel$fun pushOrderNote()</ID>
     <ID>ReturnCount:AddOrderShipmentTrackingViewModel.kt$AddOrderShipmentTrackingViewModel$fun onAddButtonTapped()</ID>
     <ID>ReturnCount:ChromeCustomTabUtils.kt$ChromeCustomTabUtils$ private fun canUseCustomTabs(context: Context): Boolean</ID>
     <ID>ReturnCount:DrawableMatcher.kt$DrawableMatcher$override fun matchesSafely(item: View?): Boolean</ID>
     <ID>ReturnCount:EditShippingLabelPackagesViewModel.kt$EditShippingLabelPackagesViewModel$suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean</ID>
-    <ID>ReturnCount:KeepStateNavigator.kt$KeepStateNavigator$override fun navigate( destination: Destination, args: Bundle?, navOptions: NavOptions?, navigatorExtras: Navigator.Extras? ): NavDestination?</ID>
     <ID>ReturnCount:MainActivity.kt$MainActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
     <ID>ReturnCount:MyStoreStatsView.kt$MyStoreStatsView$ private fun getRecencyMessage(): String?</ID>
     <ID>ReturnCount:OrderListAdapter.kt$&lt;no name provided&gt;$override fun areItemsTheSame(oldItem: OrderListItemUIType, newItem: OrderListItemUIType): Boolean</ID>
-    <ID>ReturnCount:OrderShipmentProvidersRepository.kt$OrderShipmentProvidersRepository$suspend fun fetchOrderShipmentProviders(orderIdentifier: OrderIdentifier): List&lt;OrderShipmentProvider&gt;?</ID>
     <ID>ReturnCount:ParentCategoryListAdapter.kt$ParentCategoryListAdapter$private fun isSameList(categories: List&lt;ProductCategoryItemUiModel&gt;): Boolean</ID>
     <ID>ReturnCount:Product.kt$Product$ private fun isSameCategories(updatedCategories: List&lt;ProductCategory&gt;): Boolean</ID>
     <ID>ReturnCount:Product.kt$Product$ private fun isSameTags(updatedTags: List&lt;ProductTag&gt;): Boolean</ID>
@@ -206,8 +185,6 @@
     <ID>ReturnCount:ProductFilterListViewModel.kt$ProductFilterListViewModel.FilterListItemUiModel$ private fun List&lt;FilterListOptionItemUiModel&gt;.isSameFilterOptions( updatedFilterOptions: List&lt;FilterListOptionItemUiModel&gt; ): Boolean</ID>
     <ID>ReturnCount:ProductHelper.kt$ProductHelper$ fun productOrVariationId(productId: Long?, variationId: Long?): Long</ID>
     <ID>ReturnCount:ProductImageMap.kt$ProductImageMap$fun get(remoteProductId: Long): String?</ID>
-    <ID>ReturnCount:ProductImagesUtils.kt$ProductImagesUtils$ fun createCaptureImageIntent(context: Context): Intent?</ID>
-    <ID>ReturnCount:ProductImagesUtils.kt$ProductImagesUtils$fun mediaModelFromLocalUri( context: Context, localSiteId: Int, localUri: Uri, mediaStore: MediaStore ): MediaModel?</ID>
     <ID>ReturnCount:ReviewListAdapter.kt$ReviewListAdapter$ fun getItemTypeAtRecyclerPosition(position: Int): ItemType</ID>
     <ID>ReturnCount:ReviewListAdapter.kt$ReviewListAdapter$private fun isSameList(reviews: List&lt;ProductReview&gt;): Boolean</ID>
     <ID>ReturnCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
@@ -218,45 +195,33 @@
     <ID>ReturnCount:TestBase.kt$LocaleAwareRenderableDate$override fun toString(): String</ID>
     <ID>ReturnCount:WCOrderModelExt.kt$ fun isVirtualProduct( site: SiteModel, lineItems: List&lt;LineItem&gt;, productStore: WCProductStore ): Boolean</ID>
     <ID>ReturnCount:WCProductImageGalleryView.kt$WCProductImageGalleryView.ImageGalleryAdapter$ private fun isSameImageList(images: List&lt;Product.Image&gt;): Boolean</ID>
-    <ID>ReturnCount:WPMediaGalleryView.kt$WPMediaGalleryView.WPMediaLibraryGalleryAdapter$private fun isSameImageList(images: List&lt;Product.Image&gt;): Boolean</ID>
-    <ID>ReturnCount:WPMediaPickerViewModel.kt$WPMediaPickerViewModel$private fun loadMedia(loadMore: Boolean = false)</ID>
-    <ID>ReturnCount:WooPermissionUtils.kt$WooPermissionUtils$/* * returns true if we know the app has asked for the passed permission */ private fun isPermissionAsked(context: Context, permission: String): Boolean</ID>
     <ID>SerialVersionUIDInSerializableClass:InfoScreenFragment.kt$InfoScreenFragment$InfoScreenLinkAction : Serializable</ID>
     <ID>SpreadOperator:OrderDetailFragment.kt$OrderDetailFragment$(event.message, *event.args)</ID>
     <ID>SpreadOperator:RefundSummaryFragment.kt$RefundSummaryFragment$(event.message, *event.args)</ID>
     <ID>SpreadOperator:ShippingLabelRefundFragment.kt$ShippingLabelRefundFragment$(event.message, *event.args)</ID>
     <ID>SpreadOperator:UiHelpers.kt$UiHelpers$( uiString.stringRes, *uiString.params.map { value -&gt; getTextOfUiString( context, value ) }.toTypedArray() )</ID>
-    <ID>SwallowedException:ActivityUtils.kt$ActivityUtils$catch (e: ActivityNotFoundException) { false }</ID>
-    <ID>SwallowedException:ActivityUtils.kt$ActivityUtils$catch (exception: ActivityNotFoundException) { ToastUtils.showToast(activity, R.string.shipping_label_preview_pdf_app_missing) }</ID>
-    <ID>SwallowedException:AppPrefs.kt$AppPrefs$catch (ex: Throwable) { relativeInstallationDate }</ID>
-    <ID>SwallowedException:AppRatingDialog.kt$AppRatingDialog$catch (e: android.content.ActivityNotFoundException) { // play store app isn't on this device so open app's page in browser instead context.startActivity( Intent( Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + context.packageName) ) ) }</ID>
-    <ID>SwallowedException:EditShippingLabelAddressFragment.kt$EditShippingLabelAddressFragment$catch (e: ActivityNotFoundException) { ToastUtils.showToast(context, R.string.error_no_gmaps_app) }</ID>
-    <ID>SwallowedException:EditShippingLabelAddressFragment.kt$EditShippingLabelAddressFragment$catch (e: ActivityNotFoundException) { ToastUtils.showToast(context, R.string.error_no_phone_app) }</ID>
-    <ID>SwallowedException:FileDownloader.kt$FileDownloader$catch (e: InterruptedIOException) { WooLog.d(T.UTILS, "Downloading file cancelled") destinationFile.delete() false }</ID>
-    <ID>SwallowedException:MainBottomNavigationView.kt$MainBottomNavigationView$catch (e: IllegalArgumentException) { return false }</ID>
-    <ID>SwallowedException:PackageUtils.kt$PackageUtils$catch (e: ClassNotFoundException) { false }</ID>
-    <ID>SwallowedException:PackageUtils.kt$PackageUtils$catch (e: PackageManager.NameNotFoundException) { null }</ID>
-    <ID>SwallowedException:PrintShippingLabelCustomsFormViewModelTest.kt$PrintShippingLabelCustomsFormViewModelTest$catch (e: CancellationException) { false }</ID>
-    <ID>SwallowedException:ProductDetailViewModel.kt$ProductDetailViewModel$catch (e: Exception) { triggerEvent(ShowSnackbar(string.product_downloadable_files_upload_failed)) }</ID>
-    <ID>SwallowedException:ProductDownloadDetailsViewModel.kt$ProductDownloadDetailsViewModel$catch (e: URISyntaxException) { copy(urlErrorMessage = R.string.product_downloadable_files_url_invalid, nameErrorMessage = null) }</ID>
-    <ID>SwallowedException:ProductListViewModel.kt$ProductListViewModel$catch (e: CancellationException) { WooLog.d(WooLog.T.PRODUCTS, "CancellationException while waiting for existing fetch") }</ID>
-    <ID>SwallowedException:ProductSelectionListViewModel.kt$ProductSelectionListViewModel$catch (e: CancellationException) { WooLog.d(WooLog.T.PRODUCTS, "CancellationException while waiting for existing fetch") }</ID>
-    <ID>SwallowedException:ProductShippingClassViewModel.kt$ProductShippingClassViewModel$catch (e: CancellationException) { WooLog.d( T.PRODUCTS, "CancellationException while waiting for existing shipping class list fetch" ) }</ID>
-    <ID>SwallowedException:RecyclerViewMatcher.kt$RecyclerViewMatcher.&lt;no name provided&gt;$catch (var4: Resources.NotFoundException) { "$recyclerViewId (resource name not found)" }</ID>
-    <ID>SwallowedException:Screen.kt$Screen$catch (e: Throwable) { false }</ID>
-    <ID>SwallowedException:Screen.kt$Screen$catch (e: java.lang.Exception) { // ignore the failure }</ID>
-    <ID>SwallowedException:Screen.kt$Screen$catch (ex: Exception) { // do nothing }</ID>
-    <ID>SwallowedException:Screen.kt$Screen.Companion$catch (e: Throwable) { false }</ID>
-    <ID>SwallowedException:StringDateFormatExt.kt$catch (e: Exception) { throw IllegalArgumentException("Date string argument is not of format yyyy'W'MM'W'dd: $this") }</ID>
-    <ID>SwallowedException:StringDateFormatExt.kt$catch (e: Exception) { throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd HH: $this") }</ID>
-    <ID>SwallowedException:StringDateFormatExt.kt$catch (e: Exception) { throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd'T'HH:mm:ss: $this") }</ID>
-    <ID>SwallowedException:StringDateFormatExt.kt$catch (e: Exception) { throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this") }</ID>
-    <ID>SwallowedException:StringUtils.kt$StringUtils$catch (e: IOException) { "" }</ID>
-    <ID>SwallowedException:StringUtils.kt$StringUtils$catch (e: NotFoundException) { WooLog.d(UTILS, "Unable to find a valid country name for country code: $storeCountry") }</ID>
-    <ID>SwallowedException:StringUtils.kt$StringUtils$catch (e: NotFoundException) { WooLog.w(UTILS, "No resource found for id $id in locale $locale") null }</ID>
-    <ID>SwallowedException:StringUtils.kt$StringUtils$catch (e: NotFoundException) { WooLog.w(UTILS, "No string array resource found for id $id in locale $locale") null }</ID>
-    <ID>SwallowedException:WooLog.kt$WooLog.LogEntryList$catch (e: NoSuchElementException) { // ignore }</ID>
-    <ID>SwallowedException:WooLogViewerActivity.kt$WooLogViewerActivity$catch (ex: android.content.ActivityNotFoundException) { ToastUtils.showToast(this, R.string.logviewer_share_error) }</ID>
+    <ID>SwallowedException:ActivityUtils.kt$ActivityUtils$e: ActivityNotFoundException</ID>
+    <ID>SwallowedException:ActivityUtils.kt$ActivityUtils$exception: ActivityNotFoundException</ID>
+    <ID>SwallowedException:AppPrefs.kt$AppPrefs$ex: Throwable</ID>
+    <ID>SwallowedException:AppRatingDialog.kt$AppRatingDialog$e: android.content.ActivityNotFoundException</ID>
+    <ID>SwallowedException:EditShippingLabelAddressFragment.kt$EditShippingLabelAddressFragment$e: ActivityNotFoundException</ID>
+    <ID>SwallowedException:FileDownloader.kt$FileDownloader$e: InterruptedIOException</ID>
+    <ID>SwallowedException:PackageUtils.kt$PackageUtils$e: ClassNotFoundException</ID>
+    <ID>SwallowedException:PackageUtils.kt$PackageUtils$e: PackageManager.NameNotFoundException</ID>
+    <ID>SwallowedException:PrintShippingLabelCustomsFormViewModelTest.kt$PrintShippingLabelCustomsFormViewModelTest$e: CancellationException</ID>
+    <ID>SwallowedException:ProductDownloadDetailsViewModel.kt$ProductDownloadDetailsViewModel$e: URISyntaxException</ID>
+    <ID>SwallowedException:ProductListViewModel.kt$ProductListViewModel$e: CancellationException</ID>
+    <ID>SwallowedException:ProductSelectionListViewModel.kt$ProductSelectionListViewModel$e: CancellationException</ID>
+    <ID>SwallowedException:ProductShippingClassViewModel.kt$ProductShippingClassViewModel$e: CancellationException</ID>
+    <ID>SwallowedException:RecyclerViewMatcher.kt$RecyclerViewMatcher.&lt;no name provided&gt;$var4: Resources.NotFoundException</ID>
+    <ID>SwallowedException:Screen.kt$Screen$e: Throwable</ID>
+    <ID>SwallowedException:Screen.kt$Screen$e: java.lang.Exception</ID>
+    <ID>SwallowedException:Screen.kt$Screen$ex: Exception</ID>
+    <ID>SwallowedException:Screen.kt$Screen.Companion$e: Throwable</ID>
+    <ID>SwallowedException:StringDateFormatExt.kt$e: Exception</ID>
+    <ID>SwallowedException:StringUtils.kt$StringUtils$e: IOException</ID>
+    <ID>SwallowedException:StringUtils.kt$StringUtils$e: NotFoundException</ID>
+    <ID>SwallowedException:WooLogViewerActivity.kt$WooLogViewerActivity$ex: android.content.ActivityNotFoundException</ID>
     <ID>ThrowingExceptionsWithoutMessageOrCause:MetaData.kt$MetaData$IllegalArgumentException()</ID>
     <ID>ThrowingExceptionsWithoutMessageOrCause:ProductCatalogVisibilityFragment.kt$ProductCatalogVisibilityFragment$IllegalArgumentException()</ID>
     <ID>ThrowingExceptionsWithoutMessageOrCause:ProductStatusFragment.kt$ProductStatusFragment$IllegalArgumentException()</ID>
@@ -274,7 +239,6 @@
     <ID>TooGenericExceptionCaught:FileUtils.kt$FileUtils$e: Exception</ID>
     <ID>TooGenericExceptionCaught:OrderShipmentTrackingHelper.kt$OrderShipmentTrackingHelper$e: Exception</ID>
     <ID>TooGenericExceptionCaught:PhoneUtils.kt$PhoneUtils$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:ProductDetailViewModel.kt$ProductDetailViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:StringDateFormatExt.kt$e: Exception</ID>
     <ID>TooGenericExceptionCaught:TokenProvider.kt$TokenProvider$e: RuntimeException</ID>
     <ID>TooGenericExceptionCaught:WooLogViewerActivity.kt$WooLogViewerActivity$e: Exception</ID>
@@ -285,10 +249,7 @@
     <ID>UnnecessaryAbstractClass:ActionRequest.kt$ActionRequest</ID>
     <ID>UnnecessaryAbstractClass:BaseUnitTest.kt$BaseUnitTest</ID>
     <ID>UnnecessaryAbstractClass:MultiLiveEvent.kt$MultiLiveEvent$Event</ID>
-    <ID>UnusedPrivateMember:AddProductDownloadBottomSheetFragment.kt$AddProductDownloadBottomSheetFragment$private fun setupResultHandlers(viewModel: AddProductDownloadViewModel)</ID>
     <ID>UnusedPrivateMember:AttributesAddedFragment.kt$AttributesAddedFragment$view: View</ID>
-    <ID>UnusedPrivateMember:InstallSoftwareUpdateAction.kt$InstallSoftwareUpdateAction$private val logWrapper: LogWrapper</ID>
-    <ID>UnusedPrivateMember:MainBottomNavigationView.kt$MainBottomNavigationView$ @SuppressLint("PrivateResource") private fun detectLabelVisibilityMode()</ID>
     <ID>UnusedPrivateMember:MainPresenter.kt$MainPresenter$event: SelectedSiteChangedEvent</ID>
     <ID>UnusedPrivateMember:MainPresenter.kt$MainPresenter$private val notificationStore: NotificationStore</ID>
     <ID>UnusedPrivateMember:MainPresenter.kt$MainPresenter$private val siteStore: SiteStore</ID>
@@ -298,9 +259,6 @@
     <ID>UnusedPrivateMember:ProductDetailViewModel.kt$ProductDetailViewModel$isOnSale: Boolean? = null</ID>
     <ID>UnusedPrivateMember:SequenceExt.kt$element: T</ID>
     <ID>UnusedPrivateMember:ShippingLabelCreatePackageViewModel.kt$ShippingLabelCreatePackageViewModel$private var viewState by viewStateData</ID>
-    <ID>UnusedPrivateMember:SitePickerPresenter.kt$SitePickerPresenter$private val appPrefs: AppPrefs</ID>
-    <ID>VariableNaming:OrderListViewModel.kt$OrderListViewModel$protected val _orderStatusOptions = MutableLiveData&lt;Map&lt;String, WCOrderStatusModel&gt;&gt;()</ID>
-    <ID>VariableNaming:OrderListViewModel.kt$OrderListViewModel$protected val _pagedListData = MediatorLiveData&lt;PagedOrdersList&gt;()</ID>
     <ID>VariableNaming:ScopedViewModel.kt$ScopedViewModel$protected open val _event: MutableLiveData&lt;Event&gt; = MultiLiveEvent()</ID>
   </CurrentIssues>
 </SmellBaseline>
