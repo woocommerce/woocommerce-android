@@ -17,7 +17,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:header="@string/products"
-        app:keepAddButtons="true"/>
+        app:keepAddButtons="true" />
+
+    <include
+        android:id="@+id/payment_section"
+        layout="@layout/order_creation_payment_section" />
 
     <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
         android:id="@+id/customer_section"
