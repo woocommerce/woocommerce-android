@@ -366,6 +366,7 @@ class MyStoreFragment :
     }
 
     private fun showChartSkeleton(show: Boolean) {
+        binding.myStoreDateBar.isVisible = !show
         binding.myStoreStats.showErrorView(false)
         binding.myStoreStats.showSkeleton(show)
     }

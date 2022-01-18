@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.MarkerImage
-import com.github.mikephil.charting.components.XAxis.XAxisPosition
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -155,33 +155,15 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showSkeleton(show: Boolean) {
         if (show) {
-            // inflate the skeleton view and adjust the bar widths based on the granularity
-            val inflater = LayoutInflater.from(context)
-            val skeleton = inflater.inflate(
+            skeletonView.show(
+                binding.myStoreStatsLinearLayout,
                 R.layout.skeleton_dashboard_stats,
-                binding.chartContainer,
-                false
-            ) as ViewGroup
-            val barWidth = getSkeletonBarWidth()
-            for (i in 0 until skeleton.childCount) {
-                skeleton.getChildAt(i).layoutParams.width = barWidth
-            }
-
-            skeletonView.show(binding.chartContainer, skeleton, delayed = true)
+                delayed = true
+            )
             binding.dashboardRecencyText.text = null
         } else {
             skeletonView.hide()
         }
-    }
-
-    private fun getSkeletonBarWidth(): Int {
-        val resId = when (activeGranularity) {
-            StatsGranularity.DAYS -> R.dimen.skeleton_bar_chart_bar_width_days
-            StatsGranularity.WEEKS -> R.dimen.skeleton_bar_chart_bar_width_weeks
-            StatsGranularity.MONTHS -> R.dimen.skeleton_bar_chart_bar_width_months
-            StatsGranularity.YEARS -> R.dimen.skeleton_bar_chart_bar_width_years
-        }
-        return context.resources.getDimensionPixelSize(resId)
     }
 
     private fun getChartXAxisLabelCount(): Int {
@@ -204,7 +186,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun initChart() {
         with(binding.chart) {
             with(xAxis) {
-                position = XAxisPosition.BOTTOM
+                position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
