@@ -178,6 +178,9 @@
         <action
             android:id="@+id/action_moreMenu_to_reviewList"
             app:destination="@id/reviews" />
+        <action
+            android:id="@+id/action_moreMenu_to_settingsActivity"
+            app:destination="@id/appSettingsActivity" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -376,4 +379,9 @@
         android:id="@+id/orderCreationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
         tools:layout="@layout/dialog_order_creation_bottom_sheet"/>
+    <activity
+        android:id="@+id/appSettingsActivity"
+        android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
+        android:label="AppSettingsActivity" />
+
 </navigation>
