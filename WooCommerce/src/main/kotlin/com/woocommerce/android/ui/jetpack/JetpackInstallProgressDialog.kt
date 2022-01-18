@@ -69,8 +69,9 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         }
 
         binding.jetpackProgressActionButton.setOnClickListener {
-            findNavController().navigateSafely(
-                JetpackInstallProgressDialogDirections.actionJetpackInstallProgressDialogToDashboard()
+            findNavController().popBackStack(
+                destinationId = R.id.jetpackBenefitsDialog,
+                inclusive = true
             )
         }
 
