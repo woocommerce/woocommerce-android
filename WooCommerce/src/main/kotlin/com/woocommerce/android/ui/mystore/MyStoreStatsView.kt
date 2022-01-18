@@ -102,7 +102,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         get() = binding.root.findViewById<ViewGroup>(R.id.visitorStatsConstraintLayout)
 
     private val conversionValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.conversionValue)
+        get() = binding.root.findViewById<MaterialTextView>(R.id.conversionValueTextView)
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -354,43 +354,48 @@ class MyStoreStatsView @JvmOverloads constructor(
         if (visitorsLayout.visibility == View.GONE) {
             WooAnimUtils.fadeIn(visitorsLayout)
         }
-
         // Make sure the empty view is hidden
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
-        binding.statsViewRow.visitorsValueTextview.isVisible = true
 
         val totalVisitors = visitorStats.values.sum()
         fadeInLabelValue(visitorsValue, totalVisitors.toString())
     }
 
-    private fun updateConversionRate() {
-        val ordersCount = ordersValue.text.toString().toIntOrNull()
-        val visitorsCount = visitorsValue.text.toString().toIntOrNull()
-
-        val conversionRateDisplayValue = when {
-            visitorsCount == null || ordersCount == null -> context.getString(R.string.emdash)
-            visitorsCount == 0 -> "0%"
-            else -> {
-                val conversionRate = (ordersCount / visitorsCount.toFloat()) * 100
-                DecimalFormat("##.#").format(conversionRate) + "%"
-            }
-        }
-
-        val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
-        conversionValue.setTextColor(color)
-        conversionValue.text = conversionRateDisplayValue
-    }
-
     fun showVisitorStatsError() {
-        if (visitorsLayout.visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(visitorsLayout)
-        }
+        visitorsLayout.isVisible = true
+        binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
+        binding.statsViewRow.jetpackIconImageView.isVisible = false
+        binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
     fun showEmptyVisitorStatsForJetpackCP() {
         visitorsLayout.isVisible = true
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
         binding.statsViewRow.visitorsValueTextview.isVisible = false
+    }
+
+    private fun updateConversionRate() {
+        val ordersCount = ordersValue.text.toString().toIntOrNull()
+        val visitorsCount = visitorsValue.text.toString().toIntOrNull()
+
+        if (visitorsCount == null || ordersCount == null) {
+            conversionValue.isVisible = false
+            binding.statsViewRow.emptyConversionRateIndicator.isVisible = true
+            return
+        }
+
+        val conversionRateDisplayValue = when (visitorsCount) {
+            0 -> "0%"
+            else -> {
+                val conversionRate = (ordersCount / visitorsCount.toFloat()) * 100
+                DecimalFormat("##.#").format(conversionRate) + "%"
+            }
+        }
+        val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
+        conversionValue.setTextColor(color)
+        binding.statsViewRow.emptyConversionRateIndicator.isVisible = false
+        conversionValue.isVisible = true
+        conversionValue.text = conversionRateDisplayValue
     }
 
     fun clearStatsHeaderValues() {

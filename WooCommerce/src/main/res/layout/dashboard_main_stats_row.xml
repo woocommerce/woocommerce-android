@@ -35,8 +35,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:id="@+id/orders_layout"
@@ -76,7 +77,7 @@
                 android:textAppearance="?attr/textAppearanceHeadline6"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/visitorsLabelTextview"
                 tools:text="1567" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -88,57 +89,71 @@
                 android:textColor="@color/color_on_surface_high"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/visitorsValueTextview" />
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/emptyVisitorsStatsGroup"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:constraint_referenced_ids="emptyVisitorStatsIndicator, jetpack_icon" />
+                android:visibility="gone"
+                app:constraint_referenced_ids="emptyVisitorStatsIndicator, jetpackIconImageView" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/jetpackIconImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_jetpack_logo"
+                app:layout_constraintBottom_toTopOf="@id/emptyVisitorStatsIndicator"
+                app:layout_constraintStart_toEndOf="@id/emptyVisitorStatsIndicator" />
 
             <View
                 android:id="@+id/emptyVisitorStatsIndicator"
                 android:layout_width="@dimen/major_200"
                 android:layout_height="@dimen/minor_100"
-                android:layout_gravity="center"
                 android:background="@color/skeleton_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/jetpack_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/minor_50"
-                android:src="@drawable/ic_jetpack_logo"
-                app:layout_constraintBottom_toTopOf="@id/emptyVisitorStatsIndicator"
-                app:layout_constraintStart_toEndOf="@id/emptyVisitorStatsIndicator" />
+                android:layout_marginBottom="@dimen/minor_100"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/visitorsLabelTextview" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:layout_weight="1">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/conversionValue"
+                android:id="@+id/conversionValueTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceHeadline6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/conversionLabelTextView"
                 tools:text="4.5%" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/revenue_label"
+                android:id="@+id/conversionLabelTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/dashboard_stats_conversion"
                 android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="@color/color_on_surface_high" />
+                android:textColor="@color/color_on_surface_high"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-        </LinearLayout>
+            <View
+                android:id="@+id/emptyConversionRateIndicator"
+                android:layout_width="@dimen/major_200"
+                android:layout_height="@dimen/minor_100"
+                android:background="@color/skeleton_color"
+                android:layout_marginBottom="@dimen/minor_100"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/conversionLabelTextView" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </LinearLayout>

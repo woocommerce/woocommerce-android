@@ -30,7 +30,7 @@ class WCEmptyStatsView @JvmOverloads constructor(
         get() = binding.root.findViewById<MaterialTextView>(R.id.totalRevenueTextView)
 
     private val conversionValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.conversionValue)
+        get() = binding.root.findViewById<MaterialTextView>(R.id.conversionValueTextView)
 
     fun updateVisitorCount(visits: Int) {
         visitorValue.text = visits.toString()
