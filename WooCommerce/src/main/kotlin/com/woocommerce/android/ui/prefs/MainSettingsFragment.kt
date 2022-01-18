@@ -237,7 +237,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         if (show) {
             binding.optionInstallJetpack.visibility = View.VISIBLE
             binding.optionInstallJetpack.setOnClickListener {
-                // todo
+                findNavController().navigateSafely(
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToNavGraphJetpackInstall()
+                )
             }
         } else {
             binding.optionInstallJetpack.visibility = View.GONE
