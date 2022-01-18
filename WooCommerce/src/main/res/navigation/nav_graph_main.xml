@@ -13,51 +13,6 @@
             android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
             app:destination="@id/jetpackBenefitsDialog" />
     </fragment>
-    <dialog
-        android:id="@+id/simplePaymentsDialog"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
-        android:label="SimplePaymentsDialog" />
-    <fragment
-        android:id="@+id/simplePaymentsFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsFragment"
-        android:label="SimplePaymentsFragment">
-        <argument
-            android:name="order"
-            app:argType="com.woocommerce.android.model.Order"
-            app:nullable="false" />
-        <action
-            android:id="@+id/action_simplePaymentsFragment_to_simplePaymentsCustomerNoteFragment"
-            app:destination="@id/simplePaymentsCustomerNoteFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
-            android:id="@+id/action_simplePaymentsFragment_to_takePaymentFragment"
-            app:destination="@id/takePaymentFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-    </fragment>
-    <fragment
-        android:id="@+id/simplePaymentsCustomerNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsCustomerNoteFragment"
-        android:label="SimplePaymentsCustomerNoteFragment">
-        <argument
-            android:name="customerNote"
-            android:defaultValue='""'
-            app:argType="string" />
-    </fragment>
-    <fragment
-        android:id="@+id/takePaymentFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.TakePaymentFragment"
-        android:label="TakePaymentFragment">
-        <argument
-            android:name="order"
-            app:argType="com.woocommerce.android.model.Order"
-            app:nullable="false" />
-    </fragment>
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -80,13 +35,8 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_orderListFragment_to_simplePaymentsDialog"
-            app:destination="@id/simplePaymentsDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_orderListFragment_to_simplePaymentsFragment"
-            app:destination="@id/simplePaymentsFragment"
+            android:id="@+id/action_orderListFragment_to_simplePayments"
+            app:destination="@id/nav_graph_simple_payments"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
@@ -257,11 +207,13 @@
             android:name="enableModeration"
             app:argType="boolean" />
     </fragment>
+
     <include app:graph="@navigation/nav_graph_orders" />
     <include app:graph="@navigation/nav_graph_order_filters" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
     <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_simple_payments" />
 
     <fragment
         android:id="@+id/infoScreenFragment"

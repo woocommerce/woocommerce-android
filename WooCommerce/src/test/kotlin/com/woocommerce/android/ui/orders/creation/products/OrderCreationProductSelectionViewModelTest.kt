@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders.creation.products
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductList
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithVariations
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -18,13 +20,18 @@ import org.mockito.kotlin.*
 class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     private lateinit var sut: OrderCreationProductSelectionViewModel
     private lateinit var productListRepository: ProductListRepository
+    private lateinit var searchResult: List<Product>
+    private lateinit var fullProductList: List<Product>
 
     @Before
     fun setUp() {
         productListRepository = mock {
-            val products = generateProductList()
-            on { getProductList() } doReturn products
-            onBlocking { fetchProductList() } doReturn products
+            fullProductList = generateProductList()
+            searchResult = listOf(generateProduct(333))
+            on { getProductList() } doReturn fullProductList
+            onBlocking { fetchProductList() } doReturn fullProductList
+            onBlocking { searchProductList(SEARCH_QUERY) } doReturn searchResult
+            on { lastSearchQuery } doReturn SEARCH_QUERY
         }
     }
 
@@ -106,6 +113,97 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         assertThat(productListUpdateCalls).isEqualTo(2)
     }
 
+    @Test
+    fun `when searching for products, then apply the expected result`() = testBlocking {
+        var actualProductList = emptyList<Product>()
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        sut.searchProductList(SEARCH_QUERY)
+        verify(productListRepository).searchProductList(SEARCH_QUERY)
+        assertThat(actualProductList).isEqualTo(searchResult)
+    }
+
+    @Test
+    fun `when loading more products with search active, then apply the expected result`() = testBlocking {
+        var actualProductList = emptyList<Product>()
+        val loadMoreSearchResponse = listOf(generateProduct(666))
+        whenever(productListRepository.searchProductList(SEARCH_QUERY, true))
+            .thenReturn(loadMoreSearchResponse)
+
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        sut.onSearchOpened()
+
+        sut.searchProductList(SEARCH_QUERY)
+        verify(productListRepository).searchProductList(SEARCH_QUERY)
+        assertThat(actualProductList).isEqualTo(searchResult)
+
+        sut.loadProductList(loadMore = true)
+        verify(productListRepository).searchProductList(SEARCH_QUERY, true)
+        assertThat(actualProductList).isEqualTo(loadMoreSearchResponse + searchResult)
+    }
+
+    @Test
+    fun `when onSearchOpened is called, then product list should be empty and search should be active`() =
+        testBlocking {
+            var actualProductList = emptyList<Product>()
+            var actualSearchState: Boolean? = null
+            startSut()
+            sut.productListData.observeForever {
+                actualProductList = it
+            }
+            sut.viewStateData.observeForever { _, new ->
+                actualSearchState = new.isSearchActive
+            }
+
+            sut.onSearchOpened()
+
+            assertThat(actualSearchState).isTrue
+            assertThat(actualProductList).isEmpty()
+        }
+
+    @Test
+    fun `when onSearchClosed is called, then product full list should be loaded and search should be inactive`() =
+        testBlocking {
+            var actualProductList = emptyList<Product>()
+            var actualSearchState: Boolean? = null
+            var actualQueryString: String? = null
+            startSut()
+            sut.productListData.observeForever {
+                actualProductList = it
+            }
+            sut.viewStateData.observeForever { _, new ->
+                actualSearchState = new.isSearchActive
+                actualQueryString = new.query
+            }
+
+            sut.onSearchOpened()
+            sut.onSearchClosed()
+
+            assertThat(actualQueryString).isNull()
+            assertThat(actualSearchState).isFalse
+            assertThat(actualProductList).isEqualTo(fullProductList)
+        }
+
+    @Test
+    fun `when onSearchQueryCleared is called, then product list and search query should be empty`() =
+        testBlocking {
+            var actualProductList = emptyList<Product>()
+            startSut()
+            sut.productListData.observeForever {
+                actualProductList = it
+            }
+
+            sut.onSearchQueryCleared()
+
+            assertThat(sut.currentQuery).isEmpty()
+            assertThat(actualProductList).isEmpty()
+        }
+
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(
             SavedStateHandle(),
@@ -116,5 +214,6 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     companion object {
         const val VARIABLE_PRODUCT_ID = 6L
         const val NON_VARIABLE_PRODUCT_ID = 1L
+        const val SEARCH_QUERY = "search_query"
     }
 }

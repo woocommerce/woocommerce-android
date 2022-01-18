@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import com.woocommerce.android.AppPrefsWrapper
-import org.mockito.kotlin.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
@@ -12,6 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult

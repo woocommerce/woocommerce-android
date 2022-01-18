@@ -1,6 +1,5 @@
 package com.woocommerce.android.util
 
-import org.mockito.kotlin.mock
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
@@ -11,6 +10,7 @@ import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals

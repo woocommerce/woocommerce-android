@@ -1,7 +1,6 @@
 package com.woocommerce.android.viewmodel
 
 import androidx.lifecycle.ViewModel
-
 import dagger.MapKey
 import kotlin.annotation.AnnotationRetention
 import kotlin.annotation.AnnotationTarget

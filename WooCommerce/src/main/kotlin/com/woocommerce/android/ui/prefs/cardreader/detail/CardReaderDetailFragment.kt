@@ -5,7 +5,6 @@ import android.text.method.LinkMovementMethod
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import org.wordpress.android.util.DisplayUtils.dpToPx
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppUrls
@@ -33,6 +32,7 @@ import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils.dpToPx
 
 private const val HIT_AREA_EXPANSION_DP = 16
 
