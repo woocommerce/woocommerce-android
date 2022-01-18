@@ -1,5 +1,12 @@
 package com.woocommerce.android.ui.prefs
 
+import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.util.CoroutineTestRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.mockito.kotlin.KArgumentCaptor
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
@@ -8,13 +15,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.util.CoroutineTestRule
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.NotificationAction

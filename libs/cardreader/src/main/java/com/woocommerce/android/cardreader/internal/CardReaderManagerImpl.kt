@@ -5,9 +5,8 @@ import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.BuildConfig
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.payments.PaymentData
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
@@ -15,8 +14,9 @@ import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
-import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import kotlinx.coroutines.flow.Flow
 
