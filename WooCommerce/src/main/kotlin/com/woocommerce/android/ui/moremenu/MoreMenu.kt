@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,17 +33,16 @@ fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
     Column {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(
                 onClick = { settingsOnClick() },
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_gridicons_cog_24dp),
+                    painter = painterResource(id = R.drawable.ic_more_screen_settings),
                     contentDescription = stringResource(id = R.string.settings),
-                    tint = colorResource(id = color.woo_pink_50)
+                    tint = Color.Unspecified
                 )
             }
         }
