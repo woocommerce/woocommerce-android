@@ -6,16 +6,20 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.order.CreateOrderRequest
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.LineItem
+import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
 class OrderCreationRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
-    private val dispatchers: CoroutineDispatchers,
+    private val orderUpdateStore: OrderUpdateStore,
     private val orderMapper: OrderMapper,
+    private val dispatchers: CoroutineDispatchers
 ) {
     suspend fun createOrder(order: Order): Result<Order> {
         val status = withContext(dispatchers.io) {
@@ -24,7 +28,7 @@ class OrderCreationRepository @Inject constructor(
                 ?: error("Couldn't find a status with key ${order.status.value}")
         }
 
-        val request = CreateOrderRequest(
+        val request = UpdateOrderRequest(
             status = status,
             lineItems = order.items.map {
                 LineItem(
@@ -38,7 +42,7 @@ class OrderCreationRepository @Inject constructor(
             billingAddress = order.billingAddress.toBillingAddressModel(),
             customerNote = order.customerNote
         )
-        val result = orderStore.createOrder(selectedSite.get(), request)
+        val result = orderUpdateStore.createOrder(selectedSite.get(), request)
 
         return when {
             result.isError -> Result.failure(WooException(result.error))
