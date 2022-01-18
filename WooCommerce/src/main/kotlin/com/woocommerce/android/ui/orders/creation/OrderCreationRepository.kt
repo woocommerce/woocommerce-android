@@ -49,4 +49,35 @@ class OrderCreationRepository @Inject constructor(
             else -> Result.success(orderMapper.toAppModel(result.model!!))
         }
     }
+
+    suspend fun createOrUpdateDraft(order: Order): Result<Order> {
+        // TODO we need to support the "auto-draft" status here depending on Woo's version
+        val status = WCOrderStatusModel(statusKey = CoreOrderStatus.PENDING.value)
+        val request = UpdateOrderRequest(
+            status = status,
+            lineItems = order.items.map { item ->
+                LineItem(
+                    id = item.itemId.takeIf { it != 0L },
+                    name = item.name,
+                    productId = item.productId,
+                    variationId = item.variationId,
+                    quantity = item.quantity
+                )
+            },
+            shippingAddress = order.shippingAddress.takeIf { !it.isEmpty() }?.toShippingAddressModel(),
+            billingAddress = order.billingAddress.takeIf { !it.isEmpty() }?.toBillingAddressModel(),
+            customerNote = order.customerNote
+        )
+
+        val result = if (order.id == 0L) {
+            orderUpdateStore.createOrder(selectedSite.get(), request)
+        } else {
+            orderUpdateStore.updateOrder(selectedSite.get(), order.id, request)
+        }
+
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(result.model!!.toAppModel())
+        }
+    }
 }
