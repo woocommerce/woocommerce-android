@@ -34,6 +34,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
+import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -261,12 +262,18 @@ class MyStoreViewModel @Inject constructor(
             productId = product.remoteProductId,
             name = StringEscapeUtils.unescapeHtml4(product.name),
             timesOrdered = FormatUtils.formatDecimal(quantity),
-            totalSpend = currencyFormatter.formatCurrencyRounded(
-                total,
-                wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: currency
+            netSales = resourceProvider.getString(
+                R.string.dashboard_top_performers_net_sales,
+                getTotalSpendFormatted(total.toBigDecimal(), currency)
             ),
             imageUrl = product.getFirstImageUrl()?.toImageUrl(),
             onClick = ::onTopPerformerSelected
+        )
+
+    private fun getTotalSpendFormatted(totalSpend: BigDecimal, currency: String) =
+        currencyFormatter.formatCurrency(
+            totalSpend,
+            wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: currency
         )
 
     private fun String.toImageUrl() =

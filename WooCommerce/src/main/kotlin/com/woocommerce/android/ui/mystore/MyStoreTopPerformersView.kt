@@ -17,6 +17,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import java.util.Locale
 
 class MyStoreTopPerformersView @JvmOverloads constructor(
     ctx: Context,
@@ -60,7 +61,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     private fun trackDateRangeChanged(granularity: StatsGranularity) {
         AnalyticsTracker.track(
             Stat.DASHBOARD_TOP_PERFORMERS_DATE,
-            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase())
+            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase(Locale.getDefault()))
         )
     }
 
@@ -125,8 +126,8 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         override fun onBindViewHolder(holder: TopPerformersViewHolder, position: Int) {
             val topPerformer = topPerformersList[position]
             holder.viewBinding.textProductName.text = topPerformer.name
-            holder.viewBinding.textProductOrders.text = topPerformer.timesOrdered
-            holder.viewBinding.textTotalSpend.text = topPerformer.totalSpend
+            holder.viewBinding.itemsSoldTextView.text = topPerformer.timesOrdered
+            holder.viewBinding.netSalesTextView.text = topPerformer.netSales
             holder.viewBinding.divider.isVisible = position < itemCount - 1
             GlideApp.with(holder.itemView.context)
                 .load(topPerformer.imageUrl)
