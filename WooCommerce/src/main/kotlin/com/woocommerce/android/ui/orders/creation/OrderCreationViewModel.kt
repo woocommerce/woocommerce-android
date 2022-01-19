@@ -30,9 +30,8 @@ class OrderCreationViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,
     private val orderCreationRepository: OrderCreationRepository,
-    private val productDetailRepository: ProductDetailRepository,
-    private val variationDetailRepository: VariationDetailRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
+    private val createOrderItem: CreateOrderItem,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -92,24 +91,19 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
         val uniqueId = variationId ?: remoteProductId
-        orderDraft.items.toMutableList().apply {
-            val index = indexOfFirst { it.uniqueId == uniqueId }
-            if (index != -1) {
-                val item = get(index)
-                set(index, item.copy(quantity = item.quantity + 1))
-                return@apply
-            }
-            // Create a new item
-            val product = productDetailRepository.getProduct(remoteProductId)
-            val item = variationId?.let {
-                if (product != null) {
-                    variationDetailRepository.getVariation(remoteProductId, it)?.createItem(product)
-                } else null
-            } ?: product?.createItem()
-            ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
-
-            add(item)
-        }.let { orderDraft = orderDraft.updateItems(it) }
+        viewModelScope.launch {
+            orderDraft.items.toMutableList().apply {
+                val index = indexOfFirst { it.uniqueId == uniqueId }
+                if (index != -1) {
+                    val item = get(index)
+                    set(index, item.copy(quantity = item.quantity + 1))
+                    return@apply
+                }
+                // Create a new item
+                val item = createOrderItem(remoteProductId, variationId)
+                add(item)
+            }.let { orderDraft = orderDraft.updateItems(it) }
+        }
     }
 
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
