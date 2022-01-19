@@ -10,7 +10,7 @@ If there is no Github issue, you can use prefixes like `feature/` or `fix/`.
 
 ## Commits
 
-As you commit code to these branches, don’t tag the issue number in the individual commit messages as it pollutes the pull request and makes it messier, just attach the issue number to the final pull request. Before you submit your final pull request, make sure all your branches are up to date with `develop`.
+As you commit code to these branches, don’t tag the issue number in the individual commit messages as it pollutes the pull request and makes it messier, just attach the issue number to the final pull request. Before you submit your final pull request, make sure all your branches are up to date with `trunk`.
 
 ## Anatomy of a Good Pull Request
 

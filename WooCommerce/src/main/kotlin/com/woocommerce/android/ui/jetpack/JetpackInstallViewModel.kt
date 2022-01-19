@@ -6,14 +6,15 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject

@@ -48,16 +48,16 @@ so that's the baseline as defined in `major_100`.
     <dimen name="text_major_200">96sp</dimen>
 
     <!-- Regular text line heights -->
-    <dimen name="line_height_minor_70">16dp</dimen>
-    <dimen name="line_height_minor_80">20dp</dimen>
-    <dimen name="line_height_minor_100">24dp</dimen>
+    <dimen name="line_height_minor_70">16sp</dimen>
+    <dimen name="line_height_minor_80">20sp</dimen>
+    <dimen name="line_height_minor_100">24sp</dimen>
 
     <!-- Large text line heights -->
-    <dimen name="line_height_major_25">24dp</dimen>
-    <dimen name="line_height_major_50">36dp</dimen>
-    <dimen name="line_height_major_100">56dp</dimen>
-    <dimen name="line_height_major_150">72dp</dimen>
-    <dimen name="line_height_major_200">112dp</dimen>
+    <dimen name="line_height_major_25">24sp</dimen>
+    <dimen name="line_height_major_50">36sp</dimen>
+    <dimen name="line_height_major_100">56sp</dimen>
+    <dimen name="line_height_major_150">72sp</dimen>
+    <dimen name="line_height_major_200">112sp</dimen>
 
     <!-- Line spacing extra -->
     <dimen name="line_spacing_extra_50">2sp</dimen>
@@ -85,10 +85,6 @@ so that's the baseline as defined in `major_100`.
     <dimen name="skeleton_list_item_title_text_height_100">@dimen/major_110</dimen>
     <dimen name="skeleton_list_item_body_text_height_100">@dimen/major_100</dimen>
     <dimen name="skeleton_list_spinner_text_field_height_100">@dimen/image_major_50</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_days">14dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_weeks">18dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_months">24dp</dimen>
-    <dimen name="skeleton_bar_chart_bar_width_years">38dp</dimen>
     <dimen name="skeleton_bar_chart_bar_spacing">@dimen/minor_100</dimen>
     <dimen name="skeleton_text_height_75">@dimen/text_minor_125</dimen>
     <dimen name="skeleton_text_height_100">@dimen/text_major_25</dimen>

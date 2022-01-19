@@ -316,6 +316,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED,
         SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED,
         SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED,
+        SETTINGS_ABOUT_BUTTON_TAPPED,
         SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED,
         SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED,
         SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED,
@@ -487,6 +488,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SUPPORT_APPLICATION_LOG_VIEWED(siteless = true),
         SUPPORT_TICKETS_VIEWED(siteless = true),
         SUPPORT_FAQ_VIEWED(siteless = true),
+        SUPPORT_SSR_OPENED,
+        SUPPORT_SSR_COPY_BUTTON_TAPPED,
 
         // -- Push notifications
         PUSH_NOTIFICATION_RECEIVED,
@@ -577,7 +580,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MEDIA_PICKER_ITEM_UNSELECTED,
         MEDIA_PICKER_SELECTION_CLEARED,
         MEDIA_PICKER_OPENED,
-        MEDIA_PICKER_OPEN_SYSTEM_PICKER
+        MEDIA_PICKER_OPEN_SYSTEM_PICKER,
+        MEDIA_PICKER_OPEN_WORDPRESS_MEDIA_LIBRARY_PICKER
     }
     // endregion
 
@@ -798,8 +802,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
 
-        // TODO nbradbury change to production when feature is released
-        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments_prototype"
+        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
@@ -906,7 +909,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param view The view to be tracked
          */
         fun trackViewShown(view: Any) {
-            track(VIEW_SHOWN, mapOf(KEY_NAME to view::class.java.simpleName))
+            val name = if (view is String) {
+                view
+            } else {
+                view::class.java.simpleName
+            }
+            track(VIEW_SHOWN, mapOf(KEY_NAME to name))
         }
 
         /**

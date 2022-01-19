@@ -28,30 +28,31 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowUpdateInProgress
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingLocationPermissionsError
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingMerchantAddressError
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingMerchantAddressError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -382,7 +383,7 @@ class CardReaderConnectViewModel @Inject constructor(
             if (cardReaderLocationId != null) {
                 cardReaderManager.startConnectionToReader(cardReader, cardReaderLocationId)
             } else {
-                when (val result = locationRepository.getDefaultLocationId()) {
+                when (val result = locationRepository.getDefaultLocationId(getPaymentPluginType())) {
                     is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
                         tracker.track(CARD_READER_LOCATION_SUCCESS)
                         cardReaderManager.startConnectionToReader(cardReader, result.locationId)
@@ -394,6 +395,12 @@ class CardReaderConnectViewModel @Inject constructor(
             }
         }
     }
+
+    private fun getPaymentPluginType(): PluginType = appPrefs.getPaymentPluginType(
+        selectedSite.get().id,
+        selectedSite.get().siteId,
+        selectedSite.get().selfHostedSiteId
+    )
 
     private fun handleLocationFetchingError(result: CardReaderLocationRepository.LocationIdFetchingResult.Error) {
         this@CardReaderConnectViewModel.coroutineContext.cancelChildren()

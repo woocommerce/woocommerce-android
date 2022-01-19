@@ -23,6 +23,7 @@
     <string name="my_store">My store</string>
     <string name="orders">Orders</string>
     <string name="email_address">Email address</string>
+    <string name="email">Email</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="order_total">Order total</string>
@@ -31,6 +32,7 @@
     <string name="edit">Edit</string>
     <string name="payment">Payment</string>
     <string name="taxes">Taxes</string>
+    <string name="tax">Tax</string>
     <string name="subtotal">Subtotal</string>
     <string name="products_total">Products total</string>
     <string name="discount">Discount</string>
@@ -121,6 +123,10 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
+    <string name="minus">Minus</string>
+    <string name="plus">Plus</string>
+    <string name="card">Card</string>
+    <string name="cash">Cash</string>
 
     <!--
         Date/Time Labels
@@ -297,12 +303,25 @@
     <string name="orderlist_simple_payments_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
     <string name="orderlist_simple_payments_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
     <!--
          Simple Payments
     -->
     <string name="simple_payments_dialog_title">Take payment</string>
+    <string name="simple_payments_title">Simple payment</string>
     <string name="simple_payments_enter_amount">Enter amount</string>
     <string name="simple_payments_creation_error">Unable to create order</string>
+    <string name="simple_payments_edit_email_hint">Enter email</string>
+    <string name="simple_payments_custom_amount">Custom amount</string>
+    <string name="simple_payments_charge_taxes">Charge taxes</string>
+    <string name="simple_payments_take_payment_button">Take payment (%s)</string>
+    <string name="simple_payments_tax_with_percent">Tax (%s%%)</string>
+    <string name="simple_payments_tax_message">Taxes are automatically calculated based on your store address</string>
+    <string name="simple_payments_choose_method">Choose your payment method</string>
+    <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
+    <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
+    <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <!--
          Order Creation
     -->
@@ -312,6 +331,25 @@
     <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
     <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
     <string name="order_creation_fragment_title">New Order</string>
+    <string name="order_creation_customer">Customer</string>
+    <string name="order_creation_customer_note">Customer Note</string>
+    <string name="order_creation_add_customer">Add customer</string>
+    <string name="order_creation_add_customer_note">Add note</string>
+    <string name="order_creation_products">Products</string>
+    <string name="order_creation_add_products">Add Product</string>
+    <string name="order_creation_new_customer">New customer</string>
+    <string name="order_creation_product_stock_quantity">%s in stock</string>
+    <string name="order_creation_product_instock">In stock</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
+    <string name="order_creation_product_details_title">Product</string>
+    <string name="order_creation_add_discount">Add discount</string>
+    <string name="order_creation_remove_product">Remove product from order</string>
+    <string name="order_creation_variations_screen_title">Select variation</string>
+    <string name="order_creation_payment">Payment</string>
+    <string name="order_creation_payment_products_total">Products Total</string>
+    <string name="order_creation_payment_order_total">Order Total</string>
+    <string name="order_creation_payment_tax_hint">Total excluding taxes. Taxes will be automatically calculated based on your store settings.</string>
+
     <!--
         Order Filters
     -->
@@ -764,8 +802,10 @@
     <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
+    <string name="order_refunds_fees_refund">Fees refund</string>
     <string name="order_refunds_select_quantity">Select quantity</string>
     <string name="order_refunds_refund_shipping">Refund shipping</string>
+    <string name="order_refunds_refund_fees">Refund fees</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
     <string name="order_refunds_refund_info_description_one">%d item</string>
     <string name="order_refunds_refund_info_description_many">%d items</string>
@@ -1002,25 +1042,25 @@
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Refresh after updating</string>
 
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Finish setup WooCommerce Stripe Payment Gateway in your store admin</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Stripe Payment Gateway to start accepting In-Person Payments.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Refresh</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Finish Stripe setup on your store admin</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">You’re almost there! Please finish setting up Stripe to start accepting Card-Present Payments.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Refresh</string>
 
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Update WooCommerce Stripe Payment Gateway</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Outdated version of the WooCommerce Stripe Payment Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Refresh after updating</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Update Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Outdated version of the WooCommerce Stripe Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Refresh after updating</string>
 
 
-    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
+    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_rejected_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
 
     <string name="card_reader_onboarding_account_under_review_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_under_review_hint">You\’ll be able to accept In-Person Payments as soon as we finish reviewing your account.</string>
 
     <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments.</string>
 
-    <string name="card_reader_onboarding_account_pending_requirements_header">Your WooCommerce Payments account has pending requirements</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_account_pending_requirements_dismiss_button" translatable="false">@string/dismiss</string>
 
@@ -1072,6 +1112,8 @@
     <string name="wc_load_review_error">Error loading product review detail</string>
     <string name="wc_moderate_review_error">Error updating product review status</string>
     <string name="wc_review_title">Review</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
     <!--
         Product Reviews List
     -->
@@ -1307,7 +1349,8 @@
     <string name="upsell_product_count_one">%d upsell product</string>
     <string name="upsell_product_count_many">%d upsell products</string>
     <string name="product_detail_background_image_upload">Image uploading will continue in the background</string>
-
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -1453,6 +1496,8 @@
     <string name="settings_app_theme_option_battery_saver">Set by Battery Saver</string>
     <string name="settings_app_theme_option_default" translatable="false">@string/settings_app_theme_option_battery_saver</string>
     <string name="settings_about_title">About WooCommerce</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <!--
         WCToggleSingleOptionView
     -->
@@ -1743,18 +1788,18 @@
     <string name="jetpack_install_progress_step_two_message">Activating</string>
     <string name="jetpack_install_progress_step_three_message">Connecting your store</string>
     <string name="jetpack_install_progress_step_four_message">All done</string>
-    <string name ="jetpack_install_progress_failed_title">Sorry, something went wrong during %s</string>
-    <string name ="jetpack_install_progress_failed_reason_installation">installation</string>
-    <string name ="jetpack_install_progress_failed_reason_activation">activation</string>
-    <string name ="jetpack_install_progress_failed_reason_connection">connecting</string>
-    <string name ="jetpack_install_progress_failed_try">Please try again.</string>
-    <string name ="jetpack_install_progress_failed_alternative">Alternatively, you can %s Jetpack in WP Admin.</string>
-    <string name ="jetpack_install_progress_failed_alternative_install">install</string>
-    <string name ="jetpack_install_progress_failed_alternative_activate">activate</string>
-    <string name ="jetpack_install_progress_failed_option_wp_admin">%s Jetpack in WP Admin</string>
-    <string name ="jetpack_install_progress_option_wp_admin_install">Install</string>
-    <string name ="jetpack_install_progress_option_wp_admin_activate">Activate</string>
-    <string name ="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
+    <string name="jetpack_install_progress_failed_title">Sorry, something went wrong during %s</string>
+    <string name="jetpack_install_progress_failed_reason_installation">installation</string>
+    <string name="jetpack_install_progress_failed_reason_activation">activation</string>
+    <string name="jetpack_install_progress_failed_reason_connection">connecting</string>
+    <string name="jetpack_install_progress_failed_try">Please try again.</string>
+    <string name="jetpack_install_progress_failed_alternative">Alternatively, you can %s Jetpack in WP Admin.</string>
+    <string name="jetpack_install_progress_failed_alternative_install">install</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">activate</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s Jetpack in WP Admin</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">Install</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">Activate</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
@@ -2132,4 +2177,31 @@
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
     <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
+    <string name="about_automattic_main_page_title">About %1$s</string>
+    <string name="about_automattic_legal_page_title">Legal and More</string>
+    <string name="about_automattic_acknowledgements_page_title">Acknowledgements</string>
+    <string name="about_automattic_share_with_friends_item_title">Share with Friends</string>
+    <string name="about_automattic_rate_us_item_title">Rate Us</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_legal_and_more_item_title">Legal and More</string>
+    <string name="about_automattic_family_item_title">Automattic Family</string>
+    <string name="about_automattic_work_with_us_item_title">Work With Us</string>
+    <string name="about_automattic_work_with_us_item_subtitle">Work from Anywhere</string>
+    <string name="about_automattic_terms_of_service_item_title">Terms of Service</string>
+    <string name="about_automattic_privacy_policy_item_title">Privacy Policy</string>
+    <string name="about_automattic_california_privacy_notice_item_title">California Privacy Notice</string>
+    <string name="about_automattic_source_code_item_title">Source Code</string>
+    <string name="about_automattic_acknowledgements_item_title">Acknowledgements</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_version_label">Version %1$s</string>
+    <string name="about_automattic_logo_description">Automattic logo</string>
+    <string name="about_automattic_back_icon_description">Back icon</string>
+    <string name="about_automattic_app_icon_description">App icon</string>
 </resources>

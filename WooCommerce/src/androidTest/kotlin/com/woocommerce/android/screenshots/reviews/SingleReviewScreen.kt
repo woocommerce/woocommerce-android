@@ -26,14 +26,11 @@ class SingleReviewScreen : Screen {
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withId(R.id.toolbar),
-                ViewMatchers.withChild(ViewMatchers.withContentDescription("Navigate up")),
                 ViewMatchers.withChild(ViewMatchers.withText("Review"))
             )
         )
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
-        Espresso.onView(ViewMatchers.withContentDescription("Navigate up"))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         // Review top bar
         Espresso.onView(ViewMatchers.withId(R.id.review_product_icon))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))

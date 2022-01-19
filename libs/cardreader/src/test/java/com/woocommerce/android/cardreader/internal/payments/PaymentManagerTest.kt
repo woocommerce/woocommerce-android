@@ -1,12 +1,5 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.stripe.stripeterminal.external.models.Charge
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus
@@ -15,16 +8,8 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CA
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
-import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
@@ -33,6 +18,14 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.payments.PaymentInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -51,6 +44,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.reflect.KClass
 

@@ -178,4 +178,10 @@
     <color name="reader_update_progress_color">@color/woo_purple_50</color>
     <color name="reader_update_rest_color">@color/woo_purple_30</color>
     <color name="reader_update_border_color">#533582</color>
+
+    <!--
+    Media picker colors
+    -->
+    <color name="color_media_picker_toolbar_background">@color/color_toolbar</color>
+    <color name="color_media_picker_toolbar_foreground">@color/color_on_surface</color>
 </resources>

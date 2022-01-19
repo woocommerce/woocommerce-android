@@ -32,8 +32,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.OrderIdSet
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
@@ -55,9 +53,6 @@ class OrderFulfillViewModel @Inject constructor(
 
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
-
-    private val orderIdSet: OrderIdSet
-        get() = navArgs.orderIdentifier.toIdSet()
 
     private val _productList = MutableLiveData<List<Item>>()
     val productList: LiveData<List<Item>> = _productList
@@ -83,16 +78,14 @@ class OrderFulfillViewModel @Inject constructor(
     }
 
     final fun start() {
-        val order = repository.getOrder(navArgs.orderIdentifier)
-        order?.let {
-            displayOrderDetails(it)
-            displayOrderProducts(it)
-            displayShipmentTrackings()
+        launch {
+            val order = repository.getOrderById(navArgs.orderId)
+            order?.let {
+                displayOrderDetails(it)
+                displayOrderProducts(it)
+                displayShipmentTrackings()
+            }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
     }
 
     private fun displayOrderDetails(order: Order) {
@@ -103,17 +96,17 @@ class OrderFulfillViewModel @Inject constructor(
     }
 
     private fun displayOrderProducts(order: Order) {
-        val products = repository.getOrderRefunds(orderIdSet.remoteOrderId).getNonRefundedProducts(order.items)
+        val products = repository.getOrderRefunds(navArgs.orderId).getNonRefundedProducts(order.items)
         _productList.value = products
     }
 
     private fun displayShipmentTrackings() {
-        val isShippingLabelAvailable = repository.getOrderShippingLabels(orderIdSet.remoteOrderId).isNotEmpty()
+        val isShippingLabelAvailable = repository.getOrderShippingLabels(navArgs.orderId).isNotEmpty()
         val trackingAvailable = appPrefs.isTrackingExtensionAvailable() &&
             !hasVirtualProductsOnly() && !isShippingLabelAvailable
         viewState = viewState.copy(isShipmentTrackingAvailable = trackingAvailable)
         if (trackingAvailable) {
-            _shipmentTrackings.value = repository.getOrderShipmentTrackings(orderIdSet.id)
+            _shipmentTrackings.value = repository.getOrderShipmentTrackings(navArgs.orderLocalId)
         }
     }
 
@@ -140,7 +133,8 @@ class OrderFulfillViewModel @Inject constructor(
     fun onAddShipmentTrackingClicked() {
         triggerEvent(
             AddOrderShipmentTracking(
-                orderIdentifier = order.identifier,
+                orderId = order.id,
+                orderLocalId = order.rawLocalOrderId,
                 orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
                 isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
             )
@@ -151,19 +145,19 @@ class OrderFulfillViewModel @Inject constructor(
         AnalyticsTracker.track(
             ORDER_TRACKING_ADD,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider
             )
         )
         viewState = viewState.copy(shouldRefreshShipmentTracking = true)
-        _shipmentTrackings.value = repository.getOrderShipmentTrackings(orderIdSet.id)
+        _shipmentTrackings.value = repository.getOrderShipmentTrackings(navArgs.orderLocalId)
     }
 
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
             repository.getOrderShipmentTrackingByTrackingNumber(
-                orderIdSet.id, trackingNumber
+                navArgs.orderLocalId, trackingNumber
             )?.let { deletedShipmentTracking ->
                 deletedOrderShipmentTrackingSet.add(trackingNumber)
 
@@ -202,7 +196,7 @@ class OrderFulfillViewModel @Inject constructor(
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val onOrderChanged = repository.deleteOrderShipmentTracking(
-                orderIdSet.id, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
+                navArgs.orderLocalId, navArgs.orderId, shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
                 AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)

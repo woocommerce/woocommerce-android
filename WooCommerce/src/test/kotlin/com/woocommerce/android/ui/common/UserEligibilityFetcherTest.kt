@@ -8,13 +8,14 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCUserStore
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -81,9 +82,6 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
 
     @Test
     fun `Do not update prefs when request failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(
-            WooResult<WooError>(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN))
-        ).whenever(userStore).fetchUserRole(any())
         doReturn(true).whenever(appPrefsWrapper).isUserEligible()
         doReturn(null).whenever(appPrefsWrapper).getUserEmail()
 

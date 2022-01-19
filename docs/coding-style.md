@@ -27,7 +27,7 @@ Once installed, you can configure the plugin here:
 
 `Android Studio > Preferences... > Tools > Checkstyle`
 
-From there, add and enable the custom configuration file, located at [config/checkstyle.xml](https://github.com/woocommerce/woocommerce-android/blob/develop/config/checkstyle.xml).
+From there, add and enable the custom configuration file, located at [config/checkstyle.xml](https://github.com/woocommerce/woocommerce-android/blob/trunk/config/checkstyle.xml).
 
 ## Detekt
 
@@ -49,4 +49,4 @@ Once installed, you can configure the plugin here:
 
 `Android Studio > Preferences... > Tools > Detekt`
 
-From there, add and enable the custom configuration file, located at [config/detekt/detekt.yml](https://github.com/woocommerce/woocommerce-android/blob/develop/config/detekt/detekt.yml).
+From there, add and enable the custom configuration file, located at [config/detekt/detekt.yml](https://github.com/woocommerce/woocommerce-android/blob/trunk/config/detekt/detekt.yml).

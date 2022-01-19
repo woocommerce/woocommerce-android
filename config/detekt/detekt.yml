@@ -22,3 +22,6 @@ formatting:
 style:
   WildcardImport:
     active: false
+  UnnecessaryAbstractClass:
+    active: true
+    ignoreAnnotated: [ 'Module' ]

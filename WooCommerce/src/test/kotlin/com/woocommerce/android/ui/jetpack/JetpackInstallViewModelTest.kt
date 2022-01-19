@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.jetpack
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
 import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus
 import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
 import com.woocommerce.android.viewmodel.BaseUnitTest

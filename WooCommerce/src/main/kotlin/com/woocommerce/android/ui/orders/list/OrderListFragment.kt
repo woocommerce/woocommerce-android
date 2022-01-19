@@ -11,29 +11,30 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.ViewGroupCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
-import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog.Companion.KEY_SIMPLE_PAYMENTS_RESULT
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -100,6 +101,12 @@ class OrderListFragment :
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
         }
+
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
+        enterTransition = fadeThroughTransition
+        exitTransition = fadeThroughTransition
+        reenterTransition = fadeThroughTransition
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -120,11 +127,15 @@ class OrderListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
 
         setHasOptionsMenu(true)
 
         _binding = FragmentOrderListBinding.bind(view)
+        view.doOnPreDraw { startPostponedEnterTransition() }
+
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
+        ViewGroupCompat.setTransitionGroup(binding.orderRefreshLayout, true)
         binding.orderRefreshLayout.apply {
             // Set the scrolling view in the custom refresh SwipeRefreshLayout
             scrollUpChild = binding.orderListView.ordersList
@@ -145,9 +156,7 @@ class OrderListFragment :
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        if (FeatureFlag.SIMPLE_PAYMENTS.isEnabled()) {
-            displaySimplePaymentsWIPCard(true)
-        }
+        displaySimplePaymentsWIPCard(true)
     }
 
     override fun onResume() {
@@ -172,8 +181,7 @@ class OrderListFragment :
     }
 
     private fun isSimplePaymentsAvailable(): Boolean {
-        return FeatureFlag.SIMPLE_PAYMENTS.isEnabled() &&
-            AppPrefs.isSimplePaymentsEnabled &&
+        return AppPrefs.isSimplePaymentsEnabled &&
             viewModel.isCardReaderOnboardingCompleted()
     }
 
@@ -243,6 +251,13 @@ class OrderListFragment :
     @Suppress("LongMethod")
     private fun initObservers() {
         // setup observers
+        viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
+            it?.let { options ->
+                // So the order status can be matched to the appropriate label
+                binding.orderListView.setOrderStatusOptions(options)
+            }
+        }
+
         viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
             binding.orderRefreshLayout.isRefreshing = it == true
         }
@@ -305,11 +320,6 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
-        handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
-            binding.orderListView.post {
-                openOrderDetail(order.localId.value, order.remoteId, order.status.value)
-            }
-        }
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
             binding.orderListView.post {
                 when (it) {
@@ -326,7 +336,7 @@ class OrderListFragment :
 
     private fun showSimplePaymentsDialog() {
         AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
-        findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsDialog)
+        findNavController().navigate(R.id.action_orderListFragment_to_simplePayments)
     }
 
     private fun showOrderCreationBottomSheet() {
@@ -357,12 +367,12 @@ class OrderListFragment :
         }
     }
 
-    override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String) {
+    override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
         // Track user clicked to open an order and the status of that order
         AnalyticsTracker.track(
             Stat.ORDER_OPEN,
             mapOf(
-                AnalyticsTracker.KEY_ID to remoteOrderId,
+                AnalyticsTracker.KEY_ID to orderId,
                 AnalyticsTracker.KEY_STATUS to orderStatus
             )
         )
@@ -376,9 +386,17 @@ class OrderListFragment :
             searchQuery = savedSearch
             isSearching = true
         }
-
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, localOrderId, remoteOrderId)
+        (activity as? MainNavigationRouter)?.run {
+            if (sharedView != null) {
+                showOrderDetailWithSharedTransition(
+                    orderId = orderId,
+                    sharedView = sharedView
+                )
+            } else {
+                showOrderDetail(orderId)
+            }
+        }
     }
 
     // region search

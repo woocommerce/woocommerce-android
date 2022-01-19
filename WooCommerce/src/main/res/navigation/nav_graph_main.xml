@@ -13,10 +13,6 @@
             android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
             app:destination="@id/jetpackBenefitsDialog" />
     </fragment>
-    <dialog
-        android:id="@+id/simplePaymentsDialog"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
-        android:label="SimplePaymentsDialog" />
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -24,13 +20,10 @@
         tools:layout="@layout/fragment_order_list">
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
-            app:destination="@id/nav_graph_orders"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/nav_graph_orders">
             <argument
                 android:name="orderId"
-                android:defaultValue='""'
-                app:argType="string" />
+                app:argType="long" />
             <argument
                 android:name="remoteNoteId"
                 android:defaultValue="0L"
@@ -42,8 +35,8 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_orderListFragment_to_simplePaymentsDialog"
-            app:destination="@id/simplePaymentsDialog"
+            android:id="@+id/action_orderListFragment_to_simplePayments"
+            app:destination="@id/nav_graph_simple_payments"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
@@ -106,9 +99,7 @@
         tools:layout="@layout/fragment_reviews_list">
         <action
             android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
-            app:destination="@id/reviewDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/reviewDetailFragment"/>
     </fragment>
     <fragment
         android:id="@+id/analytics"
@@ -182,9 +173,7 @@
 
     <action
         android:id="@+id/action_global_productDetailFragment"
-        app:destination="@id/nav_graph_products"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right">
+        app:destination="@id/nav_graph_products">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
@@ -218,11 +207,13 @@
             android:name="enableModeration"
             app:argType="boolean" />
     </fragment>
+
     <include app:graph="@navigation/nav_graph_orders" />
     <include app:graph="@navigation/nav_graph_order_filters" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
     <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_simple_payments" />
 
     <fragment
         android:id="@+id/infoScreenFragment"
