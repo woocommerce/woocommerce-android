@@ -176,7 +176,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.cardview:cardview:1.0.0"
-    implementation("androidx.browser:browser:1.3.0") {
+    implementation("androidx.browser:browser:1.4.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
     implementation "androidx.preference:preference:1.1.1"
@@ -274,7 +274,7 @@ dependencies {
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
 
     // Dependencies for screenshots
-    androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
+    androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
     androidTestImplementation('com.github.tomakehurst:wiremock:2.26.3') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.apache.commons', module: 'commons-lang3'
