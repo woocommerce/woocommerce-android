@@ -107,8 +107,8 @@ class JetpackInstallViewModel @Inject constructor(
             val result = wooCommerceStore.fetchWooCommerceSites()
             val sites = result.model
             if (sites != null) {
-                val syncedSite = sites.first { it.siteId == selectedSite.get().siteId }
-                if (syncedSite.hasWooCommerce) {
+                val syncedSite = sites.firstOrNull { it.siteId == selectedSite.get().siteId }
+                if (syncedSite?.hasWooCommerce == true) {
                     return true
                 } else {
                     attempt++
