@@ -1,22 +1,27 @@
 package com.woocommerce.android.ui.orders.creation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.map
+import android.os.Parcelable
+import androidx.lifecycle.*
+import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.mapAsync
+import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +29,7 @@ class OrderCreationViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,
+    private val orderCreationRepository: OrderCreationRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val variationDetailRepository: VariationDetailRepository,
     parameterRepository: ParameterRepository
@@ -31,6 +37,9 @@ class OrderCreationViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
     }
+
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateData
 
     val orderDraftData = LiveDataDelegate(savedState, Order.EMPTY)
     private var orderDraft by orderDraftData
@@ -92,10 +101,52 @@ class OrderCreationViewModel @Inject constructor(
                     variationDetailRepository.getVariation(remoteProductId, it)?.createItem(product)
                 } else null
             } ?: product?.createItem()
-                ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
+            ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
 
             add(item)
         }.let { updateOrderItems(it) }
+    }
+
+    fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
+        launch(dispatchers.io) {
+            orderDetailRepository
+                .getOrderStatusOptions().toTypedArray()
+                .runWithContext(dispatchers.main) {
+                    triggerEvent(ViewOrderStatusSelector(currentStatus = currentStatus.statusKey, orderStatusList = it))
+                }
+        }
+    }
+
+    fun onCustomerClicked() {
+        triggerEvent(EditCustomer)
+    }
+
+    fun onCustomerNoteClicked() {
+        triggerEvent(EditCustomerNote)
+    }
+
+    fun onAddSimpleProductsClicked() {
+        triggerEvent(AddProduct)
+    }
+
+    fun onProductClicked(item: Order.Item) {
+        triggerEvent(ShowProductDetails(item))
+    }
+
+    fun onCreateOrderClicked(order: Order) {
+        viewModelScope.launch {
+            viewState = viewState.copy(isProgressDialogShown = true)
+            orderCreationRepository.createOrder(order).fold(
+                onSuccess = {
+                    triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
+                    triggerEvent(ShowCreatedOrder(it.id))
+                },
+                onFailure = {
+                    viewState = viewState.copy(isProgressDialogShown = false)
+                    triggerEvent(ShowSnackbar(string.order_creation_failure_snackbar))
+                }
+            )
+        }
     }
 
     private fun adjustProductsQuantity(id: Long, quantityToAdd: Int) {
@@ -146,6 +197,11 @@ class OrderCreationViewModel @Inject constructor(
             shippingAddress = shippingAddress
         )
     }
+
+    @Parcelize
+    data class ViewState(
+        val isProgressDialogShown: Boolean = false
+    ) : Parcelable
 }
 
 data class ProductUIModel(

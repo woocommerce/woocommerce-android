@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
-import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -41,8 +40,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form) {
-    private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
-    private val formViewModel by viewModels<OrderCreationFormViewModel>()
+    private val viewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -52,7 +50,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private val bigDecimalFormatter by lazy {
         currencyFormatter.buildBigDecimalFormatter(
-            currencyCode = sharedViewModel.currentDraft.currency
+            currencyCode = viewModel.currentDraft.currency
         )
     }
 
@@ -70,14 +68,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_creation, menu)
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
-            isVisible = sharedViewModel.currentDraft.isValidForCreation
+            isVisible = viewModel.currentDraft.isValidForCreation
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_create -> {
-                formViewModel.onCreateOrderClicked(sharedViewModel.currentDraft)
+                viewModel.onCreateOrderClicked(viewModel.currentDraft)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -93,8 +91,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         orderStatusView.initView(
             mode = OrderDetailOrderStatusView.Mode.OrderCreation,
             editOrderStatusClickListener = {
-                sharedViewModel.orderStatusData.value?.let {
-                    formViewModel.onEditOrderStatusClicked(it)
+                viewModel.orderStatusData.value?.let {
+                    viewModel.onEditOrderStatusClicked(it)
                 }
             }
         )
@@ -103,13 +101,13 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 AddButton(
                     text = getString(R.string.order_creation_add_customer_note),
                     onClickListener = {
-                        formViewModel.onCustomerNoteClicked()
+                        viewModel.onCustomerNoteClicked()
                     }
                 )
             )
         )
         notesSection.setOnEditButtonClicked {
-            formViewModel.onCustomerNoteClicked()
+            viewModel.onCustomerNoteClicked()
         }
 
         customerSection.setAddButtons(
@@ -117,7 +115,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 AddButton(
                     text = getString(R.string.order_creation_add_customer),
                     onClickListener = {
-                        formViewModel.onCustomerClicked()
+                        viewModel.onCustomerClicked()
                     }
                 )
             )
@@ -127,7 +125,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 AddButton(
                     text = getString(R.string.order_creation_add_products),
                     onClickListener = {
-                        formViewModel.onAddSimpleProductsClicked()
+                        viewModel.onAddSimpleProductsClicked()
                     }
                 )
             )
@@ -143,7 +141,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
-        sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
+        viewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
             createOrderMenuItem?.isVisible = newOrderData.isValidForCreation
             binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
@@ -151,21 +149,21 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             bindPaymentSection(binding.paymentSection, newOrderData)
         }
 
-        sharedViewModel.orderStatusData.observe(viewLifecycleOwner) {
+        viewModel.orderStatusData.observe(viewLifecycleOwner) {
             binding.orderStatusView.updateStatus(it)
         }
 
-        sharedViewModel.products.observe(viewLifecycleOwner) {
+        viewModel.products.observe(viewLifecycleOwner) {
             bindProductsSection(binding.productsSection, it)
         }
 
-        formViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { show ->
                 if (show) showProgressDialog() else hideProgressDialog()
             }
         }
 
-        formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
+        viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
@@ -203,10 +201,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 productsSection.content = RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = ProductsAdapter(
-                        onProductClicked = formViewModel::onProductClicked,
+                        onProductClicked = viewModel::onProductClicked,
                         currencyFormatter = bigDecimalFormatter,
-                        onIncreaseQuantity = sharedViewModel::onIncreaseProductsQuantity,
-                        onDecreaseQuantity = sharedViewModel::onDecreaseProductsQuantity
+                        onIncreaseQuantity = viewModel::onIncreaseProductsQuantity,
+                        onDecreaseQuantity = viewModel::onDecreaseProductsQuantity
                     )
                     itemAnimator = animator
                 }
@@ -239,7 +237,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         handleDialogResult<OrderStatusUpdateSource>(
             key = KEY_ORDER_STATUS_RESULT,
             entryId = R.id.orderCreationFragment
-        ) { sharedViewModel.onOrderStatusChanged(Order.Status.fromValue(it.newStatus)) }
+        ) { viewModel.onOrderStatusChanged(Order.Status.fromValue(it.newStatus)) }
     }
 
     private fun handleViewModelEvents(event: Event) {
