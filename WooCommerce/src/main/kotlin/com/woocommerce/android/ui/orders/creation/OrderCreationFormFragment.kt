@@ -68,7 +68,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_creation, menu)
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
-            isVisible = viewModel.currentDraft.isValidForCreation
+            isVisible = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
         }
     }
 
@@ -142,7 +142,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
         viewModel.orderDraft.observe(viewLifecycleOwner) { newOrderData ->
-            createOrderMenuItem?.isVisible = newOrderData.isValidForCreation
             binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
             bindCustomerAddressSection(binding.customerSection, newOrderData)
@@ -160,6 +159,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { show ->
                 if (show) showProgressDialog() else hideProgressDialog()
+            }
+            new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
+                createOrderMenuItem?.isVisible = it
             }
         }
 

@@ -17,9 +17,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -43,7 +41,15 @@ class OrderCreationViewModel @Inject constructor(
     private var viewState by viewStateData
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
-    val orderDraft = _orderDraft.asLiveData()
+    val orderDraft = _orderDraft
+        .onEach {
+            viewState = viewState.copy(
+                canCreateOrder = it.items.isNotEmpty() &&
+                    it.shippingAddress != Address.EMPTY &&
+                    it.billingAddress != Address.EMPTY
+            )
+        }
+        .asLiveData()
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
         .map { it.status }
@@ -77,7 +83,6 @@ class OrderCreationViewModel @Inject constructor(
     fun onIncreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, +1) }
 
     fun onDecreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, -1) }
-
 
     fun onRemoveProduct(item: Order.Item) = _orderDraft.update { it.updateItems(it.items - item) }
 
@@ -156,7 +161,8 @@ class OrderCreationViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val isProgressDialogShown: Boolean = false
+        val isProgressDialogShown: Boolean = false,
+        val canCreateOrder: Boolean = false
     ) : Parcelable
 }
 
@@ -167,8 +173,3 @@ data class ProductUIModel(
     val stockQuantity: Double,
     val canDecreaseQuantity: Boolean
 )
-
-val Order.isValidForCreation: Boolean
-    get() = items.isNotEmpty() &&
-        shippingAddress != Address.EMPTY &&
-        billingAddress != Address.EMPTY
