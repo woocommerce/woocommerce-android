@@ -67,7 +67,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(
-                binding.dashboardTopPerformersContainer,
+                binding.topPerformersLinearLayout,
                 R.layout.skeleton_dashboard_top_performers,
                 delayed = true
             )

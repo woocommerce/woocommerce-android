@@ -24,6 +24,10 @@
             app:keepAddButtons="true"
             app:hasEditButton="false"/>
 
+        <include
+            android:id="@+id/payment_section"
+            layout="@layout/order_creation_payment_section" />
+
         <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
             android:id="@+id/customer_section"
             style="@style/Woo.Card"

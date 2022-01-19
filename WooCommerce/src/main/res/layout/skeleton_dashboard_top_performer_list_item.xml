@@ -1,31 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="@dimen/major_100">
 
     <View
+        android:id="@+id/image_skeleton_view"
         android:layout_width="@dimen/skeleton_list_item_icon_200"
         android:layout_height="@dimen/skeleton_list_item_icon_200"
         android:layout_gravity="center_vertical"
-        android:background="@drawable/skeleton_background"/>
+        android:background="@drawable/skeleton_background" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_toRightOf="@id/image_skeleton_view"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="191dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="@dimen/minor_50"
+            android:background="@color/skeleton_color" />
+
+        <View
+            android:layout_width="130dp"
+            android:layout_height="20dp"
+            android:background="@color/skeleton_color" />
+
+    </LinearLayout>
 
     <View
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="@dimen/major_75"
-        android:layout_marginStart="@dimen/major_75"
-        android:layout_weight="5"
-        android:background="@drawable/skeleton_background"/>
+        android:layout_width="68dp"
+        android:layout_height="20dp"
+        android:layout_alignParentEnd="true"
+        android:background="@color/skeleton_color" />
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="1"
-        android:background="@drawable/skeleton_background"/>
-
-</LinearLayout>
+</RelativeLayout>

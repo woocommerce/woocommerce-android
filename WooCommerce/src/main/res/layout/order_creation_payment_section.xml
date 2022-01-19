@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/major_100">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/header_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/order_creation_payment"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/products_total_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/order_creation_payment_products_total"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            app:layout_constraintEnd_toStartOf="@id/products_total_value"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header_label" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/products_total_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/order_creation_payment_products_total"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            app:layout_constraintBaseline_toBaselineOf="@id/products_total_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/products_total_label"
+            app:layout_constraintWidth_default="wrap"
+            tools:text="$20.00" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/order_total_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/order_creation_payment_order_total"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/products_total_value"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/products_total_label" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/order_total_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/order_creation_payment_products_total"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/order_total_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/products_total_label"
+            app:layout_constraintWidth_default="wrap"
+            tools:text="$20.00" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_100"
+            android:text="@string/order_creation_payment_tax_hint"
+            android:textAppearance="?attr/textAppearanceCaption"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/order_total_label" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

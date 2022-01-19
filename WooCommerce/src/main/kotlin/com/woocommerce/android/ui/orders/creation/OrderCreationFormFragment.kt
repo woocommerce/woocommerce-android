@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -17,6 +18,7 @@ import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
+import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -47,6 +49,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
+
+    private val bigDecimalFormatter by lazy {
+        currencyFormatter.buildBigDecimalFormatter(
+            currencyCode = sharedViewModel.currentDraft.currency
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -140,6 +148,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
             bindCustomerAddressSection(binding.customerSection, newOrderData)
+            bindPaymentSection(binding.paymentSection, newOrderData)
         }
 
         sharedViewModel.orderStatusData.observe(viewLifecycleOwner) {
@@ -157,6 +166,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         }
 
         formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
+    }
+
+    private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
+        paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
+        bigDecimalFormatter(newOrderData.total).let { total ->
+            paymentSection.productsTotalValue.text = total
+            paymentSection.orderTotalValue.text = total
+        }
     }
 
     private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {
@@ -187,9 +204,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = ProductsAdapter(
                         onProductClicked = formViewModel::onProductClicked,
-                        currencyFormatter = currencyFormatter.buildBigDecimalFormatter(
-                            currencyCode = sharedViewModel.currentDraft.currency
-                        ),
+                        currencyFormatter = bigDecimalFormatter,
                         onIncreaseQuantity = sharedViewModel::onIncreaseProductsQuantity,
                         onDecreaseQuantity = sharedViewModel::onDecreaseProductsQuantity
                     )
