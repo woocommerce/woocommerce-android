@@ -32,6 +32,7 @@ class OrderCreationViewModel @Inject constructor(
     private val orderCreationRepository: OrderCreationRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val variationDetailRepository: VariationDetailRepository,
+    private val mapItemToProductUiModel: MapItemToProductUiModel,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -57,7 +58,7 @@ class OrderCreationViewModel @Inject constructor(
         .map { it.items }
         .distinctUntilChanged()
         .mapAsync { items ->
-            items.map { item -> item.toProductUIModel() }
+            items.map { item -> mapItemToProductUiModel(item) }
         }
 
     val currentDraft
@@ -168,26 +169,6 @@ class OrderCreationViewModel @Inject constructor(
         orderDraft = orderDraft.copy(
             items = items,
             total = items.sumOf { it.subtotal }
-        )
-    }
-
-    private suspend fun Order.Item.toProductUIModel(): ProductUIModel {
-        val (imageUrl, isStockManaged, stockQuantity) = withContext(dispatchers.io) {
-            if (isVariation) {
-                val variation = variationDetailRepository.getVariation(productId, variationId)
-                Triple(variation?.image?.source, variation?.isStockManaged, variation?.stockQuantity)
-            } else {
-                val product = productDetailRepository.getProduct(productId)
-                Triple(product?.firstImageUrl, product?.isStockManaged, product?.stockQuantity)
-            }
-        }
-        return ProductUIModel(
-            item = this,
-            imageUrl = imageUrl.orEmpty(),
-            isStockManaged = isStockManaged ?: false,
-            stockQuantity = stockQuantity ?: 0.0,
-            canDecreaseQuantity = quantity >= 2
-            // TODO check if we need to disable the plus button depending on stock quantity
         )
     }
 
