@@ -235,8 +235,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
     }
 
-    override fun handleJetpackInstallOption(show: Boolean) {
-        if (show) {
+    override fun handleJetpackInstallOption(isJetpackCPSite: Boolean) {
+        if (isJetpackCPSite) {
             binding.optionInstallJetpack.visibility = View.VISIBLE
             binding.optionInstallJetpack.setOnClickListener {
                 findNavController().navigateSafely(

@@ -17,8 +17,7 @@ class MainSettingsPresenter @Inject constructor(
     private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
-    private val buildConfigWrapper: BuildConfigWrapper,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val buildConfigWrapper: BuildConfigWrapper
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -53,23 +52,7 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun setupJetpackInstallOption() {
-        if (!selectedSite.get().isJetpackCPConnected) {
-            appSettingsFragmentView?.handleJetpackInstallOption(show = false)
-            return
-        }
-
-        coroutineScope.launch {
-            val userModel = userEligibilityFetcher.fetchUserInfo()
-            userModel?.let {
-                val userRoles = it.getUserRoles()
-
-                if (WCUserRole.ADMINISTRATOR in userRoles ||
-                    WCUserRole.SHOP_MANAGER in userRoles
-                ) {
-                    appSettingsFragmentView?.handleJetpackInstallOption(show = true)
-                }
-            }
-        }
+        appSettingsFragmentView?.handleJetpackInstallOption(selectedSite.get().isJetpackCPConnected)
     }
 
     override fun isCardReaderOnboardingCompleted(): Boolean {
