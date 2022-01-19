@@ -562,7 +562,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
         }
 
     @Test
@@ -574,7 +574,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
         }
 
     @Test
@@ -586,7 +586,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
         }
 
     @Test
@@ -598,7 +598,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
         }
 
     @Test
@@ -610,7 +610,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotEqualTo(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+            assertThat(result).isNotEqualTo(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
         }
 
     @Test
