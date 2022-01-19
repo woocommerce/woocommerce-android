@@ -194,6 +194,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         presenter.setupAnnouncementOption()
+        presenter.setupJetpackInstallOption()
     }
 
     override fun onResume() {
@@ -217,6 +218,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             updateStoreViews()
             updateStoreSettings()
             settingsListener.onSiteChanged()
+            presenter.setupJetpackInstallOption()
         }
     }
 
@@ -269,8 +271,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun updateStoreViews() {
         binding.optionStore.optionTitle = presenter.getStoreDomainName()
         binding.optionStore.optionValue = presenter.getUserDisplayName()
-
-        presenter.setupJetpackInstallOption()
     }
 
     private fun updateStoreSettings() {
