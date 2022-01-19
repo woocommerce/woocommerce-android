@@ -103,6 +103,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
 
     fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
         binding.editText.doAfterTextChanged {
+            println("Foobar: did text change: ${it.toString()}")
             cb(it)
         }
     }

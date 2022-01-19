@@ -12,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCDataStore
-import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 
 typealias LocationCode = String
@@ -31,7 +30,7 @@ class AddressViewModel @Inject constructor(
         get() = dataStore.getCountries().map { it.toAppModel() }
 
     private fun statesAvailableFor(type: AddressType): List<Location> {
-        return dataStore.getStates(viewState.countryStatePairs.getValue(type).address.country.code)
+        return dataStore.getStates(viewState.addressSelectionStates.getValue(type).address.country.code)
             .map { it.toAppModel() }
     }
 
@@ -56,6 +55,7 @@ class AddressViewModel @Inject constructor(
     }
 
     private fun initialize(initialState: Map<AddressType, Address>) {
+        println("Foobar: is initializing")
         launch {
             if (countries.isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
@@ -63,8 +63,8 @@ class AddressViewModel @Inject constructor(
                 viewState = viewState.copy(isLoading = false)
             }
             viewState = viewState.copy(
-                countryStatePairs = initialState.mapValues { initialSingleAddressState ->
-                    val viewModelSingleAddressState = viewStateData.liveData.value?.countryStatePairs?.get(initialSingleAddressState.key)
+                addressSelectionStates = initialState.mapValues { initialSingleAddressState ->
+                    val viewModelSingleAddressState = viewStateData.liveData.value?.addressSelectionStates?.get(initialSingleAddressState.key)
                     if (viewModelSingleAddressState == null) {
                         AddressSelectionState(
                             address = initialSingleAddressState.value,
@@ -109,7 +109,11 @@ class AddressViewModel @Inject constructor(
             ?: Location(countryCode, countryCode)
 
         viewState = viewState.copy(
-            countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
+            addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
+                if(entry.key == AddressType.BILLING){
+                    println("Foobar: onCountrySelected billing name: ${entry.value.address.firstName}")
+                }
+
                 if (entry.key == type) {
                     entry.value.copy(
                         address = entry.value.address.copy(
@@ -131,12 +135,12 @@ class AddressViewModel @Inject constructor(
 
     fun onStateSelected(type: AddressType, selectedStateCode: LocationCode) {
         val (_, selectedState) = getLocations(
-            countryCode = viewState.countryStatePairs.getValue(type).address.country.code,
+            countryCode = viewState.addressSelectionStates.getValue(type).address.country.code,
             stateCode = selectedStateCode,
         )
 
         viewState = viewState.copy(
-            countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
+            addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
                 if (entry.key == type) {
                     entry.value.copy(
                         address = entry.value.address.copy(
@@ -163,7 +167,7 @@ class AddressViewModel @Inject constructor(
     fun onDoneSelected() {
         triggerEvent(
             Exit(
-                viewState.countryStatePairs.mapValues { statePairs ->
+                viewState.addressSelectionStates.mapValues { statePairs ->
                     statePairs.value.address
                 }
             )
@@ -175,7 +179,7 @@ class AddressViewModel @Inject constructor(
         field: Field,
         value: String
     ) {
-        val currentAddress = viewState.countryStatePairs.getValue(addressType).address
+        val currentAddress = viewState.addressSelectionStates.getValue(addressType).address
         val newAddress = when (field) {
             Field.FirstName -> currentAddress.copy(firstName = value)
             Field.LastName -> currentAddress.copy(lastName = value)
@@ -186,9 +190,10 @@ class AddressViewModel @Inject constructor(
             Field.City -> currentAddress.copy(city = value)
             Field.State -> currentAddress.copy(state = AmbiguousLocation.Raw(value))
             Field.Zip -> currentAddress.copy(postcode = value)
+            Field.Email -> currentAddress.copy(email = value)
         }
         viewState = viewState.copy(
-            countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
+            addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
                 if (entry.key == addressType) {
                     entry.value.copy(address = newAddress)
                 } else {
@@ -200,7 +205,7 @@ class AddressViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val countryStatePairs: Map<AddressType, AddressSelectionState> = emptyMap(),
+        val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
     ) : Parcelable
 
@@ -233,6 +238,6 @@ class AddressViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     enum class Field {
-        FirstName, LastName, Company, Phone, Address1, Address2, City, State, Zip
+        FirstName, LastName, Company, Phone, Address1, Address2, City, State, Zip, Email
     }
 }

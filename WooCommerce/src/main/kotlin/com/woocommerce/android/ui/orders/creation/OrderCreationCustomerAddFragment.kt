@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -80,12 +81,12 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         FragmentCreationEditCustomerAddressBinding.bind(view).apply {
             container.addView(billingBinding?.root)
             container.addView(showShippingAddressFormSwitch.root)
-            container.addView(shippingBinding?.root)
+//            container.addView(shippingBinding?.root)
         }
 
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            val newBilling = new.countryStatePairs[BILLING]
-            val newShipping = new.countryStatePairs[SHIPPING]
+            val newBilling = new.addressSelectionStates[BILLING]
+            val newShipping = new.addressSelectionStates[SHIPPING]
 
             newBilling?.let {
                 billingBinding.update(it)
@@ -96,6 +97,8 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                     shippingBinding.update(it)
                 }
             }
+
+            println("Foobar: observed update ${newBilling?.address?.firstName}")
         }
 
         updateShippingBindingVisibility(showShippingAddressFormSwitch.addressSwitch.isChecked)
@@ -109,9 +112,6 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             setupHandlingCountrySelection(it)
             setupHandlingStateSelection(it)
         }
-
-        billingBinding?.foo(BILLING)
-        shippingBinding?.foo(SHIPPING)
 
         addressViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -133,11 +133,16 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                 SHIPPING to sharedViewModel.currentDraft.shippingAddress
             )
         )
+
+        println("Foobar: onViewCreated finish: ${addressViewModel.viewStateData.liveData.value?.addressSelectionStates?.getValue(BILLING)?.address?.firstName}")
+
+        billingBinding?.foo(BILLING)
+//        shippingBinding?.foo(SHIPPING)
     }
 
     private fun WCMaterialOutlinedEditTextView.bindToField(addressType: AddressType, field: Field) {
         setOnTextChangedListener {
-            addressViewModel.onFieldEdited(addressType, field, it?.toString().orEmpty())
+            if (this.isVisible) addressViewModel.onFieldEdited(addressType, field, it?.toString().orEmpty())
         }
     }
 
@@ -151,6 +156,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         this.city.bindToField(addressType, Field.City)
         this.postcode.bindToField(addressType, Field.Zip)
         this.stateEditText.bindToField(addressType, Field.State)
+        this.email.bindToField(addressType, Field.Email)
     }
 
     private fun setupHandlingCountrySelection(addressType: AddressType) {
@@ -238,11 +244,6 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     }
 
     override fun getFragmentTitle() = getString(R.string.order_creation_new_customer)
-
-    override fun onDetach() {
-        addressViewModel.onScreenDetached()
-        super.onDetach()
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
