@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.creation
 import android.os.Parcelable
 import androidx.lifecycle.*
 import com.woocommerce.android.R.string
-import com.woocommerce.android.extensions.mapAsync
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -16,7 +15,11 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -39,58 +42,49 @@ class OrderCreationViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val orderDraftData = LiveDataDelegate(savedState, Order.EMPTY)
-    private var orderDraft by orderDraftData
+    private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
+    val orderDraft = _orderDraft.asLiveData()
 
-    val orderStatusData: LiveData<OrderStatus> = orderDraftData.liveData
+    val orderStatusData: LiveData<OrderStatus> = _orderDraft
         .map { it.status }
         .distinctUntilChanged()
-        .mapAsync { status ->
+        .map { status ->
             withContext(dispatchers.io) {
                 orderDetailRepository.getOrderStatus(status.value)
             }
-        }
+        }.asLiveData()
 
-    val products: LiveData<List<ProductUIModel>> = orderDraftData.liveData
+    val products: LiveData<List<ProductUIModel>> = _orderDraft
         .map { it.items }
         .distinctUntilChanged()
-        .mapAsync { items ->
+        .map { items ->
             items.map { item -> mapItemToProductUiModel(item) }
-        }
+        }.asLiveData()
 
     val currentDraft
-        get() = orderDraft
+        get() = _orderDraft.value
 
     init {
-        orderDraft = orderDraft.copy(
-            currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencyCode.orEmpty()
-        )
+        _orderDraft.update {
+            it.copy(currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencyCode.orEmpty())
+        }
     }
 
-    fun onOrderStatusChanged(status: Order.Status) {
-        orderDraft = orderDraft.copy(status = status)
-    }
+    fun onOrderStatusChanged(status: Order.Status) = _orderDraft.update { it.copy(status = status) }
 
-    fun onCustomerNoteEdited(newNote: String) {
-        orderDraft = orderDraft.copy(customerNote = newNote)
-    }
+    fun onCustomerNoteEdited(newNote: String) = _orderDraft.update { it.copy(customerNote = newNote) }
 
-    fun onIncreaseProductsQuantity(id: Long) {
-        orderDraft = orderDraft.adjustProductQuantity(id, +1)
-    }
+    fun onIncreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, +1) }
 
-    fun onDecreaseProductsQuantity(id: Long) {
-        orderDraft = orderDraft.adjustProductQuantity(id, -1)
-    }
+    fun onDecreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, -1) }
 
-    fun onRemoveProduct(item: Order.Item) {
-        orderDraft = orderDraft.updateItems(orderDraft.items - item)
-    }
+
+    fun onRemoveProduct(item: Order.Item) = _orderDraft.update { it.updateItems(it.items - item) }
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
         val uniqueId = variationId ?: remoteProductId
         viewModelScope.launch {
-            orderDraft.items.toMutableList().apply {
+            _orderDraft.value.items.toMutableList().apply {
                 val index = indexOfFirst { it.uniqueId == uniqueId }
                 if (index != -1) {
                     val item = get(index)
@@ -100,15 +94,17 @@ class OrderCreationViewModel @Inject constructor(
                 // Create a new item
                 val item = createOrderItem(remoteProductId, variationId)
                 add(item)
-            }.let { orderDraft = orderDraft.updateItems(it) }
+            }.let { items -> _orderDraft.update { it.updateItems(items) } }
         }
     }
 
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
-        orderDraft = orderDraft.copy(
-            billingAddress = billingAddress,
-            shippingAddress = shippingAddress
-        )
+        _orderDraft.update {
+            it.copy(
+                billingAddress = billingAddress,
+                shippingAddress = shippingAddress
+            )
+        }
     }
 
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
@@ -116,7 +112,12 @@ class OrderCreationViewModel @Inject constructor(
             orderDetailRepository
                 .getOrderStatusOptions().toTypedArray()
                 .runWithContext(dispatchers.main) {
-                    triggerEvent(ViewOrderStatusSelector(currentStatus = currentStatus.statusKey, orderStatusList = it))
+                    triggerEvent(
+                        ViewOrderStatusSelector(
+                            currentStatus = currentStatus.statusKey,
+                            orderStatusList = it
+                        )
+                    )
                 }
         }
     }

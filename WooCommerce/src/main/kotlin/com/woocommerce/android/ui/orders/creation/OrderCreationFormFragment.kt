@@ -141,7 +141,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
-        viewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
+        viewModel.orderDraft.observe(viewLifecycleOwner) { newOrderData ->
             createOrderMenuItem?.isVisible = newOrderData.isValidForCreation
             binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
