@@ -7,7 +7,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
@@ -97,9 +96,6 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private val visitorsValue
         get() = binding.root.findViewById<MaterialTextView>(R.id.visitorsValueTextview)
-
-    private val visitorsLayout
-        get() = binding.root.findViewById<ViewGroup>(R.id.visitorStatsConstraintLayout)
 
     private val conversionValue
         get() = binding.root.findViewById<MaterialTextView>(R.id.conversionValueTextView)
@@ -211,9 +207,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         // update the total values of the chart here
         binding.chart.highlightValue(null)
         updateChartView()
-        if (visitorsLayout.visibility == View.GONE) {
-            visitorsLayout.visibility = View.VISIBLE
-        }
+        visitorsValue.isVisible = true
+        binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = false
         fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
         updateDate(revenueStatsModel, activeGranularity)
         updateColorForStatsHeaderValues(R.color.color_on_surface_high)
@@ -290,13 +285,22 @@ class MyStoreStatsView @JvmOverloads constructor(
         val date = getDateFromIndex(entry.x.toInt())
         val orderCount = chartOrderStats[date]?.toInt() ?: 0
         ordersValue.text = orderCount.toString()
-
-        // display the visitor count for this entry only if the text is NOT empty
-        val formattedVisitorsValue = getFormattedVisitorValue(date)
-        visitorsValue.text = formattedVisitorsValue
-
+        updateVisitorsValue(date)
+        updateConversionRate()
         updateDateOnScrubbing(date, activeGranularity)
         updateColorForStatsHeaderValues(R.color.color_secondary)
+    }
+
+    private fun updateVisitorsValue(date: String) {
+        if (activeGranularity == StatsGranularity.DAYS) {
+            visitorsValue.isVisible = false
+            visitorsValue.setText(R.string.emdash)
+            binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
+        } else {
+            visitorsValue.isVisible = true
+            binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = false
+            visitorsValue.text = chartVisitorStats[date]?.toString() ?: "0"
+        }
     }
 
     /**
@@ -351,9 +355,6 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
-        if (visitorsLayout.visibility == View.GONE) {
-            WooAnimUtils.fadeIn(visitorsLayout)
-        }
         // Make sure the empty view is hidden
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
 
@@ -362,14 +363,12 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun showVisitorStatsError() {
-        visitorsLayout.isVisible = true
         binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
         binding.statsViewRow.jetpackIconImageView.isVisible = false
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
     fun showEmptyVisitorStatsForJetpackCP() {
-        visitorsLayout.isVisible = true
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
@@ -479,10 +478,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         .formatCurrency(revenue.toBigDecimal(), revenueStatsModel?.currencyCode.orEmpty())
 
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
-
-    private fun getFormattedVisitorValue(date: String) =
-        if (activeGranularity == StatsGranularity.DAYS) context.getString(R.string.emdash)
-        else chartVisitorStats[date]?.toString() ?: "0"
 
     /**
      * Method to format the incoming visitor stats data
