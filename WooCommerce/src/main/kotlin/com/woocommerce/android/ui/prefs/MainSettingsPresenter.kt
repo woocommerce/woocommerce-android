@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.user.WCUserRole
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
