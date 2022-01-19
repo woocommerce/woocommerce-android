@@ -78,12 +78,16 @@ class OrderCreationViewModel @Inject constructor(
         orderDraft = orderDraft.copy(customerNote = newNote)
     }
 
-    fun onIncreaseProductsQuantity(id: Long) = adjustProductsQuantity(id, 1)
+    fun onIncreaseProductsQuantity(id: Long) {
+        orderDraft = orderDraft.adjustProductQuantity(id, +1)
+    }
 
-    fun onDecreaseProductsQuantity(id: Long) = adjustProductsQuantity(id, -1)
+    fun onDecreaseProductsQuantity(id: Long) {
+        orderDraft = orderDraft.adjustProductQuantity(id, -1)
+    }
 
     fun onRemoveProduct(item: Order.Item) {
-        updateOrderItems(orderDraft.items - item)
+        orderDraft = orderDraft.updateItems(orderDraft.items - item)
     }
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
@@ -105,7 +109,7 @@ class OrderCreationViewModel @Inject constructor(
             ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
 
             add(item)
-        }.let { updateOrderItems(it) }
+        }.let { orderDraft = orderDraft.updateItems(it) }
     }
 
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
@@ -148,28 +152,6 @@ class OrderCreationViewModel @Inject constructor(
                 }
             )
         }
-    }
-
-    private fun adjustProductsQuantity(id: Long, quantityToAdd: Int) {
-        val items = orderDraft.items.toMutableList()
-        val index = items.indexOfFirst { it.uniqueId == id }
-        if (index == -1) error("Couldn't find the product with id $id")
-        items[index] = with(items[index]) {
-            val newQuantity = quantity + quantityToAdd
-            copy(
-                quantity = newQuantity,
-                subtotal = price.multiply(newQuantity.toBigDecimal()),
-                total = price.multiply(newQuantity.toBigDecimal())
-            )
-        }
-        updateOrderItems(items)
-    }
-
-    private fun updateOrderItems(items: List<Order.Item>) {
-        orderDraft = orderDraft.copy(
-            items = items,
-            total = items.sumOf { it.subtotal }
-        )
     }
 
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
