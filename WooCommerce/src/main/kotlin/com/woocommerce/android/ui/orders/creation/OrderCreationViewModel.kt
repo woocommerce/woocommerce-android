@@ -106,6 +106,13 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
+    fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
+        orderDraft = orderDraft.copy(
+            billingAddress = billingAddress,
+            shippingAddress = shippingAddress
+        )
+    }
+
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
         launch(dispatchers.io) {
             orderDetailRepository
@@ -146,13 +153,6 @@ class OrderCreationViewModel @Inject constructor(
                 }
             )
         }
-    }
-
-    fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
-        orderDraft = orderDraft.copy(
-            billingAddress = billingAddress,
-            shippingAddress = shippingAddress
-        )
     }
 
     @Parcelize
