@@ -92,7 +92,7 @@ class OrderCreationViewModel @Inject constructor(
                     variationDetailRepository.getVariation(remoteProductId, it)?.createItem(product)
                 } else null
             } ?: product?.createItem()
-                ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
+            ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
 
             add(item)
         }.let { updateOrderItems(it) }
@@ -143,7 +143,7 @@ class OrderCreationViewModel @Inject constructor(
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
         orderDraft = orderDraft.copy(
             billingAddress = billingAddress,
-            shippingAddress = shippingAddress
+            shippingAddress = shippingAddress.takeIf { it != Address.EMPTY } ?: Address.EMPTY
         )
     }
 }

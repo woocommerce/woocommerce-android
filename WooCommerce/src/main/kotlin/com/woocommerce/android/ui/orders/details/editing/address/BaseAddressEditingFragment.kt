@@ -83,6 +83,10 @@ abstract class BaseAddressEditingFragment :
         }
         bindTextWatchers()
 
+        addressViewModel.start(
+            mapOf(addressType to storedAddress)
+        )
+
         binding.form.countrySpinner.setClickListener {
             addressViewModel.onCountrySpinnerClicked(addressType)
         }
@@ -98,7 +102,6 @@ abstract class BaseAddressEditingFragment :
         setupObservers()
         setupResultHandlers()
         onViewBound(binding)
-        updateStateViews()
     }
 
     override fun hasChanges() =
@@ -113,7 +116,7 @@ abstract class BaseAddressEditingFragment :
     }
 
     override fun onDetach() {
-        addressViewModel.onScreenDetached()
+//        addressViewModel.onScreenDetached()
         super.onDetach()
     }
 
@@ -130,17 +133,8 @@ abstract class BaseAddressEditingFragment :
         binding.form.stateEditText.textWatcher = textWatcher
     }
 
+    @Deprecated("Use stateSpinnerStatus of corresponding AddressSelectionState")
     private fun shouldShowStateSpinner() = addressViewModel.hasStatesFor(addressType)
-
-    /**
-     * When the country is empty, or we don't have country or state data, we show an editText
-     * for the state rather than a spinner
-     */
-    // Remove?
-    private fun updateStateViews() {
-        binding.form.stateSpinner.isVisible = shouldShowStateSpinner()
-        binding.form.stateEditText.isVisible = !shouldShowStateSpinner()
-    }
 
     private fun showCountrySearchScreen(countries: List<Location>) {
         val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
@@ -178,9 +172,6 @@ abstract class BaseAddressEditingFragment :
 
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
                 binding.progressBar.isVisible = it
-                if (old?.isLoading == true) {
-                    updateStateViews()
-                }
             }
             binding.form.update(newCountryStatePair)
         }

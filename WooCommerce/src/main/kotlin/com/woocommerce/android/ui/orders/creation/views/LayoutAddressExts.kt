@@ -27,31 +27,16 @@ fun LayoutAddressFormBinding?.updateLocationStateViews(hasStatesAvailable: Addre
     }
 }
 
-val LayoutAddressFormBinding?.textFieldsState
-    get() = Address(
-        company = this?.company?.text.orEmpty(),
-        firstName = this?.firstName?.text.orEmpty(),
-        lastName = this?.lastName?.text.orEmpty(),
-        phone = this?.phone?.text.orEmpty(),
-        country = Location.EMPTY,
-        state = AmbiguousLocation.EMPTY,
-        address1 = this?.address1?.text.orEmpty(),
-        address2 = this?.address2?.text.orEmpty(),
-        city = this?.city?.text.orEmpty(),
-        postcode = this?.postcode?.text.orEmpty(),
-        email = this?.email?.text.orEmpty()
-    )
-
 fun LayoutAddressFormBinding?.inflateTextFields(address: Address) {
-    this?.city?.text = address.city
-    this?.company?.text = address.company
-    this?.firstName?.text = address.firstName
-    this?.lastName?.text = address.lastName
-    this?.phone?.text = address.phone
-    this?.address1?.text = address.address1
-    this?.address2?.text = address.address2
-    this?.postcode?.text = address.postcode
-    this?.email?.text = address.email
+    this?.city?.setTextIfDifferent(address.city)
+    this?.company?.setTextIfDifferent(address.company)
+    this?.firstName?.setTextIfDifferent(address.firstName)
+    this?.lastName?.setTextIfDifferent(address.lastName)
+    this?.phone?.setTextIfDifferent(address.phone)
+    this?.address1?.setTextIfDifferent(address.address1)
+    this?.address2?.setTextIfDifferent(address.address2)
+    this?.postcode?.setTextIfDifferent(address.postcode)
+    this?.email?.setTextIfDifferent(address.email)
 }
 
 fun LayoutAddressFormBinding?.inflateLocationFields(countryLocation: Location, stateLocation: AmbiguousLocation) {
@@ -65,7 +50,7 @@ fun LayoutAddressFormBinding?.inflateLocationFields(countryLocation: Location, s
         is AmbiguousLocation.Raw -> {
             this?.stateSpinner?.visibility = View.GONE
             this?.stateEditText?.visibility = View.VISIBLE
-            this?.stateEditText?.text = stateLocation.value
+            this?.stateEditText?.setTextIfDifferent(stateLocation.value)
         }
     }
 }
