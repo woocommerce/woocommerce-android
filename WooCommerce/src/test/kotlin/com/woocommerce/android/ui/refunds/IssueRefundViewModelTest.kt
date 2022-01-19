@@ -5,6 +5,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.orders.OrderTestUtils.orderMapper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundByItemsViewState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -64,7 +65,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             resourceProvider,
             orderDetailRepository,
             gatewayStore,
-            refundStore
+            refundStore,
+            orderMapper
         )
     }
 

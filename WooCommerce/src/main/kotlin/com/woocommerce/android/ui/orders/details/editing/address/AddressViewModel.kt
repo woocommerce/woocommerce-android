@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.Location
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -22,6 +20,7 @@ class AddressViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val dataStore: WCDataStore,
+    private val getLocations: GetLocations,
 ) : ScopedViewModel(savedState) {
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -30,8 +29,7 @@ class AddressViewModel @Inject constructor(
         get() = dataStore.getCountries().map { it.toAppModel() }
 
     private fun statesAvailableFor(type: AddressType): List<Location> {
-        val selectedCountry = selectedCountryLocationFor(type)
-        return dataStore.getStates(selectedCountry.code)
+        return dataStore.getStates(viewState.countryStatePairs.getValue(type).address.country.code)
             .map { it.toAppModel() }
     }
 
@@ -40,12 +38,6 @@ class AddressViewModel @Inject constructor(
             .map { it.toAppModel() }
     }
 
-    fun selectedCountryLocationFor(type: AddressType) =
-        viewState.countryStatePairs.getValue(type).countryLocation
-
-    fun selectedStateLocationFor(type: AddressType) =
-        viewState.countryStatePairs.getValue(type).stateLocation
-
     private var hasStarted = false
 
     /**
@@ -53,15 +45,15 @@ class AddressViewModel @Inject constructor(
      * search and back) we don't want this method to be called again, otherwise the ViewModel will replace the newly
      * selected country or state with the previously saved values.
      */
-    fun start(countryCode: LocationCode, stateCode: LocationCode) {
+    fun start(initialState: Map<AddressType, Address>) {
         if (hasStarted) {
             return
         }
         hasStarted = true
-        initialize(countryCode, stateCode)
+        initialize(initialState)
     }
 
-    private fun initialize(countryCode: String, stateCode: String) {
+    private fun initialize(initialState: Map<AddressType, Address>) {
         launch {
             // we only fetch the countries and states if they've never been fetched
             if (countries.isEmpty()) {
@@ -69,7 +61,7 @@ class AddressViewModel @Inject constructor(
                 dataStore.fetchCountriesAndStates(selectedSite.get())
                 viewState = viewState.copy(isLoading = false)
             }
-            initializeCountriesAndStates(countryCode, stateCode)
+            initializeCountriesAndStates(initialState)
         }
     }
 
@@ -88,24 +80,18 @@ class AddressViewModel @Inject constructor(
         viewState = ViewState()
     }
 
-    private fun getCountryNameFromCode(countryCode: LocationCode): String =
-        countries.find { it.code == countryCode }?.name ?: countryCode
-
-    private fun getCountryLocationFromCode(countryCode: LocationCode) =
-        Location(countryCode, getCountryNameFromCode(countryCode))
-
-    private fun getStateLocationFromCode(countryCode: LocationCode, stateCode: LocationCode) = Location(
-        code = stateCode,
-        name = dataStore.getStates(countryCode).firstOrNull { state -> state.code == stateCode }?.name ?: stateCode
-    )
-
     fun onCountrySelected(type: AddressType, countryCode: LocationCode) {
+        val selectedCountry = dataStore.getCountries().firstOrNull { it.code == countryCode }?.toAppModel()
+            ?: Location(countryCode, countryCode)
+
         viewState = viewState.copy(
             countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
                 if (entry.key == type) {
                     entry.value.copy(
-                        countryLocation = getCountryLocationFromCode(countryCode),
-                        stateLocation = Location.EMPTY,
+                        address = entry.value.address.copy(
+                            country = selectedCountry,
+                            state = AmbiguousLocation.EMPTY
+                        ),
                         stateSpinnerStatus = if (statesFor(countryCode).isEmpty()) {
                             StateSpinnerStatus.RAW_VALUE
                         } else {
@@ -116,7 +102,6 @@ class AddressViewModel @Inject constructor(
                     entry.value
                 }
             },
-            isStateSelectionEnabled = true
         )
     }
 
@@ -128,18 +113,25 @@ class AddressViewModel @Inject constructor(
         viewState = viewState.copy(
             countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
                 entry.value.copy(
-                    inputFormValues = currentFormsState.getValue(entry.key)
+                    address = currentFormsState.getValue(entry.key)
                 )
             }
         )
     }
 
-    fun onStateSelected(type: AddressType, stateCode: LocationCode) {
+    fun onStateSelected(type: AddressType, selectedStateCode: LocationCode) {
+        val (_, selectedState) = getLocations(
+            countryCode = viewState.countryStatePairs.getValue(type).address.country.code,
+            stateCode = selectedStateCode,
+        )
+
         viewState = viewState.copy(
             countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
                 if (entry.key == type) {
                     entry.value.copy(
-                        stateLocation = getStateLocationFromCode(entry.value.countryLocation.code, stateCode)
+                        address = entry.value.address.copy(
+                            state = selectedState
+                        )
                     )
                 } else {
                     entry.value
@@ -148,24 +140,18 @@ class AddressViewModel @Inject constructor(
         )
     }
 
-    private fun initializeCountriesAndStates(countryCode: LocationCode, stateCode: LocationCode) {
-        // TODO handle correct initialization in #5290
+    private fun initializeCountriesAndStates(initialState: Map<AddressType, Address>) {
         viewState = viewState.copy(
-            countryStatePairs = mapOf(
-                AddressType.BILLING to AddressSelectionState(
-                    countryLocation = getCountryLocationFromCode(countryCode),
-                    stateLocation = getStateLocationFromCode(countryCode, stateCode),
-                    inputFormValues = Address.EMPTY,
-                    stateSpinnerStatus = StateSpinnerStatus.DISABLED
-                ),
-                AddressType.SHIPPING to AddressSelectionState(
-                    countryLocation = getCountryLocationFromCode(countryCode),
-                    stateLocation = getStateLocationFromCode(countryCode, stateCode),
-                    inputFormValues = Address.EMPTY,
-                    stateSpinnerStatus = StateSpinnerStatus.DISABLED
+            countryStatePairs = initialState.mapValues {
+                AddressSelectionState(
+                    address = it.value,
+                    stateSpinnerStatus = if (statesFor(it.value.country.code).isEmpty()) {
+                        StateSpinnerStatus.RAW_VALUE
+                    } else {
+                        StateSpinnerStatus.HAVING_LOCATIONS
+                    }
                 )
-            ),
-            isStateSelectionEnabled = countryCode.isNotEmpty()
+            },
         )
     }
 
@@ -179,49 +165,15 @@ class AddressViewModel @Inject constructor(
         triggerEvent(event)
     }
 
+    @Suppress("UnusedPrivateMember")
     fun onDoneSelected(currentFormsState: Map<AddressType, Address>) {
-        updateInputFormValues(currentFormsState)
-        val billingAddress = getRichAddressFromViewState(AddressType.BILLING)
-        val shippingAddress = getRichAddressFromViewState(AddressType.SHIPPING)
-        triggerEvent(
-            Exit(
-                billingAddress = billingAddress,
-                shippingAddress = shippingAddress.takeIf { shippingAddress != Address.EMPTY } ?: billingAddress
-            )
-        )
+        // no-op
     }
-
-    private fun getRichAddressFromViewState(addressType: AddressType) =
-        viewState.countryStatePairs.getValue(addressType).let { state ->
-            state.inputFormValues.copy(
-                state = when (state.stateSpinnerStatus) {
-                    StateSpinnerStatus.HAVING_LOCATIONS -> state.stateLocation.name
-                    StateSpinnerStatus.RAW_VALUE -> state.inputFormValues.state
-                    StateSpinnerStatus.DISABLED -> ""
-                },
-                country = state.countryLocation.name
-            )
-        }
 
     @Parcelize
     data class ViewState(
-        val countryStatePairs: Map<AddressType, AddressSelectionState> = mapOf(
-            AddressType.BILLING to AddressSelectionState(
-                inputFormValues = Address.EMPTY,
-                countryLocation = Location.EMPTY,
-                stateLocation = Location.EMPTY,
-                stateSpinnerStatus = StateSpinnerStatus.DISABLED,
-            ),
-            AddressType.SHIPPING to AddressSelectionState(
-                inputFormValues = Address.EMPTY,
-                countryLocation = Location.EMPTY,
-                stateLocation = Location.EMPTY,
-                stateSpinnerStatus = StateSpinnerStatus.DISABLED,
-            ),
-        ),
+        val countryStatePairs: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
-        @Deprecated("Use stateSpinnerStatus of corresponding AddressSelectionState")
-        val isStateSelectionEnabled: Boolean = false
     ) : Parcelable
 
     enum class AddressType {
@@ -234,9 +186,7 @@ class AddressViewModel @Inject constructor(
 
     @Parcelize
     data class AddressSelectionState(
-        val inputFormValues: Address,
-        val countryLocation: Location,
-        val stateLocation: Location,
+        val address: Address,
         val stateSpinnerStatus: StateSpinnerStatus
     ) : Parcelable
 
@@ -250,6 +200,7 @@ class AddressViewModel @Inject constructor(
         val states: List<Location>
     ) : MultiLiveEvent.Event()
 
+    // TODO return map of addresses
     data class Exit(
         val billingAddress: Address,
         val shippingAddress: Address

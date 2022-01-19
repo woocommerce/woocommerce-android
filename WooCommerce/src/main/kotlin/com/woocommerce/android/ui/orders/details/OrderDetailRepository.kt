@@ -174,7 +174,9 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun getOrderById(orderId: Long) = withContext(dispatchers.io) {
-        orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.toAppModel()
+        orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let {
+            orderMapper.toAppModel(it)
+        }
     }
 
     fun getOrderStatus(key: String): OrderStatus {

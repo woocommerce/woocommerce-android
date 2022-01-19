@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.products.addons
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils.orderMapper
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultAddonsList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
@@ -17,11 +17,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.times
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.store.WCAddonsStore
@@ -127,7 +123,7 @@ class AddonRepositoryTest {
     fun `containsAddonsFrom should return true for valid OrderItem`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
-        val orderItem = defaultWCOrderModel.toAppModel().items.first()
+        val orderItem = defaultWCOrderModel.let { orderMapper.toAppModel(it) }.items.first()
 
         assertThat(repositoryUnderTest.containsAddonsFrom(orderItem)).isTrue
     }
@@ -136,7 +132,7 @@ class AddonRepositoryTest {
     fun `containsAddonsFrom should return false when requested with invalid OrderItem`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
-        val orderItem = defaultWCOrderModel.toAppModel().items.first()
+        val orderItem = defaultWCOrderModel.let { orderMapper.toAppModel(it) }.items.first()
             .copy(
                 attributesList = listOf(
                     Order.Item.Attribute("Invalid", "Invalid"),
