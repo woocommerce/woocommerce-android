@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
@@ -78,7 +77,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     }
 
     private fun showEmptyView(show: Boolean) {
-        binding.topPerformersEmptyView.isVisible = show
+        binding.topPerformersEmptyViewLinearLayout.isVisible = show
     }
 
     fun updateView(topPerformers: List<TopPerformerProductUiModel>) {
@@ -88,7 +87,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
 
     fun showErrorView(show: Boolean) {
         showEmptyView(false)
-        binding.topPerformersEmptyView.isVisible = show
+        binding.topPerformersEmptyViewLinearLayout.isVisible = show
         binding.topPerformersRecycler.isVisible = !show
     }
 
