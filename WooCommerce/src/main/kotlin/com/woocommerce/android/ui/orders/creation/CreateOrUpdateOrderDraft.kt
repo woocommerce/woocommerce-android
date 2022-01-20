@@ -6,8 +6,9 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
-class CreateOrUpdateOrderDraft(
+class CreateOrUpdateOrderDraft @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderCreationRepository: OrderCreationRepository
 ) {
