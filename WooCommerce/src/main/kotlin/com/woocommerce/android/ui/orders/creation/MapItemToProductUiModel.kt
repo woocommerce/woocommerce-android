@@ -33,5 +33,4 @@ class MapItemToProductUiModel @Inject constructor(
             )
         }
     }
-
 }
