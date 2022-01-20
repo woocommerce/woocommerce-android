@@ -26,6 +26,8 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
@@ -125,7 +127,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 AddButton(
                     text = getString(R.string.order_creation_add_products),
                     onClickListener = {
-                        viewModel.onAddSimpleProductsClicked()
+                        viewModel.onAddProductClicked()
                     }
                 )
             )
@@ -202,7 +204,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 }
                 productsSection.content = RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext())
-                    adapter = ProductsAdapter(
+                    adapter = OrderCreationProductsAdapter(
                         onProductClicked = viewModel::onProductClicked,
                         currencyFormatter = bigDecimalFormatter,
                         onIncreaseQuantity = viewModel::onIncreaseProductsQuantity,
@@ -211,7 +213,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     itemAnimator = animator
                 }
             }
-            ((productsSection.content as RecyclerView).adapter as ProductsAdapter).products = products
+            ((productsSection.content as RecyclerView).adapter as OrderCreationProductsAdapter).products = products
         }
     }
 

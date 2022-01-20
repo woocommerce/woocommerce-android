@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation
+package com.woocommerce.android.ui.orders.creation.navigation
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event

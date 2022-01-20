@@ -1,8 +1,8 @@
-package com.woocommerce.android.ui.orders.creation
+package com.woocommerce.android.ui.orders.creation.navigation
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.*
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragmentDirections
 
 object OrderCreationNavigator {

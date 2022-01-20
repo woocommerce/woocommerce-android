@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation
+package com.woocommerce.android.ui.orders.creation.notes
 
 import android.os.Bundle
 import android.view.Menu
@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditCustomerOrderNoteBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 
 class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_customer_order_note) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)

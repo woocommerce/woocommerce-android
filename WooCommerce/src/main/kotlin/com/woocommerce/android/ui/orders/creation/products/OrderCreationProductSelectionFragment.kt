@@ -17,9 +17,9 @@ import com.woocommerce.android.databinding.FragmentOrderCreationProductSelection
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigator
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.ViewState
 import com.woocommerce.android.ui.products.OnLoadMoreListener

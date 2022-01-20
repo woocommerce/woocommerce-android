@@ -8,7 +8,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.*
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -135,7 +135,7 @@ class OrderCreationViewModel @Inject constructor(
         triggerEvent(EditCustomerNote)
     }
 
-    fun onAddSimpleProductsClicked() {
+    fun onAddProductClicked() {
         triggerEvent(AddProduct)
     }
 
