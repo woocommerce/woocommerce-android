@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -57,9 +59,14 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val shippingAddress = originAddress.copy(company = "McDonald's")
     private val shippingAddressValidated = shippingAddress.copy(city = "DONE")
     private val order = OrderTestUtils.generateOrder()
+    private val orderMapper = OrderMapper(
+        getLocations = mock {
+            on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
+        }
+    )
 
     private val data = StateMachineData(
-        order = order.toAppModel(),
+        order = orderMapper.toAppModel(order),
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
@@ -75,7 +82,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     )
 
     private val doneData = StateMachineData(
-        order = order.toAppModel(),
+        order = orderMapper.toAppModel(order),
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(READY, shippingAddress),
@@ -169,7 +176,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 wooStore,
                 accountStore,
                 resourceProvider,
-                currencyFormatter
+                currencyFormatter,
+                mock()
             )
         )
 
@@ -299,9 +307,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     @Test
     fun `Purchase a label successfully`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
-            OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
-            )
+            OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
@@ -315,9 +321,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     @Test
     fun `Show print screen after purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
-            OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
-            )
+            OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
         )
 
         var event: MultiLiveEvent.Event? = null
@@ -333,9 +337,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     @Test
     fun `fulfill order after successful purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
-            OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
-            )
+            OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
@@ -358,9 +360,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     fun `notify user if fulfilment fail after successful purchase`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val purchasedLabels = listOf(
-                OrderTestUtils.generateShippingLabel(
-                    remoteOrderId = order.remoteOrderId.value, shippingLabelId = 1
-                )
+                OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
             )
             whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
                 .thenReturn(WooResult(purchasedLabels))

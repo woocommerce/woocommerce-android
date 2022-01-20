@@ -11,12 +11,7 @@ import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.joinToString
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.PaymentGateway
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.getMaxRefundQuantities
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -79,7 +74,8 @@ class IssueRefundViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository,
     private val gatewayStore: WCGatewayStore,
-    private val refundStore: WCRefundStore
+    private val refundStore: WCRefundStore,
+    private val orderMapper: OrderMapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -165,7 +161,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private suspend fun loadOrder(orderId: Long): Order =
-        requireNotNull(orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.toAppModel())
+        requireNotNull(orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let { orderMapper.toAppModel(it) })
 
     private fun updateRefundTotal(amount: BigDecimal) {
         commonState = commonState.copy(

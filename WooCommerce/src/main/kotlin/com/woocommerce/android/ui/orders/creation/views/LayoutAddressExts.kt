@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.orders.creation.views
 
+import android.view.View
 import androidx.core.view.isVisible
 import com.woocommerce.android.databinding.LayoutAddressFormBinding
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel
 
@@ -31,8 +33,8 @@ val LayoutAddressFormBinding?.textFieldsState
         firstName = this?.firstName?.text.orEmpty(),
         lastName = this?.lastName?.text.orEmpty(),
         phone = this?.phone?.text.orEmpty(),
-        country = "",
-        state = this?.stateEditText?.text.orEmpty(),
+        country = Location.EMPTY,
+        state = AmbiguousLocation.EMPTY,
         address1 = this?.address1?.text.orEmpty(),
         address2 = this?.address2?.text.orEmpty(),
         city = this?.city?.text.orEmpty(),
@@ -41,24 +43,35 @@ val LayoutAddressFormBinding?.textFieldsState
     )
 
 fun LayoutAddressFormBinding?.inflateTextFields(address: Address) {
+    this?.city?.text = address.city
     this?.company?.text = address.company
     this?.firstName?.text = address.firstName
     this?.lastName?.text = address.lastName
     this?.phone?.text = address.phone
-    this?.stateEditText?.text = address.state
     this?.address1?.text = address.address1
     this?.address2?.text = address.address2
     this?.postcode?.text = address.postcode
     this?.email?.text = address.email
 }
 
-fun LayoutAddressFormBinding?.inflateLocationFields(countryLocation: Location, stateLocation: Location) {
+fun LayoutAddressFormBinding?.inflateLocationFields(countryLocation: Location, stateLocation: AmbiguousLocation) {
     this?.countrySpinner?.setText(countryLocation.name)
-    this?.stateSpinner?.setText(stateLocation.name)
+    when (stateLocation) {
+        is AmbiguousLocation.Defined -> {
+            this?.stateSpinner?.visibility = View.VISIBLE
+            this?.stateEditText?.visibility = View.GONE
+            this?.stateSpinner?.setText(stateLocation.value.name)
+        }
+        is AmbiguousLocation.Raw -> {
+            this?.stateSpinner?.visibility = View.GONE
+            this?.stateEditText?.visibility = View.VISIBLE
+            this?.stateEditText?.text = stateLocation.value
+        }
+    }
 }
 
 fun LayoutAddressFormBinding?.update(state: AddressViewModel.AddressSelectionState) {
-    this?.inflateTextFields(state.inputFormValues)
-    this?.inflateLocationFields(countryLocation = state.countryLocation, stateLocation = state.stateLocation)
+    this?.inflateTextFields(state.address)
+    this?.inflateLocationFields(countryLocation = state.address.country, stateLocation = state.address.state)
     this?.updateLocationStateViews(state.stateSpinnerStatus)
 }

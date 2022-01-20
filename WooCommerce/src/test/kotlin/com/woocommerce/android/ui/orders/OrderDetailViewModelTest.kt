@@ -85,11 +85,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         localOrderId = ORDER_ID.toInt(),
         localSiteId = ORDER_SITE_ID,
     )
-    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(
-        totalCount = 5,
-        remoteOrderId = ORDER_ID,
-        localSiteId = ORDER_SITE_ID,
-    )
+    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(totalCount = 5)
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderDetailViewModel
 
