@@ -24,6 +24,9 @@ object OrderCreationNavigator {
                     .actionOrderCreationProductSelectionFragmentToOrderCreationVariationSelectionFragment(
                         target.productId
                     )
+            is ShowCreatedOrder ->
+                OrderCreationFormFragmentDirections
+                    .actionOrderCreationFragmentToOrderDetailFragment(target.orderId)
         }
 
         navController.navigate(action)

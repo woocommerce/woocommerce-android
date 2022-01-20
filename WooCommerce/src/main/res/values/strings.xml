@@ -127,6 +127,7 @@
     <string name="plus">Plus</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
+    <string name="create">Create</string>
 
     <!--
         Date/Time Labels
@@ -349,6 +350,10 @@
     <string name="order_creation_payment_products_total">Products Total</string>
     <string name="order_creation_payment_order_total">Order Total</string>
     <string name="order_creation_payment_tax_hint">Total excluding taxes. Taxes will be automatically calculated based on your store settings.</string>
+    <string name="order_creation_loading_dialog_title">Creating your order</string>
+    <string name="order_creation_loading_dialog_message">Please wait…</string>
+    <string name="order_creation_failure_snackbar">Order creation failed</string>
+    <string name="order_creation_success_snackbar">Order created</string>
 
     <!--
         Order Filters

@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
@@ -18,9 +21,11 @@ import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBindin
 import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView.AddButton
@@ -29,6 +34,8 @@ import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Compa
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -38,6 +45,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private val formViewModel by viewModels<OrderCreationFormViewModel>()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private var createOrderMenuItem: MenuItem? = null
+    private var progressDialog: CustomProgressDialog? = null
 
     private val bigDecimalFormatter by lazy {
         currencyFormatter.buildBigDecimalFormatter(
@@ -47,11 +58,35 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         with(FragmentOrderCreationFormBinding.bind(view)) {
             setupObserversWith(this)
             setupHandleResults()
             initView()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_order_creation, menu)
+        createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
+            isVisible = sharedViewModel.currentDraft.isValidForCreation
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_create -> {
+                formViewModel.onCreateOrderClicked(sharedViewModel.currentDraft)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        progressDialog?.dismiss()
     }
 
     private fun FragmentOrderCreationFormBinding.initView() {
@@ -109,6 +144,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
         sharedViewModel.orderDraftData.observe(viewLifecycleOwner) { _, newOrderData ->
+            createOrderMenuItem?.isVisible = newOrderData.isValidForCreation
             binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
             bindCustomerAddressSection(binding.customerSection, newOrderData)
@@ -121,6 +157,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
         sharedViewModel.products.observe(viewLifecycleOwner) {
             bindProductsSection(binding.productsSection, it)
+        }
+
+        formViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { show ->
+                if (show) showProgressDialog() else hideProgressDialog()
+            }
         }
 
         formViewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
@@ -209,7 +251,22 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                         currentStatus = event.currentStatus,
                         orderStatusList = event.orderStatusList
                     ).let { findNavController().navigateSafely(it) }
+            is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
         }
+    }
+
+    private fun showProgressDialog() {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(R.string.order_creation_loading_dialog_title),
+            getString(R.string.order_creation_loading_dialog_message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     override fun getFragmentTitle() = getString(R.string.order_creation_fragment_title)
