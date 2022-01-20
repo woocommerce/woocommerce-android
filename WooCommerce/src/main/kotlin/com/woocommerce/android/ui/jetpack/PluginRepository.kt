@@ -49,7 +49,7 @@ class PluginRepository @Inject constructor(
     private var continuationFetchJetpackSitePlugin = ContinuationWrapper<SitePluginModel?>(WooLog.T.WP)
 
     // Note that the `newInstallSitePluginAction` action automatically tries to activate the plugin after
-    // installation is successful, so when using this function, there's no need to call `activateJetpackPlugin()
+    // installation is successful, so when using this function, there's no need to call `activatePlugin()`
     // separately.
     fun installPlugin(slug: String, name: String) = callbackFlow<PluginStatus> {
         val listener = PluginActionListener(this)

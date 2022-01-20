@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
@@ -20,6 +21,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.ui.mystore.MyStoreViewModel
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -34,16 +36,24 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         private const val JETPACK_ACTIVATE_URL = "plugins.php"
         private const val ICON_NOT_DONE = R.drawable.ic_progress_circle_start
         private const val ICON_DONE = R.drawable.ic_progress_circle_complete
+        private const val STATE_KEY_IS_RETURNING_FROM_WPADMIN = "is_from_wpadmin"
     }
 
     @Inject lateinit var selectedSite: SelectedSite
 
     private val viewModel: JetpackInstallViewModel by viewModels()
+    private val myStoreViewModel: MyStoreViewModel by activityViewModels()
+
+    private var isReturningFromWpAdmin = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Use fullscreen style for all cases except tablet in landscape mode
         setStyle(STYLE_NO_TITLE, if (isTabletLandscape()) R.style.Theme_Woo_Dialog else R.style.Theme_Woo)
+
+        savedInstanceState?.let { bundle ->
+            isReturningFromWpAdmin = bundle.getBoolean(STATE_KEY_IS_RETURNING_FROM_WPADMIN)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +64,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
 
         val binding = DialogJetpackInstallProgressBinding.bind(view)
 
-        with(binding.subtitle) {
+        with(binding.jetpackProgressSubtitleTextView) {
             val stringBuilder = StringBuilder()
             stringBuilder.append(context.getString(R.string.jetpack_install_start_default_name))
 
@@ -73,6 +83,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 destinationId = R.id.jetpackBenefitsDialog,
                 inclusive = true
             )
+            myStoreViewModel.handleSuccessfulJetpackInstallation()
         }
 
         binding.contactButton.setOnClickListener {
@@ -104,8 +115,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
     private fun updateInstallProgressUi(status: InstallStatus, binding: DialogJetpackInstallProgressBinding) {
         when (status) {
             is Installing -> {
-                binding.step1Views.show()
-                binding.step1Hide.hide()
+                binding.showStep1Group.show()
+                binding.hideStep1Group.visibility = View.INVISIBLE
                 setViewImage(ICON_NOT_DONE, binding.icon2, binding.icon3, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1)
                 setTextWeight(Typeface.NORMAL, binding.message2, binding.message3, binding.message4)
@@ -113,8 +124,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.jetpackProgressActionButton.hide()
             }
             is Activating -> {
-                binding.step2Views.show()
-                binding.step2Hide.hide()
+                binding.showStep2Group.show()
+                binding.hideStep2Group.visibility = View.INVISIBLE
                 setViewImage(ICON_DONE, binding.icon1)
                 setViewImage(ICON_NOT_DONE, binding.icon3, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2)
@@ -123,22 +134,28 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.jetpackProgressActionButton.hide()
             }
             is Connecting -> {
-                binding.step3Views.show()
-                binding.step3Hide.hide()
+                binding.showStep3Group.show()
+                binding.hideStep3Group.visibility = View.INVISIBLE
                 setViewImage(ICON_DONE, binding.icon1, binding.icon2)
                 setViewImage(ICON_NOT_DONE, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2, binding.message3)
                 setTextWeight(Typeface.NORMAL, binding.message4)
 
+                if (status.retry) {
+                    binding.messagesGroup.show()
+                }
+
                 binding.jetpackProgressActionButton.hide()
             }
             is Finished -> {
-                binding.step4Views.show()
-                binding.step4Hide.hide()
+                binding.showStep4Group.show()
+                binding.hideStep4Group.visibility = View.INVISIBLE
                 setViewImage(ICON_DONE, binding.icon1, binding.icon2, binding.icon3, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2, binding.message3, binding.message4)
 
                 binding.jetpackProgressActionButton.show()
+                binding.openAdminOrRetryButton.visibility = View.INVISIBLE
+                binding.contactButton.visibility = View.INVISIBLE
             }
             is Failed -> {
                 handleFailedState(status.errorType, binding)
@@ -154,7 +171,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         val ctx = binding.root.context
 
         // Title copy
-        binding.title.text = ctx.getString(
+        binding.jetpackProgressTitleTextView.text = ctx.getString(
             R.string.jetpack_install_progress_failed_title,
             when (errorType) {
                 INSTALLATION -> ctx.getString(R.string.jetpack_install_progress_failed_reason_installation)
@@ -187,7 +204,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 }
             )
         }
-        binding.subtitle.text = sb.toString()
+        binding.jetpackProgressSubtitleTextView.text = sb.toString()
 
         // Button copy
         val btnText = when (errorType) {
@@ -208,7 +225,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         binding.openAdminOrRetryButton.text = btnText
 
         // Visibilities
-        binding.failureHide.hide()
+        binding.hideFailureGroup.visibility = View.INVISIBLE
+        binding.messagesGroup.visibility = View.INVISIBLE
         binding.contactButton.show()
         binding.openAdminOrRetryButton.show()
         binding.jetpackProgressActionButton.hide()
@@ -218,6 +236,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         when (errorType) {
             INSTALLATION -> {
                 button.setOnClickListener {
+                    isReturningFromWpAdmin = true
+
                     val installJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_INSTALL_URL
                     ChromeCustomTabUtils.launchUrl(requireContext(), installJetpackInWpAdminUrl)
 
@@ -229,12 +249,16 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             }
             ACTIVATION -> {
                 button.setOnClickListener {
+                    isReturningFromWpAdmin = true
+
                     val activateJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_ACTIVATE_URL
                     ChromeCustomTabUtils.launchUrl(requireContext(), activateJetpackInWpAdminUrl)
                 }
             }
-            else -> {
-                // Add sync functionality.
+            CONNECTION -> {
+                button.setOnClickListener {
+                    viewModel.checkJetpackConnection(retry = true)
+                }
             }
         }
     }
@@ -244,4 +268,23 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
 
     private fun isTabletLandscape() = (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)) &&
         DisplayUtils.isLandscape(context)
+
+    override fun onResume() {
+        super.onResume()
+
+        if (isReturningFromWpAdmin) {
+            // If installation / activation fails and a merchant ends up installing / activating directly in wp-admin,
+            // when they return to the app from wp-admin we want to check Jetpack's installation status and either
+            // proceed with installation process or keep the error message shown.
+            viewModel.checkJetpackConnection()
+
+            isReturningFromWpAdmin = false
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(STATE_KEY_IS_RETURNING_FROM_WPADMIN, isReturningFromWpAdmin)
+
+        super.onSaveInstanceState(outState)
+    }
 }
