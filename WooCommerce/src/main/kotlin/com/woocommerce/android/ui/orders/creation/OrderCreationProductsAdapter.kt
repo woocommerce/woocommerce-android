@@ -11,11 +11,11 @@ import com.woocommerce.android.databinding.OrderCreationProductItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.ProductsAdapter.ProductViewHolder
+import com.woocommerce.android.ui.orders.creation.OrderCreationProductsAdapter.ProductViewHolder
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
-class ProductsAdapter(
+class OrderCreationProductsAdapter(
     private val onProductClicked: (Order.Item) -> Unit,
     private val currencyFormatter: (BigDecimal) -> String,
     private val onIncreaseQuantity: (Long) -> Unit,

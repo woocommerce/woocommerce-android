@@ -69,7 +69,7 @@
     </dialog>
     <fragment
         android:id="@+id/orderCreationCustomerNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.notes.OrderCreationCustomerNoteFragment"
         android:label="OrderCreationCustomerNoteFragment"
         tools:layout="@layout/fragment_edit_customer_order_note" />
     <fragment
@@ -120,7 +120,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationProductDetailsFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationProductDetailsFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductDetailsFragment"
         android:label="OrderCreationProductDetailsFragment"
         tools:layout="@layout/fragment_order_creation_product_details">
         <argument
