@@ -274,7 +274,7 @@ dependencies {
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
 
     // Dependencies for screenshots
-    androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
+    androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
     androidTestImplementation('com.github.tomakehurst:wiremock:2.26.3') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.apache.commons', module: 'commons-lang3'

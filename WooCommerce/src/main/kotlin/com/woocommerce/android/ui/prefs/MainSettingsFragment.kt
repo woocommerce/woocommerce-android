@@ -194,6 +194,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         presenter.setupAnnouncementOption()
+        presenter.setupJetpackInstallOption()
     }
 
     override fun onResume() {
@@ -217,6 +218,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             updateStoreViews()
             updateStoreSettings()
             settingsListener.onSiteChanged()
+            presenter.setupJetpackInstallOption()
         }
     }
 
@@ -230,6 +232,19 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
             intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.packageName)
             activity?.startActivity(intent)
+        }
+    }
+
+    override fun handleJetpackInstallOption(isJetpackCPSite: Boolean) {
+        if (isJetpackCPSite) {
+            binding.optionInstallJetpack.visibility = View.VISIBLE
+            binding.optionInstallJetpack.setOnClickListener {
+                findNavController().navigateSafely(
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToNavGraphJetpackInstall()
+                )
+            }
+        } else {
+            binding.optionInstallJetpack.visibility = View.GONE
         }
     }
 
