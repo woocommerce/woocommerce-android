@@ -140,7 +140,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
         ).showDialog()
     }
 
-    private fun navigateUp() {
+    protected fun navigateUp() {
         trackEventCanceled()
         ActivityUtils.hideKeyboard(activity)
         findNavController().navigateUp()

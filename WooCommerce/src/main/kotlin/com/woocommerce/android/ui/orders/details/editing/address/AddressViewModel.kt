@@ -147,11 +147,11 @@ class AddressViewModel @Inject constructor(
         triggerEvent(event)
     }
 
-    fun onDoneSelected(addDifferentShippingChecked: Boolean) {
+    fun onDoneSelected(addDifferentShippingChecked: Boolean? = null) {
         triggerEvent(
             Exit(
                 viewState.addressSelectionStates.mapValues { statePair ->
-                    if (!addDifferentShippingChecked && statePair.key == AddressType.SHIPPING) {
+                    if (addDifferentShippingChecked == false && statePair.key == AddressType.SHIPPING) {
                         Address.EMPTY
                     } else {
                         statePair.value.address
