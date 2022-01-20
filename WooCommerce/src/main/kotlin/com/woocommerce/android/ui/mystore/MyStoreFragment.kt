@@ -325,9 +325,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     private fun showVisitorStats(visitorStats: Map<String, Int>) {
         binding.myStoreStats.showVisitorStats(visitorStats)
-        if (activeGranularity == StatsGranularity.DAYS) {
-            binding.emptyStatsView.updateVisitorCount(visitorStats.values.sum())
-        }
     }
 
     private fun showEmptyVisitorStatsForJetpackCP() {
@@ -418,13 +415,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
                 ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
-            binding.emptyStatsView.visibility = View.VISIBLE
         } else {
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
-            binding.emptyStatsView.visibility = View.GONE
         }
-
         tabLayout.visibility = dashboardVisibility
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
