@@ -50,13 +50,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
-    private val orderUpdateFailureSnackBar: Snackbar by lazy {
-        uiMessageResolver.getIndefiniteActionSnack(
-            message = "Update failed",
-            actionText = "retry",
-            actionListener = { }
-        )
-    }
+    private var orderUpdateFailureSnackBar: Snackbar? = null
 
     private val bigDecimalFormatter by lazy {
         currencyFormatter.buildBigDecimalFormatter(
@@ -95,6 +89,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override fun onStop() {
         super.onStop()
         progressDialog?.dismiss()
+        orderUpdateFailureSnackBar?.dismiss()
     }
 
     private fun FragmentOrderCreationFormBinding.initView() {
@@ -177,11 +172,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 binding.paymentSection.loadingProgress.isVisible = show
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
-                if (show) {
-                    orderUpdateFailureSnackBar.show()
-                } else {
-                    orderUpdateFailureSnackBar.dismiss()
-                }
+                showOrHideErrorSnackBar(show)
             }
         }
 
@@ -281,6 +272,26 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             getString(R.string.order_creation_loading_dialog_message)
         ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
         progressDialog?.isCancelable = false
+    }
+
+    private fun showOrHideErrorSnackBar(show: Boolean) {
+        if (show) {
+            val orderUpdateFailureSnackBar = orderUpdateFailureSnackBar ?: uiMessageResolver.getIndefiniteActionSnack(
+                message = "Update failed",
+                actionText = "retry",
+                actionListener = {  }
+            ).also {
+                orderUpdateFailureSnackBar = it
+            }
+
+            // If the snackbar was dismissed recently, a call to show will be ignore
+            val delay = if (orderUpdateFailureSnackBar.isShown) 500L else 0L
+            requireView().postDelayed({
+                orderUpdateFailureSnackBar.show()
+            }, delay)
+        } else {
+            orderUpdateFailureSnackBar?.dismiss()
+        }
     }
 
     private fun hideProgressDialog() {
