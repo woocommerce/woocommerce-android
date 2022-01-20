@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import com.woocommerce.android.AppPrefsWrapper
-import org.mockito.kotlin.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
@@ -12,6 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -184,7 +184,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
                 .thenReturn(null)
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(false)
@@ -216,7 +216,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
                 .thenReturn(null)
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
@@ -225,32 +225,32 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.OnboardingCompleted(
-                    PluginType.STRIPE_TERMINAL_GATEWAY
+                    PluginType.STRIPE_EXTENSION_GATEWAY
                 )
             )
         }
 
     @Test
-    fun `when stripe terminal plugin outdated, then UNSUPPORTED_VERSION returned`() =
+    fun `when stripe extension plugin outdated, then UNSUPPORTED_VERSION returned`() =
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(version = "2.8.1"))
+                .thenReturn(buildStripeExtensionPluginInfo(version = "2.8.1"))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS)).thenReturn(null)
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
 
             val result = checker.getOnboardingState()
 
             assertThat(result).isEqualTo(
-                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_TERMINAL_GATEWAY)
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_EXTENSION_GATEWAY)
             )
         }
 
     @Test
-    fun `given stripe terminal plugin, when stripe account not connected, then SETUP_NOT_COMPLETED returned`() =
+    fun `given stripe extension plugin, when stripe account not connected, then SETUP_NOT_COMPLETED returned`() =
         testBlocking {
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS)).thenReturn(null)
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
             whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
@@ -263,7 +263,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.SetupNotCompleted(
-                    PluginType.STRIPE_TERMINAL_GATEWAY
+                    PluginType.STRIPE_EXTENSION_GATEWAY
                 )
             )
         }
@@ -273,7 +273,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(isActive = false))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = false))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
                 .thenReturn(buildWCPayPluginInfo(isActive = true))
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
@@ -288,7 +288,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(isActive = false))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = false))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
                 .thenReturn(buildWCPayPluginInfo(isActive = true))
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
@@ -303,7 +303,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(isActive = false))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = false))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
                 .thenReturn(buildWCPayPluginInfo(isActive = false))
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
@@ -318,7 +318,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
                 .thenReturn(buildWCPayPluginInfo(isActive = false))
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
@@ -333,7 +333,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
                 .thenReturn(buildWCPayPluginInfo(isActive = false))
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
@@ -342,7 +342,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.OnboardingCompleted(
-                    PluginType.STRIPE_TERMINAL_GATEWAY
+                    PluginType.STRIPE_EXTENSION_GATEWAY
                 )
             )
         }
@@ -352,7 +352,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
                 .thenReturn(buildWCPayPluginInfo(isActive = true))
             whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
@@ -663,7 +663,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(null)
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
         whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
 
         checker.getOnboardingState()
@@ -672,7 +672,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(PluginType.STRIPE_TERMINAL_GATEWAY)
+            eq(PluginType.STRIPE_EXTENSION_GATEWAY)
         )
     }
 
@@ -682,7 +682,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(null)
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
         whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
             buildPaymentAccountResult(
                 hasPendingRequirements = true,
@@ -697,7 +697,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(PluginType.STRIPE_TERMINAL_GATEWAY)
+            eq(PluginType.STRIPE_EXTENSION_GATEWAY)
         )
     }
 
@@ -740,7 +740,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `given stripe ext active, when verifying state, then stripe ext account endpoint used`() = testBlocking {
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(null)
         whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
@@ -767,7 +767,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     fun `when onboarding completed using stripe, then onboarding completed plugin type saved`() = testBlocking {
         whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeTerminalPluginInfo(isActive = true))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(null)
         whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
@@ -778,7 +778,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(PluginType.STRIPE_TERMINAL_GATEWAY)
+            eq(PluginType.STRIPE_EXTENSION_GATEWAY)
         )
     }
 
@@ -826,7 +826,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         version: String = SUPPORTED_WCPAY_VERSION
     ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)
 
-    private fun buildStripeTerminalPluginInfo(
+    private fun buildStripeExtensionPluginInfo(
         isActive: Boolean = true,
         version: String = SUPPORTED_STRIPE_EXTENSION_VERSION
     ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)

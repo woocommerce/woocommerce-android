@@ -12,8 +12,8 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment.Companion.SELECTED_PACKAGE_RESULT
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

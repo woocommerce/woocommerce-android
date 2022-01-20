@@ -27,7 +27,7 @@ class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
     private lateinit var repository: OrderShipmentProvidersRepository
 
     @Before
-    fun setup() {
+    fun setup() = testBlocking {
         repository = OrderShipmentProvidersRepository(selectedSite, orderStore)
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(orderStore.getOrderByIdAndSite(ORDER_ID, siteModel)).thenReturn(order)

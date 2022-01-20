@@ -20,6 +20,8 @@ import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
@@ -41,22 +43,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 
 @OpenClassOnDebug
 @HiltViewModel
-class OrderDetailViewModel @Inject constructor(
-    private val dispatcher: Dispatcher,
+final class OrderDetailViewModel @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
@@ -65,8 +61,9 @@ class OrderDetailViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
+    private val productImageMap: ProductImageMap,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
-) : ScopedViewModel(savedState) {
+) : ScopedViewModel(savedState), OnProductFetchedListener {
     companion object {
         // The required version to support shipping label creation
         const val SUPPORTED_WCS_VERSION = "1.25.11"
@@ -116,17 +113,17 @@ class OrderDetailViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        dispatcher.unregister(this)
+        productImageMap.unsubscribeFromOnProductFetchedEvents(this)
     }
 
     init {
-        dispatcher.register(this)
+        productImageMap.subscribeToOnProductFetchedEvents(this)
     }
 
     fun start() {
-        val orderInDb = orderDetailRepository.getOrderById(navArgs.orderId)
-        val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
         launch {
+            val orderInDb = orderDetailRepository.getOrderById(navArgs.orderId)
+            val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
             if (needToFetch) {
                 fetchOrder(true)
             } else {
@@ -330,12 +327,14 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onShippingLabelsPurchased() {
-        // Refresh UI from the database, as new labels are cached by FluxC after the purchase,
-        // if for any reason, the order wasn't found, refetch it
-        orderDetailRepository.getOrderById(navArgs.orderId)?.let {
-            order = it
-            displayOrderDetails()
-        } ?: launch { fetchOrder(true) }
+        launch {
+            // Refresh UI from the database, as new labels are cached by FluxC after the purchase,
+            // if for any reason, the order wasn't found, refetch it
+            orderDetailRepository.getOrderById(navArgs.orderId)?.let {
+                order = it
+                displayOrderDetails()
+            } ?: fetchOrder(true)
+        }
     }
 
     fun onOrderItemRefunded() {
@@ -641,15 +640,8 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onProductChanged(event: OnProductChanged) {
-        /**
-         * This will be triggered if we fetched a product via ProduictImageMap so we could get its image.
-         */
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
-            viewState = viewState.copy(refreshedProductId = event.remoteProductId)
-        }
+    override fun onProductFetched(remoteProductId: Long) {
+        viewState = viewState.copy(refreshedProductId = remoteProductId)
     }
 
     private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(

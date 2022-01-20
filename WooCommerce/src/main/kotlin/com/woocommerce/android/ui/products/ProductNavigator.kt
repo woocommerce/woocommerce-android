@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAddonsDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
@@ -46,7 +47,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections

@@ -10,8 +10,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOFTWARE_UPDATE_TYPE
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_SOFTWARE_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager

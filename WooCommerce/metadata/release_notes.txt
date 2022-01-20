@@ -1,3 +1,1 @@
-- [*] In-Person Payments: Better error handling
-
-
+We’ve improved order refunding to let you refund fees to customers. There are some pretty cool updates coming in the next few weeks! If you’d like to join our early beta program, visit https://woocommercehalo.wordpress.com.

@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 11:54:05+0000
+Translation-Revision-Date: 2021-12-28 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="order_creation_add_customer_note">Anmerkung hinzufügen</string>
+    <string name="order_creation_customer_note">Anmerkung des Kunden</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Nach dem Update aktualisieren</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">In deinem Shop ist eine veraltete Version der WooCommerce Stripe-Zahlungs-Gateway-Erweiterung installiert. Aktualisiere diese bitte, um persönliche Zahlungen zu erhalten.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">WooCommerce Stripe-Zahlungs-Gateway aktualisieren</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Aktualisieren</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Du hast es fast geschafft! Schließe bitte die Einrichtung des WooCommerce Stripe-Zahlungs-Gateways ab, um persönliche Zahlungen zu erhalten.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Schließe die Einrichtung des WooCommerce Stripe-Zahlungs-Gateways in deiner Shop-Administration ab</string>
+    <string name="card_reader_payment_failed_unknown">Die Zahlung wurde aus unbekanntem Grund abgelehnt</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">Auf einer Website im Testmodus wurde eine echte Karte verwendet</string>
+    <string name="card_reader_payment_failed_test_card">Karten für Systemtests sind für Zahlungen nicht zulässig</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">Eine falsche PIN wurde zu oft eingegeben</string>
+    <string name="card_reader_payment_failed_pin_required">Für diese Karte ist ein PIN-Code erforderlich; deshalb kann sie nicht bearbeitet werden</string>
+    <string name="card_reader_payment_failed_invalid_amount">Der Zahlungsbetrag ist für die vorliegende Karte nicht zulässig</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Zahlung wegen unzureichendem Guthaben abgelehnt</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">Die Postleitzahlen der Transaktion und der Karte stimmen nicht überein</string>
+    <string name="card_reader_payment_failed_expired_card">Die Karte ist abgelaufen</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">Vor Kurzem wurde eine identische Transaktion übermittelt</string>
+    <string name="card_reader_payment_failed_currency_not_supported">Diese Währung wird von der Karte nicht unterstützt</string>
+    <string name="card_reader_payment_failed_card_not_supported">Diese Art von Kauf wird von der Karte nicht unterstützt</string>
+    <string name="card_reader_payment_failed_invalid_account">Die Karte oder das zugehörige Konto ist ungültig</string>
+    <string name="card_reader_payment_failed_generic">Die Zahlung wurde aus einem nicht näher bezeichneten Grund abgelehnt</string>
+    <string name="card_reader_payment_failed_fraud">Versuche es mit einer anderen Zahlungsmethode</string>
+    <string name="card_reader_payment_failed_temporary">Versuche es erneut</string>
+    <string name="order_creation_fragment_title">Neue Bestellung</string>
+    <string name="analytics_date_range_selector_description">Auswahl für Datumsbereich-Filter</string>
+    <string name="analytics_date_range_from_date">im Vergleich zum vorherigen Zeitraum (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">Bisheriges Jahr</string>
+    <string name="date_timeframe_quarter_to_date">Bisheriges Quartal</string>
+    <string name="date_timeframe_month_to_date">Bisheriger Monat</string>
+    <string name="date_timeframe_week_to_date">Bisherige Woche</string>
+    <string name="date_timeframe_last_year">Letztes Jahr</string>
+    <string name="date_timeframe_last_quarter">Letztes Quartal</string>
+    <string name="date_timeframe_last_month">Letzter Monat</string>
+    <string name="date_timeframe_last_week">Letzte Woche</string>
     <string name="settings_enable_order_creation_teaser_message">Versuche, Bestellungen mit vollständigen Informationen zu erstellen, während wir uns auf den Launch vorbereiten</string>
     <string name="settings_enable_order_creation_teaser_title">Erstellung von Bestellungen</string>
     <string name="settings_enable_simple_payments_teaser_title">Einfaches Bezahlen</string>
@@ -213,7 +249,7 @@ Language: de
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">In deinem Store ist eine veraltete Version der WooCommerce Payments-Erweiterung installiert. Aktualisiere diese bitte, um persönliche Zahlungen zu erhalten.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments aktualisieren</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Aktualisieren</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">Du hast es fast geschafft! Schließe bitte die Einrichtung von WooCommerce Payments ab, um Zahlungen mit einer vorgelegten Karte („Card Present“) anzunehmen.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Du hast es fast geschafft! Schließe bitte die Einrichtung von WooCommerce Payments ab, um persönliche Zahlungen zu erhalten.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Schließe die Einrichtung von WooCommerce Payments in deiner Store-Administration ab</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Nach der Aktivierung aktualisieren</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">Die WooCommerce Payments-Erweiterung ist in deinem Store installiert, aber nicht aktiviert. Aktiviere diese bitte, um persönliche Zahlungen zu erhalten.</string>
@@ -291,7 +327,6 @@ Language: de
     <string name="card_reader_connect_multiple_readers_found_header">Mehrere Reader gefunden</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">Diese Bestellung ist bereits bezahlt</string>
     <string name="card_reader_payment_receipt_email_content">Vielen Dank für deinen Einkauf! Klicke auf den Link unten, um deinen Zahlungsbeleg zu erhalten.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">Karte abgelehnt</string>
     <string name="shipping_label_print_customs_form_download_failed">Fehler beim Herunterladen des Zollformulars</string>
     <string name="shipping_label_print_customs_form_screen_title">Zollrechnung drucken</string>
     <string name="shipping_label_print_customs_form">Zollformular drucken</string>
@@ -1735,6 +1770,18 @@ Language: de
     <string name="all">Alle</string>
     <string name="notification_channel_general_title">Allgemein</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>0@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>In Bearbeitung</item>
         <item>Alle Bestellungen</item>

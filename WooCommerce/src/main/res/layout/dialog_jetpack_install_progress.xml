@@ -20,17 +20,17 @@
             android:paddingBottom="@dimen/major_300">
 
             <LinearLayout
-                android:id="@+id/header_layout"
+                android:id="@+id/headerLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
-                app:layout_constraintEnd_toEndOf="@id/jetpack_progress_guideline_end"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintEnd_toEndOf="@id/jetpackProgressEndGuideline"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginTop="@dimen/image_major_100">
 
                 <ImageView
-                    android:id="@+id/jetpack_logo"
+                    android:id="@+id/jetpackLogoImage"
                     android:layout_width="@dimen/image_minor_100"
                     android:layout_height="@dimen/image_minor_100"
                     android:importantForAccessibility="no"
@@ -45,7 +45,7 @@
                     android:src="@drawable/ic_connecting" />
 
                 <ImageView
-                    android:id="@+id/woo_logo"
+                    android:id="@+id/wooLogoImage"
                     android:layout_width="@dimen/image_minor_100"
                     android:layout_height="@dimen/image_minor_100"
                     android:importantForAccessibility="no"
@@ -55,7 +55,7 @@
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/title"
+                android:id="@+id/jetpackProgressTitleTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_200"
@@ -63,21 +63,21 @@
                 android:textAlignment="textStart"
                 android:textAppearance="?attr/textAppearanceHeadline4"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
-                app:layout_constraintEnd_toEndOf="@id/jetpack_progress_guideline_end"
-                app:layout_constraintTop_toBottomOf="@id/header_layout" />
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintEnd_toEndOf="@id/jetpackProgressEndGuideline"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/subtitle"
+                android:id="@+id/jetpackProgressSubtitleTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
                 android:text="@string/jetpack_install_progress_subtitle"
                 android:textAlignment="textStart"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
-                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
-                app:layout_constraintEnd_toEndOf="@id/jetpack_progress_guideline_end"
-                app:layout_constraintTop_toBottomOf="@id/title" />
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintEnd_toEndOf="@id/jetpackProgressEndGuideline"
+                app:layout_constraintTop_toBottomOf="@id/jetpackProgressTitleTextView" />
 
             <ImageView
                 android:id="@+id/icon1"
@@ -86,8 +86,8 @@
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_progress_circle_complete"
                 android:layout_marginTop="@dimen/major_200"
-                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/subtitle"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintTop_toBottomOf="@id/jetpackProgressSubtitleTextView"
                 android:visibility="visible" />
 
             <ProgressBar
@@ -96,8 +96,8 @@
                 android:layout_width="@dimen/image_minor_60"
                 android:layout_height="@dimen/image_minor_60"
                 android:layout_marginTop="@dimen/major_200"
-                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
-                app:layout_constraintTop_toBottomOf="@id/subtitle"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintTop_toBottomOf="@id/jetpackProgressSubtitleTextView"
                 android:visibility="invisible"/>
 
             <com.google.android.material.textview.MaterialTextView
@@ -118,11 +118,11 @@
                 android:layout_width="@dimen/image_minor_60"
                 android:layout_height="@dimen/image_minor_60"
                 android:importantForAccessibility="no"
-                android:src="@drawable/ic_progress_circle_loading"
+                android:src="@drawable/ic_progress_circle_start"
                 android:layout_marginTop="@dimen/major_125"
-                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
                 app:layout_constraintTop_toBottomOf="@id/icon1"
-                android:visibility="invisible"/>
+                android:visibility="visible"/>
 
             <ProgressBar
                 android:id="@+id/progress2"
@@ -130,9 +130,9 @@
                 android:layout_width="@dimen/image_minor_60"
                 android:layout_height="@dimen/image_minor_60"
                 android:layout_marginTop="@dimen/major_125"
-                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
                 app:layout_constraintTop_toBottomOf="@id/icon1"
-                android:visibility="visible"/>
+                android:visibility="invisible"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/message2"
@@ -154,7 +154,7 @@
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_progress_circle_start"
                 android:layout_marginTop="@dimen/major_125"
-                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
                 app:layout_constraintTop_toBottomOf="@id/icon2" />
 
             <ProgressBar
@@ -163,7 +163,7 @@
                 android:layout_width="@dimen/image_minor_60"
                 android:layout_height="@dimen/image_minor_60"
                 android:layout_marginTop="@dimen/major_125"
-                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
                 app:layout_constraintTop_toBottomOf="@id/icon2"
                 android:visibility="invisible"/>
 
@@ -186,7 +186,7 @@
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_progress_circle_start"
                 android:layout_marginTop="@dimen/major_125"
-                app:layout_constraintStart_toStartOf="@id/jetpack_progress_guideline_start"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
                 app:layout_constraintTop_toBottomOf="@id/icon3" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -202,69 +202,74 @@
                 app:layout_constraintBottom_toBottomOf="@id/icon4" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/step1_views"
+                android:id="@+id/showStep1Group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="progress1, icon2, icon3, icon4" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/step1_hide"
+                android:id="@+id/hideStep1Group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="icon1, progress2, progress3" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/step2_views"
+                android:id="@+id/showStep2Group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="icon1, progress2, icon3, icon4" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/step2_hide"
+                android:id="@+id/hideStep2Group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="progress1, icon2, progress3" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/step3_views"
+                android:id="@+id/showStep3Group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="icon1, icon2, progress3, icon4" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/step3_hide"
+                android:id="@+id/hideStep3Group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="progress1, progress2, icon3" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/step4_views"
+                android:id="@+id/showStep4Group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="icon1, icon2, icon3, icon4" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/step4_hide"
+                android:id="@+id/hideStep4Group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="progress1, progress2, progress3" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/failure_hide"
+                android:id="@+id/hideFailureGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="icon1, icon2, icon3, icon4, message1, message2, message3, message4, progress1, progress2, progress3" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/messagesGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="message1, message2, message3, message4" />
 
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/jetpack_progress_guideline_start"
+                android:id="@+id/jetpackProgressStartGuideline"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:orientation="vertical"
                 app:layout_constraintGuide_begin="@dimen/major_200" />
 
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/jetpack_progress_guideline_end"
+                android:id="@+id/jetpackProgressEndGuideline"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:orientation="vertical"
@@ -274,7 +279,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/open_admin_or_retry_button"
+        android:id="@+id/openAdminOrRetryButton"
         style="@style/Woo.Button.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -283,7 +288,7 @@
         tools:visibility="visible" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/contact_button"
+        android:id="@+id/contactButton"
         style="@style/Woo.Button.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -292,7 +297,7 @@
         tools:visibility="visible" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/jetpack_progress_action_button"
+        android:id="@+id/jetpackProgressActionButton"
         style="@style/Woo.JetpackButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

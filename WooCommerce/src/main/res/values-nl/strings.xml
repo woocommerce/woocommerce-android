@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 16:54:16+0000
+Translation-Revision-Date: 2021-12-28 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="order_creation_add_customer_note">Notitie toevoegen</string>
+    <string name="order_creation_customer_note">Klantnotitie</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Vernieuwen na bijwerken</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Verouderde versie van de WooCommerce Stripe betaalgateway-extensie is geïnstalleerd in je winkel. Werk deze bij om fysieke betalingen aan te nemen.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Woocommerce Stripe betaalgateway bijwerken</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Vernieuw</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Je bent bijna klaar! Rond het instellen van de WooCommerce Stripe-betaalgateway af om betalingen met fysieke betaalkaart aan te nemen.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Rond het instellen van de WooCommerce Stripe-betaalgateway af bij je winkelbeheer</string>
+    <string name="card_reader_payment_failed_unknown">Betaling mislukt om onbekende reden</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">Er werd een live kaart gebruikt op een site in de testmodus</string>
+    <string name="card_reader_payment_failed_test_card">Er mag niet worden betaald met systeemtestkaarten</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">Er is te vaak een onjuiste PIN ingevoerd</string>
+    <string name="card_reader_payment_failed_pin_required">Voor deze kaart is een PIN-code vereist en kan daarom niet worden verwerkt</string>
+    <string name="card_reader_payment_failed_invalid_amount">Het betalingsbedrag is niet toegestaan voor de getoonde kaart</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Betaling mislukt vanwege onvoldoende saldo</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">De postcode van de transactie en de postcode van de kaart komen niet overeen</string>
+    <string name="card_reader_payment_failed_expired_card">De kaart is verlopen</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">Er is recent een identieke transactie ingediend</string>
+    <string name="card_reader_payment_failed_currency_not_supported">De kaart ondersteunt deze valuta niet</string>
+    <string name="card_reader_payment_failed_card_not_supported">De kaart ondersteunt dit type aankoop niet</string>
+    <string name="card_reader_payment_failed_invalid_account">De kaart of het account van de kaart is ongeldig</string>
+    <string name="card_reader_payment_failed_generic">Betaling mislukt om onbekende reden</string>
+    <string name="card_reader_payment_failed_fraud">Probeer een andere betaalmethode</string>
+    <string name="card_reader_payment_failed_temporary">Het opnieuw proberen kan helpen</string>
+    <string name="order_creation_fragment_title">Nieuwe bestelling</string>
+    <string name="analytics_date_range_selector_description">Kiezer voor filter datumbereik</string>
+    <string name="analytics_date_range_from_date">t.o.v. vorige periode (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s %2$s()</string>
+    <string name="date_timeframe_year_to_date">Jaar tot en met huidige datum</string>
+    <string name="date_timeframe_quarter_to_date">Kwartaal tot en met huidige datum</string>
+    <string name="date_timeframe_month_to_date">Maand tot en met huidige datum</string>
+    <string name="date_timeframe_week_to_date">Week tot en met huidige datum</string>
+    <string name="date_timeframe_last_year">Afgelopen jaar</string>
+    <string name="date_timeframe_last_quarter">Afgelopen kwartaal</string>
+    <string name="date_timeframe_last_month">Afgelopen maand</string>
+    <string name="date_timeframe_last_week">Afgelopen week</string>
     <string name="settings_enable_order_creation_teaser_message">Probeer eens wat bestellingen aan te maken met volledige gegevens terwijl wij ons voorbereiden voor het uitbrengen van de versie</string>
     <string name="settings_enable_order_creation_teaser_title">Aanmaken van bestellingen</string>
     <string name="settings_enable_simple_payments_teaser_title">Eenvoudig betalen</string>
@@ -213,7 +249,7 @@ Language: nl
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Verouderde versie van de WooCommerce Payments-extensie is geïnstalleerd in je winkel. Werk deze bij om fysieke betalingen aan te nemen.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments bijwerken</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Vernieuw</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">Je bent bijna klaar! Rond het instellen van WooCommerce Payments af om betalingen met fysieke betaalkaart (Card-Present) aan te nemen.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Je bent bijna klaar! Rond het instellen van WooCommerce Payments af om betalingen met fysieke betaalkaart aan te nemen.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Rond het instellen van WooCommerce Payments af bij je winkelbeheer</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Vernieuwen na activeren</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">De WooCommerce Payments-extensie is geïnstalleerd in je winkel, maar nog niet geactiveerd. Activeer deze om fysieke betalingen aan te nemen.</string>
@@ -291,7 +327,6 @@ Language: nl
     <string name="card_reader_connect_multiple_readers_found_header">Meerdere lezers gevonden</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">De bestelling is al betaald</string>
     <string name="card_reader_payment_receipt_email_content">Bedankt voor je aankoop! Klik op de onderstaande link voor je betaalbewijs.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">Kaart geweigerd</string>
     <string name="shipping_label_print_customs_form_download_failed">Fout bij downloaden douaneaangifte</string>
     <string name="shipping_label_print_customs_form_screen_title">Douanefactuur afdrukken</string>
     <string name="shipping_label_print_customs_form">Douaneformulier afdrukken</string>
@@ -1735,6 +1770,18 @@ Language: nl
     <string name="all">Alles</string>
     <string name="notification_channel_general_title">Algemeen</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>Bezig met verwerken</item>
         <item>Alle bestellingen</item>
