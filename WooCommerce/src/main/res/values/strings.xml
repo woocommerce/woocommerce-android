@@ -127,6 +127,7 @@
     <string name="plus">Plus</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
+    <string name="create">Create</string>
 
     <!--
         Date/Time Labels
@@ -345,6 +346,14 @@
     <string name="order_creation_add_discount">Add discount</string>
     <string name="order_creation_remove_product">Remove product from order</string>
     <string name="order_creation_variations_screen_title">Select variation</string>
+    <string name="order_creation_payment">Payment</string>
+    <string name="order_creation_payment_products_total">Products Total</string>
+    <string name="order_creation_payment_order_total">Order Total</string>
+    <string name="order_creation_payment_tax_hint">Total excluding taxes. Taxes will be automatically calculated based on your store settings.</string>
+    <string name="order_creation_loading_dialog_title">Creating your order</string>
+    <string name="order_creation_loading_dialog_message">Please wait…</string>
+    <string name="order_creation_failure_snackbar">Order creation failed</string>
+    <string name="order_creation_success_snackbar">Order created</string>
 
     <!--
         Order Filters
@@ -1464,6 +1473,7 @@
     <string name="settings_card_reader">Manage card reader</string>
     <string name="settings_card_reader_payments">In-Person Payments</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
+    <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>

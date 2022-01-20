@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
@@ -59,7 +59,7 @@ class MyStoreFragment :
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
     }
 
-    private val viewModel: MyStoreViewModel by viewModels()
+    private val viewModel: MyStoreViewModel by activityViewModels()
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -186,6 +186,7 @@ class MyStoreFragment :
                 is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
                 VisitorStatsViewState.Error -> binding.myStoreStats.showVisitorStatsError()
                 is VisitorStatsViewState.JetpackCpConnected -> onJetpackCpConnected(stats.benefitsBanner)
+                is VisitorStatsViewState.PostJetpackInstalled -> binding.jetpackBenefitsBanner.root.isVisible = false
             }
         }
         viewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
@@ -366,6 +367,7 @@ class MyStoreFragment :
     }
 
     private fun showChartSkeleton(show: Boolean) {
+        binding.myStoreDateBar.isVisible = !show
         binding.myStoreStats.showErrorView(false)
         binding.myStoreStats.showSkeleton(show)
     }
