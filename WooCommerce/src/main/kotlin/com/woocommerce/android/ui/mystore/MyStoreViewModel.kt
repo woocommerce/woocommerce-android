@@ -22,6 +22,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -74,6 +75,8 @@ class MyStoreViewModel @Inject constructor(
 
     @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
     @VisibleForTesting val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
+
+    private var jetpackMonitoringJob: Job? = null
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
@@ -187,6 +190,17 @@ class MyStoreViewModel @Inject constructor(
                 }
             )
         _visitorStatsState.value = VisitorStatsViewState.JetpackCpConnected(benefitsBanner)
+        monitorJetpackInstallation()
+    }
+
+    private fun monitorJetpackInstallation() {
+        jetpackMonitoringJob?.cancel()
+        jetpackMonitoringJob = viewModelScope.launch {
+            selectedSite.observe()
+                .filter { it?.isJetpackConnected == true }
+                .take(1)
+                .collect { loadStoreStats(activeStatsGranularity.value) }
+        }
     }
 
     private suspend fun loadTopPerformersStats(granularity: StatsGranularity) {

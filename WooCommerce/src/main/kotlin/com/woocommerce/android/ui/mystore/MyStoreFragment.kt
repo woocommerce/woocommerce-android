@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -185,7 +184,10 @@ class MyStoreFragment :
         viewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
             when (stats) {
                 is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
-                VisitorStatsViewState.Error -> binding.myStoreStats.showVisitorStatsError()
+                VisitorStatsViewState.Error -> {
+                    binding.jetpackBenefitsBanner.root.isVisible = false
+                    binding.myStoreStats.showVisitorStatsError()
+                }
                 is VisitorStatsViewState.JetpackCpConnected -> onJetpackCpConnected(stats.benefitsBanner)
             }
         }
@@ -341,6 +343,7 @@ class MyStoreFragment :
     }
 
     private fun showVisitorStats(visitorStats: Map<String, Int>) {
+        binding.jetpackBenefitsBanner.root.isVisible = false
         binding.myStoreStats.showVisitorStats(visitorStats)
         if (activeGranularity == StatsGranularity.DAYS) {
             binding.emptyStatsView.updateVisitorCount(visitorStats.values.sum())
