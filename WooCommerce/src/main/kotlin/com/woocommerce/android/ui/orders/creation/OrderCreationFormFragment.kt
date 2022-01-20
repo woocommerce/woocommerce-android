@@ -277,8 +277,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private fun showOrHideErrorSnackBar(show: Boolean) {
         if (show) {
             val orderUpdateFailureSnackBar = orderUpdateFailureSnackBar ?: uiMessageResolver.getIndefiniteActionSnack(
-                message = "Update failed",
-                actionText = "retry",
+                message = getString(R.string.order_creation_price_calculation_failed),
+                actionText = getString(R.string.retry),
                 actionListener = { viewModel.onRetryPaymentsClicked() }
             ).also {
                 orderUpdateFailureSnackBar = it
