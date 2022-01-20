@@ -21,7 +21,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
-import com.woocommerce.android.ui.mystore.MyStoreViewModel
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -42,7 +41,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
     @Inject lateinit var selectedSite: SelectedSite
 
     private val viewModel: JetpackInstallViewModel by viewModels()
-    private val myStoreViewModel: MyStoreViewModel by activityViewModels()
 
     private var isReturningFromWpAdmin = false
 
@@ -83,7 +81,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 destinationId = R.id.jetpackBenefitsDialog,
                 inclusive = true
             )
-            myStoreViewModel.handleSuccessfulJetpackInstallation()
         }
 
         binding.contactButton.setOnClickListener {

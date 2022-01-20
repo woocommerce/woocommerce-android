@@ -92,11 +92,6 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    fun handleSuccessfulJetpackInstallation() {
-        _visitorStatsState.value =
-            VisitorStatsViewState.PostJetpackInstalled
-    }
-
     override fun onCleared() {
         ConnectionChangeReceiver.getEventBus().unregister(this)
         super.onCleared()
@@ -300,8 +295,6 @@ class MyStoreViewModel @Inject constructor(
         data class Content(
             val stats: Map<String, Int>
         ) : VisitorStatsViewState()
-
-        object PostJetpackInstalled : VisitorStatsViewState()
     }
 
     sealed class TopPerformersViewState {
