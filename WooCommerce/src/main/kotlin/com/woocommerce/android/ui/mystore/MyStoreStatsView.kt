@@ -474,8 +474,13 @@ class MyStoreStatsView @JvmOverloads constructor(
         isRequestingStats = false
     }
 
-    private fun getFormattedRevenueValue(revenue: Double) = currencyFormatter
-        .formatCurrency(revenue.toBigDecimal(), revenueStatsModel?.currencyCode.orEmpty())
+    private fun getFormattedRevenueValue(revenue: Double) =
+        if (revenue == 0.0) {
+            currencyFormatter.formatCurrencyRounded(revenue, revenueStatsModel?.currencyCode.orEmpty())
+        } else {
+            currencyFormatter
+                .formatCurrency(revenue.toBigDecimal(), revenueStatsModel?.currencyCode.orEmpty())
+        }
 
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 
