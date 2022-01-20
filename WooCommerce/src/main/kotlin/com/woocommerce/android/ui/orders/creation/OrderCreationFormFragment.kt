@@ -279,7 +279,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             val orderUpdateFailureSnackBar = orderUpdateFailureSnackBar ?: uiMessageResolver.getIndefiniteActionSnack(
                 message = "Update failed",
                 actionText = "retry",
-                actionListener = {  }
+                actionListener = { viewModel.onRetryPaymentsClicked() }
             ).also {
                 orderUpdateFailureSnackBar = it
             }

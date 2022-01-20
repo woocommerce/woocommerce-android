@@ -13,14 +13,19 @@ class CreateOrUpdateOrderDraft @Inject constructor(
     private val orderCreationRepository: OrderCreationRepository
 ) {
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    operator fun invoke(changes: Flow<Order>): Flow<OrderDraftUpdateStatus> {
-        return changes
+    operator fun invoke(changes: Flow<Order>, retryTrigger: Flow<Unit>): Flow<OrderDraftUpdateStatus> {
+        val debouncedChangesFlow = changes
             .filter { it.items.isNotEmpty() }
             .distinctUntilChanged { old, new ->
                 areEquivalent(old, new)
             }
             .debounce(1000)
             .flowOn(dispatchers.computation)
+
+        return combine(
+            debouncedChangesFlow,
+            retryTrigger.onStart { emit(Unit) }
+        ) { draft, _ -> draft }
             .transformLatest {
                 emit(OrderDraftUpdateStatus.Ongoing)
                 orderCreationRepository.createOrUpdateDraft(it)

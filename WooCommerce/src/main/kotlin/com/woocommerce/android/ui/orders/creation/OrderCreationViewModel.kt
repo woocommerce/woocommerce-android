@@ -68,6 +68,8 @@ class OrderCreationViewModel @Inject constructor(
             items.map { item -> mapItemToProductUiModel(item) }
         }.asLiveData()
 
+    private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     val currentDraft
         get() = _orderDraft.value
 
@@ -76,27 +78,6 @@ class OrderCreationViewModel @Inject constructor(
             it.copy(currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencyCode.orEmpty())
         }
         monitorOrderChanges()
-    }
-
-    /**
-     * Monitor order changes, and update the remote draft to update price totals
-     */
-    private fun monitorOrderChanges() {
-        viewModelScope.launch {
-            createOrUpdateOrderDraft(_orderDraft)
-                .collect {
-                    when (it) {
-                        Ongoing -> viewState =
-                            viewState.copy(isUpdatingOrderDraft = true, showOrderUpdateSnackbar = false)
-                        Failed -> viewState =
-                            viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
-                        is Succeeded -> {
-                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = false)
-                            _orderDraft.value = it.order
-                        }
-                    }
-                }
-        }
     }
 
     fun onOrderStatusChanged(status: Order.Status) = _orderDraft.update { it.copy(status = status) }
@@ -166,6 +147,10 @@ class OrderCreationViewModel @Inject constructor(
         triggerEvent(ShowProductDetails(item))
     }
 
+    fun onRetryPaymentsClicked() {
+        retryOrderDraftUpdateTrigger.tryEmit(Unit)
+    }
+
     fun onCreateOrderClicked(order: Order) {
         viewModelScope.launch {
             viewState = viewState.copy(isProgressDialogShown = true)
@@ -179,6 +164,27 @@ class OrderCreationViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(string.order_creation_failure_snackbar))
                 }
             )
+        }
+    }
+
+    /**
+     * Monitor order changes, and update the remote draft to update price totals
+     */
+    private fun monitorOrderChanges() {
+        viewModelScope.launch {
+            createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
+                .collect {
+                    when (it) {
+                        Ongoing -> viewState =
+                            viewState.copy(isUpdatingOrderDraft = true, showOrderUpdateSnackbar = false)
+                        Failed -> viewState =
+                            viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                        is Succeeded -> {
+                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = false)
+                            _orderDraft.value = it.order
+                        }
+                    }
+                }
         }
     }
 
