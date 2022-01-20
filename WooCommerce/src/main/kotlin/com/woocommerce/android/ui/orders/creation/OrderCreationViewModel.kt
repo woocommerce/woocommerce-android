@@ -30,6 +30,7 @@ class OrderCreationViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val orderCreationRepository: OrderCreationRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
+    private val createOrUpdateOrderDraft: CreateOrUpdateOrderDraft,
     private val createOrderItem: CreateOrderItem,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
@@ -73,6 +74,28 @@ class OrderCreationViewModel @Inject constructor(
     init {
         _orderDraft.update {
             it.copy(currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencyCode.orEmpty())
+        }
+        monitorOrderChanges()
+    }
+
+    /**
+     * Monitor order changes, and update the remote draft to update price totals
+     */
+    private fun monitorOrderChanges() {
+        viewModelScope.launch {
+            createOrUpdateOrderDraft(_orderDraft)
+                .collect {
+                    when (it) {
+                        Ongoing -> viewState =
+                            viewState.copy(isProgressDialogShown = true, showOrderUpdateSnackbar = false)
+                        Failed -> viewState =
+                            viewState.copy(isProgressDialogShown = false, showOrderUpdateSnackbar = true)
+                        is Succeeded -> {
+                            viewState = viewState.copy(isProgressDialogShown = false, showOrderUpdateSnackbar = false)
+                            _orderDraft.value = it.order
+                        }
+                    }
+                }
         }
     }
 
@@ -162,7 +185,9 @@ class OrderCreationViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
-        val canCreateOrder: Boolean = false
+        val canCreateOrder: Boolean = false,
+        val isUpdatingOrderDraft: Boolean = false,
+        val showOrderUpdateSnackbar: Boolean = false
     ) : Parcelable
 }
 
