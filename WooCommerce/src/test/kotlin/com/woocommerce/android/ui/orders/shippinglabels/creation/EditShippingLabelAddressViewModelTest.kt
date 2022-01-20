@@ -120,8 +120,8 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         assertThat(viewState?.address1Field?.content).isEqualTo(address.address1)
         assertThat(viewState?.address2Field?.content).isEqualTo(address.address2)
         assertThat(viewState?.cityField?.content).isEqualTo(address.city)
-        assertThat(viewState?.stateField?.location?.code).isEqualTo(address.state)
-        assertThat(viewState?.countryField?.location?.code).isEqualTo(address.country)
+        assertThat(viewState?.stateField?.location).isEqualTo(address.state.asLocation())
+        assertThat(viewState?.countryField?.location).isEqualTo(address.country)
     }
 
     @Test
@@ -280,7 +280,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onCountrySpinnerTapped()
 
-        assertThat(event).isEqualTo(ShowCountrySelector(countries.map { it.toAppModel() }, address.country))
+        assertThat(event).isEqualTo(ShowCountrySelector(countries.map { it.toAppModel() }, address.country.code))
     }
 
     @Test
@@ -290,7 +290,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onStateSpinnerTapped()
 
-        assertThat(event).isEqualTo(ShowStateSelector(states.map { it.toAppModel() }, address.state))
+        assertThat(event).isEqualTo(ShowStateSelector(states.map { it.toAppModel() }, address.state.codeOrRaw))
     }
 
     @Test

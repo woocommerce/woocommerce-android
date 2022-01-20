@@ -1,11 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.model.*
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.*
-import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -17,11 +13,6 @@ object OrderTestUtils {
     val TEST_LOCAL_SITE_ID = LocalOrRemoteId.LocalId(1)
     val TEST_REMOTE_ORDER_ID = LocalOrRemoteId.RemoteId(2)
     const val TEST_ORDER_STATUS_COUNT = 20
-
-    val mockedGetLocations = mock<GetLocations> {
-        on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
-    }
-    val orderMapper = OrderMapper(mockedGetLocations)
 
     /**
      * Generates an array containing multiple [WCOrderModel] objects.
@@ -192,33 +183,27 @@ object OrderTestUtils {
     fun generateOrderStatusOptionsMappedByStatus(): Map<String, WCOrderStatusModel> =
         generateOrderStatusOptions().map { it.statusKey to it }.toMap()
 
-    fun generateShippingLabel(localSiteId: Int = 1, remoteOrderId: Long, shippingLabelId: Long): ShippingLabel {
-        return WCShippingLabelModel().apply {
-            this.localSiteId = localSiteId
-            this.remoteOrderId = remoteOrderId
-            remoteShippingLabelId = shippingLabelId
-            packageName = "Package"
-            serviceName = "Service"
-            dateCreated = Date().time
-        }.toAppModel(mockedGetLocations)
+    fun generateShippingLabel(shippingLabelId: Long): ShippingLabel {
+        return ShippingLabel(
+            id = shippingLabelId,
+            packageName = "Package",
+            serviceName = "Service",
+            createdDate = Date(),
+            commercialInvoiceUrl = "",
+        )
     }
 
-    fun generateShippingLabels(
-        totalCount: Int = 5,
-        remoteOrderId: Long = 1L,
-        localSiteId: Int = 1,
-    ): List<ShippingLabel> {
+    fun generateShippingLabels(totalCount: Int = 5): List<ShippingLabel> {
         val result = ArrayList<ShippingLabel>()
         for (i in totalCount downTo 1) {
             result.add(
-                WCShippingLabelModel().apply {
-                    this.localSiteId = localSiteId
-                    this.remoteOrderId = remoteOrderId
-                    remoteShippingLabelId = i.toLong()
-                    packageName = "Package$i"
-                    serviceName = "Service$i"
-                    dateCreated = Date().time
-                }.toAppModel(mockedGetLocations)
+                ShippingLabel(
+                    id = i.toLong(),
+                    packageName = "Package$i",
+                    serviceName = "Service$i",
+                    createdDate = Date(),
+                    commercialInvoiceUrl = "",
+                )
             )
         }
         return result
