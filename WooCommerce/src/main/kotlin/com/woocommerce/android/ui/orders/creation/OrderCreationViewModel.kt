@@ -143,7 +143,7 @@ class OrderCreationViewModel @Inject constructor(
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
         orderDraft = orderDraft.copy(
             billingAddress = billingAddress,
-            shippingAddress = shippingAddress
+            shippingAddress = shippingAddress.takeIf { it != Address.EMPTY } ?: billingAddress
         )
     }
 }

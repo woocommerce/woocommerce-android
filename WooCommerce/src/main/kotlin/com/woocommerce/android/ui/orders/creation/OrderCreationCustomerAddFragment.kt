@@ -14,13 +14,14 @@ import com.woocommerce.android.databinding.LayoutAddressFormBinding
 import com.woocommerce.android.databinding.LayoutAddressSwitchBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.orders.creation.views.textFieldsState
+import com.woocommerce.android.ui.orders.creation.views.bindEditFields
 import com.woocommerce.android.ui.orders.creation.views.update
-import com.woocommerce.android.ui.orders.creation.views.updateLocationStateViews
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.*
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.BILLING
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.SHIPPING
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
@@ -41,14 +42,72 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
 
     private var shippingBinding: LayoutAddressFormBinding? = null
     private var billingBinding: LayoutAddressFormBinding? = null
+    private var showShippingAddressFormSwitch: LayoutAddressSwitchBinding? = null
 
     private lateinit var doneMenuItem: MenuItem
-    private lateinit var showShippingAddressFormSwitch: LayoutAddressSwitchBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
+        inflateLayout(view)
+        setupLocationHandling()
+        observeEvents()
+        observeViewState()
+
+        addressViewModel.start(
+            mapOf(
+                BILLING to sharedViewModel.currentDraft.billingAddress,
+                SHIPPING to (
+                    sharedViewModel.currentDraft.shippingAddress.takeIf {
+                        it != sharedViewModel.currentDraft.billingAddress
+                    } ?: Address.EMPTY
+                    )
+            )
+        )
+    }
+
+    private fun setupLocationHandling() {
+        AddressType.values().forEach {
+            setupHandlingCountrySelection(it)
+            setupHandlingStateSelection(it)
+        }
+    }
+
+    private fun observeViewState() {
+        addressViewModel.viewStateData.observe(viewLifecycleOwner) { _, new ->
+            val newBilling = new.addressSelectionStates[BILLING]
+            val newShipping = new.addressSelectionStates[SHIPPING]
+
+            newBilling?.let {
+                billingBinding.update(it)
+            }
+            if (newShipping?.address != Address.EMPTY) {
+                showShippingAddressFormSwitch?.addressSwitch?.isChecked = true
+                newShipping?.let {
+                    shippingBinding.update(it)
+                }
+            }
+        }
+    }
+
+    private fun observeEvents() {
+        addressViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowStateSelector -> showStateSearchScreen(event.type, event.states)
+                is ShowCountrySelector -> showCountrySearchScreen(event.type, event.countries)
+                is Exit -> {
+                    sharedViewModel.onCustomerAddressEdited(
+                        billingAddress = event.addresses.getValue(BILLING),
+                        shippingAddress = event.addresses.getValue(SHIPPING)
+                    )
+                    findNavController().navigateUp()
+                }
+            }
+        }
+    }
+
+    private fun inflateLayout(view: View) {
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
             addressSectionHeader.setText(R.string.order_detail_billing_address_section)
             countrySpinner.setClickListener {
@@ -59,46 +118,47 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             }
         }
 
+        shippingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
+            addressSectionHeader.setText(R.string.order_detail_shipping_address_section)
+            email.visibility = View.GONE
+            countrySpinner.setClickListener {
+                addressViewModel.onCountrySpinnerClicked(SHIPPING)
+            }
+            stateSpinner.setClickListener {
+                addressViewModel.onStateSpinnerClicked(SHIPPING)
+            }
+        }
+
         showShippingAddressFormSwitch = LayoutAddressSwitchBinding.inflate(layoutInflater)
 
-        val binding = FragmentCreationEditCustomerAddressBinding.bind(view).apply {
-            container.addView(billingBinding?.root)
-            container.addView(showShippingAddressFormSwitch.root)
+        FragmentCreationEditCustomerAddressBinding.bind(view).container.apply {
+            addView(billingBinding?.root)
+            addView(showShippingAddressFormSwitch?.root)
+            addView(shippingBinding?.root)
         }
 
-        binding.updateShippingBindingVisibility(showShippingAddressFormSwitch.addressSwitch.isChecked)
-        showShippingAddressFormSwitch.addressSwitch.apply {
-            setOnCheckedChangeListener { _, checked ->
-                binding.updateShippingBindingVisibility(checked)
+        updateShippingBindingVisibility(showShippingAddressFormSwitch?.addressSwitch?.isChecked ?: false)
+        showShippingAddressFormSwitch?.let {
+            it.addressSwitch.setOnCheckedChangeListener { _, checked ->
+                updateShippingBindingVisibility(checked)
             }
         }
 
-        addressViewModel.viewStateData.observe(viewLifecycleOwner) { _, new ->
-            val newBilling = new.countryStatePairs.getValue(BILLING)
-            val newShipping = new.countryStatePairs.getValue(SHIPPING)
-
-            billingBinding.update(newBilling)
-            shippingBinding.update(newShipping)
-        }
-
-        AddressViewModel.AddressType.values().forEach {
-            setupHandlingCountrySelection(it)
-            setupHandlingStateSelection(it)
-        }
-
-        addressViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is AddressViewModel.ShowStateSelector -> showStateSearchScreen(event.type, event.states)
-                is AddressViewModel.ShowCountrySelector -> showCountrySearchScreen(event.type, event.countries)
-                is AddressViewModel.Exit -> {
-                    sharedViewModel.onCustomerAddressEdited(event.billingAddress, event.shippingAddress)
-                    findNavController().navigateUp()
-                }
+        billingBinding?.bindEditFields(
+            BILLING,
+            onFieldEdited = { addressType, field, value ->
+                addressViewModel.onFieldEdited(addressType, field, value)
             }
-        }
+        )
+        shippingBinding?.bindEditFields(
+            SHIPPING,
+            onFieldEdited = { addressType, field, value ->
+                addressViewModel.onFieldEdited(addressType, field, value)
+            }
+        )
     }
 
-    private fun setupHandlingCountrySelection(addressType: AddressViewModel.AddressType) {
+    private fun setupHandlingCountrySelection(addressType: AddressType) {
         handleResult<LocationCode>(
             when (addressType) {
                 SHIPPING -> SELECT_SHIPPING_COUNTRY_REQUEST
@@ -109,7 +169,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         }
     }
 
-    private fun setupHandlingStateSelection(addressType: AddressViewModel.AddressType) {
+    private fun setupHandlingStateSelection(addressType: AddressType) {
         handleResult<LocationCode>(
             when (addressType) {
                 SHIPPING -> SELECT_SHIPPING_STATE_REQUEST
@@ -120,30 +180,15 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         }
     }
 
-    private fun FragmentCreationEditCustomerAddressBinding.updateShippingBindingVisibility(checked: Boolean) {
+    private fun updateShippingBindingVisibility(checked: Boolean) {
         if (checked) {
-            if (shippingBinding == null) {
-                shippingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
-                    addressSectionHeader.setText(R.string.order_detail_shipping_address_section)
-                    email.visibility = View.GONE
-                    countrySpinner.setClickListener {
-                        addressViewModel.onCountrySpinnerClicked(SHIPPING)
-                    }
-                    stateSpinner.setClickListener {
-                        addressViewModel.onStateSpinnerClicked(SHIPPING)
-                    }
-                    updateLocationStateViews(AddressViewModel.StateSpinnerStatus.DISABLED)
-                }.also {
-                    this.container.addView(it.root)
-                }
-            }
             shippingBinding?.root?.visibility = View.VISIBLE
         } else {
             shippingBinding?.root?.visibility = View.GONE
         }
     }
 
-    private fun showCountrySearchScreen(addressType: AddressViewModel.AddressType, countries: List<Location>) {
+    private fun showCountrySearchScreen(addressType: AddressType, countries: List<Location>) {
         val action = OrderCreationCustomerAddFragmentDirections.actionSearchFilterFragment(
             items = countries.map {
                 SearchFilterItem(
@@ -161,7 +206,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         findNavController().navigateSafely(action)
     }
 
-    private fun showStateSearchScreen(addressType: AddressViewModel.AddressType, states: List<Location>) {
+    private fun showStateSearchScreen(addressType: AddressType, states: List<Location>) {
         val action = OrderDetailFragmentDirections.actionSearchFilterFragment(
             items = states.map {
                 SearchFilterItem(
@@ -191,10 +236,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         return when (item.itemId) {
             R.id.menu_done -> {
                 addressViewModel.onDoneSelected(
-                    mapOf(
-                        SHIPPING to shippingBinding.textFieldsState,
-                        BILLING to billingBinding.textFieldsState
-                    )
+                    addDifferentShippingChecked = showShippingAddressFormSwitch?.addressSwitch?.isChecked ?: false
                 )
                 true
             }
@@ -206,14 +248,9 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
 
     override fun onDestroyView() {
         super.onDestroyView()
-        addressViewModel.onViewDestroyed(
-            mapOf(
-                SHIPPING to shippingBinding.textFieldsState,
-                BILLING to billingBinding.textFieldsState
-            )
-        )
         shippingBinding = null
         billingBinding = null
+        showShippingAddressFormSwitch = null
     }
 
     @Suppress("FunctionOnlyReturningConstant")
