@@ -107,7 +107,6 @@ object OrderTestUtils {
         return result
     }
 
-    @Deprecated("When generating test objects for ViewModels use app models instead of database entities")
     fun generateOrder(): WCOrderModel {
         return WCOrderModel(
             id = 2,
