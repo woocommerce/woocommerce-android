@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
@@ -49,6 +50,13 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
+    private val orderUpdateFailureSnackBar: Snackbar by lazy {
+        uiMessageResolver.getIndefiniteActionSnack(
+            message = "Update failed",
+            actionText = "retry",
+            actionListener = { }
+        )
+    }
 
     private val bigDecimalFormatter by lazy {
         currencyFormatter.buildBigDecimalFormatter(
@@ -165,6 +173,16 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
                 createOrderMenuItem?.isVisible = it
             }
+            new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
+                binding.paymentSection.loadingProgress.isVisible = show
+            }
+            new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
+                if (show) {
+                    orderUpdateFailureSnackBar.show()
+                } else {
+                    orderUpdateFailureSnackBar.dismiss()
+                }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
@@ -172,10 +190,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
-        bigDecimalFormatter(newOrderData.total).let { total ->
-            paymentSection.productsTotalValue.text = total
-            paymentSection.orderTotalValue.text = total
-        }
+        paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
+        paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
+        paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
     }
 
     private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {

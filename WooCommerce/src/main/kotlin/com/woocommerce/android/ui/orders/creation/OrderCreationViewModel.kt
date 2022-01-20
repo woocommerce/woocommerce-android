@@ -87,11 +87,11 @@ class OrderCreationViewModel @Inject constructor(
                 .collect {
                     when (it) {
                         Ongoing -> viewState =
-                            viewState.copy(isProgressDialogShown = true, showOrderUpdateSnackbar = false)
+                            viewState.copy(isUpdatingOrderDraft = true, showOrderUpdateSnackbar = false)
                         Failed -> viewState =
-                            viewState.copy(isProgressDialogShown = false, showOrderUpdateSnackbar = true)
+                            viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
                         is Succeeded -> {
-                            viewState = viewState.copy(isProgressDialogShown = false, showOrderUpdateSnackbar = false)
+                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = false)
                             _orderDraft.value = it.order
                         }
                     }
