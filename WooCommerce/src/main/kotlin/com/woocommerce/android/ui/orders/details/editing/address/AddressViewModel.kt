@@ -56,13 +56,23 @@ class AddressViewModel @Inject constructor(
 
     private fun initialize(initialState: Map<AddressType, Address>) {
         launch {
-            // we only fetch the countries and states if they've never been fetched
             if (countries.isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
                 dataStore.fetchCountriesAndStates(selectedSite.get())
                 viewState = viewState.copy(isLoading = false)
             }
-            initializeCountriesAndStates(initialState)
+            viewState = viewState.copy(
+                addressSelectionStates = initialState.mapValues { initialSingleAddressState ->
+                    AddressSelectionState(
+                        address = initialSingleAddressState.value,
+                        stateSpinnerStatus = when {
+                            initialSingleAddressState.value.country.code.isBlank() -> DISABLED
+                            statesFor(initialSingleAddressState.value.country.code).isNotEmpty() -> HAVING_LOCATIONS
+                            else -> RAW_VALUE
+                        }
+                    )
+                }
+            )
         }
     }
 
