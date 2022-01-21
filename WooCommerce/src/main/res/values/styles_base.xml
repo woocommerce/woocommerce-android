@@ -86,7 +86,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="tabPaddingStart">25dp</item>
         <item name="tabPaddingEnd">25dp</item>
         <item name="android:background">@color/color_surface</item>
-        <item name="tabTextColor">@color/color_on_surface</item>
+        <item name="tabTextColor">@color/color_on_surface_medium</item>
     </style>
 
     <style name="Woo.TabLayout.Scrollable">

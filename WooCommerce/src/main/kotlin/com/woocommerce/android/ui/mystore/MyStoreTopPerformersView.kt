@@ -28,14 +28,9 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
 
     private lateinit var selectedSite: SelectedSite
 
-    private var listener: MyStoreStatsListener? = null
     private var skeletonView = SkeletonView()
 
-    fun initView(
-        listener: MyStoreStatsListener,
-        selectedSite: SelectedSite
-    ) {
-        this.listener = listener
+    fun initView(selectedSite: SelectedSite) {
         this.selectedSite = selectedSite
 
         binding.topPerformersRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
@@ -46,10 +41,6 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         // and only processes the first click event. More details on this issue can be found here:
         // https://github.com/woocommerce/woocommerce-android/issues/2074
         binding.topPerformersRecycler.isMotionEventSplittingEnabled = false
-    }
-
-    fun removeListener() {
-        listener = null
     }
 
     fun onDateGranularityChanged(granularity: StatsGranularity) {

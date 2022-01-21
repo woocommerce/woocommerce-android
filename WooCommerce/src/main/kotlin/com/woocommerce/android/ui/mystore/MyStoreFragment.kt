@@ -47,9 +47,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class MyStoreFragment :
-    TopLevelFragment(R.layout.fragment_my_store),
-    MyStoreStatsListener {
+class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
         private const val STATE_KEY_TAB_POSITION = "tab-stats-position"
@@ -89,16 +87,12 @@ class MyStoreFragment :
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
 
-    private val myStoreDateBar
-        get() = binding.myStoreDateBar
-
     private var isEmptyViewVisible: Boolean = false
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
             tabStatsPosition = tab.position
             viewModel.onStatsGranularityChanged(activeGranularity)
-            myStoreDateBar.clearDateRangeValues()
             binding.myStoreStats.loadDashboardStats(activeGranularity)
             binding.myStoreTopPerformers.onDateGranularityChanged(activeGranularity)
         }
@@ -119,9 +113,8 @@ class MyStoreFragment :
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
             viewModel.onSwipeToRefresh()
-            binding.myStoreStats.clearLabelValues()
+            binding.myStoreStats.clearStatsHeaderValues()
             binding.myStoreStats.clearChartData()
-            myStoreDateBar.clearDateRangeValues()
         }
 
         savedInstanceState?.let { bundle ->
@@ -142,20 +135,14 @@ class MyStoreFragment :
             }
         }
 
-        myStoreDateBar.initView(dateUtils)
-
         binding.myStoreStats.initView(
             activeGranularity,
-            listener = this,
-            selectedSite = selectedSite,
-            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
-            dateUtils = dateUtils
+            selectedSite,
+            dateUtils,
+            currencyFormatter
         )
 
-        binding.myStoreTopPerformers.initView(
-            listener = this,
-            selectedSite = selectedSite
-        )
+        binding.myStoreTopPerformers.initView(selectedSite)
 
         val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
         binding.myStoreStatsAvailabilityMessage.setClickableText(
@@ -278,8 +265,6 @@ class MyStoreFragment :
     }
 
     override fun onDestroyView() {
-        binding.myStoreStats.removeListener()
-        binding.myStoreTopPerformers.removeListener()
         removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         _tabLayout = null
@@ -312,7 +297,6 @@ class MyStoreFragment :
         binding.myStoreStats.showErrorView(false)
         showChartSkeleton(false)
         binding.myStoreStats.updateView(revenueStatsModel)
-        myStoreDateBar.updateDateRangeView(revenueStatsModel, activeGranularity)
     }
 
     private fun showStatsError() {
@@ -342,9 +326,6 @@ class MyStoreFragment :
 
     private fun showVisitorStats(visitorStats: Map<String, Int>) {
         binding.myStoreStats.showVisitorStats(visitorStats)
-        if (activeGranularity == StatsGranularity.DAYS) {
-            binding.emptyStatsView.updateVisitorCount(visitorStats.values.sum())
-        }
     }
 
     private fun showEmptyVisitorStatsForJetpackCP() {
@@ -367,17 +348,8 @@ class MyStoreFragment :
     }
 
     private fun showChartSkeleton(show: Boolean) {
-        binding.myStoreDateBar.isVisible = !show
         binding.myStoreStats.showErrorView(false)
         binding.myStoreStats.showSkeleton(show)
-    }
-
-    override fun onChartValueSelected(dateString: String, period: StatsGranularity) {
-        myStoreDateBar.updateDateViewOnScrubbing(dateString, period)
-    }
-
-    override fun onChartValueUnSelected(revenueStatsModel: RevenueStatsUiModel?, period: StatsGranularity) {
-        myStoreDateBar.updateDateRangeView(revenueStatsModel, period)
     }
 
     /**
@@ -444,15 +416,11 @@ class MyStoreFragment :
                 AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
                 ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
-            binding.emptyStatsView.visibility = View.VISIBLE
         } else {
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
-            binding.emptyStatsView.visibility = View.GONE
         }
-
         tabLayout.visibility = dashboardVisibility
-        myStoreDateBar.visibility = dashboardVisibility
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show
