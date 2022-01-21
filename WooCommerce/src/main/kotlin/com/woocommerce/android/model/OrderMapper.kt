@@ -11,6 +11,9 @@ import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
+import org.wordpress.android.fluxc.model.order.LineItem as WCLineItem
+import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
 class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
     fun toAppModel(databaseEntity: WCOrderModel): Order {
@@ -40,40 +43,37 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             isCashPayment = CASH_PAYMENTS.contains(databaseEntity.paymentMethod),
             pricesIncludeTax = databaseEntity.pricesIncludeTax,
             multiShippingLinesAvailable = databaseEntity.isMultiShippingLinesAvailable(),
-            billingAddress = mapAddress(databaseEntity.getBillingAddress()),
-            shippingAddress = mapAddress(databaseEntity.getShippingAddress()),
-            shippingMethods = mapShippingMethods(databaseEntity),
-            items = mapLineItems(databaseEntity),
-            shippingLines = mapShippingLines(databaseEntity),
-            feesLines = mapFeesLines(databaseEntity),
+            billingAddress = databaseEntity.getBillingAddress().mapAddress(),
+            shippingAddress = databaseEntity.getShippingAddress().mapAddress(),
+            shippingMethods = databaseEntity.getShippingLineList().mapShippingMethods(),
+            items = databaseEntity.getLineItemList().mapLineItems(),
+            shippingLines = databaseEntity.getShippingLineList().mapShippingLines(),
+            feesLines = databaseEntity.getFeeLineList().mapFeesLines(),
             metaData = databaseEntity.getMetaDataList().mapNotNull { it.toAppModel() }
         )
     }
 
-    private fun mapFeesLines(databaseEntity: WCOrderModel) =
-        databaseEntity.getFeeLineList().map {
-            Order.FeeLine(
-                id = it.id!!,
-                name = it.name ?: StringUtils.EMPTY,
-                totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            )
-        }
+    private fun List<WCFeeLine>.mapFeesLines(): List<Order.FeeLine> = map {
+        Order.FeeLine(
+            id = it.id!!,
+            name = it.name ?: StringUtils.EMPTY,
+            totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        )
+    }
 
-    private fun mapShippingLines(databaseEntity: WCOrderModel) =
-        databaseEntity.getShippingLineList().map {
-            Order.ShippingLine(
-                it.id!!,
-                it.methodId ?: StringUtils.EMPTY,
-                it.methodTitle ?: StringUtils.EMPTY,
-                it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-            )
-        }
+    private fun List<WCShippingLine>.mapShippingLines(): List<Order.ShippingLine> = map {
+        Order.ShippingLine(
+            it.id!!,
+            it.methodId ?: StringUtils.EMPTY,
+            it.methodTitle ?: StringUtils.EMPTY,
+            it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        )
+    }
 
-    private fun mapLineItems(databaseEntity: WCOrderModel) =
-        databaseEntity.getLineItemList()
-            .filter { it.productId != null && it.id != null }
+    private fun List<WCLineItem>.mapLineItems(): List<Item> =
+        this.filter { it.productId != null && it.id != null }
             .map {
                 Item(
                     it.id!!,
@@ -92,32 +92,33 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
                 )
             }
 
-    private fun mapShippingMethods(databaseEntity: WCOrderModel) =
-        databaseEntity.getShippingLineList().filter { it.methodId != null && it.methodTitle != null }.map {
-            Order.ShippingMethod(
-                it.methodId!!,
-                it.methodTitle!!,
-                it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-            )
-        }
+    private fun List<WCShippingLine>.mapShippingMethods(): List<Order.ShippingMethod> =
+        this.filter { it.methodId != null && it.methodTitle != null }
+            .map {
+                Order.ShippingMethod(
+                    it.methodId!!,
+                    it.methodTitle!!,
+                    it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+                )
+            }
 
-    private fun mapAddress(databaseAddress: OrderAddress): Address {
-        val (country, state) = getLocations(databaseAddress.country, stateCode = databaseAddress.state)
+    private fun OrderAddress.mapAddress(): Address {
+        val (country, state) = getLocations(this.country, stateCode = this.state)
         return Address(
-            company = databaseAddress.company,
-            firstName = databaseAddress.firstName,
-            lastName = databaseAddress.lastName,
+            company = this.company,
+            firstName = this.firstName,
+            lastName = this.lastName,
             country = country,
             state = state,
-            address1 = databaseAddress.address1,
-            address2 = databaseAddress.address2,
-            city = databaseAddress.city,
-            postcode = databaseAddress.postcode,
-            phone = databaseAddress.phone,
-            email = when (databaseAddress) {
+            address1 = this.address1,
+            address2 = this.address2,
+            city = this.city,
+            postcode = this.postcode,
+            phone = this.phone,
+            email = when (this) {
                 is OrderAddress.Shipping -> ""
-                is OrderAddress.Billing -> databaseAddress.email
+                is OrderAddress.Billing -> this.email
             }
         )
     }

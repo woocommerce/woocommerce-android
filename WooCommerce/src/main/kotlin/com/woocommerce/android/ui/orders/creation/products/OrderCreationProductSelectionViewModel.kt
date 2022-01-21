@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.differsFrom
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent

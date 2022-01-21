@@ -71,11 +71,6 @@ data class Address(
         return fullAddr
     }
 
-    fun getCountryLabelByCountryCode(): String {
-        val locale = Locale(Locale.getDefault().language, country.code)
-        return locale.displayCountry
-    }
-
     fun hasInfo(): Boolean {
         return firstName.isNotEmpty() || lastName.isNotEmpty() ||
             address1.isNotEmpty() || country != Location.EMPTY ||
@@ -149,7 +144,7 @@ data class Address(
             .appendWithIfNotEmpty(this.city, "\n")
             .appendWithIfNotEmpty(this.state.codeOrRaw)
             .appendWithIfNotEmpty(this.postcode, " ")
-            .appendWithIfNotEmpty(getCountryLabelByCountryCode(), "\n")
+            .appendWithIfNotEmpty(this.country.name, "\n")
             .toString()
     }
 
