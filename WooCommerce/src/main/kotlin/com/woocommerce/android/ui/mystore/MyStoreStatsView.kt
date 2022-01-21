@@ -24,7 +24,6 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -86,19 +85,19 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val fadeHandler = Handler(Looper.getMainLooper())
 
     private val statsDateValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.statsDateTextView)
+        get() = binding.statsViewRow.statsDateTextView
 
     private val revenueValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.totalRevenueTextView)
+        get() = binding.statsViewRow.totalRevenueTextView
 
     private val ordersValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.ordersValueTextView)
+        get() = binding.statsViewRow.ordersValueTextView
 
     private val visitorsValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.visitorsValueTextview)
+        get() = binding.statsViewRow.visitorsValueTextview
 
     private val conversionValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.conversionValueTextView)
+        get() = binding.statsViewRow.conversionValueTextView
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
