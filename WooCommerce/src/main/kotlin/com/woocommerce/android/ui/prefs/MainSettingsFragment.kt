@@ -207,6 +207,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        presenter.dropView()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
