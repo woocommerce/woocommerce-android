@@ -732,6 +732,7 @@ class MainActivity :
                 is ViewReviewDetail -> {
                     showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
                 }
+                is ViewReviewList -> showReviewList()
                 is RestartActivityForNotification -> {
                     // Add flags for handling the push notification after restart
                     intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
@@ -777,6 +778,14 @@ class MainActivity :
     override fun showAddProduct() {
         showBottomNav()
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
+        navController.navigateSafely(action)
+    }
+
+    private fun showReviewList() {
+        showBottomNav()
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+        val action = MoreMenuFragmentDirections.actionMoreMenuToReviewList()
         navController.navigateSafely(action)
     }
 
