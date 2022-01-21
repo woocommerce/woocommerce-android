@@ -63,7 +63,7 @@ class OrderCreationViewModel @Inject constructor(
         }.asLiveData()
 
     val products: LiveData<List<ProductUIModel>> = _orderDraft
-        .map { it.items }
+        .map { order -> order.items.filter { it.quantity > 0 } }
         .distinctUntilChanged()
         .map { items ->
             items.map { item -> mapItemToProductUiModel(item) }
@@ -89,7 +89,9 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onDecreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, -1) }
 
-    fun onRemoveProduct(item: Order.Item) = _orderDraft.update { it.updateItems(it.items - item) }
+    fun onRemoveProduct(item: Order.Item) = _orderDraft.update {
+        it.adjustProductQuantity(item.uniqueId, -item.quantity.toInt())
+    }
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
         val uniqueId = variationId ?: remoteProductId
