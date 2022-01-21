@@ -6,8 +6,8 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.*
-import java.math.RoundingMode.HALF_UP
 import java.math.BigDecimal
+import java.math.RoundingMode.HALF_UP
 import java.util.Date
 
 @Parcelize

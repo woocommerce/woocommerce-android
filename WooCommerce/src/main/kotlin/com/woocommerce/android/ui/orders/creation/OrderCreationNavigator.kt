@@ -10,11 +10,11 @@ object OrderCreationNavigator {
         val navController = fragment.findNavController()
 
         val action = when (target) {
-            EditCustomer ->
+            is EditCustomer ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
-            EditCustomerNote ->
+            is EditCustomerNote ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
-            AddProduct ->
+            is AddProduct ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
             is ShowProductDetails ->
                 OrderCreationFormFragmentDirections
@@ -24,6 +24,9 @@ object OrderCreationNavigator {
                     .actionOrderCreationProductSelectionFragmentToOrderCreationVariationSelectionFragment(
                         target.productId
                     )
+            is ShowCreatedOrder ->
+                OrderCreationFormFragmentDirections
+                    .actionOrderCreationFragmentToOrderDetailFragment(target.orderId)
         }
 
         navController.navigate(action)

@@ -49,6 +49,10 @@ class MainSettingsPresenter @Inject constructor(
         }
     }
 
+    override fun setupJetpackInstallOption() {
+        appSettingsFragmentView?.handleJetpackInstallOption(selectedSite.get().isJetpackCPConnected)
+    }
+
     override fun isCardReaderOnboardingCompleted(): Boolean {
         return selectedSite.getIfExists()?.let {
             AppPrefs.isCardReaderOnboardingCompleted(

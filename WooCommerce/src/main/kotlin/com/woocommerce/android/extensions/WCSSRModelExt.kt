@@ -117,7 +117,6 @@ private fun formatEnvironmentData(data: JSONObject): String {
         .append("WP Cron: ${checkIfTrue(data.optBoolean("wp_cron", false))}\n")
         .append("Language: ${data.optString("language", MISSING_VALUE)}\n")
         .append("External object cache: ${checkIfTrue(data.optBoolean("external_object_cache", false))}\n")
-
         .append(formattedHeading(HEADING_SERVER_ENVIRONMENT))
         .append("Server Info: ${data.optString("server_info", MISSING_VALUE)}\n")
         .append("PHP Version: ${data.optString("php_version", MISSING_VALUE)}\n")
@@ -219,7 +218,6 @@ private fun formatSettingsData(data: JSONObject): String {
     sb.append(formattedHeading(HEADING_SETTINGS))
         .append("API Enabled: ${checkIfTrue(data.optBoolean("api_enabled", false))}\n")
         .append("Force SSL: ${checkIfTrue(data.optBoolean("force_ssl", false))}\n")
-
         // Currency format: currency_name(currency_symbol)
         // Correct value example: USD($)
         // Missing value example: Info not found(Info not found)
@@ -234,7 +232,6 @@ private fun formatSettingsData(data: JSONObject): String {
         }
     )
         .append(")\n")
-
         .append("Currency Position: ${data.optString("currency_position", MISSING_VALUE)}\n")
         .append("Thousand Separator: ${data.optString("thousand_separator", MISSING_VALUE)}\n")
         .append("Decimal Separator: ${data.optString("decimal_separator", MISSING_VALUE)}\n")
@@ -295,7 +292,6 @@ private fun formatThemeData(data: JSONObject): String {
         sb.append(" (update to version $latestVersion available)")
     }
     sb.append("\n")
-
         .append("Author URL: ${data.optString("author_url", MISSING_VALUE)}\n")
 
     val isChildTheme = data.optBoolean("is_child_theme", false)

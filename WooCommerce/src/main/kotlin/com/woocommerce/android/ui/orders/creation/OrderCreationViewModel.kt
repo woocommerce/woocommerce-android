@@ -155,3 +155,8 @@ data class ProductUIModel(
     val stockQuantity: Double,
     val canDecreaseQuantity: Boolean
 )
+
+val Order.isValidForCreation: Boolean
+    get() = items.isNotEmpty() &&
+        shippingAddress != Address.EMPTY &&
+        billingAddress != Address.EMPTY

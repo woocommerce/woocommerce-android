@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/topPerformers_linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -15,12 +16,14 @@
         android:text="@string/dashboard_top_performers_title"/>
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/topPerformers_description"
         style="@style/Woo.Card.Body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/dashboard_top_performers_description"/>
 
     <FrameLayout
+        android:id="@+id/topPerformers_list_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -38,9 +41,6 @@
             android:layout_gravity="end"
             android:text="@string/dashboard_top_performers_total_spend"/>
     </FrameLayout>
-
-    <View
-        style="@style/Woo.Divider"/>
 
     <RelativeLayout
         android:id="@+id/dashboard_top_performers_container"

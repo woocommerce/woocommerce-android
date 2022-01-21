@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.extensions.differsFrom
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -11,6 +12,8 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -26,22 +29,40 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     private val productList = MutableLiveData<List<Product>>()
     val productListData: LiveData<List<Product>> = productList
 
+    val isSearchActive
+        get() = viewState.isSearchActive ?: false
+
+    val currentQuery
+        get() = viewState.query.orEmpty()
+
+    private var searchJob: Job? = null
+
     init {
-        fetchProductList()
+        loadProductList()
     }
 
-    fun fetchProductList(
-        loadMore: Boolean = false
-    ) {
+    fun loadProductList(loadMore: Boolean = false) {
         if (loadMore.not()) {
             viewState = viewState.copy(isSkeletonShown = true)
         }
-        /**
-         * We will probably want to improve this call to check if the product list
-         * is already available on database before relying directly on this call
-         */
+        if (viewState.isSearchActive == true) {
+            viewState.query?.let { searchProductList(it, loadMore) }
+        } else loadFullProductList(loadMore)
+    }
+
+    private fun loadFullProductList(loadMore: Boolean) {
         launch {
-            productList.value = productListRepository.fetchProductList(loadMore)
+            val cachedProducts = productListRepository.getProductList()
+                .takeIf { it.isNotEmpty() }
+                ?.apply {
+                    productList.value = this
+                    viewState = viewState.copy(isSkeletonShown = false)
+                }
+
+            productListRepository.fetchProductList(loadMore)
+                .takeIf { it != cachedProducts }
+                ?.let { productList.value = it }
+
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
@@ -55,9 +76,54 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
+    fun searchProductList(query: String, loadMore: Boolean = false) {
+        viewState = viewState.copy(query = query)
+        searchJob?.cancel()
+        searchJob = launch {
+            productListRepository.searchProductList(query, loadMore)
+                ?.takeIf { query == productListRepository.lastSearchQuery }
+                ?.let { handleSearchResult(it, loadMore) }
+        }
+    }
+
+    private fun handleSearchResult(
+        searchResult: List<Product>,
+        loadedMore: Boolean
+    ) {
+        productList.value = productList.value
+            ?.takeIf { loadedMore && searchResult differsFrom it }
+            ?.let { searchResult + it }
+            ?: searchResult
+    }
+
+    fun onSearchOpened() {
+        productList.value = emptyList()
+        viewState = viewState.copy(
+            isSearchActive = true
+        )
+    }
+
+    fun onSearchClosed() {
+        launch { searchJob?.cancelAndJoin() }
+        viewState = viewState.copy(
+            isSearchActive = false,
+            query = null
+        )
+        loadProductList()
+    }
+
+    fun onSearchQueryCleared() {
+        productList.value = emptyList()
+        viewState = viewState.copy(
+            query = null
+        )
+    }
+
     @Parcelize
     data class ViewState(
-        val isSkeletonShown: Boolean? = null
+        val isSkeletonShown: Boolean? = null,
+        val isSearchActive: Boolean? = null,
+        val query: String? = null
     ) : Parcelable
 
     data class AddProduct(val productId: Long) : MultiLiveEvent.Event()

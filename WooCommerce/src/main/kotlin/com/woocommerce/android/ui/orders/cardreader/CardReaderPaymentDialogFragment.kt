@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.ContentResolver
 import android.media.MediaPlayer
 import android.net.Uri
+import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +30,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import android.nfc.NfcAdapter
 
 @AndroidEntryPoint
 class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_payment_dialog) {
