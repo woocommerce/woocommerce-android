@@ -51,6 +51,12 @@
             app:layout_constraintStart_toEndOf="@id/products_total_label"
             tools:text="$20.00" />
 
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/tax_group"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="tax_label, tax_value" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tax_label"
             android:layout_width="0dp"
@@ -99,6 +105,17 @@
             app:layout_constraintStart_toEndOf="@id/products_total_label"
             app:layout_constraintWidth_default="wrap"
             tools:text="$20.00" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tax_calculation_hint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_100"
+            android:text="@string/order_creation_payment_tax_hint"
+            android:textAppearance="?attr/textAppearanceCaption"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/order_total_label" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

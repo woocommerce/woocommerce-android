@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatu
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -181,6 +182,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
+        paymentSection.taxGroup.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
+        paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
+
         paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
         paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
         paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
