@@ -3,10 +3,11 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.extensions.areSameAs
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.CoroutineDispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
+
+private const val DEBOUNCE_DURATION_MS = 1000L
 
 class CreateOrUpdateOrderDraft @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
@@ -14,25 +15,29 @@ class CreateOrUpdateOrderDraft @Inject constructor(
 ) {
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     operator fun invoke(changes: Flow<Order>, retryTrigger: Flow<Unit>): Flow<OrderDraftUpdateStatus> {
-        val debouncedChangesFlow = changes
+        return changes
             .filter { it.items.isNotEmpty() }
             .distinctUntilChanged { old, new ->
                 areEquivalent(old, new)
             }
-            .debounce(1000)
             .flowOn(dispatchers.computation)
-
-        return combine(
-            debouncedChangesFlow,
-            retryTrigger.onStart { emit(Unit) }
-        ) { draft, _ -> draft }
-            .transformLatest {
-                emit(OrderDraftUpdateStatus.Ongoing)
-                orderCreationRepository.createOrUpdateDraft(it)
-                    .fold(
-                        onSuccess = { emit(OrderDraftUpdateStatus.Succeeded(it)) },
-                        onFailure = { emit(OrderDraftUpdateStatus.Failed) }
-                    )
+            .flatMapLatest {
+                val debouncedChanges = flow {
+                    // We can't use `debounce` directly, because we want to cancel any current update
+                    // when we get new changes, hence the use of `flatMapLatest` + `delay`
+                    delay(DEBOUNCE_DURATION_MS)
+                    emit(it)
+                }
+                debouncedChanges
+                    .combine(retryTrigger.onStart { emit(Unit) }) { draft, _ -> draft }
+                    .transform { order ->
+                        emit(OrderDraftUpdateStatus.Ongoing)
+                        orderCreationRepository.createOrUpdateDraft(order)
+                            .fold(
+                                onSuccess = { emit(OrderDraftUpdateStatus.Succeeded(it)) },
+                                onFailure = { emit(OrderDraftUpdateStatus.Failed) }
+                            )
+                    }
             }
     }
 
