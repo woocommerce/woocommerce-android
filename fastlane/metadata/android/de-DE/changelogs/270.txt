@@ -1,2 +1,0 @@
-8.2:
-In dieser Version haben wir einige Dinge verbessert und kleinere Bugs behoben, die das Team gefunden hat. Aber das ist noch lange nicht alles – wir arbeiten an ein paar tollen Neuerungen, die euch 2022 erwarten. Sendet uns weiterhin euer Feedback! So finden wir heraus, woran wir als Nächstes arbeiten sollten. 💜
