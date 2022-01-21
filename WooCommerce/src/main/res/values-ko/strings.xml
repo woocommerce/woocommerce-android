@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-21 14:54:03+0000
+Translation-Revision-Date: 2022-01-19 16:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">앱 아이콘</string>
+    <string name="about_automattic_back_icon_description">뒤로 아이콘</string>
+    <string name="about_automattic_logo_description">Automattic 로고</string>
+    <string name="about_automattic_version_label">버전 %1$s</string>
+    <string name="about_automattic_wordpress">워드프레스</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">젯팩</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_acknowledgements_item_title">승인</string>
+    <string name="about_automattic_source_code_item_title">소스 코드</string>
+    <string name="about_automattic_california_privacy_notice_item_title">캘리포니아주 개인정보 공지</string>
+    <string name="about_automattic_privacy_policy_item_title">개인정보 취급방침</string>
+    <string name="about_automattic_terms_of_service_item_title">서비스 약관</string>
+    <string name="about_automattic_work_with_us_item_subtitle">어디에서나 근무</string>
+    <string name="about_automattic_work_with_us_item_title">워드프레스닷컴 사용</string>
+    <string name="about_automattic_family_item_title">Automattic 회원</string>
+    <string name="about_automattic_legal_and_more_item_title">법적 고지 사항 및 기타</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">인스타그램</string>
+    <string name="about_automattic_rate_us_item_title">평가하기</string>
+    <string name="about_automattic_share_with_friends_item_title">친구와 공유</string>
+    <string name="about_automattic_acknowledgements_page_title">승인</string>
+    <string name="about_automattic_legal_page_title">법적 고지 사항 및 기타</string>
+    <string name="about_automattic_main_page_title">%1$s 소개</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">지원팀에 문의하기</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">활성화</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">설치</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">WP 관리자의 %s 젯팩</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">활성화</string>
+    <string name="jetpack_install_progress_failed_alternative_install">설치</string>
+    <string name="jetpack_install_progress_failed_alternative">WP 관리자에서 %s 젯팩을 설치할 수도 있습니다.</string>
+    <string name="jetpack_install_progress_failed_try">다시 시도해 보세요.</string>
+    <string name="jetpack_install_progress_failed_reason_connection">연결하기</string>
+    <string name="jetpack_install_progress_failed_reason_activation">활성화</string>
+    <string name="jetpack_install_progress_failed_reason_installation">설치</string>
+    <string name="jetpack_install_progress_failed_title">죄송합니다. %s 중 문제가 발생했습니다</string>
+    <string name="settings_about_recommend_app_message">잠시만요! WooCommerce를 다운로드하는 링크가 있습니다. 정말 즐겁게 사용하고 있는데 여러분도 그럴 것입니다. %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Stripe 업데이트</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">거의 완료되었습니다! 카드 제시 결제 수락을 시작하려면 Stripe 결제 설정을 마무리하세요.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">스토어 관리자에서 Stripe 설정 마무리</string>
+    <string name="order_refunds_refund_fees">수수료 환불</string>
+    <string name="order_refunds_fees_refund">수수료 환불</string>
+    <string name="order_creation_variations_screen_title">변형 선택</string>
+    <string name="order_creation_remove_product">주문에서 상품 제거</string>
+    <string name="order_creation_add_discount">할인 추가</string>
+    <string name="order_creation_product_details_title">상품</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">다른 배송 주소 추가</string>
+    <string name="order_creation_product_instock">재고 있음</string>
+    <string name="order_creation_product_stock_quantity">%s 재고 있음</string>
+    <string name="order_creation_new_customer">신규 고객</string>
+    <string name="order_creation_add_products">상품 추가</string>
+    <string name="order_creation_products">상품</string>
+    <string name="order_creation_add_customer">고객 추가</string>
+    <string name="order_creation_customer">고객</string>
+    <string name="simple_payments_cash_dlg_button">결제됨으로 표시</string>
+    <string name="simple_payments_cash_dlg_message">그러면 주문이 생성되며 WooCommerce 외부에서 결제를 받은 경우 결제됨으로 표시됩니다.</string>
+    <string name="simple_payments_cash_dlg_title">결제됨으로 표시하나요?</string>
+    <string name="simple_payments_choose_method">결제 수단 선택</string>
+    <string name="simple_payments_tax_message">스토어 주소를 기준으로 세금이 자동으로 계산됩니다.</string>
+    <string name="simple_payments_tax_with_percent">세금(%s%%)</string>
+    <string name="simple_payments_take_payment_button">결제하기(%s)</string>
+    <string name="simple_payments_charge_taxes">세금 청구</string>
+    <string name="simple_payments_custom_amount">사용자 정의 금액</string>
+    <string name="simple_payments_edit_email_hint">이메일 입력</string>
+    <string name="simple_payments_title">간편한 결제</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">현금</string>
+    <string name="card">카드</string>
+    <string name="plus">더하기</string>
+    <string name="minus">빼기</string>
+    <string name="tax">세금</string>
+    <string name="email">이메일</string>
     <string name="order_creation_add_customer_note">메모 추가</string>
     <string name="order_creation_customer_note">고객 메모</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">업데이트 후 새로 고침</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">WooCommerce Stripe 결제 게이트웨이 확장 기능의 오래된 버전이 스토어에 설치되어 있습니다. 대면 결제를 수락하려면 해당 확장 기능을 업데이트하세요.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">WooCommerce Stripe 결제 게이트웨이 업데이트</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">새로 고침</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">거의 완료되었습니다! 대면 결제 수락을 시작하려면 WooCommerce Stripe 결제 게이트웨이 설정을 마무리하세요.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">스토어 관리자에서 WooCommerce Stripe 결제 게이트웨이 설정 마무리</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">업데이트 후 새로 고침</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">WooCommerce Stripe 게이트웨이 확장 기능의 오래된 버전이 스토어에 설치되어 있습니다. 대면 결제를 수락하려면 해당 확장 기능을 업데이트하세요.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">새로 고침</string>
     <string name="card_reader_payment_failed_unknown">알 수 없는 사유로 결제가 거부되었습니다.</string>
     <string name="card_reader_payment_failed_test_mode_live_card">테스트 모드로 사이트에서 실시간 카드가 사용되었습니다.</string>
     <string name="card_reader_payment_failed_test_card">시스템 테스트 카드는 결제에 사용할 수 없습니다.</string>
