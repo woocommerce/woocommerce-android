@@ -30,15 +30,19 @@ class CreateOrUpdateOrderDraft @Inject constructor(
                 }
                 debouncedChanges
                     .combine(retryTrigger.onStart { emit(Unit) }) { draft, _ -> draft }
-                    .transform { order ->
-                        emit(OrderDraftUpdateStatus.Ongoing)
-                        orderCreationRepository.createOrUpdateDraft(order)
-                            .fold(
-                                onSuccess = { emit(OrderDraftUpdateStatus.Succeeded(it)) },
-                                onFailure = { emit(OrderDraftUpdateStatus.Failed) }
-                            )
-                    }
+                    .flatMapLatest { createOrUpdateDraft(it) }
+                    .onStart { emit(OrderDraftUpdateStatus.Ongoing) }
+                    .distinctUntilChanged()
             }
+    }
+
+    private fun createOrUpdateDraft(order: Order) = flow {
+        emit(OrderDraftUpdateStatus.Ongoing)
+        orderCreationRepository.createOrUpdateDraft(order)
+            .fold(
+                onSuccess = { emit(OrderDraftUpdateStatus.Succeeded(it)) },
+                onFailure = { emit(OrderDraftUpdateStatus.Failed) }
+            )
     }
 
     sealed interface OrderDraftUpdateStatus {
