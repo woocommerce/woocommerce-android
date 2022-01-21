@@ -139,8 +139,7 @@ class ReviewDetailFragment :
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
         }
 
-        viewModel.event.observe(viewLifecycleOwner)
-        { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MarkNotificationAsRead -> {
@@ -277,5 +276,4 @@ class ReviewDetailFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean = viewModel.onBackPressed()
-
 }

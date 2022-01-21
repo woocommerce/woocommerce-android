@@ -134,7 +134,6 @@ class ReviewDetailViewModel @Inject constructor(
     fun onBackPressed(): Boolean {
         if (launchedFromNotification) {
             triggerEvent(NavigateBackFromNotification)
-
         } else {
             triggerEvent(Exit)
         }
