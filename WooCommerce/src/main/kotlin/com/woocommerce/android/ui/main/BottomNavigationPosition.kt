@@ -13,7 +13,7 @@ enum class BottomNavigationPosition(val position: Int, val id: Int) {
     ANALYTICS(ANALYTICS_POSITION, R.id.dashboard),
     ORDERS(ORDERS_POSITION, R.id.orders),
     PRODUCTS(PRODUCTS_POSITION, R.id.products),
-    MORE(MORE_POSITION, R.id.more_menu)
+    MORE(MORE_POSITION, R.id.moreMenu)
 }
 
 fun findNavigationPositionById(id: Int): BottomNavigationPosition = when (id) {

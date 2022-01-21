@@ -335,7 +335,7 @@ class MainActivity :
             currentDestinationId == R.id.dashboard ||
                 currentDestinationId == R.id.orders ||
                 currentDestinationId == R.id.products ||
-                currentDestinationId == R.id.more_menu ||
+                currentDestinationId == R.id.moreMenu ||
                 currentDestinationId == R.id.analytics
         } else {
             true

@@ -11,6 +11,7 @@ import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -33,7 +34,10 @@ class ReviewDetailViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
+    private var launchedFromNotification: Boolean = false
+
     fun start(remoteReviewId: Long, launchedFromNotification: Boolean) {
+        this.launchedFromNotification = launchedFromNotification
         loadProductReview(remoteReviewId, launchedFromNotification)
     }
 
@@ -127,6 +131,16 @@ class ReviewDetailViewModel @Inject constructor(
         }
     }
 
+    fun onBackPressed(): Boolean {
+        if (launchedFromNotification) {
+            triggerEvent(NavigateBackFromNotification)
+
+        } else {
+            triggerEvent(Exit)
+        }
+        return false
+    }
+
     @Parcelize
     data class ViewState(
         val productReview: ProductReview? = null,
@@ -135,5 +149,6 @@ class ReviewDetailViewModel @Inject constructor(
 
     sealed class ReviewDetailEvent : Event() {
         data class MarkNotificationAsRead(val remoteNoteId: Long) : ReviewDetailEvent()
+        object NavigateBackFromNotification : ReviewDetailEvent()
     }
 }

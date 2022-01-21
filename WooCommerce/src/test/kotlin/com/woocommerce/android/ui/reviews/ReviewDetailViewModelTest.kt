@@ -8,6 +8,7 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -159,4 +160,24 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             assertFalse(exitCalled)
             Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
         }
+
+    @Test
+    fun `Given review detail opened from notification, when navigating back, trigger NavigateBackFromNotification`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+        viewModel.start(REVIEW_ID, launchedFromNotification = true)
+
+        viewModel.onBackPressed()
+
+        Assertions.assertThat(viewModel.event.value).isEqualTo(NavigateBackFromNotification)
+    }
+
+    @Test
+    fun `Given review detail not opened from notification, when navigating back, trigger Exit`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+        viewModel.start(REVIEW_ID, launchedFromNotification = false)
+
+        viewModel.onBackPressed()
+
+        Assertions.assertThat(viewModel.event.value).isEqualTo(Exit)
+    }
 }
