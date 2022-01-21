@@ -54,7 +54,7 @@ class CreateOrUpdateOrderDraft @Inject constructor(
     private fun areEquivalent(old: Order, new: Order): Boolean {
         // Make sure to update the prices only when items did change
         // TODO we need to include more checks here: fees and discounts...
-        return old.items
+        val hasSameItems = old.items
             .filter {
                 // Check only non-zero quantities, to avoid circular update when removing products
                 it.quantity > 0
@@ -64,5 +64,9 @@ class CreateOrUpdateOrderDraft @Inject constructor(
                     this.variationId == newItem.variationId &&
                     this.quantity == newItem.quantity
             }
+
+        return hasSameItems &&
+            old.shippingAddress == new.shippingAddress &&
+            old.billingAddress == old.billingAddress
     }
 }
