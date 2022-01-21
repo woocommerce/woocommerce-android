@@ -18,6 +18,5 @@ fun Order.adjustProductQuantity(productId: Long, quantityToAdd: Int): Order {
 }
 
 fun Order.updateItems(items: List<Order.Item>): Order = copy(
-    items = items,
-    total = items.sumOf { it.subtotal }
+    items = items
 )
