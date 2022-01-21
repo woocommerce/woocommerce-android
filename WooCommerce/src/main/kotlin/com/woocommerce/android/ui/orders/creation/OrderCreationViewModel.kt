@@ -21,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -46,7 +47,7 @@ class OrderCreationViewModel @Inject constructor(
     val orderDraft = _orderDraft
         .onEach {
             viewState = viewState.copy(
-                canCreateOrder = it.items.isNotEmpty() &&
+                isOrderValidForCreation = it.items.isNotEmpty() &&
                     it.shippingAddress != Address.EMPTY &&
                     it.billingAddress != Address.EMPTY
             )
@@ -194,10 +195,13 @@ class OrderCreationViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
-        val canCreateOrder: Boolean = false,
+        private val isOrderValidForCreation: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val canCreateOrder: Boolean = isOrderValidForCreation && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+    }
 }
 
 data class ProductUIModel(
