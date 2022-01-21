@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.*
 import com.woocommerce.android.ui.main.MainActivityViewModel.*
+import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
@@ -788,7 +789,13 @@ class MainActivity :
         enableModeration: Boolean,
         tempStatus: String?
     ) {
-        val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
+        if (launchedFromNotification) {
+            showBottomNav()
+            binding.bottomNav.currentPosition = MORE
+            binding.bottomNav.active(MORE.position)
+        }
+
+        val action = MoreMenuFragmentDirections.actionMoreMenuFragmentToReviewDetailFragment(
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
             launchedFromNotification = launchedFromNotification,
