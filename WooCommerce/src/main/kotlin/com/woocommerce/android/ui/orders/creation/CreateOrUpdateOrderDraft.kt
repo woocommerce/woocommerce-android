@@ -66,7 +66,7 @@ class CreateOrUpdateOrderDraft @Inject constructor(
             }
 
         return hasSameItems &&
-            old.shippingAddress == new.shippingAddress &&
-            old.billingAddress == old.billingAddress
+            old.shippingAddress.isSamePhysicalAddress(new.shippingAddress) &&
+            old.billingAddress.isSamePhysicalAddress(new.billingAddress)
     }
 }
