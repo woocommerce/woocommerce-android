@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.WooException
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
@@ -66,8 +67,8 @@ class OrderCreationRepository @Inject constructor(
                     total = item.total.toPlainString()
                 )
             },
-            shippingAddress = order.shippingAddress.takeIf { !it.isEmpty() }?.toShippingAddressModel(),
-            billingAddress = order.billingAddress.takeIf { !it.isEmpty() }?.toBillingAddressModel(),
+            shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
+            billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
             customerNote = order.customerNote
         )
 
@@ -79,7 +80,7 @@ class OrderCreationRepository @Inject constructor(
 
         return when {
             result.isError -> Result.failure(WooException(result.error))
-            else -> Result.success(result.model!!.toAppModel())
+            else -> Result.success(orderMapper.toAppModel(result.model!!))
         }
     }
 }

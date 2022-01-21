@@ -8,6 +8,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -175,11 +176,11 @@ class OrderCreationViewModel @Inject constructor(
             createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
                 .collect {
                     when (it) {
-                        Ongoing -> viewState =
+                        OrderDraftUpdateStatus.Ongoing -> viewState =
                             viewState.copy(isUpdatingOrderDraft = true, showOrderUpdateSnackbar = false)
-                        Failed -> viewState =
+                        OrderDraftUpdateStatus.Failed -> viewState =
                             viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
-                        is Succeeded -> {
+                        is OrderDraftUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = false)
                             _orderDraft.value = it.order
                         }
