@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.*
@@ -40,6 +42,11 @@ class AddressViewModel @Inject constructor(
     }
 
     private var hasStarted = false
+    private var initialState = emptyMap<AddressType, Address>()
+
+    val isAnyAddressEdited: LiveData<Boolean> = viewStateData.liveData.map { viewState ->
+        viewState.addressSelectionStates.mapValues { it.value.address } != initialState
+    }
 
     /**
      * The start method is called when the view is created. When the view is recreated (e.g. navigating to country
@@ -51,6 +58,7 @@ class AddressViewModel @Inject constructor(
             return
         }
         hasStarted = true
+        this.initialState = initialState
         initialize(initialState)
     }
 

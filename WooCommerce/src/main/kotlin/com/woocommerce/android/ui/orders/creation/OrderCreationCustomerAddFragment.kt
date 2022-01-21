@@ -43,8 +43,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     private var shippingBinding: LayoutAddressFormBinding? = null
     private var billingBinding: LayoutAddressFormBinding? = null
     private var showShippingAddressFormSwitch: LayoutAddressSwitchBinding? = null
-
-    private lateinit var doneMenuItem: MenuItem
+    private var doneMenuItem: MenuItem? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -88,6 +87,9 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                     shippingBinding.update(it)
                 }
             }
+        }
+        addressViewModel.isAnyAddressEdited.observe(viewLifecycleOwner) { isAnyAddressEdited ->
+            doneMenuItem?.isVisible = isAnyAddressEdited
         }
     }
 
@@ -228,8 +230,9 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem.isVisible = hasChanges()
+        doneMenuItem = menu.findItem(R.id.menu_done).apply {
+            isVisible = addressViewModel.isAnyAddressEdited.value ?: false
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -252,7 +255,4 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         billingBinding = null
         showShippingAddressFormSwitch = null
     }
-
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun hasChanges() = true
 }

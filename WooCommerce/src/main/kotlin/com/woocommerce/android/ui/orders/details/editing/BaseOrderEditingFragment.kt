@@ -26,7 +26,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     protected val sharedViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private var doneMenuItem: MenuItem? = null
+    protected var doneMenuItem: MenuItem? = null
 
     /**
      * The value to pass to analytics for the specific screen, used to record when the user enters or

@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
-import android.view.*
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.core.view.updateMargins
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -21,6 +23,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.UiHelpers.getPxOfUiDimen
+import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
@@ -69,7 +72,6 @@ abstract class BaseAddressEditingFragment :
 
         replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
-            updateDoneMenuItem()
         }
         bindTextWatchers()
 
@@ -125,7 +127,6 @@ abstract class BaseAddressEditingFragment :
             addressType,
             onFieldEdited = { addressType, field, value ->
                 addressViewModel.onFieldEdited(addressType, field, value)
-                updateDoneMenuItem()
             }
         )
     }
@@ -168,6 +169,14 @@ abstract class BaseAddressEditingFragment :
                 binding.progressBar.isVisible = it
             }
             binding.form.update(newCountryStatePair)
+        }
+
+        sharedViewModel.viewStateData.liveData.combineWith(
+            addressViewModel.isAnyAddressEdited
+        ) { sharedViewState, isAddressEdited ->
+            (isAddressEdited ?: false) || (sharedViewState?.replicateBothAddressesToggleActivated ?: false)
+        }.observe(viewLifecycleOwner) { shouldShowDoneButton ->
+            doneMenuItem?.isVisible = shouldShowDoneButton
         }
 
         addressViewModel.event.observe(viewLifecycleOwner) { event ->
