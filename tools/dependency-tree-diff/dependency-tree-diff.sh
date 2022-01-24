@@ -7,19 +7,31 @@ DIFF_DEPENDENCIES_FILE="$DIFF_DEPENDENCIES_FOLDER/diff_dependencies.txt"
 CONFIGURATION="vanillaReleaseRuntimeClasspath"
 DEPENDENCY_TREE_VERSION="1.2.0"
 
+git config --global user.email '$( git log --format='%ae' $CIRCLE_SHA1^! )'
+git config --global user.name '$( git log --format='%an' $CIRCLE_SHA1^! )'
+
 if [ -n "$CIRCLE_PULL_REQUEST" ]; then
   prNumber=$(echo "$CIRCLE_PULL_REQUEST" | sed "s/^.*\/\([0-9]*$\)/\1/")
   githubUrl="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$prNumber"
   githubResponse="$(curl "$githubUrl" -H "Authorization: token $GITHUB_API_TOKEN")"
   targetBranch=$(echo "$githubResponse" | tr '\r\n' ' ' | jq '.base.ref' | tr -d '"')
 
+  echo "Before merge"
+  git merge "origin/$targetBranch" --no-edit
+
+  if [[ $(git diff --name-status "$targetBranch" | grep ".gradle") ]]; then
+      echo ".gradle files have been changed. Looking for caused dependency changes"
+    else
+      echo ".gradle files haven't been changed. There is no need to run the diff"
+      exit 0
+  fi
+
   mkdir -p "$DIFF_DEPENDENCIES_FOLDER"
+
+  ./gradlew :WooCommerce:dependencies --configuration $CONFIGURATION >$CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE
 
   git checkout "$targetBranch"
   ./gradlew :WooCommerce:dependencies --configuration $CONFIGURATION >$TARGET_BRANCH_DEPENDENCIES_FILE
-
-  git checkout "$CIRCLE_BRANCH"
-  ./gradlew :WooCommerce:dependencies --configuration $CONFIGURATION >$CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE
 
   # https://github.com/JakeWharton/dependency-tree-diff
   curl -L "https://github.com/JakeWharton/dependency-tree-diff/releases/download/$DEPENDENCY_TREE_VERSION/dependency-tree-diff.jar" -o dependency-tree-diff.jar
