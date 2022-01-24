@@ -171,17 +171,17 @@ class MyStoreStatsView @JvmOverloads constructor(
                 // Couldn't use the dimension resource here due to the way this component is written :/
                 textSize = 10f
             }
-
-            axisRight.isEnabled = false
             with(axisLeft) {
-                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
+                setLabelCount(3, false)
+                valueFormatter = RevenueAxisFormatter()
                 setDrawGridLines(true)
+                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
                 setDrawAxisLine(false)
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
                 // Couldn't use the dimension resource here due to the way this component is written :/
                 textSize = 10f
             }
-
+            axisRight.isEnabled = false
             description.isEnabled = false
             legend.isEnabled = false
 
@@ -462,8 +462,6 @@ class MyStoreStatsView @JvmOverloads constructor(
                     setDrawZeroLine(true)
                     zeroLineColor = ContextCompat.getColor(context, R.color.divider_color)
                 }
-                labelCount = 3
-                valueFormatter = RevenueAxisFormatter()
             }
             val dot = MarkerImage(context, R.drawable.chart_highlight_dot)
             val offset = DisplayUtils.dpToPx(context, LINE_CHART_DOT_OFFSET).toFloat()
@@ -602,7 +600,10 @@ class MyStoreStatsView @JvmOverloads constructor(
      */
     private inner class RevenueAxisFormatter : ValueFormatter() {
         override fun getFormattedValue(value: Float): String {
-            return getFormattedRevenueValue(value.toDouble())
+            return currencyFormatter.formatCurrencyRounded(
+                value.toDouble(),
+                revenueStatsModel?.currencyCode.orEmpty()
+            )
         }
     }
 }
