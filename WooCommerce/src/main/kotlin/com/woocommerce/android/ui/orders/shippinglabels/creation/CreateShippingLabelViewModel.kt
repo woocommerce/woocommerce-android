@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_AMOUNT
@@ -84,7 +83,8 @@ class CreateShippingLabelViewModel @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val accountStore: AccountStore,
     private val resourceProvider: ResourceProvider,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val getLocations: GetLocations,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_KEY = KEY_STATE
@@ -109,7 +109,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         if (state != null) {
             stateMachine.initialize(state)
         } else {
-            stateMachine.start(arguments.orderIdentifier)
+            stateMachine.start(arguments.orderId)
         }
 
         launch {
@@ -279,7 +279,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     private fun openPackagesDetails(currentShippingPackages: List<ShippingLabelPackage>) {
         triggerEvent(
             ShowPackageDetails(
-                orderIdentifier = arguments.orderIdentifier,
+                orderId = arguments.orderId,
                 shippingLabelPackages = currentShippingPackages
             )
         )
@@ -382,13 +382,13 @@ class CreateShippingLabelViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadData(orderId: String): Event {
-        val order = requireNotNull(orderDetailRepository.getOrder(orderId))
+    private suspend fun loadData(orderId: Long): Event {
+        val order = requireNotNull(orderDetailRepository.getOrderById(orderId))
         val accountSettings = shippingLabelRepository.getAccountSettings().let {
-            if (it.isError) return Event.DataLoadingFailed
+            if (it.isError) return DataLoadingFailed
             it.model!!
         }
-        return Event.DataLoaded(
+        return DataLoaded(
             order = order,
             originAddress = getStoreAddress(),
             shippingAddress = getShippingAddress(order),
@@ -398,14 +398,18 @@ class CreateShippingLabelViewModel @Inject constructor(
 
     private fun getStoreAddress(): Address {
         val siteSettings = wooStore.getSiteSettings(site.get())
+        val (country, state) = getLocations(
+            countryCode = siteSettings?.countryCode.orEmpty(),
+            stateCode = siteSettings?.stateCode.orEmpty()
+        )
         return Address(
             company = site.get().name,
             firstName = accountStore.account.firstName,
             lastName = accountStore.account.lastName,
             phone = "",
             email = "",
-            country = siteSettings?.countryCode ?: "",
-            state = siteSettings?.stateCode ?: "",
+            country = country,
+            state = state,
             address1 = siteSettings?.address ?: "",
             address2 = siteSettings?.address2 ?: "",
             city = siteSettings?.city ?: "",
@@ -441,7 +445,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         var result: WooResult<List<ShippingLabel>>
         val duration = measureTimeMillis {
             result = shippingLabelRepository.purchaseLabels(
-                orderId = data.order.remoteId,
+                orderId = data.order.id,
                 origin = data.stepsState.originAddressStep.data,
                 destination = data.stepsState.shippingAddressStep.data,
                 packages = data.stepsState.packagingStep.data,
@@ -462,7 +466,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         } else {
             if (fulfillOrder) {
                 orderDetailRepository.updateOrderStatus(
-                    orderLocalId = data.order.localId,
+                    remoteOrderId = data.order.id,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 ).collect { result ->
                     when (result) {
@@ -472,7 +476,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                         is RemoteUpdateResult -> {
                             if (result.event.isError) {
                                 AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
-                                triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+                                triggerEvent(ShowSnackbar(string.shipping_label_create_purchase_fulfill_error))
                             } else {
                                 AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
                             }
@@ -573,7 +577,7 @@ class CreateShippingLabelViewModel @Inject constructor(
             else string.shipping_label_create_customs_description
         )
 
-    fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
+    fun retry() = stateMachine.handleEvent(FlowStarted(arguments.orderId))
 
     fun onAddressEditConfirmed(address: Address) {
         stateMachine.handleEvent(AddressValidated(address))
@@ -639,12 +643,12 @@ class CreateShippingLabelViewModel @Inject constructor(
     fun onEditButtonTapped(step: FlowStep) {
         trackStartedStep(step)
         when (step) {
-            FlowStep.ORIGIN_ADDRESS -> Event.EditOriginAddressRequested
-            FlowStep.SHIPPING_ADDRESS -> Event.EditShippingAddressRequested
-            FlowStep.PACKAGING -> Event.EditPackagingRequested
-            FlowStep.CUSTOMS -> Event.EditCustomsRequested
-            FlowStep.CARRIER -> Event.EditShippingCarrierRequested
-            FlowStep.PAYMENT -> Event.EditPaymentRequested
+            FlowStep.ORIGIN_ADDRESS -> EditOriginAddressRequested
+            FlowStep.SHIPPING_ADDRESS -> EditShippingAddressRequested
+            FlowStep.PACKAGING -> EditPackagingRequested
+            FlowStep.CUSTOMS -> EditCustomsRequested
+            FlowStep.CARRIER -> EditShippingCarrierRequested
+            FlowStep.PAYMENT -> EditPaymentRequested
         }.also { event ->
             event.let {
                 stateMachine.handleEvent(it)
@@ -655,12 +659,12 @@ class CreateShippingLabelViewModel @Inject constructor(
     fun onContinueButtonTapped(step: FlowStep) {
         trackStartedStep(step)
         when (step) {
-            FlowStep.ORIGIN_ADDRESS -> Event.OriginAddressValidationStarted
-            FlowStep.SHIPPING_ADDRESS -> Event.ShippingAddressValidationStarted
-            FlowStep.PACKAGING -> Event.PackageSelectionStarted
-            FlowStep.CUSTOMS -> Event.CustomsDeclarationStarted
-            FlowStep.CARRIER -> Event.ShippingCarrierSelectionStarted
-            FlowStep.PAYMENT -> Event.PaymentSelectionStarted
+            FlowStep.ORIGIN_ADDRESS -> OriginAddressValidationStarted
+            FlowStep.SHIPPING_ADDRESS -> ShippingAddressValidationStarted
+            FlowStep.PACKAGING -> PackageSelectionStarted
+            FlowStep.CUSTOMS -> CustomsDeclarationStarted
+            FlowStep.CARRIER -> ShippingCarrierSelectionStarted
+            FlowStep.PAYMENT -> PaymentSelectionStarted
         }.also { event ->
             event.let { stateMachine.handleEvent(it) }
         }
@@ -668,7 +672,7 @@ class CreateShippingLabelViewModel @Inject constructor(
 
     fun onBackButtonClicked() {
         val stepsState = stateMachine.transitions.value.state.data?.stepsState
-        if (stepsState?.any { it.status == StepStatus.DONE } == true) {
+        if (stepsState?.any { it.status == DONE } == true) {
             triggerEvent(
                 ShowDialog.buildDiscardDialogEvent(
                     positiveBtnAction = { _, _ ->

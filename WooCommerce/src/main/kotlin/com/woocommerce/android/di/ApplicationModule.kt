@@ -1,8 +1,8 @@
 package com.woocommerce.android.di
 
 import android.content.Context
-import com.woocommerce.android.tracker.TrackerRepository
 import com.woocommerce.android.tracker.DataStoreTrackerRepository
+import com.woocommerce.android.tracker.TrackerRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.wordpress.android.login.di.LoginServiceModule
 import javax.inject.Qualifier
+import javax.inject.Singleton
 import kotlin.annotation.AnnotationRetention.RUNTIME
 
 @InstallIn(SingletonComponent::class)
@@ -39,6 +40,7 @@ abstract class ApplicationModule {
     companion object {
         @Provides
         @AppCoroutineScope
+        @Singleton
         fun provideAppCoroutineScope(dispatcher: CoroutineDispatcher): CoroutineScope =
             CoroutineScope(SupervisorJob() + dispatcher)
 

@@ -17,7 +17,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
@@ -28,7 +35,7 @@ import kotlin.test.assertTrue
 @ExperimentalCoroutinesApi
 class AddOrderNoteViewModelTest : BaseUnitTest() {
     companion object {
-        private const val REMOTE_ORDER_ID = "1-1-1"
+        private const val ORDER_ID = 1L
         private const val REMOTE_ORDER_NUMBER = "100"
     }
 
@@ -38,13 +45,13 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
 
     private val testOrder: Order
         get() {
-            return OrderTestUtils.generateTestOrder(REMOTE_ORDER_ID).copy(number = REMOTE_ORDER_NUMBER)
+            return OrderTestUtils.generateTestOrder(ORDER_ID).copy(number = REMOTE_ORDER_NUMBER)
         }
 
     private lateinit var viewModel: AddOrderNoteViewModel
 
     private val savedState: SavedStateHandle =
-        AddOrderNoteFragmentArgs(orderId = REMOTE_ORDER_ID, orderNumber = "100").initSavedStateHandle()
+        AddOrderNoteFragmentArgs(orderId = ORDER_ID, orderNumber = "100").initSavedStateHandle()
 
     private fun initViewModel() {
         viewModel = AddOrderNoteViewModel(
@@ -56,12 +63,12 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `hide customer note checkbox if no email`() {
+    fun `hide customer note checkbox if no email`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val testOrder = testOrder.let {
             val address = it.billingAddress.copy(email = "")
             it.copy(billingAddress = address)
         }
-        doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
+        doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
 
         initViewModel()
         var state: AddOrderNoteViewModel.ViewState? = null
@@ -73,12 +80,12 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `show customer note checkbox if no email`() {
+    fun `show customer note checkbox if no email`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val testOrder = testOrder.let {
             val address = it.billingAddress.copy(email = "test@emai.com")
             it.copy(billingAddress = address)
         }
-        doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
+        doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
 
         initViewModel()
         var state: AddOrderNoteViewModel.ViewState? = null
@@ -134,10 +141,10 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
 
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(true).whenever(networkStatus).isConnected()
-            doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
+            doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
             doReturn(
-                OnOrderChanged(0)
-            ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), any())
+                OnOrderChanged()
+            ).whenever(repository).addOrderNote(eq(testOrder.id), any())
 
             initViewModel()
 
@@ -149,7 +156,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.pushOrderNote()
 
             verify(repository, times(1)).addOrderNote(
-                eq(REMOTE_ORDER_ID), eq(testOrder.remoteId),
+                eq(testOrder.id),
                 argThat {
                     this.note == note
                     this.isCustomerNote == isCustomerNote
@@ -176,7 +183,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.onOrderTextEntered("note")
             viewModel.pushOrderNote()
 
-            verify(repository, times(0)).addOrderNote(any(), any(), any())
+            verify(repository, times(0)).addOrderNote(any(), any())
             assertThat(event).isInstanceOf(ShowSnackbar::class.java)
             assertEquals(R.string.offline_error, (event as ShowSnackbar).message)
         }
@@ -189,10 +196,10 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
 
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(true).whenever(networkStatus).isConnected()
-            doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
+            doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
             doReturn(
-                OnOrderChanged(0).apply { this.error = OrderError(GENERIC_ERROR) }
-            ).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), any())
+                OnOrderChanged().apply { this.error = OrderError(GENERIC_ERROR) }
+            ).whenever(repository).addOrderNote(eq(testOrder.id), any())
 
             initViewModel()
 
@@ -204,7 +211,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             viewModel.pushOrderNote()
 
             verify(repository, times(1)).addOrderNote(
-                eq(REMOTE_ORDER_ID), eq(testOrder.remoteId),
+                eq(testOrder.id),
                 argThat {
                     this.note == note
                     this.isCustomerNote == isCustomerNote

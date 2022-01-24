@@ -3,17 +3,16 @@ package com.woocommerce.android.ui.main
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -22,7 +21,6 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.WCOrderAction.*
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.*
@@ -39,16 +37,38 @@ class MainPresenter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
     private val appPrefs: AppPrefs,
+    private val wcOrderStore: WCOrderStore,
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
     private var isHandlingMagicLink: Boolean = false
     private var pendingUnfilledOrderCountCheck: Boolean = false
 
-    override fun takeView(view: MainContract.View) {
+    override fun takeView(
+        view: MainContract.View
+    ) {
         mainView = view
         dispatcher.register(this)
         ConnectionChangeReceiver.getEventBus().register(this)
+
+        coroutineScope.launch {
+            selectedSite.getIfExists()?.let { siteModel ->
+                wcOrderStore.observeOrdersForSite(
+                    siteModel, listOf(PROCESSING.value)
+                ).collect {
+                    AnalyticsTracker.track(
+                        AnalyticsTracker.Stat.UNFULFILLED_ORDERS_LOADED,
+                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to it.size)
+                    )
+
+                    if (it.isNotEmpty()) {
+                        mainView?.showOrderBadge(it.size)
+                    } else {
+                        mainView?.hideOrderBadge()
+                    }
+                }
+            }
+        }
     }
 
     override fun dropView() {
@@ -162,17 +182,6 @@ class MainPresenter @Inject constructor(
                     mainView?.hideOrderBadge()
                     return
                 }
-
-                AnalyticsTracker.track(
-                    Stat.UNFULFILLED_ORDERS_LOADED,
-                    mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to (event.rowsAffected > 0))
-                )
-
-                if (event.rowsAffected > 0) {
-                    mainView?.showOrderBadge(event.rowsAffected)
-                } else {
-                    mainView?.hideOrderBadge()
-                }
             }
             FETCH_ORDERS, UPDATE_ORDER_STATUS -> {
                 // we just fetched the order list or an order's status changed, so re-check the unfilled orders count
@@ -205,16 +214,6 @@ class MainPresenter @Inject constructor(
         if (event.channel == NEW_ORDER) {
             fetchUnfilledOrderCount()
         }
-    }
-
-    /**
-     * A request to fetch a product has been sent - dispatch the action to fetch it
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: RequestFetchProductEvent) {
-        val payload = WCProductStore.FetchSingleProductPayload(event.site, event.remoteProductId)
-        dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
     }
 
     fun onEventMainThread(event: SelectedSiteChangedEvent) {

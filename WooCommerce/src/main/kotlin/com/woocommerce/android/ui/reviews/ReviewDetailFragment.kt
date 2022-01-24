@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.LayerDrawable
 import android.os.Build
@@ -10,10 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -85,7 +88,25 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
 
         _binding = FragmentReviewDetailBinding.bind(view)
 
+        ViewCompat.setTransitionName(
+            binding.scrollView,
+            getString(R.string.review_card_detail_transition_name)
+        )
+
         initializeViewModel()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val backgroundColor = ContextCompat.getColor(requireContext(), R.color.default_window_background)
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.snack_root
+            duration = transitionDuration
+            scrimColor = Color.TRANSPARENT
+            startContainerColor = backgroundColor
+            endContainerColor = backgroundColor
+        }
     }
 
     override fun onStart() {

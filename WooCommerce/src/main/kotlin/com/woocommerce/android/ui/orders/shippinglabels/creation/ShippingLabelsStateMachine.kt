@@ -162,8 +162,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(
                     State.CustomsDeclaration(data),
                     SideEffect.ShowCustomsForm(
-                        originCountryCode = data.stepsState.originAddressStep.data.country,
-                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
+                        originCountryCode = data.stepsState.originAddressStep.data.country.code,
+                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country.code,
                         shippingPackages = data.stepsState.packagingStep.data,
                         customsPackages = data.stepsState.customsStep.data ?: emptyList()
                     )
@@ -205,8 +205,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(
                     State.CustomsDeclaration(data),
                     SideEffect.ShowCustomsForm(
-                        originCountryCode = data.stepsState.originAddressStep.data.country,
-                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
+                        originCountryCode = data.stepsState.originAddressStep.data.country.code,
+                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country.code,
                         shippingPackages = data.stepsState.packagingStep.data,
                         customsPackages = data.stepsState.customsStep.data ?: emptyList()
                     )
@@ -416,7 +416,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             }
 
             on<Event.PurchaseSuccess> {
-                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(data.order.remoteId, it.labels))
+                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(data.order.id, it.labels))
             }
         }
 
@@ -434,7 +434,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
     /**
      * Starts the initial event sequence (see the diagram)
      */
-    fun start(orderId: String) {
+    fun start(orderId: Long) {
         stateMachine.transition(Event.FlowStarted(orderId))
     }
 
@@ -539,7 +539,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
             val originAddress = originAddressStep.data
             val shippingAddress = shippingAddressStep.data
 
-            fun Address.isUSMilitaryState() = country == "US" && US_MILITARY_STATES.contains(state)
+            fun Address.isUSMilitaryState() =
+                country.code == "US" && US_MILITARY_STATES.contains(state.asLocation().code)
 
             return@lazy if (originAddress.isUSMilitaryState() || shippingAddress.isUSMilitaryState()) {
                 // Special case: Any shipment from/to military addresses must have Customs
@@ -700,7 +701,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object DataLoadingFailure : State()
 
         @Parcelize
-        data class DataLoading(val orderId: String) : State()
+        data class DataLoading(val orderId: Long) : State()
 
         @Parcelize
         data class WaitingForInput(override val data: StateMachineData) : State()
@@ -742,7 +743,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
     sealed class Event {
         abstract class UserInput : Event()
 
-        data class FlowStarted(val orderId: String) : Event()
+        data class FlowStarted(val orderId: Long) : Event()
         data class DataLoaded(
             val order: Order,
             val originAddress: Address,

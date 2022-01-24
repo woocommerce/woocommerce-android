@@ -200,7 +200,8 @@ class HelpActivity : AppCompatActivity() {
         LOGIN_EPILOGUE("origin:login-epilogue"),
         LOGIN_CONNECTED_EMAIL_HELP("origin:login-connected-email-help"),
         SIGNUP_EMAIL("origin:signup-email"),
-        SIGNUP_MAGIC_LINK("origin:signup-magic-link");
+        SIGNUP_MAGIC_LINK("origin:signup-magic-link"),
+        JETPACK_INSTALLATION("origin:jetpack-installation");
 
         override fun toString(): String {
             return stringValue

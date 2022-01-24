@@ -33,9 +33,7 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     private val repository: ShippingLabelRepository = mock()
     private val networkStatus: NetworkStatus = mock()
 
-    private val shippingLabel = OrderTestUtils.generateShippingLabel(
-        remoteOrderId = REMOTE_ORDER_ID, shippingLabelId = REMOTE_SHIPPING_LABEL_ID
-    )
+    private val shippingLabel = OrderTestUtils.generateShippingLabel(shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
 
     private val savedState = ShippingLabelRefundFragmentArgs(
         orderId = REMOTE_ORDER_ID,

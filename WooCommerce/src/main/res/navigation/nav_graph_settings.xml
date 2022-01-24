@@ -31,8 +31,8 @@
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
-            android:id="@+id/action_mainSettingsFragment_to_aboutFragment"
-            app:destination="@id/aboutFragment"
+            android:id="@+id/action_mainSettingsFragment_to_aboutActivity"
+            app:destination="@id/aboutActivity"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
@@ -55,6 +55,9 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_featureAnnouncementDialogFragment"
             app:destination="@id/featureAnnouncementDialogFragment" />
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_nav_graph_jetpack_install"
+            app:destination="@id/nav_graph_jetpack_install" />
     </fragment>
     <dialog
         android:id="@+id/cardReaderConnectDialogFragment"
@@ -133,10 +136,13 @@
         android:id="@+id/privacySettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.PrivacySettingsFragment"
         android:label="PrivacySettingsFragment" />
-    <fragment
-        android:id="@+id/aboutFragment"
-        android:name="com.woocommerce.android.ui.prefs.AboutFragment"
-        android:label="AboutFragment" />
+
+    <activity
+        android:id="@+id/aboutActivity"
+        android:name="com.woocommerce.android.ui.prefs.UnifiedAboutScreenActivity"
+        android:label="AboutActivity"
+        tools:layout="@layout/unified_about_screen_activity" />
+
     <fragment
         android:id="@+id/licensesFragment2"
         android:name="com.woocommerce.android.ui.prefs.LicensesFragment"
@@ -199,4 +205,5 @@
             android:defaultValue="@null"/>
     </fragment>
     <action android:id="@+id/action_global_WPComWebViewFragment" app:destination="@id/WPComWebViewFragment"/>
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
 </navigation>

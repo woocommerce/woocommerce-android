@@ -7,8 +7,8 @@ import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
-import com.woocommerce.android.screenshots.util.ReviewData
 import com.woocommerce.android.screenshots.util.MocksReader
+import com.woocommerce.android.screenshots.util.ReviewData
 import com.woocommerce.android.screenshots.util.iterator
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

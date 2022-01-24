@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -34,13 +33,13 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -174,13 +173,8 @@ class VariationDetailFragment :
                 shippingClassId = it.shippingClassId
             )
         }
-        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
-            // If empty, the image was deleted. Create a placeholder image with ID 0
-            val updatedImage = it.firstOrNull() ?: Image(0, "", "", Date())
-
-            viewModel.onVariationChanged(
-                image = updatedImage
-            )
+        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) { updatedImage ->
+            viewModel.onVariationChanged(image = Optional(updatedImage.firstOrNull()))
         }
         handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) { result ->
             if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
@@ -190,9 +184,7 @@ class VariationDetailFragment :
             }
         }
         handleResult<Array<VariantOption>>(KEY_VARIATION_ATTRIBUTES_RESULT) {
-            viewModel.onVariationChanged(
-                attributes = it
-            )
+            viewModel.onVariationChanged(attributes = it)
         }
     }
 
@@ -232,30 +224,24 @@ class VariationDetailFragment :
             }
         }
 
-        viewModel.variationDetailCards.observe(
-            viewLifecycleOwner,
-            Observer {
-                showVariationCards(it)
-            }
-        )
+        viewModel.variationDetailCards.observe(viewLifecycleOwner) {
+            showVariationCards(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
-                    is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
-                    is VariationNavigationTarget -> {
-                        navigator.navigate(this, event)
-                    }
-                    is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
-                    is ShowDialog -> event.showDialog()
-                    is Exit -> requireActivity().onBackPressed()
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
+                is VariationNavigationTarget -> {
+                    navigator.navigate(this, event)
                 }
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
+                is ShowDialog -> event.showDialog()
+                is Exit -> requireActivity().onBackPressed()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showVariationDetails(variation: ProductVariation) {

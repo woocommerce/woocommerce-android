@@ -1,11 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-11-11 16:54:03+0000
+Translation-Revision-Date: 2021-12-26 19:13:40+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="order_creation_add_customer_note">Lägg till anteckning</string>
+    <string name="order_creation_customer_note">Kundmeddelande</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Uppdatera efter uppdatering</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Stripe Payment Gateway är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Uppdatera WooCommerce Stripe Payment Gateway</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Uppdatera</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Du är nästan där! Slutför konfigurationen av WooCommerce Stripe Payment Gateway för att börja ta emot personliga betalningar.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Slutför konfigurationen av WooCommerce Stripe Payment Gateway i adminpanelen för din butik</string>
+    <string name="card_reader_payment_failed_unknown">Betalningen avvisades av okänd anledning</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">Ett live-kort användes på en webbplats i testläge</string>
+    <string name="card_reader_payment_failed_test_card">Systemtestkort är inte tillåtna för betalning</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">En felaktig PIN-kod har angetts för många gånger</string>
+    <string name="card_reader_payment_failed_pin_required">Detta kort kräver en PIN-kod och kan därför inte behandlas</string>
+    <string name="card_reader_payment_failed_invalid_amount">Betalningsbeloppet är inte tillåtet för det aktuella kortet</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Betalningen avvisades på grund av otillräckliga medel</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">Transaktionens postnummer och kortets postnummer matchar inte</string>
+    <string name="card_reader_payment_failed_expired_card">Kortet har löpt ut</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">En identisk transaktion skickades nyligen</string>
+    <string name="card_reader_payment_failed_currency_not_supported">Kortet stöder inte denna valuta</string>
+    <string name="card_reader_payment_failed_card_not_supported">Kortet stöder inte denna typ av köp</string>
+    <string name="card_reader_payment_failed_invalid_account">Kortet eller kortkontot är ogiltigt</string>
+    <string name="card_reader_payment_failed_generic">Betalningen avvisades av ospecificerad anledning</string>
+    <string name="card_reader_payment_failed_fraud">Prova en annan betalningsmetod</string>
+    <string name="card_reader_payment_failed_temporary">Det kan fungera att prova igen</string>
+    <string name="order_creation_fragment_title">Ny beställning</string>
+    <string name="analytics_date_range_selector_description">Väljare för datumintervallsfilter</string>
+    <string name="analytics_date_range_from_date">kontra föregående period (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">År till datum</string>
+    <string name="date_timeframe_quarter_to_date">Kvartal till datum</string>
+    <string name="date_timeframe_month_to_date">Månad till datum</string>
+    <string name="date_timeframe_week_to_date">Vecka till datum</string>
+    <string name="date_timeframe_last_year">Förra året</string>
+    <string name="date_timeframe_last_quarter">Förra kvartalet</string>
+    <string name="date_timeframe_last_month">Förra månaden</string>
+    <string name="date_timeframe_last_week">Förra veckan</string>
+    <string name="settings_enable_order_creation_teaser_message">Testa att skapa beställningar med fullständig information medan vi gör oss redo för lansering</string>
+    <string name="settings_enable_order_creation_teaser_title">Skapande av beställning</string>
+    <string name="settings_enable_simple_payments_teaser_title">Enkla betalningar</string>
+    <string name="beta_features_order_creation">Skapande av beställning</string>
+    <string name="beta_features_simple_payments">Enkla betalningar</string>
+    <string name="beta_features_add_ons">Visa utökningar</string>
+    <string name="orders_empty_message_for_filtered_orders">Vi kunde inte hitta några beställningar</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">Öppna inställningar</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">Saknar nödvändig behörighet för enheter i närheten</string>
+    <string name="shipping_label_edit_address_country_search_hint">Filtrera länder</string>
+    <string name="shipping_label_edit_address_state_search_hint">Filtrera stater</string>
+    <string name="order_detail_edit_address_state">Status</string>
+    <string name="orderfilters_date_range_end_date">Slutdatum</string>
+    <string name="orderfilters_date_range_start_date">Startdatum</string>
+    <string name="orderfilters_date_range_picker_title">Välj datum</string>
+    <string name="orderfilters_date_range_filter_custom_range">Anpassat intervall</string>
+    <string name="orderlist_bottom_sheet_simple_payment_description">Skapa en beställning med minimalt med information</string>
+    <string name="orderlist_bottom_sheet_simple_payment_action">Enkel betalning</string>
+    <string name="orderlist_bottom_sheet_create_order_description">Skapa en ny manuell beställning</string>
+    <string name="orderlist_bottom_sheet_create_order_action">Skapa beställning</string>
+    <string name="orderlist_create_order_button_description">Skapa beställning</string>
+    <string name="simple_payments_creation_error">Kan inte skapa beställning</string>
+    <string name="simple_payments_enter_amount">Ange belopp</string>
+    <string name="simple_payments_dialog_title">Ta emot betalning</string>
+    <string name="orderlist_simple_payments_menu">Enkel betalning</string>
+    <string name="orderlist_simple_payments_wip_title">Ta emot betalningar från din enhet!</string>
+    <string name="analytics">Analys</string>
+    <string name="jetpack_install_progress_step_four_message">Allt klart</string>
+    <string name="jetpack_install_progress_step_three_message">Ansluter din butik</string>
+    <string name="jetpack_install_progress_step_two_message">Aktiverar</string>
+    <string name="jetpack_install_progress_step_one_message">Installerar Jetpack</string>
+    <string name="jetpack_install_progress_subtitle">Vänta medan vi ansluter %s till Jetpack.</string>
+    <string name="jetpack_install_progress_title">Installerar\nJetpack</string>
+    <string name="jetpack_install_start_default_name">din webbplats</string>
+    <string name="jetpack_install_start_subtitle">Installera det kostnadsfria Jetpack-tillägget till &lt;strong&gt;%s&lt;/strong&gt; för den bästa mobilupplevelsen.</string>
+    <string name="jetpack_install_start_title">Installera Jetpack</string>
+    <string name="product_review_list_fetching_failed">Produktrecensionerna kunde inte hämtas</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">Läsaren är frånkopplad</string>
+    <string name="card_reader_accessibility_reader_is_connected">Läsare är ansluten</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">Att avbryta en pågående programvaruuppdatering är inte att rekommendera. Om du avbryter blockeras din läsaranslutning.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">Uppdateringen av läsarprogramvaran misslyckades, eftersom läsarens batteri inte är tillräckligt laddat. Ladda läsaren till över 50 %% innan du försöker igen.</string>
+    <string name="card_reader_software_update_progress_description_low_battery">Uppdateringen av läsarprogramvaran misslyckades, eftersom läsarens batteri endast är laddat till %1$s%%. Ladda läsaren till över 50 %% innan du försöker igen.</string>
+    <string name="card_reader_software_update_title_battery_low">Ladda läsare</string>
+    <string name="card_reader_software_update_description">Din kortläsares programvara behöver uppdateras för att fungera korrekt</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">Ange ett giltigt postnummer i dina butiksinställningar och försök igen</string>
+    <string name="card_reader_connect_invalid_postal_code_header">Postnumret i butiksadressen är ogiltigt</string>
+    <string name="card_reader_connect_missing_address_button">Ange adress</string>
+    <string name="card_reader_connect_missing_address">Ange din butiksadress för att fortsätta</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">Kontrollera din mobila enhet</string>
+    <string name="card_reader_m2_manual_card_reader">Stripe M2-kortläsarmanual</string>
+    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper-kortläsarmanual</string>
+    <string name="order_error_update_empty_mail">Adressen kan inte uppdateras med en tom e-postadress. Kontrollera att du kör den senaste versionen av WooCommerce.</string>
+    <string name="orderfilters_date_range_filter_last_30_days">Senaste 30 dagarna</string>
+    <string name="orderfilters_date_range_filter_last_7_days">Senaste 7 dagarna</string>
+    <string name="orderfilters_date_range_filter_last_two_days">Senaste 2 dagarna</string>
+    <string name="orderfilters_date_range_filter_today">Idag</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
+    <string name="orderfilters_default_filter_option">Alla</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">Filtrerade beställningar</string>
+    <string name="orderfilters_filter_card_title_all_orders">Alla beställningar</string>
+    <string name="orderlist_simple_payments_wip_message_disabled">Vi arbetar på att göra det enklare för dig att ta emot betalningar från din enhet! Aktivera det i Inställningar &gt; Beta-funktioner.</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Vi arbetar på att göra det enklare för dig att ta emot betalningar från din enhet! För tillfället kan du trycka på \"+\"-knappen för att skapa en beställning med det belopp som du vill ta emot.</string>
     <string name="jetpack_benefits_modal_dismiss">Inte nu</string>
     <string name="jetpack_benefits_modal_install_jetpack">Installera Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Tillåt flera användare att komma åt WooCommerce Mobile.</string>
@@ -16,9 +114,7 @@ Language: sv_SE
     <string name="jetpack_benefits_modal_push_notifications_title">Push-notiser</string>
     <string name="jetpack_benefits_modal_subtitle">Installera det kostnadsfria Jetpack-tillägget för den bästa mobilupplevelsen.</string>
     <string name="jetpack_benefits_modal_title">Få ut så mycket som möjligt av din butik</string>
-    <string name="settings_enable_quick_order_teaser_message">Testa att skapa beställningar med minimalt med information medan vi gör oss redo för lansering</string>
-    <string name="settings_enable_quick_order_teaser_title">Snabb beställning</string>
-    <string name="beta_features_message">Visa tillägg, snabb beställning</string>
+    <string name="settings_enable_simple_payments_teaser_message">Testa att skapa beställningar med minimalt med information medan vi gör oss redo för lansering</string>
     <string name="order_detail_use_as_shipping_address">Använd som leveransadress</string>
     <string name="order_detail_use_as_billing_address">Använd som faktureringsadress</string>
     <string name="orderfilters_filters_count_title">Filter (%d)</string>
@@ -37,7 +133,6 @@ Language: sv_SE
     <string name="product_description_hint_with_title">Berätta mer om %s …</string>
     <string name="product_description_hint_no_title">Beskriv din produkt för dina framtida kunder…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Läsarens serienummer kopierad till urklipp</string>
-    <string name="card_reader_manual_card_reader">Kortläsarmanual</string>
     <string name="order_detail_add_billing_address">Lägg till faktureringsadress</string>
     <string name="order_detail_add_shipping_address">Lägg till leveransadress</string>
     <string name="order_detail_add_customer_note">Lägg till kundanteckning</string>
@@ -45,7 +140,6 @@ Language: sv_SE
     <string name="order_detail_shipping_address_section">Leveransadress</string>
     <string name="order_detail_address_section">Adress</string>
     <string name="order_detail_edit_address_country">Land</string>
-    <string name="order_detail_edit_address_state">Delstat/län</string>
     <string name="order_detail_edit_address_zip">Postnummer</string>
     <string name="order_detail_edit_address_city">Ort</string>
     <string name="order_detail_edit_address_line2">Adress 2</string>
@@ -125,7 +219,6 @@ Language: sv_SE
     <string name="card_reader_purchase_card_reader">Beställ kortläsare</string>
     <string name="card_reader_manage_card_reader">Hantera kortläsare</string>
     <string name="shipping_label_multiple_customs_form_print_button">Skriv ut</string>
-    <string name="shipping_label_edit_address_state">Delstat/län</string>
     <string name="shipping_label_edit_address_line2">Adressrad 2</string>
     <string name="shipping_label_edit_address_line1">Adressrad 1</string>
     <string name="shipping_label_print_multiple_screen_title">Skriv ut fraktetikett</string>
@@ -156,7 +249,7 @@ Language: sv_SE
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Payments är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Uppdatera WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Uppdatera</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">Du är nästan framme! Slutför konfigurationen av WooCommerce Payments för att börja ta emot kortbetalningar.</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Du är nästan där! Slutför konfigurationen av WooCommerce Payments för att börja ta emot personliga betalningar.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Slutför konfigurationen av WooCommerce Payments i adminpanelen för din butik</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Uppdatera efter aktivering</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">Utökningen WooCommerce Payments är installerad för din butik, men den har inte aktiverats. Aktivera den för att ta emot personliga betalningar.</string>
@@ -183,7 +276,7 @@ Language: sv_SE
     <string name="product_attributes_created_generate_action_text">Generera variation</string>
     <string name="product_attributes_created_description">Nu när du har lagt till attribut kan du skapa din första variation!</string>
     <string name="product_attributes_created_title">Attribut skapade</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% slutförd</string>
     <string name="card_reader_software_update_progress_cancel_warning">Att avbryta en pågående programvaruuppdatering är inte att rekommendera</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Denna betalning kunde inte bearbetas</string>
     <string name="card_reader_payment_failed_server_error_state">Ingen anslutning till server</string>
@@ -234,7 +327,6 @@ Language: sv_SE
     <string name="card_reader_connect_multiple_readers_found_header">Flera läsare hittade</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">Beställningen är redan betald</string>
     <string name="card_reader_payment_receipt_email_content">Tack för ditt köp! Klicka på länken nedan för att visa ditt betalningskvitto.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">Kort avvisades</string>
     <string name="shipping_label_print_customs_form_download_failed">Det gick inte att ladda ner tullformuläret</string>
     <string name="shipping_label_print_customs_form_screen_title">Skriv ut tullfaktura</string>
     <string name="shipping_label_print_customs_form">Skriv ut tullformulär</string>
@@ -273,7 +365,6 @@ Language: sv_SE
     <string name="shipping_label_rate_included_options_usps_tracking">USPS-spårning</string>
     <string name="card_reader_software_update_in_progress_title">Uppdaterar din läsares programvara</string>
     <string name="card_reader_software_update_title">Programvaruuppdatering</string>
-    <string name="card_reader_software_update_description">Din kortläsares programvara behöver uppdateras för att fungera korrekt. Vill du uppdatera den nu?</string>
     <string name="card_reader_detail_connected_update_success">Läsarens programvara har uppdaterats</string>
     <string name="card_reader_detail_connected_reader_unknown">OKÄNT KORTLÄSARNAMN</string>
     <string name="card_reader_detail_connected_disconnect_reader">Koppla från läsare</string>
@@ -344,7 +435,7 @@ Language: sv_SE
     <string name="card_reader_connect_open_permission_settings">Öppna inställningar</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth är inaktiverat</string>
     <string name="card_reader_connect_location_provider_disabled_header">Plats är inaktiverad</string>
-    <string name="card_reader_connect_missing_permissions_header">Saknar nödvändig platsbehörighet</string>
+    <string name="card_reader_connect_missing_permissions_header">Saknar nödvändig exakt platsbehörighet</string>
     <string name="card_reader_connect_connecting_failed_hint">Det gick inte att ansluta till läsaren.</string>
     <string name="card_reader_connect_connecting_header">Ansluter till läsaren</string>
     <string name="card_reader_connect_to_reader">Anslut läsaren</string>
@@ -487,6 +578,7 @@ Language: sv_SE
     <string name="shipping_label_edit_address_use_address_as_is">Använd adressen som angavs</string>
     <string name="shipping_label_edit_address_country">Land</string>
     <string name="shipping_label_edit_address_zip">Postnummer</string>
+    <string name="shipping_label_edit_address_state">Delstat</string>
     <string name="shipping_label_edit_address_city">Ort</string>
     <string name="shipping_label_edit_address_phone">Telefon</string>
     <string name="shipping_label_edit_address_company">Företag</string>
@@ -840,7 +932,6 @@ Language: sv_SE
     <string name="product_schedule_sale_sublabel">Starta och avsluta en rea automatiskt</string>
     <string name="product_schedule_sale_label">Schemalägg rea</string>
     <string name="order_refunds_store_admin_link_text">i ditt administratörsarkiv</string>
-    <string name="orders_empty_message_with_order_status_filter">Vi hittade inga %s-ordrar</string>
     <string name="product_inventory_update_sku_error">SKU används redan av en annan produkt</string>
     <string name="product_shipping_settings">Fraktinställningar</string>
     <string name="product_no_shipping_class">Ingen fraktklass</string>
@@ -1679,6 +1770,18 @@ Language: sv_SE
     <string name="all">Alla</string>
     <string name="notification_channel_general_title">Allmänt</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>Behandlas</item>
         <item>Alla ordrar</item>

@@ -1,11 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-11-09 17:54:03+0000
+Translation-Revision-Date: 2021-12-20 19:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="order_creation_add_customer_note">إضافة ملاحظة</string>
+    <string name="order_creation_customer_note">ملحوظة العميل</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">التنشيط بعد التحديث</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">تم تثبيت إصدار قديم من إضافة بوابة دفع WooCommerce Stripe على مخزنك. يرجى تحديثه لقبول المدفوعات الشخصية.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">تحديث بوابة دفع WooCommerce Stripe</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">تجديد</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">لقد أوشكت على الانتهاء! يرجى الانتهاء من إعداد بوابة دفع WooCommerce Stripe لبدء قبول المدفوعات الشخصية.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">الانتهاء من إعداد بوابة دفع WooCommerce Stripe في مسؤول مخزنك</string>
+    <string name="card_reader_payment_failed_unknown">تم رفض عملية الدفع لسبب غير معروف</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">تم استخدام بطاقة مباشرة على موقع في وضع الاختبار</string>
+    <string name="card_reader_payment_failed_test_card">غير مسموح ببطاقات اختبار النظام للدفع</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">تم إدخال رمز PIN غير صحيح عدة مرات</string>
+    <string name="card_reader_payment_failed_pin_required">تتطلب هذه البطاقة رمز PIN، ولهذا السبب تتعذر معالجته</string>
+    <string name="card_reader_payment_failed_invalid_amount">مبلغ عملية الدفع غير مسموح به للبطاقة التي تم تقديمها</string>
+    <string name="card_reader_payment_failed_insufficient_funds">تم رفض عملية الدفع لأن الأموال غير كافية</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">الرمز البريدي للمعاملة والرمز البريدي للبطاقة غير متطابقين</string>
+    <string name="card_reader_payment_failed_expired_card">لقد انتهت صلاحية البطاقة</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">تم إرسال معاملة مماثلة مؤخرًا</string>
+    <string name="card_reader_payment_failed_currency_not_supported">لا تدعم البطاقة هذه العملة</string>
+    <string name="card_reader_payment_failed_card_not_supported">لا تدعم البطاقة نوع الشراء هذا</string>
+    <string name="card_reader_payment_failed_invalid_account">البطاقة أو حساب البطاقة غير صالحين</string>
+    <string name="card_reader_payment_failed_generic">تم رفض عملية الدفع لسبب غير محدَّد</string>
+    <string name="card_reader_payment_failed_fraud">تجربة وسائل دفع أخرى</string>
+    <string name="card_reader_payment_failed_temporary">قد تنجح المحاولة مرة أخرى</string>
+    <string name="order_creation_fragment_title">طلب جديد</string>
+    <string name="analytics_date_range_selector_description">محدِّد عامل تصفية نطاق التاريخ</string>
+    <string name="analytics_date_range_from_date">مقابل الفترة السابقة (⁦%1$s⁩)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">منذ بداية العام حتى تاريخه</string>
+    <string name="date_timeframe_quarter_to_date">منذ بداية الربع حتى تاريخه</string>
+    <string name="date_timeframe_month_to_date">منذ بداية الشهر حتى تاريخه</string>
+    <string name="date_timeframe_week_to_date">منذ بداية الأسبوع حتى تاريخه</string>
+    <string name="date_timeframe_last_year">العام الماضي</string>
+    <string name="date_timeframe_last_quarter">الربع الأخير</string>
+    <string name="date_timeframe_last_month">الشهر الماضي</string>
+    <string name="date_timeframe_last_week">الأسبوع الماضي</string>
+    <string name="settings_enable_order_creation_teaser_message">اختبر إنشاء الطلبات باستخدام تفاصيل كاملة بينما نستعد لإطلاقها</string>
+    <string name="settings_enable_order_creation_teaser_title">إنشاء الطلب</string>
+    <string name="settings_enable_simple_payments_teaser_title">المدفوعات البسيطة</string>
+    <string name="beta_features_order_creation">إنشاء الطلب</string>
+    <string name="beta_features_simple_payments">المدفوعات البسيطة</string>
+    <string name="beta_features_add_ons">عرض الوظائف الإضافية</string>
+    <string name="orders_empty_message_for_filtered_orders">عذرًا، لم نتمكن من العثور على أي طلبات</string>
+    <string name="card_reader_connect_missing_bluetooth_permission_button">فتح الإعدادات</string>
+    <string name="card_reader_connect_missing_bluetooth_permissions_header">صلاحية الأجهزة القريبة المطلوبة مفقودة</string>
+    <string name="shipping_label_edit_address_country_search_hint">تصفية البلدان</string>
+    <string name="shipping_label_edit_address_state_search_hint">تصفية الحالة</string>
+    <string name="order_detail_edit_address_state">الولاية</string>
+    <string name="orderfilters_date_range_end_date">تاريخ الانتهاء</string>
+    <string name="orderfilters_date_range_start_date">تاريخ البدء</string>
+    <string name="orderfilters_date_range_picker_title">تحديد التواريخ</string>
+    <string name="orderfilters_date_range_filter_custom_range">نطاق مخصص</string>
+    <string name="orderlist_bottom_sheet_simple_payment_description">إنشاء طلب باستخدام أقل قدر من المعلومات</string>
+    <string name="orderlist_bottom_sheet_simple_payment_action">عملية دفع بسيطة</string>
+    <string name="orderlist_bottom_sheet_create_order_description">إنشاء طلب يدوي جديد</string>
+    <string name="orderlist_bottom_sheet_create_order_action">إنشاء طلب</string>
+    <string name="orderlist_create_order_button_description">إنشاء طلب</string>
+    <string name="simple_payments_creation_error">يتعذر إنشاء الطلب</string>
+    <string name="simple_payments_enter_amount">إدخال المبلغ</string>
+    <string name="simple_payments_dialog_title">تحصيل الدفع</string>
+    <string name="orderlist_simple_payments_menu">عملية دفع بسيطة</string>
+    <string name="orderlist_simple_payments_wip_title">تحصيل المدفوعات من جهازك!</string>
+    <string name="analytics">التحليلات</string>
+    <string name="jetpack_install_progress_step_four_message">كل شيء جاهز</string>
+    <string name="jetpack_install_progress_step_three_message">الاتصال بمتجرك</string>
+    <string name="jetpack_install_progress_step_two_message">جاري التفعيل</string>
+    <string name="jetpack_install_progress_step_one_message">تنصيب Jetpack</string>
+    <string name="jetpack_install_progress_subtitle">يرجى الانتظار بينما نقوم بربط %s بـ Jetpack.</string>
+    <string name="jetpack_install_progress_title">تثبيت \nJetpack</string>
+    <string name="jetpack_install_start_default_name">موقعك</string>
+    <string name="jetpack_install_start_subtitle">قم بتثبيت إضافة Jetpack المجانية على &lt;strong&gt;%s&lt;/strong&gt; للاستمتاع بأفضل تجربة على الهاتف المحمول.</string>
+    <string name="jetpack_install_start_title">تثبيت Jetpack</string>
+    <string name="product_review_list_fetching_failed">حدث خطأ في أثناء إحضار مراجعات المنتج</string>
+    <string name="card_reader_accessibility_reader_is_disconnected">القارئ غير متصل</string>
+    <string name="card_reader_accessibility_reader_is_connected">القارئ متصل</string>
+    <string name="card_reader_software_update_progress_cancel_required_warning">لا يوصى بإلغاء أي تحديث برنامج جارٍ. سيؤدي الإلغاء إلى حظر اتصال القارئ الخاص بك.</string>
+    <string name="card_reader_software_update_progress_description_low_battery_level_unknown">فشل تحديث برنامج القارئ لأن بطارية القارئ غير مشحونة بشكل كافٍ. يرجى شحن القارئ بنسبة تزيد على 50%% قبل المحاولة مرة أخرى.</string>
+    <string name="card_reader_software_update_progress_description_low_battery">فشل تحديث برنامج القارئ لأن بطارية القارئ مشحونة بنسبة ⁦%1$s⁩%%. يرجى شحن القارئ بنسبة تزيد على 50%% قبل المحاولة مرة أخرى.</string>
+    <string name="card_reader_software_update_title_battery_low">يرجى شحن القارئ</string>
+    <string name="card_reader_software_update_description">يتعين تحديث برنامج قارئ بطاقتك لكي يستمر في العمل بسلاسة.</string>
+    <string name="card_reader_connect_invalid_postal_code_hint">يرجى تقديم رمز بريدي صالح في إعدادات مخزنك والمحاولة مرة أخرى</string>
+    <string name="card_reader_connect_invalid_postal_code_header">الرمز البريدي لعنوان المخزن غير صالح</string>
+    <string name="card_reader_connect_missing_address_button">إدخال العنوان</string>
+    <string name="card_reader_connect_missing_address">يرجى تقديم عنوان مخزنك للمتابعة</string>
+    <string name="card_reader_payment_check_mobile_device_prompt">التحقُّق من جهازك المحمول</string>
+    <string name="card_reader_m2_manual_card_reader">دليل قارئ بطاقة Stripe M2</string>
+    <string name="card_reader_bbpos_manual_card_reader">دليل قارئ بطاقة BBPOS Chipper</string>
+    <string name="order_error_update_empty_mail">يتعذر تحديث العنوان باستخدام بريد إلكتروني فارغ. تأكَّد من أنك تستخدك أحدث إصدار من WooCommerce.</string>
+    <string name="orderfilters_date_range_filter_last_30_days">آخر 30 يومًا</string>
+    <string name="orderfilters_date_range_filter_last_7_days">آخر 7 أيام</string>
+    <string name="orderfilters_date_range_filter_last_two_days">آخر يومين</string>
+    <string name="orderfilters_date_range_filter_today">اليوم</string>
+    <string name="orderfilters_order_status_with_count_filter_option">%1$s (%2$d)</string>
+    <string name="orderfilters_default_filter_option">الكل</string>
+    <string name="orderfilters_filter_card_title_filtered_orders">الطلبات التي تمت تصفيتها</string>
+    <string name="orderfilters_filter_card_title_all_orders">جميع الطلبات</string>
+    <string name="orderlist_simple_payments_wip_message_disabled">نعمل على تسهيل تحصيلك المدفوعات من جهازك! قم بتمكينه في الإعدادات &gt; ميزات بيتا.</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">نعمل على تسهيل تحصيلك المدفوعات من جهازك! من الآن، اضغط الآن على زر \"+\" وستتمكن من إنشاء طلب بالمبلغ الذي ترغب في تجميعه.</string>
     <string name="jetpack_benefits_modal_dismiss">ليس الآن</string>
     <string name="jetpack_benefits_modal_install_jetpack">تثبيت Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">اسمح لعدة مستخدمين بالوصول إلى تطبيق WooCommerce للهاتف المحمول.</string>
@@ -16,9 +114,7 @@ Language: ar
     <string name="jetpack_benefits_modal_push_notifications_title">دفع التنبيهات</string>
     <string name="jetpack_benefits_modal_subtitle">قم بتثبيت إضافة Jetpack المجانية للاستمتاع بأفضل تجربة على الهاتف المحمول.</string>
     <string name="jetpack_benefits_modal_title">الاستفادة من مخزنك إلى أقصى حد</string>
-    <string name="settings_enable_quick_order_teaser_message">اختبر إنشاء الطلبات من خلال أقل قدر من المعلومات بينما نستعد لإطلاقها</string>
-    <string name="settings_enable_quick_order_teaser_title">الطلب السريع</string>
-    <string name="beta_features_message">عرض الوظائف الإضافية والطلب السريع</string>
+    <string name="settings_enable_simple_payments_teaser_message">اختبر إنشاء الطلبات من خلال أقل قدر من المعلومات بينما نستعد لإطلاقها</string>
     <string name="order_detail_use_as_shipping_address">استخدام عنوان الشحن</string>
     <string name="order_detail_use_as_billing_address">استخدام عنوان الفوترة</string>
     <string name="orderfilters_filters_count_title">عوامل التصفية (%d)</string>
@@ -37,7 +133,6 @@ Language: ar
     <string name="product_description_hint_with_title">إخبارنا بالمزيد حول %s…</string>
     <string name="product_description_hint_no_title">صِف منتجك لعملائك في المستقبل…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">تم نسخ الرقم التسلسلي للقارئ إلى الحافظة</string>
-    <string name="card_reader_manual_card_reader">دليل قارئ البطاقة</string>
     <string name="order_detail_add_billing_address">إضافة عنوان الفوترة</string>
     <string name="order_detail_add_shipping_address">إضافة عنوان الشحن</string>
     <string name="order_detail_add_customer_note">إضافة ملحوظة العميل</string>
@@ -45,7 +140,6 @@ Language: ar
     <string name="order_detail_shipping_address_section">عنوان الشحن</string>
     <string name="order_detail_address_section">العنوان</string>
     <string name="order_detail_edit_address_country">البلد</string>
-    <string name="order_detail_edit_address_state">المنطقة</string>
     <string name="order_detail_edit_address_zip">الرمز البريدي</string>
     <string name="order_detail_edit_address_city">المدينة</string>
     <string name="order_detail_edit_address_line2">العنوان 2</string>
@@ -125,7 +219,6 @@ Language: ar
     <string name="card_reader_purchase_card_reader">طلب قارئ البطاقة</string>
     <string name="card_reader_manage_card_reader">إدارة قارئ البطاقة</string>
     <string name="shipping_label_multiple_customs_form_print_button">اطبع</string>
-    <string name="shipping_label_edit_address_state">المنطقة</string>
     <string name="shipping_label_edit_address_line2">سطر العنوان 2</string>
     <string name="shipping_label_edit_address_line1">سطر العنوان 1</string>
     <string name="shipping_label_print_multiple_screen_title">طباعة ملصقات الشحن</string>
@@ -156,7 +249,6 @@ Language: ar
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">تم تثبيت إصدار قديم من إضافة مدفوعات WooCommerce على مخزنك. يرجى تحديثه لقبول المدفوعات الشخصية.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">تحديث مدفوعات WooCommerce</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">تجديد</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">لقد أوشكت على الانتهاء! يرجى الانتهاء من إعداد مدفوعات WooCommerce لبدء قبول المدفوعات الحالية بالبطاقة.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">يرجى الانتهاء من إعداد مدفوعات WooCommerce في مسؤول مخزنك</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">التنشيط بعد التفعيل</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">تم تثبيت إضافة مدفوعات WooCommerce على مخزنك ولكن لم يتم تفعيلها. يرجى تفعيلها لقبول المدفوعات الشخصية.</string>
@@ -183,7 +275,7 @@ Language: ar
     <string name="product_attributes_created_generate_action_text">إنشاء مجموعة</string>
     <string name="product_attributes_created_description">لقد قمت الآن بإضافة السمات، يمكنك إنشاء مجموعتك الأولى!</string>
     <string name="product_attributes_created_title">تم إنشاء سمات</string>
-    <string name="card_reader_software_update_progress_indicator">%1$s%%</string>
+    <string name="card_reader_software_update_progress_indicator">%1$s%% مُكتمل</string>
     <string name="card_reader_software_update_progress_cancel_warning">لا يوصى بإلغاء أي تحديث برنامج جارٍ</string>
     <string name="card_reader_payment_failed_unexpected_error_state">عذرًا، تتعذر معالجة عملية الدفع هذه</string>
     <string name="card_reader_payment_failed_server_error_state">لا اتصال بالخادم</string>
@@ -234,7 +326,6 @@ Language: ar
     <string name="card_reader_connect_multiple_readers_found_header">تم العثور على عدة قراء</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">تم دفع الطلب بالفعل</string>
     <string name="card_reader_payment_receipt_email_content">شكراً لك على شرائك! انقر على الرابط الوارد أدناه للحصول على إيصال عملية الدفع الخاصة بك.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">تم رفض البطاقة</string>
     <string name="shipping_label_print_customs_form_download_failed">حدث خطأ في أثناء تنزيل نموذج الجمارك</string>
     <string name="shipping_label_print_customs_form_screen_title">طباعة فاتورة الجمارك</string>
     <string name="shipping_label_print_customs_form">طباعة نموذج الجمارك</string>
@@ -273,7 +364,6 @@ Language: ar
     <string name="shipping_label_rate_included_options_usps_tracking">تعقب الخدمة البريدية للولايات المتحدة</string>
     <string name="card_reader_software_update_in_progress_title">تحديث برنامج قارئك</string>
     <string name="card_reader_software_update_title">تحديث برنامج</string>
-    <string name="card_reader_software_update_description">يتعين تحديث برنامج قارئ بطاقتك لكي يعمل بسلاسة. هل ترغب في تحديثه الآن؟</string>
     <string name="card_reader_detail_connected_update_success">تم تحديث برنامج القارئ</string>
     <string name="card_reader_detail_connected_reader_unknown">اسم قارئ بطاقة غير معروف</string>
     <string name="card_reader_detail_connected_disconnect_reader">فصل القارئ</string>
@@ -344,7 +434,7 @@ Language: ar
     <string name="card_reader_connect_open_permission_settings">فتح الإعدادات</string>
     <string name="card_reader_connect_bluetooth_disabled_header">تم تعطيل البلوتوث</string>
     <string name="card_reader_connect_location_provider_disabled_header">تم تعطيل الموقع</string>
-    <string name="card_reader_connect_missing_permissions_header">صلاحية الموقع المطلوب مفقودة</string>
+    <string name="card_reader_connect_missing_permissions_header">صلاحية الموقع الدقيق المطلوبة مفقودة</string>
     <string name="card_reader_connect_connecting_failed_hint">تعذر علينا الربط بالقارئ.</string>
     <string name="card_reader_connect_connecting_header">الربط بالقارئ</string>
     <string name="card_reader_connect_to_reader">الربط بالقارئ</string>
@@ -487,6 +577,7 @@ Language: ar
     <string name="shipping_label_edit_address_use_address_as_is">استخدام العنوان كما تم إدخاله</string>
     <string name="shipping_label_edit_address_country">البلد</string>
     <string name="shipping_label_edit_address_zip">الرمز البريدي</string>
+    <string name="shipping_label_edit_address_state">الولاية</string>
     <string name="shipping_label_edit_address_city">المدينة</string>
     <string name="shipping_label_edit_address_phone">الهاتف</string>
     <string name="shipping_label_edit_address_company">الشركة</string>
@@ -840,7 +931,6 @@ Language: ar
     <string name="product_schedule_sale_sublabel">بدء التخفيض وانتهاؤه تلقائيًا</string>
     <string name="product_schedule_sale_label">جدولة التخفيض</string>
     <string name="order_refunds_store_admin_link_text">في مسؤول المتجر الخاص بك</string>
-    <string name="orders_empty_message_with_order_status_filter">نأسف لذلك، لم نتمكن من العثور على أي \"%s\" من الطلبات</string>
     <string name="product_inventory_update_sku_error">وحدة SKU قيد الاستخدام بالفعل بواسطة منتج آخر</string>
     <string name="product_shipping_settings">إعدادات الشحن</string>
     <string name="product_no_shipping_class">لا توجد فئة شحن</string>
@@ -1679,6 +1769,18 @@ Language: ar
     <string name="all">الكل</string>
     <string name="notification_channel_general_title">عام</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>قيد المعالجة</item>
         <item>جميع الطلبات</item>

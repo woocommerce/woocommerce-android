@@ -8,6 +8,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivitySsrBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
@@ -15,8 +17,8 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.copyToClipboard
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 import java.lang.IllegalStateException
@@ -40,6 +42,12 @@ class SSRActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setupObservers(binding)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        AnalyticsTracker.track(Stat.SUPPORT_SSR_OPENED)
     }
 
     private fun setupObservers(binding: ActivitySsrBinding) {
@@ -85,6 +93,7 @@ class SSRActivity : AppCompatActivity() {
     private fun copySSRToClipboard(text: String) {
         try {
             copyToClipboard(getString(R.string.support_system_status_report_clipboard_label), text)
+            AnalyticsTracker.track(Stat.SUPPORT_SSR_COPY_BUTTON_TAPPED)
             ToastUtils.showToast(this, R.string.support_system_status_report_copied_to_clipboard)
         } catch (e: IllegalStateException) {
             WooLog.e(T.UTILS, e)

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
@@ -17,6 +18,7 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -31,14 +33,13 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.*
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
+import kotlinx.coroutines.flow.collect
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
@@ -46,22 +47,18 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class MyStoreFragment :
-    TopLevelFragment(R.layout.fragment_my_store),
-    MyStoreContract.View,
-    MyStoreStatsListener {
+class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
         private const val STATE_KEY_TAB_POSITION = "tab-stats-position"
-        private const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
-        private const val STATE_KEY_IS_EMPTY_VIEW_SHOWING = "is-empty-view-showing"
 
         fun newInstance() = MyStoreFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
     }
 
-    @Inject lateinit var presenter: MyStoreContract.Presenter
+    private val viewModel: MyStoreViewModel by activityViewModels()
+
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -70,7 +67,6 @@ class MyStoreFragment :
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
 
-    override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
 
     private var tabStatsPosition: Int = 0 // Save the current position of stats tab view
@@ -91,17 +87,14 @@ class MyStoreFragment :
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
 
-    private val myStoreDateBar
-        get() = binding.myStoreDateBar
-
     private var isEmptyViewVisible: Boolean = false
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
             tabStatsPosition = tab.position
-            myStoreDateBar.clearDateRangeValues()
+            viewModel.onStatsGranularityChanged(activeGranularity)
             binding.myStoreStats.loadDashboardStats(activeGranularity)
-            binding.myStoreTopPerformers.loadTopPerformerStats(activeGranularity)
+            binding.myStoreTopPerformers.onDateGranularityChanged(activeGranularity)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -118,23 +111,15 @@ class MyStoreFragment :
         _binding = FragmentMyStoreBinding.bind(view)
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
-            // Track the user gesture
-            AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
-
-            MyStorePresenter.resetForceRefresh()
             binding.myStoreRefreshLayout.isRefreshing = false
-            refreshMyStoreStats(forced = true)
+            viewModel.onSwipeToRefresh()
+            binding.myStoreStats.clearStatsHeaderValues()
+            binding.myStoreStats.clearChartData()
         }
 
         savedInstanceState?.let { bundle ->
-            isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)
             tabStatsPosition = bundle.getInt(STATE_KEY_TAB_POSITION)
-            if (bundle.getBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING)) {
-                showEmptyView(true)
-            }
         }
-
-        presenter.takeView(this)
 
         // Create tabs and add to appbar
         StatsGranularity.values().forEach { granularity ->
@@ -150,22 +135,14 @@ class MyStoreFragment :
             }
         }
 
-        myStoreDateBar.initView(dateUtils)
-
         binding.myStoreStats.initView(
             activeGranularity,
-            listener = this,
-            selectedSite = selectedSite,
-            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
-            dateUtils = dateUtils
+            selectedSite,
+            dateUtils,
+            currencyFormatter
         )
 
-        binding.myStoreTopPerformers.initView(
-            listener = this,
-            selectedSite = selectedSite,
-            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
-            statsCurrencyCode = presenter.getStatsCurrency().orEmpty()
-        )
+        binding.myStoreTopPerformers.initView(selectedSite)
 
         val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
         binding.myStoreStatsAvailabilityMessage.setClickableText(
@@ -178,13 +155,77 @@ class MyStoreFragment :
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
-        refreshMyStoreStats(forced = this.isRefreshPending)
+        setupStateObservers()
     }
 
-    private fun prepareJetpackBenefitsBanner() {
-        binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
-            presenter.dismissJetpackBenefitsBanner()
+    @Suppress("ComplexMethod")
+    private fun setupStateObservers() {
+        viewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
+            when (revenueStats) {
+                is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats)
+                RevenueStatsViewState.GenericError -> showStatsError()
+                RevenueStatsViewState.Loading -> showChartSkeleton(true)
+                RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
+            }
         }
+        viewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
+            when (stats) {
+                is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
+                VisitorStatsViewState.Error -> binding.myStoreStats.showVisitorStatsError()
+                is VisitorStatsViewState.JetpackCpConnected -> onJetpackCpConnected(stats.benefitsBanner)
+                is VisitorStatsViewState.PostJetpackInstalled -> binding.jetpackBenefitsBanner.root.isVisible = false
+            }
+        }
+        viewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
+            when (topPerformers) {
+                is TopPerformersViewState.Loading -> showTopPerformersLoading()
+                is TopPerformersViewState.Error -> showTopPerformersError()
+                is TopPerformersViewState.Content -> showTopPerformers(topPerformers.topPerformers)
+            }
+        }
+        viewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
+            when (newValue) {
+                OrderState.Empty -> showEmptyView(true)
+                OrderState.AtLeastOne -> showEmptyView(false)
+            }
+        }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OpenTopPerformer -> findNavController().navigateSafely(
+                    NavGraphMainDirections.actionGlobalProductDetailFragment(
+                        remoteProductId = event.productId,
+                        isTrashEnabled = false
+                    )
+                )
+                else -> event.isHandled = false
+            }
+        }
+    }
+
+    private fun onJetpackCpConnected(benefitsBanner: BenefitsBannerUiModel) {
+        showEmptyVisitorStatsForJetpackCP()
+        if (benefitsBanner.show) {
+            binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
+                benefitsBanner.onDismiss()
+            }
+        }
+        if (benefitsBanner.show && !binding.jetpackBenefitsBanner.root.isVisible) {
+            AnalyticsTracker.track(
+                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
+            )
+        }
+        binding.jetpackBenefitsBanner.root.isVisible = benefitsBanner.show
+    }
+
+    private fun showTopPerformersLoading() {
+        binding.myStoreTopPerformers.showErrorView(false)
+        binding.myStoreTopPerformers.showSkeleton(true)
+    }
+
+    @Suppress("ForbiddenComment")
+    private fun prepareJetpackBenefitsBanner() {
+        binding.jetpackBenefitsBanner.root.isVisible = false
         binding.jetpackBenefitsBanner.root.setOnClickListener {
             AnalyticsTracker.track(
                 stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
@@ -194,12 +235,17 @@ class MyStoreFragment :
         }
         val appBarLayout = appBarLayout ?: return
         // For the banner to be above the bottom navigation view when the toolbar is expanded
-        appBarLayout.verticalOffsetChanges()
-            .onEach { verticalOffset ->
-                binding.jetpackBenefitsBanner.root.translationY =
-                    (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
-            }
-            .launchIn(viewLifecycleOwner.lifecycleScope)
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
+            // we are using `launchWhenCreated` here, since if this view doesn't reach the created state,
+            // the scope will not get cancelled.
+            // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
+            appBarLayout.verticalOffsetChanges()
+                .collect { verticalOffset ->
+                    binding.jetpackBenefitsBanner.root.translationY =
+                        (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
+                }
+        }
     }
 
     private fun initTabLayout() {
@@ -219,12 +265,9 @@ class MyStoreFragment :
     }
 
     override fun onDestroyView() {
-        binding.myStoreStats.removeListener()
-        binding.myStoreTopPerformers.removeListener()
         removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         _tabLayout = null
-        presenter.dropView()
         super.onDestroyView()
         _binding = null
     }
@@ -246,133 +289,67 @@ class MyStoreFragment :
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putInt(STATE_KEY_TAB_POSITION, tabStatsPosition)
-        outState.putBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING, isEmptyViewVisible)
     }
 
-    override fun showStats(
-        revenueStatsModel: WCRevenueStatsModel?,
-        granularity: StatsGranularity
-    ) {
+    private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
         addTabLayoutToAppBar()
-        // Only update the order stats view if the new stats match the currently selected timeframe
-        if (activeGranularity == granularity) {
-            binding.myStoreStats.showErrorView(false)
-            binding.myStoreStats.updateView(revenueStatsModel, presenter.getStatsCurrency())
-            myStoreDateBar.updateDateRangeView(revenueStatsModel, granularity)
-        }
+        binding.myStoreStats.showErrorView(false)
+        showChartSkeleton(false)
+        binding.myStoreStats.updateView(revenueStatsModel)
     }
 
-    override fun showStatsError(granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            showStats(null, granularity)
-            binding.myStoreStats.showErrorView(true)
-            showErrorSnack()
-        }
+    private fun showStatsError() {
+        showChartSkeleton(false)
+        binding.myStoreStats.showErrorView(true)
+        showErrorSnack()
     }
 
-    override fun updateStatsAvailabilityError() {
+    private fun updateStatsAvailabilityError() {
         binding.myStoreRefreshLayout.visibility = View.GONE
         WooAnimUtils.fadeIn(binding.statsErrorScrollView)
         removeTabLayoutFromAppBar()
+        showChartSkeleton(false)
     }
 
-    override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            binding.myStoreTopPerformers.showErrorView(false)
-            binding.myStoreTopPerformers.updateView(topPerformers)
-        }
+    private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>) {
+        binding.myStoreTopPerformers.showSkeleton(false)
+        binding.myStoreTopPerformers.showErrorView(false)
+        binding.myStoreTopPerformers.updateView(topPerformers)
     }
 
-    override fun showTopPerformersError(granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            binding.myStoreTopPerformers.updateView(emptyList())
-            binding.myStoreTopPerformers.showErrorView(true)
-            showErrorSnack()
-        }
+    private fun showTopPerformersError() {
+        binding.myStoreTopPerformers.showSkeleton(false)
+        binding.myStoreTopPerformers.showErrorView(true)
+        showErrorSnack()
     }
 
-    override fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            binding.myStoreStats.showVisitorStats(visitorStats)
-            if (granularity == StatsGranularity.DAYS) {
-                binding.emptyStatsView.updateVisitorCount(visitorStats.values.sum())
-            }
-        }
+    private fun showVisitorStats(visitorStats: Map<String, Int>) {
+        binding.myStoreStats.showVisitorStats(visitorStats)
     }
 
-    override fun showVisitorStatsError(granularity: StatsGranularity) {
-        if (activeGranularity == granularity) {
-            binding.myStoreStats.showVisitorStatsError()
-        }
-    }
-
-    override fun showEmptyVisitorStatsForJetpackCP() {
+    private fun showEmptyVisitorStatsForJetpackCP() {
         binding.myStoreStats.showEmptyVisitorStatsForJetpackCP()
     }
 
-    override fun showErrorSnack() {
+    private fun showErrorSnack() {
         if (errorSnackbar?.isShownOrQueued == false || NetworkUtils.isNetworkAvailable(context)) {
             errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
             errorSnackbar?.show()
         }
     }
 
-    override fun showJetpackBenefitsBanner(show: Boolean) {
-        binding.jetpackBenefitsBanner.root.isVisible = show
-    }
-
     override fun getFragmentTitle() = getString(R.string.my_store)
 
-    override fun getFragmentSubtitle(): String = presenter.getSelectedSiteName() ?: ""
+    override fun getFragmentSubtitle(): String = viewModel.getSelectedSiteName()
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
     }
 
-    override fun refreshMyStoreStats(forced: Boolean) {
-        // If this fragment is currently active, force a refresh of data. If not, set
-        // a flag to force a refresh when it becomes active
-        if (forced) {
-            binding.myStoreStats.clearLabelValues()
-            binding.myStoreStats.clearChartData()
-            myStoreDateBar.clearDateRangeValues()
-        }
-        presenter.run {
-            loadStats(activeGranularity, forced)
-            loadTopPerformersStats(activeGranularity, forced)
-        }
-    }
-
-    override fun showChartSkeleton(show: Boolean) {
-        binding.myStoreStats.showSkeleton(show)
-    }
-
-    override fun showTopPerformersSkeleton(show: Boolean) {
-        binding.myStoreTopPerformers.showSkeleton(show)
-    }
-
-    override fun onRequestLoadStats(period: StatsGranularity) {
+    private fun showChartSkeleton(show: Boolean) {
         binding.myStoreStats.showErrorView(false)
-        presenter.loadStats(period)
-    }
-
-    override fun onRequestLoadTopPerformersStats(period: StatsGranularity) {
-        binding.myStoreTopPerformers.showErrorView(false)
-        presenter.loadTopPerformersStats(period)
-    }
-
-    override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {
-        mainNavigationRouter?.showProductDetail(topPerformer.product.remoteProductId)
-    }
-
-    override fun onChartValueSelected(dateString: String, period: StatsGranularity) {
-        myStoreDateBar.updateDateViewOnScrubbing(dateString, period)
-    }
-
-    override fun onChartValueUnSelected(revenueStatsModel: WCRevenueStatsModel?, period: StatsGranularity) {
-        myStoreDateBar.updateDateRangeView(revenueStatsModel, period)
+        binding.myStoreStats.showSkeleton(show)
     }
 
     /**
@@ -431,7 +408,7 @@ class MyStoreFragment :
         }
     }
 
-    override fun showEmptyView(show: Boolean) {
+    private fun showEmptyView(show: Boolean) {
         val dashboardVisibility: Int
         if (show) {
             dashboardVisibility = View.GONE
@@ -439,15 +416,11 @@ class MyStoreFragment :
                 AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
                 ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
-            binding.emptyStatsView.visibility = View.VISIBLE
         } else {
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
-            binding.emptyStatsView.visibility = View.GONE
         }
-
         tabLayout.visibility = dashboardVisibility
-        myStoreDateBar.visibility = dashboardVisibility
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show

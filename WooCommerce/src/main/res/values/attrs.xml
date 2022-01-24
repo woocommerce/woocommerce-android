@@ -24,6 +24,7 @@
         <attr name="settingsOptionValueStyle" format="reference" />
         <attr name="settingsCategoryHeaderStyle" format="reference" />
         <attr name="settingsButtonStyle" format="reference" />
+        <attr name="secondaryTextButtonStyle" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="WCTextViewCompat">
@@ -180,6 +181,13 @@
         <attr name="circleProgressRestColor" format="color" />
         <attr name="circleProgressBorderColor" format="color" />
         <attr name="circleProgressBorderSize" format="dimension" />
+    </declare-styleable>
+
+
+    <declare-styleable name="OrderCreationSectionView">
+        <attr name="header" format="string" />
+        <attr name="keepAddButtons" format="boolean" />
+        <attr name="hasEditButton" format="boolean" />
     </declare-styleable>
 
 </resources>

@@ -147,7 +147,6 @@ class VariationListFragment :
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) {
                 binding.loadMoreProgress.isVisible = it
             }
-            new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { showWarning(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible, ::handleEmptyViewChanges)
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 showProgressDialog(it, R.string.variation_create_dialog_title)
@@ -180,10 +179,6 @@ class VariationListFragment :
         handleResult<DeletedVariationData>(KEY_VARIATION_DETAILS_RESULT) {
             viewModel.onVariationDeleted(it.productID, it.variationID)
         }
-    }
-
-    private fun showWarning(isVisible: Boolean) {
-        binding.variationVisibilityWarning.isVisible = isVisible
     }
 
     private fun openVariationDetail(variation: ProductVariation) {

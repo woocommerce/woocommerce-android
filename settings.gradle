@@ -1,7 +1,7 @@
 pluginManagement {
     gradle.ext.agpVersion = '4.2.2'
-    gradle.ext.daggerVersion = '2.40.1'
-    gradle.ext.detektVersion = '1.18.1'
+    gradle.ext.daggerVersion = '2.40.5'
+    gradle.ext.detektVersion = '1.19.0'
     gradle.ext.kotlinVersion = '1.5.31'
     gradle.ext.navigationVersion = '2.4.0-beta02'
 
@@ -18,7 +18,7 @@ pluginManagement {
         id 'com.google.gms.google-services' version '4.3.8'
         id 'io.github.wzieba.tracks.plugin' version '1.0.0'
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
-        id 'io.sentry.android.gradle' version '2.0.0'
+        id 'io.sentry.android.gradle' version '2.1.5'
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
@@ -51,6 +51,7 @@ gradle.ext.mediaPickerBinaryPath = "org.wordpress:mediapicker"
 gradle.ext.mediaPickerDomainBinaryPath = "org.wordpress.mediapicker:domain"
 gradle.ext.mediaPickerSourceDeviceBinaryPath = "org.wordpress.mediapicker:source-device"
 gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gif"
+gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:source-wordpress"
 
 def localBuilds = new File('local-builds.gradle')
 if (localBuilds.exists()) {
@@ -93,6 +94,7 @@ if (localBuilds.exists()) {
                 substitute module("$gradle.ext.mediaPickerDomainBinaryPath") with project(':mediapicker:domain')
                 substitute module("$gradle.ext.mediaPickerSourceDeviceBinaryPath") with project(':mediapicker:source-device')
                 substitute module("$gradle.ext.mediaPickerSourceGifBinaryPath") with project(':mediapicker:source-gif')
+                substitute module("$gradle.ext.mediaPickerSourceWordPressBinaryPath") with project(':mediapicker:source-wordpress')
             }
         }
     }

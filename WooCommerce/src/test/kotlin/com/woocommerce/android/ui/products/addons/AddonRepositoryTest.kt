@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.products.addons
 
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultAddonsList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
@@ -20,7 +22,6 @@ import org.mockito.Mockito.times
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -39,6 +40,12 @@ class AddonRepositoryTest {
     private val localSiteID = 321
     private val remoteOrderID = 123L
     private val remoteProductID = 333L
+
+    private val orderMapper = OrderMapper(
+        getLocations = mock {
+            on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
+        }
+    )
 
     @Before
     fun setUp() {
@@ -70,7 +77,7 @@ class AddonRepositoryTest {
             ?.let { (productAddons, orderAddons) ->
 
                 verify(orderStoreMock, times(1))
-                    .getOrderByIdentifier(OrderIdentifier(321, 123))
+                    .getOrderByIdAndSite(123L, siteModelMock)
 
                 verify(productStoreMock, times(1))
                     .getProductByRemoteId(siteModelMock, 333)
@@ -91,7 +98,7 @@ class AddonRepositoryTest {
             ?.let { (_, orderAddons) ->
 
                 verify(orderStoreMock, times(1))
-                    .getOrderByIdentifier(OrderIdentifier(321, 123))
+                    .getOrderByIdAndSite(123L, siteModelMock)
 
                 verify(productStoreMock, times(1))
                     .getProductByRemoteId(siteModelMock, 333)
@@ -124,7 +131,7 @@ class AddonRepositoryTest {
     fun `containsAddonsFrom should return true for valid OrderItem`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
-        val orderItem = defaultWCOrderModel.toAppModel().items.first()
+        val orderItem = defaultWCOrderModel.let { orderMapper.toAppModel(it) }.items.first()
 
         assertThat(repositoryUnderTest.containsAddonsFrom(orderItem)).isTrue
     }
@@ -133,7 +140,7 @@ class AddonRepositoryTest {
     fun `containsAddonsFrom should return false when requested with invalid OrderItem`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
-        val orderItem = defaultWCOrderModel.toAppModel().items.first()
+        val orderItem = defaultWCOrderModel.let { orderMapper.toAppModel(it) }.items.first()
             .copy(
                 attributesList = listOf(
                     Order.Item.Attribute("Invalid", "Invalid"),
@@ -179,14 +186,12 @@ class AddonRepositoryTest {
         assertThat(repositoryUnderTest.hasAnyProductSpecificAddons(remoteProductID)).isEqualTo(true)
     }
 
-    private fun configureSuccessfulOrderResponse() {
+    private suspend fun configureSuccessfulOrderResponse() {
         mock<WCOrderModel>().apply {
             whenever(getLineItemList()).thenReturn(defaultWCOrderItemList)
         }.let {
             whenever(
-                orderStoreMock.getOrderByIdentifier(
-                    OrderIdentifier(localSiteID, remoteOrderID)
-                )
+                orderStoreMock.getOrderByIdAndSite(remoteOrderID, siteModelMock)
             ).thenReturn(it)
         }
     }
