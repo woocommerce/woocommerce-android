@@ -16,14 +16,7 @@ if [ "${CIRCLE_PULL_REQUEST##*/}" != "" ]; then
   githubResponse="$(curl "$githubUrl" -H "Authorization: token $GITHUB_API_TOKEN")"
   targetBranch=$(echo "$githubResponse" | tr '\r\n' ' ' | jq '.base.ref' | tr -d '"')
 
-  git fetch && git merge --no-commit --no-ff "origin/$targetBranch"
-  if [ $? != 0 ]; then
-    echo "Merge conflicts detected. Please resolve"
-    exit 1
-  fi
-
-  git merge --abort
-  git merge "origin/$targetBranch" --no-edit
+git merge "origin/$targetBranch" --no-edit
 
   if [[ $(git diff --name-status "$targetBranch" | grep ".gradle") ]]; then
       echo ".gradle files have been changed. Looking for caused dependency changes"
