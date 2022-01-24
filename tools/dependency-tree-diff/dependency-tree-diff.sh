@@ -5,10 +5,9 @@ CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE="current_branch_dependencies.txt"
 DIFF_DEPENDENCIES_FOLDER="./build/reports/diff"
 DIFF_DEPENDENCIES_FILE="$DIFF_DEPENDENCIES_FOLDER/diff_dependencies.txt"
 CONFIGURATION="vanillaReleaseRuntimeClasspath"
+DEPENDENCY_TREE_VERSION="1.2.0"
 
 if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-  curl -L "https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64" -o jq
-  chmod +x jq
   prNumber=$(echo "$CIRCLE_PULL_REQUEST" | sed "s/^.*\/\([0-9]*$\)/\1/")
   githubUrl="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$prNumber"
   githubResponse="$(curl "$githubUrl" -H "Authorization: token $GITHUB_API_TOKEN")"
@@ -23,7 +22,9 @@ if [ -n "$CIRCLE_PULL_REQUEST" ]; then
   ./gradlew :WooCommerce:dependencies --configuration $CONFIGURATION >$CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE
 
   # https://github.com/JakeWharton/dependency-tree-diff
-  ./tools/dependency-tree-diff/dependency-tree-diff.jar $TARGET_BRANCH_DEPENDENCIES_FILE $CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE >$DIFF_DEPENDENCIES_FILE
+  curl -L "https://github.com/JakeWharton/dependency-tree-diff/releases/download/$DEPENDENCY_TREE_VERSION/dependency-tree-diff.jar" -o dependency-tree-diff.jar
+  chmod +x dependency-tree-diff.jar
+  ./dependency-tree-diff.jar $TARGET_BRANCH_DEPENDENCIES_FILE $CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE >$DIFF_DEPENDENCIES_FILE
 
   if [ -s $DIFF_DEPENDENCIES_FILE ]; then
     echo "There are changes in dependencies of the project"
