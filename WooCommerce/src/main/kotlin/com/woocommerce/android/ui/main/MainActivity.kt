@@ -31,7 +31,10 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.active
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -56,7 +59,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
-import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -796,7 +798,6 @@ class MainActivity :
         tempStatus: String?
     ) {
         if (launchedFromNotification) {
-            showBottomNav()
             binding.bottomNav.currentPosition = MORE
             binding.bottomNav.active(MORE.position)
         }
@@ -851,7 +852,6 @@ class MainActivity :
         launchedFromNotification: Boolean
     ) {
         if (launchedFromNotification) {
-            showBottomNav()
             binding.bottomNav.currentPosition = ORDERS
             binding.bottomNav.active(ORDERS.position)
         }
