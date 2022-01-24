@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.internal.connection
 
 import com.stripe.stripeterminal.external.models.ConnectionStatus
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock

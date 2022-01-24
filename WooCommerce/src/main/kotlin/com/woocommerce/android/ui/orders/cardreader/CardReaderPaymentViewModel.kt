@@ -325,9 +325,11 @@ class CardReaderPaymentViewModel
     }
 
     private fun startPrintingFlow() {
-        val order = orderRepository.getOrderById(arguments.orderId)
-            ?: throw IllegalStateException("Order URL not available.")
-        triggerEvent(PrintReceipt(getReceiptUrl(order.id), order.getReceiptDocumentName()))
+        launch {
+            val order = orderRepository.getOrderById(arguments.orderId)
+                ?: throw IllegalStateException("Order URL not available.")
+            triggerEvent(PrintReceipt(getReceiptUrl(order.id), order.getReceiptDocumentName()))
+        }
     }
 
     private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {

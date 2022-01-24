@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.prefs.cardreader.connect.adapter
 
 import androidx.recyclerview.widget.DiffUtil.Callback
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 
 class MultipleCardReadersFoundDiffCallback(
     private val oldList: List<ListItemViewState>,

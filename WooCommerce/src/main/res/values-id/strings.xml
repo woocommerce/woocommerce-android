@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 16:54:02+0000
+Translation-Revision-Date: 2021-12-21 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="order_creation_add_customer_note">Tambahkan catatan</string>
+    <string name="order_creation_customer_note">Catatan Pelanggan</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Segarkan setelah memperbarui</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Ekstensi WooCommerce Stripe Payment Gateway yang terpasang di toko Anda adalah versi lama. Harap perbarui untuk menerima Pembayaran Langsung.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Perbarui WooCommerce Stripe Payment Gateway</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Segarkan</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Hampir jadi! Harap selesaikan penyiapan WooCommerce Stripe Payment Gateway untuk mulai menerima Pembayaran Langsung.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Selesaikan penyiapan WooCommerce Stripe Payment Gateway di admin toko Anda</string>
+    <string name="card_reader_payment_failed_unknown">Pembayaran ditolak untuk alasan yang tidak diketahui</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">Kartu aktual digunakan untuk situs dalam mode pengujian</string>
+    <string name="card_reader_payment_failed_test_card">Kartu pengujian sistem tidak boleh digunakan untuk pembayaran</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">Batas input PIN yang salah sudah terlampaui</string>
+    <string name="card_reader_payment_failed_pin_required">Kartu ini memerlukan kode PIN, sehingga tidak dapat diproses</string>
+    <string name="card_reader_payment_failed_invalid_amount">Nilai pembayaran melewati batas untuk kartu yang dimasukkan</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Pembayaran ditolak karena dana tidak cukup</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">Kode pos pada transaksi dan kode pos pada kartu tidak cocok</string>
+    <string name="card_reader_payment_failed_expired_card">Kartu telah kedaluwarsa</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">Transaksi yang identik dilakukan baru-baru ini</string>
+    <string name="card_reader_payment_failed_currency_not_supported">Kartu tidak mendukung mata uang ini</string>
+    <string name="card_reader_payment_failed_card_not_supported">Kartu tidak mendukung jenis pembelian ini</string>
+    <string name="card_reader_payment_failed_invalid_account">Kartu atau rekening kartu tidak valid</string>
+    <string name="card_reader_payment_failed_generic">Pembayaran ditolak untuk alasan yang tidak diketahui</string>
+    <string name="card_reader_payment_failed_fraud">Coba gunakan metode pembayaran lainnya</string>
+    <string name="card_reader_payment_failed_temporary">Dengan mencoba lagi, pembayaran mungkin akan berhasil</string>
+    <string name="order_creation_fragment_title">Pesanan Baru</string>
+    <string name="analytics_date_range_selector_description">Pemilih untuk penyaring rentang tanggal</string>
+    <string name="analytics_date_range_from_date">vs Periode Sebelumnya (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">Awal Tahun hingga Saat Ini</string>
+    <string name="date_timeframe_quarter_to_date">Awal Kuartal hingga Saat Ini</string>
+    <string name="date_timeframe_month_to_date">Awal Bulan hingga Saat Ini</string>
+    <string name="date_timeframe_week_to_date">Awal Minggu hingga Saat ini</string>
+    <string name="date_timeframe_last_year">Tahun Terakhir</string>
+    <string name="date_timeframe_last_quarter">Kuartal Terakhir</string>
+    <string name="date_timeframe_last_month">Bulan Terakhir</string>
+    <string name="date_timeframe_last_week">Minggu Terakhir</string>
     <string name="settings_enable_order_creation_teaser_message">Coba buat pesanan dengan detail lengkap sembari kami bersiap untuk meluncurkan</string>
     <string name="settings_enable_order_creation_teaser_title">Pembuatan Pesanan</string>
     <string name="settings_enable_simple_payments_teaser_title">Simple payments</string>
@@ -213,7 +249,6 @@ Language: id
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Versi ekstensi WooCommerce Payments yang terpasang di toko Anda sudah usang. Harap perbarui untuk menerima Pembayaran Langsung.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Perbarui WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Segarkan</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">Hampir jadi! Harap selesaikan pengaturan WooCommerce Payments untuk mulai menerima Pembayaran dengan Kartu.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Selesaikan pengaturan WooCommerce Payments di admin toko Anda</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Segarkan setelah mengaktifkan</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">Ekstensi WooCommerce Payments sudah terpasang di toko Anda tetapi belum diaktifkan. Harap aktifkan terlebih dahulu untuk menerima Pembayaran Langsung.</string>
@@ -291,7 +326,6 @@ Language: id
     <string name="card_reader_connect_multiple_readers_found_header">Ditemukan beberapa pembaca</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">Pesanan sudah dibayar</string>
     <string name="card_reader_payment_receipt_email_content">Terima kasih atas pembelian Anda! Klik tautan di bawah untuk melihat tanda terima pembayaran Anda.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">Kartu ditolak</string>
     <string name="shipping_label_print_customs_form_download_failed">Terjadi error saat mengunduh formulir bea cukai</string>
     <string name="shipping_label_print_customs_form_screen_title">Cetak faktur bea cukai</string>
     <string name="shipping_label_print_customs_form">Cetak formulir bea cukai</string>
@@ -1735,6 +1769,18 @@ Language: id
     <string name="all">Semua</string>
     <string name="notification_channel_general_title">Umum</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>Dalam Proses</item>
         <item>Semua Pesanan</item>

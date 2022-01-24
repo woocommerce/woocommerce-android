@@ -6,6 +6,8 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.details.editing.address.testCountry
+import com.woocommerce.android.ui.orders.details.editing.address.testState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,7 +26,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     private val orderEditingRepository: OrderEditingRepository = mock()
     private val orderDetailRepository: OrderDetailRepository = mock {
-        on { getOrderById(any()) } doReturn testOrder
+        onBlocking { getOrderById(any()) } doReturn testOrder
     }
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
@@ -135,7 +137,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             )
 
             orderDetailRepository.stub {
-                on { getOrderById(any()) } doReturn originalOrder
+                onBlocking { getOrderById(any()) } doReturn originalOrder
             }
 
             orderEditingRepository.stub {
@@ -303,8 +305,8 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             firstName = "Joe",
             lastName = "Doe",
             phone = "123456789",
-            country = "United States",
-            state = "California",
+            country = testCountry,
+            state = testState,
             address1 = "Address 1",
             address2 = "",
             city = "San Francisco",

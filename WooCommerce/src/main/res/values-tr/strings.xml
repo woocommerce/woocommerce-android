@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 16:54:02+0000
+Translation-Revision-Date: 2021-12-21 14:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="order_creation_add_customer_note">Not ekle</string>
+    <string name="order_creation_customer_note">Müşteri notu</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Güncellemeden sonra yenileyin</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Mağazanızda WooCommerce Stripe Ödeme Ağ Geçidi uzantısının eski sürümü yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
+    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">WooCommerce Stripe Ödeme Ağ Geçidini Güncelle</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Yenile</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Çok az kaldı! Şahsen Ödemeleri kabul etmeye başlamak için lütfen WooCommerce Stripe Ödeme Ağ Geçidi kurulumunu tamamlayın.</string>
+    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Mağaza yöneticinizden WooCommerce Stripe Ödeme Ağ Geçidi kurulumunu tamamlayın</string>
+    <string name="card_reader_payment_failed_unknown">Bilinmeyen bir nedenle ödeme reddedildi</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">Test modunda bir sitede canlı kart kullanıldı</string>
+    <string name="card_reader_payment_failed_test_card">Sistem test kartlarına ödeme yapılmasına izin verilmiyor</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">Birçok kez yanlış PIN girildi</string>
+    <string name="card_reader_payment_failed_pin_required">Bu kart bir PIN kodu gerektirdiğinden işleme alınamıyor</string>
+    <string name="card_reader_payment_failed_invalid_amount">Belirtilen kart için ödeme tutarına izin verilmiyor</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Yetersiz bakiye nedeniyle ödeme reddedildi</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">İşlem posta kodu ve kart posta kodu eşleşmiyor</string>
+    <string name="card_reader_payment_failed_expired_card">Kartın süresi bitmiş.</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">Yakın zamanda benzer bir işlem gönderildi</string>
+    <string name="card_reader_payment_failed_currency_not_supported">Kart bu para birimini desteklemiyor</string>
+    <string name="card_reader_payment_failed_card_not_supported">Kart bu satın alma türünü desteklemiyor</string>
+    <string name="card_reader_payment_failed_invalid_account">Kart veya kart hesabı geçersiz</string>
+    <string name="card_reader_payment_failed_generic">Ödeme belirtilmeyen bir nedenle reddedildi</string>
+    <string name="card_reader_payment_failed_fraud">Başka bir ödeme yöntemi deneyin</string>
+    <string name="card_reader_payment_failed_temporary">Tekrar denemek işe yarayabilir</string>
+    <string name="order_creation_fragment_title">Yeni Sipariş</string>
+    <string name="analytics_date_range_selector_description">Tarih aralığı filtresi için seçici</string>
+    <string name="analytics_date_range_from_date">ve Önceki Dönem (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">Sene başından tarihe</string>
+    <string name="date_timeframe_quarter_to_date">Çeyrekten tarihe</string>
+    <string name="date_timeframe_month_to_date">Aydan tarihe</string>
+    <string name="date_timeframe_week_to_date">Haftadan tarihe</string>
+    <string name="date_timeframe_last_year">Geçen yıl</string>
+    <string name="date_timeframe_last_quarter">Geçen çeyrek</string>
+    <string name="date_timeframe_last_month">Geçen ay</string>
+    <string name="date_timeframe_last_week">Geçen hafta</string>
     <string name="settings_enable_order_creation_teaser_message">Biz lansmana hazırlanırken yeni manuel siparişler oluşturmayı deneyin</string>
     <string name="settings_enable_order_creation_teaser_title">Sipariş Oluştur</string>
     <string name="settings_enable_simple_payments_teaser_title">Basit ödemeler</string>
@@ -213,7 +249,6 @@ Language: tr
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">WooCommerce Payments uzantısının eski sürümü mağazanızda yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments\'ı Güncelleyin</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Yenile</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">Çok az kaldı! Card-Present Payments\'ı kabul etmeye başlamak için lütfen WooCommerce Payments kurulumunu tamamlayın.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Mağaza yönetici bölümünüzde WooCommerce Payments kurulumunu tamamlayın</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Etkinleştirdikten sonra yenileyin</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">WooCommerce Payments uzantısı mağazanıza yüklendi ancak etkinleştirilmedi. Şahsen Ödemeleri kabul etmek için lütfen etkinleştirin.</string>
@@ -291,7 +326,6 @@ Language: tr
     <string name="card_reader_connect_multiple_readers_found_header">Birkaç okuyucu bulundu</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">Siparişin ücreti zaten ödendi</string>
     <string name="card_reader_payment_receipt_email_content">Alışverişiniz için teşekkürler! Ödeme makbuzunuz için aşağıdaki bağlantıya tıklayın.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">Kart reddedildi</string>
     <string name="shipping_label_print_customs_form_download_failed">Gümrük formu indirilirken hata oluştu</string>
     <string name="shipping_label_print_customs_form_screen_title">Gümrük faturası yazdır</string>
     <string name="shipping_label_print_customs_form">Gümrük formu yazdır</string>
@@ -1735,6 +1769,18 @@ Language: tr
     <string name="all">Tümü</string>
     <string name="notification_channel_general_title">Genel</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>İşlemde</item>
         <item>Tüm Siparişler</item>

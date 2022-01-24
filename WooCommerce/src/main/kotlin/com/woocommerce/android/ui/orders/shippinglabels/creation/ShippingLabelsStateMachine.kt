@@ -162,8 +162,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(
                     State.CustomsDeclaration(data),
                     SideEffect.ShowCustomsForm(
-                        originCountryCode = data.stepsState.originAddressStep.data.country,
-                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
+                        originCountryCode = data.stepsState.originAddressStep.data.country.code,
+                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country.code,
                         shippingPackages = data.stepsState.packagingStep.data,
                         customsPackages = data.stepsState.customsStep.data ?: emptyList()
                     )
@@ -205,8 +205,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(
                     State.CustomsDeclaration(data),
                     SideEffect.ShowCustomsForm(
-                        originCountryCode = data.stepsState.originAddressStep.data.country,
-                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
+                        originCountryCode = data.stepsState.originAddressStep.data.country.code,
+                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country.code,
                         shippingPackages = data.stepsState.packagingStep.data,
                         customsPackages = data.stepsState.customsStep.data ?: emptyList()
                     )
@@ -539,7 +539,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
             val originAddress = originAddressStep.data
             val shippingAddress = shippingAddressStep.data
 
-            fun Address.isUSMilitaryState() = country == "US" && US_MILITARY_STATES.contains(state)
+            fun Address.isUSMilitaryState() =
+                country.code == "US" && US_MILITARY_STATES.contains(state.asLocation().code)
 
             return@lazy if (originAddress.isUSMilitaryState() || shippingAddress.isUSMilitaryState()) {
                 // Special case: Any shipment from/to military addresses must have Customs

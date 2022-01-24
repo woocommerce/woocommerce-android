@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -39,7 +40,8 @@ class RefundDetailViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
     private val addonsRepository: AddonRepository,
-    private val refundStore: WCRefundStore
+    private val refundStore: WCRefundStore,
+    private val orderMapper: OrderMapper,
 ) : ScopedViewModel(savedState) {
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -54,17 +56,19 @@ class RefundDetailViewModel @Inject constructor(
     private val navArgs: RefundDetailFragmentArgs by savedState.navArgs()
 
     init {
-        val orderModel = orderStore.getOrderByIdAndSite(navArgs.orderId, selectedSite.get())
-        orderModel?.toAppModel()?.let { order ->
-            formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-            if (navArgs.refundId > 0) {
-                refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)
-                    ?.toAppModel()?.let { refund ->
-                        displayRefundDetails(refund, order)
-                    }
-            } else {
-                val refunds = refundStore.getAllRefunds(selectedSite.get(), navArgs.orderId).map { it.toAppModel() }
-                displayRefundedProducts(order, refunds)
+        launch {
+            val orderModel = orderStore.getOrderByIdAndSite(navArgs.orderId, selectedSite.get())
+            orderModel?.let { orderMapper.toAppModel(it) }?.let { order ->
+                formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
+                if (navArgs.refundId > 0) {
+                    refundStore.getRefund(selectedSite.get(), navArgs.orderId, navArgs.refundId)
+                        ?.toAppModel()?.let { refund ->
+                            displayRefundDetails(refund, order)
+                        }
+                } else {
+                    val refunds = refundStore.getAllRefunds(selectedSite.get(), navArgs.orderId).map { it.toAppModel() }
+                    displayRefundedProducts(order, refunds)
+                }
             }
         }
     }

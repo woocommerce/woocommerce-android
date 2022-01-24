@@ -5,14 +5,11 @@ import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Order.*
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
-import com.woocommerce.android.util.StringUtils
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.*
 
@@ -114,6 +111,24 @@ data class Order(
                 it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
 
+        companion object {
+            val EMPTY by lazy {
+                Item(
+                    itemId = 0,
+                    productId = 0,
+                    name = "",
+                    price = BigDecimal(0),
+                    sku = "",
+                    quantity = 0f,
+                    subtotal = BigDecimal(0),
+                    totalTax = BigDecimal(0),
+                    total = BigDecimal(0),
+                    variationId = 0,
+                    attributesList = emptyList()
+                )
+            }
+        }
+
         @Parcelize
         data class Attribute(
             val key: String,
@@ -179,7 +194,7 @@ data class Order(
     fun formatBillingInformationForDisplay(): String {
         val billingName = getBillingName("")
         val billingAddress = this.billingAddress.getEnvelopeAddress()
-        val billingCountry = AddressUtils.getCountryLabelByCountryCode(this.billingAddress.country)
+        val billingCountry = AddressUtils.getCountryLabelByCountryCode(this.billingAddress.country.code)
         return this.billingAddress.getFullAddress(
             billingName, billingAddress, billingCountry
         )
@@ -188,7 +203,7 @@ data class Order(
     fun formatShippingInformationForDisplay(): String {
         val shippingName = "${shippingAddress.firstName} ${shippingAddress.lastName}"
         val shippingAddress = this.shippingAddress.getEnvelopeAddress()
-        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(this.shippingAddress.country)
+        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(this.shippingAddress.country.code)
         return this.shippingAddress.getFullAddress(
             shippingName, shippingAddress, shippingCountry
         )
@@ -281,111 +296,6 @@ data class Order(
             )
         }
     }
-}
-
-fun WCOrderModel.toAppModel(): Order {
-    @Suppress("DEPRECATION_ERROR")
-    return Order(
-        rawLocalOrderId = this.id,
-        id = this.remoteOrderId.value,
-        number = this.number,
-        dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
-        dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
-        datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
-        status = Status.fromValue(status),
-        total = this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        productsTotal = this.getOrderSubtotal().toBigDecimal().roundError(),
-        totalTax = this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        shippingTotal = this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        discountTotal = this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        refundTotal = -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
-        feesTotal = this.getFeeLineList()
-            .sumByBigDecimal { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO },
-        currency = this.currency,
-        orderKey = this.orderKey,
-        customerNote = this.customerNote,
-        discountCodes = this.discountCodes,
-        paymentMethod = this.paymentMethod,
-        paymentMethodTitle = this.paymentMethodTitle,
-        isCashPayment = CASH_PAYMENTS.contains(this.paymentMethod),
-        pricesIncludeTax = this.pricesIncludeTax,
-        multiShippingLinesAvailable = this.isMultiShippingLinesAvailable(),
-        billingAddress = this.getBillingAddress().let {
-            Address(
-                it.company,
-                it.firstName,
-                it.lastName,
-                this.billingPhone,
-                it.country,
-                it.state,
-                it.address1,
-                it.address2,
-                it.city,
-                it.postcode,
-                this.billingEmail
-            )
-        },
-        shippingAddress = this.getShippingAddress().let {
-            Address(
-                it.company,
-                it.firstName,
-                it.lastName,
-                it.phone,
-                it.country,
-                it.state,
-                it.address1,
-                it.address2,
-                it.city,
-                it.postcode,
-                ""
-            )
-        },
-        shippingMethods = getShippingLineList().filter { it.methodId != null && it.methodTitle != null }.map {
-            ShippingMethod(
-                it.methodId!!,
-                it.methodTitle!!,
-                it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-            )
-        },
-        items = getLineItemList()
-            .filter { it.productId != null && it.id != null }
-            .map {
-                Item(
-                    it.id!!,
-                    it.productId!!,
-                    it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
-                    it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.sku ?: "",
-                    it.quantity ?: 0f,
-                    it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.variationId ?: 0,
-                    it.getAttributeList().map { attribute ->
-                        Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
-                    }
-                )
-            },
-        shippingLines = getShippingLineList().map {
-            ShippingLine(
-                it.id!!,
-                it.methodId ?: StringUtils.EMPTY,
-                it.methodTitle ?: StringUtils.EMPTY,
-                it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
-            )
-        },
-        feesLines = this.getFeeLineList().map {
-            FeeLine(
-                id = it.id!!,
-                name = it.name ?: StringUtils.EMPTY,
-                totalTax = it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                total = it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            )
-        },
-        metaData = getMetaDataList().mapNotNull { it.toAppModel() }
-    )
 }
 
 fun WCOrderStatusModel.toOrderStatus(): OrderStatus {

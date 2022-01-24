@@ -64,6 +64,17 @@
             android:layout_height="wrap_content"
             app:optionTitle="@string/settings_card_reader_payments" />
 
+        <!--
+            Install Jetpack
+        -->
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_install_jetpack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/settings_install_jetpack"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
     </LinearLayout>
 
     <View style="@style/Woo.Divider" />
