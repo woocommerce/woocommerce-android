@@ -29,7 +29,7 @@ import com.woocommerce.android.R.color
 
 @ExperimentalFoundationApi
 @Composable
-fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
+fun moreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
     Column {
         Row(
             modifier = Modifier
@@ -53,7 +53,7 @@ fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
             verticalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
         ) {
             itemsIndexed(buttons) { _, item ->
-                MoreMenuButton(
+                moreMenuButton(
                     text = item.text,
                     iconDrawable = item.icon,
                     onClick = item.onClick
@@ -64,7 +64,7 @@ fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
 }
 
 @Composable
-private fun MoreMenuButton(
+private fun moreMenuButton(
     @StringRes text: Int,
     @DrawableRes iconDrawable: Int,
     onClick: () -> Unit
@@ -112,7 +112,7 @@ private fun MoreMenuButton(
 @ExperimentalFoundationApi
 @Preview
 @Composable
-fun MoreMenuPreview() {
+fun moreMenuPreview() {
     val buttons = listOf(
         MenuButton(R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin),
         MenuButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
@@ -121,5 +121,5 @@ fun MoreMenuPreview() {
         MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
         MenuButton(R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews)
     )
-    MoreMenu(buttons)
+    moreMenu(buttons)
 }

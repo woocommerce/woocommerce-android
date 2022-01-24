@@ -31,7 +31,10 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.active
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -42,6 +45,7 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.*
 import com.woocommerce.android.ui.main.MainActivityViewModel.*
+import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
@@ -55,7 +59,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
-import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -334,7 +337,7 @@ class MainActivity :
             currentDestinationId == R.id.dashboard ||
                 currentDestinationId == R.id.orders ||
                 currentDestinationId == R.id.products ||
-                currentDestinationId == R.id.more_menu ||
+                currentDestinationId == R.id.moreMenu ||
                 currentDestinationId == R.id.analytics
         } else {
             true
@@ -713,40 +716,38 @@ class MainActivity :
     // endregion
 
     private fun setupObservers() {
-        viewModel.event.observe(
-            this,
-            { event ->
-                when (event) {
-                    is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
-                    is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                    is ViewZendeskTickets -> {
-                        binding.bottomNav.currentPosition = MY_STORE
-                        startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
-                    }
-                    is ViewOrderDetail -> {
-                        showOrderDetail(
-                            orderId = event.uniqueId,
-                            remoteNoteId = event.remoteNoteId,
-                            launchedFromNotification = true
-                        )
-                    }
-                    is ViewReviewDetail -> {
-                        showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
-                    }
-                    is RestartActivityForNotification -> {
-                        // Add flags for handling the push notification after restart
-                        intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
-                        intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
-                        intent.putExtra(FIELD_PUSH_ID, event.pushId)
-                        restart()
-                    }
-                    is ShowFeatureAnnouncement -> {
-                        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
-                        navController.navigateSafely(action)
-                    }
+        viewModel.event.observe(this) { event ->
+            when (event) {
+                is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
+                is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
+                is ViewZendeskTickets -> {
+                    binding.bottomNav.currentPosition = MY_STORE
+                    startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
+                }
+                is ViewOrderDetail -> {
+                    showOrderDetail(
+                        orderId = event.uniqueId,
+                        remoteNoteId = event.remoteNoteId,
+                        launchedFromNotification = true
+                    )
+                }
+                is ViewReviewDetail -> {
+                    showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
+                }
+                is ViewReviewList -> showReviewList()
+                is RestartActivityForNotification -> {
+                    // Add flags for handling the push notification after restart
+                    intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
+                    intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
+                    intent.putExtra(FIELD_PUSH_ID, event.pushId)
+                    restart()
+                }
+                is ShowFeatureAnnouncement -> {
+                    val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+                    navController.navigateSafely(action)
                 }
             }
-        )
+        }
     }
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
@@ -782,13 +783,26 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    private fun showReviewList() {
+        showBottomNav()
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+        val action = MoreMenuFragmentDirections.actionMoreMenuToReviewList()
+        navController.navigateSafely(action)
+    }
+
     override fun showReviewDetail(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,
         enableModeration: Boolean,
         tempStatus: String?
     ) {
-        val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
+        if (launchedFromNotification) {
+            binding.bottomNav.currentPosition = MORE
+            binding.bottomNav.active(MORE.position)
+        }
+
+        val action = MoreMenuFragmentDirections.actionMoreMenuFragmentToReviewDetailFragment(
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
             launchedFromNotification = launchedFromNotification,
@@ -838,7 +852,6 @@ class MainActivity :
         launchedFromNotification: Boolean
     ) {
         if (launchedFromNotification) {
-            showBottomNav()
             binding.bottomNav.currentPosition = ORDERS
             binding.bottomNav.active(ORDERS.position)
         }
