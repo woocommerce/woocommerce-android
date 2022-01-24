@@ -29,6 +29,7 @@ if [ "${CIRCLE_PULL_REQUEST##*/}" != "" ]; then
       echo ".gradle files have been changed. Looking for caused dependency changes"
     else
       echo ".gradle files haven't been changed. There is no need to run the diff"
+      ./gradlew dependencyTreeDiffCommentToGitHub -DGITHUB_PULLREQUESTID="${CIRCLE_PULL_REQUEST##*/}" -DGITHUB_OAUTH2TOKEN="$GITHUB_API_TOKEN"
       exit 0
   fi
 
