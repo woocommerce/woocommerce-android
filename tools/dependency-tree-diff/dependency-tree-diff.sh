@@ -7,10 +7,10 @@ DIFF_DEPENDENCIES_FILE="$DIFF_DEPENDENCIES_FOLDER/diff_dependencies.txt"
 CONFIGURATION="vanillaReleaseRuntimeClasspath"
 DEPENDENCY_TREE_VERSION="1.2.0"
 
-git config --global user.email '$( git log --format='%ae' $CIRCLE_SHA1^! )'
-git config --global user.name '$( git log --format='%an' $CIRCLE_SHA1^! )'
+if [ "${CIRCLE_PULL_REQUEST##*/}" != "" ]; then
+  git config --global user.email '$( git log --format='%ae' $CIRCLE_SHA1^! )'
+  git config --global user.name '$( git log --format='%an' $CIRCLE_SHA1^! )'
 
-if [ -n "$CIRCLE_PULL_REQUEST" ]; then
   prNumber=$(echo "$CIRCLE_PULL_REQUEST" | sed "s/^.*\/\([0-9]*$\)/\1/")
   githubUrl="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$prNumber"
   githubResponse="$(curl "$githubUrl" -H "Authorization: token $GITHUB_API_TOKEN")"
