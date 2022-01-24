@@ -11,7 +11,7 @@ if [ -n "$CIRCLE_PULL_REQUEST" ]; then
   prNumber=$(echo "$CIRCLE_PULL_REQUEST" | sed "s/^.*\/\([0-9]*$\)/\1/")
   githubUrl="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$prNumber"
   githubResponse="$(curl "$githubUrl" -H "Authorization: token $GITHUB_API_TOKEN")"
-  targetBranch=$(echo "$githubResponse" | tr '\r\n' ' ' | ./jq '.base.ref' | tr -d '"')
+  targetBranch=$(echo "$githubResponse" | tr '\r\n' ' ' | jq '.base.ref' | tr -d '"')
 
   mkdir -p "$DIFF_DEPENDENCIES_FOLDER"
 
