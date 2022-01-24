@@ -278,6 +278,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         progressDialog?.isCancelable = false
     }
 
+    @Suppress("MagicNumber")
     private fun showOrHideErrorSnackBar(show: Boolean) {
         if (show) {
             val orderUpdateFailureSnackBar = orderUpdateFailureSnackBar ?: uiMessageResolver.getIndefiniteActionSnack(

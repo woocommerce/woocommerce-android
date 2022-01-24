@@ -185,10 +185,10 @@ class OrderCreationViewModel @Inject constructor(
             createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
                 .collect {
                     when (it) {
-                        OrderDraftUpdateStatus.Ongoing -> viewState =
-                            viewState.copy(isUpdatingOrderDraft = true, showOrderUpdateSnackbar = false)
-                        OrderDraftUpdateStatus.Failed -> viewState =
-                            viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                        OrderDraftUpdateStatus.Ongoing ->
+                            viewState = viewState.copy(isUpdatingOrderDraft = true, showOrderUpdateSnackbar = false)
+                        OrderDraftUpdateStatus.Failed ->
+                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
                         is OrderDraftUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = false)
                             _orderDraft.value = it.order
