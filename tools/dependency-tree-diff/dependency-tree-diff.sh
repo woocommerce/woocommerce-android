@@ -18,7 +18,7 @@ if [ "${CIRCLE_PULL_REQUEST##*/}" != "" ]; then
 
   git merge "origin/$targetBranch" --no-edit
 
-  if [[ $(git diff --name-status "$targetBranch" | grep ".gradle") ]]; then
+  if [[ $(git diff --name-status "origin/$targetBranch" | grep ".gradle") ]]; then
       echo ".gradle files have been changed. Looking for caused dependency changes"
     else
       echo ".gradle files haven't been changed. There is no need to run the diff"
