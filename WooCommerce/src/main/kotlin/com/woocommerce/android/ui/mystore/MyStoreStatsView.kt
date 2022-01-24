@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.github.mikephil.charting.charts.Chart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.MarkerImage
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -548,14 +549,14 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private inner class StartEndDateAxisFormatter : ValueFormatter() {
-        override fun getFormattedValue(value: Float): String {
+        override fun getAxisLabel(value: Float, axis: AxisBase): String {
             var index = round(value).toInt() - 1
             index = if (index == -1) index + 1 else index
             return if (index > -1 && index < chartRevenueStats.keys.size) {
                 // if this is the first entry in the chart, then display the month as well as the date
                 // for weekly and monthly stats
                 val dateString = chartRevenueStats.keys.elementAt(index)
-                if (value == binding.chart.xAxis.mEntries.first()) {
+                if (value == axis.mEntries.first()) {
                     getEntryValue(dateString)
                 } else {
                     getLabelValue(dateString)
@@ -595,12 +596,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Custom AxisFormatter for the Y-axis which only displays 3 labels:
-     * the maximum, minimum and 0 value labels
-     */
     private inner class RevenueAxisFormatter : ValueFormatter() {
-        override fun getFormattedValue(value: Float): String {
+        override fun getAxisLabel(value: Float, axis: AxisBase): String {
             return currencyFormatter.formatCurrencyRounded(
                 value.toDouble(),
                 revenueStatsModel?.currencyCode.orEmpty()
