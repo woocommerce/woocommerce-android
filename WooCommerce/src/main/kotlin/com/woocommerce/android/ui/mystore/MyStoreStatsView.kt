@@ -175,6 +175,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                 setLabelCount(3, false)
                 valueFormatter = RevenueAxisFormatter()
                 setDrawGridLines(true)
+                gridLineWidth = 1f
                 gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
                 setDrawAxisLine(false)
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
