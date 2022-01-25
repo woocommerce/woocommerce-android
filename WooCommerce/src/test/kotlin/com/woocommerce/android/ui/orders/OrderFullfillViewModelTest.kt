@@ -40,7 +40,6 @@ import kotlin.test.assertNull
 class OrderFullfillViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = 1L
-        private const val ORDER_LOCAL_ID = 1
         private const val ORDER_SITE_ID = 1
     }
 
@@ -53,12 +52,11 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     private val resources: ResourceProvider = mock()
 
     private val savedState =
-        OrderFulfillFragmentArgs(orderId = ORDER_ID, orderLocalId = ORDER_LOCAL_ID).initSavedStateHandle()
+        OrderFulfillFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(
         totalCount = 5,
-        orderId = ORDER_LOCAL_ID,
         localSiteId = ORDER_SITE_ID,
     )
     private val orderShippingLabels = OrderTestUtils.generateShippingLabels(5)

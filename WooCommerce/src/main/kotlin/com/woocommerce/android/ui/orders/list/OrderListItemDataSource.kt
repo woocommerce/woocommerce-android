@@ -19,8 +19,7 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.model.list.datasource.ListItemDataSourceInterface
@@ -48,11 +47,11 @@ class OrderListItemDataSource(
         listDescriptor: WCOrderListDescriptor,
         itemIdentifiers: List<OrderListItemIdentifier>
     ): List<OrderListItemUIType> {
-        val remoteItemIds = itemIdentifiers.mapNotNull { (it as? OrderIdentifier)?.remoteId }
+        val remoteItemIds = itemIdentifiers.mapNotNull { (it as? OrderIdentifier)?.orderId }
         val ordersMap = orderStore.getOrdersForDescriptor(listDescriptor, remoteItemIds)
         val isLastItemByRemoteIdMap = itemIdentifiers
             .mapNotNull { (it as? OrderIdentifier) }
-            .associate { it.remoteId to it.isLastItemInSection }
+            .associate { it.orderId to it.isLastItemInSection }
 
         // Fetch missing items
         fetcher.fetchOrders(
@@ -60,15 +59,14 @@ class OrderListItemDataSource(
             orderIds = remoteItemIds.filter { !ordersMap.containsKey(it) }
         )
 
-        val mapSummary = { remoteOrderId: RemoteId ->
-            ordersMap[remoteOrderId].let { order ->
+        val mapSummary = { orderId: Long ->
+            ordersMap[orderId].let { order ->
                 if (order == null) {
-                    LoadingItem(remoteOrderId)
+                    LoadingItem(orderId)
                 } else {
                     @Suppress("DEPRECATION_ERROR")
                     OrderListItemUI(
-                        localOrderId = LocalId(order.id),
-                        remoteOrderId = order.orderId,
+                        orderId = order.orderId,
                         orderNumber = order.number,
                         orderName = order.getBillingName(
                             resourceProvider.getString(R.string.orderdetail_customer_name_default)
@@ -85,7 +83,7 @@ class OrderListItemDataSource(
 
         return itemIdentifiers.map { identifier ->
             when (identifier) {
-                is OrderIdentifier -> mapSummary(identifier.remoteId)
+                is OrderIdentifier -> mapSummary(identifier.orderId)
                 is SectionHeaderIdentifier -> SectionHeader(title = identifier.title)
             }
         }
@@ -93,10 +91,11 @@ class OrderListItemDataSource(
 
     override fun getItemIdentifiers(
         listDescriptor: WCOrderListDescriptor,
-        remoteItemIds: List<RemoteId>,
+        remoteItemIds: List<LocalOrRemoteId.RemoteId>,
         isListFullyFetched: Boolean
     ): List<OrderListItemIdentifier> {
-        val orderSummaries = orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, remoteItemIds)
+        val orderIds = remoteItemIds.map { it.value }
+        val orderSummaries = orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, orderIds)
             .let { summariesByRemoteId ->
                 val summaries = remoteItemIds.mapNotNull { summariesByRemoteId[it] }
 
@@ -104,8 +103,8 @@ class OrderListItemDataSource(
                     // The network is not connected so remove any order summaries from the list where
                     // a matching order has not yet been downloaded. This prevents the user from seeing
                     // a "loading" view for that item indefinitely.
-                    val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, remoteItemIds)
-                    summaries.filter { cachedOrders.containsKey(RemoteId(it.orderId)) }
+                    val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, orderIds)
+                    summaries.filter { cachedOrders.containsKey(it.orderId) }
                 } else summaries
             }
 
@@ -116,7 +115,7 @@ class OrderListItemDataSource(
         val listWeek = mutableListOf<OrderIdentifier>()
         val listMonth = mutableListOf<OrderIdentifier>()
         val mapToRemoteOrderIdentifier = { summary: WCOrderSummaryModel ->
-            OrderIdentifier(RemoteId(summary.orderId))
+            OrderIdentifier(summary.orderId)
         }
         orderSummaries.forEach {
             // Default to today if the date cannot be parsed. This date is in UTC.

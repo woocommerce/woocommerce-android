@@ -13,7 +13,7 @@ data class OrderNote(
     val dateCreated: Date = Date(),
     val isCustomerNote: Boolean,
     val isSystemNote: Boolean = false,
-    val localOrderId: Int = 0,
+    val orderId: Long = 0,
     val localSiteId: Int = 0,
     val note: String
 ) : Parcelable {

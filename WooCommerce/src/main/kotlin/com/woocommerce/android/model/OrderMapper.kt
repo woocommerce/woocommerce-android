@@ -19,8 +19,7 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
     fun toAppModel(databaseEntity: WCOrderModel): Order {
         @Suppress("DEPRECATION_ERROR")
         return Order(
-            rawLocalOrderId = databaseEntity.id,
-            id = databaseEntity.remoteOrderId.value,
+            id = databaseEntity.orderId,
             number = databaseEntity.number,
             dateCreated = DateTimeUtils.dateUTCFromIso8601(databaseEntity.dateCreated) ?: Date(),
             dateModified = DateTimeUtils.dateUTCFromIso8601(databaseEntity.dateModified) ?: Date(),

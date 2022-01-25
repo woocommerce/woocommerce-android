@@ -15,7 +15,6 @@ import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
@@ -50,22 +49,16 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchOrderNotes(
-        localOrderId: Int,
-        remoteOrderId: Long
-    ): Boolean = withContext(dispatchers.io) {
+    suspend fun fetchOrderNotes(orderId: Long): Boolean = withContext(dispatchers.io) {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            orderStore.fetchOrderNotes(localOrderId, remoteOrderId, selectedSite.get())
+            orderStore.fetchOrderNotes(orderId, selectedSite.get())
         }
         result?.isError == false
     }
 
-    suspend fun fetchOrderShipmentTrackingList(
-        localOrderId: Int,
-        remoteOrderId: Long
-    ): RequestResult {
+    suspend fun fetchOrderShipmentTrackingList(orderId: Long): RequestResult {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            orderStore.fetchOrderShipmentTrackings(localOrderId, remoteOrderId, selectedSite.get())
+            orderStore.fetchOrderShipmentTrackings(orderId, selectedSite.get())
         }
 
         return if (result?.isError == false) {
@@ -77,9 +70,9 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchOrderRefunds(remoteOrderId: Long): List<Refund> {
+    suspend fun fetchOrderRefunds(orderId: Long): List<Refund> {
         return withContext(dispatchers.io) {
-            refundStore.fetchAllRefunds(selectedSite.get(), remoteOrderId)
+            refundStore.fetchAllRefunds(selectedSite.get(), orderId)
                 .model?.map { it.toAppModel() } ?: emptyList()
         }
     }
@@ -99,7 +92,7 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun updateOrderStatus(
-        remoteOrderId: Long,
+        orderId: Long,
         newStatus: String
     ): Flow<UpdateOrderResult> {
         val status = withContext(dispatchers.io) {
@@ -107,7 +100,7 @@ class OrderDetailRepository @Inject constructor(
                 ?: error("Couldn't find a status with key $newStatus")
         }
         return orderStore.updateOrderStatus(
-            LocalOrRemoteId.RemoteId(remoteOrderId),
+            orderId,
             selectedSite.get(),
             status
         )
@@ -133,13 +126,11 @@ class OrderDetailRepository @Inject constructor(
 
     suspend fun addOrderShipmentTracking(
         orderId: Long,
-        orderLocalId: Int,
         shipmentTrackingModel: OrderShipmentTracking
     ): OnOrderChanged {
         return orderStore.addOrderShipmentTracking(
             AddOrderShipmentTrackingPayload(
                 site = selectedSite.get(),
-                localOrderId = orderLocalId,
                 orderId = orderId,
                 tracking = shipmentTrackingModel.toDataModel(),
                 isCustomProvider = shipmentTrackingModel.isCustomProvider
@@ -148,13 +139,12 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun deleteOrderShipmentTracking(
-        localOrderId: Int,
-        remoteOrderId: Long,
+        orderId: Long,
         shipmentTrackingModel: WCOrderShipmentTrackingModel
     ): OnOrderChanged {
         return orderStore.deleteOrderShipmentTracking(
             DeleteOrderShipmentTrackingPayload(
-                selectedSite.get(), localOrderId, remoteOrderId, shipmentTrackingModel
+                selectedSite.get(), orderId, shipmentTrackingModel
             )
         )
     }
@@ -176,8 +166,8 @@ class OrderDetailRepository @Inject constructor(
 
     fun getOrderStatusOptions() = orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() }
 
-    fun getOrderNotes(localOrderId: Int) =
-        orderStore.getOrderNotesForOrder(localOrderId).map { it.toAppModel() }
+    fun getOrderNotes(orderId: Long) =
+        orderStore.getOrderNotesForOrder(orderId).map { it.toAppModel() }
 
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
@@ -210,14 +200,14 @@ class OrderDetailRepository @Inject constructor(
         .sortedBy { it.id }
 
     fun getOrderShipmentTrackingByTrackingNumber(
-        localOrderId: Int,
+        orderId: Long,
         trackingNumber: String
     ): OrderShipmentTracking? = orderStore.getShipmentTrackingByTrackingNumber(
-        selectedSite.get(), localOrderId, trackingNumber
+        selectedSite.get(), orderId, trackingNumber
     )?.toAppModel()
 
-    fun getOrderShipmentTrackings(localOrderId: Int) =
-        orderStore.getShipmentTrackingsForOrder(selectedSite.get(), localOrderId).map { it.toAppModel() }
+    fun getOrderShipmentTrackings(orderId: Long) =
+        orderStore.getShipmentTrackingsForOrder(selectedSite.get(), orderId).map { it.toAppModel() }
 
     fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId)

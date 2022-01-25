@@ -10,9 +10,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 object OrderTestUtils {
-    val TEST_LOCAL_SITE_ID = LocalOrRemoteId.LocalId(1)
-    val TEST_REMOTE_ORDER_ID = LocalOrRemoteId.RemoteId(2)
-    const val TEST_ORDER_STATUS_COUNT = 20
+    const val ORDER_ID = 1L
+    private const val TEST_ORDER_STATUS_COUNT = 20
 
     /**
      * Generates an array containing multiple [WCOrderModel] objects.
@@ -24,11 +23,11 @@ object OrderTestUtils {
             billingLastName = "Peters",
             currency = "USD",
             dateCreated = "2018-01-05T05:14:30Z",
-            localSiteId = TEST_LOCAL_SITE_ID,
-            orderId = TEST_REMOTE_ORDER_ID,
+            orderId = ORDER_ID,
             number = "51",
             status = "processing",
             total = "14.53",
+            localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
         val om2 = WCOrderModel(
@@ -36,11 +35,11 @@ object OrderTestUtils {
             billingLastName = "Masterson",
             currency = "CAD",
             dateCreated = "2017-12-08T16:11:13Z",
-            localSiteId = TEST_LOCAL_SITE_ID,
-            orderId = TEST_REMOTE_ORDER_ID,
+            orderId = ORDER_ID,
             number = "63",
             status = "pending",
             total = "106.00",
+            localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
         val om3 = WCOrderModel(
@@ -48,11 +47,11 @@ object OrderTestUtils {
             billingLastName = "Sykes",
             currency = "USD",
             dateCreated = "2018-02-05T16:11:13Z",
-            localSiteId = TEST_LOCAL_SITE_ID,
-            orderId = TEST_REMOTE_ORDER_ID,
+            orderId = ORDER_ID,
             number = "14",
             status = "processing",
             total = "25.73",
+            localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
         val om4 = WCOrderModel(
@@ -60,11 +59,11 @@ object OrderTestUtils {
             billingLastName = "Johnson",
             currency = "CAD",
             dateCreated = "2018-02-06T09:11:13Z",
-            localSiteId = TEST_LOCAL_SITE_ID,
-            orderId = TEST_REMOTE_ORDER_ID,
+            orderId = ORDER_ID,
             number = "15",
             status = "pending, on-hold, complete",
             total = "106.00",
+            localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
         val om5 = WCOrderModel(
@@ -72,11 +71,11 @@ object OrderTestUtils {
             billingLastName = "Jones",
             currency = "USD",
             dateCreated = "2018-02-05T16:11:13Z",
-            localSiteId = TEST_LOCAL_SITE_ID,
-            orderId = TEST_REMOTE_ORDER_ID,
+            orderId = ORDER_ID,
             number = "3",
             status = "pending",
             total = "106.00",
+            localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
         val om6 = WCOrderModel(
@@ -84,11 +83,11 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = TEST_LOCAL_SITE_ID,
-            orderId = TEST_REMOTE_ORDER_ID,
+            orderId = ORDER_ID,
             number = "55",
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
+            localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
         result.add(om1)
@@ -107,11 +106,11 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = TEST_LOCAL_SITE_ID,
-            orderId = TEST_REMOTE_ORDER_ID,
+            orderId = ORDER_ID,
             number = "55",
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
+            localSiteId = LocalOrRemoteId.LocalId(1),
         )
     }
 
@@ -152,7 +151,7 @@ object OrderTestUtils {
         val result = ArrayList<WCOrderShipmentProviderModel>()
         result.add(
             WCOrderShipmentProviderModel().apply {
-                localSiteId = TEST_LOCAL_SITE_ID.value
+                localSiteId = 1
                 country = "Australia"
                 carrierName = "Anitaa Test"
                 carrierLink = "http://google.com"
@@ -165,7 +164,7 @@ object OrderTestUtils {
     fun generateOrderStatusOptions(): List<WCOrderStatusModel> {
         return CoreOrderStatus.values().map {
             WCOrderStatusModel().apply {
-                localSiteId = TEST_LOCAL_SITE_ID.value
+                localSiteId = 1
                 statusKey = it.value
                 label = it.value
                 statusCount = TEST_ORDER_STATUS_COUNT
@@ -251,7 +250,7 @@ object OrderTestUtils {
 
     fun generateTestOrder(orderId: Long = 1): Order {
         return Order.EMPTY.copy(
-            this.OrderEntity = orderId,
+            id = orderId,
             billingAddress = Address.EMPTY.copy(
                 firstName = "Carissa",
                 lastName = "King"
@@ -303,7 +302,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = LocalOrRemoteId.LocalId(1),
-            orderId = LocalOrRemoteId.RemoteId(1),
+            orderId = 1,
             number = "55",
             status = "pending",
             total = "106.00",
@@ -335,7 +334,7 @@ object OrderTestUtils {
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
             localSiteId = LocalOrRemoteId.LocalId(1),
-            orderId = LocalOrRemoteId.RemoteId(1),
+            orderId = 1,
             number = "55",
             status = "pending",
             total = "106.00",
