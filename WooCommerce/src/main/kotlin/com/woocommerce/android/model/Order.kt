@@ -96,7 +96,7 @@ data class Order(
         val isVariation: Boolean = variationId != 0L
 
         @IgnoredOnParcel
-        val pricePreDiscount = subtotal / quantity.toBigDecimal()
+        val pricePreDiscount = if (quantity == 0f) BigDecimal.ZERO else subtotal / quantity.toBigDecimal()
 
         @IgnoredOnParcel
         val discount = subtotal - total
