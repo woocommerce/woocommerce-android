@@ -163,7 +163,7 @@ class OrderCreationViewModel @Inject constructor(
     fun onCreateOrderClicked(order: Order) {
         viewModelScope.launch {
             viewState = viewState.copy(isProgressDialogShown = true)
-            orderCreationRepository.createOrder(order).fold(
+            orderCreationRepository.placeOrder(order).fold(
                 onSuccess = {
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
                     triggerEvent(ShowCreatedOrder(it.id))

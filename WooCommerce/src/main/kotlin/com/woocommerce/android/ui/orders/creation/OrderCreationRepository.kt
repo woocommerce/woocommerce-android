@@ -22,7 +22,7 @@ class OrderCreationRepository @Inject constructor(
     private val orderMapper: OrderMapper,
     private val dispatchers: CoroutineDispatchers
 ) {
-    suspend fun createOrder(order: Order): Result<Order> {
+    suspend fun placeOrder(order: Order): Result<Order> {
         val status = withContext(dispatchers.io) {
             // Currently this query will run on the current thread, so forcing the usage of IO dispatcher
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), order.status.value)
@@ -43,7 +43,11 @@ class OrderCreationRepository @Inject constructor(
             billingAddress = order.billingAddress.toBillingAddressModel(),
             customerNote = order.customerNote
         )
-        val result = orderUpdateStore.createOrder(selectedSite.get(), request)
+        val result = if (order.id == 0L) {
+            orderUpdateStore.createOrder(selectedSite.get(), request)
+        } else {
+            orderUpdateStore.updateOrder(selectedSite.get(), order.id, request)
+        }
 
         return when {
             result.isError -> Result.failure(WooException(result.error))
