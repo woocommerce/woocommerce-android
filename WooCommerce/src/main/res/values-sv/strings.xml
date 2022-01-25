@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-26 19:13:40+0000
+Translation-Revision-Date: 2022-01-20 21:55:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">App-ikon</string>
+    <string name="about_automattic_back_icon_description">Ikon för tillbaka</string>
+    <string name="about_automattic_logo_description">Logga för Automattic</string>
+    <string name="about_automattic_version_label">Version %1$s</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">Dag ett</string>
+    <string name="about_automattic_acknowledgements_item_title">Erkännanden</string>
+    <string name="about_automattic_source_code_item_title">Källkod</string>
+    <string name="about_automattic_california_privacy_notice_item_title">Integritetsnotis för Kalifornien</string>
+    <string name="about_automattic_privacy_policy_item_title">Integritetspolicy</string>
+    <string name="about_automattic_terms_of_service_item_title">Användarvillkor</string>
+    <string name="about_automattic_work_with_us_item_subtitle">Jobba var du än är</string>
+    <string name="about_automattic_work_with_us_item_title">Jobba med oss</string>
+    <string name="about_automattic_family_item_title">Automattic-familjen</string>
+    <string name="about_automattic_legal_and_more_item_title">Juridisk information med mera</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_rate_us_item_title">Betygsätt oss</string>
+    <string name="about_automattic_share_with_friends_item_title">Dela med vänner</string>
+    <string name="about_automattic_acknowledgements_page_title">Erkännanden</string>
+    <string name="about_automattic_legal_page_title">Juridisk information med mera</string>
+    <string name="about_automattic_main_page_title">Om %1$s</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">Kontakta supporten</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">Aktivera</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">Installera</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s Jetpack i WP Admin</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">aktivera</string>
+    <string name="jetpack_install_progress_failed_alternative_install">installera</string>
+    <string name="jetpack_install_progress_failed_alternative">Alternativt kan du %s Jetpack i WP-admin.</string>
+    <string name="jetpack_install_progress_failed_try">Försök igen.</string>
+    <string name="jetpack_install_progress_failed_reason_connection">ansluter</string>
+    <string name="jetpack_install_progress_failed_reason_activation">aktivering</string>
+    <string name="jetpack_install_progress_failed_reason_installation">installation</string>
+    <string name="jetpack_install_progress_failed_title">Något gick fel under %s</string>
+    <string name="settings_about_recommend_app_message">Hej! Här är en länk för att ladda ner WooCommerce-appen. Jag tycker att den är jättebra och tänkte att du också skulle gilla den. %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Uppdatera Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">Du är nästan där! Slutför konfigurationen av Stripe för att börja ta emot kortbetalningar.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Slutför konfigurationen av Stripe i adminpanelen för din butik</string>
+    <string name="order_refunds_refund_fees">Återbetala avgifter</string>
+    <string name="order_refunds_fees_refund">Avgiftsåterbetalning</string>
+    <string name="order_creation_variations_screen_title">Välj variant</string>
+    <string name="order_creation_remove_product">Ta bort produkt från beställning </string>
+    <string name="order_creation_add_discount">Lägg till rabatt</string>
+    <string name="order_creation_product_details_title">Produkt</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Lägg till en annan leveransadress</string>
+    <string name="order_creation_product_instock">I lager</string>
+    <string name="order_creation_product_stock_quantity">%s i lager</string>
+    <string name="order_creation_new_customer">Ny kund</string>
+    <string name="order_creation_add_products">Lägg till produkt</string>
+    <string name="order_creation_products">Produkter</string>
+    <string name="order_creation_add_customer">Lägg till kund</string>
+    <string name="order_creation_customer">Kund</string>
+    <string name="simple_payments_cash_dlg_button">Markera som betald</string>
+    <string name="simple_payments_cash_dlg_message">Detta kommer att skapa din beställning och markera den som slutförd om du har mottagit betalning utanför WooCommerce</string>
+    <string name="simple_payments_cash_dlg_title">Markera som betald?</string>
+    <string name="simple_payments_choose_method">Välj din betalningsmetod</string>
+    <string name="simple_payments_tax_message">Moms beräknas automatiskt baserat på din butiksadress</string>
+    <string name="simple_payments_tax_with_percent">Moms (%s&amp;nbsp;%%)</string>
+    <string name="simple_payments_take_payment_button">Ta emot betalning %s</string>
+    <string name="simple_payments_charge_taxes">Debitera moms</string>
+    <string name="simple_payments_custom_amount">Anpassat belopp</string>
+    <string name="simple_payments_edit_email_hint">Ange e-post</string>
+    <string name="simple_payments_title">Enkel betalning</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">Kontant</string>
+    <string name="card">Kort</string>
+    <string name="plus">Plus</string>
+    <string name="minus">Minus</string>
+    <string name="tax">Moms</string>
+    <string name="email">E-post</string>
     <string name="order_creation_add_customer_note">Lägg till anteckning</string>
     <string name="order_creation_customer_note">Kundmeddelande</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Uppdatera efter uppdatering</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Stripe Payment Gateway är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Uppdatera WooCommerce Stripe Payment Gateway</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Uppdatera</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Du är nästan där! Slutför konfigurationen av WooCommerce Stripe Payment Gateway för att börja ta emot personliga betalningar.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Slutför konfigurationen av WooCommerce Stripe Payment Gateway i adminpanelen för din butik</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Uppdatera efter uppdatering</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Stripe Gateway är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Uppdatera</string>
     <string name="card_reader_payment_failed_unknown">Betalningen avvisades av okänd anledning</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Ett live-kort användes på en webbplats i testläge</string>
     <string name="card_reader_payment_failed_test_card">Systemtestkort är inte tillåtna för betalning</string>

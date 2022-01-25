@@ -1,0 +1,2 @@
+8.3:
+Müşterilere ücret iadesi yapabilmeniz için sipariş geri ödemesini iyileştirdik. Önümüzdeki birkaç hafta içinde çok güzel güncellemeler geliyor! Erken beta programımıza katılmak isterseniz https://woocommercehalo.wordpress.com adresini ziyaret edin.

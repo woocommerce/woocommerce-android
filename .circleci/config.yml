@@ -11,7 +11,7 @@ commands:
       parameters:
         jvmargs:
           type: string
-          default: "Xmx1536m"
+          default: "Xmx2048m"
       steps:
         - run:
             name: Update memory setting
@@ -124,7 +124,7 @@ jobs:
       - android/restore-gradle-cache
       - copy-gradle-properties
       - update-gradle-memory:
-          jvmargs: "Xmx1536m"
+          jvmargs: "Xmx2048m"
       - run:
           name: Build
           command: ./gradlew WooCommerce:assembleVanillaDebug --stacktrace
