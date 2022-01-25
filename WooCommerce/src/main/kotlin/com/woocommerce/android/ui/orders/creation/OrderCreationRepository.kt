@@ -67,8 +67,8 @@ class OrderCreationRepository @Inject constructor(
                     productId = item.productId,
                     variationId = item.variationId,
                     quantity = item.quantity,
-                    subtotal = item.subtotal.toPlainString(),
-                    total = item.total.toPlainString()
+                    subtotal = item.subtotal.takeIf { item.itemId != 0L }?.toPlainString(),
+                    total = item.total.takeIf { item.itemId != 0L }?.toPlainString()
                 )
             },
             shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
