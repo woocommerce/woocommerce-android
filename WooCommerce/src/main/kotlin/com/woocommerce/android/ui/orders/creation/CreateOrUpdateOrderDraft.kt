@@ -13,7 +13,7 @@ class CreateOrUpdateOrderDraft @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderCreationRepository: OrderCreationRepository
 ) {
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(changes: Flow<Order>, retryTrigger: Flow<Unit>): Flow<OrderDraftUpdateStatus> {
         return changes
             .filter { it.items.isNotEmpty() }
