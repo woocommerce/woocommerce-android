@@ -96,6 +96,12 @@ data class Order(
         val isVariation: Boolean = variationId != 0L
 
         @IgnoredOnParcel
+        val pricePreDiscount = subtotal / quantity.toBigDecimal()
+
+        @IgnoredOnParcel
+        val discount = subtotal - total
+
+        @IgnoredOnParcel
         var containsAddons = false
 
         @IgnoredOnParcel
