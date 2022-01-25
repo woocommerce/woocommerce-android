@@ -89,6 +89,7 @@ class OrderListItemDataSource(
         }
     }
 
+    @Suppress("LongMethod", "ComplexMethod")
     override fun getItemIdentifiers(
         listDescriptor: WCOrderListDescriptor,
         remoteItemIds: List<LocalOrRemoteId.RemoteId>,
