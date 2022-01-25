@@ -11,7 +11,7 @@ fun Order.adjustProductQuantity(productId: Long, quantityToAdd: Int): Order {
         val newQuantity = quantity + quantityToAdd
         copy(
             quantity = newQuantity,
-            subtotal = price.multiply(newQuantity.toBigDecimal()),
+            subtotal = pricePreDiscount.multiply(newQuantity.toBigDecimal()),
             total = price.multiply(newQuantity.toBigDecimal())
         )
     }
