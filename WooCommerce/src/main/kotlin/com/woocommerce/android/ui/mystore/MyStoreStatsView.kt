@@ -41,7 +41,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.text.DecimalFormat
 import java.util.Locale
-import kotlin.math.round
+import kotlin.math.*
 
 class MyStoreStatsView @JvmOverloads constructor(
     ctx: Context,
@@ -173,7 +173,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                 textSize = 10f
             }
             with(axisLeft) {
-                setLabelCount(3, false)
+                setLabelCount(3, true)
                 valueFormatter = RevenueAxisFormatter()
                 setDrawGridLines(true)
                 gridLineWidth = 1f
@@ -449,6 +449,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         // determine the min revenue so we can set the min value for the left axis, which should be zero unless
         // the stats contain any negative revenue
         val minRevenue = dataSet.values.minOf { it.y }
+        val maxRevenue = dataSet.values.maxOf { it.y }
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(binding.chart) {
             data = LineData(dataSet)
@@ -464,6 +465,8 @@ class MyStoreStatsView @JvmOverloads constructor(
                     setDrawZeroLine(true)
                     zeroLineColor = ContextCompat.getColor(context, R.color.divider_color)
                 }
+                axisMinimum = minRevenue.roundToTheNextPowerOfTen()
+                axisMaximum = maxRevenue.roundToTheNextPowerOfTen()
             }
             val dot = MarkerImage(context, R.drawable.chart_highlight_dot)
             val offset = DisplayUtils.dpToPx(context, LINE_CHART_DOT_OFFSET).toFloat()
@@ -471,6 +474,26 @@ class MyStoreStatsView @JvmOverloads constructor(
             marker = dot
         }
         isRequestingStats = false
+    }
+
+    /**
+     * Returns a rounded value that has the next higher multitude of the same power of 10.
+     * Examples when positive number: 62 --> 70, 134 --> 200, 1450 --> 2000
+     * Examples when negative number: -62 --> -70, -579 --> -600
+     */
+    private fun Float.roundToTheNextPowerOfTen(): Float {
+        if (this == 0f) {
+            return 0f
+        }
+        val isNegative = this < 0
+        val absoluteValue = abs(this)
+        val numberOfDigits = max(floor(log10(absoluteValue)), 0f)
+        val tenthPowerValue = 10f.pow(numberOfDigits)
+        return if (isNegative) {
+            floor(-absoluteValue / tenthPowerValue) * tenthPowerValue
+        } else {
+            ceil(absoluteValue / tenthPowerValue) * tenthPowerValue
+        }
     }
 
     private fun getFormattedRevenueValue(revenue: Double) =
@@ -601,7 +624,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             return currencyFormatter.formatCurrencyRounded(
                 value.toDouble(),
                 revenueStatsModel?.currencyCode.orEmpty()
-            )
+            ).replace(".0", "")
         }
     }
 }
