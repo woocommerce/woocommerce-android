@@ -83,7 +83,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                                 ::refreshState, ::onLearnMoreClicked
                             )
                     }
-                CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount ->
+                CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount ->
                     viewState.value = OnboardingViewState.StripeAcountError.WCPayInTestModeWithLiveAccountState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
@@ -152,7 +152,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
             CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
             is CardReaderOnboardingState.StripeAccountCountryNotSupported -> "account_country_not_supported"
-            CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
+            CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
             CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
             CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
             is CardReaderOnboardingState.SetupNotCompleted ->

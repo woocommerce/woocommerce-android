@@ -83,7 +83,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
         if (!isPluginSetupCompleted(paymentAccount)) return SetupNotCompleted(preferredPlugin.type)
-        if (isWCPayInTestModeWithLiveStripeAccount(paymentAccount)) return WcpayInTestModeWithLiveStripeAccount
+        if (isPluginInTestModeWithLiveStripeAccount(paymentAccount)) return PluginInTestModeWithLiveStripeAccount
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
         if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
         if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
@@ -140,7 +140,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun isPluginSetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != NO_ACCOUNT
 
-    private fun isWCPayInTestModeWithLiveStripeAccount(account: WCPaymentAccountResult): Boolean =
+    private fun isPluginInTestModeWithLiveStripeAccount(account: WCPaymentAccountResult): Boolean =
         account.testMode == true && account.isLive
 
     private fun isStripeAccountUnderReview(paymentAccount: WCPaymentAccountResult): Boolean =
@@ -237,7 +237,7 @@ sealed class CardReaderOnboardingState {
      * This is a bit special case: WCPay is set to "dev mode" but the connected Stripe account is in live mode.
      * Connecting to a reader or accepting payments is not supported in this state.
      */
-    object WcpayInTestModeWithLiveStripeAccount : CardReaderOnboardingState()
+    object PluginInTestModeWithLiveStripeAccount : CardReaderOnboardingState()
 
     /**
      * The connected Stripe account has not been reviewed by Stripe yet. This is a temporary state and

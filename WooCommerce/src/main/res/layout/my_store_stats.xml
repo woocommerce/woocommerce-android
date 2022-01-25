@@ -39,13 +39,5 @@
                 app:srcCompat="@drawable/ic_woo_error_state"
                 tools:visibility="visible" />
         </FrameLayout>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/dashboard_recency_text"
-            style="@style/Woo.TextView.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            tools:text="dashboard_recency_text" />
     </LinearLayout>
 </merge>

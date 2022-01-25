@@ -1,1 +1,3 @@
-We’ve improved order refunding to let you refund fees to customers. There are some pretty cool updates coming in the next few weeks! If you’d like to join our early beta program, visit https://woocommercehalo.wordpress.com.
+- [*] New Home Screen UI. Store stats are now shown in a line chart, new stats have been added such as conversion rate and revenue stats are not rounded anymore.
+- [*] Fixed an issue which resulted in showing wrong order prices if the store used more than 2 digits for price formatting [https://github.com/woocommerce/woocommerce-android/pull/5612]
+
