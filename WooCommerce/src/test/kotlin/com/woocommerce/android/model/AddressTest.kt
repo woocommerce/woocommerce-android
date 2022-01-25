@@ -16,8 +16,8 @@ class AddressTest {
             city = "City",
             postcode = "",
             email = "email",
-            country = "country",
-            state = "state"
+            country = Location("US", "USA"),
+            state = AmbiguousLocation.Defined(Location("CA", "California", "USA"))
         )
 
         val dataModel = address.toShippingLabelModel()
@@ -37,8 +37,8 @@ class AddressTest {
             city = "City",
             postcode = "",
             email = "email",
-            country = "country",
-            state = "state"
+            country = Location("US", "USA"),
+            state = AmbiguousLocation.Defined(Location("CA", "California", "USA"))
         )
 
         val dataModel = address.toShippingLabelModel()

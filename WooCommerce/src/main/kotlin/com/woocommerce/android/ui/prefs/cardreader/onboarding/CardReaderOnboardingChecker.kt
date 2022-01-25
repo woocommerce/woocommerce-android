@@ -7,18 +7,18 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_TERMINAL_GATEWAY
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.*
+import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils.WCPluginModel
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
+import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils.WCPluginModel
-import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType
 
 private val SUPPORTED_COUNTRIES = listOf("US")
 
@@ -66,14 +66,14 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         if (!isPluginInstalled(preferredPlugin)) when (preferredPlugin.type) {
             WOOCOMMERCE_PAYMENTS -> return WcpayNotInstalled
-            STRIPE_TERMINAL_GATEWAY -> throw IllegalStateException("Developer error: `preferredPlugin` should be WCPay")
+            STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
         }
 
         if (!isPluginVersionSupported(preferredPlugin)) return PluginUnsupportedVersion(preferredPlugin.type)
 
         if (!isPluginActivated(preferredPlugin.info)) when (preferredPlugin.type) {
             WOOCOMMERCE_PAYMENTS -> return WcpayNotActivated
-            STRIPE_TERMINAL_GATEWAY -> throw IllegalStateException("Developer error: `preferredPlugin` should be WCPay")
+            STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
         }
 
         val fluxCPluginType = preferredPlugin.type.toInPersonPaymentsPluginType()
@@ -83,7 +83,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
         if (!isPluginSetupCompleted(paymentAccount)) return SetupNotCompleted(preferredPlugin.type)
-        if (isWCPayInTestModeWithLiveStripeAccount(paymentAccount)) return WcpayInTestModeWithLiveStripeAccount
+        if (isPluginInTestModeWithLiveStripeAccount(paymentAccount)) return PluginInTestModeWithLiveStripeAccount
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
         if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
         if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
@@ -108,7 +108,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             isPluginActivated(stripePluginInfo) &&
             !isPluginActivated(wcPayPluginInfo)
         ) {
-            PluginWrapper(STRIPE_TERMINAL_GATEWAY, stripePluginInfo)
+            PluginWrapper(STRIPE_EXTENSION_GATEWAY, stripePluginInfo)
         } else {
             // Default to WCPay when Stripe Extension is not active
             PluginWrapper(WOOCOMMERCE_PAYMENTS, wcPayPluginInfo)
@@ -140,7 +140,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun isPluginSetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != NO_ACCOUNT
 
-    private fun isWCPayInTestModeWithLiveStripeAccount(account: WCPaymentAccountResult): Boolean =
+    private fun isPluginInTestModeWithLiveStripeAccount(account: WCPaymentAccountResult): Boolean =
         account.testMode == true && account.isLive
 
     private fun isStripeAccountUnderReview(paymentAccount: WCPaymentAccountResult): Boolean =
@@ -188,14 +188,14 @@ class CardReaderOnboardingChecker @Inject constructor(
 
 fun PluginType.toInPersonPaymentsPluginType(): InPersonPaymentsPluginType = when (this) {
     WOOCOMMERCE_PAYMENTS -> InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
-    STRIPE_TERMINAL_GATEWAY -> InPersonPaymentsPluginType.STRIPE
+    STRIPE_EXTENSION_GATEWAY -> InPersonPaymentsPluginType.STRIPE
 }
 
 private data class PluginWrapper(val type: PluginType, val info: WCPluginModel?)
 
 enum class PluginType(val minSupportedVersion: String) {
     WOOCOMMERCE_PAYMENTS(SUPPORTED_WCPAY_VERSION),
-    STRIPE_TERMINAL_GATEWAY(SUPPORTED_STRIPE_EXTENSION_VERSION)
+    STRIPE_EXTENSION_GATEWAY(SUPPORTED_STRIPE_EXTENSION_VERSION)
 }
 
 sealed class CardReaderOnboardingState {
@@ -237,7 +237,7 @@ sealed class CardReaderOnboardingState {
      * This is a bit special case: WCPay is set to "dev mode" but the connected Stripe account is in live mode.
      * Connecting to a reader or accepting payments is not supported in this state.
      */
-    object WcpayInTestModeWithLiveStripeAccount : CardReaderOnboardingState()
+    object PluginInTestModeWithLiveStripeAccount : CardReaderOnboardingState()
 
     /**
      * The connected Stripe account has not been reviewed by Stripe yet. This is a temporary state and

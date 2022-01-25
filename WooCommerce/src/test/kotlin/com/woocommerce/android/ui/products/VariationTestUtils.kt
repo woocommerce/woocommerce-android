@@ -19,6 +19,7 @@ fun generateVariation(): ProductVariation {
         length = 0f,
         options = emptyList(),
         priceWithCurrency = null,
+        price = null,
         regularPrice = null,
         remoteProductId = 1,
         remoteVariationId = 2,

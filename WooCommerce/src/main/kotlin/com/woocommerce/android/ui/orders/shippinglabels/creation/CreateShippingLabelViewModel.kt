@@ -83,7 +83,8 @@ class CreateShippingLabelViewModel @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val accountStore: AccountStore,
     private val resourceProvider: ResourceProvider,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val getLocations: GetLocations,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_KEY = KEY_STATE
@@ -397,14 +398,18 @@ class CreateShippingLabelViewModel @Inject constructor(
 
     private fun getStoreAddress(): Address {
         val siteSettings = wooStore.getSiteSettings(site.get())
+        val (country, state) = getLocations(
+            countryCode = siteSettings?.countryCode.orEmpty(),
+            stateCode = siteSettings?.stateCode.orEmpty()
+        )
         return Address(
             company = site.get().name,
             firstName = accountStore.account.firstName,
             lastName = accountStore.account.lastName,
             phone = "",
             email = "",
-            country = siteSettings?.countryCode ?: "",
-            state = siteSettings?.stateCode ?: "",
+            country = country,
+            state = state,
             address1 = siteSettings?.address ?: "",
             address2 = siteSettings?.address2 ?: "",
             city = siteSettings?.city ?: "",

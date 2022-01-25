@@ -1,7 +1,7 @@
 pluginManagement {
     gradle.ext.agpVersion = '4.2.2'
     gradle.ext.daggerVersion = '2.40.5'
-    gradle.ext.detektVersion = '1.18.1'
+    gradle.ext.detektVersion = '1.19.0'
     gradle.ext.kotlinVersion = '1.5.31'
     gradle.ext.navigationVersion = '2.4.0-beta02'
 
@@ -18,7 +18,7 @@ pluginManagement {
         id 'com.google.gms.google-services' version '4.3.8'
         id 'io.github.wzieba.tracks.plugin' version '1.0.0'
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
-        id 'io.sentry.android.gradle' version '2.0.0'
+        id 'io.sentry.android.gradle' version '2.1.5'
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion

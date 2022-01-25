@@ -89,10 +89,10 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchRevenueStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GenericError }
+                .filter { it is RevenueStatsError }
                 .first()
 
-            assertThat(result).isEqualTo(GenericError)
+            assertThat(result).isEqualTo(RevenueStatsError)
         }
 
     @Test

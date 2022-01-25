@@ -1,11 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 16:54:02+0000
+Translation-Revision-Date: 2022-01-19 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">Uygulama simgesi</string>
+    <string name="about_automattic_back_icon_description">Geri simgesi</string>
+    <string name="about_automattic_logo_description">Automattic logosu</string>
+    <string name="about_automattic_version_label">Sürüm %1$s</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">1. Gün</string>
+    <string name="about_automattic_acknowledgements_item_title">Teşekkürler</string>
+    <string name="about_automattic_source_code_item_title">Kaynak kodu</string>
+    <string name="about_automattic_california_privacy_notice_item_title">Kaliforniya için Gizlilik Bildirimi</string>
+    <string name="about_automattic_privacy_policy_item_title">Gizlilik politikası</string>
+    <string name="about_automattic_terms_of_service_item_title">Hizmet şartları</string>
+    <string name="about_automattic_work_with_us_item_subtitle">İstediğiniz Yerden Çalışın</string>
+    <string name="about_automattic_work_with_us_item_title">Bizimle Çalışın</string>
+    <string name="about_automattic_family_item_title">Automattic Ailesi</string>
+    <string name="about_automattic_legal_and_more_item_title">Yasal Bilgiler ve Daha Fazlası</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_rate_us_item_title">Bizi Değerlendirin</string>
+    <string name="about_automattic_share_with_friends_item_title">Arkadaşlarla paylaş</string>
+    <string name="about_automattic_acknowledgements_page_title">Teşekkürler</string>
+    <string name="about_automattic_legal_page_title">Yasal Bilgiler ve Daha Fazlası</string>
+    <string name="about_automattic_main_page_title">%1$s Hakkında</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">Destek birimine başvurun</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">Aktifleştir</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">Kur</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s WP Admin\'de Jetpack </string>
+    <string name="jetpack_install_progress_failed_alternative_activate">etkinleştir</string>
+    <string name="jetpack_install_progress_failed_alternative_install">kur</string>
+    <string name="jetpack_install_progress_failed_alternative">Alternatf olarak, WP Admin\'de Jetpack için %s yapabilirsiniz.</string>
+    <string name="jetpack_install_progress_failed_try">Lütfen yeniden deneyin.</string>
+    <string name="jetpack_install_progress_failed_reason_connection">bağlanıyor</string>
+    <string name="jetpack_install_progress_failed_reason_activation">etkinleştirme</string>
+    <string name="jetpack_install_progress_failed_reason_installation">kurulum</string>
+    <string name="jetpack_install_progress_failed_title">Maalesef %s sırasında bir şeyler ters gitti</string>
+    <string name="settings_about_recommend_app_message">Merhaba! İşte WooCommerce uygulamasını indirebileceğiniz bir bağlantı. Gerçekten çok hoşuma gitti, sizin de seveceğinizi düşündüm. %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Stripe\'ı Güncelle</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">Çok az kaldı! Card-Present Ödemelerini kabul etmeye başlamak için lütfen Stripe kurulumunu tamamlayın.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Mağaza yöneticinizde Stripe kurulumunu tamamlayın</string>
+    <string name="order_refunds_refund_fees">Geri ödeme ücretleri</string>
+    <string name="order_refunds_fees_refund">Ücret iadesi</string>
+    <string name="order_creation_variations_screen_title">Varyasyon seç</string>
+    <string name="order_creation_remove_product">Ürünü siparişten kaldır</string>
+    <string name="order_creation_add_discount">İndirim ekle</string>
+    <string name="order_creation_product_details_title">Ürün</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Farklı bir gönderim adresi ekle</string>
+    <string name="order_creation_product_instock">Stokta</string>
+    <string name="order_creation_product_stock_quantity">%s stokta</string>
+    <string name="order_creation_new_customer">Yeni müşteri</string>
+    <string name="order_creation_add_products">Ürün Ekle</string>
+    <string name="order_creation_products">Ürünler</string>
+    <string name="order_creation_add_customer">Müşteri ekle</string>
+    <string name="order_creation_customer">Müşteri</string>
+    <string name="simple_payments_cash_dlg_button">Ödendi olarak işaretle</string>
+    <string name="simple_payments_cash_dlg_message">Bu, siparişinizi oluşturacak ve WooCommerce dışında ödeme aldıysanız ödendi olarak işaretleyecektir.</string>
+    <string name="simple_payments_cash_dlg_title">Ödendi olarak işaretle</string>
+    <string name="simple_payments_choose_method">Ödeme yönteminizi seçin</string>
+    <string name="simple_payments_tax_message">Vergiler mağaza adresinize göre otomatik olarak hesaplanır</string>
+    <string name="simple_payments_tax_with_percent">Vergi (%s%%)</string>
+    <string name="simple_payments_take_payment_button">Ödeme Al (%s)</string>
+    <string name="simple_payments_charge_taxes">Vergileri al</string>
+    <string name="simple_payments_custom_amount">Özel tutar</string>
+    <string name="simple_payments_edit_email_hint">E-posta gir</string>
+    <string name="simple_payments_title">Basit ödeme</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">Nakit</string>
+    <string name="card">Kart</string>
+    <string name="plus">Artı</string>
+    <string name="minus">Eksi</string>
+    <string name="tax">Vergi</string>
+    <string name="email">E-posta</string>
+    <string name="order_creation_add_customer_note">Not ekle</string>
+    <string name="order_creation_customer_note">Müşteri notu</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Güncellemeden sonra yenileyin</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Mağazanızda WooCommerce Stripe Gateway uzantısının eski sürümü yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Yenile</string>
+    <string name="card_reader_payment_failed_unknown">Bilinmeyen bir nedenle ödeme reddedildi</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">Test modunda bir sitede canlı kart kullanıldı</string>
+    <string name="card_reader_payment_failed_test_card">Sistem test kartlarına ödeme yapılmasına izin verilmiyor</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">Birçok kez yanlış PIN girildi</string>
+    <string name="card_reader_payment_failed_pin_required">Bu kart bir PIN kodu gerektirdiğinden işleme alınamıyor</string>
+    <string name="card_reader_payment_failed_invalid_amount">Belirtilen kart için ödeme tutarına izin verilmiyor</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Yetersiz bakiye nedeniyle ödeme reddedildi</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">İşlem posta kodu ve kart posta kodu eşleşmiyor</string>
+    <string name="card_reader_payment_failed_expired_card">Kartın süresi bitmiş.</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">Yakın zamanda benzer bir işlem gönderildi</string>
+    <string name="card_reader_payment_failed_currency_not_supported">Kart bu para birimini desteklemiyor</string>
+    <string name="card_reader_payment_failed_card_not_supported">Kart bu satın alma türünü desteklemiyor</string>
+    <string name="card_reader_payment_failed_invalid_account">Kart veya kart hesabı geçersiz</string>
+    <string name="card_reader_payment_failed_generic">Ödeme belirtilmeyen bir nedenle reddedildi</string>
+    <string name="card_reader_payment_failed_fraud">Başka bir ödeme yöntemi deneyin</string>
+    <string name="card_reader_payment_failed_temporary">Tekrar denemek işe yarayabilir</string>
+    <string name="order_creation_fragment_title">Yeni Sipariş</string>
+    <string name="analytics_date_range_selector_description">Tarih aralığı filtresi için seçici</string>
+    <string name="analytics_date_range_from_date">ve Önceki Dönem (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">Sene başından tarihe</string>
+    <string name="date_timeframe_quarter_to_date">Çeyrekten tarihe</string>
+    <string name="date_timeframe_month_to_date">Aydan tarihe</string>
+    <string name="date_timeframe_week_to_date">Haftadan tarihe</string>
+    <string name="date_timeframe_last_year">Geçen yıl</string>
+    <string name="date_timeframe_last_quarter">Geçen çeyrek</string>
+    <string name="date_timeframe_last_month">Geçen ay</string>
+    <string name="date_timeframe_last_week">Geçen hafta</string>
     <string name="settings_enable_order_creation_teaser_message">Biz lansmana hazırlanırken yeni manuel siparişler oluşturmayı deneyin</string>
     <string name="settings_enable_order_creation_teaser_title">Sipariş Oluştur</string>
     <string name="settings_enable_simple_payments_teaser_title">Basit ödemeler</string>
@@ -213,7 +327,6 @@ Language: tr
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">WooCommerce Payments uzantısının eski sürümü mağazanızda yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments\'ı Güncelleyin</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Yenile</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">Çok az kaldı! Card-Present Payments\'ı kabul etmeye başlamak için lütfen WooCommerce Payments kurulumunu tamamlayın.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Mağaza yönetici bölümünüzde WooCommerce Payments kurulumunu tamamlayın</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Etkinleştirdikten sonra yenileyin</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">WooCommerce Payments uzantısı mağazanıza yüklendi ancak etkinleştirilmedi. Şahsen Ödemeleri kabul etmek için lütfen etkinleştirin.</string>
@@ -291,7 +404,6 @@ Language: tr
     <string name="card_reader_connect_multiple_readers_found_header">Birkaç okuyucu bulundu</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">Siparişin ücreti zaten ödendi</string>
     <string name="card_reader_payment_receipt_email_content">Alışverişiniz için teşekkürler! Ödeme makbuzunuz için aşağıdaki bağlantıya tıklayın.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">Kart reddedildi</string>
     <string name="shipping_label_print_customs_form_download_failed">Gümrük formu indirilirken hata oluştu</string>
     <string name="shipping_label_print_customs_form_screen_title">Gümrük faturası yazdır</string>
     <string name="shipping_label_print_customs_form">Gümrük formu yazdır</string>
@@ -1735,6 +1847,18 @@ Language: tr
     <string name="all">Tümü</string>
     <string name="notification_channel_general_title">Genel</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>İşlemde</item>
         <item>Tüm Siparişler</item>

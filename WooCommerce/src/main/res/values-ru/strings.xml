@@ -1,11 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 16:54:04+0000
+Translation-Revision-Date: 2022-01-18 11:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">Значок приложения</string>
+    <string name="about_automattic_back_icon_description">Значок возврата</string>
+    <string name="about_automattic_logo_description">Логотип Automattic</string>
+    <string name="about_automattic_version_label">Версия %1$s</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_acknowledgements_item_title">Благодарности</string>
+    <string name="about_automattic_source_code_item_title">Исходный код</string>
+    <string name="about_automattic_california_privacy_notice_item_title">Заявление о защите конфиденциальности пользователей из Калифорнии</string>
+    <string name="about_automattic_privacy_policy_item_title">Политика конфиденциальности</string>
+    <string name="about_automattic_terms_of_service_item_title">Условия сервиса</string>
+    <string name="about_automattic_work_with_us_item_subtitle">Работайте откуда угодно</string>
+    <string name="about_automattic_work_with_us_item_title">Работа у нас</string>
+    <string name="about_automattic_family_item_title">Семейство Automattic</string>
+    <string name="about_automattic_legal_and_more_item_title">Юридическая информация и прочее</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_rate_us_item_title">Оцените нас</string>
+    <string name="about_automattic_share_with_friends_item_title">Поделитесь с друзьями</string>
+    <string name="about_automattic_acknowledgements_page_title">Благодарности</string>
+    <string name="about_automattic_legal_page_title">Юридическая информация и прочее</string>
+    <string name="about_automattic_main_page_title">О %1$s</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">Обратиться в службу поддержки</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">Активировать</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">Установить</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s Jetpack на консоли</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">активировать</string>
+    <string name="jetpack_install_progress_failed_alternative_install">установить</string>
+    <string name="jetpack_install_progress_failed_alternative">Либо вы можете %s Jetpack на консоли.</string>
+    <string name="jetpack_install_progress_failed_try">Повторите попытку.</string>
+    <string name="jetpack_install_progress_failed_reason_connection">подключение</string>
+    <string name="jetpack_install_progress_failed_reason_activation">активация</string>
+    <string name="jetpack_install_progress_failed_reason_installation">установка</string>
+    <string name="jetpack_install_progress_failed_title">Что-то пошло не так во время %s</string>
+    <string name="settings_about_recommend_app_message">Привет! Вот ссылка для загрузки приложения WooCommerce. Мне оно нравится, рекомендую. %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Обновить Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">Почти готово. Завершите настройку Stripe, чтобы начать получать платежи по карте.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Завершить настройку Stripe в учётной записи администратора магазина</string>
+    <string name="order_refunds_refund_fees">Возвратить платежи</string>
+    <string name="order_refunds_fees_refund">Возврат платежей</string>
+    <string name="order_creation_variations_screen_title">Выберите вариант</string>
+    <string name="order_creation_remove_product">Удалить товар из заказа</string>
+    <string name="order_creation_add_discount">Добавить скидку</string>
+    <string name="order_creation_product_details_title">Товар</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Добавить другой адрес доставки</string>
+    <string name="order_creation_product_instock">В наличии</string>
+    <string name="order_creation_product_stock_quantity">%s в наличии</string>
+    <string name="order_creation_new_customer">Новый клиент</string>
+    <string name="order_creation_add_products">Добавить товар</string>
+    <string name="order_creation_products">Товары</string>
+    <string name="order_creation_add_customer">Добавить клиента</string>
+    <string name="order_creation_customer">Клиент</string>
+    <string name="simple_payments_cash_dlg_button">Отметить как оплаченный</string>
+    <string name="simple_payments_cash_dlg_message">Заказ будет создан и отмечен как оплаченный, если вы получили платеж не через WooCommerce</string>
+    <string name="simple_payments_cash_dlg_title">Отметить как оплаченный?</string>
+    <string name="simple_payments_choose_method">Выберите способ оплаты</string>
+    <string name="simple_payments_tax_message">Налоги рассчитываются автоматически на основе адреса магазина</string>
+    <string name="simple_payments_tax_with_percent">Налог (%s%%)</string>
+    <string name="simple_payments_take_payment_button">Получить оплату (%s)</string>
+    <string name="simple_payments_charge_taxes">Удержать налоги</string>
+    <string name="simple_payments_custom_amount">Индивидуальная сумма</string>
+    <string name="simple_payments_edit_email_hint">Введите адрес электронной почты</string>
+    <string name="simple_payments_title">Платёж без хлопот</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">Наличные</string>
+    <string name="card">Карта</string>
+    <string name="plus">Plus</string>
+    <string name="minus">Минус</string>
+    <string name="tax">Налог</string>
+    <string name="email">Отправить email</string>
+    <string name="order_creation_add_customer_note">Добавить примечание</string>
+    <string name="order_creation_customer_note">Примечание для клиента</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Перезагрузите после обновления</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">В вашем магазине установлена устаревшая версия расширения WooCommerce Stripe Gateway. Обновите его, чтобы принимать очные платежи.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Обновить</string>
+    <string name="card_reader_payment_failed_unknown">Платёж отклонён по неизвестной причине</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">Действующая карта была использована на сайте в тестовом режиме</string>
+    <string name="card_reader_payment_failed_test_card">Карты для тестирования системы нельзя использовать для платежа</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">Неверный PIN введен слишком много раз</string>
+    <string name="card_reader_payment_failed_pin_required">Для этой карты требуется PIN-код, поэтому её нельзя обработать</string>
+    <string name="card_reader_payment_failed_invalid_amount">Такая сумма платежа не разрешена для этой карты</string>
+    <string name="card_reader_payment_failed_insufficient_funds">Платёж отклонён из-за нехватки средств</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">Почтовый индекс транзакции и почтовый индекс карты не совпадают</string>
+    <string name="card_reader_payment_failed_expired_card">Срок действия карты истёк</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">Такая же транзакция была запрошена недавно</string>
+    <string name="card_reader_payment_failed_currency_not_supported">Карта не поддерживает эту валюту</string>
+    <string name="card_reader_payment_failed_card_not_supported">Карта не поддерживает этот тип покупки</string>
+    <string name="card_reader_payment_failed_invalid_account">Недействительная карта или счёт карты</string>
+    <string name="card_reader_payment_failed_generic">Платёж отклонён по неопределённой причине</string>
+    <string name="card_reader_payment_failed_fraud">Попробуйте другое средство платежа</string>
+    <string name="card_reader_payment_failed_temporary">Возможно, другая попытка будет удачной</string>
+    <string name="order_creation_fragment_title">Новый заказ</string>
+    <string name="analytics_date_range_selector_description">Выбор фильтра диапазона дат</string>
+    <string name="analytics_date_range_from_date">по сравнению с предыдущим периодом (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">С начала года до текущего дня</string>
+    <string name="date_timeframe_quarter_to_date">С начала квартала до текущего дня</string>
+    <string name="date_timeframe_month_to_date">С начала месяца до текущего дня</string>
+    <string name="date_timeframe_week_to_date">С начала недели до текущего дня</string>
+    <string name="date_timeframe_last_year">Прошлый год</string>
+    <string name="date_timeframe_last_quarter">Прошлый квартал</string>
+    <string name="date_timeframe_last_month">Прошлый месяц</string>
+    <string name="date_timeframe_last_week">Прошлая неделя</string>
     <string name="settings_enable_order_creation_teaser_message">Попробуйте создавать заказы с подробной информацией, пока мы готовим запуск функции</string>
     <string name="settings_enable_order_creation_teaser_title">Создание заказа</string>
     <string name="settings_enable_simple_payments_teaser_title">Платежи без хлопот</string>
@@ -213,7 +327,6 @@ Language: ru
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">В вашем магазине установлена устаревшая версия расширения WooCommerce Payments. Обновите его, чтобы получать очные платежи.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Обновить WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Обновить</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">Почти готово. Закончите настройку WooCommerce Payments, чтобы начать получать платежи по карте.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Закончите настройку WooCommerce Payments в учётной записи администратора магазина.</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Обновите после активации</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">В вашем магазине версия расширения WooCommerce Payments установлена, но не активирована. Активируйте её, чтобы получать очные платежи.</string>
@@ -291,7 +404,6 @@ Language: ru
     <string name="card_reader_connect_multiple_readers_found_header">Найдено несколько устройств чтения</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">Заказ уже оплачен</string>
     <string name="card_reader_payment_receipt_email_content">Спасибо за покупку! Перейдите по ссылке ниже, чтобы получить чек.\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">Карта отклонена</string>
     <string name="shipping_label_print_customs_form_download_failed">Ошибка загрузки таможенной формы</string>
     <string name="shipping_label_print_customs_form_screen_title">Печать таможенного счета-фактуры</string>
     <string name="shipping_label_print_customs_form">Печать таможенной формы</string>
@@ -1735,6 +1847,18 @@ Language: ru
     <string name="all">Все</string>
     <string name="notification_channel_general_title">Общее</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>В обработке</item>
         <item>Все заказы</item>

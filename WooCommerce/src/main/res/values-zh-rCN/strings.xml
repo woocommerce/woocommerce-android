@@ -1,11 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 16:54:03+0000
+Translation-Revision-Date: 2022-01-20 21:46:34+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">应用程序图标</string>
+    <string name="about_automattic_back_icon_description">返回图标</string>
+    <string name="about_automattic_logo_description">Automattic 徽标</string>
+    <string name="about_automattic_version_label">版本 %1$s</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_acknowledgements_item_title">确认</string>
+    <string name="about_automattic_source_code_item_title">源代码</string>
+    <string name="about_automattic_california_privacy_notice_item_title">加州隐私声明</string>
+    <string name="about_automattic_privacy_policy_item_title">隐私政策</string>
+    <string name="about_automattic_terms_of_service_item_title">服务条款</string>
+    <string name="about_automattic_work_with_us_item_subtitle">随时随地工作</string>
+    <string name="about_automattic_work_with_us_item_title">加入我们</string>
+    <string name="about_automattic_family_item_title">Automattic 家族</string>
+    <string name="about_automattic_legal_and_more_item_title">法律及更多信息</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_rate_us_item_title">给我们评分</string>
+    <string name="about_automattic_share_with_friends_item_title">分享给朋友</string>
+    <string name="about_automattic_acknowledgements_page_title">确认</string>
+    <string name="about_automattic_legal_page_title">法律及更多信息</string>
+    <string name="about_automattic_main_page_title">关于 %1$s</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">联系支持人员</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">启用</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">安装</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">在 WP Admin 中%s Jetpack</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">启用</string>
+    <string name="jetpack_install_progress_failed_alternative_install">安装</string>
+    <string name="jetpack_install_progress_failed_alternative">此外，您可以在 WP Admin 中%s Jetpack。</string>
+    <string name="jetpack_install_progress_failed_try">请重试。</string>
+    <string name="jetpack_install_progress_failed_reason_connection">连接</string>
+    <string name="jetpack_install_progress_failed_reason_activation">启用</string>
+    <string name="jetpack_install_progress_failed_reason_installation">安装</string>
+    <string name="jetpack_install_progress_failed_title">抱歉，%s期间出错了</string>
+    <string name="settings_about_recommend_app_message">您好！ 这是下载 WooCommerce 应用程序的链接。我非常喜欢这个应用，希望您也喜欢。 %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">更新 Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">您即将大功告成！ 请完成 Stripe 设置，以开始支持现场刷卡付款。</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">在商店管理中完成 Stripe 设置</string>
+    <string name="order_refunds_refund_fees">退还费用</string>
+    <string name="order_refunds_fees_refund">退款金额</string>
+    <string name="order_creation_variations_screen_title">选择变体</string>
+    <string name="order_creation_remove_product">从订单中移除产品</string>
+    <string name="order_creation_add_discount">添加折扣</string>
+    <string name="order_creation_product_details_title">产品</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">添加其他配送地址</string>
+    <string name="order_creation_product_instock">有货</string>
+    <string name="order_creation_product_stock_quantity">%s 有货</string>
+    <string name="order_creation_new_customer">新客户</string>
+    <string name="order_creation_add_products">添加产品</string>
+    <string name="order_creation_products">产品</string>
+    <string name="order_creation_add_customer">添加客户</string>
+    <string name="order_creation_customer">客户</string>
+    <string name="simple_payments_cash_dlg_button">标记为已付款</string>
+    <string name="simple_payments_cash_dlg_message">如果您在 WooCommerce 之外收取了付款，则此操作将创建订单并将其标记为已付款</string>
+    <string name="simple_payments_cash_dlg_title">是否标记为已付款？</string>
+    <string name="simple_payments_choose_method">选择付款方式</string>
+    <string name="simple_payments_tax_message">系统会根据您的商店地址自动计算税费</string>
+    <string name="simple_payments_tax_with_percent">税 (%s%%)</string>
+    <string name="simple_payments_take_payment_button">收款 (%s)</string>
+    <string name="simple_payments_charge_taxes">收取税费</string>
+    <string name="simple_payments_custom_amount">自定义金额</string>
+    <string name="simple_payments_edit_email_hint">输入电子邮件</string>
+    <string name="simple_payments_title">简单付款</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">现金</string>
+    <string name="card">卡片</string>
+    <string name="plus">加号</string>
+    <string name="minus">减号</string>
+    <string name="tax">税费</string>
+    <string name="email">电子邮件</string>
+    <string name="order_creation_add_customer_note">添加备注</string>
+    <string name="order_creation_customer_note">客户备注</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">更新后刷新</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">您的商店中安装的 WooCommerce Stripe Gateway 扩展程序版本已过时。 请更新，以便支持现场付款。</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">刷新</string>
+    <string name="card_reader_payment_failed_unknown">付款因未知原因被拒</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">在站点处于测试模式下使用实时卡</string>
+    <string name="card_reader_payment_failed_test_card">禁止使用系统测试卡付款</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">输入错误 PIN 次数过多</string>
+    <string name="card_reader_payment_failed_pin_required">此卡需要 PIN 码，因此无法处理</string>
+    <string name="card_reader_payment_failed_invalid_amount">当前卡片不支持付款金额</string>
+    <string name="card_reader_payment_failed_insufficient_funds">付款因余额不足被拒</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">交易邮政编码与卡片邮政编码不匹配</string>
+    <string name="card_reader_payment_failed_expired_card">卡已过期</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">近期提交过一笔相同的交易</string>
+    <string name="card_reader_payment_failed_currency_not_supported">卡片不支持当前币种</string>
+    <string name="card_reader_payment_failed_card_not_supported">卡片不支持当前购买类型</string>
+    <string name="card_reader_payment_failed_invalid_account">卡片或卡片账户无效</string>
+    <string name="card_reader_payment_failed_generic">付款因不明原因被拒</string>
+    <string name="card_reader_payment_failed_fraud">请尝试其他付款方式</string>
+    <string name="card_reader_payment_failed_temporary">重试可能会成功</string>
+    <string name="order_creation_fragment_title">新订单</string>
+    <string name="analytics_date_range_selector_description">日期范围过滤器选择器</string>
+    <string name="analytics_date_range_from_date">与上一时间段 (%1$s)</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">年初至今</string>
+    <string name="date_timeframe_quarter_to_date">季初至今</string>
+    <string name="date_timeframe_month_to_date">月初至今</string>
+    <string name="date_timeframe_week_to_date">周初至今</string>
+    <string name="date_timeframe_last_year">去年</string>
+    <string name="date_timeframe_last_quarter">上一季度</string>
+    <string name="date_timeframe_last_month">上月</string>
+    <string name="date_timeframe_last_week">上周</string>
     <string name="settings_enable_order_creation_teaser_message">在我们准备发布时，测试如何使用完整的信息创建订单</string>
     <string name="settings_enable_order_creation_teaser_title">订单创建</string>
     <string name="settings_enable_simple_payments_teaser_title">简单付款</string>
@@ -213,7 +327,6 @@ Language: zh_CN
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">您的商店中安装的 WooCommerce Payments 扩展程序版本已过时。 请更新，以支持现场付款。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">更新 WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">刷新</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">您即将大功告成！ 请完成 WooCommerce Payments 设置，以支持现场刷卡付款。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">在您的商店管理页面中完成 WooCommerce Payments 设置 </string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">激活后刷新</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">您的商店中已安装 WooCommerce Payments 扩展程序，但未激活。 请激活它，以支持现场付款。</string>
@@ -291,7 +404,6 @@ Language: zh_CN
     <string name="card_reader_connect_multiple_readers_found_header">找到多个读卡器</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">订单已支付</string>
     <string name="card_reader_payment_receipt_email_content">谢谢购买！ 点击以下链接，获取付款收据。\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">卡片被拒</string>
     <string name="shipping_label_print_customs_form_download_failed">下载报关单时出错</string>
     <string name="shipping_label_print_customs_form_screen_title">打印海关发票</string>
     <string name="shipping_label_print_customs_form">打印报关单</string>
@@ -1735,6 +1847,18 @@ Language: zh_CN
     <string name="all">全部</string>
     <string name="notification_channel_general_title">常规</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>正在处理</item>
         <item>所有订单</item>

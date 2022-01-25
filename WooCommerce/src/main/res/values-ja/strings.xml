@@ -1,11 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-08 11:54:04+0000
+Translation-Revision-Date: 2022-01-20 21:48:50+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">アプリアイコン</string>
+    <string name="about_automattic_back_icon_description">「戻る」アイコン</string>
+    <string name="about_automattic_logo_description">Automattic ロゴ</string>
+    <string name="about_automattic_version_label">バージョン%1$s</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_acknowledgements_item_title">謝辞</string>
+    <string name="about_automattic_source_code_item_title">ソースコード</string>
+    <string name="about_automattic_california_privacy_notice_item_title">カリフォルニア州プライバシー通知</string>
+    <string name="about_automattic_privacy_policy_item_title">プライバシーポリシー</string>
+    <string name="about_automattic_terms_of_service_item_title">利用規約</string>
+    <string name="about_automattic_work_with_us_item_subtitle">どこでも作業可能</string>
+    <string name="about_automattic_work_with_us_item_title">求人情報</string>
+    <string name="about_automattic_family_item_title">Automattic ファミリー</string>
+    <string name="about_automattic_legal_and_more_item_title">法的情報およびその他</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_rate_us_item_title">評価してください</string>
+    <string name="about_automattic_share_with_friends_item_title">友達と共有</string>
+    <string name="about_automattic_acknowledgements_page_title">謝辞</string>
+    <string name="about_automattic_legal_page_title">法的情報およびその他</string>
+    <string name="about_automattic_main_page_title">%1$s について</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">サポートに問い合わせる</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">有効化</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">インストール</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">WP 管理画面で Jetpack を%s</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">有効化</string>
+    <string name="jetpack_install_progress_failed_alternative_install">インストール</string>
+    <string name="jetpack_install_progress_failed_alternative">または、WP 管理画面で Jetpack を%sできます。</string>
+    <string name="jetpack_install_progress_failed_try">もう一度お試しください。</string>
+    <string name="jetpack_install_progress_failed_reason_connection">連携中</string>
+    <string name="jetpack_install_progress_failed_reason_activation">有効化</string>
+    <string name="jetpack_install_progress_failed_reason_installation">インストール</string>
+    <string name="jetpack_install_progress_failed_title">%s中にエラーが発生しました</string>
+    <string name="settings_about_recommend_app_message">注目! このリンクから WooCommerce アプリをダウンロードできます。とても楽しく、どなたにも気に入ってもらえると思います。 %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Stripe を更新</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">あともう少しです。 カードを使用した支払いを開始するには、Stripe の設定を完了してください。</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">ストア管理で Stripe の設定を完了する</string>
+    <string name="order_refunds_refund_fees">料金を返金</string>
+    <string name="order_refunds_fees_refund">料金の返金</string>
+    <string name="order_creation_variations_screen_title">バリエーションを選択</string>
+    <string name="order_creation_remove_product">注文から商品を削除</string>
+    <string name="order_creation_add_discount">割引を追加</string>
+    <string name="order_creation_product_details_title">商品</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">別の配送先住所を追加</string>
+    <string name="order_creation_product_instock">在庫あり</string>
+    <string name="order_creation_product_stock_quantity">在庫%s件</string>
+    <string name="order_creation_new_customer">新規顧客</string>
+    <string name="order_creation_add_products">商品を追加</string>
+    <string name="order_creation_products">商品</string>
+    <string name="order_creation_add_customer">顧客を追加</string>
+    <string name="order_creation_customer">お客様</string>
+    <string name="simple_payments_cash_dlg_button">支払い済みとしてマーク</string>
+    <string name="simple_payments_cash_dlg_message">注文が作成され、WooCommerce 外部で支払いを受け取った場合は支払い済みとしてマークされます</string>
+    <string name="simple_payments_cash_dlg_title">支払い済みとしてマーク</string>
+    <string name="simple_payments_choose_method">支払い方法を選択</string>
+    <string name="simple_payments_tax_message">税金は店舗の住所に基づいて自動的に計算されます</string>
+    <string name="simple_payments_tax_with_percent">税金 (%s%%)</string>
+    <string name="simple_payments_take_payment_button">支払いを受け取る (%s)</string>
+    <string name="simple_payments_charge_taxes">税金を請求</string>
+    <string name="simple_payments_custom_amount">カスタム金額</string>
+    <string name="simple_payments_edit_email_hint">メールアドレスを入力</string>
+    <string name="simple_payments_title">シンプルペイメント</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">現金</string>
+    <string name="card">カード</string>
+    <string name="plus">Plus</string>
+    <string name="minus">マイナス</string>
+    <string name="tax">税金</string>
+    <string name="email">メールアドレス</string>
+    <string name="order_creation_add_customer_note">メモを追加</string>
+    <string name="order_creation_customer_note">注文メモ</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">更新後に再読み込みする</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Stripe Gateway 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">再読み込み</string>
+    <string name="card_reader_payment_failed_unknown">不明な理由により支払いが拒否されました</string>
+    <string name="card_reader_payment_failed_test_mode_live_card">本番用カードがテストモードのサイトで使用されました</string>
+    <string name="card_reader_payment_failed_test_card">システムテストカードは支払いが許可されていません</string>
+    <string name="card_reader_payment_failed_too_many_pin_tries">上限回数を超えて誤った PIN が入力されました</string>
+    <string name="card_reader_payment_failed_pin_required">このカードには PIN コードが必要であるため、処理できません</string>
+    <string name="card_reader_payment_failed_invalid_amount">この支払い額は提示されたカードで許可されていません</string>
+    <string name="card_reader_payment_failed_insufficient_funds">資金が不足しているため支払いが拒否されました</string>
+    <string name="card_reader_payment_failed_incorrect_postal_code">取引の郵便番号とカードの郵便番号が一致しません</string>
+    <string name="card_reader_payment_failed_expired_card">カードの有効期限が過ぎています</string>
+    <string name="card_reader_payment_failed_duplicate_transaction">同一の取引が最近送信されています</string>
+    <string name="card_reader_payment_failed_currency_not_supported">カードはこの通貨をサポートしていません</string>
+    <string name="card_reader_payment_failed_card_not_supported">カードはこの種類の購入をサポートしていません</string>
+    <string name="card_reader_payment_failed_invalid_account">カードまたはカード口座が無効です</string>
+    <string name="card_reader_payment_failed_generic">不明な理由により支払いが拒否されました</string>
+    <string name="card_reader_payment_failed_fraud">別の支払い手段でお試しください</string>
+    <string name="card_reader_payment_failed_temporary">再試行すると完了できる場合があります</string>
+    <string name="order_creation_fragment_title">新しい注文</string>
+    <string name="analytics_date_range_selector_description">日付範囲フィルターのセレクタ</string>
+    <string name="analytics_date_range_from_date">前の期間 (%1$s) との比較</string>
+    <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
+    <string name="date_timeframe_year_to_date">今年の現在まで</string>
+    <string name="date_timeframe_quarter_to_date">今四半期の現在まで</string>
+    <string name="date_timeframe_month_to_date">今月の現在まで</string>
+    <string name="date_timeframe_week_to_date">今週の現在まで</string>
+    <string name="date_timeframe_last_year">去年</string>
+    <string name="date_timeframe_last_quarter">前四半期</string>
+    <string name="date_timeframe_last_month">先月</string>
+    <string name="date_timeframe_last_week">先週</string>
     <string name="settings_enable_order_creation_teaser_message">リリースの準備ができ次第、詳細情報で注文の作成をテストしてください</string>
     <string name="settings_enable_order_creation_teaser_title">注文の作成</string>
     <string name="settings_enable_simple_payments_teaser_title">シンプルペイメント</string>
@@ -213,7 +327,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Payments 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments を更新する</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">再読み込み</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_hint">あともう少しです。 カードを使用した支払いを開始するには、WooCommerce Payments のセットアップを完了させてください。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">ストア管理で WooCommerce Payments のセットアップを完了させる</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">有効化後に再読み込みする</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">ご使用のストアには WooCommerce Payments 拡張機能はインストールされていますが、有効化されていません。 オフラインでの支払いを受け取るには、この拡張機能を有効化してください。</string>
@@ -291,7 +404,6 @@ Language: ja_JP
     <string name="card_reader_connect_multiple_readers_found_header">複数の Reader が見つかりました</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">この注文のお支払いは完了しています</string>
     <string name="card_reader_payment_receipt_email_content">ご購入ありがとうございます。 以下のリンクをクリックしてお支払いのレシートをご確認ください。\n\n%s</string>
-    <string name="card_reader_payment_failed_card_declined_state">カードが拒否されました</string>
     <string name="shipping_label_print_customs_form_download_failed">税関申告書をダウンロードする際にエラーが発生しました</string>
     <string name="shipping_label_print_customs_form_screen_title">税関送り状を印刷</string>
     <string name="shipping_label_print_customs_form">税関申告書を印刷</string>
@@ -1735,6 +1847,18 @@ Language: ja_JP
     <string name="all">すべて</string>
     <string name="notification_channel_general_title">一般</string>
     <string name="app_name">WooCommerce</string>
+    <string-array name="date_range_selectors">
+        <item>\@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_yesterday</item>
+        <item>\@string/date_timeframe_last_week</item>
+        <item>\@string/date_timeframe_last_month</item>
+        <item>\@string/date_timeframe_last_quarter</item>
+        <item>\@string/date_timeframe_last_year</item>
+        <item>\@string/date_timeframe_week_to_date</item>
+        <item>\@string/date_timeframe_month_to_date</item>
+        <item>\@string/date_timeframe_quarter_to_date</item>
+        <item>\@string/date_timeframe_year_to_date</item>
+    </string-array>
     <string-array name="order_list_tabs">
         <item>処理中</item>
         <item>すべての注文</item>

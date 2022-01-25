@@ -1,1 +1,1 @@
-For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all in 2022! Keep your feedback rolling in; it helps us figure out what to work on next. 💜
+We’ve improved order refunding to let you refund fees to customers. There are some pretty cool updates coming in the next few weeks! If you’d like to join our early beta program, visit https://woocommercehalo.wordpress.com.

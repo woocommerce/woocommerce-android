@@ -86,7 +86,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="tabPaddingStart">25dp</item>
         <item name="tabPaddingEnd">25dp</item>
         <item name="android:background">@color/color_surface</item>
-        <item name="tabTextColor">@color/color_on_surface</item>
+        <item name="tabTextColor">@color/color_on_surface_medium</item>
     </style>
 
     <style name="Woo.TabLayout.Scrollable">
@@ -164,7 +164,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginTop">@dimen/major_100</item>
     </style>
 
-    <style name="Woo.Card.Title" parent="Woo.TextView.Subtitle1" />
+    <style name="Woo.Card.Title" parent="Woo.TextView.Subtitle1">
+        <item name="android:textStyle">bold</item>
+    </style>
 
     <style name="Woo.Card.Header" parent="Woo.TextView.Subtitle2">
         <item name="android:layout_marginTop">@dimen/major_100</item>
@@ -174,7 +176,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textColor">@color/color_on_surface_disabled</item>
     </style>
 
-    <style name="Woo.Card.Body" parent="Woo.TextView.Body2"/>
+    <style name="Woo.Card.Body" parent="Woo.TextView.Body2" />
 
     <style name="Woo.Card.Body.High" parent="Woo.TextView.Body2">
         <item name="android:textColor">@color/color_on_surface_high</item>
@@ -187,8 +189,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Card.StatusMessage" parent="Woo.TextView.Subtitle1"/>
 
-    <style name="Woo.Card.ListHeader" parent="Woo.TextView.Subtitle2">
-        <item name="android:layout_marginTop">@dimen/major_100</item>
+    <style name="Woo.Card.ListHeader" parent="Woo.TextView.Body2">
         <item name="android:layout_marginBottom">@dimen/major_75</item>
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>

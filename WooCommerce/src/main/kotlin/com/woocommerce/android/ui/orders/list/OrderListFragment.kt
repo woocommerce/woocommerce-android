@@ -25,7 +25,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -36,7 +35,6 @@ import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.C
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog.Companion.KEY_SIMPLE_PAYMENTS_RESULT
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -322,11 +320,6 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
-        handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
-            binding.orderListView.post {
-                openSimpleOrder(order)
-            }
-        }
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
             binding.orderListView.post {
                 when (it) {
@@ -343,7 +336,7 @@ class OrderListFragment :
 
     private fun showSimplePaymentsDialog() {
         AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
-        findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsDialog)
+        findNavController().navigate(R.id.action_orderListFragment_to_simplePayments)
     }
 
     private fun showOrderCreationBottomSheet() {
@@ -371,18 +364,6 @@ class OrderListFragment :
         setHasOptionsMenu(show)
         if (show) {
             refreshOptionsMenu()
-        }
-    }
-
-    private fun openSimpleOrder(order: Order) {
-        if (FeatureFlag.SIMPLE_PAYMENT_I2.isEnabled()) {
-            // TODO nbradbury - tracks?
-            val bundle = Bundle().also {
-                it.putParcelable("order", order)
-            }
-            findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsFragment, bundle)
-        } else {
-            openOrderDetail(order.id, order.status.value)
         }
     }
 

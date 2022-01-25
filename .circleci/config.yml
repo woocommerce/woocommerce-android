@@ -11,7 +11,7 @@ commands:
       parameters:
         jvmargs:
           type: string
-          default: "Xmx1536m"
+          default: "Xmx2048m"
       steps:
         - run:
             name: Update memory setting
@@ -60,6 +60,16 @@ jobs:
       - store_artifacts:
           path: WooCommerce/build/reports
           destination: reports
+  Dependency Tree Diff:
+    executor:
+      name: android/default
+      api-version: "28"
+    steps:
+      - checkout
+      - copy-gradle-properties
+      - run:
+          name: Build dependency diff report
+          command: ./tools/dependency-tree-diff/dependency-tree-diff.sh
   Test:
     executor:
       name: android/default
@@ -114,7 +124,7 @@ jobs:
       - android/restore-gradle-cache
       - copy-gradle-properties
       - update-gradle-memory:
-          jvmargs: "Xmx1536m"
+          jvmargs: "Xmx2048m"
       - run:
           name: Build
           command: ./gradlew WooCommerce:assembleVanillaDebug --stacktrace
@@ -224,6 +234,7 @@ workflows:
     unless: << pipeline.parameters.release_build >>
     jobs:
       - Lint
+      - Dependency Tree Diff
       - Test
       - Installable Build
       - Ensure Screenshots Tests Build
