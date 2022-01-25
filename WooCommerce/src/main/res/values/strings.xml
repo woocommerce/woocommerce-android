@@ -355,7 +355,7 @@
     <string name="order_creation_failure_snackbar">Order creation failed</string>
     <string name="order_creation_success_snackbar">Order created</string>
     <string name="order_creation_payment_tax">Taxes</string>
-    <string name="order_creation_price_calculation_failed">Prices calculation failed</string>
+    <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
     <!--
         Order Filters
     -->
