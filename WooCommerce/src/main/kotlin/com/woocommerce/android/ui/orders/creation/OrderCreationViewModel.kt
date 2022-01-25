@@ -183,15 +183,18 @@ class OrderCreationViewModel @Inject constructor(
         if (!FeatureFlag.ORDER_CREATION_M2.isEnabled()) return
         viewModelScope.launch {
             createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
-                .collect {
-                    when (it) {
+                .collect { updateStatus ->
+                    when (updateStatus) {
                         OrderDraftUpdateStatus.Ongoing ->
                             viewState = viewState.copy(isUpdatingOrderDraft = true, showOrderUpdateSnackbar = false)
                         OrderDraftUpdateStatus.Failed ->
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
                         is OrderDraftUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = false)
-                            _orderDraft.value = it.order
+                            _orderDraft.update { currentDraft ->
+                                // Keep the user's selected status
+                                updateStatus.order.copy(status = currentDraft.status)
+                            }
                         }
                     }
                 }
