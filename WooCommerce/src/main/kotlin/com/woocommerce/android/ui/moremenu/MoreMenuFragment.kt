@@ -8,6 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentMoreMenuBinding
 import com.woocommerce.android.extensions.navigateSafely
@@ -21,6 +22,7 @@ import javax.inject.Inject
 @ExperimentalFoundationApi
 class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var appPrefs: AppPrefsWrapper
 
     override fun getFragmentTitle() = getString(R.string.more_menu)
 
@@ -44,20 +46,30 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         val storeUrl = selectedSite.get().url
 
         val buttons = listOf(
-            MenuButton(R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin) {
+            MenuButton(
+                R.string.more_menu_button_woo_admin,
+                R.drawable.ic_more_menu_wp_admin
+            ) {
                 ChromeCustomTabUtils.launchUrl(requireContext(), wpAdminUrl)
             },
-            MenuButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store) {
+            MenuButton(
+                R.string.more_menu_button_store,
+                R.drawable.ic_more_menu_store
+            ) {
                 ChromeCustomTabUtils.launchUrl(requireContext(), storeUrl)
             },
-            // MenuButton(R.string.more_menu_button_analytics, R.drawable.ic_more_menu_analytics),
-            // MenuButton(R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments),
-            // MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
-            MenuButton(R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews) {
+            MenuButton(
+                R.string.more_menu_button_reviews,
+                R.drawable.ic_more_menu_reviews,
+                badgeCount = if (appPrefs.hasUnseenReviews()) 1 else 0
+            ) {
                 findNavController().navigateSafely(
                     MoreMenuFragmentDirections.actionMoreMenuToReviewList()
                 )
             }
+            // MenuButton(R.string.more_menu_button_analytics, R.drawable.ic_more_menu_analytics),
+            // MenuButton(R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments),
+            // MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
         )
 
         binding.menu.apply {
