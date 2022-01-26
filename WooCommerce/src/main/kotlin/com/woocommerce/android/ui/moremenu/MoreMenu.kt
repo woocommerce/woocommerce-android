@@ -29,11 +29,10 @@ import com.woocommerce.android.R.color
 
 @ExperimentalFoundationApi
 @Composable
-fun moreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
+fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
     Column {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(
@@ -53,9 +52,10 @@ fun moreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
             verticalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
         ) {
             itemsIndexed(buttons) { _, item ->
-                moreMenuButton(
+                MoreMenuButton(
                     text = item.text,
                     iconDrawable = item.icon,
+                    badgeCount = item.badgeCount,
                     onClick = item.onClick
                 )
             }
@@ -64,47 +64,76 @@ fun moreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
 }
 
 @Composable
-private fun moreMenuButton(
+private fun MoreMenuButton(
     @StringRes text: Int,
     @DrawableRes iconDrawable: Int,
-    onClick: () -> Unit
+    badgeCount: Int,
+    onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(12.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(id = color.color_surface)
         ),
         modifier = Modifier.height(190.dp),
         shape = RoundedCornerShape(10.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 30.dp)
+        Box(Modifier.fillMaxSize()) {
+            MoreMenuBadge(badgeCount = badgeCount)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(58.dp)
+                        .clip(CircleShape)
+                        .background(colorResource(id = color.woo_gray_0))
+                ) {
+                    Image(
+                        painter = painterResource(id = iconDrawable),
+                        contentDescription = stringResource(id = text),
+                        modifier = Modifier
+                            .size(35.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(
+                    text = stringResource(id = text),
+                    fontSize = 13.sp,
+                    textAlign = TextAlign.Center,
+                    color = colorResource(id = color.color_on_surface)
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun MoreMenuBadge(badgeCount: Int) {
+    if (badgeCount > 0) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
         ) {
             Box(
                 modifier = Modifier
-                    .size(58.dp)
+                    .size(24.dp)
                     .clip(CircleShape)
-                    .background(colorResource(id = color.woo_gray_0))
+                    .background(colorResource(id = color.color_primary))
             ) {
-                Image(
-                    painter = painterResource(id = iconDrawable),
-                    contentDescription = stringResource(id = text),
-                    modifier = Modifier
-                        .size(35.dp)
-                        .align(Alignment.Center)
+                Text(
+                    text = badgeCount.toString(),
+                    fontSize = 13.sp,
+                    color = colorResource(id = color.color_on_surface_inverted),
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
-            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-            Text(
-                text = stringResource(id = text),
-                fontSize = 13.sp,
-                textAlign = TextAlign.Center,
-                color = colorResource(id = color.color_on_surface)
-            )
         }
     }
 }
@@ -112,7 +141,7 @@ private fun moreMenuButton(
 @ExperimentalFoundationApi
 @Preview
 @Composable
-fun moreMenuPreview() {
+fun MoreMenuPreview() {
     val buttons = listOf(
         MenuButton(R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin),
         MenuButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
@@ -121,5 +150,5 @@ fun moreMenuPreview() {
         MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
         MenuButton(R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews)
     )
-    moreMenu(buttons)
+    MoreMenu(buttons)
 }
