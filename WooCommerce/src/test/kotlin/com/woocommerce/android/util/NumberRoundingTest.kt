@@ -6,6 +6,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @RunWith(Parameterized::class)
+@Suppress("ArrayPrimitive")
 class NumberRoundingTest(
     private val initialValue: Float,
     private val roundedValue: Float
