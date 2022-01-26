@@ -11,7 +11,6 @@ class NumberRoundingTest(
     private val initialValue: Float,
     private val roundedValue: Float
 ) {
-
     companion object {
         @JvmStatic
         @Parameterized.Parameters
