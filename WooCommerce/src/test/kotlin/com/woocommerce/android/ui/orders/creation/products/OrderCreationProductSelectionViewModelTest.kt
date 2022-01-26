@@ -5,8 +5,10 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductList
+import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithDrafts
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithVariations
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -203,6 +205,21 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
             assertThat(sut.currentQuery).isEmpty()
             assertThat(actualProductList).isEmpty()
         }
+
+    @Test
+    fun `when loading products, then filter non-published products out`() = testBlocking {
+        var actualProductList: List<Product>? = null
+        val completeProductList = generateProductListWithDrafts()
+        val filteredProductList = completeProductList
+            .filter { it.status == PUBLISH }
+        whenever(productListRepository.fetchProductList()).thenReturn(completeProductList)
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        sut.loadProductList()
+        assertThat(actualProductList).isEqualTo(filteredProductList)
+    }
 
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(
