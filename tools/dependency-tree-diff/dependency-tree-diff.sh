@@ -35,6 +35,11 @@ if [ "${CIRCLE_PULL_REQUEST##*/}" != "" ]; then
 
   # https://github.com/JakeWharton/dependency-tree-diff
   curl -L "https://github.com/JakeWharton/dependency-tree-diff/releases/download/$DEPENDENCY_TREE_VERSION/dependency-tree-diff.jar" -o dependency-tree-diff.jar
+  sha=($(sha1sum dependency-tree-diff.jar))
+  if [[ $sha != "949394274f37c06ac695b5d49860513e4d16e847" ]]; then
+    echo "dependency-tree-diff.jar file has unexpected sha1"
+    exit 1
+  fi
   chmod +x dependency-tree-diff.jar
   ./dependency-tree-diff.jar $TARGET_BRANCH_DEPENDENCIES_FILE $CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE >$DIFF_DEPENDENCIES_FILE
 
