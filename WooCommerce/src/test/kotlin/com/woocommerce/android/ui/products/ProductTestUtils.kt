@@ -14,7 +14,7 @@ object ProductTestUtils {
         productId: Long = 1L,
         isVirtual: Boolean = false,
         isVariable: Boolean = false,
-        isPurchasable: Boolean = false,
+        isPurchasable: Boolean = true,
         customStatus: String? = null
     ): Product {
         return WCProductModel(2).apply {
@@ -75,8 +75,14 @@ object ProductTestUtils {
         generateProductList()
             .toMutableList()
             .apply {
+                add(generateProduct(6, customStatus = DRAFT.toString()))
+            }
+
+    fun generateProductListWithNonPurchasable(): List<Product> =
+        generateProductList()
+            .toMutableList()
+            .apply {
                 add(generateProduct(6, isPurchasable = false))
-                add(generateProduct(7, customStatus = DRAFT.toString()))
             }
 
     fun generateProductListWithVariations(): List<Product> =
