@@ -7,7 +7,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
-private const val DEBOUNCE_DURATION_MS = 1000L
+private const val DEBOUNCE_DURATION_MS = 500L
 
 class CreateOrUpdateOrderDraft @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
