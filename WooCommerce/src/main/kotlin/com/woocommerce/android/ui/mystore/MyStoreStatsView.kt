@@ -425,7 +425,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         fadeInLabelValue(revenueValue, revenue)
         fadeInLabelValue(ordersValue, orders)
 
-        if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales?.toInt() == 0) {
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales == 0.toDouble()) {
             isRequestingStats = false
             return
         }
