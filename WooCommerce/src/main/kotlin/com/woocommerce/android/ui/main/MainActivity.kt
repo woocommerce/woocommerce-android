@@ -653,6 +653,13 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
+    override fun showMoreMenuBadge(show: Boolean) {
+        binding.bottomNav.showMoreMenuBadge(show)
+        if (!show) {
+            viewModel.removeReviewNotifications()
+        }
+    }
+
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> Stat.MAIN_TAB_DASHBOARD_SELECTED
