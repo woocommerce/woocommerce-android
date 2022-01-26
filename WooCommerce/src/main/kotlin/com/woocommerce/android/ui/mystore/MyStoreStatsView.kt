@@ -36,12 +36,13 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.util.roundToTheNextPowerOfTen
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.text.DecimalFormat
 import java.util.Locale
-import kotlin.math.*
+import kotlin.math.round
 
 class MyStoreStatsView @JvmOverloads constructor(
     ctx: Context,
@@ -474,26 +475,6 @@ class MyStoreStatsView @JvmOverloads constructor(
             marker = dot
         }
         isRequestingStats = false
-    }
-
-    /**
-     * Returns a rounded value that has the next higher multitude of the same power of 10.
-     * Examples when positive number: 62 --> 70, 134 --> 200, 1450 --> 2000
-     * Examples when negative number: -62 --> -70, -579 --> -600
-     */
-    private fun Float.roundToTheNextPowerOfTen(): Float {
-        if (this == 0f) {
-            return 0f
-        }
-        val isNegative = this < 0
-        val absoluteValue = abs(this)
-        val numberOfDigits = max(floor(log10(absoluteValue)), 0f)
-        val tenthPowerValue = 10f.pow(numberOfDigits)
-        return if (isNegative) {
-            floor(-absoluteValue / tenthPowerValue) * tenthPowerValue
-        } else {
-            ceil(absoluteValue / tenthPowerValue) * tenthPowerValue
-        }
     }
 
     private fun getFormattedRevenueValue(revenue: Double) =
