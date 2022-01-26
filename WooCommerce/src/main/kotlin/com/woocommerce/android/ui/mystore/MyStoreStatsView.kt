@@ -602,10 +602,17 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private inner class RevenueAxisFormatter : ValueFormatter() {
         override fun getAxisLabel(value: Float, axis: AxisBase): String {
-            return currencyFormatter.formatCurrencyRounded(
-                value.toDouble(),
-                revenueStatsModel?.currencyCode.orEmpty()
-            ).replace(".0", "")
+            return if (-1 < value && value < 1 && value != 0f) {
+                currencyFormatter.formatCurrency(
+                    value.toBigDecimal(),
+                    revenueStatsModel?.currencyCode.orEmpty()
+                )
+            } else {
+                currencyFormatter.formatCurrencyRounded(
+                    value.toDouble(),
+                    revenueStatsModel?.currencyCode.orEmpty()
+                ).replace(".0", "")
+            }
         }
     }
 }

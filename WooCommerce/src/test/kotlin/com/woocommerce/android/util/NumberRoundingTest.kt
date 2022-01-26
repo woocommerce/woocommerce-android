@@ -23,8 +23,10 @@ class NumberRoundingTest(
                 arrayOf(-18f, -20f),
                 arrayOf(-138f, -200f),
                 arrayOf(-1338f, -2000f),
-                arrayOf(0.3f, 1f),
-                arrayOf(-0.3f, -1f),
+                arrayOf(0.3f, 0.3f),
+                arrayOf(-0.3f, -0.3f),
+                arrayOf(1.3f, 2f),
+                arrayOf(-1.3f, -2f)
             )
         }
     }
