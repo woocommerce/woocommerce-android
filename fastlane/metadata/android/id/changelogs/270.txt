@@ -1,2 +1,0 @@
-8.2:
-Untuk rilis ini, kami berfokus meningkatkan beberapa hal dan mengatasi bug minor yang ditemukan oleh tim. Jangan salah sangka – kami sedang mengerjakan hal menarik untuk Anda di tahun 2022! Terus kirimkan feedback Anda untuk memberi tahu kami apa yang harus ditingkatkan selanjutnya. 💜

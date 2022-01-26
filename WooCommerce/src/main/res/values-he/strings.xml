@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-21 16:54:03+0000
+Translation-Revision-Date: 2022-01-19 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">סמל האפליקציה</string>
+    <string name="about_automattic_back_icon_description">סמל \'חזרה\'</string>
+    <string name="about_automattic_logo_description">הסמל של Automattic</string>
+    <string name="about_automattic_version_label">גרסה ⁦%1$s⁩</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_acknowledgements_item_title">בשיתוף</string>
+    <string name="about_automattic_source_code_item_title">קוד מקור</string>
+    <string name="about_automattic_california_privacy_notice_item_title">הצהרת פרטיות של קליפורניה</string>
+    <string name="about_automattic_privacy_policy_item_title">מדיניות פרטיות</string>
+    <string name="about_automattic_terms_of_service_item_title">תנאי שימוש</string>
+    <string name="about_automattic_work_with_us_item_subtitle">לעבוד מכל מקום</string>
+    <string name="about_automattic_work_with_us_item_title">הצטרפות לכוח העבודה שלנו</string>
+    <string name="about_automattic_family_item_title">משפחת Automattic</string>
+    <string name="about_automattic_legal_and_more_item_title">מידע משפטי ופרטים נוספים</string>
+    <string name="about_automattic_twitter_item_title">טוויטר</string>
+    <string name="about_automattic_instagram_item_title">אינסטגרם</string>
+    <string name="about_automattic_rate_us_item_title">נשמח לקבל ממך דירוג</string>
+    <string name="about_automattic_share_with_friends_item_title">לשתף עם חברים</string>
+    <string name="about_automattic_acknowledgements_page_title">בשיתוף</string>
+    <string name="about_automattic_legal_page_title">מידע משפטי ופרטים נוספים</string>
+    <string name="about_automattic_main_page_title">אודות ⁦%1$s⁩</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">יצירת קשר עם התמיכה</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">להפעיל</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">להתקין</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s את Jetpack בניהול WP</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">להפעיל</string>
+    <string name="jetpack_install_progress_failed_alternative_install">להתקין</string>
+    <string name="jetpack_install_progress_failed_alternative">לחלופין, אפשר %s את Jetpack בניהול WP.</string>
+    <string name="jetpack_install_progress_failed_try">יש לנסות שוב.</string>
+    <string name="jetpack_install_progress_failed_reason_connection">מתחבר</string>
+    <string name="jetpack_install_progress_failed_reason_activation">ההפעלה</string>
+    <string name="jetpack_install_progress_failed_reason_installation">ההתקנה</string>
+    <string name="jetpack_install_progress_failed_title">מצטערים, משהו השתמש במהלך %s</string>
+    <string name="settings_about_recommend_app_message">היי! זה קישור להורדת האפליקציה של WooCommerce. זו אפליקציה נהדרת לדעתי ואולי תמצא חן גם בעיניך. %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">לעדכן את Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">כמעט סיימת! על מנת להתחיל לקבל תשלומים בהצגת כרטיס, יש לסיים את ההגדרה של Stripe.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">יש לסיים את ההגדרה של Stripe במנהל החנות שלך</string>
+    <string name="order_refunds_refund_fees">להנפיק החזר כספי על עמלות</string>
+    <string name="order_refunds_fees_refund">החזר כספי על עמלות</string>
+    <string name="order_creation_variations_screen_title">יש לבחור סוג</string>
+    <string name="order_creation_remove_product">להסיר את המוצר מההזמנה</string>
+    <string name="order_creation_add_discount">להוסיף הנחה</string>
+    <string name="order_creation_product_details_title">מוצר</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">להוסיף כתובת שונה למשלוח</string>
+    <string name="order_creation_product_instock">במלאי</string>
+    <string name="order_creation_product_stock_quantity">%s במלאי</string>
+    <string name="order_creation_new_customer">לקוח חדש</string>
+    <string name="order_creation_add_products">להוסיף מוצר</string>
+    <string name="order_creation_products">מוצרים</string>
+    <string name="order_creation_add_customer">להוסיף לקוח</string>
+    <string name="order_creation_customer">לקוח</string>
+    <string name="simple_payments_cash_dlg_button">לסמן כ\'שולמה\'</string>
+    <string name="simple_payments_cash_dlg_message">הפעולה הזאת תיצור את ההזמנה ותסמן אותה בתור \'שולמה\' אם קיבלת תשלום מחוץ ל-WooCommerce</string>
+    <string name="simple_payments_cash_dlg_title">האם לסמן כ\'שולמה\'?</string>
+    <string name="simple_payments_choose_method">לבחור את אמצעי התשלום שלך</string>
+    <string name="simple_payments_tax_message">מיסים מחושבים באופן אוטומטי בהתאם לכתובת של החנות שלך</string>
+    <string name="simple_payments_tax_with_percent">מס (%s%%)</string>
+    <string name="simple_payments_take_payment_button">לגבות תשלום (%s)</string>
+    <string name="simple_payments_charge_taxes">לגבות מיסים</string>
+    <string name="simple_payments_custom_amount">סכום מותאם</string>
+    <string name="simple_payments_edit_email_hint">להזין אימייל</string>
+    <string name="simple_payments_title">תשלום פשוט</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">מזומן</string>
+    <string name="card">כרטיס</string>
+    <string name="plus">ועוד</string>
+    <string name="minus">פחות</string>
+    <string name="tax">מס</string>
+    <string name="email">לשלוח מייל</string>
     <string name="order_creation_add_customer_note">להוסיף הערה</string>
     <string name="order_creation_customer_note">הערת לקוח</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">לרענן לאחר עדכון</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">בחנות שלך הותקנה גרסה מיושנת של ההרחבה WooCommerce Stripe Payment Gateway. יש לעדכן אותה כדי לקבל תשלומים באופן אישי.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">יש לעדכן את WooCommerce Stripe Payment Gateway</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">לריענון</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">כמעט סיימת! כדי להתחיל לקבל תשלומים באופן אישי, יש לסיים את ההגדרה של WooCommerce Stripe Payment Gateway.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">להשלים את ההגדרה של WooCommerce Stripe Payment Gateway במנהל המערכת של החנות שלך</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">לרענן לאחר עדכון</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">בחנות שלך הותקנה גרסה מיושנת של ההרחבה WooCommerce Stripe Gateway. יש לעדכן אותה כדי לקבל תשלומים באופן אישי.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">לריענון</string>
     <string name="card_reader_payment_failed_unknown">התשלום נדחה מסיבה לא ידועה</string>
     <string name="card_reader_payment_failed_test_mode_live_card">נעשה שימוש בכרטיס אמיתי באתר במצב בדיקה</string>
     <string name="card_reader_payment_failed_test_card">כרטיסי בדיקה של המערכת לא מותרים לשימוש לצורך תשלום</string>
