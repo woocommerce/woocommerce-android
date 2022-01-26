@@ -49,6 +49,7 @@ object ProductTestUtils {
             shortDescription = "short desc"
             virtual = isVirtual
             stockQuantity = 4.2
+            purchasable = true
         }.toAppModel()
     }
 
