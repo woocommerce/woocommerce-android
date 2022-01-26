@@ -91,12 +91,12 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
     fun `when retrying, then launch a new request`() = testBlocking {
         whenever(orderCreationRepository.createOrUpdateDraft(any()))
             .thenReturn(Result.failure(Exception()))
-            .thenAnswer {
+            .thenAnswer(
                 InlineClassesAnswer {
                     val order = it.arguments.first() as Order
                     Result.success(order)
                 }
-            }
+            )
 
         val updateStatuses = mutableListOf<OrderDraftUpdateStatus>()
         val job = sut(orderDraftChanges, retryTrigger)
