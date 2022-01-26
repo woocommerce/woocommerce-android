@@ -120,7 +120,7 @@ class OrderCreationViewModel @Inject constructor(
         _orderDraft.update {
             it.copy(
                 billingAddress = billingAddress,
-                shippingAddress = shippingAddress
+                shippingAddress = shippingAddress.takeIf { it != Address.EMPTY } ?: billingAddress
             )
         }
     }

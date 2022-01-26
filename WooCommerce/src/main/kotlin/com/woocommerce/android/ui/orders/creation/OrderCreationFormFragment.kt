@@ -115,7 +115,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         notesSection.setOnEditButtonClicked {
             viewModel.onCustomerNoteClicked()
         }
-
         customerSection.setAddButtons(
             listOf(
                 AddButton(
@@ -126,6 +125,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 )
             )
         )
+        customerSection.setOnEditButtonClicked {
+            viewModel.onCustomerClicked()
+        }
         productsSection.setAddButtons(
             listOf(
                 AddButton(
@@ -232,12 +234,17 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     @SuppressLint("SetTextI18n")
     private fun bindCustomerAddressSection(customerAddressSection: OrderCreationSectionView, order: Order) {
         customerAddressSection.setContentHorizontalPadding(R.dimen.minor_00)
-        order.takeIf { it.shippingAddress != Address.EMPTY }
+        order.takeIf { it.billingAddress != Address.EMPTY }
             ?.let {
                 val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
                 view.name.text = "${order.billingAddress.firstName} ${order.billingAddress.lastName}"
                 view.email.text = order.billingAddress.email
-                view.shippingAddressDetails.text = order.formatShippingInformationForDisplay()
+                view.shippingAddressDetails.text =
+                    if (order.shippingAddress != Address.EMPTY) {
+                        order.formatShippingInformationForDisplay()
+                    } else {
+                        order.formatBillingInformationForDisplay()
+                    }
                 view.billingAddressDetails.text = order.formatBillingInformationForDisplay()
                 view.customerInfoViewMoreButtonTitle.setOnClickListener {
                     view.changeState()
