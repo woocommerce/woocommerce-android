@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductList
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithDrafts
+import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithNonPurchasable
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithVariations
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -212,6 +213,21 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         val completeProductList = generateProductListWithDrafts()
         val filteredProductList = completeProductList
             .filter { it.status == PUBLISH }
+        whenever(productListRepository.fetchProductList()).thenReturn(completeProductList)
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        sut.loadProductList()
+        assertThat(actualProductList).isEqualTo(filteredProductList)
+    }
+
+    @Test
+    fun `when loading products, then filter non-purchasable products out`() = testBlocking {
+        var actualProductList: List<Product>? = null
+        val completeProductList = generateProductListWithNonPurchasable()
+        val filteredProductList = completeProductList
+            .filter { it.isPurchasable }
         whenever(productListRepository.fetchProductList()).thenReturn(completeProductList)
         startSut()
         sut.productListData.observeForever {
