@@ -115,7 +115,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when searching for products, then apply the expected result`() = testBlocking {
-        var actualProductList = emptyList<Product>()
+        var actualProductList: List<Product>? = null
         startSut()
         sut.productListData.observeForever {
             actualProductList = it
@@ -127,7 +127,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when loading more products with search active, then apply the expected result`() = testBlocking {
-        var actualProductList = emptyList<Product>()
+        var actualProductList: List<Product>? = null
         val loadMoreSearchResponse = listOf(generateProduct(666))
         whenever(productListRepository.searchProductList(SEARCH_QUERY, true))
             .thenReturn(loadMoreSearchResponse)
@@ -150,7 +150,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     @Test
     fun `when onSearchOpened is called, then product list should be empty and search should be active`() =
         testBlocking {
-            var actualProductList = emptyList<Product>()
+            var actualProductList: List<Product>? = null
             var actualSearchState: Boolean? = null
             startSut()
             sut.productListData.observeForever {
@@ -169,7 +169,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     @Test
     fun `when onSearchClosed is called, then product full list should be loaded and search should be inactive`() =
         testBlocking {
-            var actualProductList = emptyList<Product>()
+            var actualProductList: List<Product>? = null
             var actualSearchState: Boolean? = null
             var actualQueryString: String? = null
             startSut()
@@ -192,7 +192,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     @Test
     fun `when onSearchQueryCleared is called, then product list and search query should be empty`() =
         testBlocking {
-            var actualProductList = emptyList<Product>()
+            var actualProductList: List<Product>? = null
             startSut()
             sut.productListData.observeForever {
                 actualProductList = it
