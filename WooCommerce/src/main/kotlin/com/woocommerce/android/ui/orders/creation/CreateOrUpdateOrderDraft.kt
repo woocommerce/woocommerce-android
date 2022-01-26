@@ -3,16 +3,19 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.extensions.areSameAs
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.CoroutineDispatchers
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
-
-private const val DEBOUNCE_DURATION_MS = 500L
 
 class CreateOrUpdateOrderDraft @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderCreationRepository: OrderCreationRepository
 ) {
+    companion object {
+        const val DEBOUNCE_DURATION_MS = 500L
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(changes: Flow<Order>, retryTrigger: Flow<Unit>): Flow<OrderDraftUpdateStatus> {
         return changes
