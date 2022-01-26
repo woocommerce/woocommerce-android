@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-21 14:54:03+0000
+Translation-Revision-Date: 2022-01-19 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">Uygulama simgesi</string>
+    <string name="about_automattic_back_icon_description">Geri simgesi</string>
+    <string name="about_automattic_logo_description">Automattic logosu</string>
+    <string name="about_automattic_version_label">Sürüm %1$s</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">1. Gün</string>
+    <string name="about_automattic_acknowledgements_item_title">Teşekkürler</string>
+    <string name="about_automattic_source_code_item_title">Kaynak kodu</string>
+    <string name="about_automattic_california_privacy_notice_item_title">Kaliforniya için Gizlilik Bildirimi</string>
+    <string name="about_automattic_privacy_policy_item_title">Gizlilik politikası</string>
+    <string name="about_automattic_terms_of_service_item_title">Hizmet şartları</string>
+    <string name="about_automattic_work_with_us_item_subtitle">İstediğiniz Yerden Çalışın</string>
+    <string name="about_automattic_work_with_us_item_title">Bizimle Çalışın</string>
+    <string name="about_automattic_family_item_title">Automattic Ailesi</string>
+    <string name="about_automattic_legal_and_more_item_title">Yasal Bilgiler ve Daha Fazlası</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_rate_us_item_title">Bizi Değerlendirin</string>
+    <string name="about_automattic_share_with_friends_item_title">Arkadaşlarla paylaş</string>
+    <string name="about_automattic_acknowledgements_page_title">Teşekkürler</string>
+    <string name="about_automattic_legal_page_title">Yasal Bilgiler ve Daha Fazlası</string>
+    <string name="about_automattic_main_page_title">%1$s Hakkında</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">Destek birimine başvurun</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">Aktifleştir</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">Kur</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s WP Admin\'de Jetpack </string>
+    <string name="jetpack_install_progress_failed_alternative_activate">etkinleştir</string>
+    <string name="jetpack_install_progress_failed_alternative_install">kur</string>
+    <string name="jetpack_install_progress_failed_alternative">Alternatf olarak, WP Admin\'de Jetpack için %s yapabilirsiniz.</string>
+    <string name="jetpack_install_progress_failed_try">Lütfen yeniden deneyin.</string>
+    <string name="jetpack_install_progress_failed_reason_connection">bağlanıyor</string>
+    <string name="jetpack_install_progress_failed_reason_activation">etkinleştirme</string>
+    <string name="jetpack_install_progress_failed_reason_installation">kurulum</string>
+    <string name="jetpack_install_progress_failed_title">Maalesef %s sırasında bir şeyler ters gitti</string>
+    <string name="settings_about_recommend_app_message">Merhaba! İşte WooCommerce uygulamasını indirebileceğiniz bir bağlantı. Gerçekten çok hoşuma gitti, sizin de seveceğinizi düşündüm. %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Stripe\'ı Güncelle</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">Çok az kaldı! Card-Present Ödemelerini kabul etmeye başlamak için lütfen Stripe kurulumunu tamamlayın.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Mağaza yöneticinizde Stripe kurulumunu tamamlayın</string>
+    <string name="order_refunds_refund_fees">Geri ödeme ücretleri</string>
+    <string name="order_refunds_fees_refund">Ücret iadesi</string>
+    <string name="order_creation_variations_screen_title">Varyasyon seç</string>
+    <string name="order_creation_remove_product">Ürünü siparişten kaldır</string>
+    <string name="order_creation_add_discount">İndirim ekle</string>
+    <string name="order_creation_product_details_title">Ürün</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Farklı bir gönderim adresi ekle</string>
+    <string name="order_creation_product_instock">Stokta</string>
+    <string name="order_creation_product_stock_quantity">%s stokta</string>
+    <string name="order_creation_new_customer">Yeni müşteri</string>
+    <string name="order_creation_add_products">Ürün Ekle</string>
+    <string name="order_creation_products">Ürünler</string>
+    <string name="order_creation_add_customer">Müşteri ekle</string>
+    <string name="order_creation_customer">Müşteri</string>
+    <string name="simple_payments_cash_dlg_button">Ödendi olarak işaretle</string>
+    <string name="simple_payments_cash_dlg_message">Bu, siparişinizi oluşturacak ve WooCommerce dışında ödeme aldıysanız ödendi olarak işaretleyecektir.</string>
+    <string name="simple_payments_cash_dlg_title">Ödendi olarak işaretle</string>
+    <string name="simple_payments_choose_method">Ödeme yönteminizi seçin</string>
+    <string name="simple_payments_tax_message">Vergiler mağaza adresinize göre otomatik olarak hesaplanır</string>
+    <string name="simple_payments_tax_with_percent">Vergi (%s%%)</string>
+    <string name="simple_payments_take_payment_button">Ödeme Al (%s)</string>
+    <string name="simple_payments_charge_taxes">Vergileri al</string>
+    <string name="simple_payments_custom_amount">Özel tutar</string>
+    <string name="simple_payments_edit_email_hint">E-posta gir</string>
+    <string name="simple_payments_title">Basit ödeme</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">Nakit</string>
+    <string name="card">Kart</string>
+    <string name="plus">Artı</string>
+    <string name="minus">Eksi</string>
+    <string name="tax">Vergi</string>
+    <string name="email">E-posta</string>
     <string name="order_creation_add_customer_note">Not ekle</string>
     <string name="order_creation_customer_note">Müşteri notu</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Güncellemeden sonra yenileyin</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Mağazanızda WooCommerce Stripe Ödeme Ağ Geçidi uzantısının eski sürümü yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">WooCommerce Stripe Ödeme Ağ Geçidini Güncelle</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Yenile</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Çok az kaldı! Şahsen Ödemeleri kabul etmeye başlamak için lütfen WooCommerce Stripe Ödeme Ağ Geçidi kurulumunu tamamlayın.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Mağaza yöneticinizden WooCommerce Stripe Ödeme Ağ Geçidi kurulumunu tamamlayın</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Güncellemeden sonra yenileyin</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Mağazanızda WooCommerce Stripe Gateway uzantısının eski sürümü yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Yenile</string>
     <string name="card_reader_payment_failed_unknown">Bilinmeyen bir nedenle ödeme reddedildi</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Test modunda bir sitede canlı kart kullanıldı</string>
     <string name="card_reader_payment_failed_test_card">Sistem test kartlarına ödeme yapılmasına izin verilmiyor</string>

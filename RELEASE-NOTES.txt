@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+8.5
+-----
+
+
 8.4
 -----
 - [*] New Home Screen UI. Store stats are now shown in a line chart, new stats have been added such as conversion rate and revenue stats are not rounded anymore.

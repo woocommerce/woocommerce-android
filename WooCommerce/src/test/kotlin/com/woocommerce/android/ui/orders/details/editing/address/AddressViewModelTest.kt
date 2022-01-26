@@ -130,7 +130,7 @@ class AddressViewModelTest : BaseUnitTest() {
         )
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
             ViewState(
-                countryStatePairs = mapOf(
+                addressSelectionStates = mapOf(
                     SHIPPING to AddressSelectionState(
                         address = shippingAddress,
                         stateSpinnerStatus = StateSpinnerStatus.RAW_VALUE,
@@ -165,7 +165,7 @@ class AddressViewModelTest : BaseUnitTest() {
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
             ViewState(
-                countryStatePairs = mapOf(
+                addressSelectionStates = mapOf(
                     SHIPPING to AddressSelectionState(
                         address = shippingAddress.copy(
                             country = newCountry.toAppModel(),
@@ -188,7 +188,7 @@ class AddressViewModelTest : BaseUnitTest() {
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
             ViewState(
-                countryStatePairs = mapOf(
+                addressSelectionStates = mapOf(
                     SHIPPING to AddressSelectionState(
                         address = shippingAddress.copy(
                             country = Location(missingCountryCode, missingCountryCode),
@@ -210,7 +210,7 @@ class AddressViewModelTest : BaseUnitTest() {
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
             ViewState(
-                countryStatePairs = mapOf(
+                addressSelectionStates = mapOf(
                     SHIPPING to AddressSelectionState(
                         address = shippingAddress.copy(
                             country = newCountry.toAppModel(),
@@ -233,7 +233,7 @@ class AddressViewModelTest : BaseUnitTest() {
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
             ViewState(
-                countryStatePairs = mapOf(
+                addressSelectionStates = mapOf(
                     SHIPPING to AddressSelectionState(
                         address = shippingAddress.copy(state = AmbiguousLocation.Raw(stateCode)),
                         stateSpinnerStatus = StateSpinnerStatus.RAW_VALUE,

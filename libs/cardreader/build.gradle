@@ -44,7 +44,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
 
-    implementation "com.stripe:stripeterminal:2.5.2"
+    implementation "com.stripe:stripeterminal:2.6.0"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"

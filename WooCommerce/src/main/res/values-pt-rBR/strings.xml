@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-20 22:54:03+0000
+Translation-Revision-Date: 2022-01-19 18:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">Ícone do aplicativo</string>
+    <string name="about_automattic_back_icon_description">Ícone de fundo</string>
+    <string name="about_automattic_logo_description">Logo da Automattic</string>
+    <string name="about_automattic_version_label">Versão %1$s</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_acknowledgements_item_title">Agradecimentos</string>
+    <string name="about_automattic_source_code_item_title">Código-fonte</string>
+    <string name="about_automattic_california_privacy_notice_item_title">Aviso de privacidade para usuários da Califórnia</string>
+    <string name="about_automattic_privacy_policy_item_title">Política de privacidade</string>
+    <string name="about_automattic_terms_of_service_item_title">Termos de serviço</string>
+    <string name="about_automattic_work_with_us_item_subtitle">Trabalhe de qualquer lugar</string>
+    <string name="about_automattic_work_with_us_item_title">Trabalhe conosco</string>
+    <string name="about_automattic_family_item_title">Família Automattic</string>
+    <string name="about_automattic_legal_and_more_item_title">Jurídico e mais</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_rate_us_item_title">Classifique-nos</string>
+    <string name="about_automattic_share_with_friends_item_title">Compartilhe com seus amigos</string>
+    <string name="about_automattic_acknowledgements_page_title">Agradecimentos</string>
+    <string name="about_automattic_legal_page_title">Jurídico e mais</string>
+    <string name="about_automattic_main_page_title">Sobre %1$s</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">Falar com o suporte</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">Ativar</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">Instalar</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s Jetpack no Painel WP Admin</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">ativar</string>
+    <string name="jetpack_install_progress_failed_alternative_install">instalar</string>
+    <string name="jetpack_install_progress_failed_alternative">Como alternativa, você pode %s Jetpack no Painel WP Admin.</string>
+    <string name="jetpack_install_progress_failed_try">Tente novamente.</string>
+    <string name="jetpack_install_progress_failed_reason_connection">conectando</string>
+    <string name="jetpack_install_progress_failed_reason_activation">ativação</string>
+    <string name="jetpack_install_progress_failed_reason_installation">instalação</string>
+    <string name="jetpack_install_progress_failed_title">Ocorreu um erro durante %s</string>
+    <string name="settings_about_recommend_app_message">Olá! Este é um link para fazer download do aplicativo do WooCommerce. Eu estou gostando muito de usá-lo e acho que talvez você goste também. %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Atualizar Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">Quase pronto! Termine de configurar a Stripe para aceitar pagamentos com cartão de forma presencial.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Finalize a configuração da Stripe na administração da sua loja</string>
+    <string name="order_refunds_refund_fees">Reembolsar taxas</string>
+    <string name="order_refunds_fees_refund">Reembolso de taxas</string>
+    <string name="order_creation_variations_screen_title">Selecionar variação</string>
+    <string name="order_creation_remove_product">Remover produto do pedido</string>
+    <string name="order_creation_add_discount">Adicionar desconto</string>
+    <string name="order_creation_product_details_title">Produto</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Adicionar um endereço de entrega diferente</string>
+    <string name="order_creation_product_instock">Em estoque</string>
+    <string name="order_creation_product_stock_quantity">%s em estoque</string>
+    <string name="order_creation_new_customer">Novo cliente</string>
+    <string name="order_creation_add_products">Adicionar produto</string>
+    <string name="order_creation_products">Produtos</string>
+    <string name="order_creation_add_customer">Adicionar cliente</string>
+    <string name="order_creation_customer">Cliente</string>
+    <string name="simple_payments_cash_dlg_button">Marcar como pago</string>
+    <string name="simple_payments_cash_dlg_message">Isso criará o pedido e o marcará como pago se você tiver recebido o pagamento fora do WooCommerce</string>
+    <string name="simple_payments_cash_dlg_title">Marcar como pago?</string>
+    <string name="simple_payments_choose_method">Escolha a forma de pagamento</string>
+    <string name="simple_payments_tax_message">Os impostos são calculados automaticamente, de acordo com o endereço da sua loja</string>
+    <string name="simple_payments_tax_with_percent">Imposto (%s%%)</string>
+    <string name="simple_payments_take_payment_button">Aceitar pagamento (%s)</string>
+    <string name="simple_payments_charge_taxes">Cobrar impostos</string>
+    <string name="simple_payments_custom_amount">Valor personalizado</string>
+    <string name="simple_payments_edit_email_hint">Inserir e-mail</string>
+    <string name="simple_payments_title">Pagamento simples</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">Dinheiro</string>
+    <string name="card">Cartão</string>
+    <string name="plus">Mais</string>
+    <string name="minus">Menos</string>
+    <string name="tax">Imposto</string>
+    <string name="email">Email</string>
     <string name="order_creation_add_customer_note">Adicionar anotação</string>
     <string name="order_creation_customer_note">Anotações do cliente</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Recarregue a página depois de atualizar</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Uma versão desatualizada da extensão do WooCommerce Stripe Payment Gateway está instalada na sua loja. Atualize-a para aceitar pagamentos presenciais.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Atualizar WooCommerce Stripe Payment Gateway</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Recarregar a página</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Quase pronto! Termine de configurar o WooCommerce Stripe Payment Gateway para aceitar pagamentos presenciais.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Finalize a configuração do WooCommerce Stripe Payment Gateway na página de administração da sua loja</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Recarregar a página depois de atualizar</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Uma versão desatualizada da extensão do WooCommerce Stripe Gateway está instalada na sua loja. Atualize-a para aceitar pagamentos presenciais.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Atualizar</string>
     <string name="card_reader_payment_failed_unknown">Pagamento recusado por motivos desconhecidos</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Um cartão ativo foi usado em um site em modo de teste</string>
     <string name="card_reader_payment_failed_test_card">Cartões de teste do sistema não são permitidos para pagamentos</string>

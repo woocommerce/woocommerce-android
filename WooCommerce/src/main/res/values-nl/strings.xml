@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-28 13:54:03+0000
+Translation-Revision-Date: 2022-01-20 21:50:17+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">App-pictogram</string>
+    <string name="about_automattic_back_icon_description">Terug-pictogram</string>
+    <string name="about_automattic_logo_description">Automattic-logo</string>
+    <string name="about_automattic_version_label">Versie %1$s</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_acknowledgements_item_title">Referenties</string>
+    <string name="about_automattic_source_code_item_title">Broncode</string>
+    <string name="about_automattic_california_privacy_notice_item_title">Privacyverklaring Californië</string>
+    <string name="about_automattic_privacy_policy_item_title">Privacybeleid</string>
+    <string name="about_automattic_terms_of_service_item_title">Servicevoorwaarden</string>
+    <string name="about_automattic_work_with_us_item_subtitle">Werken vanaf elke locatie</string>
+    <string name="about_automattic_work_with_us_item_title">Werk met ons samen</string>
+    <string name="about_automattic_family_item_title">Automattic-familie</string>
+    <string name="about_automattic_legal_and_more_item_title">Juridisch en meer</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_rate_us_item_title">Beoordeel ons</string>
+    <string name="about_automattic_share_with_friends_item_title">Deel met vrienden</string>
+    <string name="about_automattic_acknowledgements_page_title">Referenties</string>
+    <string name="about_automattic_legal_page_title">Juridisch en meer</string>
+    <string name="about_automattic_main_page_title">Over %1$s</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">Contact opnemen met ondersteuning</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">Activeren</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">Installeren</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s Jetpack in WP-Admin</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">activeren</string>
+    <string name="jetpack_install_progress_failed_alternative_install">installeren</string>
+    <string name="jetpack_install_progress_failed_alternative">Of je kunt Jetpack %s in WP-Admin.</string>
+    <string name="jetpack_install_progress_failed_try">Probeer het nog eens.</string>
+    <string name="jetpack_install_progress_failed_reason_connection">verbinding maken</string>
+    <string name="jetpack_install_progress_failed_reason_activation">activering</string>
+    <string name="jetpack_install_progress_failed_reason_installation">installatie</string>
+    <string name="jetpack_install_progress_failed_title">Er is iets fout gegaan bij %s</string>
+    <string name="settings_about_recommend_app_message">Hallo! Hier is een downloadlink voor de WooCommerce-app. Ik vind hem geweldig en ik dacht, jij vast ook. %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Stripe updaten</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">Je bent bijna klaar! Rond het instellen van Stripe af om betalingen met fysieke betaalkaart (Card-Present) aan te nemen.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Rond het instellen van Stripe af in je winkelbeheer</string>
+    <string name="order_refunds_refund_fees">Bedragen terugbetalen</string>
+    <string name="order_refunds_fees_refund">Terugbetaling bedrag</string>
+    <string name="order_creation_variations_screen_title">Selecteer variatie</string>
+    <string name="order_creation_remove_product">Product verwijderen uit bestelling</string>
+    <string name="order_creation_add_discount">Korting toevoegen</string>
+    <string name="order_creation_product_details_title">Product</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Voeg een ander verzendadres toe</string>
+    <string name="order_creation_product_instock">Op voorraad</string>
+    <string name="order_creation_product_stock_quantity">%s op voorraad</string>
+    <string name="order_creation_new_customer">Nieuwe klant</string>
+    <string name="order_creation_add_products">Product toevoegen</string>
+    <string name="order_creation_products">Producten</string>
+    <string name="order_creation_add_customer">Klant toevoegen</string>
+    <string name="order_creation_customer">Klant</string>
+    <string name="simple_payments_cash_dlg_button">Markeren als betaald</string>
+    <string name="simple_payments_cash_dlg_message">Hiermee maak je je bestelling aan en markeer je deze als betaald indien je de betaling buiten WooCommerce hebt ontvangen.</string>
+    <string name="simple_payments_cash_dlg_title">Markeren als betaald?</string>
+    <string name="simple_payments_choose_method">Kies je betaalmethode</string>
+    <string name="simple_payments_tax_message">Belastingen worden automatisch berekend op basis van je winkeladres.</string>
+    <string name="simple_payments_tax_with_percent">Belasting (%s%%)</string>
+    <string name="simple_payments_take_payment_button">Betaling ontvangen (%s)</string>
+    <string name="simple_payments_charge_taxes">Btw rekenen</string>
+    <string name="simple_payments_custom_amount">Aangepast bedrag</string>
+    <string name="simple_payments_edit_email_hint">E-mail invoeren</string>
+    <string name="simple_payments_title">Eenvoudige betaling</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">Contant</string>
+    <string name="card">Kaart</string>
+    <string name="plus">Plus</string>
+    <string name="minus">Min</string>
+    <string name="tax">Belasting</string>
+    <string name="email">E-mail</string>
     <string name="order_creation_add_customer_note">Notitie toevoegen</string>
     <string name="order_creation_customer_note">Klantnotitie</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Vernieuwen na bijwerken</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Verouderde versie van de WooCommerce Stripe betaalgateway-extensie is geïnstalleerd in je winkel. Werk deze bij om fysieke betalingen aan te nemen.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Woocommerce Stripe betaalgateway bijwerken</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Vernieuw</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Je bent bijna klaar! Rond het instellen van de WooCommerce Stripe-betaalgateway af om betalingen met fysieke betaalkaart aan te nemen.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Rond het instellen van de WooCommerce Stripe-betaalgateway af bij je winkelbeheer</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Vernieuwen na bijwerken</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Er is een verouderde versie van de WooCommerce Stripe gateway-extensie geïnstalleerd in je winkel. Werk deze bij om fysieke betalingen aan te nemen.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Vernieuwen</string>
     <string name="card_reader_payment_failed_unknown">Betaling mislukt om onbekende reden</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Er werd een live kaart gebruikt op een site in de testmodus</string>
     <string name="card_reader_payment_failed_test_card">Er mag niet worden betaald met systeemtestkaarten</string>

@@ -13,6 +13,31 @@
             android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
             app:destination="@id/nav_graph_jetpack_install" />
     </fragment>
+    <dialog
+        android:id="@+id/simplePaymentsDialog"
+        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
+        android:label="SimplePaymentsDialog" />
+    <fragment
+        android:id="@+id/simplePaymentsFragment"
+        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsFragment"
+        android:label="SimplePaymentsFragment">
+        <argument
+            android:name="order"
+            app:argType="com.woocommerce.android.model.Order"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_simplePaymentsFragment_to_simplePaymentsCustomerNoteFragment"
+            app:destination="@id/simplePaymentsCustomerNoteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/simplePaymentsCustomerNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsCustomerNoteFragment"
+        android:label="SimplePaymentsCustomerNoteFragment">
+        <argument
+            android:name="customerNote"
+            android:defaultValue='""'
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -33,21 +58,29 @@
             android:id="@+id/action_orderListFragment_to_orderFilterListFragment"
             app:destination="@id/nav_graph_order_filters"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderListFragment_to_simplePayments"
             app:destination="@id/nav_graph_simple_payments"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderListFragment_to_orderCreationBottomSheet"
             app:destination="@id/orderCreationBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out"/>
         <action
             android:id="@+id/action_orderListFragment_to_orderCreationFragment"
             app:destination="@id/nav_graph_order_creations"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
@@ -59,6 +92,8 @@
             android:id="@+id/action_productListFragment_to_productFilterListFragment"
             app:destination="@id/nav_graph_product_filters"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="selectedStockStatus"
@@ -85,6 +120,8 @@
             android:id="@+id/action_productListFragment_to_productTypesBottomSheet"
             app:destination="@id/productTypesBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="isAddProduct"
@@ -147,21 +184,13 @@
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/feedbackSurveyFragment"
             app:popUpToInclusive="true" />
     </fragment>
 
     <action
         android:id="@+id/action_global_feedbackSurveyFragment"
-        app:destination="@id/feedbackSurveyFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/feedbackSurveyFragment" />
     <fragment
         android:id="@+id/feedbackCompletedFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackCompletedFragment"
@@ -269,14 +298,14 @@
         app:destination="@id/WPComWebViewFragment" />
     <action
         android:id="@+id/action_global_userEligibilityErrorFragment"
-        app:destination="@id/userEligibilityErrorFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/userEligibilityErrorFragment" />
 
     <action
         android:id="@+id/action_global_infoScreenFragment"
         app:destination="@id/infoScreenFragment"
         app:enterAnim="@anim/activity_fade_in"
+        app:exitAnim="@null"
+        app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
@@ -304,6 +333,8 @@
         android:id="@+id/action_open_Whatsnew_from_Main"
         app:destination="@id/featureAnnouncementDialogFragmentOnMain"
         app:enterAnim="@anim/activity_fade_in"
+        app:exitAnim="@null"
+        app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
     <dialog
         android:id="@+id/orderCreationBottomSheetFragment"
