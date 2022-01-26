@@ -538,7 +538,8 @@ class IssueRefundViewModel @Inject constructor(
         refundByItemsState = refundByItemsState.copy(
             productsRefund = newAmount,
             formattedProductsRefund = formatCurrency(newAmount),
-            isNextButtonEnabled = newAmount > BigDecimal.ZERO
+            isNextButtonEnabled =  isTotalRefundAmountGreaterThanZero(newAmount ,
+                refundByItemsState.shippingRefund ,refundByItemsState.feesRefund)
         )
     }
 
@@ -562,7 +563,8 @@ class IssueRefundViewModel @Inject constructor(
             formattedProductsRefund = formatCurrency(productsRefund),
             taxes = formatCurrency(taxes),
             subtotal = formatCurrency(subtotal),
-            isNextButtonEnabled = _refundItems.value?.any { it.quantity > 0 } ?: false,
+            isNextButtonEnabled = isTotalRefundAmountGreaterThanZero(productsRefund ,
+                refundByItemsState.shippingRefund ,refundByItemsState.feesRefund),
             selectButtonTitle = selectButtonTitle
         )
     }
@@ -669,7 +671,8 @@ class IssueRefundViewModel @Inject constructor(
                 shippingRefund = shippingRefund,
                 formattedShippingRefundTotal = formatCurrency(shippingRefund),
                 isShippingMainSwitchChecked = true,
-                isNextButtonEnabled = productsRefund.add(shippingRefund) > BigDecimal.ZERO,
+                isNextButtonEnabled = isTotalRefundAmountGreaterThanZero(productsRefund ,
+                    shippingRefund ,refundByItemsState.feesRefund),
                 selectedShippingLines = allShippingLineIds
             )
         } else {
@@ -677,7 +680,8 @@ class IssueRefundViewModel @Inject constructor(
                 shippingRefund = 0.toBigDecimal(),
                 formattedShippingRefundTotal = formatCurrency(0.toBigDecimal()),
                 isShippingMainSwitchChecked = false,
-                isNextButtonEnabled = productsRefund > BigDecimal.ZERO,
+                isNextButtonEnabled = isTotalRefundAmountGreaterThanZero(productsRefund ,
+                    0.toBigDecimal() ,refundByItemsState.feesRefund),
                 selectedShippingLines = emptyList()
             )
         }
@@ -693,7 +697,8 @@ class IssueRefundViewModel @Inject constructor(
                 feesRefund = feesRefund,
                 formattedFeesRefundTotal = formatCurrency(feesRefund),
                 isFeesMainSwitchChecked = true,
-                isNextButtonEnabled = productsRefund.add(feesRefund) > BigDecimal.ZERO,
+                isNextButtonEnabled = isTotalRefundAmountGreaterThanZero(productsRefund ,
+                    refundByItemsState.shippingRefund ,feesRefund),
                 selectedFeeLines = allFeeLineIds
             )
         } else {
@@ -701,7 +706,8 @@ class IssueRefundViewModel @Inject constructor(
                 feesRefund = 0.toBigDecimal(),
                 formattedFeesRefundTotal = formatCurrency(0.toBigDecimal()),
                 isFeesMainSwitchChecked = false,
-                isNextButtonEnabled = productsRefund > BigDecimal.ZERO,
+                isNextButtonEnabled = isTotalRefundAmountGreaterThanZero(productsRefund ,
+                    refundByItemsState.shippingRefund ,0.toBigDecimal()),
                 selectedFeeLines = emptyList()
             )
         }
@@ -727,9 +733,16 @@ class IssueRefundViewModel @Inject constructor(
                 shippingTaxes = formatCurrency(calculatePartialShippingTaxes(list)),
                 shippingRefund = newShippingRefundTotal,
                 formattedShippingRefundTotal = formatCurrency(newShippingRefundTotal),
-                isNextButtonEnabled = productsRefund.add(newShippingRefundTotal) > BigDecimal.ZERO
+                isNextButtonEnabled = isTotalRefundAmountGreaterThanZero(productsRefund ,newShippingRefundTotal ,
+                    refundByItemsState.feesRefund)
             )
         }
+    }
+
+    private fun isTotalRefundAmountGreaterThanZero(productsRefund:BigDecimal,shippingRefund:BigDecimal,
+                                                   feesRefund:BigDecimal):Boolean{
+        val total = productsRefund.add(shippingRefund).add(feesRefund)
+        return total > BigDecimal.ZERO
     }
 
     fun onFeeLineSwitchChanged(isChecked: Boolean, itemId: Long) {
@@ -752,7 +765,8 @@ class IssueRefundViewModel @Inject constructor(
                 feesTaxes = formatCurrency(calculatePartialFeesTaxes(list)),
                 feesRefund = newFeesRefundTotal,
                 formattedFeesRefundTotal = formatCurrency(newFeesRefundTotal),
-                isNextButtonEnabled = productsRefund.add(newFeesRefundTotal) > BigDecimal.ZERO
+                isNextButtonEnabled = isTotalRefundAmountGreaterThanZero(productsRefund ,
+                    refundByItemsState.shippingRefund ,newFeesRefundTotal)
             )
         }
     }
