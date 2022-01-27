@@ -21,6 +21,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ProgressBar
+            android:id="@+id/loading_progress"
+            android:layout_width="@dimen/major_200"
+            android:layout_height="@dimen/major_200"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/products_total_label"
             android:layout_width="0dp"
@@ -29,21 +36,49 @@
             android:text="@string/order_creation_payment_products_total"
             android:textAppearance="?attr/textAppearanceSubtitle1"
             app:layout_constraintEnd_toStartOf="@id/products_total_value"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header_label" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/products_total_value"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
-            android:text="@string/order_creation_payment_products_total"
             android:textAppearance="?attr/textAppearanceSubtitle1"
+            app:layout_constrainedWidth="true"
             app:layout_constraintBaseline_toBaselineOf="@id/products_total_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/products_total_label"
-            app:layout_constraintWidth_default="wrap"
             tools:text="$20.00" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/tax_group"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="tax_label, tax_value" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tax_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/order_creation_payment_tax"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            app:layout_constraintEnd_toStartOf="@id/tax_value"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/products_total_label" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tax_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBaseline_toBaselineOf="@id/tax_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tax_label"
+            tools:text="$0.00" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/order_total_label"
@@ -53,16 +88,16 @@
             android:text="@string/order_creation_payment_order_total"
             android:textAppearance="?attr/textAppearanceSubtitle1"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/products_total_value"
+            app:layout_constraintEnd_toStartOf="@id/order_total_value"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/products_total_label" />
+
+            app:layout_constraintTop_toBottomOf="@id/tax_label" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/order_total_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
-            android:text="@string/order_creation_payment_products_total"
             android:textAppearance="?attr/textAppearanceSubtitle1"
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/order_total_label"
@@ -72,6 +107,7 @@
             tools:text="$20.00" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tax_calculation_hint"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_100"
@@ -80,7 +116,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/order_total_label" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

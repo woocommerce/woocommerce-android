@@ -8,10 +8,12 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -20,6 +22,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -30,6 +33,7 @@ class OrderCreationViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val orderCreationRepository: OrderCreationRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
+    private val createOrUpdateOrderDraft: CreateOrUpdateOrderDraft,
     private val createOrderItem: CreateOrderItem,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
@@ -44,7 +48,7 @@ class OrderCreationViewModel @Inject constructor(
     val orderDraft = _orderDraft
         .onEach {
             viewState = viewState.copy(
-                canCreateOrder = it.items.isNotEmpty() &&
+                isOrderValidForCreation = it.items.isNotEmpty() &&
                     it.shippingAddress != Address.EMPTY &&
                     it.billingAddress != Address.EMPTY
             )
@@ -61,11 +65,13 @@ class OrderCreationViewModel @Inject constructor(
         }.asLiveData()
 
     val products: LiveData<List<ProductUIModel>> = _orderDraft
-        .map { it.items }
+        .map { order -> order.items.filter { it.quantity > 0 } }
         .distinctUntilChanged()
         .map { items ->
             items.map { item -> mapItemToProductUiModel(item) }
         }.asLiveData()
+
+    private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     val currentDraft
         get() = _orderDraft.value
@@ -74,6 +80,7 @@ class OrderCreationViewModel @Inject constructor(
         _orderDraft.update {
             it.copy(currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencyCode.orEmpty())
         }
+        monitorOrderChanges()
     }
 
     fun onOrderStatusChanged(status: Order.Status) = _orderDraft.update { it.copy(status = status) }
@@ -84,7 +91,13 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onDecreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, -1) }
 
-    fun onRemoveProduct(item: Order.Item) = _orderDraft.update { it.updateItems(it.items - item) }
+    fun onRemoveProduct(item: Order.Item) = _orderDraft.update {
+        if (FeatureFlag.ORDER_CREATION_M2.isEnabled()) {
+            it.adjustProductQuantity(item.uniqueId, -item.quantity.toInt())
+        } else {
+            it.updateItems(it.items - item)
+        }
+    }
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
         val uniqueId = variationId ?: remoteProductId
@@ -143,10 +156,14 @@ class OrderCreationViewModel @Inject constructor(
         triggerEvent(ShowProductDetails(item))
     }
 
+    fun onRetryPaymentsClicked() {
+        retryOrderDraftUpdateTrigger.tryEmit(Unit)
+    }
+
     fun onCreateOrderClicked(order: Order) {
         viewModelScope.launch {
             viewState = viewState.copy(isProgressDialogShown = true)
-            orderCreationRepository.createOrder(order).fold(
+            orderCreationRepository.placeOrder(order).fold(
                 onSuccess = {
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
                     triggerEvent(ShowCreatedOrder(it.id))
@@ -159,11 +176,41 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Monitor order changes, and update the remote draft to update price totals
+     */
+    private fun monitorOrderChanges() {
+        if (!FeatureFlag.ORDER_CREATION_M2.isEnabled()) return
+        viewModelScope.launch {
+            createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
+                .collect { updateStatus ->
+                    when (updateStatus) {
+                        OrderDraftUpdateStatus.Ongoing ->
+                            viewState = viewState.copy(isUpdatingOrderDraft = true, showOrderUpdateSnackbar = false)
+                        OrderDraftUpdateStatus.Failed ->
+                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                        is OrderDraftUpdateStatus.Succeeded -> {
+                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = false)
+                            _orderDraft.update { currentDraft ->
+                                // Keep the user's selected status
+                                updateStatus.order.copy(status = currentDraft.status)
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
-        val canCreateOrder: Boolean = false
-    ) : Parcelable
+        private val isOrderValidForCreation: Boolean = false,
+        val isUpdatingOrderDraft: Boolean = false,
+        val showOrderUpdateSnackbar: Boolean = false
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val canCreateOrder: Boolean = isOrderValidForCreation && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+    }
 }
 
 data class ProductUIModel(
