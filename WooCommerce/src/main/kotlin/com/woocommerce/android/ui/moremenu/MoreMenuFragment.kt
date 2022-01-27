@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.moremenu
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
@@ -16,6 +18,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.moremenu.MenuButtonType.*
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.*
+import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -33,6 +36,10 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     private val binding get() = _binding!!
 
     private val viewModel: MoreMenuViewModel by viewModels()
+
+    private val requestSitePicker = registerForActivityResult(StartActivityForResult()) {
+        viewModel.handleSiteSwitch()
+    }
 
     override fun scrollToTop() {
         return
@@ -79,6 +86,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         viewModel.event.observe(this) { event ->
             when (event) {
                 is NavigateToSettingsEvent -> navigateToSettings()
+                is StartSitePickerEvent -> startSitePicker()
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
@@ -90,6 +98,11 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToSettingsActivity()
         )
+    }
+
+    private fun startSitePicker() {
+        val sitePickerIntent = Intent(context, SitePickerActivity::class.java)
+        requestSitePicker.launch(sitePickerIntent)
     }
 
     private fun openInBrowser(url: String) {
