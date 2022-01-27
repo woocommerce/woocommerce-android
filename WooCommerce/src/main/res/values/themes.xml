@@ -110,6 +110,12 @@
         <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
         <item name="wcMaterialOutlinedEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedEditTextView</item>
         <item name="wcSingleOptionTextViewStyle">@style/Widget.Woo.WCSingleOptionTextView</item>
+
+        <!-- Default animations -->
+        <item name="enterAnim">@anim/activity_slide_in_from_right</item>
+        <item name="exitAnim">@anim/activity_slide_out_to_left</item>
+        <item name="popEnterAnim">@anim/activity_slide_in_from_left</item>
+        <item name="popExitAnim">@anim/activity_slide_out_to_right</item>
     </style>
 
     <style name="Theme.Woo.Dialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">

@@ -22,53 +22,25 @@
             app:argType="boolean" />
         <action
             android:id="@+id/action_productDetailFragment_to_variationListFragment"
-            app:destination="@id/variationListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/variationListFragment" />
         <action
             android:id="@+id/action_productDetailFragment_to_productInventoryFragment"
-            app:destination="@id/productInventoryFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productInventoryFragment" />
         <action
             android:id="@+id/action_productDetailFragment_to_productPricingFragment"
-            app:destination="@id/productPricingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productPricingFragment" />
         <action
             android:id="@+id/action_productDetailFragment_to_productExternalLinkFragment"
-            app:destination="@id/productExternalLinkFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productExternalLinkFragment" />
         <action
             android:id="@+id/action_productDetailFragment_to_productReviewsFragment"
-            app:destination="@id/productReviewsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productReviewsFragment" />
         <action
             android:id="@+id/action_productDetailFragment_to_attributeListFragment"
-            app:destination="@id/attributeListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/attributeListFragment"/>
         <action
             android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
-            app:destination="@id/productTypesBottomSheetFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/productTypesBottomSheetFragment">
             <argument
                 android:name="isAddProduct"
                 android:defaultValue="false"
@@ -76,11 +48,7 @@
         </action>
         <action
             android:id="@+id/action_productDetailFragment_to_nav_graph_image_gallery"
-            app:destination="@id/nav_graph_image_gallery"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/nav_graph_image_gallery">
             <argument
                 android:name="remoteId"
                 android:defaultValue="0L"
@@ -103,14 +71,12 @@
             android:id="@+id/action_productDetailFragment_to_productDownloadsFragment"
             app:destination="@id/productDownloadsFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_productDetailFragment_to_addAttributeFragment"
-            app:destination="@id/addAttributeFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/addAttributeFragment">
             <argument
                 android:name="isVariationCreation"
                 android:defaultValue="false"
@@ -118,11 +84,7 @@
         </action>
         <action
             android:id="@+id/action_productDetailFragment_to_productAddonsFragment"
-            app:destination="@id/productAddonsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productAddonsFragment"/>
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -136,18 +98,10 @@
 
         <action
             android:id="@+id/action_variationListFragment_to_variationDetailFragment"
-            app:destination="@id/variationDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/variationDetailFragment" />
         <action
             android:id="@+id/action_variationListFragment_to_addAttributeFragment"
-            app:destination="@id/addAttributeFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/addAttributeFragment">
             <argument
                 android:name="isVariationCreation"
                 android:defaultValue="false"
@@ -166,11 +120,7 @@
         <action
             android:id="@+id/action_attributeListFragment_to_variationListFragment"
             app:destination="@id/variationListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
             app:launchSingleTop="true"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/productDetailFragment">
             <argument
                 android:name="isVariationCreation"
@@ -179,11 +129,7 @@
         </action>
         <action
             android:id="@+id/action_attributeListFragment_to_addAttributeFragment"
-            app:destination="@id/addAttributeFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/addAttributeFragment">
             <argument
                 android:name="isVariationCreation"
                 android:defaultValue="false"
@@ -191,11 +137,7 @@
         </action>
         <action
             android:id="@+id/action_attributeListFragment_to_attributesAddedFragment"
-            app:destination="@id/attributesAddedFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/attributesAddedFragment" />
     </fragment>
     <fragment
         android:id="@+id/addAttributeFragment"
@@ -208,11 +150,7 @@
         <action
             android:id="@+id/action_addAttributeFragment_to_attributeListFragment"
             app:destination="@id/attributeListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
             app:launchSingleTop="true"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/addAttributeFragment">
             <argument
                 android:name="isVariationCreation"
@@ -250,18 +188,10 @@
             app:argType="boolean" />
         <action
             android:id="@+id/action_attributeTermsFragment_to_renameAttributeFragment"
-            app:destination="@id/renameAttributeFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/renameAttributeFragment" />
         <action
             android:id="@+id/action_addAttributeTermsFragment_to_attributeListFragment"
             app:destination="@id/attributeListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/addAttributeFragment">
             <argument
                 android:name="isVariationCreation"
@@ -276,19 +206,11 @@
         tools:layout="@layout/fragment_attributes_added">
         <action
             android:id="@+id/action_attributesAddedFragment_to_variationListFragment"
-            app:destination="@id/variationListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/variationListFragment" />
         <action
             android:id="@+id/action_attributesAddedFragment_to_productDetailFragment"
             app:destination="@id/productDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
             app:launchSingleTop="true"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/nav_graph_products" />
     </fragment>
     <fragment
@@ -355,11 +277,7 @@
         tools:layout="@layout/fragment_product_shipping">
         <action
             android:id="@+id/action_productShippingFragment_to_productShippingClassFragment"
-            app:destination="@id/productShippingClassFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productShippingClassFragment" />
         <argument
             android:name="requestCode"
             app:argType="integer" />
@@ -394,7 +312,9 @@
             android:id="@+id/action_productDownloadsFragment_to_productDownloadsSettingsFragment"
             app:destination="@id/productDownloadsSettingsFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@anim/activity_fade_out" />
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
 
     <fragment
@@ -499,82 +419,44 @@
 
     <action
         android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
-        app:destination="@id/nav_graph_product_settings"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/nav_graph_product_settings" />
 
     <action
         android:id="@+id/action_productCategoriesFragment_to_addProductCategoryFragment"
-        app:destination="@id/nav_graph_add_product_category"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/nav_graph_add_product_category" />
 
     <action
         android:id="@+id/action_global_aztecEditorFragment"
-        app:destination="@id/aztecEditorFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/aztecEditorFragment" />
 
     <action
         android:id="@+id/action_global_productDetailBottomSheetFragment"
         app:destination="@id/productDetailBottomSheetFragment"
         app:enterAnim="@anim/activity_fade_in"
+        app:exitAnim="@null"
+        app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
     <action
         android:id="@+id/action_global_productShippingFragment"
-        app:destination="@id/productShippingFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/productShippingFragment" />
     <action
         android:id="@+id/action_global_productCategoriesFragment"
-        app:destination="@id/productCategoriesFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/productCategoriesFragment" />
     <action
         android:id="@+id/action_global_productTagsFragment"
-        app:destination="@id/productTagsFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/productTagsFragment" />
     <action
         android:id="@+id/action_global_groupedProductListFragment"
-        app:destination="@id/groupedProductListFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/groupedProductListFragment" />
     <action
         android:id="@+id/action_global_productSelectionListFragment"
-        app:destination="@id/productSelectionListFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/productSelectionListFragment" />
     <action
         android:id="@+id/action_productDetailFragment_to_linkedProductsFragment"
-        app:destination="@id/linkedProductsFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/linkedProductsFragment" />
     <action
         android:id="@+id/action_global_addProductDownloadBottomSheetFragment"
-        app:destination="@id/addProductDownloadBottomSheetFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/addProductDownloadBottomSheetFragment" />
     <fragment
         android:id="@+id/variationDetailFragment"
         android:name="com.woocommerce.android.ui.products.variations.VariationDetailFragment"
@@ -590,11 +472,7 @@
             app:destination="@id/productPricingFragment" />
         <action
             android:id="@+id/action_variationDetailFragment_to_editVariationAttributesFragment"
-            app:destination="@id/editVariationAttributesFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/editVariationAttributesFragment" />
         <action
             android:id="@+id/action_variationDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment" />
@@ -603,11 +481,7 @@
             app:destination="@id/productShippingFragment" />
         <action
             android:id="@+id/action_variationDetailFragment_to_nav_graph_image_gallery"
-            app:destination="@id/nav_graph_image_gallery"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/nav_graph_image_gallery">
             <argument
                 android:name="remoteId"
                 android:defaultValue="0L"
@@ -668,24 +542,12 @@
         tools:layout="@layout/dialog_product_add_downloadable_file" />
     <action
         android:id="@+id/action_global_mediaUploadErrorsFragment"
-        app:destination="@id/mediaUploadErrorsFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/mediaUploadErrorsFragment" />
     <action
         android:id="@+id/action_global_productDownloadDetailsFragment"
-        app:destination="@id/productDownloadDetailsFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/productDownloadDetailsFragment" />
     <action
         android:id="@+id/action_global_addVariationAttributeTermsFragment"
-        app:destination="@id/addAttributeTermsFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/addAttributeTermsFragment" />
     <include app:graph="@navigation/nav_graph_image_gallery" />
 </navigation>
