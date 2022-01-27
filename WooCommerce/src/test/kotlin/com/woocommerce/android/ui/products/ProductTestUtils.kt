@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.*
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -12,13 +13,15 @@ object ProductTestUtils {
     fun generateProduct(
         productId: Long = 1L,
         isVirtual: Boolean = false,
-        isVariable: Boolean = false
+        isVariable: Boolean = false,
+        isPurchasable: Boolean = true,
+        customStatus: String? = null
     ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
             remoteProductId = productId
-            status = "publish"
+            status = customStatus ?: "publish"
             type = "simple"
             stockStatus = "instock"
             price = "20.00"
@@ -49,6 +52,7 @@ object ProductTestUtils {
             shortDescription = "short desc"
             virtual = isVirtual
             stockQuantity = 4.2
+            purchasable = isPurchasable
         }.toAppModel()
     }
 
@@ -66,6 +70,20 @@ object ProductTestUtils {
             return this
         }
     }
+
+    fun generateProductListWithDrafts(): List<Product> =
+        generateProductList()
+            .toMutableList()
+            .apply {
+                add(generateProduct(6, customStatus = DRAFT.toString()))
+            }
+
+    fun generateProductListWithNonPurchasable(): List<Product> =
+        generateProductList()
+            .toMutableList()
+            .apply {
+                add(generateProduct(6, isPurchasable = false))
+            }
 
     fun generateProductListWithVariations(): List<Product> =
         generateProductList()
