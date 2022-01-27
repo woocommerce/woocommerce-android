@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells.Fixed
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -22,12 +23,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.moremenu.MenuButtonType.*
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
@@ -44,14 +47,32 @@ fun moreMenu(
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Column(
+                modifier = Modifier
+                    .padding(10.dp)
+            ) {
+                Text(
+                    text = stringResource(string.settings_switch_store),
+                    color = colorResource(color.color_secondary),
+                    modifier = Modifier
+                        .clickable(
+                            enabled = true,
+                            onClickLabel = stringResource(id = string.settings_switch_store),
+                            role = Role.Button
+                        ) {
+                            viewModel.onSwitchSiteClick()
+                        }
+                )
+            }
+
             IconButton(
                 onClick = { viewModel.onSettingsClick() },
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_more_screen_settings),
-                    contentDescription = stringResource(id = R.string.settings),
+                    contentDescription = stringResource(id = string.settings),
                     tint = Color.Unspecified
                 )
             }
