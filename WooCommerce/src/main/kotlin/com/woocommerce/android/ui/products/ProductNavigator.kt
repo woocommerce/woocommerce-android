@@ -269,37 +269,37 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductAdd -> {
                 val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductDownloads -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductDownloadsFragment()
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductDownloadsSettings -> {
                 val action = ProductDownloadsFragmentDirections
                     .actionProductDownloadsFragmentToProductDownloadsSettingsFragment()
 
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductDownloadDetails -> {
                 val action = NavGraphProductsDirections
                     .actionGlobalProductDownloadDetailsFragment(target.isEditing, target.file)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductAddonsDetails -> {
                 ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductAddonsFragment()
-                    .apply { fragment.findNavController().navigate(this) }
+                    .apply { fragment.findNavController().navigateSafely(this) }
             }
 
             is AddProductDownloadableFile -> {
                 val action = NavGraphProductsDirections.actionGlobalAddProductDownloadBottomSheetFragment()
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is AddProductAttribute -> {
@@ -307,19 +307,19 @@ class ProductNavigator @Inject constructor() {
                     true ->
                         ProductDetailFragmentDirections
                             .actionProductDetailFragmentToAddAttributeFragment(isVariationCreation = true)
-                            .run { fragment.findNavController().navigate(this) }
+                            .run { fragment.findNavController().navigateSafely(this) }
 
                     else ->
                         AttributeListFragmentDirections
                             .actionAttributeListFragmentToAddAttributeFragment()
-                            .run { fragment.findNavController().navigate(this) }
+                            .run { fragment.findNavController().navigateSafely(this) }
                 }
             }
 
             is RenameProductAttribute -> {
                 val action = AddAttributeTermsFragmentDirections
                     .actionAttributeTermsFragmentToRenameAttributeFragment(target.attributeName)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is AddProductAttributeTerms -> {
@@ -329,7 +329,7 @@ class ProductNavigator @Inject constructor() {
                     isNewAttribute = target.isNewAttribute,
                     isVariationCreation = target.isVariationCreation
                 )
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewMediaUploadErrors -> {
