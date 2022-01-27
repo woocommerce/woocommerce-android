@@ -62,7 +62,7 @@ fun moreMenu(
                             onClickLabel = stringResource(id = string.settings_switch_store),
                             role = Role.Button
                         ) {
-                            viewModel.onSwitchSiteClick()
+                            viewModel.onSwitchStoreClick()
                         }
                 )
             }

@@ -38,7 +38,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     private val viewModel: MoreMenuViewModel by viewModels()
 
     private val requestSitePicker = registerForActivityResult(StartActivityForResult()) {
-        viewModel.handleSiteSwitch()
+        viewModel.handleStoreSwitch()
     }
 
     override fun scrollToTop() {

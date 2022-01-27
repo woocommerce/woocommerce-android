@@ -25,8 +25,8 @@ class MoreMenuViewModel @Inject constructor(
         )
     }
 
-    fun handleSiteSwitch() {
-        // Update URLs to use the newly selected site's information.
+    fun handleStoreSwitch() {
+        // Update URLs to use the newly selected store's information.
         viewState = viewState.copy(
             adminUrl = selectedSite.get().adminUrl,
             storeUrl = selectedSite.get().url
@@ -37,7 +37,7 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(NavigateToSettingsEvent)
     }
 
-    fun onSwitchSiteClick() {
+    fun onSwitchStoreClick() {
         triggerEvent(StartSitePickerEvent)
     }
 
