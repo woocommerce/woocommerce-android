@@ -16,8 +16,7 @@ import com.woocommerce.android.databinding.FragmentMoreMenuBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.moremenu.MenuButtonType.*
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.*
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.*
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,24 +51,13 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     ): View {
         _binding = FragmentMoreMenuBinding.inflate(inflater, container, false)
         val view = binding.root
-
-        val buttons = listOf(
-            MenuButton(VIEW_ADMIN, R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin),
-            MenuButton(VIEW_STORE, R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
-            // MenuButton(R.string.more_menu_button_analytics, R.drawable.ic_more_menu_analytics),
-            // MenuButton(R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments),
-            // MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
-            MenuButton(REVIEWS, R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews)
-        )
-
         binding.menu.apply {
             // Dispose of the Composition when the view's LifecycleOwner
             // is destroyed
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                // In Compose world
                 MaterialTheme {
-                    MoreMenu(buttons)
+                    MoreMenu(viewModel)
                 }
             }
         }
@@ -78,12 +66,11 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupObservers()
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(this) { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToSettingsEvent -> navigateToSettings()
                 is StartSitePickerEvent -> startSitePicker()

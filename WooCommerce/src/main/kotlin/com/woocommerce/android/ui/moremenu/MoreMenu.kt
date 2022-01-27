@@ -27,20 +27,27 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.moremenu.MenuButtonType.*
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
 @Composable
-@Suppress("LongMethod", "FunctionNaming")
-fun MoreMenu(buttons: List<MenuButton>) {
-    val viewModel: MoreMenuViewModel = viewModel()
-    val state: MoreMenuViewState by viewModel.viewStateLiveData.liveData.observeAsState(MoreMenuViewState())
+@Suppress("FunctionNaming")
+fun MoreMenu(viewModel: MoreMenuViewModel) {
+    val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
+    MoreMenu(
+        moreMenuState.moreMenuItems,
+        moreMenuState.onSwitchStoreSite,
+        moreMenuState.onSwitchStoreSite
+    )
+}
 
+@ExperimentalFoundationApi
+@Composable
+@Suppress("LongMethod", "FunctionNaming")
+fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSettingsClick: () -> Unit) {
     Column {
         Row(
             modifier = Modifier
@@ -59,14 +66,12 @@ fun MoreMenu(buttons: List<MenuButton>) {
                             enabled = true,
                             onClickLabel = stringResource(id = string.settings_switch_store),
                             role = Role.Button
-                        ) {
-                            viewModel.onSwitchStoreClick()
-                        }
+                        ) { onSwitchStore() }
                 )
             }
 
             IconButton(
-                onClick = { viewModel.onSettingsClick() },
+                onClick = { onSettingsClick() },
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_more_screen_settings),
@@ -81,24 +86,12 @@ fun MoreMenu(buttons: List<MenuButton>) {
             horizontalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing),
             verticalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
         ) {
-            itemsIndexed(buttons) { _, item ->
-                when (item.type) {
-                    VIEW_ADMIN -> {
-                        MoreMenuButton(text = item.text, iconDrawable = item.icon) {
-                            viewModel.onViewAdminButtonClick(state.adminUrl)
-                        }
-                    }
-                    VIEW_STORE -> {
-                        MoreMenuButton(text = item.text, iconDrawable = item.icon) {
-                            viewModel.onViewStoreButtonClick(state.storeUrl)
-                        }
-                    }
-                    REVIEWS -> {
-                        MoreMenuButton(text = item.text, iconDrawable = item.icon) {
-                            viewModel.onReviewsButtonClick()
-                        }
-                    }
-                }
+            itemsIndexed(uiButtons) { _, item ->
+                MoreMenuButton(
+                    text = item.text,
+                    iconDrawable = item.icon,
+                    onClick = item.onClick
+                )
             }
         }
     }

@@ -1,67 +1,86 @@
 package com.woocommerce.android.ui.moremenu
 
-import android.os.Parcelable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
-    val viewStateLiveData = LiveDataDelegate(savedState, MoreMenuViewState())
-    private var viewState by viewStateLiveData
+
+    private var _moreMenuViewState = MutableLiveData<MoreMenuViewState>()
+    val moreMenuViewState: LiveData<MoreMenuViewState> = _moreMenuViewState
 
     init {
-        viewState = viewState.copy(
-            adminUrl = selectedSite.get().adminUrl,
-            storeUrl = selectedSite.get().url
+        _moreMenuViewState.value = MoreMenuViewState(
+            moreMenuItems = generateMenuButtons(),
+            onSwitchStoreSite = ::onSwitchStoreClick,
+            onSettingsClicked = ::onSettingsClick
         )
     }
+
+    private fun generateMenuButtons(): List<MenuUiButton> =
+        listOf(
+            MenuUiButton(
+                R.string.more_menu_button_woo_admin,
+                R.drawable.ic_more_menu_wp_admin,
+                ::onViewAdminButtonClick
+            ),
+            MenuUiButton(
+                R.string.more_menu_button_store,
+                R.drawable.ic_more_menu_store,
+                ::onViewStoreButtonClick
+            ),
+            MenuUiButton(
+                R.string.more_menu_button_reviews,
+                R.drawable.ic_more_menu_reviews,
+                ::onReviewsButtonClick
+            )
+        )
 
     fun handleStoreSwitch() {
-        // Update URLs to use the newly selected store's information.
-        viewState = viewState.copy(
-            adminUrl = selectedSite.get().adminUrl,
-            storeUrl = selectedSite.get().url
-        )
+        _moreMenuViewState.value = _moreMenuViewState.value?.copy(moreMenuItems = generateMenuButtons())
     }
 
-    fun onSettingsClick() {
-        triggerEvent(NavigateToSettingsEvent)
+    private fun onSettingsClick() {
+        triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
     }
 
-    fun onSwitchStoreClick() {
-        triggerEvent(StartSitePickerEvent)
+    private fun onSwitchStoreClick() {
+        triggerEvent(MoreMenuEvent.StartSitePickerEvent)
     }
 
-    fun onViewAdminButtonClick(url: String) {
-        triggerEvent(ViewAdminEvent(url))
+    private fun onViewAdminButtonClick() {
+        triggerEvent(MoreMenuEvent.ViewAdminEvent(selectedSite.get().adminUrl))
     }
 
-    fun onViewStoreButtonClick(url: String) {
-        triggerEvent(ViewStoreEvent(url))
+    private fun onViewStoreButtonClick() {
+        triggerEvent(MoreMenuEvent.ViewStoreEvent(selectedSite.get().url))
     }
 
-    fun onReviewsButtonClick() {
-        triggerEvent(ViewReviewsEvent)
+    private fun onReviewsButtonClick() {
+        triggerEvent(MoreMenuEvent.ViewReviewsEvent)
     }
 
-    @Parcelize
     data class MoreMenuViewState(
-        val adminUrl: String = "",
-        val storeUrl: String = ""
-    ) : Parcelable
+        val moreMenuItems: List<MenuUiButton> = emptyList(),
+        val onSwitchStoreSite: () -> Unit = {},
+        val onSettingsClicked: () -> Unit = {}
+    )
 
-    object NavigateToSettingsEvent : MultiLiveEvent.Event()
-    object StartSitePickerEvent : MultiLiveEvent.Event()
-    data class ViewAdminEvent(val url: String) : MultiLiveEvent.Event()
-    data class ViewStoreEvent(val url: String) : MultiLiveEvent.Event()
-    object ViewReviewsEvent : MultiLiveEvent.Event()
+    sealed class MoreMenuEvent : MultiLiveEvent.Event() {
+        object NavigateToSettingsEvent : MoreMenuEvent()
+        object StartSitePickerEvent : MoreMenuEvent()
+        data class ViewAdminEvent(val url: String) : MoreMenuEvent()
+        data class ViewStoreEvent(val url: String) : MoreMenuEvent()
+        object ViewReviewsEvent : MoreMenuEvent()
+    }
 }
