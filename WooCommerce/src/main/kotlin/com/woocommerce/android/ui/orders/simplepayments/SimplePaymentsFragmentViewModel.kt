@@ -45,17 +45,18 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         // so when the order is created core automatically sets the total tax if the store has taxes enabled.
         val feeLine = order.feesLines[0]
 
+        val orderTaxRate = if (order.taxLines.isEmpty()) {
+            EMPTY_TAX_RATE
+        } else {
+            order.taxLines[0].taxTotal
+        }
+
         if (chargeTaxes) {
-            val taxPercent = if (feeLine.total > BigDecimal.ZERO) {
-                (order.totalTax.toFloat() / feeLine.total.toFloat()) * ONE_HUNDRED
-            } else {
-                0f
-            }
             viewState = viewState.copy(
                 chargeTaxes = true,
                 orderSubtotal = feeLine.total,
                 orderTotalTax = order.totalTax,
-                orderTaxPercent = taxPercent,
+                orderTaxRate = orderTaxRate,
                 orderTotal = order.total
             )
         } else {
@@ -63,7 +64,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 chargeTaxes = false,
                 orderSubtotal = feeLine.total,
                 orderTotalTax = BigDecimal.ZERO,
-                orderTaxPercent = 0f,
+                orderTaxRate = "0.0",
                 orderTotal = feeLine.total
             )
         }
@@ -91,7 +92,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         val chargeTaxes: Boolean = false,
         val orderSubtotal: BigDecimal = BigDecimal.ZERO,
         val orderTotalTax: BigDecimal = BigDecimal.ZERO,
-        val orderTaxPercent: Float = 0f,
+        val orderTaxRate: String = "",
         val orderTotal: BigDecimal = BigDecimal.ZERO,
         val customerNote: String = ""
     ) : Parcelable
@@ -100,6 +101,6 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     object ShowTakePaymentScreen : MultiLiveEvent.Event()
 
     companion object {
-        private const val ONE_HUNDRED = 100f
+        private const val EMPTY_TAX_RATE = "0.00"
     }
 }
