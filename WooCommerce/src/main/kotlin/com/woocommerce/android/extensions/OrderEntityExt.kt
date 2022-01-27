@@ -1,7 +1,7 @@
 package com.woocommerce.android.extensions
 
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.store.WCProductStore
 
@@ -11,7 +11,7 @@ internal const val WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE = "woocommerce_payments"
 val CASH_PAYMENTS = listOf(CASH_ON_DELIVERY_PAYMENT_TYPE, "bacs", "cheque")
 
 /**
- * Returns true if all the products specified in the [WCOrderModel.LineItem] is a virtual product
+ * Returns true if all the products specified in the [OrderEntity.LineItem] is a virtual product
  * and if product exists in the local cache.
  */
 fun isVirtualProduct(
@@ -41,7 +41,7 @@ fun isVirtualProduct(
 val String.isCashPayment: Boolean
     get() = CASH_PAYMENTS.contains(this)
 
-fun WCOrderModel.getBillingName(defaultValue: String): String {
+fun OrderEntity.getBillingName(defaultValue: String): String {
     return if (billingFirstName.isEmpty() && billingLastName.isEmpty()) {
         defaultValue
     } else "$billingFirstName $billingLastName"

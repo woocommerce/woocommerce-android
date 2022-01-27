@@ -19,7 +19,7 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.*
@@ -170,7 +170,7 @@ class MainPresenterTest : BaseUnitTest() {
     fun `Updates orders badge on new unfilled orders`() = runBlocking {
         val initialOrderCount = 25
         val postUpdateOrderCount = 30
-        val fakeObserveResult = MutableSharedFlow<List<WCOrderModel>>()
+        val fakeObserveResult = MutableSharedFlow<List<OrderEntity>>()
         whenever(wcOrderStore.observeOrdersForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value)))).doReturn(
             fakeObserveResult
         )
@@ -197,8 +197,8 @@ class MainPresenterTest : BaseUnitTest() {
         }
     }
 
-    private fun generateFakeOrders(size: Int): List<WCOrderModel> {
-        return mutableListOf<WCOrderModel>().also { list ->
+    private fun generateFakeOrders(size: Int): List<OrderEntity> {
+        return mutableListOf<OrderEntity>().also { list ->
             repeat(size) { repeatCount ->
                 list.add(OrderTestUtils.generateOrder())
             }

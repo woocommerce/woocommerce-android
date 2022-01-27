@@ -14,11 +14,11 @@ object OrderTestUtils {
     private const val TEST_ORDER_STATUS_COUNT = 20
 
     /**
-     * Generates an array containing multiple [WCOrderModel] objects.
+     * Generates an array containing multiple [OrderEntity] objects.
      */
-    fun generateOrders(): List<WCOrderModel> {
-        val result = ArrayList<WCOrderModel>()
-        val om1 = WCOrderModel(
+    fun generateOrders(): List<OrderEntity> {
+        val result = ArrayList<OrderEntity>()
+        val om1 = OrderEntity(
             billingFirstName = "John",
             billingLastName = "Peters",
             currency = "USD",
@@ -30,7 +30,7 @@ object OrderTestUtils {
             localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
-        val om2 = WCOrderModel(
+        val om2 = OrderEntity(
             billingFirstName = "Jane",
             billingLastName = "Masterson",
             currency = "CAD",
@@ -42,7 +42,7 @@ object OrderTestUtils {
             localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
-        val om3 = WCOrderModel(
+        val om3 = OrderEntity(
             billingFirstName = "Mandy",
             billingLastName = "Sykes",
             currency = "USD",
@@ -54,7 +54,7 @@ object OrderTestUtils {
             localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
-        val om4 = WCOrderModel(
+        val om4 = OrderEntity(
             billingFirstName = "Jennifer",
             billingLastName = "Johnson",
             currency = "CAD",
@@ -66,7 +66,7 @@ object OrderTestUtils {
             localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
-        val om5 = WCOrderModel(
+        val om5 = OrderEntity(
             billingFirstName = "Christopher",
             billingLastName = "Jones",
             currency = "USD",
@@ -78,7 +78,7 @@ object OrderTestUtils {
             localSiteId = LocalOrRemoteId.LocalId(1),
         )
 
-        val om6 = WCOrderModel(
+        val om6 = OrderEntity(
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
@@ -100,8 +100,8 @@ object OrderTestUtils {
         return result
     }
 
-    fun generateOrder(): WCOrderModel {
-        return WCOrderModel(
+    fun generateOrder(): OrderEntity {
+        return OrderEntity(
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
@@ -279,7 +279,7 @@ object OrderTestUtils {
         )
     }
 
-    fun generateOrderWithFee(): WCOrderModel {
+    fun generateOrderWithFee(): OrderEntity {
         val lineItems = "[{\n" +
             "    \"id\":1,\n" +
             "    \"name\":\"A test\",\n" +
@@ -296,7 +296,7 @@ object OrderTestUtils {
             "    \"price\":10\n" +
             "  }]"
 
-        return WCOrderModel(
+        return OrderEntity(
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",
@@ -327,8 +327,8 @@ object OrderTestUtils {
         )
     }
 
-    fun generateOrderWithMultipleShippingLines(): WCOrderModel {
-        return WCOrderModel(
+    fun generateOrderWithMultipleShippingLines(): OrderEntity {
+        return OrderEntity(
             billingFirstName = "Carissa",
             billingLastName = "King",
             currency = "USD",

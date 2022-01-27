@@ -5,7 +5,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.StringUtils
-import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -16,7 +16,7 @@ import org.wordpress.android.fluxc.model.order.LineItem as WCLineItem
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
 class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
-    fun toAppModel(databaseEntity: WCOrderModel): Order {
+    fun toAppModel(databaseEntity: OrderEntity): Order {
         @Suppress("DEPRECATION_ERROR")
         return Order(
             id = databaseEntity.orderId,

@@ -8,7 +8,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultAddonsList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
-import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderModel
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderModel
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ import org.junit.Test
 import org.mockito.Mockito.times
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -131,7 +131,7 @@ class AddonRepositoryTest {
     fun `containsAddonsFrom should return true for valid OrderItem`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
-        val orderItem = defaultWCOrderModel.let { orderMapper.toAppModel(it) }.items.first()
+        val orderItem = defaultOrderModel.let { orderMapper.toAppModel(it) }.items.first()
 
         assertThat(repositoryUnderTest.containsAddonsFrom(orderItem)).isTrue
     }
@@ -140,7 +140,7 @@ class AddonRepositoryTest {
     fun `containsAddonsFrom should return false when requested with invalid OrderItem`() = runBlockingTest {
         configureSuccessfulAddonResponse()
 
-        val orderItem = defaultWCOrderModel.let { orderMapper.toAppModel(it) }.items.first()
+        val orderItem = defaultOrderModel.let { orderMapper.toAppModel(it) }.items.first()
             .copy(
                 attributesList = listOf(
                     Order.Item.Attribute("Invalid", "Invalid"),
@@ -187,7 +187,7 @@ class AddonRepositoryTest {
     }
 
     private suspend fun configureSuccessfulOrderResponse() {
-        mock<WCOrderModel>().apply {
+        mock<OrderEntity>().apply {
             whenever(getLineItemList()).thenReturn(defaultWCOrderItemList)
         }.let {
             whenever(
