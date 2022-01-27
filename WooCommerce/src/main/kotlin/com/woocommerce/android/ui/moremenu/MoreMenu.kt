@@ -13,6 +13,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,15 +23,23 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
+import com.woocommerce.android.ui.moremenu.MenuButtonType.*
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
 @Composable
-fun moreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
+@Suppress("LongMethod")
+fun moreMenu(
+    buttons: List<MenuButton>
+) {
+    val viewModel: MoreMenuViewModel = viewModel()
+    val state: MoreMenuViewState by viewModel.viewStateLiveData.liveData.observeAsState(MoreMenuViewState())
+
     Column {
         Row(
             modifier = Modifier
@@ -37,7 +47,7 @@ fun moreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(
-                onClick = { settingsOnClick() },
+                onClick = { viewModel.onSettingsClick() },
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_more_screen_settings),
@@ -53,11 +63,36 @@ fun moreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
             verticalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
         ) {
             itemsIndexed(buttons) { _, item ->
-                moreMenuButton(
-                    text = item.text,
-                    iconDrawable = item.icon,
-                    onClick = item.onClick
-                )
+                when (item.type) {
+                    VIEW_ADMIN -> {
+                        moreMenuButton(
+                            text = item.text,
+                            iconDrawable = item.icon,
+                            onClick = { viewModel.onViewAdminButtonClick(state.adminUrl) }
+                        )
+                    }
+                    VIEW_STORE -> {
+                        moreMenuButton(
+                            text = item.text,
+                            iconDrawable = item.icon,
+                            onClick = { viewModel.onViewStoreButtonClick(state.storeUrl) }
+                        )
+                    }
+                    REVIEWS -> {
+                        moreMenuButton(
+                            text = item.text,
+                            iconDrawable = item.icon,
+                            onClick = { viewModel.onReviewsButtonClick() }
+                        )
+                    }
+                    else -> {
+                        moreMenuButton(
+                            text = item.text,
+                            iconDrawable = item.icon,
+                            onClick = item.onClick
+                        )
+                    }
+                }
             }
         }
     }
@@ -107,19 +142,4 @@ private fun moreMenuButton(
             )
         }
     }
-}
-
-@ExperimentalFoundationApi
-@Preview
-@Composable
-fun moreMenuPreview() {
-    val buttons = listOf(
-        MenuButton(R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin),
-        MenuButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
-        MenuButton(R.string.more_menu_button_analytics, R.drawable.ic_more_menu_analytics),
-        MenuButton(R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments),
-        MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
-        MenuButton(R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews)
-    )
-    moreMenu(buttons)
 }
