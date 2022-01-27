@@ -7,8 +7,8 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultAddonsList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderAttributes
-import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderModel
+import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +20,8 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.times
 import org.mockito.kotlin.*
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
