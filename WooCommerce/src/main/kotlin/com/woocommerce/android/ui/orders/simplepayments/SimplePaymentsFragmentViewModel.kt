@@ -33,6 +33,14 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
             customerNote = viewState.customerNote
         )
 
+    // determine the tax rate from the first tax line item
+    val orderTaxRate
+        get() = if (order.taxLines.isEmpty()) {
+            EMPTY_TAX_RATE
+        } else {
+            order.taxLines[0].taxTotal
+        }
+
     init {
         viewState = viewState.copy(customerNote = order.customerNote)
         val hasTaxes = order.totalTax > BigDecimal.ZERO
@@ -45,18 +53,11 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         // so when the order is created core automatically sets the total tax if the store has taxes enabled.
         val feeLine = order.feesLines[0]
 
-        val orderTaxRate = if (order.taxLines.isEmpty()) {
-            EMPTY_TAX_RATE
-        } else {
-            order.taxLines[0].taxTotal
-        }
-
         if (chargeTaxes) {
             viewState = viewState.copy(
                 chargeTaxes = true,
                 orderSubtotal = feeLine.total,
                 orderTotalTax = order.totalTax,
-                orderTaxRate = orderTaxRate,
                 orderTotal = order.total
             )
         } else {
@@ -64,7 +65,6 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 chargeTaxes = false,
                 orderSubtotal = feeLine.total,
                 orderTotalTax = BigDecimal.ZERO,
-                orderTaxRate = "0.0",
                 orderTotal = feeLine.total
             )
         }
@@ -92,7 +92,6 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         val chargeTaxes: Boolean = false,
         val orderSubtotal: BigDecimal = BigDecimal.ZERO,
         val orderTotalTax: BigDecimal = BigDecimal.ZERO,
-        val orderTaxRate: String = "",
         val orderTotal: BigDecimal = BigDecimal.ZERO,
         val customerNote: String = ""
     ) : Parcelable
