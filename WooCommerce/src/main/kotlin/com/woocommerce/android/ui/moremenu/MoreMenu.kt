@@ -37,9 +37,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 @ExperimentalFoundationApi
 @Composable
 @Suppress("LongMethod", "FunctionNaming")
-fun MoreMenu(
-    buttons: List<MenuButton>
-) {
+fun MoreMenu(buttons: List<MenuButton>) {
     val viewModel: MoreMenuViewModel = viewModel()
     val state: MoreMenuViewState by viewModel.viewStateLiveData.liveData.observeAsState(MoreMenuViewState())
 
@@ -99,13 +97,6 @@ fun MoreMenu(
                         MoreMenuButton(text = item.text, iconDrawable = item.icon) {
                             viewModel.onReviewsButtonClick()
                         }
-                    }
-                    else -> {
-                        MoreMenuButton(
-                            text = item.text,
-                            iconDrawable = item.icon,
-                            onClick = item.onClick
-                        )
                     }
                 }
             }
