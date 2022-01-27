@@ -21,6 +21,7 @@ repositories {
             includeGroup "org.wordpress"
             includeGroup "org.wordpress.fluxc"
             includeGroup "org.wordpress.fluxc.plugins"
+            includeGroup "org.wordpress.wellsql"
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
         }
