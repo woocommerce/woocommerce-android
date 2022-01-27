@@ -52,5 +52,5 @@ if [ "${CIRCLE_PULL_REQUEST##*/}" != "" ]; then
   fi
   ./gradlew dependencyTreeDiffCommentToGitHub -DGITHUB_PULLREQUESTID="${CIRCLE_PULL_REQUEST##*/}" -DGITHUB_OAUTH2TOKEN="$GITHUB_API_TOKEN" --info
 else
-  echo "$CIRCLE_PULL_REQUEST is missing in env"
+  echo "CIRCLE_PULL_REQUEST var is missing in env. This is not a Pull Request. Skipping"
 fi
