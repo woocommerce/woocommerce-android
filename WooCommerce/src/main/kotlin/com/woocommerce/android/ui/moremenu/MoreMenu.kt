@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
 @Composable
-@Suppress("LongMethod")
+@Suppress("LongMethod", "FunctionNaming")
 fun MoreMenu(
     buttons: List<MenuButton>
 ) {
@@ -86,25 +86,19 @@ fun MoreMenu(
             itemsIndexed(buttons) { _, item ->
                 when (item.type) {
                     VIEW_ADMIN -> {
-                        MoreMenuButton(
-                            text = item.text,
-                            iconDrawable = item.icon,
-                            onClick = { viewModel.onViewAdminButtonClick(state.adminUrl) }
-                        )
+                        MoreMenuButton(text = item.text, iconDrawable = item.icon) {
+                            viewModel.onViewAdminButtonClick(state.adminUrl)
+                        }
                     }
                     VIEW_STORE -> {
-                        MoreMenuButton(
-                            text = item.text,
-                            iconDrawable = item.icon,
-                            onClick = { viewModel.onViewStoreButtonClick(state.storeUrl) }
-                        )
+                        MoreMenuButton(text = item.text, iconDrawable = item.icon) {
+                            viewModel.onViewStoreButtonClick(state.storeUrl)
+                        }
                     }
                     REVIEWS -> {
-                        MoreMenuButton(
-                            text = item.text,
-                            iconDrawable = item.icon,
-                            onClick = { viewModel.onReviewsButtonClick() }
-                        )
+                        MoreMenuButton(text = item.text, iconDrawable = item.icon) {
+                            viewModel.onReviewsButtonClick()
+                        }
                     }
                     else -> {
                         MoreMenuButton(
@@ -120,6 +114,7 @@ fun MoreMenu(
 }
 
 @Composable
+@Suppress("FunctionNaming")
 private fun MoreMenuButton(
     @StringRes text: Int,
     @DrawableRes iconDrawable: Int,
