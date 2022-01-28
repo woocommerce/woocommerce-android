@@ -54,7 +54,7 @@ data class ProductVariation(
     override val width: Float,
     override val height: Float,
     override val weight: Float
-) : Parcelable, IProduct {
+) : Parcelable, IProduct, Comparable<ProductVariation> {
     val isSaleInEffect: Boolean
         get() {
             val now = Date()
@@ -98,6 +98,8 @@ data class ProductVariation(
                 width == variation.width
         } ?: false
     }
+
+    override fun compareTo(other: ProductVariation): Int = menuOrder.compareTo(other.menuOrder)
 
     override fun hashCode(): Int {
         return super.hashCode()
