@@ -69,6 +69,7 @@ data class Product(
     val isSoldIndividually: Boolean,
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
+    val isPurchasable: Boolean,
     val menuOrder: Int,
     val categories: List<ProductCategory>,
     val tags: List<ProductTag>,
@@ -459,6 +460,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.downloadExpiry = downloadExpiry
         it.downloadable = isDownloadable
         it.attributes = attributesToJson()
+        it.purchasable = isPurchasable
     }
 }
 
@@ -544,6 +546,7 @@ fun WCProductModel.toAppModel(): Product {
         groupedProductIds = this.getGroupedProductIdList(),
         crossSellProductIds = this.getCrossSellProductIdList(),
         upsellProductIds = this.getUpsellProductIdList(),
+        isPurchasable = this.purchasable
     )
 }
 
