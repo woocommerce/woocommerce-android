@@ -215,7 +215,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay in test mode with live stripe account, then wcpay in test mode state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+                .thenReturn(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
 
             val viewModel = createVM()
 
@@ -556,7 +556,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay in test mode with live account, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WcpayInTestModeWithLiveStripeAccount)
+                .thenReturn(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
 
             createVM()
 

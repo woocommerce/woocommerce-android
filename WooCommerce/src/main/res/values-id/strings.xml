@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-21 09:54:03+0000
+Translation-Revision-Date: 2022-01-20 21:54:58+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">Ikon aplikasi</string>
+    <string name="about_automattic_back_icon_description">Ikon kembali</string>
+    <string name="about_automattic_logo_description">Logo Automattic</string>
+    <string name="about_automattic_version_label">Versi %1$s</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_acknowledgements_item_title">Pernyataan</string>
+    <string name="about_automattic_source_code_item_title">Kode Sumber</string>
+    <string name="about_automattic_california_privacy_notice_item_title">Pemberitahuan Privasi untuk California</string>
+    <string name="about_automattic_privacy_policy_item_title">Kebijakan Privasi</string>
+    <string name="about_automattic_terms_of_service_item_title">Ketentuan Layanan</string>
+    <string name="about_automattic_work_with_us_item_subtitle">Bekerja dari Mana Saja</string>
+    <string name="about_automattic_work_with_us_item_title">Berkarya Bersama Kami</string>
+    <string name="about_automattic_family_item_title">Keluarga Automattic</string>
+    <string name="about_automattic_legal_and_more_item_title">Informasi Hukum dan Lainnya</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_rate_us_item_title">Beri Rating</string>
+    <string name="about_automattic_share_with_friends_item_title">Bagikan dengan Teman</string>
+    <string name="about_automattic_acknowledgements_page_title">Pernyataan</string>
+    <string name="about_automattic_legal_page_title">Informasi Hukum dan Lainnya</string>
+    <string name="about_automattic_main_page_title">Tentang %1$s</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">Hubungi Dukungan</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">Aktivasi</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">Instal</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s Jetpack di WP Admin</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">aktifkan</string>
+    <string name="jetpack_install_progress_failed_alternative_install">instal</string>
+    <string name="jetpack_install_progress_failed_alternative">Selain itu, Anda dapat %s Jetpack di WP Admin.</string>
+    <string name="jetpack_install_progress_failed_try">Harap coba lagi.</string>
+    <string name="jetpack_install_progress_failed_reason_connection">menghubungkan</string>
+    <string name="jetpack_install_progress_failed_reason_activation">aktivasi</string>
+    <string name="jetpack_install_progress_failed_reason_installation">instalasi</string>
+    <string name="jetpack_install_progress_failed_title">Maaf, terjadi kesalahan selama %s</string>
+    <string name="settings_about_recommend_app_message">Hei! Berikut tautan untuk mengunduh aplikasi WooCommerce. Saya sangat suka aplikasi ini dan saya rasa Anda juga akan suka. %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Perbarui Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">Hampir jadi! Harap selesaikan pengaturan Stripe untuk mulai menerima Pembayaran dengan Kartu.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Selesaikan penyiapan Stripe di admin toko Anda</string>
+    <string name="order_refunds_refund_fees">Biaya pengembalian dana</string>
+    <string name="order_refunds_fees_refund">Pengembalian dana</string>
+    <string name="order_creation_variations_screen_title">Pilih variasi</string>
+    <string name="order_creation_remove_product">Hapus produk dari pesanan</string>
+    <string name="order_creation_add_discount">Berikan diskon</string>
+    <string name="order_creation_product_details_title">Produk</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Tambahkan alamat pengiriman lain</string>
+    <string name="order_creation_product_instock">Tersedia</string>
+    <string name="order_creation_product_stock_quantity">%s tersedia</string>
+    <string name="order_creation_new_customer">Pelanggan baru</string>
+    <string name="order_creation_add_products">Tambahkan Produk</string>
+    <string name="order_creation_products">Produk</string>
+    <string name="order_creation_add_customer">Tambahkan pelanggan</string>
+    <string name="order_creation_customer">Pelanggan</string>
+    <string name="simple_payments_cash_dlg_button">Tandai sebagai dibayar</string>
+    <string name="simple_payments_cash_dlg_message">Pesanan akan dibuat dan ditandai sebagai dibayar jika Anda telah menerima pembayaran tanpa melalui WooCommerce</string>
+    <string name="simple_payments_cash_dlg_title">Tandai sebagai dibayar?</string>
+    <string name="simple_payments_choose_method">Pilih metode pembayaran Anda</string>
+    <string name="simple_payments_tax_message">Pajak dihitung otomatis berdasarkan alamat toko Anda</string>
+    <string name="simple_payments_tax_with_percent">Pajak (%s%%)</string>
+    <string name="simple_payments_take_payment_button">Terima pembayaran (%s)</string>
+    <string name="simple_payments_charge_taxes">Kena pajak</string>
+    <string name="simple_payments_custom_amount">Jumlah kustom</string>
+    <string name="simple_payments_edit_email_hint">Masukkan email</string>
+    <string name="simple_payments_title">Simple payment</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">Uang Tunai</string>
+    <string name="card">Kartu</string>
+    <string name="plus">Lebih</string>
+    <string name="minus">Kurang</string>
+    <string name="tax">Pajak</string>
+    <string name="email">Email</string>
     <string name="order_creation_add_customer_note">Tambahkan catatan</string>
     <string name="order_creation_customer_note">Catatan Pelanggan</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Segarkan setelah memperbarui</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Ekstensi WooCommerce Stripe Payment Gateway yang terpasang di toko Anda adalah versi lama. Harap perbarui untuk menerima Pembayaran Langsung.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Perbarui WooCommerce Stripe Payment Gateway</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Segarkan</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">Hampir jadi! Harap selesaikan penyiapan WooCommerce Stripe Payment Gateway untuk mulai menerima Pembayaran Langsung.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Selesaikan penyiapan WooCommerce Stripe Payment Gateway di admin toko Anda</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Segarkan setelah memperbarui</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Versi ekstensi WooCommerce Stripe Gateway yang terpasang di toko Anda sudah usang. Harap perbarui untuk menerima Pembayaran Langsung.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Segarkan</string>
     <string name="card_reader_payment_failed_unknown">Pembayaran ditolak untuk alasan yang tidak diketahui</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Kartu aktual digunakan untuk situs dalam mode pengujian</string>
     <string name="card_reader_payment_failed_test_card">Kartu pengujian sistem tidak boleh digunakan untuk pembayaran</string>

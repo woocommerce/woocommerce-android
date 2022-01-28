@@ -4,10 +4,12 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import com.woocommerce.android.extensions.differsFrom
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -27,7 +29,9 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     private var viewState by viewStateData
 
     private val productList = MutableLiveData<List<Product>>()
-    val productListData: LiveData<List<Product>> = productList
+    val productListData: LiveData<List<Product>> = productList.map { products ->
+        products.filter { it.isPurchasable && it.status == PUBLISH }
+    }
 
     val isSearchActive
         get() = viewState.isSearchActive ?: false

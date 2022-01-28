@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-22 09:54:20+0000
+Translation-Revision-Date: 2022-01-20 21:48:50+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">アプリアイコン</string>
+    <string name="about_automattic_back_icon_description">「戻る」アイコン</string>
+    <string name="about_automattic_logo_description">Automattic ロゴ</string>
+    <string name="about_automattic_version_label">バージョン%1$s</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_acknowledgements_item_title">謝辞</string>
+    <string name="about_automattic_source_code_item_title">ソースコード</string>
+    <string name="about_automattic_california_privacy_notice_item_title">カリフォルニア州プライバシー通知</string>
+    <string name="about_automattic_privacy_policy_item_title">プライバシーポリシー</string>
+    <string name="about_automattic_terms_of_service_item_title">利用規約</string>
+    <string name="about_automattic_work_with_us_item_subtitle">どこでも作業可能</string>
+    <string name="about_automattic_work_with_us_item_title">求人情報</string>
+    <string name="about_automattic_family_item_title">Automattic ファミリー</string>
+    <string name="about_automattic_legal_and_more_item_title">法的情報およびその他</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_rate_us_item_title">評価してください</string>
+    <string name="about_automattic_share_with_friends_item_title">友達と共有</string>
+    <string name="about_automattic_acknowledgements_page_title">謝辞</string>
+    <string name="about_automattic_legal_page_title">法的情報およびその他</string>
+    <string name="about_automattic_main_page_title">%1$s について</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">サポートに問い合わせる</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">有効化</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">インストール</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">WP 管理画面で Jetpack を%s</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">有効化</string>
+    <string name="jetpack_install_progress_failed_alternative_install">インストール</string>
+    <string name="jetpack_install_progress_failed_alternative">または、WP 管理画面で Jetpack を%sできます。</string>
+    <string name="jetpack_install_progress_failed_try">もう一度お試しください。</string>
+    <string name="jetpack_install_progress_failed_reason_connection">連携中</string>
+    <string name="jetpack_install_progress_failed_reason_activation">有効化</string>
+    <string name="jetpack_install_progress_failed_reason_installation">インストール</string>
+    <string name="jetpack_install_progress_failed_title">%s中にエラーが発生しました</string>
+    <string name="settings_about_recommend_app_message">注目! このリンクから WooCommerce アプリをダウンロードできます。とても楽しく、どなたにも気に入ってもらえると思います。 %1$s</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Stripe を更新</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">あともう少しです。 カードを使用した支払いを開始するには、Stripe の設定を完了してください。</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">ストア管理で Stripe の設定を完了する</string>
+    <string name="order_refunds_refund_fees">料金を返金</string>
+    <string name="order_refunds_fees_refund">料金の返金</string>
+    <string name="order_creation_variations_screen_title">バリエーションを選択</string>
+    <string name="order_creation_remove_product">注文から商品を削除</string>
+    <string name="order_creation_add_discount">割引を追加</string>
+    <string name="order_creation_product_details_title">商品</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">別の配送先住所を追加</string>
+    <string name="order_creation_product_instock">在庫あり</string>
+    <string name="order_creation_product_stock_quantity">在庫%s件</string>
+    <string name="order_creation_new_customer">新規顧客</string>
+    <string name="order_creation_add_products">商品を追加</string>
+    <string name="order_creation_products">商品</string>
+    <string name="order_creation_add_customer">顧客を追加</string>
+    <string name="order_creation_customer">お客様</string>
+    <string name="simple_payments_cash_dlg_button">支払い済みとしてマーク</string>
+    <string name="simple_payments_cash_dlg_message">注文が作成され、WooCommerce 外部で支払いを受け取った場合は支払い済みとしてマークされます</string>
+    <string name="simple_payments_cash_dlg_title">支払い済みとしてマーク</string>
+    <string name="simple_payments_choose_method">支払い方法を選択</string>
+    <string name="simple_payments_tax_message">税金は店舗の住所に基づいて自動的に計算されます</string>
+    <string name="simple_payments_tax_with_percent">税金 (%s%%)</string>
+    <string name="simple_payments_take_payment_button">支払いを受け取る (%s)</string>
+    <string name="simple_payments_charge_taxes">税金を請求</string>
+    <string name="simple_payments_custom_amount">カスタム金額</string>
+    <string name="simple_payments_edit_email_hint">メールアドレスを入力</string>
+    <string name="simple_payments_title">シンプルペイメント</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">現金</string>
+    <string name="card">カード</string>
+    <string name="plus">Plus</string>
+    <string name="minus">マイナス</string>
+    <string name="tax">税金</string>
+    <string name="email">メールアドレス</string>
     <string name="order_creation_add_customer_note">メモを追加</string>
     <string name="order_creation_customer_note">注文メモ</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">更新後に再読み込みする</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Stripe Payment Gateway 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">WooCommerce Stripe Payment Gateway を更新する</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">再読み込み</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">あともう少しです。 オフラインでの支払いを開始するには、WooCommerce Stripe Payment Gateway のセットアップを完了させてください。</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">ストア管理で WooCommerce Stripe Payment Gateway のセットアップを完了させる</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">更新後に再読み込みする</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Stripe Gateway 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">再読み込み</string>
     <string name="card_reader_payment_failed_unknown">不明な理由により支払いが拒否されました</string>
     <string name="card_reader_payment_failed_test_mode_live_card">本番用カードがテストモードのサイトで使用されました</string>
     <string name="card_reader_payment_failed_test_card">システムテストカードは支払いが許可されていません</string>

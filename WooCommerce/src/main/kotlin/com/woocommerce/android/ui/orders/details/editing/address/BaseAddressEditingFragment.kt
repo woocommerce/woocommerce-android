@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -16,10 +17,13 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.UiDimen
+import com.woocommerce.android.ui.orders.creation.views.bindEditFields
+import com.woocommerce.android.ui.orders.creation.views.update
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.UiHelpers.getPxOfUiDimen
+import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
@@ -43,26 +47,15 @@ abstract class BaseAddressEditingFragment :
 
     protected lateinit var replicateAddressSwitch: SwitchMaterial
 
-    val addressDraft
-        get() = binding.form.run {
-            Address(
-                firstName = firstName.text,
-                lastName = lastName.text,
-                email = email.text,
-                phone = phone.text,
-                company = company.text,
-                address1 = address1.text,
-                address2 = address2.text,
-                city = city.text,
-                postcode = postcode.text,
-                country = addressViewModel.selectedCountryLocationFor(addressType).code,
-                state = if (shouldShowStateSpinner()) {
-                    addressViewModel.selectedStateLocationFor(addressType).code
-                } else {
-                    stateEditText.text
-                }
-            )
-        }
+    val addressDraft: Address
+        get() = addressViewModel
+            .viewStateData
+            .liveData
+            .value
+            ?.addressSelectionStates
+            ?.getValue(addressType)
+            ?.address
+            ?: Address.EMPTY
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,12 +70,13 @@ abstract class BaseAddressEditingFragment :
             )
         }
 
-        storedAddress.bindToView()
+        replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
+            sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
+        }
         bindTextWatchers()
 
         addressViewModel.start(
-            countryCode = storedAddress.country,
-            stateCode = storedAddress.state
+            mapOf(addressType to storedAddress)
         )
 
         binding.form.countrySpinner.setClickListener {
@@ -93,10 +87,13 @@ abstract class BaseAddressEditingFragment :
             addressViewModel.onStateSpinnerClicked(addressType)
         }
 
+        addressViewModel.start(
+            mapOf(addressType to storedAddress)
+        )
+
         setupObservers()
         setupResultHandlers()
         onViewBound(binding)
-        updateStateViews()
     }
 
     override fun hasChanges() =
@@ -110,52 +107,28 @@ abstract class BaseAddressEditingFragment :
         super.onStop()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                addressViewModel.onDoneSelected()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onDetach() {
         addressViewModel.onScreenDetached()
         super.onDetach()
     }
 
-    private fun Address.bindToView() {
-        binding.form.firstName.text = firstName
-        binding.form.lastName.text = lastName
-        binding.form.email.text = email
-        binding.form.phone.text = phone
-        binding.form.company.text = company
-        binding.form.address1.text = address1
-        binding.form.address2.text = address2
-        binding.form.city.text = city
-        binding.form.postcode.text = postcode
-        binding.form.countrySpinner.setText(getCountryLabelByCountryCode())
-        binding.form.stateSpinner.setText(addressViewModel.selectedStateLocationFor(addressType).name)
-        binding.form.stateEditText.text = state
-        replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
-            sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
-            updateDoneMenuItem()
-        }
-    }
-
     private fun bindTextWatchers() {
-        binding.form.firstName.textWatcher = textWatcher
-        binding.form.lastName.textWatcher = textWatcher
-        binding.form.email.textWatcher = textWatcher
-        binding.form.phone.textWatcher = textWatcher
-        binding.form.company.textWatcher = textWatcher
-        binding.form.address1.textWatcher = textWatcher
-        binding.form.address2.textWatcher = textWatcher
-        binding.form.city.textWatcher = textWatcher
-        binding.form.postcode.textWatcher = textWatcher
-        binding.form.stateEditText.textWatcher = textWatcher
-    }
-
-    private fun shouldShowStateSpinner() = addressViewModel.hasStatesFor(addressType)
-
-    /**
-     * When the country is empty, or we don't have country or state data, we show an editText
-     * for the state rather than a spinner
-     */
-    private fun updateStateViews() {
-        binding.form.stateSpinner.isVisible = shouldShowStateSpinner()
-        binding.form.stateEditText.isVisible = !shouldShowStateSpinner()
+        binding.form.bindEditFields(
+            addressType,
+            onFieldEdited = { addressType, field, value ->
+                addressViewModel.onFieldEdited(addressType, field, value)
+            }
+        )
     }
 
     private fun showCountrySearchScreen(countries: List<Location>) {
@@ -190,34 +163,30 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            val oldCountryStatePair = old?.countryStatePairs?.get(addressType)
-            val newCountryStatePair = new.countryStatePairs.getValue(addressType)
+            val newCountryStatePair = new.addressSelectionStates.getValue(addressType)
 
-            newCountryStatePair.countryLocation.takeIfNotEqualTo(oldCountryStatePair?.countryLocation) {
-                binding.form.countrySpinner.setText(it.name)
-                updateDoneMenuItem()
-                updateStateViews()
-            }
-            newCountryStatePair.stateLocation.takeIfNotEqualTo(oldCountryStatePair?.stateLocation) {
-                binding.form.stateSpinner.setText(it.name)
-                binding.form.stateEditText.text = it.code
-                updateDoneMenuItem()
-            }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
                 binding.progressBar.isVisible = it
-                if (old?.isLoading == true) {
-                    updateStateViews()
-                }
             }
-            new.isStateSelectionEnabled.takeIfNotEqualTo(old?.isStateSelectionEnabled) {
-                binding.form.stateSpinner.isEnabled = it
-            }
+            binding.form.update(newCountryStatePair)
+        }
+
+        sharedViewModel.viewStateData.liveData.combineWith(
+            addressViewModel.isAnyAddressEdited
+        ) { sharedViewState, isAddressEdited ->
+            (isAddressEdited ?: false) || (sharedViewState?.replicateBothAddressesToggleActivated ?: false)
+        }.observe(viewLifecycleOwner) { shouldShowDoneButton ->
+            doneMenuItem?.isVisible = shouldShowDoneButton
         }
 
         addressViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is AddressViewModel.ShowStateSelector -> showStateSearchScreen(event.states)
                 is AddressViewModel.ShowCountrySelector -> showCountrySearchScreen(event.countries)
+                is AddressViewModel.Exit -> {
+                    saveChanges()
+                    navigateUp()
+                }
             }
         }
     }

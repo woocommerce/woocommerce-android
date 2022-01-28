@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells.Fixed
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -13,6 +14,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,27 +23,59 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.woocommerce.android.R
 import com.woocommerce.android.R.color
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
 @Composable
-fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
+@Suppress("FunctionNaming")
+fun MoreMenu(viewModel: MoreMenuViewModel) {
+    val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
+    MoreMenu(
+        moreMenuState.moreMenuItems,
+        viewModel::onSwitchStoreClick,
+        viewModel::onSettingsClick
+    )
+}
+
+@ExperimentalFoundationApi
+@Composable
+@Suppress("LongMethod", "FunctionNaming")
+fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSettingsClick: () -> Unit) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Column(
+                modifier = Modifier
+                    .padding(10.dp)
+            ) {
+                Text(
+                    text = stringResource(string.settings_switch_store),
+                    color = colorResource(color.color_secondary),
+                    modifier = Modifier
+                        .clickable(
+                            enabled = true,
+                            onClickLabel = stringResource(id = string.settings_switch_store),
+                            role = Role.Button
+                        ) { onSwitchStore() }
+                )
+            }
+
             IconButton(
-                onClick = { settingsOnClick() },
+                onClick = { onSettingsClick() },
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_more_screen_settings),
-                    contentDescription = stringResource(id = R.string.settings),
+                    painter = painterResource(id = drawable.ic_more_screen_settings),
+                    contentDescription = stringResource(id = string.settings),
                     tint = Color.Unspecified
                 )
             }
@@ -51,7 +86,7 @@ fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
             horizontalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing),
             verticalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
         ) {
-            itemsIndexed(buttons) { _, item ->
+            itemsIndexed(uiButtons) { _, item ->
                 MoreMenuButton(
                     text = item.text,
                     iconDrawable = item.icon,
@@ -64,6 +99,7 @@ fun MoreMenu(buttons: List<MenuButton>, settingsOnClick: () -> Unit = {}) {
 }
 
 @Composable
+@Suppress("FunctionNaming")
 private fun MoreMenuButton(
     @StringRes text: Int,
     @DrawableRes iconDrawable: Int,
@@ -141,14 +177,12 @@ fun MoreMenuBadge(badgeCount: Int) {
 @ExperimentalFoundationApi
 @Preview
 @Composable
+@Suppress("FunctionNaming")
 fun MoreMenuPreview() {
     val buttons = listOf(
-        MenuButton(R.string.more_menu_button_woo_admin, R.drawable.ic_more_menu_wp_admin),
-        MenuButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
-        MenuButton(R.string.more_menu_button_analytics, R.drawable.ic_more_menu_analytics),
-        MenuButton(R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments),
-        MenuButton(R.string.more_menu_button_inbox, R.drawable.ic_more_menu_inbox),
-        MenuButton(R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews)
+        MenuUiButton(string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
+        MenuUiButton(string.more_menu_button_store, drawable.ic_more_menu_store),
+        MenuUiButton(string.more_menu_button_reviews, drawable.ic_more_menu_reviews)
     )
-    MoreMenu(buttons)
+    MoreMenu(uiButtons = buttons, {}, {})
 }

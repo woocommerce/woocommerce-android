@@ -21,6 +21,7 @@ repositories {
             includeGroup "org.wordpress"
             includeGroup "org.wordpress.fluxc"
             includeGroup "org.wordpress.fluxc.plugins"
+            includeGroup "org.wordpress.wellsql"
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
         }
@@ -33,14 +34,14 @@ repositories {
         }
     }
     mavenCentral()
-    //noinspection JcenterRepositoryObsolete
-    jcenter {
+    maven {
+        url "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
         content {
-            includeModule("org.wordpress", "wellsql")
-            includeModule("org.wordpress", "wellsql-core")
-            includeModule("com.google.android", "flexbox")
-            includeModule("com.android.volley", "volley")
-            includeModule("com.jraska", "falcon")
+            includeVersion "com.android.volley", "volley", "1.1.1"
+            includeVersion "com.google.android", "flexbox", "2.0.1"
+            includeVersion "com.jraska", "falcon", "2.1.1"
+            includeVersion "org.wordpress", "wellsql", "1.6.0"
+            includeVersion "org.wordpress", "wellsql-core", "1.6.0"
         }
     }
     maven {
@@ -68,9 +69,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.3-rc-1"
+            versionName "8.4-rc-1"
         }
-        versionCode 271
+        versionCode 273
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -176,13 +177,13 @@ dependencies {
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "androidx.core:core-ktx:$coreKtxVersion"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.2"
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.cardview:cardview:1.0.0"
-    implementation("androidx.browser:browser:1.3.0") {
+    implementation("androidx.browser:browser:1.4.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
     implementation "androidx.preference:preference:1.1.1"
@@ -255,7 +256,7 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
@@ -331,6 +332,7 @@ dependencies {
     implementation "androidx.compose.animation:animation:$composeVersion"
     implementation "androidx.compose.ui:ui-tooling:$composeVersion"
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
+    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
     implementation "com.google.android.material:compose-theme-adapter:$composeVersion"
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.0.5'
 }
