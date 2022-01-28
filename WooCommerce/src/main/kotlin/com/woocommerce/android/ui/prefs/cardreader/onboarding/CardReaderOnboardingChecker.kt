@@ -37,6 +37,13 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag,
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
 ) {
+    private val supportedCountries: List<String>
+        get() = if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
+            listOf("US", "CA")
+        } else {
+            listOf("US")
+        }
+
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
 
@@ -96,14 +103,6 @@ class CardReaderOnboardingChecker @Inject constructor(
         return OnboardingCompleted(preferredPlugin.type)
     }
 
-    private fun getSupportedCountries(): List<String> {
-        return if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
-            listOf("US", "CA")
-        } else {
-            listOf("US")
-        }
-    }
-
     private fun isBothPluginsActivated(
         wcPayPluginInfo: WCPluginModel?,
         stripePluginInfo: WCPluginModel?
@@ -132,7 +131,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
     private fun isCountrySupported(countryCode: String?): Boolean {
         return countryCode?.let { storeCountryCode ->
-            getSupportedCountries().any { it.equals(storeCountryCode, ignoreCase = true) }
+            supportedCountries.any { it.equals(storeCountryCode, ignoreCase = true) }
         } ?: false.also { WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.") }
     }
 
