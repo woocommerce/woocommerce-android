@@ -217,7 +217,7 @@ class OrderListFragment :
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
         val isSimplePaymentAvailable = isSimplePaymentsAvailable()
-        val isOrderCreationAvailable = FeatureFlag.ORDER_CREATION.isEnabled() && AppPrefs.isOrderCreationEnabled
+        val isOrderCreationAvailable = AppPrefs.isOrderCreationEnabled
 
         if (isSimplePaymentAvailable || isOrderCreationAvailable) {
             fabButton.visibility = View.VISIBLE
