@@ -203,13 +203,10 @@ class MainActivity :
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this@MainActivity)
-
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
-
         binding.bottomNav.init(navController, this)
 
         // fetch the site list if the database has been downgraded - otherwise the site picker will be displayed,
