@@ -1346,7 +1346,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Canada flag true, then supported readers contains Wisepad 3`() {
+    fun `given ipp Canada feature flag is true, then supported readers contains Wisepad 3`() {
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
 
         assertThat(viewModel.supportedReaders).isEqualTo(
@@ -1357,7 +1357,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Canada flag false, then supported readers does not contain Wisepad 3`() {
+    fun `given ipp Canada feature flag is false, then supported readers does not contain Wisepad 3`() {
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
 
         assertThat(viewModel.supportedReaders).isEqualTo(
