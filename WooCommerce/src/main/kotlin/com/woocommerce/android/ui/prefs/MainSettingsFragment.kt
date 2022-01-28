@@ -286,13 +286,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun generateBetaFeaturesTitleList() =
         mutableListOf<String>().apply {
             add(getString(R.string.beta_features_add_ons))
-
+            add(getString(R.string.beta_features_order_creation))
             if (presenter.isCardReaderOnboardingCompleted()) {
                 add(getString(R.string.beta_features_simple_payments))
-            }
-
-            if (FeatureFlag.ORDER_CREATION.isEnabled()) {
-                add(getString(R.string.beta_features_order_creation))
             }
         }
 
