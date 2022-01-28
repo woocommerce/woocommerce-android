@@ -30,42 +30,52 @@ class StatsRepository @Inject constructor(
         granularity: StatsGranularity,
         forced: Boolean
     ): Flow<Result<WCRevenueStatsModel?>> = flow {
-        val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, forced = forced)
-        val result = wcStatsStore.fetchRevenueStats(statsPayload)
+        if (selectedSite.exists()) {
+            val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, forced = forced)
+            val result = wcStatsStore.fetchRevenueStats(statsPayload)
 
-        if (!result.isError) {
-            val revenueStatsModel = wcStatsStore.getRawRevenueStats(
-                selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
-            )
-            Result.success(revenueStatsModel)
-            emit(Result.success(revenueStatsModel))
+            if (!result.isError) {
+                val revenueStatsModel = wcStatsStore.getRawRevenueStats(
+                    selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
+                )
+                Result.success(revenueStatsModel)
+                emit(Result.success(revenueStatsModel))
+            } else {
+                val errorMessage = result.error?.message ?: "Timeout"
+                WooLog.e(
+                    DASHBOARD,
+                    "$TAG - Error fetching revenue stats: $errorMessage"
+                )
+                val exception = StatsException(error = result.error)
+                emit(Result.failure(exception))
+            }
         } else {
-            val errorMessage = result.error?.message ?: "Timeout"
-            WooLog.e(
-                DASHBOARD,
-                "$TAG - Error fetching revenue stats: $errorMessage"
-            )
-            val exception = StatsException(error = result.error)
+            val exception = IllegalStateException("SelectedSite.get() not initialised")
             emit(Result.failure(exception))
         }
     }
 
     suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Flow<Result<Map<String, Int>>> =
         flow {
-            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
-            val result = wcStatsStore.fetchNewVisitorStats(visitsPayload)
-            if (!result.isError) {
-                val visitorStats = wcStatsStore.getNewVisitorStats(
-                    selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
-                )
-                emit(Result.success(visitorStats))
+            if (selectedSite.exists()) {
+                val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
+                val result = wcStatsStore.fetchNewVisitorStats(visitsPayload)
+                if (!result.isError) {
+                    val visitorStats = wcStatsStore.getNewVisitorStats(
+                        selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
+                    )
+                    emit(Result.success(visitorStats))
+                } else {
+                    val errorMessage = result.error?.message ?: "Timeout"
+                    WooLog.e(
+                        DASHBOARD,
+                        "$TAG - Error fetching visitor stats: $errorMessage"
+                    )
+                    emit(Result.failure(Exception(errorMessage)))
+                }
             } else {
-                val errorMessage = result.error?.message ?: "Timeout"
-                WooLog.e(
-                    DASHBOARD,
-                    "$TAG - Error fetching visitor stats: $errorMessage"
-                )
-                emit(Result.failure(Exception(errorMessage)))
+                val exception = IllegalStateException("SelectedSite.get() not initialised")
+                emit(Result.failure(exception))
             }
         }
 
@@ -107,7 +117,8 @@ class StatsRepository @Inject constructor(
                 emit(Result.success(!result.hasOrders))
             }
             is WCOrderStore.HasOrdersResult.Failure, null -> {
-                val errorMessage = (result as? WCOrderStore.HasOrdersResult.Failure)?.error?.message ?: "Timeout"
+                val errorMessage =
+                    (result as? WCOrderStore.HasOrdersResult.Failure)?.error?.message ?: "Timeout"
                 WooLog.e(
                     DASHBOARD,
                     "$TAG - Error fetching whether orders exist: $errorMessage"
