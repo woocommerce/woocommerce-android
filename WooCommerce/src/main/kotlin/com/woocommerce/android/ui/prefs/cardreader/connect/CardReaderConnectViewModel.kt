@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -27,6 +28,7 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
@@ -79,8 +81,17 @@ class CardReaderConnectViewModel @Inject constructor(
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
     private val cardReaderManager: CardReaderManager,
+    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val supportedReaders: List<SpecificReader>
+        get() = if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
+            listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3)
+        } else {
+            listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2)
+        }
 
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
@@ -251,7 +262,7 @@ class CardReaderConnectViewModel @Inject constructor(
             cardReaderManager
                 .discoverReaders(
                     isSimulated = BuildConfig.USE_SIMULATED_READER,
-                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(SUPPORTED_READERS)
+                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(supportedReaders)
                 )
                 .flowOn(dispatchers.io)
                 .collect { discoveryEvent ->
@@ -509,9 +520,5 @@ class CardReaderConnectViewModel @Inject constructor(
         ) : ListItemViewState() {
             val connectLabel: UiString = UiStringRes(R.string.card_reader_connect_connect_button)
         }
-    }
-
-    companion object {
-        private val SUPPORTED_READERS = listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2)
     }
 }
