@@ -88,7 +88,7 @@ class SitePickerPresenter
     override fun fetchSitesFromAPI() {
         coroutineScope.launch {
             val startTime = System.currentTimeMillis()
-            val result = wooCommerceStore.fetchWooCommerceSites()
+            val result = withContext(Dispatchers.IO) { wooCommerceStore.fetchWooCommerceSites() }
             val duration = System.currentTimeMillis() - startTime
             view?.showLoadingView(false)
             if (result.isError) {
