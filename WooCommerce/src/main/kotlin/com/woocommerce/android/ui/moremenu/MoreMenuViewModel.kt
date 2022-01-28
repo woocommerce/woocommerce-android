@@ -15,15 +15,12 @@ class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
-
     private var _moreMenuViewState = MutableLiveData<MoreMenuViewState>()
     val moreMenuViewState: LiveData<MoreMenuViewState> = _moreMenuViewState
 
     init {
         _moreMenuViewState.value = MoreMenuViewState(
-            moreMenuItems = generateMenuButtons(),
-            onSwitchStoreSite = ::onSwitchStoreClick,
-            onSettingsClicked = ::onSettingsClick
+            moreMenuItems = generateMenuButtons()
         )
     }
 
@@ -50,11 +47,11 @@ class MoreMenuViewModel @Inject constructor(
         _moreMenuViewState.value = _moreMenuViewState.value?.copy(moreMenuItems = generateMenuButtons())
     }
 
-    private fun onSettingsClick() {
+    fun onSettingsClick() {
         triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
     }
 
-    private fun onSwitchStoreClick() {
+    fun onSwitchStoreClick() {
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
     }
 
@@ -72,8 +69,6 @@ class MoreMenuViewModel @Inject constructor(
 
     data class MoreMenuViewState(
         val moreMenuItems: List<MenuUiButton> = emptyList(),
-        val onSwitchStoreSite: () -> Unit = {},
-        val onSettingsClicked: () -> Unit = {}
     )
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {

@@ -39,8 +39,8 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
     val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
     MoreMenu(
         moreMenuState.moreMenuItems,
-        moreMenuState.onSwitchStoreSite,
-        moreMenuState.onSettingsClicked
+        viewModel::onSwitchStoreClick,
+        viewModel::onSettingsClick
     )
 }
 
