@@ -19,7 +19,6 @@ fun generateVariation(): ProductVariation {
         stockStatus = InStock,
         backorderStatus = Yes,
         stockQuantity = 1.0,
-        options = emptyList(),
         priceWithCurrency = null,
         isPurchasable = true,
         isVirtual = false,
