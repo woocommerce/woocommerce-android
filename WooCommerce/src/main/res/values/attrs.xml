@@ -187,6 +187,7 @@
     <declare-styleable name="OrderCreationSectionView">
         <attr name="header" format="string" />
         <attr name="keepAddButtons" format="boolean" />
+        <attr name="hasEditButton" format="boolean" />
     </declare-styleable>
 
 </resources>

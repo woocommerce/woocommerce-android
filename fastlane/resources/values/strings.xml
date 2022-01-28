@@ -127,6 +127,7 @@
     <string name="plus">Plus</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
+    <string name="create">Create</string>
 
     <!--
         Date/Time Labels
@@ -239,6 +240,7 @@
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
     <string name="dashboard_stats_revenue">Revenue</string>
+    <string name="dashboard_stats_conversion">Conversion</string>
     <string name="dashboard_state_no_data">No revenue this period</string>
     <string name="dashboard_stats_error">Error fetching data</string>
     <string name="dashboard_stats_error_content_description">Error image</string>
@@ -252,10 +254,10 @@
     <string name="dashboard_stats_updated_date_time">Updated on %s</string>
 
     <string name="dashboard_top_performers_title">Top performers</string>
-    <string name="dashboard_top_performers_description">Gain insights into how products are performing on your store</string>
-    <string name="dashboard_top_performers_total_spend">Total spend</string>
+    <string name="dashboard_top_performers_items_sold">Items Sold</string>
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
+    <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -345,6 +347,14 @@
     <string name="order_creation_add_discount">Add discount</string>
     <string name="order_creation_remove_product">Remove product from order</string>
     <string name="order_creation_variations_screen_title">Select variation</string>
+    <string name="order_creation_payment">Payment</string>
+    <string name="order_creation_payment_products_total">Products Total</string>
+    <string name="order_creation_payment_order_total">Order Total</string>
+    <string name="order_creation_payment_tax_hint">Total excluding taxes. Taxes will be automatically calculated based on your store settings.</string>
+    <string name="order_creation_loading_dialog_title">Creating your order</string>
+    <string name="order_creation_loading_dialog_message">Please wait…</string>
+    <string name="order_creation_failure_snackbar">Order creation failed</string>
+    <string name="order_creation_success_snackbar">Order created</string>
 
     <!--
         Order Filters
@@ -1047,16 +1057,16 @@
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Refresh after updating</string>
 
 
-    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
+    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_rejected_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
 
     <string name="card_reader_onboarding_account_under_review_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_under_review_hint">You\’ll be able to accept In-Person Payments as soon as we finish reviewing your account.</string>
 
     <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments.</string>
 
-    <string name="card_reader_onboarding_account_pending_requirements_header">Your WooCommerce Payments account has pending requirements</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_account_pending_requirements_dismiss_button" translatable="false">@string/dismiss</string>
 
@@ -1464,6 +1474,7 @@
     <string name="settings_card_reader">Manage card reader</string>
     <string name="settings_card_reader_payments">In-Person Payments</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
+    <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>

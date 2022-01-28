@@ -17,6 +17,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import java.util.Locale
 
 class MyStoreTopPerformersView @JvmOverloads constructor(
     ctx: Context,
@@ -27,14 +28,9 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
 
     private lateinit var selectedSite: SelectedSite
 
-    private var listener: MyStoreStatsListener? = null
     private var skeletonView = SkeletonView()
 
-    fun initView(
-        listener: MyStoreStatsListener,
-        selectedSite: SelectedSite
-    ) {
-        this.listener = listener
+    fun initView(selectedSite: SelectedSite) {
         this.selectedSite = selectedSite
 
         binding.topPerformersRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
@@ -47,10 +43,6 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         binding.topPerformersRecycler.isMotionEventSplittingEnabled = false
     }
 
-    fun removeListener() {
-        listener = null
-    }
-
     fun onDateGranularityChanged(granularity: StatsGranularity) {
         trackDateRangeChanged(granularity)
         binding.topPerformersRecycler.adapter = TopPerformersAdapter()
@@ -60,7 +52,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     private fun trackDateRangeChanged(granularity: StatsGranularity) {
         AnalyticsTracker.track(
             Stat.DASHBOARD_TOP_PERFORMERS_DATE,
-            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase())
+            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase(Locale.getDefault()))
         )
     }
 
@@ -77,7 +69,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     }
 
     private fun showEmptyView(show: Boolean) {
-        binding.topPerformersEmptyView.isVisible = show
+        binding.topPerformersEmptyViewLinearLayout.isVisible = show
     }
 
     fun updateView(topPerformers: List<TopPerformerProductUiModel>) {
@@ -87,7 +79,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
 
     fun showErrorView(show: Boolean) {
         showEmptyView(false)
-        binding.topPerformersEmptyView.isVisible = show
+        binding.topPerformersEmptyViewLinearLayout.isVisible = show
         binding.topPerformersRecycler.isVisible = !show
     }
 
@@ -125,8 +117,8 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         override fun onBindViewHolder(holder: TopPerformersViewHolder, position: Int) {
             val topPerformer = topPerformersList[position]
             holder.viewBinding.textProductName.text = topPerformer.name
-            holder.viewBinding.textProductOrders.text = topPerformer.timesOrdered
-            holder.viewBinding.textTotalSpend.text = topPerformer.totalSpend
+            holder.viewBinding.itemsSoldTextView.text = topPerformer.timesOrdered
+            holder.viewBinding.netSalesTextView.text = topPerformer.netSales
             holder.viewBinding.divider.isVisible = position < itemCount - 1
             GlideApp.with(holder.itemView.context)
                 .load(topPerformer.imageUrl)

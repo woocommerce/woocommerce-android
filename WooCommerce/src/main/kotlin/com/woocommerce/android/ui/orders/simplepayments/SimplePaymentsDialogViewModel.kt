@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -28,7 +29,8 @@ class SimplePaymentsDialogViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val orderMapper: OrderMapper
 ) : ScopedViewModel(savedState) {
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
@@ -74,7 +76,7 @@ class SimplePaymentsDialogViewModel @Inject constructor(
                         AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
                         mapOf(AnalyticsTracker.KEY_AMOUNT to viewState.currentPrice.toString())
                     )
-                    viewState = viewState.copy(createdOrder = result.order!!.toAppModel())
+                    viewState = viewState.copy(createdOrder = orderMapper.toAppModel(result.order!!))
                 }
             }
         }

@@ -6,11 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.Location
-import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.InputField
 import com.woocommerce.android.ui.common.OptionalField
@@ -242,9 +239,6 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onEditRequested(address: Address) {
-        val country = countries.first { it.code == address.country }
-        val state = dataStore.getStates(address.country).firstOrNull { it.code == address.state }?.toAppModel()
-            ?: Location(code = address.state, name = address.state)
         viewState = with(viewState) {
             copy(
                 nameField = nameField.copy(content = "${address.firstName} ${address.lastName}"),
@@ -253,8 +247,8 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 address1Field = address1Field.copy(content = address.address1),
                 address2Field = address2Field.copy(content = address.address2),
                 cityField = cityField.copy(content = address.city),
-                stateField = stateField.copy(location = state),
-                countryField = countryField.copy(location = country)
+                stateField = stateField.copy(location = address.state.asLocation()),
+                countryField = countryField.copy(location = address.country)
             )
         }
     }
@@ -350,8 +344,8 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             phoneField = PhoneField(args.address.phone, args.requiresPhoneNumber, args.addressType),
             cityField = RequiredField(args.address.city),
             zipField = RequiredField(args.address.postcode),
-            stateField = LocationField(Location(code = args.address.state, name = args.address.state)),
-            countryField = LocationField(Location(code = args.address.country, name = ""), isRequired = true)
+            stateField = LocationField(args.address.state.asLocation()),
+            countryField = LocationField(args.address.country, isRequired = true)
         )
 
         @IgnoredOnParcel
@@ -397,8 +391,8 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 address1 = address1Field.content,
                 address2 = address2Field.content,
                 city = cityField.content,
-                state = stateField.location.code,
-                country = countryField.location.code,
+                state = AmbiguousLocation.Defined(stateField.location),
+                country = countryField.location,
                 postcode = zipField.content,
                 email = ""
             )

@@ -1,2 +1,0 @@
-8.2 :
-Pour cette version, nous nous sommes concentrés sur l’apport d’améliorations et la résolution de bogues mineurs détectés par notre équipe. Mais rassurez-vous : il y aura des nouveautés intéressantes pour tout le monde en 2022 ! Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer. 💜

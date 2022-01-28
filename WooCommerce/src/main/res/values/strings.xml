@@ -134,6 +134,7 @@
     <string name="plus">Plus</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
+    <string name="create">Create</string>
 
     <!--
         Date/Time Labels
@@ -246,6 +247,7 @@
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
     <string name="dashboard_stats_revenue">Revenue</string>
+    <string name="dashboard_stats_conversion">Conversion</string>
     <string name="dashboard_state_no_data">No revenue this period</string>
     <string name="dashboard_stats_error">Error fetching data</string>
     <string name="dashboard_stats_error_content_description">Error image</string>
@@ -259,10 +261,10 @@
     <string name="dashboard_stats_updated_date_time">Updated on %s</string>
 
     <string name="dashboard_top_performers_title">Top performers</string>
-    <string name="dashboard_top_performers_description">Gain insights into how products are performing on your store</string>
-    <string name="dashboard_top_performers_total_spend">Total spend</string>
+    <string name="dashboard_top_performers_items_sold">Items Sold</string>
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
+    <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -355,8 +357,13 @@
     <string name="order_creation_payment">Payment</string>
     <string name="order_creation_payment_products_total">Products Total</string>
     <string name="order_creation_payment_order_total">Order Total</string>
-    <string name="order_creation_payment_tax_hint">Total excluding taxes. Taxes will be automatically calculated based on your store settings.</string>
-
+    <string name="order_creation_payment_tax_hint">Taxes will be automatically calculated based on your store settings.</string>
+    <string name="order_creation_loading_dialog_title">Creating your order</string>
+    <string name="order_creation_loading_dialog_message">Please wait…</string>
+    <string name="order_creation_failure_snackbar">Order creation failed</string>
+    <string name="order_creation_success_snackbar">Order created</string>
+    <string name="order_creation_payment_tax">Taxes</string>
+    <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
     <!--
         Order Filters
     -->

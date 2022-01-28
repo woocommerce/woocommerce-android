@@ -61,10 +61,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         localOrderId = ORDER_LOCAL_ID,
         localSiteId = ORDER_SITE_ID,
     )
-    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(
-        5,
-        ORDER_ID
-    )
+    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(5)
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderFulfillViewModel
 

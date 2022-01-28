@@ -1,19 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-12-20 19:54:03+0000
+Translation-Revision-Date: 2022-01-18 19:54:41+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="about_automattic_app_icon_description">أيقونة التطبيق</string>
+    <string name="about_automattic_back_icon_description">أيقونة الرجوع</string>
+    <string name="about_automattic_logo_description">شعار شركة Automattic</string>
+    <string name="about_automattic_version_label">الإصدار ⁦%1$s⁩</string>
+    <string name="about_automattic_wordpress">ووردبريس</string>
+    <string name="about_automattic_woocommerce">ووكومرس</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_pocketcasts">تطبيق Pocket Casts</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_dayone">مجلة Day One</string>
+    <string name="about_automattic_acknowledgements_item_title">شكر وتقدير</string>
+    <string name="about_automattic_source_code_item_title">التعليمات البرمجية المصدر</string>
+    <string name="about_automattic_california_privacy_notice_item_title">إشعار الخصوصية في كاليفورنيا</string>
+    <string name="about_automattic_privacy_policy_item_title">سياسة الخصوصية</string>
+    <string name="about_automattic_terms_of_service_item_title">بنود الخدمة</string>
+    <string name="about_automattic_work_with_us_item_subtitle">العمل من أي مكان</string>
+    <string name="about_automattic_work_with_us_item_title">العمل معنا</string>
+    <string name="about_automattic_family_item_title">عائلة Automattic</string>
+    <string name="about_automattic_legal_and_more_item_title">الشؤون القانونية والمزيد</string>
+    <string name="about_automattic_twitter_item_title">تويتر</string>
+    <string name="about_automattic_instagram_item_title">إنستغرام</string>
+    <string name="about_automattic_rate_us_item_title">قيّمنا</string>
+    <string name="about_automattic_share_with_friends_item_title">مشاركة مع الأصدقاء</string>
+    <string name="about_automattic_acknowledgements_page_title">شكر وتقدير</string>
+    <string name="about_automattic_legal_page_title">الشؤون القانونية والمزيد</string>
+    <string name="about_automattic_main_page_title">نبذة عن ⁦%1$s⁩</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">الاتصال بالدعم</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">تفعيل</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">تثبيت</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s Jetpack في مسؤول ووردبريس</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">تفعيل</string>
+    <string name="jetpack_install_progress_failed_alternative_install">تنصيب</string>
+    <string name="jetpack_install_progress_failed_alternative">بدلاً من ذلك، يمكنك %s Jetpack في مسؤول ووردبريس.</string>
+    <string name="jetpack_install_progress_failed_try">يُرجى المحاولة مرة أخرى.</string>
+    <string name="jetpack_install_progress_failed_reason_connection">جاري الاتصال</string>
+    <string name="jetpack_install_progress_failed_reason_activation">تفعيل</string>
+    <string name="jetpack_install_progress_failed_reason_installation">تثبيت</string>
+    <string name="jetpack_install_progress_failed_title">عذرًا، حدث خطأ ما في أثناء %s</string>
+    <string name="settings_about_recommend_app_message">مرحبًا! فيما يأتي رابط لتنزيل تطبيق WooCommerce. إنني استمتع به حقًا وأعتقد أنك قد تستمع به كذلك. %1$s</string>
+    <string name="settings_about_recommend_app_subject">ووكومرس</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">تحديث Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">لقد أوشكت على الانتهاء! يرجى الانتهاء من إعداد Stripe لبدء قبول المدفوعات الحالية بالبطاقة.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">إنهاء إعداد Stripe على مسؤول مخزنك</string>
+    <string name="order_refunds_refund_fees">استرداد الرسوم</string>
+    <string name="order_refunds_fees_refund">استرداد الرسوم</string>
+    <string name="order_creation_variations_screen_title">تحديد التنوع</string>
+    <string name="order_creation_remove_product">إزالة منتج من الطلب</string>
+    <string name="order_creation_add_discount">إضافة خصم</string>
+    <string name="order_creation_product_details_title">المنتج</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">إضافة عنوان شحن مختلف</string>
+    <string name="order_creation_product_instock">متوفر في المخزون</string>
+    <string name="order_creation_product_stock_quantity">%s متوفر في المخزون</string>
+    <string name="order_creation_new_customer">العميل الجديد</string>
+    <string name="order_creation_add_products">إضافة منتج</string>
+    <string name="order_creation_products">المنتجات</string>
+    <string name="order_creation_add_customer">إضافة عميل</string>
+    <string name="order_creation_customer">زبون</string>
+    <string name="simple_payments_cash_dlg_button">وسم كمدفوع</string>
+    <string name="simple_payments_cash_dlg_message">سيقوم هذا بإنشاء طلبك ووسمه كمدفوع إذا تلقيت المدفوعات خارج WooCommerce</string>
+    <string name="simple_payments_cash_dlg_title">هل تريد الوسم كمدفوع؟</string>
+    <string name="simple_payments_choose_method">اختيار طريقة الدفع الخاصة بك</string>
+    <string name="simple_payments_tax_message">يتم حساب الضرائب تلقائيًا بناءً على عنوان مخزنك</string>
+    <string name="simple_payments_tax_with_percent">الضرائب (%s%%)</string>
+    <string name="simple_payments_take_payment_button">تحصيل الدفع (%s)</string>
+    <string name="simple_payments_charge_taxes">دفع الضرائب</string>
+    <string name="simple_payments_custom_amount">مبلغ مخصص</string>
+    <string name="simple_payments_edit_email_hint">إدخال البريد الإلكتروني</string>
+    <string name="simple_payments_title">عملية دفع بسيطة</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="cash">الأموال النقدية</string>
+    <string name="card">بطاقة</string>
+    <string name="plus">زائد</string>
+    <string name="minus">ناقص</string>
+    <string name="tax">الضرائب</string>
+    <string name="email">البريد الإلكتروني</string>
     <string name="order_creation_add_customer_note">إضافة ملاحظة</string>
     <string name="order_creation_customer_note">ملحوظة العميل</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">التنشيط بعد التحديث</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">تم تثبيت إصدار قديم من إضافة بوابة دفع WooCommerce Stripe على مخزنك. يرجى تحديثه لقبول المدفوعات الشخصية.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">تحديث بوابة دفع WooCommerce Stripe</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">تجديد</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">لقد أوشكت على الانتهاء! يرجى الانتهاء من إعداد بوابة دفع WooCommerce Stripe لبدء قبول المدفوعات الشخصية.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">الانتهاء من إعداد بوابة دفع WooCommerce Stripe في مسؤول مخزنك</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">التنشيط بعد التحديث</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">تم تثبيت إصدار قديم من إضافة بوابة WooCommerce Stripe على مخزنك. يرجى تحديثه لقبول المدفوعات الشخصية.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">تجديد</string>
     <string name="card_reader_payment_failed_unknown">تم رفض عملية الدفع لسبب غير معروف</string>
     <string name="card_reader_payment_failed_test_mode_live_card">تم استخدام بطاقة مباشرة على موقع في وضع الاختبار</string>
     <string name="card_reader_payment_failed_test_card">غير مسموح ببطاقات اختبار النظام للدفع</string>

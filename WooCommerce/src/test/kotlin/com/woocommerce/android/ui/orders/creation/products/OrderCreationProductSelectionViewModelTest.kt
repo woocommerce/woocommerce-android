@@ -2,11 +2,14 @@ package com.woocommerce.android.ui.orders.creation.products
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.orders.creation.OrderCreationNavigationTarget.ShowProductVariations
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductList
+import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithDrafts
+import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithNonPurchasable
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductListWithVariations
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -115,7 +118,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when searching for products, then apply the expected result`() = testBlocking {
-        var actualProductList = emptyList<Product>()
+        var actualProductList: List<Product>? = null
         startSut()
         sut.productListData.observeForever {
             actualProductList = it
@@ -127,7 +130,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when loading more products with search active, then apply the expected result`() = testBlocking {
-        var actualProductList = emptyList<Product>()
+        var actualProductList: List<Product>? = null
         val loadMoreSearchResponse = listOf(generateProduct(666))
         whenever(productListRepository.searchProductList(SEARCH_QUERY, true))
             .thenReturn(loadMoreSearchResponse)
@@ -150,7 +153,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     @Test
     fun `when onSearchOpened is called, then product list should be empty and search should be active`() =
         testBlocking {
-            var actualProductList = emptyList<Product>()
+            var actualProductList: List<Product>? = null
             var actualSearchState: Boolean? = null
             startSut()
             sut.productListData.observeForever {
@@ -169,7 +172,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     @Test
     fun `when onSearchClosed is called, then product full list should be loaded and search should be inactive`() =
         testBlocking {
-            var actualProductList = emptyList<Product>()
+            var actualProductList: List<Product>? = null
             var actualSearchState: Boolean? = null
             var actualQueryString: String? = null
             startSut()
@@ -192,7 +195,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     @Test
     fun `when onSearchQueryCleared is called, then product list and search query should be empty`() =
         testBlocking {
-            var actualProductList = emptyList<Product>()
+            var actualProductList: List<Product>? = null
             startSut()
             sut.productListData.observeForever {
                 actualProductList = it
@@ -203,6 +206,36 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
             assertThat(sut.currentQuery).isEmpty()
             assertThat(actualProductList).isEmpty()
         }
+
+    @Test
+    fun `when loading products, then filter non-published products out`() = testBlocking {
+        var actualProductList: List<Product>? = null
+        val completeProductList = generateProductListWithDrafts()
+        val filteredProductList = completeProductList
+            .filter { it.status == PUBLISH }
+        whenever(productListRepository.fetchProductList()).thenReturn(completeProductList)
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        sut.loadProductList()
+        assertThat(actualProductList).isEqualTo(filteredProductList)
+    }
+
+    @Test
+    fun `when loading products, then filter non-purchasable products out`() = testBlocking {
+        var actualProductList: List<Product>? = null
+        val completeProductList = generateProductListWithNonPurchasable()
+        val filteredProductList = completeProductList
+            .filter { it.isPurchasable }
+        whenever(productListRepository.fetchProductList()).thenReturn(completeProductList)
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        sut.loadProductList()
+        assertThat(actualProductList).isEqualTo(filteredProductList)
+    }
 
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(

@@ -36,13 +36,15 @@ class OrderCreationSectionView @JvmOverloads constructor(
         }
 
     var keepAddButtons: Boolean = false
+    var hasEditButton: Boolean = true
 
     init {
         attrs?.let {
             context.obtainStyledAttributes(attrs, R.styleable.OrderCreationSectionView, defStyleAttr, 0)
                 .use { a ->
                     header = a.getString(R.styleable.OrderCreationSectionView_header).orEmpty()
-                    keepAddButtons = a.getBoolean(R.styleable.OrderCreationSectionView_keepAddButtons, false)
+                    keepAddButtons = a.getBoolean(R.styleable.OrderCreationSectionView_keepAddButtons, keepAddButtons)
+                    hasEditButton = a.getBoolean(R.styleable.OrderCreationSectionView_hasEditButton, hasEditButton)
                 }
         }
     }
@@ -64,7 +66,7 @@ class OrderCreationSectionView @JvmOverloads constructor(
     }
 
     private fun updateContent(content: View?) {
-        binding.editButton.isVisible = content != null
+        binding.editButton.isVisible = content != null && hasEditButton
         binding.contentLayout.isVisible = content != null
         binding.contentLayout.removeAllViews()
         content?.let {

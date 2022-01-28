@@ -88,6 +88,7 @@ object ProductHelper {
             crossSellProductIds = listOf(),
             upsellProductIds = listOf(),
             downloads = listOf(),
+            isPurchasable = false
         )
     }
 }

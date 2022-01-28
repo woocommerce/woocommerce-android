@@ -2,122 +2,158 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/stats_header_linearlayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/major_100"
-    android:baselineAligned="false"
     android:gravity="center_horizontal"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/visitors_layout"
-        android:layout_width="match_parent"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/statsDateTextView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="@color/color_on_surface_medium"
+        tools:text="Thursday, Sep 10" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/visitors_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/dashboard_stats_visitors"
-            android:textAppearance="?attr/textAppearanceCaption"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Visitors" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/totalRevenueTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        android:textAppearance="?attr/textAppearanceHeadline4"
+        tools:text="$3,678.65" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/visitors_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textAppearance="?attr/textAppearanceHeadline5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/visitors_label"
-            tools:text="400" />
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/empty_visitor_stats_group"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="gone"
-            app:constraint_referenced_ids="empty_visitor_stats_indicator, jetpack_icon" />
-
-        <View
-            android:id="@+id/empty_visitor_stats_indicator"
-            android:layout_width="@dimen/major_200"
-            android:layout_height="@dimen/minor_100"
-            android:layout_gravity="center"
-            android:background="@color/skeleton_color"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/jetpack_icon" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/jetpack_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/minor_50"
-            android:src="@drawable/ic_jetpack_logo"
-            app:layout_constraintStart_toEndOf="@id/empty_visitor_stats_indicator"
-            app:layout_constraintTop_toBottomOf="@id/visitors_label" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dashboard_stats_revenue"
+        android:textAppearance="?attr/textAppearanceCaption"
+        android:textColor="@color/color_on_surface_high" />
 
     <LinearLayout
-        android:id="@+id/orders_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_marginTop="@dimen/major_100"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/orders_label"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/orders_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="@string/dashboard_stats_orders"
-            android:textAppearance="?attr/textAppearanceCaption"
-            tools:text="Orders" />
+            android:orientation="vertical">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/orders_value"
-            android:layout_width="wrap_content"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ordersValueTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                tools:text="10" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ordersLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dashboard_stats_orders"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="@color/color_on_surface_high" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textAppearance="?attr/textAppearanceHeadline5"
-            tools:text="10" />
+            android:layout_weight="1">
 
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/visitorsValueTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/visitorsLabelTextview"
+                tools:text="1567" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/visitorsLabelTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dashboard_stats_visitors"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="@color/color_on_surface_high"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/emptyVisitorsStatsGroup"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                app:constraint_referenced_ids="emptyVisitorStatsIndicator, jetpackIconImageView" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/jetpackIconImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_jetpack_logo"
+                app:layout_constraintBottom_toTopOf="@id/emptyVisitorStatsIndicator"
+                app:layout_constraintStart_toEndOf="@id/emptyVisitorStatsIndicator" />
+
+            <View
+                android:id="@+id/emptyVisitorStatsIndicator"
+                android:layout_width="@dimen/major_200"
+                android:layout_height="@dimen/minor_100"
+                android:background="@color/skeleton_color"
+                android:layout_marginBottom="@dimen/minor_100"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/visitorsLabelTextview" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/conversionValueTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/conversionLabelTextView"
+                tools:text="4.5%" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/conversionLabelTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dashboard_stats_conversion"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="@color/color_on_surface_high"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <View
+                android:id="@+id/emptyConversionRateIndicator"
+                android:layout_width="@dimen/major_200"
+                android:layout_height="@dimen/minor_100"
+                android:background="@color/skeleton_color"
+                android:layout_marginBottom="@dimen/minor_100"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/conversionLabelTextView" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/revenue_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/revenue_label"
-            android:textAppearance="?attr/textAppearanceCaption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/dashboard_stats_revenue"/>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/revenue_value"
-            android:textAppearance="?attr/textAppearanceHeadline5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            tools:text="$1.6k"/>
-
-    </LinearLayout>
-
 </LinearLayout>

@@ -13,29 +13,19 @@
             android:id="@+id/action_orderCreationFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerNoteFragment"
-            app:destination="@id/orderCreationCustomerNoteFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/orderCreationCustomerNoteFragment" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationProductSelectionFragment"
-            app:destination="@id/orderCreationProductSelectionFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/orderCreationProductSelectionFragment" />
 
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
-            app:destination="@id/orderCreationCustomerFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/orderCreationCustomerFragment" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationProductDetailsFragment"
             app:destination="@id/orderCreationProductDetailsFragment"
@@ -43,6 +33,18 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right"/>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderDetailFragment"
+            app:destination="@id/nav_graph_orders"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"
+            app:popUpTo="@id/orders">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+        </action>
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -57,7 +59,7 @@
     </dialog>
     <fragment
         android:id="@+id/orderCreationCustomerNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.notes.OrderCreationCustomerNoteFragment"
         android:label="OrderCreationCustomerNoteFragment"
         tools:layout="@layout/fragment_edit_customer_order_note" />
     <fragment
@@ -80,11 +82,7 @@
         tools:layout="@layout/fragment_base_edit_address">
         <action
             android:id="@+id/action_search_filter_fragment"
-            app:destination="@id/searchFilterFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/searchFilterFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFilterFragment"
@@ -108,7 +106,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationProductDetailsFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationProductDetailsFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductDetailsFragment"
         android:label="OrderCreationProductDetailsFragment"
         tools:layout="@layout/fragment_order_creation_product_details">
         <argument
