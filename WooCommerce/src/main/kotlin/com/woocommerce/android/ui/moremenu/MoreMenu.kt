@@ -25,10 +25,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.woocommerce.android.R
 import com.woocommerce.android.R.color
+import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
@@ -74,7 +75,7 @@ fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSetting
                 onClick = { onSettingsClick() },
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_more_screen_settings),
+                    painter = painterResource(id = drawable.ic_more_screen_settings),
                     contentDescription = stringResource(id = string.settings),
                     tint = Color.Unspecified
                 )
@@ -142,4 +143,17 @@ private fun MoreMenuButton(
             )
         }
     }
+}
+
+@ExperimentalFoundationApi
+@Preview
+@Composable
+@Suppress("FunctionNaming")
+fun MoreMenuPreview() {
+    val buttons = listOf(
+        MenuUiButton(string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
+        MenuUiButton(string.more_menu_button_store, drawable.ic_more_menu_store),
+        MenuUiButton(string.more_menu_button_reviews, drawable.ic_more_menu_reviews)
+    )
+    MoreMenu(uiButtons = buttons, {}, {})
 }
