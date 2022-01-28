@@ -29,8 +29,8 @@ enum class FeatureFlag {
             PAYMENTS_STRIPE_EXTENSION -> false
             ORDER_FILTERS,
             SIMPLE_PAYMENT_I2,
-            ANALYTICS_HUB -> PackageUtils.isDebugBuild()
-            IN_PERSON_PAYMENTS_CANADA -> false
+            ANALYTICS_HUB,
+            IN_PERSON_PAYMENTS_CANADA -> PackageUtils.isDebugBuild()
         }
     }
 }
