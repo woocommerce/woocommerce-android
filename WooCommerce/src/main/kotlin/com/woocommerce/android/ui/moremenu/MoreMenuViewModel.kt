@@ -1,47 +1,61 @@
 package com.woocommerce.android.ui.moremenu
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.*
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.reviews.ReviewListRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val reviewListRepository: ReviewListRepository
 ) : ScopedViewModel(savedState) {
     private var _moreMenuViewState = MutableLiveData<MoreMenuViewState>()
     val moreMenuViewState: LiveData<MoreMenuViewState> = _moreMenuViewState
 
     init {
-        _moreMenuViewState.value = MoreMenuViewState(
-            moreMenuItems = generateMenuButtons()
-        )
+        _moreMenuViewState.value = MoreMenuViewState(moreMenuItems = generateMenuButtons())
+        getUnseenReviewsCount()
     }
 
-    private fun generateMenuButtons(): List<MenuUiButton> =
+    private fun generateMenuButtons(unreadReviewsCount: Int = 0): List<MenuUiButton> =
         listOf(
             MenuUiButton(
-                R.string.more_menu_button_woo_admin,
-                R.drawable.ic_more_menu_wp_admin,
-                ::onViewAdminButtonClick
+                text = R.string.more_menu_button_woo_admin,
+                icon = R.drawable.ic_more_menu_wp_admin,
+                onClick = ::onViewAdminButtonClick
             ),
             MenuUiButton(
-                R.string.more_menu_button_store,
-                R.drawable.ic_more_menu_store,
-                ::onViewStoreButtonClick
+                text = R.string.more_menu_button_store,
+                icon = R.drawable.ic_more_menu_store,
+                onClick = ::onViewStoreButtonClick
             ),
             MenuUiButton(
-                R.string.more_menu_button_reviews,
-                R.drawable.ic_more_menu_reviews,
-                ::onReviewsButtonClick
+                text = R.string.more_menu_button_reviews,
+                icon = R.drawable.ic_more_menu_reviews,
+                badgeCount = unreadReviewsCount,
+                onClick = ::onReviewsButtonClick
             )
         )
+
+    private fun getUnseenReviewsCount() {
+        viewModelScope.launch {
+            val unreadReviewsCount = reviewListRepository.getCachedProductReviews()
+                .filter { it.read == false }
+                .count()
+            _moreMenuViewState.value = _moreMenuViewState.value?.copy(
+                moreMenuItems = generateMenuButtons(unreadReviewsCount)
+            )
+        }
+    }
 
     fun handleStoreSwitch() {
         _moreMenuViewState.value = _moreMenuViewState.value?.copy(moreMenuItems = generateMenuButtons())
