@@ -99,7 +99,11 @@ data class ProductVariation(
         } ?: false
     }
 
-    override fun compareTo(other: ProductVariation): Int = menuOrder.compareTo(other.menuOrder)
+    override fun compareTo(other: ProductVariation): Int {
+        val menuOrdering = menuOrder.compareTo(other.menuOrder)
+        if (menuOrdering != 0) return menuOrdering
+        return getName().compareTo(other.getName())
+    }
 
     override fun hashCode(): Int {
         return super.hashCode()
