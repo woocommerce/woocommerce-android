@@ -197,6 +197,7 @@ data class Order(
         val compound: Boolean,
         val taxTotal: String,
         val shippingTaxTotal: String,
+        val ratePercent: Float
     ) : Parcelable
 
     fun getBillingName(defaultValue: String): String {
