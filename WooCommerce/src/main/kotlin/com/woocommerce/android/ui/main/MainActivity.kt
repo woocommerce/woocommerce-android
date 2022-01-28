@@ -189,7 +189,6 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        presenter.takeView(this)
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
             showLoginScreen()
@@ -202,6 +201,8 @@ class MainActivity :
         toolbar = binding.toolbar.toolbar
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
+
+        presenter.takeView(this)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
