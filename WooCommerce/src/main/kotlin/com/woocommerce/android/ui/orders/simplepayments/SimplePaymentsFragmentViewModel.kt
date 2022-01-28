@@ -33,12 +33,12 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
             customerNote = viewState.customerNote
         )
 
-    // determine the tax rate from the first tax line item
+    // determine the tax rate from the first tax line item if it exists
     val orderTaxRate
-        get() = if (order.taxLines.isEmpty()) {
-            EMPTY_TAX_RATE
-        } else {
+        get() = if (order.taxLines.isNotEmpty()) {
             order.taxLines[0].taxTotal
+        } else {
+            EMPTY_TAX_RATE
         }
 
     init {
