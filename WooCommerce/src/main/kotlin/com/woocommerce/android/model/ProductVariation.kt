@@ -10,6 +10,7 @@ import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation.Option
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -27,7 +28,7 @@ data class ProductVariation(
     val remoteProductId: Long,
     val remoteVariationId: Long,
     val sku: String,
-    val image: Product.Image?,
+    val image: Image?,
     val price: BigDecimal?,
     val regularPrice: BigDecimal?,
     val salePrice: BigDecimal?,
@@ -47,6 +48,7 @@ data class ProductVariation(
     val isVisible: Boolean,
     val shippingClass: String,
     val shippingClassId: Long,
+    val menuOrder: Int,
     val attributes: Array<VariantOption>,
     override val length: Float,
     override val width: Float,
@@ -140,6 +142,7 @@ data class ProductVariation(
             it.status = if (isVisible) PUBLISH.value else PRIVATE.value
             it.shippingClass = shippingClass
             it.shippingClassId = shippingClassId.toInt()
+            it.menuOrder = menuOrder
             it.attributes = JsonArray().toString()
             attributes.takeIf { list -> list.isNotEmpty() }
                 ?.forEach { variant -> it.addVariant(variant.asSourceModel()) }
@@ -209,13 +212,14 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
             .filter { it.name != null && it.option != null }
             .map { Option(it.name!!, it.option!!) },
         isPurchasable = this.purchasable,
-        isDownloadable = this.downloadable,
         isVirtual = this.virtual,
+        isDownloadable = this.downloadable,
         isStockManaged = this.manageStock,
         description = this.description.fastStripHtml(),
         isVisible = ProductStatus.fromString(this.status) == PUBLISH,
         shippingClass = this.shippingClass,
         shippingClassId = this.shippingClassId.toLong(),
+        menuOrder = this.menuOrder,
         attributes = this.attributeList
             ?.map { VariantOption(it) }
             ?.toTypedArray()
