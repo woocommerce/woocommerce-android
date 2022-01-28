@@ -40,7 +40,7 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
     MoreMenu(
         moreMenuState.moreMenuItems,
         moreMenuState.onSwitchStoreSite,
-        moreMenuState.onSwitchStoreSite
+        moreMenuState.onSettingsClicked
     )
 }
 
