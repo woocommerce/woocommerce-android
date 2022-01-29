@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,6 +32,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag = mock()
+    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
 
     private val site = SiteModel()
 
@@ -44,6 +46,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             coroutinesTestRule.testDispatchers,
             networkStatus,
             stripeExtensionFeatureFlag,
+            inPersonPaymentsCanadaFeatureFlag,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
@@ -56,6 +59,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(buildWCPayPluginInfo())
         whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(false)
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
     }
 
     @Test
@@ -798,6 +802,26 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             anyLong(),
             eq(null)
         )
+    }
+
+    @Test
+    fun `given Canada flag true, when store is Canada, then STORE_COUNTRY_NOT_SUPPORTED not returned`() = testBlocking {
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.StoreCountryNotSupported::class.java)
+    }
+
+    @Test
+    fun `given Canada flag false, when store is Canada, then STORE_COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.StoreCountryNotSupported::class.java)
     }
 
     private fun buildPaymentAccountResult(

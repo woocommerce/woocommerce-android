@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
@@ -34,6 +35,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatu
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -49,6 +51,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
+    private var orderUpdateFailureSnackBar: Snackbar? = null
 
     private val bigDecimalFormatter by lazy {
         currencyFormatter.buildBigDecimalFormatter(
@@ -87,6 +90,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override fun onStop() {
         super.onStop()
         progressDialog?.dismiss()
+        orderUpdateFailureSnackBar?.dismiss()
     }
 
     private fun FragmentOrderCreationFormBinding.initView() {
@@ -111,7 +115,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         notesSection.setOnEditButtonClicked {
             viewModel.onCustomerNoteClicked()
         }
-
         customerSection.setAddButtons(
             listOf(
                 AddButton(
@@ -122,6 +125,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 )
             )
         )
+        customerSection.setOnEditButtonClicked {
+            viewModel.onCustomerClicked()
+        }
         productsSection.setAddButtons(
             listOf(
                 AddButton(
@@ -165,6 +171,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
                 createOrderMenuItem?.isVisible = it
             }
+            new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
+                binding.paymentSection.loadingProgress.isVisible = show
+            }
+            new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
+                showOrHideErrorSnackBar(show)
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
@@ -172,10 +184,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
-        bigDecimalFormatter(newOrderData.total).let { total ->
-            paymentSection.productsTotalValue.text = total
-            paymentSection.orderTotalValue.text = total
-        }
+        paymentSection.taxGroup.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
+        paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
+
+        paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
+        paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
+        paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
     }
 
     private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {
@@ -220,12 +234,17 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     @SuppressLint("SetTextI18n")
     private fun bindCustomerAddressSection(customerAddressSection: OrderCreationSectionView, order: Order) {
         customerAddressSection.setContentHorizontalPadding(R.dimen.minor_00)
-        order.takeIf { it.shippingAddress != Address.EMPTY }
+        order.takeIf { it.billingAddress != Address.EMPTY }
             ?.let {
                 val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
                 view.name.text = "${order.billingAddress.firstName} ${order.billingAddress.lastName}"
                 view.email.text = order.billingAddress.email
-                view.shippingAddressDetails.text = order.formatShippingInformationForDisplay()
+                view.shippingAddressDetails.text =
+                    if (order.shippingAddress != Address.EMPTY) {
+                        order.formatShippingInformationForDisplay()
+                    } else {
+                        order.formatBillingInformationForDisplay()
+                    }
                 view.billingAddressDetails.text = order.formatBillingInformationForDisplay()
                 view.customerInfoViewMoreButtonTitle.setOnClickListener {
                     view.changeState()
@@ -264,6 +283,27 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             getString(R.string.order_creation_loading_dialog_message)
         ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
         progressDialog?.isCancelable = false
+    }
+
+    @Suppress("MagicNumber")
+    private fun showOrHideErrorSnackBar(show: Boolean) {
+        if (show) {
+            val orderUpdateFailureSnackBar = orderUpdateFailureSnackBar ?: uiMessageResolver.getIndefiniteActionSnack(
+                message = getString(R.string.order_creation_price_calculation_failed),
+                actionText = getString(R.string.retry),
+                actionListener = { viewModel.onRetryPaymentsClicked() }
+            ).also {
+                orderUpdateFailureSnackBar = it
+            }
+
+            // If the snackbar was dismissed recently, a call to show will be ignore
+            val delay = if (orderUpdateFailureSnackBar.isShown) 500L else 0L
+            requireView().postDelayed({
+                orderUpdateFailureSnackBar.show()
+            }, delay)
+        } else {
+            orderUpdateFailureSnackBar?.dismiss()
+        }
     }
 
     private fun hideProgressDialog() {

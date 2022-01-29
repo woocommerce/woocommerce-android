@@ -47,28 +47,18 @@
             android:id="@+id/action_printShippingLabelFragment_to_shippingLabelPaperSizeSelectorDialog"
             app:destination="@id/shippingLabelPaperSizeSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_printShippingLabelFragment_to_printShippingLabelInfoFragment"
-            app:destination="@id/printShippingLabelInfoFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/printShippingLabelInfoFragment" />
         <action
             android:id="@+id/action_printShippingLabelFragment_to_labelFormatOptionsFragment"
-            app:destination="@id/shippingLabelFormatOptionsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/shippingLabelFormatOptionsFragment" />
         <action
             android:id="@+id/action_printShippingLabelFragment_to_printShippingLabelCustomsFormFragment"
             app:destination="@id/printShippingLabelCustomsFormFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/orderDetailFragment" />
     </fragment>
     <fragment
@@ -104,6 +94,8 @@
             android:id="@+id/action_editShippingLabelAddressFragment_to_shippingLabelAddressSuggestionFragment"
             app:destination="@id/shippingLabelAddressSuggestionFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
@@ -164,11 +156,7 @@
 
         <action
             android:id="@+id/action_refundDetailFragment_to_orderedAddonFragment"
-            app:destination="@id/orderedAddonFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/orderedAddonFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderDetailFragment"
@@ -183,39 +171,19 @@
             app:argType="long" />
         <action
             android:id="@+id/action_orderDetailFragment_to_addOrderNoteFragment"
-            app:destination="@id/addOrderNoteFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/addOrderNoteFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderFulfillFragment"
-            app:destination="@id/orderFulfillFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/orderFulfillFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderShippingLabelRefundFragment"
-            app:destination="@id/shippingLabelRefundFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/shippingLabelRefundFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_printShippingLabelFragment"
-            app:destination="@id/printShippingLabelFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/printShippingLabelFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_issue_refund"
-            app:destination="@id/nav_graph_refunds"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/nav_graph_refunds">
             <argument
                 android:name="orderId"
                 android:defaultValue="0L"
@@ -223,87 +191,59 @@
         </action>
         <action
             android:id="@+id/action_orderDetailFragment_to_refundDetailFragment"
-            app:destination="@id/refundDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/refundDetailFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_createShippingLabelFragment"
-            app:destination="@id/createShippingLabelFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/createShippingLabelFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderPaymentDialog"
             app:destination="@id/cardReaderPaymentDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderWelcomeDialog"
             app:destination="@id/cardReaderWelcomeDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderConnectDialog"
             app:destination="@id/cardReaderConnectDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_receiptPreviewFragment"
-            app:destination="@id/receiptPreviewFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/receiptPreviewFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_printingInstructionsFragment"
-            app:destination="@id/printingInstructionsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/printingInstructionsFragment"/>
         <action
             android:id="@+id/action_orderDetailFragment_to_printShippingLabelCustomsFormFragment"
-            app:destination="@id/printShippingLabelCustomsFormFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/printShippingLabelCustomsFormFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderedAddonFragment"
-            app:destination="@id/orderedAddonFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/orderedAddonFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_editCustomerOrderNoteFragment"
-            app:destination="@id/editCustomerOrderNoteFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/editCustomerOrderNoteFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_shippingAddressEditingFragment"
-            app:destination="@id/shippingAddressEditingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/shippingAddressEditingFragment"/>
         <action
             android:id="@+id/action_orderDetailFragment_to_billingAddressEditingFragment"
-            app:destination="@id/billingAddressEditingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/billingAddressEditingFragment" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -348,41 +288,43 @@
             android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelAddressFragment"
             app:destination="@id/editShippingLabelAddressFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_shippingLabelAddressSuggestionFragment"
             app:destination="@id/shippingLabelAddressSuggestionFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelPackagesFragment"
             app:destination="@id/editShippingLabelPackagesFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelPaymentFragment"
             app:destination="@id/editShippingLabelPaymentFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_shippingCarrierRatesFragment"
             app:destination="@id/shippingCarrierRatesFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_printShippingLabelFragment"
-            app:destination="@id/printShippingLabelFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/printShippingLabelFragment"/>
         <action
             android:id="@+id/action_createShippingLabelFragment_to_shippingCustomsFragment"
-            app:destination="@id/shippingCustomsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/shippingCustomsFragment" />
     </fragment>
     <fragment
         android:id="@+id/shippingLabelAddressSuggestionFragment"
@@ -419,11 +361,7 @@
             app:argType="boolean" />
         <action
             android:id="@+id/action_addOrderShipmentTrackingFragment_to_addOrderTrackingProviderListFragment"
-            app:destination="@id/addOrderTrackingProviderListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/addOrderTrackingProviderListFragment" />
     </fragment>
     <fragment
         android:id="@+id/editShippingLabelPackagesFragment"
@@ -438,21 +376,13 @@
             app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
         <action
             android:id="@+id/action_editShippingLabelPackagesFragment_to_shippingPackageSelectorFragment"
-            app:destination="@id/shippingPackageSelectorFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/shippingPackageSelectorFragment" />
         <action
             android:id="@+id/action_editShippingLabelPackagesFragment_to_moveShippingItemDialog"
             app:destination="@id/moveShippingItemDialog" />
         <action
             android:id="@+id/action_editShippingLabelPackagesFragment_to_shippingLabelCreatePackageFragment"
-            app:destination="@id/shippingLabelCreatePackageFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/shippingLabelCreatePackageFragment"/>
     </fragment>
     <fragment
         android:id="@+id/shippingPackageSelectorFragment"
@@ -511,11 +441,7 @@
         android:label="CardReaderWelcomeDialog">
         <action
             android:id="@+id/action_cardReaderWelcomeFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/cardReaderOnboardingFragment" />
     </dialog>
     <dialog
         android:id="@+id/cardReaderPaymentDialog"
@@ -537,19 +463,19 @@
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
             app:destination="@id/cardReaderTutorialDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
             app:destination="@id/cardReaderUpdateDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/cardReaderOnboardingFragment" />
     </dialog>
     <dialog
         android:id="@+id/cardReaderTutorialDialogFragment"
@@ -628,11 +554,7 @@
     </dialog>
     <action
         android:id="@+id/action_global_addOrderShipmentTrackingFragment"
-        app:destination="@id/addOrderShipmentTrackingFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/addOrderShipmentTrackingFragment" />
     <fragment
         android:id="@+id/orderedAddonFragment"
         android:name="com.woocommerce.android.ui.products.addons.order.OrderedAddonFragment"
@@ -671,11 +593,7 @@
         app:destination="@id/itemSelectorDialog" />
     <action
         android:id="@+id/action_search_filter_fragment"
-        app:destination="@id/searchFilterFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/searchFilterFragment" />
     <fragment
         android:id="@+id/searchFilterFragment"
         android:name="com.woocommerce.android.ui.searchfilter.SearchFilterFragment"
