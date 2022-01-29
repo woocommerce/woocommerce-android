@@ -40,6 +40,8 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
     val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
     MoreMenu(
         moreMenuState.moreMenuItems,
+        moreMenuState.siteName,
+        moreMenuState.siteUrl,
         viewModel::onSwitchStoreClick,
         viewModel::onSettingsClick
     )
@@ -48,7 +50,13 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
 @ExperimentalFoundationApi
 @Composable
 @Suppress("LongMethod", "FunctionNaming")
-fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSettingsClick: () -> Unit) {
+fun MoreMenu(
+    uiButtons: List<MenuUiButton>,
+    siteName: String,
+    siteUrl: String,
+    onSwitchStore: () -> Unit,
+    onSettingsClick: () -> Unit
+) {
     Column {
         Row(
             modifier = Modifier
@@ -57,8 +65,15 @@ fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSetting
         ) {
             Column(
                 modifier = Modifier
-                    .padding(10.dp)
+                    .padding(horizontal = 10.dp)
+                    .fillMaxWidth(fraction = 0.8f)
             ) {
+                Text(
+                    text = siteName
+                )
+                Text(
+                    text = siteUrl
+                )
                 Text(
                     text = stringResource(string.settings_switch_store),
                     color = colorResource(color.color_secondary),
@@ -155,5 +170,7 @@ fun MoreMenuPreview() {
         MenuUiButton(string.more_menu_button_store, drawable.ic_more_menu_store),
         MenuUiButton(string.more_menu_button_reviews, drawable.ic_more_menu_reviews)
     )
-    MoreMenu(uiButtons = buttons, {}, {})
+    val exampleSiteName = "Example Site"
+    val exampleSiteUrl = "woocommerce.com"
+    MoreMenu(uiButtons = buttons, exampleSiteName, exampleSiteUrl, {}, {})
 }

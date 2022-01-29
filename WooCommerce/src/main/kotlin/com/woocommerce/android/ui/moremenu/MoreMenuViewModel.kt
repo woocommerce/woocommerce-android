@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.moremenu
 
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -20,7 +21,9 @@ class MoreMenuViewModel @Inject constructor(
 
     init {
         _moreMenuViewState.value = MoreMenuViewState(
-            moreMenuItems = generateMenuButtons()
+            moreMenuItems = generateMenuButtons(),
+            siteName = getSelectedSiteName(),
+            siteUrl = getSelectedSiteAbsoluteUrl()
         )
     }
 
@@ -44,8 +47,23 @@ class MoreMenuViewModel @Inject constructor(
         )
 
     fun handleStoreSwitch() {
-        _moreMenuViewState.value = _moreMenuViewState.value?.copy(moreMenuItems = generateMenuButtons())
+        _moreMenuViewState.value = _moreMenuViewState.value?.copy(
+            moreMenuItems = generateMenuButtons(),
+            siteName = getSelectedSiteName(),
+            siteUrl = getSelectedSiteAbsoluteUrl()
+        )
     }
+
+    private fun getSelectedSiteName(): String =
+        selectedSite.getIfExists()?.let { site ->
+            if (!site.displayName.isNullOrBlank()) {
+                site.displayName
+            } else {
+                site.name
+            }
+        } ?: ""
+
+    private fun getSelectedSiteAbsoluteUrl(): String = selectedSite.get().url.toUri().host ?: ""
 
     fun onSettingsClick() {
         triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
@@ -69,6 +87,8 @@ class MoreMenuViewModel @Inject constructor(
 
     data class MoreMenuViewState(
         val moreMenuItems: List<MenuUiButton> = emptyList(),
+        val siteName: String = "",
+        val siteUrl: String = ""
     )
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
