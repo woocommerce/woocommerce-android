@@ -24,6 +24,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,18 +66,24 @@ fun MoreMenu(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 10.dp)
+                    .padding(horizontal = 10.dp, vertical = 24.dp)
                     .fillMaxWidth(fraction = 0.8f)
             ) {
                 Text(
-                    text = siteName
+                    text = siteName,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
                 )
                 Text(
-                    text = siteUrl
+                    text = siteUrl,
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .padding(vertical = 4.dp)
                 )
                 Text(
                     text = stringResource(string.settings_switch_store),
                     color = colorResource(color.color_secondary),
+                    fontSize = 14.sp,
                     modifier = Modifier
                         .clickable(
                             enabled = true,
@@ -87,6 +94,8 @@ fun MoreMenu(
             }
 
             IconButton(
+                modifier = Modifier
+                    .padding(vertical = 12.dp),
                 onClick = { onSettingsClick() },
             ) {
                 Icon(
@@ -152,7 +161,7 @@ private fun MoreMenuButton(
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(
                 text = stringResource(id = text),
-                fontSize = 13.sp,
+                fontSize = 14.sp,
                 textAlign = TextAlign.Center,
                 color = colorResource(id = color.color_on_surface)
             )
