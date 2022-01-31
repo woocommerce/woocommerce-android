@@ -9,12 +9,14 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 @HiltViewModel
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    accountStore: AccountStore
 ) : ScopedViewModel(savedState) {
     private var _moreMenuViewState = MutableLiveData<MoreMenuViewState>()
     val moreMenuViewState: LiveData<MoreMenuViewState> = _moreMenuViewState
@@ -23,7 +25,8 @@ class MoreMenuViewModel @Inject constructor(
         _moreMenuViewState.value = MoreMenuViewState(
             moreMenuItems = generateMenuButtons(),
             siteName = getSelectedSiteName(),
-            siteUrl = getSelectedSiteAbsoluteUrl()
+            siteUrl = getSelectedSiteAbsoluteUrl(),
+            userAvatarUrl = accountStore.account.avatarUrl
         )
     }
 
@@ -88,7 +91,9 @@ class MoreMenuViewModel @Inject constructor(
     data class MoreMenuViewState(
         val moreMenuItems: List<MenuUiButton> = emptyList(),
         val siteName: String = "",
-        val siteUrl: String = ""
+        val siteUrl: String = "",
+        val userAvatarUrl: String = ""
+
     )
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {

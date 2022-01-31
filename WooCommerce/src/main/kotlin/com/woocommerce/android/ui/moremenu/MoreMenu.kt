@@ -29,6 +29,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
+import coil.transform.CircleCropTransformation
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
@@ -43,6 +45,7 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
         moreMenuState.moreMenuItems,
         moreMenuState.siteName,
         moreMenuState.siteUrl,
+        moreMenuState.userAvatarUrl,
         viewModel::onSwitchStoreClick,
         viewModel::onSettingsClick
     )
@@ -50,15 +53,17 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
 
 @ExperimentalFoundationApi
 @Composable
-@Suppress("LongMethod", "FunctionNaming")
+@Suppress("LongMethod", "FunctionNaming", "LongParameterList")
 fun MoreMenu(
     uiButtons: List<MenuUiButton>,
     siteName: String,
     siteUrl: String,
+    userAvatarUrl: String,
     onSwitchStore: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
     Column {
+        Spacer(modifier = Modifier.height(32.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -66,38 +71,56 @@ fun MoreMenu(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 10.dp, vertical = 24.dp)
+                    .padding(horizontal = 10.dp)
                     .fillMaxWidth(fraction = 0.8f)
             ) {
-                Text(
-                    text = siteName,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = colorResource(id = color.color_on_surface)
-                )
-                Text(
-                    text = siteUrl,
-                    fontSize = 14.sp,
-                    color = colorResource(id = color.color_on_surface),
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                )
-                Text(
-                    text = stringResource(string.settings_switch_store),
-                    color = colorResource(color.color_secondary),
-                    fontSize = 14.sp,
-                    modifier = Modifier
-                        .clickable(
-                            enabled = true,
-                            onClickLabel = stringResource(id = string.settings_switch_store),
-                            role = Role.Button
-                        ) { onSwitchStore() }
-                )
+                Row {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Image(
+                            painter = rememberImagePainter(
+                                data = userAvatarUrl,
+                                builder = {
+                                    transformations(CircleCropTransformation())
+                                    placeholder(drawable.img_gravatar_placeholder)
+                                }
+                            ),
+                            contentDescription = stringResource(id = string.more_menu_avatar),
+                            modifier = Modifier
+                                .size(48.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            text = siteName,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            color = colorResource(id = color.color_on_surface)
+                        )
+                        Text(
+                            text = siteUrl,
+                            fontSize = 14.sp,
+                            color = colorResource(id = color.color_on_surface),
+                            modifier = Modifier
+                                .padding(vertical = 4.dp)
+                        )
+                        Text(
+                            text = stringResource(string.settings_switch_store),
+                            color = colorResource(color.color_secondary),
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .clickable(
+                                    enabled = true,
+                                    onClickLabel = stringResource(id = string.settings_switch_store),
+                                    role = Role.Button
+                                ) { onSwitchStore() }
+                        )
+                    }
+                }
             }
 
             IconButton(
-                modifier = Modifier
-                    .padding(vertical = 12.dp),
                 onClick = { onSettingsClick() },
             ) {
                 Icon(
@@ -107,6 +130,7 @@ fun MoreMenu(
                 )
             }
         }
+        Spacer(modifier = Modifier.height(32.dp))
         LazyVerticalGrid(
             cells = Fixed(2),
             contentPadding = PaddingValues(ButtonDefaults.IconSpacing),
@@ -183,5 +207,6 @@ fun MoreMenuPreview() {
     )
     val exampleSiteName = "Example Site"
     val exampleSiteUrl = "woocommerce.com"
-    MoreMenu(uiButtons = buttons, exampleSiteName, exampleSiteUrl, {}, {})
+    val exampleUserAvatarUrl = "https://woocommerce.com/"
+    MoreMenu(uiButtons = buttons, exampleSiteName, exampleSiteUrl, exampleUserAvatarUrl, {}, {})
 }
