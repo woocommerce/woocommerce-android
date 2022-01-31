@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.AppUrls
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.*
 import com.woocommerce.android.extensions.exhaustive
@@ -36,8 +36,13 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                     is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport -> {
                         requireActivity().startHelpActivity(HelpActivity.Origin.CARD_READER_ONBOARDING)
                     }
-                    is CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore -> {
-                        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+                    is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView -> {
+                        findNavController().navigate(
+                            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+                        )
+                    }
+                    is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView -> {
+                        ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                     }
                     is CardReaderOnboardingViewModel.OnboardingEvent.Continue -> {
                         val inSettingsGraph = findNavController().graph.id == R.id.nav_graph_settings
