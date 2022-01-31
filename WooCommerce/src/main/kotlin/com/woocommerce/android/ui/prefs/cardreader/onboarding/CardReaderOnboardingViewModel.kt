@@ -204,14 +204,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun onWPAdminActionClicked() {
         val url = selectedSite.get().url + AppUrls.PLUGIN_MANAGEMENT_SUFFIX
-        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(
-                NavigateToUrlInWPComWebView(url)
-            )
+        if (selectedSite.get().isWPCom || selectedSite.get().isWPComAtomic) {
+            triggerEvent(NavigateToUrlInWPComWebView(url))
         } else {
-            triggerEvent(
-                NavigateToUrlInGenericWebView(url)
-            )
+            triggerEvent(NavigateToUrlInGenericWebView(url))
         }
     }
 
