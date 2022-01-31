@@ -33,7 +33,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
             customerNote = viewState.customerNote
         )
 
-    // returns the tax rate as a string from the first tax line item if it exists
+    // note it was decided that both Android and iOS would determine the tax rate by looking at the first tax line item
     val taxRatePercent
         get() = if (order.taxLines.isNotEmpty()) {
             order.taxLines[0].ratePercent.toString()
