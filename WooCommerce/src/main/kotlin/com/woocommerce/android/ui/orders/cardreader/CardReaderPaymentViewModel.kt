@@ -72,10 +72,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.*
-import javax.inject.Inject
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.*
+import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
 
