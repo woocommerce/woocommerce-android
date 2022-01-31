@@ -330,12 +330,12 @@ class OrderListFragment :
     }
 
     private fun showOrderFilters() {
-        findNavController().navigate(R.id.action_orderListFragment_to_orderFilterListFragment)
+        findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
     private fun showSimplePaymentsDialog() {
         AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
-        findNavController().navigate(R.id.action_orderListFragment_to_simplePayments)
+        findNavController().navigateSafely(R.id.action_orderListFragment_to_simplePayments)
     }
 
     private fun showOrderCreationBottomSheet() {
@@ -344,7 +344,7 @@ class OrderListFragment :
     }
 
     private fun openOrderCreationFragment() {
-        findNavController().navigate(R.id.action_orderListFragment_to_orderCreationFragment)
+        findNavController().navigateSafely(R.id.action_orderListFragment_to_orderCreationFragment)
     }
 
     private fun hideEmptyView() {

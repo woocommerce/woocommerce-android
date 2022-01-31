@@ -16,6 +16,7 @@ import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupport
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
@@ -48,7 +49,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                     is CardReaderOnboardingViewModel.OnboardingEvent.Continue -> {
                         val inSettingsGraph = findNavController().graph.id == R.id.nav_graph_settings
                         if (inSettingsGraph) {
-                            findNavController().navigate(
+                            findNavController().navigateSafely(
                                 R.id.action_cardReaderOnboardingFragment_to_cardReaderHubFragment
                             )
                         } else {
