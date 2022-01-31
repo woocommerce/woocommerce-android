@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
@@ -20,8 +23,11 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
 import org.wordpress.android.fluxc.model.user.WCUserRole
+
+private const val DUMMY_SITE_URL = "dummy-site.url"
 
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingViewModelTest : BaseUnitTest() {
@@ -32,6 +38,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         whenever(model.getUserRoles()).thenReturn(arrayListOf(WCUserRole.ADMINISTRATOR))
         onBlocking { it.fetchUserInfo() } doReturn model
     }
+    private val selectedSite: SelectedSite = mock()
 
     @Test
     fun `when screen initialized, then loading state shown`() {
@@ -97,7 +104,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore::class.java)
+                .isInstanceOf(OnboardingEvent.NavigateToUrlInGenericWebView::class.java)
         }
 
     @Test
@@ -110,7 +117,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedCountryState).onContactSupportActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport::class.java)
+                .isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -122,8 +129,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
 
-            assertThat(viewModel.event.value)
-                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore::class.java)
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
     @Test
@@ -135,8 +142,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onContactSupportActionClicked.invoke()
 
-            assertThat(viewModel.event.value)
-                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -314,8 +320,91 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given site is self-hosted, when user taps on Go To Plugin Admin, then generic webview shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
+                setIsWPComAtomic(false)
+                setIsWPCom(false)
+            })
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+                .openWPAdminActionClicked!!.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(
+                OnboardingEvent.NavigateToUrlInGenericWebView::class.java
+            )
+        }
+
+    @Test
+    fun `given site is wpcom, when user taps on Go To Plugin Admin, then wpcom webview shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
+                setIsWPCom(true)
+            })
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+                .openWPAdminActionClicked!!.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(
+                OnboardingEvent.NavigateToUrlInWPComWebView::class.java
+            )
+        }
+
+    @Test
+    fun `given site is atomic, when user taps on Go To Plugin Admin, then wpcom webview shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
+                setIsWPComAtomic(true)
+            })
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+                .openWPAdminActionClicked!!.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(
+                OnboardingEvent.NavigateToUrlInWPComWebView::class.java
+            )
+        }
+
+    @Test
+    fun `when user taps on Go To Plugin Admin, then app navigates to Plugin Admin url`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
+                url = DUMMY_SITE_URL
+            })
+
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+                .openWPAdminActionClicked!!.invoke()
+
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(DUMMY_SITE_URL + AppUrls.PLUGIN_MANAGEMENT_SUFFIX)
+        }
+
+    @Test
     fun `given user is NOT admin, when wcpay and stripe extension active, then open wpadmin button NOT shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(userEligibilityFetcher.fetchUserInfo()).thenAnswer {
+                val model = mock<WCUserModel>()
+                whenever(model.getUserRoles())
+                    .thenReturn(arrayListOf(WCUserRole.SHOP_MANAGER))
+                model
+            }
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.WcpayAndStripeActivated
             )
@@ -616,5 +705,11 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     // Tracking End
 
     private fun createVM() =
-        CardReaderOnboardingViewModel(SavedStateHandle(), onboardingChecker, tracker, userEligibilityFetcher)
+        CardReaderOnboardingViewModel(
+            SavedStateHandle(),
+            onboardingChecker,
+            tracker,
+            userEligibilityFetcher,
+            selectedSite
+        )
 }
