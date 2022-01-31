@@ -32,9 +32,10 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
             fullProductList = generateProductList()
             searchResult = listOf(generateProduct(333))
             on { getProductList() } doReturn fullProductList
-            onBlocking { fetchProductList() } doReturn fullProductList
+            onBlocking { fetchProductList(loadMore = false) } doReturn fullProductList
             onBlocking { searchProductList(SEARCH_QUERY) } doReturn searchResult
             on { lastSearchQuery } doReturn SEARCH_QUERY
+            on { canLoadMoreProducts } doReturn true
         }
     }
 
@@ -51,7 +52,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     fun `when loading products, then pass loadMore to fetch products from store`() = testBlocking {
         startSut()
         verify(productListRepository).fetchProductList(false)
-        sut.loadProductList(true)
+        sut.onLoadMoreRequest()
         verify(productListRepository).fetchProductList(true)
     }
 
@@ -59,11 +60,12 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     fun `when loading empty cached product list, then ignore result`() = testBlocking {
         var productListUpdateCalls = 0
         whenever(productListRepository.getProductList()).thenReturn(emptyList())
+        whenever(productListRepository.fetchProductList(loadMore = true)).thenReturn(fullProductList)
         startSut()
         sut.productListData.observeForever { productListUpdateCalls++ }
         // to avoid a race condition between starting the sut and subscribing the observer
         productListUpdateCalls = 0
-        sut.loadProductList()
+        sut.onLoadMoreRequest()
         assertThat(productListUpdateCalls).isEqualTo(1)
     }
 
@@ -105,14 +107,14 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     fun `when loaded product list differs from fetched products, then apply the result again`() = testBlocking {
         var productListUpdateCalls = 0
         whenever(productListRepository.getProductList()).thenReturn(generateProductList())
-        whenever(productListRepository.fetchProductList()).thenReturn(generateProductList())
+        whenever(productListRepository.fetchProductList(loadMore = true)).thenReturn(generateProductList())
         startSut()
         sut.productListData.observeForever {
             productListUpdateCalls++
         }
         // to avoid a race condition between starting the sut and subscribing the observer
         productListUpdateCalls = 0
-        sut.loadProductList()
+        sut.onLoadMoreRequest()
         assertThat(productListUpdateCalls).isEqualTo(2)
     }
 
@@ -145,7 +147,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         verify(productListRepository).searchProductList(SEARCH_QUERY)
         assertThat(actualProductList).isEqualTo(searchResult)
 
-        sut.loadProductList(loadMore = true)
+        sut.onLoadMoreRequest()
         verify(productListRepository).searchProductList(SEARCH_QUERY, true)
         assertThat(actualProductList).isEqualTo(loadMoreSearchResponse + searchResult)
     }
@@ -213,12 +215,12 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         val completeProductList = generateProductListWithDrafts()
         val filteredProductList = completeProductList
             .filter { it.status == PUBLISH }
-        whenever(productListRepository.fetchProductList()).thenReturn(completeProductList)
+        whenever(productListRepository.fetchProductList(loadMore = true)).thenReturn(completeProductList)
         startSut()
         sut.productListData.observeForever {
             actualProductList = it
         }
-        sut.loadProductList()
+        sut.onLoadMoreRequest()
         assertThat(actualProductList).isEqualTo(filteredProductList)
     }
 
@@ -228,12 +230,12 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         val completeProductList = generateProductListWithNonPurchasable()
         val filteredProductList = completeProductList
             .filter { it.isPurchasable }
-        whenever(productListRepository.fetchProductList()).thenReturn(completeProductList)
+        whenever(productListRepository.fetchProductList(loadMore = true)).thenReturn(completeProductList)
         startSut()
         sut.productListData.observeForever {
             actualProductList = it
         }
-        sut.loadProductList()
+        sut.onLoadMoreRequest()
         assertThat(actualProductList).isEqualTo(filteredProductList)
     }
 
