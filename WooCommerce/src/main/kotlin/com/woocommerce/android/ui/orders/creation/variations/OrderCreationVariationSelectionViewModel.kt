@@ -35,7 +35,10 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
 
     private val variationsListFlow = flow {
         // Let's start with the cached variations
-        emit(variationRepository.getProductVariationList(navArgs.productId).takeIf { it.isNotEmpty() })
+        val cachedVariations = withContext(dispatchers.io) {
+            variationRepository.getProductVariationList(navArgs.productId).takeIf { it.isNotEmpty() }
+        }
+        emit(cachedVariations)
         // Then fetch from network
         emit(variationRepository.fetchProductVariations(navArgs.productId))
 
