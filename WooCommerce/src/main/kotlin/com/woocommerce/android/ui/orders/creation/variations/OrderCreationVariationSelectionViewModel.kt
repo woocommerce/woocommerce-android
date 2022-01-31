@@ -26,8 +26,9 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
     private val loadMoreTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val parentProductFlow = flow {
+        val productId = navArgs.productId
         val parentProduct = withContext(dispatchers.io) {
-            productRepository.getProduct(navArgs.productId)
+            productRepository.getProduct(productId)
         }
         emit(parentProduct)
     }
