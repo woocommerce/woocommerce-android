@@ -72,11 +72,13 @@ fun MoreMenu(
                 Text(
                     text = siteName,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    color = colorResource(id = color.color_on_surface)
                 )
                 Text(
                     text = siteUrl,
                     fontSize = 14.sp,
+                    color = colorResource(id = color.color_on_surface),
                     modifier = Modifier
                         .padding(vertical = 4.dp)
                 )
