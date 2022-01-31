@@ -8,9 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_TAPPED
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
-import com.woocommerce.android.model.Notification
-import com.woocommerce.android.model.isOrderNotification
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.*
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -322,7 +320,7 @@ class NotificationMessageHandler @Inject constructor(
      * shared preference and posts an EventBus event so main activity can update the badge
      */
     private fun setHasUnseenReviewNotifs(hasUnseen: Boolean) {
-        if (appPrefsWrapper.hasUnseenReviews() != hasUnseen) {
+        if (appPrefsWrapper.hasUnreadReviews() != hasUnseen) {
             appPrefsWrapper.setHasUnseenReviews(hasUnseen)
             EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
         }

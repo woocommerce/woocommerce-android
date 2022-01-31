@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.moremenu
 import androidx.lifecycle.*
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.SelectedSite
@@ -60,12 +61,12 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun refreshUnreadReviewsCount() {
         viewModelScope.launch {
-            //First we set the cached value
+            // First we set the cached value
             _moreMenuViewState.value = _moreMenuViewState.value?.copy(
                 moreMenuItems = generateMenuButtons(getCachedUnreadReviewsCount())
             )
 
-            //Then we fetch from API the refreshed value and update the UI again
+            // Then we fetch from API the refreshed value and update the UI again
             when (reviewListRepository.fetchProductReviews(loadMore = false)) {
                 RequestResult.SUCCESS,
                 RequestResult.NO_ACTION_NEEDED -> {
@@ -85,7 +86,9 @@ class MoreMenuViewModel @Inject constructor(
             .count()
 
     fun handleStoreSwitch() {
-        _moreMenuViewState.value = _moreMenuViewState.value?.copy(generateMenuButtons(0))
+        _moreMenuViewState.value = _moreMenuViewState.value?.copy(
+            moreMenuItems = generateMenuButtons(0)
+        )
         refreshUnreadReviewsCount()
     }
 
@@ -114,6 +117,16 @@ class MoreMenuViewModel @Inject constructor(
     fun onEventMainThread(event: NotificationReceivedEvent) {
         if (event.channel == NotificationChannelType.REVIEW) {
             refreshUnreadReviewsCount()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
+        if (!event.hasUnseen) {
+            _moreMenuViewState.value = _moreMenuViewState.value?.copy(
+                moreMenuItems = generateMenuButtons(0)
+            )
         }
     }
 

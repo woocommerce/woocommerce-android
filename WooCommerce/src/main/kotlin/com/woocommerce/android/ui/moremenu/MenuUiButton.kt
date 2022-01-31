@@ -16,4 +16,3 @@ enum class MenuButtonType {
     VIEW_STORE,
     PRODUCT_REVIEWS
 }
-

@@ -44,7 +44,7 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun isOrderNotificationsChaChingEnabled() = AppPrefs.isOrderNotificationsChaChingEnabled()
 
-    fun hasUnseenReviews() = AppPrefs.getHasUnseenReviews()
+    fun hasUnreadReviews() = AppPrefs.getHasUnseenReviews()
 
     fun setHasUnseenReviews(hasUnseen: Boolean) {
         AppPrefs.setHasUnseenReviews(hasUnseen)
@@ -75,4 +75,6 @@ class AppPrefsWrapper @Inject constructor() {
     fun setV4StatsSupported(supported: Boolean) {
         AppPrefs.setV4StatsSupported(supported)
     }
+
+    fun isUserEligible(): Boolean = AppPrefs.isUserEligible()
 }

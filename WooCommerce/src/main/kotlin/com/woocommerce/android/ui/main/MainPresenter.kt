@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.main
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.NotificationReceivedEvent
@@ -34,7 +34,7 @@ class MainPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
-    private val appPrefs: AppPrefs,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val wcOrderStore: WCOrderStore,
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
@@ -67,6 +67,7 @@ class MainPresenter @Inject constructor(
                 }
             }
         }
+        mainView?.showMoreMenuBadge(appPrefsWrapper.hasUnreadReviews())
     }
 
     override fun dropView() {
@@ -116,7 +117,7 @@ class MainPresenter @Inject constructor(
         }
     }
 
-    override fun isUserEligible() = appPrefs.isUserEligible()
+    override fun isUserEligible() = appPrefsWrapper.isUserEligible()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

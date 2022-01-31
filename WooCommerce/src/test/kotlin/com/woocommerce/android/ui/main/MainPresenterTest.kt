@@ -1,15 +1,13 @@
 package com.woocommerce.android.ui.main
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -25,12 +23,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
-import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 @ExperimentalCoroutinesApi
 class MainPresenterTest : BaseUnitTest() {
@@ -46,7 +41,7 @@ class MainPresenterTest : BaseUnitTest() {
         on { exists() } doReturn true
     }
     private val productImageMap: ProductImageMap = mock()
-    private val appPrefs: AppPrefs = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
 
     private val wcOrderStore: WCOrderStore = mock {
         on { observeOrdersForSite(any(), any()) } doReturn emptyFlow()
@@ -69,7 +64,6 @@ class MainPresenterTest : BaseUnitTest() {
                 wcOrderStore
             )
         )
-        mainPresenter.takeView(mainContractView)
         actionCaptor = argumentCaptor()
     }
 
@@ -83,6 +77,7 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `Handles token from magic link correctly`() {
+        mainPresenter.takeView(mainContractView)
         // Storing a token with the presenter should trigger a dispatch
         mainPresenter.storeMagicLinkToken("a-token")
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
@@ -99,6 +94,8 @@ class MainPresenterTest : BaseUnitTest() {
     @Test
     fun `Triggers a selected site update after site info fetch`() = testBlocking {
         whenever(wooCommerceStore.fetchWooCommerceSites()).thenReturn(WooResult())
+
+        mainPresenter.takeView(mainContractView)
 
         // Magic link login requires the presenter to fetch account and site info
         // Trigger the beginning of magic link flow to put the presenter in 'magic link' mode
@@ -161,6 +158,24 @@ class MainPresenterTest : BaseUnitTest() {
         )
 
         verify(mainContractView).hideOrderBadge()
+    }
+
+    @Test
+    fun `Given unread reviews, when presenter is takes view, then show badge on more menu tab`() {
+        whenever(appPrefs.hasUnreadReviews()).thenReturn(true)
+
+        mainPresenter.takeView(mainContractView)
+
+        verify(mainContractView).showMoreMenuBadge(true)
+    }
+
+    @Test
+    fun `Given no unread reviews, when presenter is takes view, then show badge on more menu tab`() {
+        whenever(appPrefs.hasUnreadReviews()).thenReturn(false)
+
+        mainPresenter.takeView(mainContractView)
+
+        verify(mainContractView).showMoreMenuBadge(false)
     }
 
     @Test

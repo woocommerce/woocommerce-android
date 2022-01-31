@@ -145,7 +145,6 @@ private fun MoreMenuButton(
     }
 }
 
-
 @Composable
 fun MoreMenuBadge(badgeCount: Int) {
     if (badgeCount > 0) {
