@@ -3,16 +3,12 @@ package com.woocommerce.android.ui.orders.simplepayments
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
 class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
@@ -20,12 +16,8 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
         private const val ORDER_ID = 1L
         private const val REMOTE_ORDER_NUMBER = "100"
         private const val TAX_LINE_ID = 1L
-        private const val TAX_LINE_TAX_RATE = 0.10f
+        private const val TAX_LINE_TAX_RATE = 0.15f
     }
-
-    private val repository: OrderDetailRepository = mock()
-    private val resourceProvider: ResourceProvider = mock()
-    private val networkStatus: NetworkStatus = mock()
 
     private val testOrder: Order
         get() {
@@ -53,9 +45,13 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `show tax rate when charge taxes enabled`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `ensure tax rate is correct when change taxes is toggled`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         initViewModel()
+
         viewModel.onChargeTaxesChanged(chargeTaxes = true)
-        assertThat(viewModel.taxRatePercent).isEqualTo(TAX_LINE_TAX_RATE)
+        assertThat(viewModel.taxRatePercent).isEqualTo(TAX_LINE_TAX_RATE.toString())
+
+        viewModel.onChargeTaxesChanged(chargeTaxes = false)
+        assertThat(viewModel.taxRatePercent).isEqualTo(SimplePaymentsFragmentViewModel.EMPTY_TAX_RATE)
     }
 }

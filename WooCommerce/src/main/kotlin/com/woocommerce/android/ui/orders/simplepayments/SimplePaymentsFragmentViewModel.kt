@@ -36,7 +36,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     // note it was decided that both Android and iOS would determine the tax rate by looking at the
     // first tax line item (this may be revisited)
     val taxRatePercent
-        get() = if (order.taxLines.isNotEmpty()) {
+        get() = if (order.taxLines.isNotEmpty() && viewState.chargeTaxes) {
             order.taxLines[0].ratePercent.toString()
         } else {
             EMPTY_TAX_RATE
@@ -107,6 +107,6 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     object ShowTakePaymentScreen : MultiLiveEvent.Event()
 
     companion object {
-        private const val EMPTY_TAX_RATE = "0.00"
+        const val EMPTY_TAX_RATE = "0.00"
     }
 }
