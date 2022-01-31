@@ -103,8 +103,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
 
-            assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.NavigateToUrlInGenericWebView::class.java)
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
     @Test
