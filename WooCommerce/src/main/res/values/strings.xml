@@ -128,6 +128,7 @@
     <string name="card">Card</string>
     <string name="cash">Cash</string>
     <string name="create">Create</string>
+    <string name="exclusive_or">or</string>
 
     <!--
         Date/Time Labels
@@ -1073,6 +1074,15 @@
 
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">In-Person Payments isn\’t available in Test Mode. Please turn it off to continue.</string>
+
+    <string name="card_reader_onboarding_both_plugins_activated_header">Multiple payment providers detected</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">In-Person Payments will only work with one provider activated. Please deactivate one of these to continue:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">In-Person Payments will only work with one provider activated. Please contact a site administrator to deactivate one of these to continue:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe Gateway</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Go to Plugin Admin</string>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Refresh after updating</string>
+
 
     <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
     <string name="card_reader_onboarding_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
