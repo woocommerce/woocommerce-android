@@ -3,7 +3,11 @@ package com.woocommerce.android.cardreader.internal.payments.actions
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
+import com.stripe.stripeterminal.external.models.PaymentMethodType
 import com.woocommerce.android.cardreader.connection.CardReader
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus
@@ -35,17 +39,25 @@ internal class CreatePaymentActionTest {
     private val terminal: TerminalWrapper = mock()
     private val paymentUtils: PaymentUtils = PaymentUtils()
     private val intentParametersBuilder = mock<PaymentIntentParameters.Builder>()
+    private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
 
     @Before
     fun setUp() {
-        action = CreatePaymentAction(paymentIntentParametersFactory, terminal, paymentUtils, mock())
-        whenever(paymentIntentParametersFactory.createBuilder()).thenReturn(intentParametersBuilder)
+        action = CreatePaymentAction(
+            paymentIntentParametersFactory,
+            terminal,
+            paymentUtils,
+            mock(),
+            cardReaderConfigFactory
+        )
+        whenever(paymentIntentParametersFactory.createBuilder(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setAmount(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setCurrency(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setReceiptEmail(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setDescription(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setMetadata(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.build()).thenReturn(mock())
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA())
 
         whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
@@ -318,6 +330,35 @@ internal class CreatePaymentActionTest {
         }
     }
 
+    @Test
+    fun `given store in Canada, when creating payment intent, then payment method set`() = runBlockingTest {
+        val expectedPaymentMethod = listOf(
+            PaymentMethodType.CARD_PRESENT,
+            PaymentMethodType.INTERAC_PRESENT
+        )
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor("CA")).thenReturn(
+            CardReaderConfigForCanada()
+        )
+
+        action.createPaymentIntent(createPaymentInfo(countryCode = "CA")).toList()
+
+        verify(paymentIntentParametersFactory).createBuilder(expectedPaymentMethod)
+    }
+
+    @Test
+    fun `given store in US, when creating payment intent, then payment method set`() = runBlockingTest {
+        val expectedPaymentMethod = listOf(
+            PaymentMethodType.CARD_PRESENT
+        )
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor("US")).thenReturn(
+            CardReaderConfigForUSA()
+        )
+
+        action.createPaymentIntent(createPaymentInfo(countryCode = "US")).toList()
+
+        verify(paymentIntentParametersFactory).createBuilder(expectedPaymentMethod)
+    }
+
     private fun createPaymentInfo(
         paymentDescription: String = "",
         orderId: Long = 1L,
@@ -329,6 +370,7 @@ internal class CreatePaymentActionTest {
         siteUrl: String? = "",
         customerId: String? = null,
         orderKey: String? = null,
+        countryCode: String? = "US"
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -340,6 +382,7 @@ internal class CreatePaymentActionTest {
             storeName = storeName,
             siteUrl = siteUrl,
             customerId = customerId,
-            orderKey = orderKey
+            orderKey = orderKey,
+            countryCode = countryCode
         )
 }
