@@ -46,6 +46,7 @@ import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import java.math.BigDecimal
 import kotlin.test.assertEquals
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 private val DUMMY_TOTAL = BigDecimal(10.72)
 private const val DUMMY_CURRENCY_SYMBOL = "£"
@@ -67,6 +68,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val wooStore: WooCommerceStore = mock()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(Generic, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(Generic, mock(), "dummy msg")
@@ -94,7 +96,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             tracker = tracker,
             appPrefsWrapper = appPrefsWrapper,
             currencyFormatter = currencyFormatter,
-            errorMapper = errorMapper
+            errorMapper = errorMapper,
+            wooStore = wooStore,
+            dispatchers = coroutinesTestRule.testDispatchers
         )
 
         val mockedOrder = mock<Order>()
