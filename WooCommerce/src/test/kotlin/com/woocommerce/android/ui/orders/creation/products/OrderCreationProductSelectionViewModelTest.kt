@@ -239,6 +239,20 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
         assertThat(actualProductList).isEqualTo(filteredProductList)
     }
 
+    @Test
+    fun `when loading more products, then ignore the request if canLoadMoreProducts is false`() = testBlocking {
+        var actualProductList: List<Product>?
+        whenever(productListRepository.canLoadMoreProducts).thenReturn(false)
+        startSut()
+        sut.productListData.observeForever {
+            actualProductList = it
+        }
+        actualProductList = null
+        sut.onLoadMoreRequest()
+        assertThat(actualProductList).isNull()
+        verify(productListRepository, times(0)).fetchProductList(loadMore = true)
+    }
+
     private fun startSut() {
         sut = OrderCreationProductSelectionViewModel(
             SavedStateHandle(),
