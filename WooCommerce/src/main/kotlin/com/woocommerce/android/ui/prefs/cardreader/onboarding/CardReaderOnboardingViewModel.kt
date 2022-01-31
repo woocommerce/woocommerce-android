@@ -14,8 +14,8 @@ import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -298,7 +298,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 .UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_refresh_button)
 
             val openWPAdminLabel =
-                openWPAdminActionClicked?.let { UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_open_store_admin_label) }
+                openWPAdminActionClicked?.let {
+                    UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_open_store_admin_label)
+                }
         }
 
         class NoConnectionErrorState(

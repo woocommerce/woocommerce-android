@@ -304,7 +304,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
         }
 
-
     @Test
     fun `given user is admin, when wcpay and stripe extension active, then open wpadmin button shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -322,10 +321,14 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `given site is self-hosted, when user taps on Go To Plugin Admin, then generic webview shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
-                setIsWPComAtomic(false)
-                setIsWPCom(false)
-            })
+            whenever(selectedSite.get())
+                .thenReturn(
+                    SiteModel()
+                        .apply {
+                            setIsWPComAtomic(false)
+                            setIsWPCom(false)
+                        }
+                )
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.WcpayAndStripeActivated
             )
@@ -342,9 +345,12 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `given site is wpcom, when user taps on Go To Plugin Admin, then wpcom webview shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
-                setIsWPCom(true)
-            })
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel()
+                    .apply {
+                        setIsWPCom(true)
+                    }
+            )
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.WcpayAndStripeActivated
             )
@@ -361,9 +367,11 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `given site is atomic, when user taps on Go To Plugin Admin, then wpcom webview shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
-                setIsWPComAtomic(true)
-            })
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    setIsWPComAtomic(true)
+                }
+            )
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.WcpayAndStripeActivated
             )
@@ -380,9 +388,11 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `when user taps on Go To Plugin Admin, then app navigates to Plugin Admin url`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(selectedSite.get()).thenReturn(SiteModel().apply {
-                url = DUMMY_SITE_URL
-            })
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    url = DUMMY_SITE_URL
+                }
+            )
 
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.WcpayAndStripeActivated
