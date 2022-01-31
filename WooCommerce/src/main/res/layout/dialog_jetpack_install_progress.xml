@@ -88,7 +88,7 @@
                 android:layout_marginTop="@dimen/major_200"
                 app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
                 app:layout_constraintTop_toBottomOf="@id/jetpackProgressSubtitleTextView"
-                android:visibility="visible" />
+                android:visibility="invisible" />
 
             <ProgressBar
                 android:id="@+id/progress1"
@@ -200,66 +200,6 @@
                 android:layout_marginStart="@dimen/major_150"
                 app:layout_constraintStart_toEndOf="@id/icon4"
                 app:layout_constraintBottom_toBottomOf="@id/icon4" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/showStep1Group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="progress1, icon2, icon3, icon4" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/hideStep1Group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="icon1, progress2, progress3" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/showStep2Group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="icon1, progress2, icon3, icon4" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/hideStep2Group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="progress1, icon2, progress3" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/showStep3Group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="icon1, icon2, progress3, icon4" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/hideStep3Group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="progress1, progress2, icon3" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/showStep4Group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="icon1, icon2, icon3, icon4" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/hideStep4Group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="progress1, progress2, progress3" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/hideFailureGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="icon1, icon2, icon3, icon4, message1, message2, message3, message4, progress1, progress2, progress3" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/messagesGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="message1, message2, message3, message4" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/jetpackProgressStartGuideline"
