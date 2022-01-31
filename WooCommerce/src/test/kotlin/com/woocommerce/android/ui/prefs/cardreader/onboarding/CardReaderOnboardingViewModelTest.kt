@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
@@ -19,11 +20,18 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
+import org.wordpress.android.fluxc.model.user.WCUserModel
+import org.wordpress.android.fluxc.model.user.WCUserRole
 
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val userEligibilityFetcher: UserEligibilityFetcher = mock {
+        val model = mock<WCUserModel>()
+        whenever(model.getUserRoles()).thenReturn(arrayListOf(WCUserRole.ADMINISTRATOR))
+        onBlocking { it.fetchUserInfo() } doReturn model
+    }
 
     @Test
     fun `when screen initialized, then loading state shown`() {
@@ -288,6 +296,35 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 OnboardingViewState.WcPayAndStripeInstalledState::class.java
             )
+        }
+
+
+    @Test
+    fun `given user is admin, when wcpay and stripe extension active, then open wpadmin button shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
+            assertThat(viewStateData.openWPAdminLabel).isNotNull
+            assertThat(viewStateData.openWPAdminLabel).isNotNull
+        }
+
+    @Test
+    fun `given user is NOT admin, when wcpay and stripe extension active, then open wpadmin button NOT shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
+            assertThat(viewStateData.openWPAdminLabel).isNull()
+            assertThat(viewStateData.openWPAdminLabel).isNull()
         }
 
     @Test
@@ -578,5 +615,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
     // Tracking End
 
-    private fun createVM() = CardReaderOnboardingViewModel(SavedStateHandle(), onboardingChecker, tracker)
+    private fun createVM() =
+        CardReaderOnboardingViewModel(SavedStateHandle(), onboardingChecker, tracker, userEligibilityFetcher)
 }
