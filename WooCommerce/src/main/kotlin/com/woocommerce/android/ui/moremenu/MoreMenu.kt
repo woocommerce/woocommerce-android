@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
 @Composable
-@Suppress("FunctionNaming")
 fun MoreMenu(viewModel: MoreMenuViewModel) {
     val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
     MoreMenu(
@@ -43,7 +42,7 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
 
 @ExperimentalFoundationApi
 @Composable
-@Suppress("LongMethod", "FunctionNaming")
+@Suppress("LongMethod")
 fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSettingsClick: () -> Unit) {
     Column {
         Row(
@@ -95,7 +94,6 @@ fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSetting
 }
 
 @Composable
-@Suppress("FunctionNaming")
 private fun MoreMenuButton(
     @StringRes text: Int,
     @DrawableRes iconDrawable: Int,
@@ -172,7 +170,6 @@ fun MoreMenuBadge(badgeCount: Int) {
 @ExperimentalFoundationApi
 @Preview
 @Composable
-@Suppress("FunctionNaming")
 fun MoreMenuPreview() {
     val buttons = listOf(
         MenuUiButton(VIEW_ADMIN, string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
