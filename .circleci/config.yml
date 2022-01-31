@@ -70,7 +70,7 @@ jobs:
       - run:
           name: Build dependency diff report
           command: |
-            if [ "$CIRCLE_PULL_REQUEST" ]; then
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
               ./tools/dependency-tree-diff/dependency-tree-diff.sh
             fi
   Test:
