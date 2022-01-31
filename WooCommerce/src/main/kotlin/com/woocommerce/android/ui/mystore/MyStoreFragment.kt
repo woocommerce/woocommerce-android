@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
@@ -57,7 +57,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
     }
 
-    private val viewModel: MyStoreViewModel by activityViewModels()
+    private val viewModel: MyStoreViewModel by viewModels()
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -171,9 +171,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         viewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
             when (stats) {
                 is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
-                VisitorStatsViewState.Error -> binding.myStoreStats.showVisitorStatsError()
+                VisitorStatsViewState.Error -> {
+                    binding.jetpackBenefitsBanner.root.isVisible = false
+                    binding.myStoreStats.showVisitorStatsError()
+                }
                 is VisitorStatsViewState.JetpackCpConnected -> onJetpackCpConnected(stats.benefitsBanner)
-                is VisitorStatsViewState.PostJetpackInstalled -> binding.jetpackBenefitsBanner.root.isVisible = false
             }
         }
         viewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
@@ -325,6 +327,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     }
 
     private fun showVisitorStats(visitorStats: Map<String, Int>) {
+        binding.jetpackBenefitsBanner.root.isVisible = false
         binding.myStoreStats.showVisitorStats(visitorStats)
     }
 
