@@ -2,16 +2,13 @@ package com.woocommerce.android.ui.moremenu
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentMoreMenuBinding
 import com.woocommerce.android.extensions.navigateSafely
@@ -27,7 +24,6 @@ import javax.inject.Inject
 @ExperimentalFoundationApi
 class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var appPrefs: AppPrefsWrapper
 
     override fun getFragmentTitle() = getString(R.string.more_menu)
 
