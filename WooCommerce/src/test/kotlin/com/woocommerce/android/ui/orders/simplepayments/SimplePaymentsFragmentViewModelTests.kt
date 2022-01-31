@@ -27,7 +27,6 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
                         id = TAX_LINE_ID,
                         compound = false,
                         taxTotal = "10.00",
-                        shippingTaxTotal = "0.00",
                         ratePercent = TAX_LINE_TAX_RATE
                     )
                 )

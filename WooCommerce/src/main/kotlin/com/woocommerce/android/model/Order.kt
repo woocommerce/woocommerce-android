@@ -196,7 +196,6 @@ data class Order(
         val id: Long,
         val compound: Boolean,
         val taxTotal: String,
-        val shippingTaxTotal: String,
         val ratePercent: Float
     ) : Parcelable
 
