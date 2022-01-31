@@ -12,7 +12,10 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -32,6 +35,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val cardReaderChecker: CardReaderOnboardingChecker,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val userEligibilityFetcher: UserEligibilityFetcher,
+    private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
@@ -199,7 +203,16 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onWPAdminActionClicked() {
-        TODO("Not yet implemented")
+        val url = selectedSite.get().url + AppUrls.PLUGIN_MANAGEMENT_SUFFIX
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(
+                NavigateToUrlInWPComWebView(url)
+            )
+        } else {
+            triggerEvent(
+                NavigateToUrlInGenericWebView(url)
+            )
+        }
     }
 
     private fun onContactSupportClicked() {
@@ -208,7 +221,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun onLearnMoreClicked() {
         trackerWrapper.track(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
-        triggerEvent(OnboardingEvent.ViewLearnMore)
+        triggerEvent(NavigateToUrlInGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
     }
 
     private fun onSkipPendingRequirementsClicked() {
@@ -226,11 +239,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
         state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToMMMMdd() } ?: ""
 
     sealed class OnboardingEvent : Event() {
-        object ViewLearnMore : OnboardingEvent() {
-            const val url = AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
-        }
-
         object NavigateToSupport : Event()
+
+        data class NavigateToUrlInWPComWebView(val url: String) : Event()
+        data class NavigateToUrlInGenericWebView(val url: String) : Event()
 
         object Continue : Event()
     }
