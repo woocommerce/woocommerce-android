@@ -44,13 +44,17 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `ensure tax rate is correct when change taxes is toggled`() =
+    fun `when charging taxes is enabled, then tax rate is taken from first tax line`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             initViewModel()
-
             viewModel.onChargeTaxesChanged(chargeTaxes = true)
             assertThat(viewModel.taxRatePercent).isEqualTo(TAX_LINE_TAX_RATE.toString())
+        }
 
+    @Test
+    fun `when charging taxes is NOT enabled, then tax rate is zero`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            initViewModel()
             viewModel.onChargeTaxesChanged(chargeTaxes = false)
             assertThat(viewModel.taxRatePercent).isEqualTo(SimplePaymentsFragmentViewModel.EMPTY_TAX_RATE)
         }
