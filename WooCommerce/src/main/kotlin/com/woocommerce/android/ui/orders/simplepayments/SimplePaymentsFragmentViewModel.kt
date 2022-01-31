@@ -33,12 +33,24 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
             customerNote = viewState.customerNote
         )
 
-    // note it was decided that both Android and iOS would determine the tax rate by looking at the first tax line item
+    // note it was decided that both Android and iOS would determine the tax rate by looking at the
+    // first tax line item (this may be revisited)
     val taxRatePercent
         get() = if (order.taxLines.isNotEmpty()) {
             order.taxLines[0].ratePercent.toString()
         } else {
             EMPTY_TAX_RATE
+        }
+
+    // accessing feesLines[0] should be safe to do since a fee line is passed by FluxC when creating the order, but we
+    // check for an empty list here to simplify our test. note the single fee line is the only way to get the price w/o
+    // taxes, and FluxC sets the tax status to "taxable" so when the order is created core automatically sets the total
+    // tax if the store has taxes enabled.
+    val feeLineTotal
+        get() = if (order.feesLines.isNotEmpty()) {
+            order.feesLines[0].total
+        } else {
+            BigDecimal.ZERO
         }
 
     init {
@@ -48,24 +60,19 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     private fun updateViewState(chargeTaxes: Boolean) {
-        // accessing feesLines[0] is safe to do since a fee line is passed by FluxC when creating the order. also note
-        // the single fee line is the only way to get the price w/o taxes, and FluxC sets the tax status to "taxable"
-        // so when the order is created core automatically sets the total tax if the store has taxes enabled.
-        val feeLine = order.feesLines[0]
-
         if (chargeTaxes) {
             viewState = viewState.copy(
                 chargeTaxes = true,
-                orderSubtotal = feeLine.total,
+                orderSubtotal = feeLineTotal,
                 orderTotalTax = order.totalTax,
                 orderTotal = order.total
             )
         } else {
             viewState = viewState.copy(
                 chargeTaxes = false,
-                orderSubtotal = feeLine.total,
+                orderSubtotal = feeLineTotal,
                 orderTotalTax = BigDecimal.ZERO,
-                orderTotal = feeLine.total
+                orderTotal = feeLineTotal
             )
         }
     }
