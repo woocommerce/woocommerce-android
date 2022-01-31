@@ -44,7 +44,8 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `ensure tax rate is correct when change taxes is toggled`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `ensure tax rate is correct when change taxes is toggled`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
         initViewModel()
 
         viewModel.onChargeTaxesChanged(chargeTaxes = true)
