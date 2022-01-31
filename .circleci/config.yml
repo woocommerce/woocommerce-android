@@ -69,7 +69,10 @@ jobs:
       - copy-gradle-properties
       - run:
           name: Build dependency diff report
-          command: ./tools/dependency-tree-diff/dependency-tree-diff.sh
+          command: |
+            if [ "$CIRCLE_PULL_REQUEST" ]; then
+              ./tools/dependency-tree-diff/dependency-tree-diff.sh
+            fi
   Test:
     executor:
       name: android/default
