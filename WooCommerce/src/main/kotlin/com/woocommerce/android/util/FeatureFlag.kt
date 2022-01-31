@@ -14,7 +14,8 @@ enum class FeatureFlag {
     ORDER_FILTERS,
     ANALYTICS_HUB,
     PAYMENTS_STRIPE_EXTENSION,
-    SIMPLE_PAYMENT_I2;
+    SIMPLE_PAYMENT_I2,
+    IN_PERSON_PAYMENTS_CANADA;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -28,7 +29,8 @@ enum class FeatureFlag {
             PAYMENTS_STRIPE_EXTENSION -> false
             ORDER_FILTERS,
             SIMPLE_PAYMENT_I2,
-            ANALYTICS_HUB -> PackageUtils.isDebugBuild()
+            ANALYTICS_HUB,
+            IN_PERSON_PAYMENTS_CANADA -> PackageUtils.isDebugBuild()
         }
     }
 }
