@@ -60,7 +60,6 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
 
     private fun loadFullProductList(loadMore: Boolean) {
         loadingJob = launch {
-            println("loadFullProductList $loadMore")
             val cachedProducts = productListRepository.getProductList()
                 .takeIf { it.isNotEmpty() }
                 ?.apply {
@@ -70,7 +69,6 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
 
             productListRepository.fetchProductList(loadMore)
                 .takeIf {
-                    println("loadFullProductList ${it.size} vs ${cachedProducts?.size}")
                     it != cachedProducts
                 }
                 ?.let { productList.value = it }
