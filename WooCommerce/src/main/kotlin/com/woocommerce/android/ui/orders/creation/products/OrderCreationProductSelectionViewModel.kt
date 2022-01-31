@@ -40,12 +40,16 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         get() = viewState.query.orEmpty()
 
     private var searchJob: Job? = null
+    private var loadingJob: Job? = null
+
+    private val isLoading
+        get() = loadingJob?.isActive == true || searchJob?.isActive == true
 
     init {
         loadProductList()
     }
 
-    fun loadProductList(loadMore: Boolean = false) {
+    private fun loadProductList(loadMore: Boolean = false) {
         if (loadMore.not()) {
             viewState = viewState.copy(isSkeletonShown = true)
         }
@@ -55,7 +59,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     }
 
     private fun loadFullProductList(loadMore: Boolean) {
-        launch {
+        loadingJob = launch {
+            println("loadFullProductList $loadMore")
             val cachedProducts = productListRepository.getProductList()
                 .takeIf { it.isNotEmpty() }
                 ?.apply {
@@ -64,7 +69,10 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
                 }
 
             productListRepository.fetchProductList(loadMore)
-                .takeIf { it != cachedProducts }
+                .takeIf {
+                    println("loadFullProductList ${it.size} vs ${cachedProducts?.size}")
+                    it != cachedProducts
+                }
                 ?.let { productList.value = it }
 
             viewState = viewState.copy(isSkeletonShown = false)
@@ -121,6 +129,11 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         viewState = viewState.copy(
             query = null
         )
+    }
+
+    fun onLoadMoreRequest() {
+        if (isLoading || !productListRepository.canLoadMoreProducts) return
+        loadProductList(loadMore = true)
     }
 
     @Parcelize
