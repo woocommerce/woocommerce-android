@@ -333,6 +333,24 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when refresh clicked, then loading screen shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+            val viewModel = createVM()
+            val receivedViewStates = mutableListOf<OnboardingViewState>()
+            viewModel.viewStateData.observeForever {
+                receivedViewStates.add(it)
+            }
+
+            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+                .onRefreshAfterUpdatingClicked.invoke()
+
+            assertThat(receivedViewStates[1]).isEqualTo(LoadingState)
+        }
+
+    @Test
     fun `given site is self-hosted, when user taps on Go To Plugin Admin, then generic webview shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(selectedSite.get())
