@@ -46,4 +46,6 @@ object AppUrls {
     const val M2_MANUAL_CARD_READER = "https://stripe.com/files/docs/terminal/m2_product_sheet.pdf"
 
     const val PLAY_STORE_APP_PREFIX = "http://play.google.com/store/apps/details?id="
+
+    const val PLUGIN_MANAGEMENT_SUFFIX = "/wp-admin/plugins.php"
 }
