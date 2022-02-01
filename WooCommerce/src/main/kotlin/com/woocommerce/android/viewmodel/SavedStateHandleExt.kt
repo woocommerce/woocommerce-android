@@ -39,6 +39,8 @@ inline fun <reified Args : NavArgs> SavedStateHandle.navArgs(): Lazy<Args> {
 }
 
 /** cache the methods for [NavArgsLazy] to avoid depending on reflection for all invocations **/
+// TODO investigate the usage of [ConcurrentHashMap] to avoid getting ConcurrentModificationException when accessing
+// navigation arguments from multiple threads
 private val methodMap = ArrayMap<KClass<out NavArgs>, Method>()
 
 /**
