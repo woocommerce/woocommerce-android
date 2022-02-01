@@ -284,7 +284,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_plugin_two)
             val hintOrLabel: UiString = UiString.UiStringRes(R.string.exclusive_or)
 
-            val illustration = R.drawable.img_hot_air_balloon
+            val illustration = R.drawable.img_products_error
             val contactSupportLabel = UiString.UiStringRes(
                 stringRes = R.string.card_reader_onboarding_contact_support,
                 containsHtml = true
