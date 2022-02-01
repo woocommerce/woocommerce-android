@@ -2,8 +2,7 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.*
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.NotificationReceivedEvent
-import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.SelectedSite
@@ -137,6 +136,14 @@ class MoreMenuViewModel @Inject constructor(
     fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
         if (!event.hasUnseen) {
             resetUnreadReviewsBadgeCount()
+        }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: NotificationReadEvent) {
+        if (event.channel == NotificationChannelType.REVIEW) {
+            updateUnreadCountBy(-1)
         }
     }
 
