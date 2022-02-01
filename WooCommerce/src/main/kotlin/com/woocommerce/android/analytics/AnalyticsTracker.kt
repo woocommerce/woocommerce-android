@@ -195,6 +195,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_EDIT_FLOW_FAILED,
         ORDER_DETAIL_EDIT_FLOW_CANCELED,
 
+        // -- Order Creation
+        ORDER_ADD_NEW,
+        ORDER_PRODUCT_ADD,
+        ORDER_CUSTOMER_ADD_BILLING,
+        ORDER_CUSTOMER_ADD_SHIPPING,
+        ORDER_CREATE_BUTTON_TAPPED,
+        ORDER_CREATION_SUCCESS,
+        ORDER_CREATION_FAILED,
+
         // -- Refunds
         CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
         CREATE_ORDER_REFUND_TAB_CHANGED,
