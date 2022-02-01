@@ -17,6 +17,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.SiteModel
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -221,6 +222,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     fun `Notify UI that request to mark all as read was successful`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(true).whenever(networkStatus).isConnected()
+            doReturn(SiteModel()).whenever(selectedSite).get()
             doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).markAllProductReviewsAsRead()
 
             val markReadActions = mutableListOf<ActionStatus>()
