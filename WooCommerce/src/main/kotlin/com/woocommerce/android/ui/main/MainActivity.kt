@@ -184,6 +184,12 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Verify authenticated session
+        if (!presenter.userIsLoggedIn()) {
+            showLoginScreen()
+            return
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -194,17 +200,10 @@ class MainActivity :
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this@MainActivity)
-
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
-
         binding.bottomNav.init(navController, this)
 
         presenter.takeView(this)
-        // Verify authenticated session
-        if (!presenter.userIsLoggedIn()) {
-            showLoginScreen()
-            return
-        }
 
         // fetch the site list if the database has been downgraded - otherwise the site picker will be displayed,
         // which we don't want in this situation

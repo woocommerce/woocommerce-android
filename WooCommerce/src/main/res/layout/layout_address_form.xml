@@ -150,7 +150,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_100"
             android:hint="@string/order_detail_edit_address_zip"
-            android:inputType="phone"
+            android:inputType="textPostalAddress"
             android:saveEnabled="false"
             app:errorEnabled="true" />
 
