@@ -319,6 +319,20 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when wcpay and stripe extension active, then refresh screen button shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
+            assertThat(viewStateData.onRefreshAfterUpdatingClicked != null).isTrue
+            assertThat(viewStateData.refreshButtonLabel).isNotNull
+        }
+
+    @Test
     fun `given site is self-hosted, when user taps on Go To Plugin Admin, then generic webview shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(selectedSite.get())
