@@ -314,7 +314,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
-            assertThat(viewStateData.openWPAdminLabel).isNotNull
+            assertThat(viewStateData.openWPAdminActionClicked != null).isTrue
             assertThat(viewStateData.openWPAdminLabel).isNotNull
         }
 
@@ -423,7 +423,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
             assertThat(viewStateData.openWPAdminLabel).isNull()
-            assertThat(viewStateData.openWPAdminLabel).isNull()
+            assertThat(viewStateData.openWPAdminActionClicked == null).isTrue
         }
 
     @Test
