@@ -86,10 +86,13 @@ class MoreMenuViewModel @Inject constructor(
             .count()
 
     fun handleStoreSwitch() {
+        refreshUnreadReviewsCount()
+    }
+
+    private fun resetUnreadReviewsBadgeCount() {
         _moreMenuViewState.value = _moreMenuViewState.value?.copy(
             moreMenuItems = generateMenuButtons(0)
         )
-        refreshUnreadReviewsCount()
     }
 
     fun onSettingsClick() {
@@ -112,11 +115,20 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewReviewsEvent)
     }
 
+    private fun updateUnreadCountBy(updateByValue: Int) {
+        val currentCount = _moreMenuViewState.value?.moreMenuItems
+            ?.firstOrNull { it.type == PRODUCT_REVIEWS }
+            ?.badgeCount ?: 0
+        _moreMenuViewState.value = _moreMenuViewState.value?.copy(
+            moreMenuItems = generateMenuButtons(currentCount + updateByValue)
+        )
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: NotificationReceivedEvent) {
         if (event.channel == NotificationChannelType.REVIEW) {
-            refreshUnreadReviewsCount()
+            updateUnreadCountBy(1)
         }
     }
 
@@ -124,9 +136,7 @@ class MoreMenuViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
         if (!event.hasUnseen) {
-            _moreMenuViewState.value = _moreMenuViewState.value?.copy(
-                moreMenuItems = generateMenuButtons(0)
-            )
+            resetUnreadReviewsBadgeCount()
         }
     }
 
