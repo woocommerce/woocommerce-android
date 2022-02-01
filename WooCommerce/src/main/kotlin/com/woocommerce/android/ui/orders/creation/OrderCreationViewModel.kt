@@ -172,14 +172,17 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onCreateOrderClicked(order: Order) {
+        AnalyticsTracker.track(Stat.ORDER_CREATE_BUTTON_TAPPED)
         viewModelScope.launch {
             viewState = viewState.copy(isProgressDialogShown = true)
             orderCreationRepository.placeOrder(order).fold(
                 onSuccess = {
+                    AnalyticsTracker.track(Stat.ORDER_CREATION_SUCCESS)
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
                     triggerEvent(ShowCreatedOrder(it.id))
                 },
                 onFailure = {
+                    AnalyticsTracker.track(Stat.ORDER_CREATION_FAILED)
                     viewState = viewState.copy(isProgressDialogShown = false)
                     triggerEvent(ShowSnackbar(string.order_creation_failure_snackbar))
                 }
