@@ -16,9 +16,11 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,6 +29,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     private val viewModel: SimplePaymentsFragmentViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,6 +74,9 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
             viewLifecycleOwner,
             { event ->
                 when (event) {
+                    is MultiLiveEvent.Event.ShowSnackbar -> {
+                        uiMessageResolver.showSnack(event.message)
+                    }
                     is SimplePaymentsFragmentViewModel.ShowCustomerNoteEditor -> {
                         showCustomerNoteEditor()
                     }

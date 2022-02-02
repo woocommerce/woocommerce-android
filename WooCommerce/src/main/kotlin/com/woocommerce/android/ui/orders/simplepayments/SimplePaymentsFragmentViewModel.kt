@@ -2,21 +2,35 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import java.math.BigDecimal
 import javax.inject.Inject
 
 @OpenClassOnDebug
 @HiltViewModel
 class SimplePaymentsFragmentViewModel @Inject constructor(
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val dispatchers: CoroutineDispatchers,
+    private val simplePaymentsRepository: SimplePaymentsRepository,
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal final var viewState by viewStateLiveData
@@ -93,8 +107,39 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        // TODO nbradbury - save the order draft, waiting for FluxC changes to do that
-        triggerEvent(ShowTakePaymentScreen)
+        if (!networkStatus.isConnected()) {
+            AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+            return
+        }
+
+        launch {
+            simplePaymentsRepository.updateSimplePayment(
+                order.id,
+                viewState.customerNote
+            ).collectUpdate()
+        }
+    }
+
+    private suspend fun Flow<UpdateOrderResult>.collectUpdate() {
+        // TODO nbradbury tracks
+        collect { result ->
+            when (result) {
+                is OptimisticUpdateResult -> {
+                    withContext(Dispatchers.Main) {
+                        triggerEvent(ShowTakePaymentScreen)
+                    }
+                }
+                is UpdateOrderResult.RemoteUpdateResult -> {
+                    if (result.event.isError) {
+                        withContext(Dispatchers.Main) {
+                            // TODO nbradbury change string resource
+                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Parcelize
