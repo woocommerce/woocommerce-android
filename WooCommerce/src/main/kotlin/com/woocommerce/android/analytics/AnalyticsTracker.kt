@@ -790,10 +790,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PURCHASE_READY = "purchase_ready"
 
         const val KEY_FLOW = "flow"
-        const val VALUE_FLOW_CREATION = "creation"
-        const val VALUE_FLOW_EDITING = "editing"
         const val KEY_HAS_BILLING_DETAILS = "has_billing_details"
         const val KEY_HAS_SHIPPING_DETAILS = "has_shipping_details"
+        const val VALUE_FLOW_CREATION = "creation"
+        const val VALUE_FLOW_EDITING = "editing"
 
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"

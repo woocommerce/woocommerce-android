@@ -5,8 +5,15 @@ import androidx.lifecycle.*
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.*
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FROM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BILLING_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.extensions.runWithContext
@@ -194,7 +201,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onCreateOrderClicked(order: Order) {
-        AnalyticsTracker.track(Stat.ORDER_CREATE_BUTTON_TAPPED)
+        trackCreateOrderButtonClick()
         viewModelScope.launch {
             viewState = viewState.copy(isProgressDialogShown = true)
             orderCreationRepository.placeOrder(order).fold(
@@ -204,7 +211,7 @@ class OrderCreationViewModel @Inject constructor(
                     triggerEvent(ShowCreatedOrder(it.id))
                 },
                 onFailure = {
-                    AnalyticsTracker.track(Stat.ORDER_CREATION_FAILED)
+                    trackOrderCreationFailure(it)
                     viewState = viewState.copy(isProgressDialogShown = false)
                     triggerEvent(ShowSnackbar(string.order_creation_failure_snackbar))
                 }
@@ -235,6 +242,25 @@ class OrderCreationViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    private fun trackOrderCreationFailure(it: Throwable) {
+        AnalyticsTracker.track(Stat.ORDER_CREATION_FAILED,
+            mapOf(
+                KEY_ERROR_CONTEXT to it::class.java.simpleName,
+                KEY_ERROR_TYPE to it,
+                KEY_ERROR_DESC to it.message
+            ))
+    }
+
+    private fun trackCreateOrderButtonClick() {
+        AnalyticsTracker.track(Stat.ORDER_CREATE_BUTTON_TAPPED,
+            mapOf(
+                KEY_STATUS to _orderDraft.value.status,
+                KEY_PRODUCT_COUNT to products.value?.count(),
+                KEY_HAS_BILLING_DETAILS to _orderDraft.value.billingAddress.hasInfo(),
+                KEY_HAS_SHIPPING_DETAILS to _orderDraft.value.shippingAddress.hasInfo()
+            ))
     }
 
     @Parcelize
