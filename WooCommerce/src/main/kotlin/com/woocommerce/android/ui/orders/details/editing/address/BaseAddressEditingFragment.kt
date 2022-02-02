@@ -48,7 +48,7 @@ abstract class BaseAddressEditingFragment :
     val addressDraft
         get() = binding.form.run {
             val addressState =
-                addressViewModel.viewStateData.liveData.value!!.countryStatePairs.getValue(addressType).address
+                addressViewModel.viewStateData.liveData.value!!.countryStatePairs[addressType]?.address ?: Address.EMPTY
             Address(
                 firstName = firstName.text,
                 lastName = lastName.text,
@@ -174,7 +174,7 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            val newCountryStatePair = new.countryStatePairs.getValue(addressType)
+            val newCountryStatePair = new.countryStatePairs[addressType]
 
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
                 binding.progressBar.isVisible = it
@@ -182,7 +182,7 @@ abstract class BaseAddressEditingFragment :
                     updateStateViews()
                 }
             }
-            binding.form.update(newCountryStatePair)
+            newCountryStatePair?.let { binding.form.update(it) }
         }
 
         addressViewModel.event.observe(viewLifecycleOwner) { event ->
