@@ -726,6 +726,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ID = "id"
         const val KEY_ORDER_ID = "order_id"
         const val KEY_PRODUCT_ID = "product_id"
+        const val KEY_PRODUCT_COUNT = "product_count"
         const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
@@ -791,6 +792,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FLOW = "flow"
         const val VALUE_FLOW_CREATION = "creation"
         const val VALUE_FLOW_EDITING = "editing"
+        const val KEY_HAS_BILLING_DETAILS = "has_billing_details"
+        const val KEY_HAS_SHIPPING_DETAILS = "has_shipping_details"
 
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
