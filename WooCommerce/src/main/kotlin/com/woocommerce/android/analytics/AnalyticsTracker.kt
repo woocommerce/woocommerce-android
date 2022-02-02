@@ -198,8 +198,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Order Creation
         ORDER_ADD_NEW,
         ORDER_PRODUCT_ADD,
-        ORDER_CUSTOMER_ADD_BILLING,
-        ORDER_CUSTOMER_ADD_SHIPPING,
+        ORDER_CUSTOMER_ADD,
         ORDER_CREATE_BUTTON_TAPPED,
         ORDER_CREATION_SUCCESS,
         ORDER_CREATION_FAILED,
@@ -790,8 +789,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PURCHASE_READY = "purchase_ready"
 
         const val KEY_FLOW = "flow"
-        const val KEY_HAS_BILLING_DETAILS = "has_billing_details"
-        const val KEY_HAS_SHIPPING_DETAILS = "has_shipping_details"
+        const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"
+        const val KEY_HAS_CUSTOMER_DETAILS = "has_customer_details"
         const val VALUE_FLOW_CREATION = "creation"
         const val VALUE_FLOW_EDITING = "editing"
 

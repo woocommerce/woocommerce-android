@@ -12,8 +12,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FROM
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BILLING_DETAILS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUSTOMER_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DIFFERENT_SHIPPING_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
@@ -147,19 +147,11 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
-        if (billingAddress != _orderDraft.value.billingAddress) {
-            AnalyticsTracker.track(
-                Stat.ORDER_CUSTOMER_ADD_BILLING,
-                mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
-            )
-        }
-
-        if (shippingAddress != _orderDraft.value.shippingAddress) {
-            AnalyticsTracker.track(
-                Stat.ORDER_CUSTOMER_ADD_SHIPPING,
-                mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
-            )
-        }
+        val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
+        AnalyticsTracker.track(
+            Stat.ORDER_CUSTOMER_ADD,
+            mapOf(KEY_HAS_DIFFERENT_SHIPPING_DETAILS to hasDifferentShippingDetails)
+        )
 
         _orderDraft.update {
             it.copy(
@@ -265,8 +257,7 @@ class OrderCreationViewModel @Inject constructor(
             mapOf(
                 KEY_STATUS to _orderDraft.value.status,
                 KEY_PRODUCT_COUNT to products.value?.count(),
-                KEY_HAS_BILLING_DETAILS to _orderDraft.value.billingAddress.hasInfo(),
-                KEY_HAS_SHIPPING_DETAILS to _orderDraft.value.shippingAddress.hasInfo()
+                KEY_HAS_CUSTOMER_DETAILS to _orderDraft.value.billingAddress.hasInfo()
             )
         )
     }
