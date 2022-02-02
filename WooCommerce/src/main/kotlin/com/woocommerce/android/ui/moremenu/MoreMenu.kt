@@ -44,15 +44,15 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
 @Composable
 @Suppress("LongMethod", "FunctionNaming")
 fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSettingsClick: () -> Unit) {
-    Column {
+    Column(
+        modifier = Modifier.padding(10.dp)
+    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
-                modifier = Modifier
-                    .padding(10.dp)
+                modifier = Modifier.padding(12.dp)
             ) {
                 Text(
                     text = stringResource(string.settings_switch_store),
