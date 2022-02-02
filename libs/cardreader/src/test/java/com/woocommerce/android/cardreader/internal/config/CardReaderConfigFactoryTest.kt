@@ -18,7 +18,7 @@ class CardReaderConfigFactoryTest {
     @Test
     fun `given country code US, then US card reader config is returned`() {
         val countryCode = "US"
-        val expectedCardReaderConfig = CardReaderConfigForUSA()
+        val expectedCardReaderConfig = CardReaderConfigForUSA
 
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
 
@@ -28,7 +28,7 @@ class CardReaderConfigFactoryTest {
     @Test
     fun `given country code CA, then Canada card reader config is returned`() {
         val countryCode = "CA"
-        val expectedCardReaderConfig = CardReaderConfigForCanada()
+        val expectedCardReaderConfig = CardReaderConfigForCanada
 
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
 

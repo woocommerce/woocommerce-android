@@ -4,10 +4,10 @@ class CardReaderConfigFactory {
     fun getCardReaderConfigFor(countryCode: String?): CardReaderConfig {
         return when (countryCode) {
             "US" -> {
-                CardReaderConfigForUSA()
+                CardReaderConfigForUSA
             }
             "CA" -> {
-                CardReaderConfigForCanada()
+                CardReaderConfigForCanada
             }
             else -> {
                 throw IllegalStateException("Invalid country code")

@@ -1373,7 +1373,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
             val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders>()
-            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA())
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
 
             init()
@@ -1394,7 +1394,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
             val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders>()
-            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada())
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
 
             init()
@@ -1417,7 +1417,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         val savedState = CardReaderConnectDialogFragmentArgs(skipOnboarding = skipOnboarding).initSavedStateHandle()
         whenever(onboardingChecker.getOnboardingState()).thenReturn(onboardingState)
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA())
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
         return CardReaderConnectViewModel(
             savedState,

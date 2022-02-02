@@ -65,7 +65,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             .thenReturn(buildWCPayPluginInfo())
         whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(false)
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA())
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
     }
 
     @Test
@@ -824,7 +824,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     fun `given Canada flag false, when store is Canada, then STORE_COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada())
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
 
         val result = checker.getOnboardingState()
 
@@ -840,7 +840,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
             .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
         whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada())
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
 
         val result = checker.getOnboardingState()
 
@@ -855,7 +855,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             .thenReturn(buildWCPayPluginInfo(isActive = true))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
             .thenReturn(buildStripeExtensionPluginInfo(isActive = false))
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada())
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
 
         val result = checker.getOnboardingState()
 

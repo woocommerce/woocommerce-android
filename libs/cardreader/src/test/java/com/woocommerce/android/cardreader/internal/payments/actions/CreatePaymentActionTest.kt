@@ -57,7 +57,7 @@ internal class CreatePaymentActionTest {
         whenever(intentParametersBuilder.setDescription(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setMetadata(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.build()).thenReturn(mock())
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA())
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
 
         whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
@@ -337,7 +337,7 @@ internal class CreatePaymentActionTest {
             PaymentMethodType.INTERAC_PRESENT
         )
         whenever(cardReaderConfigFactory.getCardReaderConfigFor("CA")).thenReturn(
-            CardReaderConfigForCanada()
+            CardReaderConfigForCanada
         )
 
         action.createPaymentIntent(createPaymentInfo(countryCode = "CA")).toList()
@@ -351,7 +351,7 @@ internal class CreatePaymentActionTest {
             PaymentMethodType.CARD_PRESENT
         )
         whenever(cardReaderConfigFactory.getCardReaderConfigFor("US")).thenReturn(
-            CardReaderConfigForUSA()
+            CardReaderConfigForUSA
         )
 
         action.createPaymentIntent(createPaymentInfo(countryCode = "US")).toList()

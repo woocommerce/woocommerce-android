@@ -3,7 +3,7 @@ package com.woocommerce.android.cardreader.internal.config
 import com.stripe.stripeterminal.external.models.PaymentMethodType
 import com.woocommerce.android.cardreader.connection.SpecificReader
 
-class CardReaderConfigForUSA : CardReaderConfig {
+object CardReaderConfigForUSA : CardReaderConfig {
     override val currency: String
         get() = "USD"
     override val countryCode: String
