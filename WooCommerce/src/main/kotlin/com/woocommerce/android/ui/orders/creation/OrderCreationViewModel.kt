@@ -5,6 +5,8 @@ import androidx.lifecycle.*
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.*
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -102,7 +104,10 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
-        AnalyticsTracker.track(Stat.ORDER_PRODUCT_ADD)
+        AnalyticsTracker.track(
+            Stat.ORDER_PRODUCT_ADD,
+            mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
+        )
         val uniqueId = variationId ?: remoteProductId
         viewModelScope.launch {
             _orderDraft.value.items.toMutableList().apply {
@@ -121,11 +126,17 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
         if (billingAddress != _orderDraft.value.billingAddress) {
-            AnalyticsTracker.track(Stat.ORDER_CUSTOMER_ADD_BILLING)
+            AnalyticsTracker.track(
+                Stat.ORDER_CUSTOMER_ADD_BILLING,
+                mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
+            )
         }
 
         if (shippingAddress != _orderDraft.value.shippingAddress) {
-            AnalyticsTracker.track(Stat.ORDER_CUSTOMER_ADD_SHIPPING)
+            AnalyticsTracker.track(
+                Stat.ORDER_CUSTOMER_ADD_SHIPPING,
+                mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
+            )
         }
 
         _orderDraft.update {
