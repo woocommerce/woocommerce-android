@@ -77,6 +77,7 @@ class VariationRepository @Inject constructor(
     fun getProductVariationList(remoteProductId: Long): List<ProductVariation> {
         return productStore.getVariationsForProduct(selectedSite.get(), remoteProductId)
             .map { it.toAppModel() }
+            .sorted()
     }
 
     /**
