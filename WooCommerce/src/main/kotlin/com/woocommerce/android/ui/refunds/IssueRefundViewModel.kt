@@ -41,6 +41,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
+import com.woocommerce.android.extensions.exhaustive
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -75,6 +76,7 @@ class IssueRefundViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val gatewayStore: WCGatewayStore,
     private val refundStore: WCRefundStore,
+    private val paymentChargeRepository: PaymentChargeRepository,
     private val orderMapper: OrderMapper,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -722,7 +724,6 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onFeeLineSwitchChanged(isChecked: Boolean, itemId: Long) {
         val list = refundByItemsState.selectedFeeLines?.toMutableList()
-        val productsRefund = refundByItemsState.productsRefund
         if (list != null) {
             if (isChecked && !list.contains(itemId)) {
                 list += itemId
@@ -741,6 +742,20 @@ class IssueRefundViewModel @Inject constructor(
                 feesRefund = newFeesRefundTotal,
                 formattedFeesRefundTotal = formatCurrency(newFeesRefundTotal)
             )
+        }
+    }
+
+    fun loadCardDetails() {
+        val chargeId = order.chargeId
+        if (chargeId != null) {
+            launch {
+                when (paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
+                    PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> TODO()
+                    is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> TODO()
+                }.exhaustive
+            }
+        } else {
+
         }
     }
 
