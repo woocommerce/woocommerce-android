@@ -2,10 +2,7 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells.Fixed
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -20,9 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.*
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -109,7 +104,7 @@ private fun MoreMenuButton(
         onClick = onClick,
         contentPadding = PaddingValues(20.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = colorResource(id = color.color_surface)
+            backgroundColor = colorResource(id = color.more_menu_button_background)
         ),
         modifier = Modifier.height(190.dp),
         shape = RoundedCornerShape(10.dp)
@@ -124,7 +119,7 @@ private fun MoreMenuButton(
                 modifier = Modifier
                     .size(58.dp)
                     .clip(CircleShape)
-                    .background(colorResource(id = color.woo_gray_0))
+                    .background(colorResource(id = color.more_menu_button_icon_background))
             ) {
                 Image(
                     painter = painterResource(id = iconDrawable),
