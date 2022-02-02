@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.*
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
@@ -16,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -38,6 +41,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+
 @HiltViewModel
 class OrderCreationViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -245,22 +249,26 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     private fun trackOrderCreationFailure(it: Throwable) {
-        AnalyticsTracker.track(Stat.ORDER_CREATION_FAILED,
+        AnalyticsTracker.track(
+            Stat.ORDER_CREATION_FAILED,
             mapOf(
                 KEY_ERROR_CONTEXT to it::class.java.simpleName,
                 KEY_ERROR_TYPE to it,
                 KEY_ERROR_DESC to it.message
-            ))
+            )
+        )
     }
 
     private fun trackCreateOrderButtonClick() {
-        AnalyticsTracker.track(Stat.ORDER_CREATE_BUTTON_TAPPED,
+        AnalyticsTracker.track(
+            Stat.ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
                 KEY_STATUS to _orderDraft.value.status,
                 KEY_PRODUCT_COUNT to products.value?.count(),
                 KEY_HAS_BILLING_DETAILS to _orderDraft.value.billingAddress.hasInfo(),
                 KEY_HAS_SHIPPING_DETAILS to _orderDraft.value.shippingAddress.hasInfo()
-            ))
+            )
+        )
     }
 
     @Parcelize
@@ -274,7 +282,6 @@ class OrderCreationViewModel @Inject constructor(
         val canCreateOrder: Boolean = isOrderValidForCreation && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
     }
 }
-
 
 data class ProductUIModel(
     val item: Order.Item,
