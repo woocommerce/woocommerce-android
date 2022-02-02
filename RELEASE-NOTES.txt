@@ -2,7 +2,7 @@
 
 8.5
 -----
-
+- [***] Beta Feature: It's now possible to create Orders from the app. For now only including products, customer notes, shipping and billing addresses.
 
 8.4
 -----
