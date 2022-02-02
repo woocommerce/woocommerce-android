@@ -6,6 +6,8 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.*
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FROM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
@@ -29,7 +31,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
-
 @HiltViewModel
 class OrderCreationViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -87,13 +88,23 @@ class OrderCreationViewModel @Inject constructor(
         monitorOrderChanges()
     }
 
-    fun onOrderStatusChanged(status: Order.Status) = _orderDraft.update { it.copy(status = status) }
-
     fun onCustomerNoteEdited(newNote: String) = _orderDraft.update { it.copy(customerNote = newNote) }
 
     fun onIncreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, +1) }
 
     fun onDecreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, -1) }
+
+    fun onOrderStatusChanged(status: Order.Status) {
+        AnalyticsTracker.track(
+            Stat.ORDER_STATUS_CHANGE,
+            mapOf(
+                KEY_FROM to _orderDraft.value.status.value,
+                KEY_TO to status.value,
+                KEY_FLOW to VALUE_FLOW_CREATION
+            )
+        )
+        _orderDraft.update { it.copy(status = status) }
+    }
 
     fun onRemoveProduct(item: Order.Item) = _orderDraft.update {
         if (FeatureFlag.ORDER_CREATION_M2.isEnabled()) {
@@ -237,6 +248,7 @@ class OrderCreationViewModel @Inject constructor(
         val canCreateOrder: Boolean = isOrderValidForCreation && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
     }
 }
+
 
 data class ProductUIModel(
     val item: Order.Item,

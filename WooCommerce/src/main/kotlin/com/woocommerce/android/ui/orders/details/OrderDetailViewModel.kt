@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -347,7 +348,8 @@ final class OrderDetailViewModel @Inject constructor(
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_FROM to order.status.value,
-                AnalyticsTracker.KEY_TO to updateSource.newStatus
+                AnalyticsTracker.KEY_TO to updateSource.newStatus,
+                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_EDITING
             )
         )
 
