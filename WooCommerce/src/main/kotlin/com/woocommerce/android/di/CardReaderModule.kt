@@ -13,6 +13,7 @@ import com.woocommerce.android.util.CapturePaymentResponseMapper
 import com.woocommerce.android.util.WooLog
 import dagger.Module
 import dagger.Provides
+import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
@@ -93,5 +94,6 @@ class CardReaderModule {
     }
 
     @Provides
+    @Reusable
     fun provideCardReaderConfigFactory() = CardReaderConfigFactory()
 }
