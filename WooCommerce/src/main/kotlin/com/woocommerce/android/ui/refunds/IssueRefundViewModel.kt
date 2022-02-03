@@ -296,13 +296,8 @@ class IssueRefundViewModel @Inject constructor(
             } else {
                 paymentTitle = gateway.title.ifBlank { manualRefundMethod }
                 isManualRefund = false
-                loadCardDetails(paymentTitle)
+                loadCardDetails(paymentTitle, isManualRefund)
             }
-
-            refundSummaryState = refundSummaryState.copy(
-                refundMethod = paymentTitle,
-                isMethodDescriptionVisible = isManualRefund
-            )
         }
     }
 
@@ -757,24 +752,34 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    private fun loadCardDetails(refundMethod: String) {
+    private fun loadCardDetails(refundMethod: String, isManualRefund: Boolean) {
+        fun setDefaultSummaryState() {
+            refundSummaryState = refundSummaryState.copy(
+                refundMethod = refundMethod,
+                isMethodDescriptionVisible = isManualRefund
+            )
+        }
+
         val chargeId = order.chargeId
         if (chargeId != null) {
             launch {
-                when (val cardDetails = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
+                when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
                     is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
-                        fun buildRefundMethod(): String {
-                            val brand = cardDetails.brand.orEmpty().replaceFirstChar { it.uppercase() }
-                            val last4 = cardDetails.cardLast4.orEmpty()
-                            return "$refundMethod ($brand **** $last4)"
-                        }
                         refundSummaryState = refundSummaryState.copy(
-                            refundMethod = buildRefundMethod(),
+                            refundMethod = result.run {
+                                val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
+                                val last4 = result.cardLast4.orEmpty()
+                                "$refundMethod ($brand **** $last4)"
+                            }
                         )
                     }
-                    PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {}
+                    PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
+                        setDefaultSummaryState()
+                    }
                 }.exhaustive
             }
+        } else {
+            setDefaultSummaryState()
         }
     }
 

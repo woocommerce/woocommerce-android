@@ -449,6 +449,7 @@ object AppPrefs {
             completedStatus == CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
     }
 
+    @Throws(IllegalStateException::class)
     fun getPaymentPluginType(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): PluginType {
         return when (getCardReaderOnboardingCompletedStatus(localSiteId, remoteSiteId, selfHostedSiteId)) {
             CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY,
