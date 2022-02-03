@@ -284,7 +284,6 @@ class IssueRefundViewModel @Inject constructor(
         if (refundSummaryStateLiveData.hasInitialValue) {
             val manualRefundMethod = resourceProvider.getString(R.string.order_refunds_manual_refund)
             val paymentTitle: String
-            val isManualRefund: Boolean
 
             if (!order.paymentMethod.isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
                 paymentTitle = if (gateway.title.isNotBlank()) {
@@ -292,11 +291,10 @@ class IssueRefundViewModel @Inject constructor(
                 } else {
                     manualRefundMethod
                 }
-                isManualRefund = true
+                setSummaryStateMethodAndDescriptionVisibility(paymentTitle, true)
             } else {
                 paymentTitle = gateway.title.ifBlank { manualRefundMethod }
-                isManualRefund = false
-                loadCardDetails(paymentTitle, isManualRefund)
+                loadCardDetails(paymentTitle)
             }
         }
     }
@@ -314,7 +312,7 @@ class IssueRefundViewModel @Inject constructor(
         AnalyticsTracker.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_REFUND_TYPE to RefundType.ITEMS.name,
+                AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
                 AnalyticsTracker.KEY_ORDER_ID to order.id
             )
         )
@@ -752,35 +750,34 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    private fun loadCardDetails(refundMethod: String, isManualRefund: Boolean) {
-        fun setDefaultSummaryState() {
-            refundSummaryState = refundSummaryState.copy(
-                refundMethod = refundMethod,
-                isMethodDescriptionVisible = isManualRefund
-            )
-        }
-
+    private fun loadCardDetails(refundMethod: String) {
         val chargeId = order.chargeId
         if (chargeId != null) {
             launch {
                 when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
                     is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
-                        refundSummaryState = refundSummaryState.copy(
-                            refundMethod = result.run {
-                                val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
-                                val last4 = result.cardLast4.orEmpty()
-                                "$refundMethod ($brand **** $last4)"
-                            }
-                        )
+                        val refundMethod = result.run {
+                            val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
+                            val last4 = result.cardLast4.orEmpty()
+                            "$refundMethod ($brand **** $last4)"
+                        }
+                        setSummaryStateMethodAndDescriptionVisibility(refundMethod, false)
                     }
                     PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
-                        setDefaultSummaryState()
+                        setSummaryStateMethodAndDescriptionVisibility(refundMethod, false)
                     }
                 }.exhaustive
             }
         } else {
-            setDefaultSummaryState()
+            setSummaryStateMethodAndDescriptionVisibility(refundMethod, false)
         }
+    }
+
+    private fun setSummaryStateMethodAndDescriptionVisibility(refundMethod: String, isManualRefund: Boolean) {
+        refundSummaryState = refundSummaryState.copy(
+            refundMethod = refundMethod,
+            isMethodDescriptionVisible = isManualRefund
+        )
     }
 
     private fun getRefundableShippingLineIds(): List<Long> {
