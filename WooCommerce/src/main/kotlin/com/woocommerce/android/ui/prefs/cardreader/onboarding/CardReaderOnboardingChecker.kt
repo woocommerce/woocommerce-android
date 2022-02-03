@@ -110,16 +110,18 @@ class CardReaderOnboardingChecker @Inject constructor(
         isPluginActivated(wcPayPluginInfo) &&
         isPluginActivated(stripePluginInfo)
 
-    private fun getPreferredPlugin(stripePluginInfo: SitePluginModel?, wcPayPluginInfo: SitePluginModel?): PluginWrapper =
-        if (stripeExtensionFeatureFlag.isEnabled() &&
-            isPluginActivated(stripePluginInfo) &&
-            !isPluginActivated(wcPayPluginInfo)
-        ) {
-            PluginWrapper(STRIPE_EXTENSION_GATEWAY, stripePluginInfo)
-        } else {
-            // Default to WCPay when Stripe Extension is not active
-            PluginWrapper(WOOCOMMERCE_PAYMENTS, wcPayPluginInfo)
-        }
+    private fun getPreferredPlugin(
+        stripePluginInfo: SitePluginModel?,
+        wcPayPluginInfo: SitePluginModel?
+    ): PluginWrapper = if (stripeExtensionFeatureFlag.isEnabled() &&
+        isPluginActivated(stripePluginInfo) &&
+        !isPluginActivated(wcPayPluginInfo)
+    ) {
+        PluginWrapper(STRIPE_EXTENSION_GATEWAY, stripePluginInfo)
+    } else {
+        // Default to WCPay when Stripe Extension is not active
+        PluginWrapper(WOOCOMMERCE_PAYMENTS, wcPayPluginInfo)
+    }
 
     private suspend fun getStoreCountryCode(): String? {
         return withContext(dispatchers.io) {

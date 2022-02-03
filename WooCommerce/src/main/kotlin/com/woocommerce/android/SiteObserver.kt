@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
+@Suppress("ForbiddenComment")
 /**
  * A utility class that can be used to force fetching data specific to current site,
  * the fetching will occur on app launch, and on each site switching
