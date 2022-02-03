@@ -122,7 +122,7 @@ private fun MoreMenuButton(
                     modifier = Modifier
                         .size(58.dp)
                         .clip(CircleShape)
-                        .background(colorResource(id = color.woo_gray_0))
+                        .background(colorResource(id = color.more_menu_button_icon_background))
                 ) {
                     Image(
                         painter = painterResource(id = iconDrawable),
