@@ -1,9 +1,13 @@
 package com.woocommerce.android.ui.moremenu
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.*
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -48,23 +52,39 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     fun onSettingsClick() {
+        AnalyticsTracker.track(
+            Stat.HUB_MENU_SETTINGS_TAPPED
+        )
         triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
     }
 
     fun onSwitchStoreClick() {
+        AnalyticsTracker.track(
+            Stat.HUB_MENU_SWITCH_STORE_TAPPED
+        )
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
     }
 
     private fun onViewAdminButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
         triggerEvent(MoreMenuEvent.ViewAdminEvent(selectedSite.get().adminUrl))
     }
 
     private fun onViewStoreButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_VIEW_STORE)
         triggerEvent(MoreMenuEvent.ViewStoreEvent(selectedSite.get().url))
     }
 
     private fun onReviewsButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_REVIEWS)
         triggerEvent(MoreMenuEvent.ViewReviewsEvent)
+    }
+
+    private fun trackMoreMenuOptionSelected(selectedOption: String) {
+        AnalyticsTracker.track(
+            Stat.HUB_MENU_OPTION_TAPPED,
+            mapOf(KEY_OPTION to selectedOption)
+        )
     }
 
     data class MoreMenuViewState(

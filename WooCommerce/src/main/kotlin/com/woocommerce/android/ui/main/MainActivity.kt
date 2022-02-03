@@ -7,10 +7,7 @@ import android.content.Intent
 import android.content.res.Resources.Theme
 import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -31,10 +28,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
-import com.woocommerce.android.extensions.active
-import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.expand
-import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -657,7 +651,7 @@ class MainActivity :
             ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_SELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
-            MORE -> Stat.MAIN_TAB_MORE_MENU_SELECTED
+            MORE -> Stat.MAIN_TAB_HUB_MENU_SELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -672,7 +666,7 @@ class MainActivity :
             ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_RESELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
-            MORE -> Stat.MAIN_TAB_MORE_MENU_RESELECTED
+            MORE -> Stat.MAIN_TAB_HUB_MENU_RESELECTED
         }
         AnalyticsTracker.track(stat)
 
