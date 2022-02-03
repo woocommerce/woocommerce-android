@@ -4,9 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
@@ -16,9 +14,7 @@ import androidx.core.widget.addTextChangedListener
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.MarkerImage
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
@@ -31,9 +27,7 @@ import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
-import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.*
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -329,7 +323,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
+    fun updateView(revenueStatsModel: RevenueStatsUiModel?, granularity: StatsGranularity) {
+        activeGranularity = granularity
         updateDate(revenueStatsModel, activeGranularity)
         this.revenueStatsModel = revenueStatsModel
 

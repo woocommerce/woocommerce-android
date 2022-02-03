@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.mystore
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -15,19 +12,13 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.*
 import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
-import com.woocommerce.android.NavGraphMainDirections
-import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.setClickableText
-import com.woocommerce.android.extensions.startHelpActivity
-import com.woocommerce.android.extensions.verticalOffsetChanges
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -162,7 +153,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     private fun setupStateObservers() {
         viewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
             when (revenueStats) {
-                is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats)
+                is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats, revenueStats.granularity)
                 RevenueStatsViewState.GenericError -> showStatsError()
                 RevenueStatsViewState.Loading -> showChartSkeleton(true)
                 RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
@@ -292,11 +283,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         outState.putInt(STATE_KEY_TAB_POSITION, tabStatsPosition)
     }
 
-    private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
+    private fun showStats(revenueStatsModel: RevenueStatsUiModel?, granularity: StatsGranularity) {
         addTabLayoutToAppBar()
         binding.myStoreStats.showErrorView(false)
         showChartSkeleton(false)
-        binding.myStoreStats.updateView(revenueStatsModel)
+        binding.myStoreStats.updateView(revenueStatsModel, granularity)
     }
 
     private fun showStatsError() {
