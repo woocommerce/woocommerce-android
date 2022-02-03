@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.prefs.cardreader
 
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -10,16 +11,16 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.*
 
 @ExperimentalCoroutinesApi
 class CardReaderTrackerTest : BaseUnitTest() {
-    private val trackerWrapper: AnalyticsTrackerWrapper = mock {
-
+    companion object {
+        private const val REQUIRED_UPDATE = "Required"
+        private const val OPTIONAL_UPDATE = "Optional"
     }
+
+    private val trackerWrapper: AnalyticsTrackerWrapper = mock()
     private val cardReaderTracker = CardReaderTracker(trackerWrapper)
 
     @Test
@@ -85,7 +86,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when onboarding state PluginUnsupportedVersion WCPay, then reason=wcpay_unsupported_version tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackOnboardingState(
-                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS)
+                CardReaderOnboardingState.PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS)
             )
 
             verify(trackerWrapper).track(
@@ -110,7 +111,9 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state SetupNotCompleted WCPay, then reason=wcpay_not_setup tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.SetupNotCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
+            cardReaderTracker.trackOnboardingState(
+                CardReaderOnboardingState.SetupNotCompleted(WOOCOMMERCE_PAYMENTS)
+            )
 
             verify(trackerWrapper).track(
                 CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
@@ -189,7 +192,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when onboarding state PluginInTestModeWithLiveStripeAccount, then reason=wcpay_in_test_mode_with_live_account tracked`() =
+    fun `when onboarding PluginInTestModeWithLiveStripeAccount, then reason=wcpay_in_test_mode_with_live_account`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
 
@@ -202,7 +205,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state OnboardingCompleted WCPay, then event NOT tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
+            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS))
 
             verify(trackerWrapper, never()).track(any(), any())
         }
@@ -215,5 +218,104 @@ class CardReaderTrackerTest : BaseUnitTest() {
             )
 
             verify(trackerWrapper, never()).track(any(), any())
+        }
+
+    @Test
+    fun `when track software update started, then CARD_READER_SOFTWARE_UPDATE_STARTED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackSoftwareUpdateStarted(true)
+
+            verify(trackerWrapper).track(
+                CARD_READER_SOFTWARE_UPDATE_STARTED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE
+                )
+            )
+        }
+
+    @Test
+    fun `given update required, when track software update started, then event with REQUIRED_UPDATE tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackSoftwareUpdateStarted(requiredUpdate = true)
+
+            verify(trackerWrapper).track(
+                CARD_READER_SOFTWARE_UPDATE_STARTED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE
+                )
+            )
+        }
+
+    @Test
+    fun `given update not required, when track software update started, then event with OPTIONAL_UPDATE tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackSoftwareUpdateStarted(requiredUpdate = false)
+
+            verify(trackerWrapper).track(
+                CARD_READER_SOFTWARE_UPDATE_STARTED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE
+                )
+            )
+        }
+
+    @Test
+    fun `when track software update failed, then CARD_READER_SOFTWARE_UPDATE_FAILED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val dummyMessage = "abcd"
+            cardReaderTracker.trackSoftwareUpdateFailed(Failed(mock(), dummyMessage), requiredUpdate = false)
+            // THEN
+            verify(trackerWrapper).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderTracker",
+                    AnalyticsTracker.KEY_ERROR_DESC to dummyMessage
+                )
+            )
+        }
+
+    @Test
+    fun `when software update canceled, then CARD_READER_SOFTWARE_UPDATE_FAILED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackSoftwareUpdateCancelled(false)
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(CARD_READER_SOFTWARE_UPDATE_FAILED),
+                any()
+            )
+        }
+
+    @Test
+    fun `given required update, when software update canceled, then required update property tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackSoftwareUpdateCancelled(requiredUpdate = true)
+
+            // THEN
+            verify(trackerWrapper).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderTracker",
+                    AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
+                )
+            )
+        }
+
+    @Test
+    fun `given optional update, when software update canceled, then optional update property tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackSoftwareUpdateCancelled(requiredUpdate = false)
+
+            // THEN
+            verify(trackerWrapper).track(
+                CARD_READER_SOFTWARE_UPDATE_FAILED,
+                hashMapOf(
+                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderTracker",
+                    AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
+                )
+            )
         }
 }
