@@ -30,5 +30,6 @@ interface MainContract {
         fun hideProgressDialog()
         fun showProgressDialog(@StringRes stringId: Int)
         fun showUserEligibilityErrorScreen()
+        fun showMoreMenuBadge(show: Boolean)
     }
 }
