@@ -45,6 +45,14 @@
                 android:name="orderId"
                 app:argType="long" />
         </action>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationAddFeeFragment"
+            app:destination="@id/nav_graph_orders"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"
+            app:popUpTo="@id/orders"/>
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -122,4 +130,9 @@
             android:name="productId"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/orderCreationAddFeeFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeFragment"
+        android:label="OrderCreationAddFeeFragment"
+        tools:layout="@layout/fragment_order_creation_add_fee" />
 </navigation>
