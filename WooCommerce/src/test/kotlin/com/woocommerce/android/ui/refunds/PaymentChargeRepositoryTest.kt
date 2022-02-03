@@ -20,11 +20,11 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 
 @ExperimentalCoroutinesApi
 class PaymentChargeRepositoryTest : BaseUnitTest() {
-    private val cardPreset: WCPaymentChargeApiResult.PaymentMethodDetails.CardPresent = mock() {
+    private val cardPreset: WCPaymentChargeApiResult.PaymentMethodDetails.CardPresent = mock {
         on { brand }.thenReturn("visa")
         on { last4 }.thenReturn("1234")
     }
-    private val paymentMethodDetails: WCPaymentChargeApiResult.PaymentMethodDetails = mock() {
+    private val paymentMethodDetails: WCPaymentChargeApiResult.PaymentMethodDetails = mock {
         on { cardPresent }.thenReturn(cardPreset)
     }
     private val apiResult: WCPaymentChargeApiResult = mock {
