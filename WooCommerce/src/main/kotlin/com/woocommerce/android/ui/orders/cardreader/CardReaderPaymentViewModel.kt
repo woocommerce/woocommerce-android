@@ -454,11 +454,11 @@ class CardReaderPaymentViewModel
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$id"
 
-    private suspend fun getStoreCountryCode(): String? {
+    private suspend fun getStoreCountryCode(): String {
         return withContext(dispatchers.io) {
-            wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
-                WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
-            }
+            wooStore.getStoreCountryCode(
+                selectedSite.get()
+            ) ?: throw IllegalStateException("Store's country code not found.")
         }
     }
 

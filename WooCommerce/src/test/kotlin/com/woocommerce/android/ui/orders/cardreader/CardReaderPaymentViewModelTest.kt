@@ -128,6 +128,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
         whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test url")
+        whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
     }
 
     @Test
