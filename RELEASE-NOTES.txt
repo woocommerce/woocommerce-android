@@ -2,7 +2,7 @@
 
 8.5
 -----
-
+- [***] Store admins can now access sites with plugins that have Jetpack Connection Package (e.g. WooCommerce Payments, Jetpack Backup) in the app. These sites do not require Jetpack-the-plugin to connect anymore. Store admins can still install Jetpack-the-plugin from the app through settings or a Jetpack banner. [https://github.com/woocommerce/woocommerce-android/pull/5771]
 
 8.4
 -----
