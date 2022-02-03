@@ -48,6 +48,8 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMoreMenuBinding.inflate(inflater, container, false)
+        hideToolbar()
+
         val view = binding.root
         binding.menu.apply {
             // Dispose of the Composition when the view's LifecycleOwner

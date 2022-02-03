@@ -442,14 +442,10 @@ class MainActivity :
             // the image viewers should be shown full screen
             if (isFullScreenFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
-                binding.collapsingToolbar.layoutParams.height = 0
+                hideToolbar()
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                if (restoreToolbarHeight > 0) {
-                    binding.collapsingToolbar.layoutParams.height = restoreToolbarHeight
-                    restoreToolbarHeight = 0
-                }
+                showToolbar()
             }
         }
 
@@ -461,6 +457,18 @@ class MainActivity :
         }
 
         previousDestinationId = destination.id
+    }
+
+    private fun showToolbar() {
+        if (restoreToolbarHeight > 0) {
+            binding.collapsingToolbar.layoutParams.height = restoreToolbarHeight
+            restoreToolbarHeight = 0
+        }
+    }
+
+    fun hideToolbar() {
+        restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
+        binding.collapsingToolbar.layoutParams.height = 0
     }
 
     override fun setTitle(title: CharSequence?) {

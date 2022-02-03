@@ -44,14 +44,15 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
 @Composable
 @Suppress("LongMethod")
 fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSettingsClick: () -> Unit) {
-    Column {
+    Column(
+        modifier = Modifier.padding(10.dp)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
-                modifier = Modifier
-                    .padding(10.dp)
+                modifier = Modifier.padding(12.dp)
             ) {
                 Text(
                     text = stringResource(string.settings_switch_store),
@@ -104,7 +105,7 @@ private fun MoreMenuButton(
         onClick = onClick,
         contentPadding = PaddingValues(12.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = colorResource(id = color.color_surface)
+            backgroundColor = colorResource(id = color.more_menu_button_background)
         ),
         modifier = Modifier.height(190.dp),
         shape = RoundedCornerShape(10.dp)
@@ -121,7 +122,7 @@ private fun MoreMenuButton(
                     modifier = Modifier
                         .size(58.dp)
                         .clip(CircleShape)
-                        .background(colorResource(id = color.woo_gray_0))
+                        .background(colorResource(id = color.more_menu_button_icon_background))
                 ) {
                     Image(
                         painter = painterResource(id = iconDrawable),
@@ -170,11 +171,12 @@ fun MoreMenuBadge(badgeCount: Int) {
 @ExperimentalFoundationApi
 @Preview
 @Composable
+@Suppress("MagicNumber")
 fun MoreMenuPreview() {
     val buttons = listOf(
         MenuUiButton(VIEW_ADMIN, string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
         MenuUiButton(VIEW_STORE, string.more_menu_button_store, drawable.ic_more_menu_store),
-        MenuUiButton(PRODUCT_REVIEWS, string.more_menu_button_reviews, drawable.ic_more_menu_reviews)
+        MenuUiButton(PRODUCT_REVIEWS, string.more_menu_button_reviews, drawable.ic_more_menu_reviews, 3)
     )
     MoreMenu(uiButtons = buttons, {}, {})
 }
