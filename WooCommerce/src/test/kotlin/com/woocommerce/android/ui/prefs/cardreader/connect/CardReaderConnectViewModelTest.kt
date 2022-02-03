@@ -9,11 +9,13 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
@@ -81,6 +83,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         on { getIfExists() }.thenReturn(siteModel)
         on { get() }.thenReturn(siteModel)
     }
+    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
 
     private val locationId = "location_id"
 
@@ -1342,12 +1345,35 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
     }
 
+    @Test
+    fun `given ipp Canada feature flag is true, then supported readers contains Wisepad 3`() {
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+
+        assertThat(viewModel.supportedReaders).isEqualTo(
+            listOf(
+                SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3
+            )
+        )
+    }
+
+    @Test
+    fun `given ipp Canada feature flag is false, then supported readers does not contain Wisepad 3`() {
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
+
+        assertThat(viewModel.supportedReaders).isEqualTo(
+            listOf(
+                SpecificReader.Chipper2X, SpecificReader.StripeM2
+            )
+        )
+    }
+
     private suspend fun initVM(
         onboardingState: CardReaderOnboardingState,
         skipOnboarding: Boolean = false
     ): CardReaderConnectViewModel {
         val savedState = CardReaderConnectDialogFragmentArgs(skipOnboarding = skipOnboarding).initSavedStateHandle()
         whenever(onboardingChecker.getOnboardingState()).thenReturn(onboardingState)
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
         return CardReaderConnectViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,
@@ -1357,6 +1383,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             locationRepository,
             selectedSite,
             cardReaderManager,
+            inPersonPaymentsCanadaFeatureFlag,
         )
     }
 

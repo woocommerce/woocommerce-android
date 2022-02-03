@@ -16,7 +16,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.model.ProductVariation.Option
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
@@ -34,11 +33,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -212,7 +207,6 @@ class VariationDetailViewModel @Inject constructor(
         stockStatus: ProductStockStatus? = null,
         backorderStatus: ProductBackorderStatus? = null,
         stockQuantity: Double? = null,
-        options: List<Option>? = null,
         isPurchasable: Boolean? = null,
         isVirtual: Boolean? = null,
         isDownloadable: Boolean? = null,
@@ -242,7 +236,6 @@ class VariationDetailViewModel @Inject constructor(
                     stockStatus = stockStatus ?: variation.stockStatus,
                     backorderStatus = backorderStatus ?: variation.backorderStatus,
                     stockQuantity = stockQuantity ?: variation.stockQuantity,
-                    options = options ?: variation.options,
                     isPurchasable = isPurchasable ?: variation.isPurchasable,
                     isVirtual = isVirtual ?: variation.isVirtual,
                     isDownloadable = isDownloadable ?: variation.isDownloadable,
