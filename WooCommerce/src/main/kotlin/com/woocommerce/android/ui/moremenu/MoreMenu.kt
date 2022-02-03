@@ -175,7 +175,7 @@ fun MoreMenuPreview() {
     val buttons = listOf(
         MenuUiButton(VIEW_ADMIN, string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
         MenuUiButton(VIEW_STORE, string.more_menu_button_store, drawable.ic_more_menu_store),
-        MenuUiButton(PRODUCT_REVIEWS, string.more_menu_button_reviews, drawable.ic_more_menu_reviews)
+        MenuUiButton(PRODUCT_REVIEWS, string.more_menu_button_reviews, drawable.ic_more_menu_reviews, 3)
     )
     MoreMenu(uiButtons = buttons, {}, {})
 }
