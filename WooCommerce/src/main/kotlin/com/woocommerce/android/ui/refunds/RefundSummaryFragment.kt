@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
