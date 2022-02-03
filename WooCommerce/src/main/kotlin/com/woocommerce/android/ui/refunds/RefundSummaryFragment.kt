@@ -49,8 +49,6 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
 
         initializeViews()
         setupObservers()
-
-        viewModel.loadCardDetails()
     }
 
     override fun onDestroyView() {
