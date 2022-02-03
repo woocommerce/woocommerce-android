@@ -7,13 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
@@ -33,7 +32,7 @@ private const val UNIX_TO_JAVA_TIMESTAMP_OFFSET = 1000L
 class CardReaderOnboardingViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderChecker: CardReaderOnboardingChecker,
-    private val trackerWrapper: AnalyticsTrackerWrapper,
+    private val cardReaderTracker: CardReaderTracker,
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
@@ -52,7 +51,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         launch {
             viewState.value = OnboardingViewState.LoadingState
             val state = cardReaderChecker.getOnboardingState()
-            trackState(state)
+            cardReaderTracker.trackOnboardingState(state)
             when (state) {
                 is CardReaderOnboardingState.OnboardingCompleted ->
                     triggerEvent(OnboardingEvent.Continue)
@@ -162,41 +161,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
             )
     }
 
-    private fun trackState(state: CardReaderOnboardingState) {
-        getTrackingReason(state)?.let {
-            trackerWrapper.track(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to it))
-        }
-    }
-
-    @Suppress("ComplexMethod")
-    private fun getTrackingReason(state: CardReaderOnboardingState): String? =
-        when (state) {
-            is CardReaderOnboardingState.OnboardingCompleted -> null
-            is CardReaderOnboardingState.StoreCountryNotSupported -> "country_not_supported"
-            CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
-            is CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
-            CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
-            CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
-            is CardReaderOnboardingState.StripeAccountCountryNotSupported -> "account_country_not_supported"
-            CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
-            CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
-            CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
-            is CardReaderOnboardingState.SetupNotCompleted ->
-                "${getPluginNameForAnalyticsFrom(state.pluginType)}_not_setup"
-            is CardReaderOnboardingState.PluginUnsupportedVersion ->
-                "${getPluginNameForAnalyticsFrom(state.pluginType)}_unsupported_version"
-            CardReaderOnboardingState.GenericError -> "generic_error"
-            CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
-            CardReaderOnboardingState.WcpayAndStripeActivated -> "wcpay_and_stripe_installed_and_activated"
-        }
-
-    private fun getPluginNameForAnalyticsFrom(pluginType: PluginType): String {
-        return when (pluginType) {
-            PluginType.WOOCOMMERCE_PAYMENTS -> "wcpay"
-            PluginType.STRIPE_EXTENSION_GATEWAY -> "stripe_extension"
-        }
-    }
-
     fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Onboarding flow interrupted by the user.")
         exitFlow()
@@ -216,7 +180,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onLearnMoreClicked() {
-        trackerWrapper.track(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
+        cardReaderTracker.trackOnboardingLearnMoreTapped()
         triggerEvent(NavigateToUrlInGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
     }
 
@@ -310,7 +274,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
 
         class UnsupportedCountryState(
-            val countryDisplayName: String,
+            countryDisplayName: String,
             val onContactSupportActionClicked: (() -> Unit),
             val onLearnMoreActionClicked: (() -> Unit)
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_unsupported_country) {
