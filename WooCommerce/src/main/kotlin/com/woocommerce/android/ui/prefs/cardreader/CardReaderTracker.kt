@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.prefs.cardreader
 
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import javax.inject.Inject
@@ -16,7 +17,7 @@ class CardReaderTracker @Inject constructor(
 
     fun trackOnboardingState(state: CardReaderOnboardingState) {
         getOnboardingNotCompletedReason(state)?.let {
-            trackerWrapper.track(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to it))
+            trackerWrapper.track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to it))
         }
     }
 
@@ -47,5 +48,61 @@ class CardReaderTracker @Inject constructor(
             PluginType.WOOCOMMERCE_PAYMENTS -> "wcpay"
             PluginType.STRIPE_EXTENSION_GATEWAY -> "stripe_extension"
         }
+    }
+
+    fun trackSoftwareUpdateStarted(requiredUpdate: Boolean) {
+        trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_STARTED, requiredUpdate)
+    }
+
+    fun trackSoftwareUpdateUnknownStatus() {
+        trackerWrapper.track(
+            CARD_READER_SOFTWARE_UPDATE_FAILED,
+            this.javaClass.simpleName,
+            null,
+            "Unknown software update status"
+        )
+    }
+
+    fun trackSoftwareUpdateSucceeded(requiredUpdate: Boolean) {
+        trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_SUCCESS, requiredUpdate)
+    }
+
+    fun trackSoftwareUpdateFailed(status: Failed, requiredUpdate: Boolean) {
+        trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_FAILED, requiredUpdate, status.message)
+    }
+
+    fun trackSoftwareUpdateCancelled(requiredUpdate: Boolean) {
+        trackSoftwareUpdateEvent(
+            CARD_READER_SOFTWARE_UPDATE_FAILED,
+            requiredUpdate,
+            "User manually cancelled the flow"
+        )
+    }
+
+    private fun trackSoftwareUpdateEvent(
+        event: AnalyticsTracker.Stat,
+        requiredUpdate: Boolean,
+        errorDescription: String? = null,
+    ) {
+        val eventPropertiesMap = errorDescription?.let { description ->
+            hashMapOf(
+                AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
+                AnalyticsTracker.KEY_ERROR_CONTEXT to this.javaClass.simpleName,
+                AnalyticsTracker.KEY_ERROR_DESC to description
+            )
+        } ?: run {
+            hashMapOf(
+                AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE
+            )
+        }
+        trackerWrapper.track(
+            event,
+            eventPropertiesMap
+        )
+    }
+
+    companion object {
+        private const val OPTIONAL_UPDATE: String = "Optional"
+        private const val REQUIRED_UPDATE: String = "Required"
     }
 }
