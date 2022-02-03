@@ -22,4 +22,4 @@ class NotificationsUnseenReviewsEvent(var hasUnseen: Boolean)
 
 class NotificationReceivedEvent(var channel: NotificationChannelType)
 
-class NotificationReadEvent(var channel: NotificationChannelType?)
+class NotificationSeenEvent(var channel: NotificationChannelType?)

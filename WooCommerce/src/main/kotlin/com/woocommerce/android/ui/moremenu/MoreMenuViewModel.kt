@@ -27,15 +27,15 @@ class MoreMenuViewModel @Inject constructor(
     init {
         EventBus.getDefault().register(this)
 
-        _moreMenuViewState.value = MoreMenuViewState(moreMenuItems = generateMenuButtons(unreadReviewsCount = 0))
-        refreshUnreadReviewsCount()
+        _moreMenuViewState.value = MoreMenuViewState(moreMenuItems = generateMenuButtons(unseenReviewsCount = 0))
+        refreshUnseenReviewsCount()
     }
 
     override fun onCleared() {
         EventBus.getDefault().unregister(this)
     }
 
-    private fun generateMenuButtons(unreadReviewsCount: Int): List<MenuUiButton> =
+    private fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
         listOf(
             MenuUiButton(
                 type = VIEW_ADMIN,
@@ -53,16 +53,16 @@ class MoreMenuViewModel @Inject constructor(
                 type = PRODUCT_REVIEWS,
                 text = R.string.more_menu_button_reviews,
                 icon = R.drawable.ic_more_menu_reviews,
-                badgeCount = unreadReviewsCount,
+                badgeCount = unseenReviewsCount,
                 onClick = ::onReviewsButtonClick
             )
         )
 
-    private fun refreshUnreadReviewsCount() {
+    private fun refreshUnseenReviewsCount() {
         viewModelScope.launch {
             // First we set the cached value
             _moreMenuViewState.value = _moreMenuViewState.value?.copy(
-                moreMenuItems = generateMenuButtons(getCachedUnreadReviewsCount())
+                moreMenuItems = generateMenuButtons(getCachedUnseenReviewsCount())
             )
 
             // Then we fetch from API the refreshed value and update the UI again
@@ -70,7 +70,7 @@ class MoreMenuViewModel @Inject constructor(
                 RequestResult.SUCCESS,
                 RequestResult.NO_ACTION_NEEDED -> {
                     _moreMenuViewState.value = _moreMenuViewState.value?.copy(
-                        moreMenuItems = generateMenuButtons(getCachedUnreadReviewsCount())
+                        moreMenuItems = generateMenuButtons(getCachedUnseenReviewsCount())
                     )
                 }
                 else -> {
@@ -79,16 +79,16 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getCachedUnreadReviewsCount() =
+    private suspend fun getCachedUnseenReviewsCount() =
         reviewListRepository.getCachedProductReviews()
             .filter { it.read == false }
             .count()
 
     fun handleStoreSwitch() {
-        refreshUnreadReviewsCount()
+        refreshUnseenReviewsCount()
     }
 
-    private fun resetUnreadReviewsBadgeCount() {
+    private fun resetUnseenReviewsBadgeCount() {
         _moreMenuViewState.value = _moreMenuViewState.value?.copy(
             moreMenuItems = generateMenuButtons(0)
         )
@@ -114,7 +114,7 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewReviewsEvent)
     }
 
-    private fun updateUnreadCountBy(updateByValue: Int) {
+    private fun updateUnseenCountBy(updateByValue: Int) {
         val currentCount = _moreMenuViewState.value?.moreMenuItems
             ?.firstOrNull { it.type == PRODUCT_REVIEWS }
             ?.badgeCount ?: 0
@@ -127,7 +127,7 @@ class MoreMenuViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: NotificationReceivedEvent) {
         if (event.channel == NotificationChannelType.REVIEW) {
-            updateUnreadCountBy(1)
+            updateUnseenCountBy(1)
         }
     }
 
@@ -135,15 +135,15 @@ class MoreMenuViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
         if (!event.hasUnseen) {
-            resetUnreadReviewsBadgeCount()
+            resetUnseenReviewsBadgeCount()
         }
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationReadEvent) {
+    fun onEventMainThread(event: NotificationSeenEvent) {
         if (event.channel == NotificationChannelType.REVIEW) {
-            updateUnreadCountBy(-1)
+            updateUnseenCountBy(-1)
         }
     }
 

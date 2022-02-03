@@ -67,7 +67,7 @@ class MainPresenter @Inject constructor(
                 }
             }
         }
-        mainView?.showMoreMenuBadge(appPrefsWrapper.hasUnreadReviews())
+        mainView?.showMoreMenuBadge(appPrefsWrapper.hasUnseenReviews())
     }
 
     override fun dropView() {

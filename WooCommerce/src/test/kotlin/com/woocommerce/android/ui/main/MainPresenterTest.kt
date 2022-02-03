@@ -162,7 +162,7 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `Given unread reviews, when presenter is takes view, then show badge on more menu tab`() {
-        whenever(appPrefs.hasUnreadReviews()).thenReturn(true)
+        whenever(appPrefs.hasUnseenReviews()).thenReturn(true)
 
         mainPresenter.takeView(mainContractView)
 
@@ -171,7 +171,7 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `Given no unread reviews, when presenter is takes view, then show badge on more menu tab`() {
-        whenever(appPrefs.hasUnreadReviews()).thenReturn(false)
+        whenever(appPrefs.hasUnseenReviews()).thenReturn(false)
 
         mainPresenter.takeView(mainContractView)
 

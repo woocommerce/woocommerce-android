@@ -265,7 +265,7 @@ class NotificationMessageHandler @Inject constructor(
             .forEach { row ->
                 if (row.value.remoteNoteId == remoteNoteId) {
                     notificationBuilder.cancelNotification(row.key)
-                    EventBus.getDefault().post(NotificationReadEvent(row.value.channelType))
+                    EventBus.getDefault().post(NotificationSeenEvent(row.value.channelType))
                 } else {
                     keptNotifs[row.key] = row.value
                 }
@@ -283,7 +283,7 @@ class NotificationMessageHandler @Inject constructor(
             .forEach { row ->
                 if (row.key == localPushId) {
                     notificationBuilder.cancelNotification(row.key)
-                    EventBus.getDefault().post(NotificationReadEvent(row.value.channelType))
+                    EventBus.getDefault().post(NotificationSeenEvent(row.value.channelType))
                 } else {
                     keptNotifs[row.key] = row.value
                 }
@@ -301,7 +301,7 @@ class NotificationMessageHandler @Inject constructor(
         ACTIVE_NOTIFICATIONS_MAP.toMap().asSequence().forEach { row ->
             if (row.value.channelType == type && row.value.remoteSiteId == remoteSiteId) {
                 notificationBuilder.cancelNotification(row.key)
-                EventBus.getDefault().post(NotificationReadEvent(type))
+                EventBus.getDefault().post(NotificationSeenEvent(type))
             } else {
                 keptNotifs[row.key] = row.value
             }
@@ -323,7 +323,7 @@ class NotificationMessageHandler @Inject constructor(
      * shared preference and posts an EventBus event so main activity can update the badge
      */
     private fun setHasUnseenReviewNotifs(hasUnseen: Boolean) {
-        if (appPrefsWrapper.hasUnreadReviews() != hasUnseen) {
+        if (appPrefsWrapper.hasUnseenReviews() != hasUnseen) {
             appPrefsWrapper.setHasUnseenReviews(hasUnseen)
             EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
         }

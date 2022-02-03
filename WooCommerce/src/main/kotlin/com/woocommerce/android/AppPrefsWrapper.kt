@@ -44,7 +44,7 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun isOrderNotificationsChaChingEnabled() = AppPrefs.isOrderNotificationsChaChingEnabled()
 
-    fun hasUnreadReviews() = AppPrefs.getHasUnseenReviews()
+    fun hasUnseenReviews() = AppPrefs.getHasUnseenReviews()
 
     fun setHasUnseenReviews(hasUnseen: Boolean) {
         AppPrefs.setHasUnseenReviews(hasUnseen)
