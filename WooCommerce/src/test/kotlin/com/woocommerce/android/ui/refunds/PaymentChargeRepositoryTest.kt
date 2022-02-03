@@ -51,10 +51,12 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
             val chargeId = "charge_id"
             whenever(appPrefs.getPaymentPluginType(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
                 .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
-            whenever(ippStore.fetchPaymentCharge(
-                WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE,
-                siteModel,
-                chargeId)
+            whenever(
+                ippStore.fetchPaymentCharge(
+                    WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE,
+                    siteModel,
+                    chargeId
+                )
             ).thenReturn(WooPayload(apiResult))
 
             // WHEN
@@ -77,10 +79,12 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
             val chargeId = "charge_id"
             whenever(appPrefs.getPaymentPluginType(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
                 .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
-            whenever(ippStore.fetchPaymentCharge(
-                WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE,
-                siteModel,
-                chargeId)
+            whenever(
+                ippStore.fetchPaymentCharge(
+                    WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE,
+                    siteModel,
+                    chargeId
+                )
             ).thenReturn(WooPayload(WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NOT_FOUND)))
 
             // WHEN
