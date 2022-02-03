@@ -93,6 +93,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             selectedSite.getIfExists()?.let {
                 appCoroutineScope.launch {
                     wooCommerceStore.fetchWooCommerceSite(it)
+                    wooCommerceStore.fetchSitePlugins(it)
                 }
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchProductSettingsAction(it))

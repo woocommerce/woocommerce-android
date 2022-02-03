@@ -132,7 +132,6 @@ class OrderListViewModel @Inject constructor(
 
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
-                wooCommerceStore.fetchSitePlugins(selectedSite.get())
                 loadOrders()
             } else {
                 WooLog.w(
