@@ -116,7 +116,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun loadDashboardStats(granularity: StatsGranularity) {
-        this.activeGranularity = granularity
         // Track range change
         AnalyticsTracker.track(
             Stat.DASHBOARD_MAIN_STATS_DATE,
