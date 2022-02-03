@@ -30,7 +30,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     private lateinit var navController: NavController
     private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable
-    private lateinit var reviewsBadge: BadgeDrawable
+    private lateinit var moreMenuBadge: BadgeDrawable
 
     interface MainNavigationListener {
         fun onNavItemSelected(navPos: BottomNavigationPosition)
@@ -97,9 +97,9 @@ class MainBottomNavigationView @JvmOverloads constructor(
         ordersBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
         ordersBadge.maxCharacterCount = 3 // this includes the plus sign
 
-        reviewsBadge = getOrCreateBadge(R.id.reviews)
-        reviewsBadge.isVisible = false
-        reviewsBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
+        moreMenuBadge = getOrCreateBadge(R.id.moreMenu)
+        moreMenuBadge.isVisible = false
+        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
     }
 
     /**
@@ -129,8 +129,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
         assignNavigationListeners(true)
     }
 
-    fun showReviewsBadge(show: Boolean) {
-        reviewsBadge.isVisible = show
+    fun showMoreMenuBadge(show: Boolean) {
+        moreMenuBadge.isVisible = show
     }
 
     fun setOrderBadgeCount(count: Int) {

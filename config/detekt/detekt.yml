@@ -25,3 +25,8 @@ style:
   UnnecessaryAbstractClass:
     active: true
     ignoreAnnotated: [ 'Module' ]
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: [ 'Composable' ]
+

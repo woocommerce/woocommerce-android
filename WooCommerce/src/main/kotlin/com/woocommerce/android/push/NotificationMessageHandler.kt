@@ -6,11 +6,8 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_RECEIVED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_TAPPED
-import com.woocommerce.android.extensions.NotificationReceivedEvent
-import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
-import com.woocommerce.android.model.Notification
-import com.woocommerce.android.model.isOrderNotification
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.model.*
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -47,6 +44,7 @@ class NotificationMessageHandler @Inject constructor(
     companion object {
         private const val KEY_PUSH_TYPE_ZENDESK = "zendesk"
         private const val KEY_ZENDESK_REQUEST_ID = "zendesk_sdk_request_id"
+
         // All Zendesk push notifications will show the same notification, so hopefully this will be a unique ID
         private const val ZENDESK_PUSH_NOTIFICATION_ID = 1999999999
 
@@ -267,6 +265,7 @@ class NotificationMessageHandler @Inject constructor(
             .forEach { row ->
                 if (row.value.remoteNoteId == remoteNoteId) {
                     notificationBuilder.cancelNotification(row.key)
+                    EventBus.getDefault().post(NotificationSeenEvent(row.value.channelType))
                 } else {
                     keptNotifs[row.key] = row.value
                 }
@@ -284,6 +283,7 @@ class NotificationMessageHandler @Inject constructor(
             .forEach { row ->
                 if (row.key == localPushId) {
                     notificationBuilder.cancelNotification(row.key)
+                    EventBus.getDefault().post(NotificationSeenEvent(row.value.channelType))
                 } else {
                     keptNotifs[row.key] = row.value
                 }
@@ -301,6 +301,7 @@ class NotificationMessageHandler @Inject constructor(
         ACTIVE_NOTIFICATIONS_MAP.toMap().asSequence().forEach { row ->
             if (row.value.channelType == type && row.value.remoteSiteId == remoteSiteId) {
                 notificationBuilder.cancelNotification(row.key)
+                EventBus.getDefault().post(NotificationSeenEvent(type))
             } else {
                 keptNotifs[row.key] = row.value
             }
