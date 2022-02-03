@@ -2,16 +2,10 @@ package com.woocommerce.android.ui.reviews
 
 import android.content.Context
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.view.View.OnClickListener
-import androidx.core.view.ViewGroupCompat
-import androidx.core.view.doOnPreDraw
-import androidx.core.view.isVisible
+import androidx.core.view.*
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
@@ -23,8 +17,6 @@ import com.woocommerce.android.databinding.FragmentReviewsListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -34,14 +26,12 @@ import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.widgets.AppRatingDialog
-import com.woocommerce.android.widgets.SkeletonView
-import com.woocommerce.android.widgets.UnreadItemDecoration
+import com.woocommerce.android.widgets.*
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -58,7 +48,6 @@ class ReviewListFragment :
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private var _reviewsAdapter: ReviewListAdapter? = null
     private val reviewsAdapter: ReviewListAdapter
@@ -191,37 +180,28 @@ class ReviewListFragment :
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.notifsLoadMoreProgress.isVisible = it }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
             }
-        )
+        }
 
-        viewModel.moderateProductReview.observe(
-            viewLifecycleOwner,
-            Observer {
-                if (reviewsAdapter.isEmpty()) {
-                    pendingModerationRequest = it
-                } else {
-                    it?.let { request -> handleReviewModerationRequest(request) }
-                }
+        viewModel.moderateProductReview.observe(viewLifecycleOwner) {
+            if (reviewsAdapter.isEmpty()) {
+                pendingModerationRequest = it
+            } else {
+                it?.let { request -> handleReviewModerationRequest(request) }
             }
-        )
+        }
 
-        viewModel.reviewList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showReviewList(it)
-                pendingModerationRequest?.let {
-                    handleReviewModerationRequest(it)
-                    pendingModerationRequest = null
-                }
+        viewModel.reviewList.observe(viewLifecycleOwner) {
+            showReviewList(it)
+            pendingModerationRequest?.let {
+                handleReviewModerationRequest(it)
+                pendingModerationRequest = null
             }
-        )
+        }
     }
 
     private fun handleMarkAllAsReadEvent(status: ActionStatus) {
@@ -232,11 +212,6 @@ class ReviewListFragment :
             ActionStatus.SUCCESS -> {
                 menuMarkAllRead?.actionView = null
                 showMarkAllReadMenuItem(show = false)
-
-                // Remove all active notifications from the system bar
-                notificationMessageHandler.removeNotificationsOfTypeFromSystemsBar(
-                    NotificationChannelType.REVIEW, selectedSite.get().siteId
-                )
             }
             ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
             else -> {

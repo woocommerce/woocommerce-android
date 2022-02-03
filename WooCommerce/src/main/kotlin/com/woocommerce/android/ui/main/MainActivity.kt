@@ -197,13 +197,13 @@ class MainActivity :
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
-        presenter.takeView(this)
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this@MainActivity)
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
+
+        presenter.takeView(this)
 
         // fetch the site list if the database has been downgraded - otherwise the site picker will be displayed,
         // which we don't want in this situation
@@ -643,6 +643,13 @@ class MainActivity :
     override fun hideOrderBadge() {
         unfilledOrderCount = 0
         binding.bottomNav.setOrderBadgeCount(0)
+    }
+
+    override fun showMoreMenuBadge(show: Boolean) {
+        binding.bottomNav.showMoreMenuBadge(show)
+        if (!show) {
+            viewModel.removeReviewNotifications()
+        }
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {

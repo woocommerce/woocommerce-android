@@ -3,9 +3,8 @@ package com.woocommerce.android.ui.reviews
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.ActionStatus
-import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.*
+import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
@@ -18,6 +17,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.SiteModel
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -28,6 +28,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val dispatcher: Dispatcher = mock()
     private val selectedSite: SelectedSite = mock()
     private val savedState: SavedStateHandle = SavedStateHandle()
+    private val notificationHandler: NotificationMessageHandler = mock()
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
     private lateinit var viewModel: ReviewListViewModel
@@ -40,7 +41,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
                 networkStatus,
                 dispatcher,
                 selectedSite,
-                reviewListRepository
+                reviewListRepository,
+                notificationHandler
             )
         )
 
@@ -220,6 +222,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     fun `Notify UI that request to mark all as read was successful`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(true).whenever(networkStatus).isConnected()
+            doReturn(SiteModel()).whenever(selectedSite).get()
             doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).markAllProductReviewsAsRead()
 
             val markReadActions = mutableListOf<ActionStatus>()
