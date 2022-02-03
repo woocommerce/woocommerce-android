@@ -9,6 +9,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 import java.util.*
@@ -45,6 +46,7 @@ data class Order(
     val items: List<Item>,
     val shippingLines: List<ShippingLine>,
     val feesLines: List<FeeLine>,
+    val taxLines: List<TaxLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
     @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
@@ -193,6 +195,14 @@ data class Order(
         val totalTax: BigDecimal,
     ) : Parcelable
 
+    @Parcelize
+    data class TaxLine(
+        val id: Long,
+        val compound: Boolean,
+        val taxTotal: String,
+        val ratePercent: Float
+    ) : Parcelable
+
     fun getBillingName(defaultValue: String): String {
         return when {
             billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty() -> defaultValue
@@ -302,7 +312,8 @@ data class Order(
                 items = emptyList(),
                 shippingLines = emptyList(),
                 metaData = emptyList(),
-                feesLines = emptyList()
+                feesLines = emptyList(),
+                taxLines = emptyList()
             )
         }
     }
