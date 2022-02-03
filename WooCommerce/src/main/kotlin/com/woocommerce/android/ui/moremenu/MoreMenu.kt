@@ -171,6 +171,7 @@ fun MoreMenuBadge(badgeCount: Int) {
 @ExperimentalFoundationApi
 @Preview
 @Composable
+@Suppress("MagicNumber")
 fun MoreMenuPreview() {
     val buttons = listOf(
         MenuUiButton(VIEW_ADMIN, string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
