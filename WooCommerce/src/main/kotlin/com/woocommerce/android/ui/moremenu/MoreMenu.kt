@@ -155,7 +155,7 @@ fun MoreMenuBadge(badgeCount: Int) {
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
-                    .background(colorResource(id = color.more_menu_button_icon_background))
+                    .background(colorResource(id = color.color_primary))
             ) {
                 Text(
                     text = badgeCount.toString(),
