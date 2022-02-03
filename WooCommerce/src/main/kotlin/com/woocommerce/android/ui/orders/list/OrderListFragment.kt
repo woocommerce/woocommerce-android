@@ -345,6 +345,7 @@ class OrderListFragment :
     }
 
     private fun openOrderCreationFragment() {
+        AnalyticsTracker.track(Stat.ORDER_ADD_NEW)
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderCreationFragment)
     }
 

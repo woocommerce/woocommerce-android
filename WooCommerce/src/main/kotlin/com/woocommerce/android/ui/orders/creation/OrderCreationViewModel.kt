@@ -1,8 +1,24 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FROM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUSTOMER_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DIFFERENT_SHIPPING_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -83,13 +99,23 @@ class OrderCreationViewModel @Inject constructor(
         monitorOrderChanges()
     }
 
-    fun onOrderStatusChanged(status: Order.Status) = _orderDraft.update { it.copy(status = status) }
-
     fun onCustomerNoteEdited(newNote: String) = _orderDraft.update { it.copy(customerNote = newNote) }
 
     fun onIncreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, +1) }
 
     fun onDecreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, -1) }
+
+    fun onOrderStatusChanged(status: Order.Status) {
+        AnalyticsTracker.track(
+            Stat.ORDER_STATUS_CHANGE,
+            mapOf(
+                KEY_FROM to _orderDraft.value.status.value,
+                KEY_TO to status.value,
+                KEY_FLOW to VALUE_FLOW_CREATION
+            )
+        )
+        _orderDraft.update { it.copy(status = status) }
+    }
 
     fun onRemoveProduct(item: Order.Item) = _orderDraft.update {
         if (FeatureFlag.ORDER_CREATION_M2.isEnabled()) {
@@ -100,6 +126,10 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
+        AnalyticsTracker.track(
+            Stat.ORDER_PRODUCT_ADD,
+            mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
+        )
         val uniqueId = variationId ?: remoteProductId
         viewModelScope.launch {
             _orderDraft.value.items.toMutableList().apply {
@@ -117,6 +147,12 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
+        val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
+        AnalyticsTracker.track(
+            Stat.ORDER_CUSTOMER_ADD,
+            mapOf(KEY_HAS_DIFFERENT_SHIPPING_DETAILS to hasDifferentShippingDetails)
+        )
+
         _orderDraft.update {
             it.copy(
                 billingAddress = billingAddress,
@@ -161,14 +197,17 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onCreateOrderClicked(order: Order) {
+        trackCreateOrderButtonClick()
         viewModelScope.launch {
             viewState = viewState.copy(isProgressDialogShown = true)
             orderCreationRepository.placeOrder(order).fold(
                 onSuccess = {
+                    AnalyticsTracker.track(Stat.ORDER_CREATION_SUCCESS)
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
                     triggerEvent(ShowCreatedOrder(it.id))
                 },
                 onFailure = {
+                    trackOrderCreationFailure(it)
                     viewState = viewState.copy(isProgressDialogShown = false)
                     triggerEvent(ShowSnackbar(string.order_creation_failure_snackbar))
                 }
@@ -199,6 +238,28 @@ class OrderCreationViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    private fun trackOrderCreationFailure(it: Throwable) {
+        AnalyticsTracker.track(
+            Stat.ORDER_CREATION_FAILED,
+            mapOf(
+                KEY_ERROR_CONTEXT to it::class.java.simpleName,
+                KEY_ERROR_TYPE to it,
+                KEY_ERROR_DESC to it.message
+            )
+        )
+    }
+
+    private fun trackCreateOrderButtonClick() {
+        AnalyticsTracker.track(
+            Stat.ORDER_CREATE_BUTTON_TAPPED,
+            mapOf(
+                KEY_STATUS to _orderDraft.value.status,
+                KEY_PRODUCT_COUNT to products.value?.count(),
+                KEY_HAS_CUSTOMER_DETAILS to _orderDraft.value.billingAddress.hasInfo()
+            )
+        )
     }
 
     @Parcelize
