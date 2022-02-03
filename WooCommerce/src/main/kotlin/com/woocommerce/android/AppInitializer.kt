@@ -72,6 +72,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
     @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
     @Inject lateinit var sendTelemetry: SendTelemetry
+    @Inject lateinit var siteObserver: SiteObserver
     @Inject lateinit var wooLog: WooLogWrapper
 
     // Listens for changes in device connectivity
@@ -93,7 +94,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             selectedSite.getIfExists()?.let {
                 appCoroutineScope.launch {
                     wooCommerceStore.fetchWooCommerceSite(it)
-                    wooCommerceStore.fetchSitePlugins(it)
                 }
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
                 dispatcher.dispatch(WCCoreActionBuilder.newFetchProductSettingsAction(it))
@@ -139,6 +139,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             sendTelemetry(BuildConfig.VERSION_NAME).collect { result ->
                 wooLog.i(UTILS, "WCTracker telemetry result: $result")
             }
+        }
+        appCoroutineScope.launch {
+            siteObserver.observeAndUpdateSelectedSiteData()
         }
     }
 
