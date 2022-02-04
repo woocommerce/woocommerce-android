@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -43,6 +44,11 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
         binding.switchChargeTaxes.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onChargeTaxesChanged(isChecked)
+        }
+
+        binding.editEmail.addTextChangedListener {
+            val email = binding.editEmail.text.toString()
+            viewModel.onBillingEmailChanged(email)
         }
 
         binding.notesSection.setAddButtons(
