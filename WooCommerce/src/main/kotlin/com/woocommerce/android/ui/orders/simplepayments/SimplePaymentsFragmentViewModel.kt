@@ -116,7 +116,10 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         launch {
             simplePaymentsRepository.updateSimplePayment(
                 order.id,
-                viewState.customerNote
+                viewState.orderTotal.toString(),
+                viewState.customerNote,
+                viewState.billingEmail,
+                viewState.chargeTaxes
             ).collectUpdate()
         }
     }
