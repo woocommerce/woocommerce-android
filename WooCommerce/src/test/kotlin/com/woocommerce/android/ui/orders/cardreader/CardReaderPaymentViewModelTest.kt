@@ -128,7 +128,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
         whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test url")
+        whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenReturn("test statement descriptor")
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
+        whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+            flow<BluetoothCardReaderMessages> {}
+        }
     }
 
     @Test
@@ -357,6 +362,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             verify(cardReaderManager).collectPayment(captor.capture())
             assertThat(captor.firstValue.paymentDescription).isEqualTo(expectedResult)
+        }
+
+    @Test
+    fun `when flow started, then correct statement descriptor is propagated to CardReaderManager`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val expectedResult = "hooray"
+            whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
+                .thenReturn(expectedResult)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            viewModel.start()
+
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.statementDescriptor).isEqualTo(expectedResult)
         }
 
     @Test

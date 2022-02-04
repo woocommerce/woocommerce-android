@@ -66,6 +66,7 @@ internal class CreatePaymentAction(
         with(paymentInfo) {
             customerId?.let { builder.setCustomer(it) }
             customerEmail?.takeIf { it.isNotEmpty() }?.let { builder.setReceiptEmail(it) }
+            statementDescriptor?.takeIf { it.isNotEmpty() }?.let { builder.setStatementDescriptor(it) }
         }
         return builder.build()
     }
