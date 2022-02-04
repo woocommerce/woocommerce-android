@@ -41,10 +41,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 fun MoreMenu(viewModel: MoreMenuViewModel) {
     val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
     MoreMenu(
-        moreMenuState.moreMenuItems,
-        moreMenuState.siteName,
-        moreMenuState.siteUrl,
-        moreMenuState.userAvatarUrl,
+        moreMenuState,
         viewModel::onSwitchStoreClick,
         viewModel::onSettingsClick
     )
@@ -52,15 +49,17 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
 
 @ExperimentalFoundationApi
 @Composable
-@Suppress("LongMethod", "FunctionNaming", "LongParameterList")
+@Suppress("LongMethod")
 fun MoreMenu(
-    uiButtons: List<MenuUiButton>,
-    siteName: String,
-    siteUrl: String,
-    userAvatarUrl: String,
+    state: MoreMenuViewState,
     onSwitchStore: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
+    val uiButtons = state.moreMenuItems
+    val siteName = state.siteName
+    val siteUrl = state.siteUrl
+    val userAvatarUrl = state.userAvatarUrl
+
     Column {
         Spacer(modifier = Modifier.height(32.dp))
         Row(
@@ -139,23 +138,28 @@ fun MoreMenu(
 @Composable
 private fun MoreMenuUserAvatar(avatarUrl: String) {
     val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
-    Glide.with(LocalContext.current)
-        .asBitmap()
-        .load(avatarUrl)
-        .into(
-            object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    bitmapState.value = resource
-                }
 
-                override fun onLoadCleared(placeholder: Drawable?) {
-                    // Nothing to do here.
+    if (avatarUrl.isNotEmpty()) {
+        Glide.with(LocalContext.current)
+            .asBitmap()
+            .load(avatarUrl)
+            .into(
+                object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        bitmapState.value = resource
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        // Nothing to do here.
+                    }
                 }
-            }
-        )
+            )
+    }
+
     val circledModifier = Modifier
         .size(48.dp)
         .clip(CircleShape)
+
     bitmapState.value?.let {
         Image(
             bitmap = it.asImageBitmap(),
@@ -248,13 +252,15 @@ fun MoreMenuBadge(badgeCount: Int) {
 @Composable
 @Suppress("MagicNumber")
 fun MoreMenuPreview() {
-    val buttons = listOf(
-        MenuUiButton(VIEW_ADMIN, string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
-        MenuUiButton(VIEW_STORE, string.more_menu_button_store, drawable.ic_more_menu_store),
-        MenuUiButton(PRODUCT_REVIEWS, string.more_menu_button_reviews, drawable.ic_more_menu_reviews, 3)
+    val state = MoreMenuViewState(
+        moreMenuItems = listOf(
+            MenuUiButton(VIEW_ADMIN, string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
+            MenuUiButton(VIEW_STORE, string.more_menu_button_store, drawable.ic_more_menu_store),
+            MenuUiButton(PRODUCT_REVIEWS, string.more_menu_button_reviews, drawable.ic_more_menu_reviews, 3)
+        ),
+        siteName = "Example Site",
+        siteUrl = "woocommerce.com",
+        userAvatarUrl = "" // To force displaying placeholder image
     )
-    val exampleSiteName = "Example Site"
-    val exampleSiteUrl = "woocommerce.com"
-    val exampleUserAvatarUrl = "https://woocommerce.com/"
-    MoreMenu(uiButtons = buttons, exampleSiteName, exampleSiteUrl, exampleUserAvatarUrl, {}, {})
+    MoreMenu(state, {}, {})
 }
