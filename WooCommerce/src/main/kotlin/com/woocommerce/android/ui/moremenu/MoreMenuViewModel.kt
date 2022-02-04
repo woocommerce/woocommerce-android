@@ -3,6 +3,12 @@ package com.woocommerce.android.ui.moremenu
 import androidx.core.net.toUri
 import androidx.lifecycle.*
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
@@ -118,23 +124,39 @@ class MoreMenuViewModel @Inject constructor(
     private fun getSelectedSiteAbsoluteUrl(): String = selectedSite.get().url.toUri().host ?: ""
 
     fun onSettingsClick() {
+        AnalyticsTracker.track(
+            Stat.HUB_MENU_SETTINGS_TAPPED
+        )
         triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
     }
 
     fun onSwitchStoreClick() {
+        AnalyticsTracker.track(
+            Stat.HUB_MENU_SWITCH_STORE_TAPPED
+        )
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
     }
 
     private fun onViewAdminButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
         triggerEvent(MoreMenuEvent.ViewAdminEvent(selectedSite.get().adminUrl))
     }
 
     private fun onViewStoreButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_VIEW_STORE)
         triggerEvent(MoreMenuEvent.ViewStoreEvent(selectedSite.get().url))
     }
 
     private fun onReviewsButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_REVIEWS)
         triggerEvent(MoreMenuEvent.ViewReviewsEvent)
+    }
+
+    private fun trackMoreMenuOptionSelected(selectedOption: String) {
+        AnalyticsTracker.track(
+            Stat.HUB_MENU_OPTION_TAPPED,
+            mapOf(KEY_OPTION to selectedOption)
+        )
     }
 
     private fun updateUnseenCountBy(updateByValue: Int) {

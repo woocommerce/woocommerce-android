@@ -11,7 +11,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.*
+import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
     // region Track Event Enums
@@ -301,8 +301,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MAIN_TAB_ORDERS_RESELECTED,
         MAIN_TAB_PRODUCTS_SELECTED,
         MAIN_TAB_PRODUCTS_RESELECTED,
-        MAIN_TAB_MORE_MENU_SELECTED,
-        MAIN_TAB_MORE_MENU_RESELECTED,
+        MAIN_TAB_HUB_MENU_SELECTED,
+        MAIN_TAB_HUB_MENU_RESELECTED,
 
         // -- Settings
         SETTING_CHANGE,
@@ -580,7 +580,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         MEDIA_PICKER_SELECTION_CLEARED,
         MEDIA_PICKER_OPENED,
         MEDIA_PICKER_OPEN_SYSTEM_PICKER,
-        MEDIA_PICKER_OPEN_WORDPRESS_MEDIA_LIBRARY_PICKER
+        MEDIA_PICKER_OPEN_WORDPRESS_MEDIA_LIBRARY_PICKER,
+
+        // -- More Menu (aka Hub Menu)
+        HUB_MENU_SWITCH_STORE_TAPPED,
+        HUB_MENU_OPTION_TAPPED,
+        HUB_MENU_SETTINGS_TAPPED
     }
     // endregion
 
@@ -858,6 +863,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ANNOUNCEMENT_VIEW_SOURCE = "source"
         const val VALUE_ANNOUNCEMENT_SOURCE_UPGRADE = "app_upgrade"
         const val VALUE_ANNOUNCEMENT_SOURCE_SETTINGS = "app_settings"
+
+        // -- More Menu (aka Hub Menu) option values
+        const val VALUE_MORE_MENU_VIEW_STORE = "view_store"
+        const val VALUE_MORE_MENU_ADMIN_MENU = "admin_menu"
+        const val VALUE_MORE_MENU_REVIEWS = "reviews"
 
         var sendUsageStats: Boolean = true
             set(value) {

@@ -666,7 +666,7 @@ class MainActivity :
             ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_SELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
-            MORE -> Stat.MAIN_TAB_MORE_MENU_SELECTED
+            MORE -> Stat.MAIN_TAB_HUB_MENU_SELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -681,7 +681,7 @@ class MainActivity :
             ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_RESELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
-            MORE -> Stat.MAIN_TAB_MORE_MENU_RESELECTED
+            MORE -> Stat.MAIN_TAB_HUB_MENU_RESELECTED
         }
         AnalyticsTracker.track(stat)
 
