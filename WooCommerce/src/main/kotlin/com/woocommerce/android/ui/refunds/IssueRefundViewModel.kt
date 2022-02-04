@@ -292,7 +292,7 @@ class IssueRefundViewModel @Inject constructor(
                 }
                 updateRefundSummaryState(paymentTitle, isMethodDescriptionVisible = true)
             } else {
-                loadCardDetails(gateway.title.ifBlank { manualRefundMethod })
+                enrichRefundMethodWithCardDetails(gateway.title.ifBlank { manualRefundMethod })
             }
         }
     }
@@ -748,26 +748,30 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    private fun loadCardDetails(refundMethod: String) {
+    private fun enrichRefundMethodWithCardDetails(refundMethod: String) {
         val chargeId = order.chargeId
         if (chargeId != null) {
-            launch {
-                when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
-                    is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
-                        val refundMethodWithCard = result.run {
-                            val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
-                            val last4 = result.cardLast4.orEmpty()
-                            "$refundMethod ($brand **** $last4)"
-                        }
-                        updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
-                    }
-                    PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
-                        updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
-                    }
-                }.exhaustive
-            }
+            loadCardDetails(chargeId, refundMethod)
         } else {
             updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
+        }
+    }
+
+    private fun loadCardDetails(chargeId: String, refundMethod: String) {
+        launch {
+            when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
+                is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
+                    val refundMethodWithCard = result.run {
+                        val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
+                        val last4 = result.cardLast4.orEmpty()
+                        "$refundMethod ($brand **** $last4)"
+                    }
+                    updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
+                }
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
+                    updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
+                }
+            }.exhaustive
         }
     }
 
