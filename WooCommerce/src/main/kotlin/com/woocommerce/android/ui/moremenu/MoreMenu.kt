@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.moremenu
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.*
@@ -10,19 +12,24 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.*
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
@@ -35,6 +42,9 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
     val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
     MoreMenu(
         moreMenuState.moreMenuItems,
+        moreMenuState.siteName,
+        moreMenuState.siteUrl,
+        moreMenuState.userAvatarUrl,
         viewModel::onSwitchStoreClick,
         viewModel::onSettingsClick
     )
@@ -42,28 +52,59 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
 
 @ExperimentalFoundationApi
 @Composable
-@Suppress("LongMethod")
-fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSettingsClick: () -> Unit) {
-    Column(
-        modifier = Modifier.padding(10.dp)
-    ) {
+@Suppress("LongMethod", "FunctionNaming", "LongParameterList")
+fun MoreMenu(
+    uiButtons: List<MenuUiButton>,
+    siteName: String,
+    siteUrl: String,
+    userAvatarUrl: String,
+    onSwitchStore: () -> Unit,
+    onSettingsClick: () -> Unit
+) {
+    Column {
+        Spacer(modifier = Modifier.height(32.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .fillMaxWidth(fraction = 0.8f)
             ) {
-                Text(
-                    text = stringResource(string.settings_switch_store),
-                    color = colorResource(color.color_secondary),
-                    modifier = Modifier
-                        .clickable(
-                            enabled = true,
-                            onClickLabel = stringResource(id = string.settings_switch_store),
-                            role = Role.Button
-                        ) { onSwitchStore() }
-                )
+                Row {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            text = siteName,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            color = colorResource(id = color.color_on_surface)
+                        )
+                        Text(
+                            text = siteUrl,
+                            fontSize = 14.sp,
+                            color = colorResource(id = color.color_on_surface),
+                            modifier = Modifier
+                                .padding(vertical = 4.dp)
+                        )
+                        Text(
+                            text = stringResource(string.settings_switch_store),
+                            color = colorResource(color.color_secondary),
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .clickable(
+                                    enabled = true,
+                                    onClickLabel = stringResource(id = string.settings_switch_store),
+                                    role = Role.Button
+                                ) { onSwitchStore() }
+                        )
+                    }
+                }
             }
 
             IconButton(
@@ -76,6 +117,7 @@ fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSetting
                 )
             }
         }
+        Spacer(modifier = Modifier.height(32.dp))
         LazyVerticalGrid(
             cells = Fixed(2),
             contentPadding = PaddingValues(ButtonDefaults.IconSpacing),
@@ -92,6 +134,39 @@ fun MoreMenu(uiButtons: List<MenuUiButton>, onSwitchStore: () -> Unit, onSetting
             }
         }
     }
+}
+
+@Composable
+private fun MoreMenuUserAvatar(avatarUrl: String) {
+    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+    Glide.with(LocalContext.current)
+        .asBitmap()
+        .load(avatarUrl)
+        .into(
+            object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    bitmapState.value = resource
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    // Nothing to do here.
+                }
+            }
+        )
+    val circledModifier = Modifier
+        .size(48.dp)
+        .clip(CircleShape)
+    bitmapState.value?.let {
+        Image(
+            bitmap = it.asImageBitmap(),
+            contentDescription = stringResource(id = string.more_menu_avatar),
+            modifier = circledModifier
+        )
+    } ?: Image(
+        painter = painterResource(id = drawable.img_gravatar_placeholder),
+        contentDescription = stringResource(id = string.more_menu_avatar),
+        modifier = circledModifier
+    )
 }
 
 @Composable
@@ -178,5 +253,8 @@ fun MoreMenuPreview() {
         MenuUiButton(VIEW_STORE, string.more_menu_button_store, drawable.ic_more_menu_store),
         MenuUiButton(PRODUCT_REVIEWS, string.more_menu_button_reviews, drawable.ic_more_menu_reviews, 3)
     )
-    MoreMenu(uiButtons = buttons, {}, {})
+    val exampleSiteName = "Example Site"
+    val exampleSiteUrl = "woocommerce.com"
+    val exampleUserAvatarUrl = "https://woocommerce.com/"
+    MoreMenu(uiButtons = buttons, exampleSiteName, exampleSiteUrl, exampleUserAvatarUrl, {}, {})
 }

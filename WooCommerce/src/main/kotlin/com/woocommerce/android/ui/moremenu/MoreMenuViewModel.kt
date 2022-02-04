@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.moremenu
 
+import androidx.core.net.toUri
 import androidx.lifecycle.*
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.*
@@ -13,11 +14,13 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.*
+import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 @HiltViewModel
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    accountStore: AccountStore,
     private val selectedSite: SelectedSite,
     private val reviewListRepository: ReviewListRepository
 ) : ScopedViewModel(savedState) {
@@ -27,7 +30,12 @@ class MoreMenuViewModel @Inject constructor(
     init {
         EventBus.getDefault().register(this)
 
-        _moreMenuViewState.value = MoreMenuViewState(moreMenuItems = generateMenuButtons(unseenReviewsCount = 0))
+        _moreMenuViewState.value = MoreMenuViewState(
+            moreMenuItems = generateMenuButtons(unseenReviewsCount = 0),
+            siteName = getSelectedSiteName(),
+            siteUrl = getSelectedSiteAbsoluteUrl(),
+            userAvatarUrl = accountStore.account.avatarUrl
+        )
         refreshUnseenReviewsCount()
     }
 
@@ -85,6 +93,10 @@ class MoreMenuViewModel @Inject constructor(
             .count()
 
     fun handleStoreSwitch() {
+        _moreMenuViewState.value = _moreMenuViewState.value?.copy(
+            siteName = getSelectedSiteName(),
+            siteUrl = getSelectedSiteAbsoluteUrl()
+        )
         refreshUnseenReviewsCount()
     }
 
@@ -93,6 +105,17 @@ class MoreMenuViewModel @Inject constructor(
             moreMenuItems = generateMenuButtons(0)
         )
     }
+
+    private fun getSelectedSiteName(): String =
+        selectedSite.getIfExists()?.let { site ->
+            if (!site.displayName.isNullOrBlank()) {
+                site.displayName
+            } else {
+                site.name
+            }
+        } ?: ""
+
+    private fun getSelectedSiteAbsoluteUrl(): String = selectedSite.get().url.toUri().host ?: ""
 
     fun onSettingsClick() {
         triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
@@ -149,6 +172,9 @@ class MoreMenuViewModel @Inject constructor(
 
     data class MoreMenuViewState(
         val moreMenuItems: List<MenuUiButton> = emptyList(),
+        val siteName: String = "",
+        val siteUrl: String = "",
+        val userAvatarUrl: String = ""
     )
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
