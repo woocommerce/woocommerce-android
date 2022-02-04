@@ -283,18 +283,16 @@ class IssueRefundViewModel @Inject constructor(
     private fun initRefundSummaryState() {
         if (refundSummaryStateLiveData.hasInitialValue) {
             val manualRefundMethod = resourceProvider.getString(R.string.order_refunds_manual_refund)
-            val paymentTitle: String
 
             if (!order.paymentMethod.isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
-                paymentTitle = if (gateway.title.isNotBlank()) {
+                val paymentTitle = if (gateway.title.isNotBlank()) {
                     resourceProvider.getString(R.string.order_refunds_method, manualRefundMethod, gateway.title)
                 } else {
                     manualRefundMethod
                 }
-                setSummaryStateMethodAndDescriptionVisibility(paymentTitle, true)
+                updateRefundSummaryState(paymentTitle, isMethodDescriptionVisible = true)
             } else {
-                paymentTitle = gateway.title.ifBlank { manualRefundMethod }
-                loadCardDetails(paymentTitle)
+                loadCardDetails(gateway.title.ifBlank { manualRefundMethod })
             }
         }
     }
@@ -756,27 +754,27 @@ class IssueRefundViewModel @Inject constructor(
             launch {
                 when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
                     is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
-                        val refundMethod = result.run {
+                        val refundMethodWithCard = result.run {
                             val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
                             val last4 = result.cardLast4.orEmpty()
                             "$refundMethod ($brand **** $last4)"
                         }
-                        setSummaryStateMethodAndDescriptionVisibility(refundMethod, false)
+                        updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
                     }
                     PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
-                        setSummaryStateMethodAndDescriptionVisibility(refundMethod, false)
+                        updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
                     }
                 }.exhaustive
             }
         } else {
-            setSummaryStateMethodAndDescriptionVisibility(refundMethod, false)
+            updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
         }
     }
 
-    private fun setSummaryStateMethodAndDescriptionVisibility(refundMethod: String, isManualRefund: Boolean) {
+    private fun updateRefundSummaryState(refundMethod: String, isMethodDescriptionVisible: Boolean) {
         refundSummaryState = refundSummaryState.copy(
             refundMethod = refundMethod,
-            isMethodDescriptionVisible = isManualRefund
+            isMethodDescriptionVisible = isMethodDescriptionVisible
         )
     }
 
