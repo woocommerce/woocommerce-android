@@ -11,7 +11,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.HashMap
 import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
@@ -145,6 +144,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Orders List
         ORDERS_LIST_FILTER,
+        ORDERS_LIST_SEARCH,
         ORDERS_LIST_LOADED,
         ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
         ORDERS_LIST_PULLED_TO_REFRESH,
