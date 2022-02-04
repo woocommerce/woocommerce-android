@@ -9,6 +9,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -142,15 +143,23 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         collect { result ->
             when (result) {
                 is OptimisticUpdateResult -> {
-                    withContext(Dispatchers.Main) {
-                        triggerEvent(ShowTakePaymentScreen)
+                    if (result.event.isError) {
+                        result.event.error?.let {
+                            WooLog.e(WooLog.T.ORDERS, "Simple payment optimistic update failed with ${it.message}")
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            triggerEvent(ShowTakePaymentScreen)
+                        }
                     }
                 }
                 is UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
+                        result.event.error?.let {
+                            WooLog.e(WooLog.T.ORDERS, "Simple payment remote update failed with ${it.message}")
+                        }
                         withContext(Dispatchers.Main) {
-                            // TODO nbradbury change string resource
-                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
+                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.simple_payments_update_error))
                         }
                     }
                 }
