@@ -175,9 +175,15 @@ class CardReaderPaymentViewModel
 
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
         val customerEmail = order.billingAddress.email
+        val site = selectedSite.get()
         cardReaderManager.collectPayment(
             PaymentInfo(
                 paymentDescription = order.getPaymentDescription(),
+                statementDescriptor = appPrefsWrapper.getCardReaderStatementDescriptor(
+                    localSiteId = site.id,
+                    remoteSiteId = site.siteId,
+                    selfHostedSiteId = site.selfHostedSiteId
+                ),
                 orderId = order.id,
                 amount = order.total,
                 currency = order.currency,
