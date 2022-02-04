@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
@@ -272,6 +269,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         _binding = null
     }
 
+    /*
+    Hide Settings icon on My Store, because it is moved to the "More" screen.
+    We temporarily comment this instead of outright deleting, because we might want to restore it,
+    based on merchants' feedbacks.
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_action_bar, menu)
         super.onCreateOptionsMenu(menu, inflater)
@@ -286,6 +288,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             else -> super.onOptionsItemSelected(item)
         }
     }
+     */
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
