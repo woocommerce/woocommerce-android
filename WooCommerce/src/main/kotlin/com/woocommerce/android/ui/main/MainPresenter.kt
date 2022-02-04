@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.main
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
@@ -33,7 +34,7 @@ class MainPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
-    private val appPrefs: AppPrefs,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val wcOrderStore: WCOrderStore,
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
@@ -66,6 +67,7 @@ class MainPresenter @Inject constructor(
                 }
             }
         }
+        mainView?.showMoreMenuBadge(appPrefsWrapper.hasUnseenReviews())
     }
 
     override fun dropView() {
@@ -115,7 +117,7 @@ class MainPresenter @Inject constructor(
         }
     }
 
-    override fun isUserEligible() = appPrefs.isUserEligible()
+    override fun isUserEligible() = appPrefsWrapper.isUserEligible()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -201,6 +203,12 @@ class MainPresenter @Inject constructor(
         if (event.channel == NEW_ORDER) {
             fetchUnfilledOrderCount()
         }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
+        mainView?.showMoreMenuBadge(event.hasUnseen)
     }
 
     fun onEventMainThread(event: SelectedSiteChangedEvent) {

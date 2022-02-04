@@ -7,10 +7,7 @@ import android.content.Intent
 import android.content.res.Resources.Theme
 import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -31,10 +28,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
-import com.woocommerce.android.extensions.active
-import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.expand
-import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -203,13 +197,13 @@ class MainActivity :
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
-        presenter.takeView(this)
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this@MainActivity)
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
+
+        presenter.takeView(this)
 
         // fetch the site list if the database has been downgraded - otherwise the site picker will be displayed,
         // which we don't want in this situation
@@ -448,14 +442,10 @@ class MainActivity :
             // the image viewers should be shown full screen
             if (isFullScreenFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
-                binding.collapsingToolbar.layoutParams.height = 0
+                hideToolbar()
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                if (restoreToolbarHeight > 0) {
-                    binding.collapsingToolbar.layoutParams.height = restoreToolbarHeight
-                    restoreToolbarHeight = 0
-                }
+                showToolbar()
             }
         }
 
@@ -467,6 +457,18 @@ class MainActivity :
         }
 
         previousDestinationId = destination.id
+    }
+
+    private fun showToolbar() {
+        if (restoreToolbarHeight > 0) {
+            binding.collapsingToolbar.layoutParams.height = restoreToolbarHeight
+            restoreToolbarHeight = 0
+        }
+    }
+
+    fun hideToolbar() {
+        restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
+        binding.collapsingToolbar.layoutParams.height = 0
     }
 
     override fun setTitle(title: CharSequence?) {
@@ -649,6 +651,13 @@ class MainActivity :
     override fun hideOrderBadge() {
         unfilledOrderCount = 0
         binding.bottomNav.setOrderBadgeCount(0)
+    }
+
+    override fun showMoreMenuBadge(show: Boolean) {
+        binding.bottomNav.showMoreMenuBadge(show)
+        if (!show) {
+            viewModel.removeReviewNotifications()
+        }
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {

@@ -75,4 +75,6 @@ class AppPrefsWrapper @Inject constructor() {
     fun setV4StatsSupported(supported: Boolean) {
         AppPrefs.setV4StatsSupported(supported)
     }
+
+    fun isUserEligible(): Boolean = AppPrefs.isUserEligible()
 }
