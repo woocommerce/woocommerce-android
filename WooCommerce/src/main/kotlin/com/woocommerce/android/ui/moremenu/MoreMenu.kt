@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.moremenu
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.*
@@ -10,13 +12,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.*
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -24,8 +27,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
-import coil.transform.CircleCropTransformation
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
@@ -71,18 +75,7 @@ fun MoreMenu(
                 Row {
                     Column {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Image(
-                            painter = rememberImagePainter(
-                                data = userAvatarUrl,
-                                builder = {
-                                    transformations(CircleCropTransformation())
-                                    placeholder(drawable.img_gravatar_placeholder)
-                                }
-                            ),
-                            contentDescription = stringResource(id = string.more_menu_avatar),
-                            modifier = Modifier
-                                .size(48.dp)
-                        )
+                        MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
@@ -141,6 +134,37 @@ fun MoreMenu(
             }
         }
     }
+}
+
+@Composable
+private fun MoreMenuUserAvatar(avatarUrl: String) {
+    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+    Glide.with(LocalContext.current)
+        .asBitmap()
+        .load(avatarUrl)
+        .into(
+            object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    bitmapState.value = resource
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {}
+            }
+        )
+    val circledModifier = Modifier
+        .size(48.dp)
+        .clip(CircleShape)
+    bitmapState.value?.let {
+        Image(
+            bitmap = it.asImageBitmap(),
+            contentDescription = stringResource(id = string.more_menu_avatar),
+            modifier = circledModifier
+        )
+    } ?: Image(
+        painter = painterResource(id = drawable.img_gravatar_placeholder),
+        contentDescription = stringResource(id = string.more_menu_avatar),
+        modifier = circledModifier
+    )
 }
 
 @Composable

@@ -12,9 +12,9 @@ import com.woocommerce.android.ui.reviews.ReviewListRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import org.wordpress.android.fluxc.store.AccountStore
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.*
+import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -175,7 +175,6 @@ class MoreMenuViewModel @Inject constructor(
         val siteName: String = "",
         val siteUrl: String = "",
         val userAvatarUrl: String = ""
-
     )
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {

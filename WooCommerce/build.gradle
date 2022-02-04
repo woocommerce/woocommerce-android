@@ -334,7 +334,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
     implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
     implementation "com.google.android.material:compose-theme-adapter:$composeVersion"
-    implementation("io.coil-kt:coil-compose:1.4.0")
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.0.5'
 }
 
