@@ -148,7 +148,9 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
                     bitmapState.value = resource
                 }
 
-                override fun onLoadCleared(placeholder: Drawable?) {}
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    // Nothing to do here.
+                }
             }
         )
     val circledModifier = Modifier
