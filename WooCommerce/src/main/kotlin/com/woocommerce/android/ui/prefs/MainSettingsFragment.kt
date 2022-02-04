@@ -176,6 +176,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
+        /*
+        Hide "Switch Store" option in Settings, because it is moved to the "More" screen.
+        We temporarily comment this instead of outright deleting, because we might want to restore it,
+        based on merchants' feedbacks.
+
         if (presenter.hasMultipleStores()) {
             val storeClickListener = View.OnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
@@ -186,6 +191,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         } else {
             binding.optionSwitchStore.hide()
         }
+        */
+        binding.optionSwitchStore.hide()
 
         binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)
         binding.optionTheme.setOnClickListener {
