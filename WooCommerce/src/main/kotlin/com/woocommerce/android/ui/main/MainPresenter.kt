@@ -67,7 +67,9 @@ class MainPresenter @Inject constructor(
                 }
             }
         }
-        mainView?.showMoreMenuBadge(appPrefsWrapper.hasUnseenReviews())
+        if (selectedSite.exists()) {
+            mainView?.showMoreMenuBadge(appPrefsWrapper.hasUnseenReviews())
+        }
     }
 
     override fun dropView() {
