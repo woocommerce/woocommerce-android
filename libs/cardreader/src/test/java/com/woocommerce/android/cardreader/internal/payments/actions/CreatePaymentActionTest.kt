@@ -144,6 +144,33 @@ internal class CreatePaymentActionTest {
     }
 
     @Test
+    fun `when statement descriptor not empty, then PaymentIntent setStatementDescriptor invoked`() = runBlockingTest {
+        val expected = "Site abcd"
+
+        action.createPaymentIntent(createPaymentInfo(statementDescriptor = expected)).toList()
+
+        verify(intentParametersBuilder).setStatementDescriptor(expected)
+    }
+
+    @Test
+    fun `when statement descriptor "", then PaymentIntent setStatementDescriptor NOT invoked`() = runBlockingTest {
+        val expected = ""
+
+        action.createPaymentIntent(createPaymentInfo(statementDescriptor = expected)).toList()
+
+        verify(intentParametersBuilder, never()).setStatementDescriptor(any())
+    }
+
+    @Test
+    fun `when statement descriptor null, then PaymentIntent setStatementDescriptor NOT invoked`() = runBlockingTest {
+        val expected: String? = null
+
+        action.createPaymentIntent(createPaymentInfo(statementDescriptor = expected)).toList()
+
+        verify(intentParametersBuilder, never()).setStatementDescriptor(any())
+    }
+
+    @Test
     fun `when creating payment intent, then payment description set`() = runBlockingTest {
         val expectedDescription = "test description"
 
@@ -370,7 +397,8 @@ internal class CreatePaymentActionTest {
         siteUrl: String? = "",
         customerId: String? = null,
         orderKey: String? = null,
-        countryCode: String? = "US"
+        countryCode: String? = "US",
+        statementDescriptor: String? = null,
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -383,6 +411,7 @@ internal class CreatePaymentActionTest {
             siteUrl = siteUrl,
             customerId = customerId,
             orderKey = orderKey,
-            countryCode = countryCode
+            countryCode = countryCode,
+            statementDescriptor = statementDescriptor
         )
 }
