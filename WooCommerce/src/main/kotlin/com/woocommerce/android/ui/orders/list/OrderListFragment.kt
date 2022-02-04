@@ -28,7 +28,8 @@ import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.C
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.util.*
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -208,7 +209,7 @@ class OrderListFragment :
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
         val isSimplePaymentAvailable = isSimplePaymentsAvailable()
-        val isOrderCreationAvailable = FeatureFlag.ORDER_CREATION.isEnabled() && AppPrefs.isOrderCreationEnabled
+        val isOrderCreationAvailable = AppPrefs.isOrderCreationEnabled
 
         if (isSimplePaymentAvailable || isOrderCreationAvailable) {
             fabButton.visibility = View.VISIBLE

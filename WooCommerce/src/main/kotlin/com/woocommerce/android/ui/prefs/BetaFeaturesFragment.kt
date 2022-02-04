@@ -17,7 +17,6 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.FeatureFlag
 
 class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     companion object {
@@ -77,16 +76,12 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     }
 
     private fun FragmentSettingsBetaBinding.bindOrderCreationToggle() {
-        if (FeatureFlag.ORDER_CREATION.isEnabled()) {
-            switchOrderCreationToggle.isChecked = AppPrefs.isOrderCreationEnabled
-            switchOrderCreationToggle.setOnCheckedChangeListener { switch, isChecked ->
-                // trigger order creation tracks
+        switchOrderCreationToggle.isChecked = AppPrefs.isOrderCreationEnabled
+        switchOrderCreationToggle.setOnCheckedChangeListener { switch, isChecked ->
+            // trigger order creation tracks
 
-                settingsListener?.onOrderCreationOptionChanged(isChecked)
-                    ?: handleToggleChangeFailure(switch, isChecked)
-            }
-        } else {
-            switchOrderCreationToggle.hide()
+            settingsListener?.onOrderCreationOptionChanged(isChecked)
+                ?: handleToggleChangeFailure(switch, isChecked)
         }
     }
 
