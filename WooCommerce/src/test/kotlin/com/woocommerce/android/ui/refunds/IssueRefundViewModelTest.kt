@@ -159,35 +159,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given non cash order, when summary state is shown, then card info is visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val chargeId = "charge_id"
-            val cardBrand = "visa"
-            val cardLast4 = "1234"
-            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
-            )
-            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
-            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
-                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
-                    cardBrand = cardBrand,
-                    cardLast4 = cardLast4
-                )
-            )
-            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
-                .thenReturn("Credit/Debit card")
-
-            initViewModel()
-
-            var viewState: IssueRefundViewModel.RefundSummaryViewState? = null
-            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
-
-            assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card (Visa **** 1234)")
-        }
-    }
-
-    @Test
     fun `given non cash order, when successfully charge data loaded, then card info is visible`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val chargeId = "charge_id"
@@ -220,18 +191,13 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     fun `given non cash order, when charge data loaded with error, then card info is not visible`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val chargeId = "charge_id"
-            val cardBrand = "visa"
-            val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
                 metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
-                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
-                    cardBrand = cardBrand,
-                    cardLast4 = cardLast4
-                )
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error
             )
             whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
                 .thenReturn("Credit/Debit card")
