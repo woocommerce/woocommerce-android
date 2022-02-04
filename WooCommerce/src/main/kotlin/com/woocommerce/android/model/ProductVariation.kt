@@ -3,14 +3,8 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.formatDateToISO8601Format
-import com.woocommerce.android.extensions.formatToString
-import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
-import com.woocommerce.android.extensions.isEquivalentTo
-import com.woocommerce.android.extensions.isNotSet
-import com.woocommerce.android.extensions.isSet
-import com.woocommerce.android.model.ProductVariation.Option
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
@@ -20,14 +14,14 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.Date
+import java.util.*
 
 @Parcelize
 data class ProductVariation(
     val remoteProductId: Long,
     val remoteVariationId: Long,
     val sku: String,
-    val image: Product.Image?,
+    val image: Image?,
     val price: BigDecimal?,
     val regularPrice: BigDecimal?,
     val salePrice: BigDecimal?,
@@ -37,7 +31,6 @@ data class ProductVariation(
     val stockStatus: ProductStockStatus,
     val backorderStatus: ProductBackorderStatus,
     val stockQuantity: Double,
-    val options: List<Option>,
     var priceWithCurrency: String? = null,
     val isPurchasable: Boolean,
     val isVirtual: Boolean,
@@ -47,12 +40,13 @@ data class ProductVariation(
     val isVisible: Boolean,
     val shippingClass: String,
     val shippingClassId: Long,
+    val menuOrder: Int,
     val attributes: Array<VariantOption>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
     override val weight: Float
-) : Parcelable, IProduct {
+) : Parcelable, IProduct, Comparable<ProductVariation> {
     val isSaleInEffect: Boolean
         get() {
             val now = Date()
@@ -80,7 +74,6 @@ data class ProductVariation(
                 stockQuantity == variation.stockQuantity &&
                 stockStatus == variation.stockStatus &&
                 backorderStatus == variation.backorderStatus &&
-                options == variation.options &&
                 isPurchasable == variation.isPurchasable &&
                 isVirtual == variation.isVirtual &&
                 isDownloadable == variation.isDownloadable &&
@@ -95,6 +88,12 @@ data class ProductVariation(
                 height == variation.height &&
                 width == variation.width
         } ?: false
+    }
+
+    override fun compareTo(other: ProductVariation): Int {
+        val menuOrdering = menuOrder.compareTo(other.menuOrder)
+        if (menuOrdering != 0) return menuOrdering
+        return getName().compareTo(other.getName())
     }
 
     override fun hashCode(): Int {
@@ -140,6 +139,7 @@ data class ProductVariation(
             it.status = if (isVisible) PUBLISH.value else PRIVATE.value
             it.shippingClass = shippingClass
             it.shippingClassId = shippingClassId.toInt()
+            it.menuOrder = menuOrder
             it.attributes = JsonArray().toString()
             attributes.takeIf { list -> list.isNotEmpty() }
                 ?.forEach { variant -> it.addVariant(variant.asSourceModel()) }
@@ -152,16 +152,10 @@ data class ProductVariation(
 
     fun getName(parentProduct: Product? = null): String {
         return parentProduct?.variationEnabledAttributes?.joinToString(" - ") { attribute ->
-            val option = options.firstOrNull { it.attributeName == attribute.name }
-            option?.optionChoice ?: "Any ${attribute.name}"
-        } ?: options.joinToString(" - ") { o -> o.optionChoice }
+            val option = attributes.firstOrNull { it.name == attribute.name }
+            option?.option ?: "Any ${attribute.name}"
+        } ?: attributes.filter { it.option != null }.joinToString(" - ") { o -> o.option!! }
     }
-
-    @Parcelize
-    data class Option(
-        val attributeName: String,
-        val optionChoice: String
-    ) : Parcelable
 }
 
 @Parcelize
@@ -205,17 +199,15 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         stockStatus = ProductStockStatus.fromString(this.stockStatus),
         backorderStatus = ProductBackorderStatus.fromString(this.backorders),
         stockQuantity = this.stockQuantity,
-        options = this.getProductVariantOptions()
-            .filter { it.name != null && it.option != null }
-            .map { Option(it.name!!, it.option!!) },
         isPurchasable = this.purchasable,
-        isDownloadable = this.downloadable,
         isVirtual = this.virtual,
+        isDownloadable = this.downloadable,
         isStockManaged = this.manageStock,
         description = this.description.fastStripHtml(),
         isVisible = ProductStatus.fromString(this.status) == PUBLISH,
         shippingClass = this.shippingClass,
         shippingClassId = this.shippingClassId.toLong(),
+        menuOrder = this.menuOrder,
         attributes = this.attributeList
             ?.map { VariantOption(it) }
             ?.toTypedArray()

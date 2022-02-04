@@ -22,7 +22,7 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
             ORDER_CREATION_M2 -> false
-            JETPACK_CP -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
+            JETPACK_CP,
             CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
             PAYMENTS_STRIPE_EXTENSION -> false
             ORDER_FILTERS,
