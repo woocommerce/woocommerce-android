@@ -12,5 +12,6 @@ data class PaymentInfo(
     val storeName: String?,
     val siteUrl: String?,
     val orderKey: String?,
+    internal val countryCode: String? = null,
     internal val customerId: String? = null,
 )

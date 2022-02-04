@@ -31,12 +31,13 @@ class OrderCreationRepository @Inject constructor(
 
         val request = UpdateOrderRequest(
             status = status,
-            lineItems = order.items.map {
+            lineItems = order.items.map { item ->
                 LineItem(
-                    name = it.name,
-                    productId = it.productId,
-                    variationId = it.variationId,
-                    quantity = it.quantity
+                    id = item.itemId.takeIf { it != 0L },
+                    name = item.name,
+                    productId = item.productId,
+                    variationId = item.variationId,
+                    quantity = item.quantity
                 )
             },
             shippingAddress = order.shippingAddress.toShippingAddressModel(),

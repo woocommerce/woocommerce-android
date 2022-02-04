@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader
 import android.app.Application
 import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
 import com.woocommerce.android.cardreader.internal.TokenProvider
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.connection.BluetoothReaderListenerImpl
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
@@ -43,7 +44,13 @@ object CardReaderManagerFactory {
             PaymentManager(
                 terminal,
                 cardReaderStore,
-                CreatePaymentAction(PaymentIntentParametersFactory(), terminal, PaymentUtils(), logWrapper),
+                CreatePaymentAction(
+                    PaymentIntentParametersFactory(),
+                    terminal,
+                    PaymentUtils(),
+                    logWrapper,
+                    CardReaderConfigFactory()
+                ),
                 CollectPaymentAction(terminal, logWrapper),
                 ProcessPaymentAction(terminal, logWrapper),
                 CancelPaymentAction(terminal),
