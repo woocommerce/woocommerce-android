@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.viewModels
@@ -37,8 +36,11 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
         val binding = FragmentSimplePaymentsBinding.bind(view)
         binding.buttonDone.setOnClickListener {
-            if (validateEmail(binding.editEmail)) {
-                viewModel.onDoneButtonClicked()
+            val billingEmail = binding.editEmail.text.toString()
+            if (validateEmail(billingEmail)) {
+                viewModel.onDoneButtonClicked(billingEmail)
+            } else {
+                binding.editEmail.error = getString(R.string.email_invalid)
             }
         }
 
@@ -151,14 +153,8 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
             .let { findNavController().navigateSafely(it) }
     }
 
-    private fun validateEmail(emailEditText: EditText): Boolean {
-        val email = emailEditText.text.toString()
-        return if (email.isEmpty() || StringUtils.isValidEmail(email)) {
-            true
-        } else {
-            emailEditText.error = getString(R.string.email_invalid)
-            false
-        }
+    private fun validateEmail(email: String): Boolean {
+        return (email.isEmpty() || StringUtils.isValidEmail(email))
     }
 
     override fun getFragmentTitle() = getString(R.string.simple_payments_title)

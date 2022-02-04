@@ -106,7 +106,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         viewState = viewState.copy(customerNote = customerNote)
     }
 
-    fun onDoneButtonClicked() {
+    fun onDoneButtonClicked(billingEmail: String) {
         if (!networkStatus.isConnected()) {
             AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
@@ -118,7 +118,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 order.id,
                 viewState.orderTotal.toString(),
                 viewState.customerNote,
-                viewState.billingEmail,
+                billingEmail,
                 viewState.chargeTaxes
             ).collectUpdate()
         }
