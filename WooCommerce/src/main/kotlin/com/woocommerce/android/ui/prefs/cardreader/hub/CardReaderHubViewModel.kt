@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeature
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import okhttp3.internal.toImmutableList
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,7 +55,7 @@ class CardReaderHubViewModel @Inject constructor(
                     )
                 )
             }
-        }
+        }.toImmutableList()
     )
 
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
