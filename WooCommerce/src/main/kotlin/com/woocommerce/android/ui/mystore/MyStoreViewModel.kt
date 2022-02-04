@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -69,9 +70,10 @@ class MyStoreViewModel @Inject constructor(
     val hasOrders: LiveData<OrderState> = _hasOrders
 
     private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    private var activeStatsGranularity = MutableStateFlow(
+    private var _activeStatsGranularity = MutableStateFlow(
         savedState.get<StatsGranularity>(ACTIVE_STATS_GRANULARITY_KEY) ?: StatsGranularity.DAYS
     )
+    val activeStatsGranularity = _activeStatsGranularity.asLiveData()
 
     @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
     @VisibleForTesting val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
@@ -80,7 +82,7 @@ class MyStoreViewModel @Inject constructor(
         ConnectionChangeReceiver.getEventBus().register(this)
         viewModelScope.launch {
             combine(
-                activeStatsGranularity,
+                _activeStatsGranularity,
                 refreshTrigger.onStart { emit(Unit) }
             ) { granularity, _ ->
                 granularity
@@ -114,7 +116,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onStatsGranularityChanged(granularity: StatsGranularity) {
-        activeStatsGranularity.update { granularity }
+        _activeStatsGranularity.update { granularity }
         savedState[ACTIVE_STATS_GRANULARITY_KEY] = granularity
     }
 
