@@ -8,6 +8,7 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -106,19 +107,31 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         viewState = viewState.copy(customerNote = customerNote)
     }
 
-    fun onDoneButtonClicked(billingEmail: String) {
+    fun onBillingEmailChanged(email: String) {
+        viewState = viewState.copy(billingEmail = email)
+    }
+
+    fun onDoneButtonClicked() {
         if (!networkStatus.isConnected()) {
             AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
             return
         }
 
+        val isEmailValid = viewState.billingEmail.isEmpty() || StringUtils.isValidEmail(viewState.billingEmail)
+        if (!isEmailValid) {
+            viewState = viewState.copy(isBillingEmailValid = false)
+            return
+        }
+
+        viewState = viewState.copy(isBillingEmailValid = true)
+
         launch {
             simplePaymentsRepository.updateSimplePayment(
                 order.id,
                 viewState.orderTotal.toString(),
                 viewState.customerNote,
-                billingEmail,
+                viewState.billingEmail,
                 viewState.chargeTaxes
             ).collectUpdate()
         }
@@ -151,7 +164,9 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         val orderSubtotal: BigDecimal = BigDecimal.ZERO,
         val orderTotalTax: BigDecimal = BigDecimal.ZERO,
         val orderTotal: BigDecimal = BigDecimal.ZERO,
-        val customerNote: String = ""
+        val customerNote: String = "",
+        val billingEmail: String = "",
+        val isBillingEmailValid: Boolean = true
     ) : Parcelable
 
     object ShowCustomerNoteEditor : MultiLiveEvent.Event()
