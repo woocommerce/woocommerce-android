@@ -1,0 +1,2 @@
+8.4:
+Kami tengah menyegarkan tampilan aplikasi! Akan ada beberapa perubahan visual menarik pada grafik penjualan di menu Toko Saya dan penghitungan konversi baru. Kini nilai penjualan total tidak akan lagi dibulatkan agar nilainya makin jelas. Pembaruan ini bukanlah yang terakhir – masih akan ada yang lainnya dalam beberapa minggu ke depan!
