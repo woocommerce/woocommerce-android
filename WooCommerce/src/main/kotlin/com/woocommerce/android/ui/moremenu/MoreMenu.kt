@@ -60,7 +60,7 @@ fun MoreMenu(
     val siteUrl = state.siteUrl
     val userAvatarUrl = state.userAvatarUrl
 
-    Column {
+    Column(Modifier.padding(start = 12.dp, end = 12.dp)) {
         Spacer(modifier = Modifier.height(32.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
