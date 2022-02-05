@@ -2,18 +2,32 @@ package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_AUTO_CONNECTION_STARTED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_FAILURE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_MISSING_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
@@ -57,8 +71,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 @InternalCoroutinesApi
@@ -81,6 +104,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         on { getIfExists() }.thenReturn(siteModel)
         on { get() }.thenReturn(siteModel)
     }
+    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
+    private val wooStore: WooCommerceStore = mock()
+    private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
 
     private val locationId = "location_id"
 
@@ -1342,12 +1368,57 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true)
     }
 
+    @Test
+    fun `when canada flag is disabled, then supported readers does not contains Wisepad 3`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
+            val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders>()
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
+
+            init()
+
+            verify(cardReaderManager).discoverReaders(anyBoolean(), captor.capture())
+            assertThat(captor.firstValue).isEqualTo(
+                CardReaderTypesToDiscover.SpecificReaders(
+                    listOf(
+                        SpecificReader.Chipper2X, SpecificReader.StripeM2
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when Canada flag is enabled, then supported readers contains Wisepad 3`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+            val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders>()
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
+
+            init()
+
+            verify(cardReaderManager).discoverReaders(anyBoolean(), captor.capture())
+            assertThat(captor.firstValue).isEqualTo(
+                CardReaderTypesToDiscover.SpecificReaders(
+                    listOf(
+                        SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3
+                    )
+                )
+            )
+        }
+    }
+
     private suspend fun initVM(
         onboardingState: CardReaderOnboardingState,
         skipOnboarding: Boolean = false
     ): CardReaderConnectViewModel {
         val savedState = CardReaderConnectDialogFragmentArgs(skipOnboarding = skipOnboarding).initSavedStateHandle()
         whenever(onboardingChecker.getOnboardingState()).thenReturn(onboardingState)
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
+        whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
         return CardReaderConnectViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,
@@ -1357,6 +1428,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             locationRepository,
             selectedSite,
             cardReaderManager,
+            inPersonPaymentsCanadaFeatureFlag,
+            wooStore,
+            cardReaderConfigFactory,
         )
     }
 

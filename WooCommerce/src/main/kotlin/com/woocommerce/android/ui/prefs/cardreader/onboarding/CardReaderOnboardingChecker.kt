@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -36,6 +37,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag,
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
+    private val cardReaderConfigFactory: CardReaderConfigFactory
 ) {
     private val supportedCountries: List<String>
         get() = if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
@@ -60,6 +62,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     @Suppress("ReturnCount", "ComplexMethod")
     private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
+        val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
@@ -83,10 +86,17 @@ class CardReaderOnboardingChecker @Inject constructor(
             STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
         }
 
+        if (
+            preferredPlugin.type == STRIPE_EXTENSION_GATEWAY &&
+            !cardReaderConfig.isStripeExtensionSupported
+        ) return StoreCountryNotSupported(countryCode)
+
         val fluxCPluginType = preferredPlugin.type.toInPersonPaymentsPluginType()
 
         val paymentAccount =
             inPersonPaymentsStore.loadAccount(fluxCPluginType, selectedSite.get()).model ?: return GenericError
+
+        saveStatementDescriptor(paymentAccount.statementDescriptor)
 
         if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
         if (!isPluginSetupCompleted(paymentAccount)) return SetupNotCompleted(preferredPlugin.type)
@@ -101,6 +111,16 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isInUndefinedState(paymentAccount)) return GenericError
 
         return OnboardingCompleted(preferredPlugin.type)
+    }
+
+    private fun saveStatementDescriptor(statementDescriptor: String) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderStatementDescriptor(
+            statementDescriptor = statementDescriptor,
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+        )
     }
 
     private fun isBothPluginsActivated(

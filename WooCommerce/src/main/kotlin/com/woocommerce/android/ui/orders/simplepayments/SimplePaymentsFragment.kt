@@ -101,6 +101,8 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                 if (chargeTaxes) {
                     binding.containerTaxes.isVisible = true
                     binding.textTaxMessage.isVisible = true
+                    binding.textTaxLabel.text =
+                        getString(R.string.simple_payments_tax_with_percent, viewModel.taxRatePercent)
                 } else {
                     binding.containerTaxes.isVisible = false
                     binding.textTaxMessage.isVisible = false

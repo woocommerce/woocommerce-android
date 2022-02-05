@@ -217,6 +217,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        presenter.dropView()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -296,13 +297,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun generateBetaFeaturesTitleList() =
         mutableListOf<String>().apply {
             add(getString(R.string.beta_features_add_ons))
-
+            add(getString(R.string.beta_features_order_creation))
             if (presenter.isCardReaderOnboardingCompleted()) {
                 add(getString(R.string.beta_features_simple_payments))
-            }
-
-            if (FeatureFlag.ORDER_CREATION.isEnabled()) {
-                add(getString(R.string.beta_features_order_creation))
             }
         }
 

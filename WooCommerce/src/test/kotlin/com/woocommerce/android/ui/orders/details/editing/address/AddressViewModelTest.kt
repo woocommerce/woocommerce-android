@@ -8,6 +8,7 @@ import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.*
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.BILLING
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.SHIPPING
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -19,8 +20,6 @@ import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.store.WCDataStore
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class AddressViewModelTest : BaseUnitTest() {
@@ -62,6 +61,7 @@ class AddressViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         addressViewModel.viewStateData.liveData.observeForever(viewStateObserver)
+        addressViewModel.shouldShowDoneButton.observeForever(mock())
     }
 
     @Test
@@ -138,24 +138,6 @@ class AddressViewModelTest : BaseUnitTest() {
                 ),
             )
         )
-    }
-
-    @Test
-    fun `Should return true on hasStates if states list is NOT empty`() {
-        whenever(dataStore.getStates(any())).thenReturn(listOf(newCountry))
-
-        addressViewModel.start(mapOf(SHIPPING to shippingAddress))
-
-        assertTrue(addressViewModel.hasStatesFor(SHIPPING))
-    }
-
-    @Test
-    fun `Should return false on hasStates if states list is empty`() {
-        whenever(dataStore.getStates(any())).thenReturn(emptyList())
-
-        addressViewModel.start(mapOf(SHIPPING to shippingAddress))
-
-        assertFalse(addressViewModel.hasStatesFor(SHIPPING))
     }
 
     @Test
@@ -262,5 +244,37 @@ class AddressViewModelTest : BaseUnitTest() {
         addressViewModel.onStateSpinnerClicked(SHIPPING)
 
         assertThat(addressViewModel.event.value).isEqualTo(ShowStateSelector(SHIPPING, listOf(newState.toAppModel())))
+    }
+
+    @Test
+    fun `Should show done button if billing address has been edited`() {
+        addressViewModel.start(mapOf(SHIPPING to shippingAddress, BILLING to shippingAddress))
+
+        assertThat(addressViewModel.shouldShowDoneButton.value).isFalse
+        addressViewModel.onFieldEdited(BILLING, Field.FirstName, "new first name")
+        assertThat(addressViewModel.shouldShowDoneButton.value).isTrue
+    }
+
+    @Test
+    fun `Should show done button if shipping address has been edited`() {
+        addressViewModel.start(mapOf(SHIPPING to shippingAddress, BILLING to shippingAddress))
+
+        assertThat(addressViewModel.shouldShowDoneButton.value).isFalse
+        addressViewModel.onFieldEdited(SHIPPING, Field.FirstName, "new first name")
+        assertThat(addressViewModel.shouldShowDoneButton.value).isTrue
+    }
+
+    @Test
+    fun `Should show done button if adding different shipping address has been disabled`() {
+        addressViewModel.start(
+            mapOf(
+                SHIPPING to shippingAddress.copy(firstName = "Different shipping"),
+                BILLING to shippingAddress.copy(firstName = "Different billing")
+            )
+        )
+
+        assertThat(addressViewModel.shouldShowDoneButton.value).isFalse
+        addressViewModel.onDifferentShippingAddressChecked(false)
+        assertThat(addressViewModel.shouldShowDoneButton.value).isTrue
     }
 }

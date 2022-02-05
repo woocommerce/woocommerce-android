@@ -1,19 +1,12 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.os.*
+import android.view.*
 import android.view.MenuItem.OnActionExpandListener
-import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.core.view.ViewGroupCompat
-import androidx.core.view.doOnPreDraw
-import androidx.core.view.isVisible
+import androidx.core.view.*
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
@@ -37,7 +30,6 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -217,7 +209,7 @@ class OrderListFragment :
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
         val isSimplePaymentAvailable = isSimplePaymentsAvailable()
-        val isOrderCreationAvailable = FeatureFlag.ORDER_CREATION.isEnabled() && AppPrefs.isOrderCreationEnabled
+        val isOrderCreationAvailable = AppPrefs.isOrderCreationEnabled
 
         if (isSimplePaymentAvailable || isOrderCreationAvailable) {
             fabButton.visibility = View.VISIBLE
@@ -345,6 +337,7 @@ class OrderListFragment :
     }
 
     private fun openOrderCreationFragment() {
+        AnalyticsTracker.track(Stat.ORDER_ADD_NEW)
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderCreationFragment)
     }
 
@@ -471,7 +464,7 @@ class OrderListFragment :
      */
     private fun handleNewSearchRequest(query: String) {
         AnalyticsTracker.track(
-            Stat.ORDERS_LIST_FILTER,
+            Stat.ORDERS_LIST_SEARCH,
             mapOf(AnalyticsTracker.KEY_SEARCH to query)
         )
 

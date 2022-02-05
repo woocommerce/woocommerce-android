@@ -8,15 +8,10 @@ CONFIGURATION="vanillaReleaseRuntimeClasspath"
 DEPENDENCY_TREE_VERSION="1.2.0"
 
 
-prNumber="${CIRCLE_PULL_REQUEST##*/}"
-if [ -z "$prNumber" ]; then
-  echo "This is not a Pull Request. Skipping"
-  exit 0
-fi
-
 git config --global user.email '$( git log --format='%ae' $CIRCLE_SHA1^! )'
 git config --global user.name '$( git log --format='%an' $CIRCLE_SHA1^! )'
 
+prNumber="${CIRCLE_PULL_REQUEST##*/}"
 githubUrl="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$prNumber"
 githubResponse="$(curl "$githubUrl" -H "Authorization: token $GITHUB_API_TOKEN")"
 targetBranch=$(echo "$githubResponse" | tr '\r\n' ' ' | jq '.base.ref' | tr -d '"')
