@@ -44,6 +44,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
+@Suppress("ForbiddenComment")
 class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName

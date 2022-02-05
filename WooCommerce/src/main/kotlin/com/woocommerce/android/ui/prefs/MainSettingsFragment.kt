@@ -56,6 +56,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     private lateinit var settingsListener: AppSettingsListener
 
+    @Suppress("ForbiddenComment", "LongMethod")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
