@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-01-19 14:54:04+0000
+Translation-Revision-Date: 2022-02-02 17:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="settings_install_jetpack">Jetpack\'i Kur</string>
+    <string name="card_reader_onboarding_account_rejected_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
+    <string name="order_creation_success_snackbar">Sipariş oluşturuldu</string>
+    <string name="order_creation_failure_snackbar">Sipariş oluşturulamadı</string>
+    <string name="order_creation_loading_dialog_message">Lütfen bekleyin…</string>
+    <string name="order_creation_loading_dialog_title">Siparişiniz oluşturuluyor</string>
+    <string name="order_creation_payment_tax_hint">Vergiler hariç toplam. Vergiler mağaza ayarlarınıza göre otomatik olarak hesaplanır.</string>
+    <string name="order_creation_payment_order_total">Sipariş toplamı</string>
+    <string name="order_creation_payment_products_total">Ürünlerin Toplamı</string>
+    <string name="order_creation_payment">Ödeme</string>
+    <string name="dashboard_top_performers_net_sales">Net satışlar: %s</string>
+    <string name="dashboard_top_performers_items_sold">Satılan ürünler</string>
+    <string name="dashboard_stats_conversion">Dönüşüm</string>
+    <string name="create">Oluştur</string>
     <string name="about_automattic_app_icon_description">Uygulama simgesi</string>
     <string name="about_automattic_back_icon_description">Geri simgesi</string>
     <string name="about_automattic_logo_description">Automattic logosu</string>
@@ -316,13 +330,12 @@ Language: tr
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Şahsen Ödemeler özelliği Test Modu\'nda kullanılamaz. Devam etmek için lütfen kapatın.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Hesabınızda bekleyen gereksinimler var. Şahsen Ödemeleri kabul etmeye devam etmek için lütfen %1$s tarihine kadar bu gereksinimleri karşılayın.</string>
-    <string name="card_reader_onboarding_account_pending_requirements_header">WooCommerce Payments hesabınızda bekleyen gereksinimler var</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Hesabınızda bekleyen gereksinimler var</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">Hesabınızda en az bir vadesi geçmiş gereksinim var. Şahsen Ödemeleri kullanmaya devam etmek için lütfen bu durumu giderin</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
     <string name="card_reader_onboarding_account_under_review_hint">Hesabınızın incelenmesi biter bitirmez Şahsen Ödemeleri kabul edebileceksiniz.</string>
     <string name="card_reader_onboarding_account_under_review_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
     <string name="card_reader_onboarding_account_rejected_hint">Maalesef bu mağaza için Şahsen Ödemeleri destekleyemiyoruz.</string>
-    <string name="card_reader_onboarding_account_rejected_header">Bu mağazada Şahsen Ödemeler kullanılamıyor</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Güncellemeden sonra yenileyin</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">WooCommerce Payments uzantısının eski sürümü mağazanızda yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments\'ı Güncelleyin</string>
@@ -1776,8 +1789,6 @@ Language: tr
     <string name="dashboard_action_view_order">Siparişi Görüntüle</string>
     <string name="dashboard_top_performers_empty">Bu dönemde hiç etkinlik yok</string>
     <string name="dashboard_top_performers_total_orders">Toplam sipariş: %s</string>
-    <string name="dashboard_top_performers_total_spend">Toplam harcama</string>
-    <string name="dashboard_top_performers_description">Ürünlerin mağazanızdaki performansına dair içgörüler edinin</string>
     <string name="dashboard_top_performers_title">En yüksek performans gösterenler</string>
     <string name="dashboard_stats_updated_date_time">%s tarihinde güncellendi</string>
     <string name="dashboard_stats_updated_one_day">1 gün önce güncellendi</string>
