@@ -177,8 +177,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         /*
         Hide "Switch Store" option in Settings, because it is moved to the "More" screen.
-        We temporarily comment this instead of outright deleting, because we might want to restore it,
-        based on merchants' feedbacks.
+        We temporarily comment out the code instead of deleting, because we might want to restore it later,
+        based on merchants feedbacks.
+
+        TODO: Maybe restore "Switch Store" option in Settings, depending on merchants feedbacks.
+        For more context: https://github.com/woocommerce/woocommerce-android/issues/5586
 
         if (presenter.hasMultipleStores()) {
             val storeClickListener = View.OnClickListener {

@@ -271,8 +271,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     /*
     Hide Settings icon on My Store, because it is moved to the "More" screen.
-    We temporarily comment this instead of outright deleting, because we might want to restore it,
-    based on merchants' feedbacks.
+    We temporarily comment out the code instead of deleting, because we might want to restore it later,
+    based on merchants feedbacks.
+
+    TODO: Maybe restore Settings icon on My Store, depending on merchants feedbacks.
+    For more context: https://github.com/woocommerce/woocommerce-android/issues/5586
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_action_bar, menu)
