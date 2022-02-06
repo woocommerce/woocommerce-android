@@ -6,6 +6,7 @@ import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.LOG_TAG
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
@@ -22,7 +23,8 @@ internal class CreatePaymentAction(
     private val paymentIntentParametersFactory: PaymentIntentParametersFactory,
     private val terminal: TerminalWrapper,
     private val paymentUtils: PaymentUtils,
-    private val logWrapper: LogWrapper
+    private val logWrapper: LogWrapper,
+    private val cardReaderConfigFactory: CardReaderConfigFactory
 ) {
     sealed class CreatePaymentStatus {
         data class Success(val paymentIntent: PaymentIntent) : CreatePaymentStatus()
@@ -53,7 +55,10 @@ internal class CreatePaymentAction(
 
     private fun createParams(paymentInfo: PaymentInfo): PaymentIntentParameters {
         val amountInSmallestCurrencyUnit = paymentUtils.convertBigDecimalInDollarsToLongInCents(paymentInfo.amount)
-        val builder = paymentIntentParametersFactory.createBuilder()
+        val cardReaderConfigFactory = cardReaderConfigFactory.getCardReaderConfigFor(paymentInfo.countryCode)
+        val builder = paymentIntentParametersFactory.createBuilder(
+            cardReaderConfigFactory.paymentMethodType
+        )
             .setDescription(paymentInfo.paymentDescription)
             .setAmount(amountInSmallestCurrencyUnit)
             .setCurrency(paymentInfo.currency)
@@ -61,6 +66,7 @@ internal class CreatePaymentAction(
         with(paymentInfo) {
             customerId?.let { builder.setCustomer(it) }
             customerEmail?.takeIf { it.isNotEmpty() }?.let { builder.setReceiptEmail(it) }
+            statementDescriptor?.takeIf { it.isNotEmpty() }?.let { builder.setStatementDescriptor(it) }
         }
         return builder.build()
     }

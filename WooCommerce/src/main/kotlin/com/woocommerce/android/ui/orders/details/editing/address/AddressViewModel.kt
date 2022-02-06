@@ -1,12 +1,17 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.*
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -29,7 +34,7 @@ class AddressViewModel @Inject constructor(
         get() = dataStore.getCountries().map { it.toAppModel() }
 
     private fun statesAvailableFor(type: AddressType): List<Location> {
-        return viewState.countryStatePairs[type]?.address?.country?.code?.let { locationCode ->
+        return viewState.addressSelectionStates[type]?.address?.country?.code?.let { locationCode ->
             dataStore.getStates(locationCode)
                 .map { it.toAppModel() }
         }.orEmpty()
@@ -41,6 +46,24 @@ class AddressViewModel @Inject constructor(
     }
 
     private var hasStarted = false
+    private var initialState = emptyMap<AddressType, Address>()
+
+    val isAnyAddressEdited: LiveData<Boolean> = viewStateData.liveData.map { viewState ->
+        viewState.addressSelectionStates.mapValues { it.value.address } != initialState
+    }
+
+    private val _isDifferentShippingAddressChecked = MutableLiveData<Boolean>()
+    val isDifferentShippingAddressChecked: LiveData<Boolean> = _isDifferentShippingAddressChecked
+
+    val shouldShowDoneButton = isAnyAddressEdited.combineWith(
+        isDifferentShippingAddressChecked,
+        viewStateData.liveData.map { it.addressSelectionStates[AddressType.SHIPPING]?.address }
+    ) { isAnyAddressEdited, isDifferentShippingAddressChecked, shippingAddress ->
+        val isDifferentShippingAddressDisabled =
+            isDifferentShippingAddressChecked == false && (shippingAddress != Address.EMPTY)
+
+        isAnyAddressEdited == true || isDifferentShippingAddressDisabled
+    }
 
     /**
      * The start method is called when the view is created. When the view is recreated (e.g. navigating to country
@@ -52,23 +75,35 @@ class AddressViewModel @Inject constructor(
             return
         }
         hasStarted = true
+        this.initialState = initialState
         initialize(initialState)
     }
 
     private fun initialize(initialState: Map<AddressType, Address>) {
         launch {
-            // we only fetch the countries and states if they've never been fetched
             if (countries.isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
                 dataStore.fetchCountriesAndStates(selectedSite.get())
                 viewState = viewState.copy(isLoading = false)
             }
-            initializeCountriesAndStates(initialState)
+            viewState = viewState.copy(
+                addressSelectionStates = initialState.mapValues { initialSingleAddressState ->
+                    AddressSelectionState(
+                        address = initialSingleAddressState.value,
+                        stateSpinnerStatus = when {
+                            initialSingleAddressState.value.country.code.isBlank() -> DISABLED
+                            statesFor(initialSingleAddressState.value.country.code).isNotEmpty() -> HAVING_LOCATIONS
+                            else -> RAW_VALUE
+                        }
+                    )
+                }
+            )
         }
     }
 
-    @Deprecated("Use stateSpinnerStatus of corresponding AddressSelectionState")
-    fun hasStatesFor(type: AddressType) = statesAvailableFor(type).isNotEmpty()
+    fun onDifferentShippingAddressChecked(checked: Boolean) {
+        _isDifferentShippingAddressChecked.value = checked
+    }
 
     /**
      * Even when the [BaseAddressEditingFragment] instance is destroyed the instance of [AddressViewModel] will still
@@ -87,7 +122,7 @@ class AddressViewModel @Inject constructor(
             ?: Location(countryCode, countryCode)
 
         viewState = viewState.copy(
-            countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
+            addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
                 if (entry.key == type) {
                     entry.value.copy(
                         address = entry.value.address.copy(
@@ -95,9 +130,9 @@ class AddressViewModel @Inject constructor(
                             state = AmbiguousLocation.EMPTY
                         ),
                         stateSpinnerStatus = if (statesFor(countryCode).isEmpty()) {
-                            StateSpinnerStatus.RAW_VALUE
+                            RAW_VALUE
                         } else {
-                            StateSpinnerStatus.HAVING_LOCATIONS
+                            HAVING_LOCATIONS
                         }
                     )
                 } else {
@@ -107,28 +142,14 @@ class AddressViewModel @Inject constructor(
         )
     }
 
-    fun onViewDestroyed(currentFormsState: Map<AddressType, Address>) {
-        updateInputFormValues(currentFormsState)
-    }
-
-    private fun updateInputFormValues(currentFormsState: Map<AddressType, Address>) {
-        viewState = viewState.copy(
-            countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
-                entry.value.copy(
-                    address = currentFormsState.getValue(entry.key)
-                )
-            }
-        )
-    }
-
     fun onStateSelected(type: AddressType, selectedStateCode: LocationCode) {
         val (_, selectedState) = getLocations(
-            countryCode = viewState.countryStatePairs.getValue(type).address.country.code,
+            countryCode = viewState.addressSelectionStates.getValue(type).address.country.code,
             stateCode = selectedStateCode,
         )
 
         viewState = viewState.copy(
-            countryStatePairs = viewState.countryStatePairs.mapValues { entry ->
+            addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
                 if (entry.key == type) {
                     entry.value.copy(
                         address = entry.value.address.copy(
@@ -142,21 +163,6 @@ class AddressViewModel @Inject constructor(
         )
     }
 
-    private fun initializeCountriesAndStates(initialState: Map<AddressType, Address>) {
-        viewState = viewState.copy(
-            countryStatePairs = initialState.mapValues {
-                AddressSelectionState(
-                    address = it.value,
-                    stateSpinnerStatus = if (statesFor(it.value.country.code).isEmpty()) {
-                        StateSpinnerStatus.RAW_VALUE
-                    } else {
-                        StateSpinnerStatus.HAVING_LOCATIONS
-                    }
-                )
-            },
-        )
-    }
-
     fun onCountrySpinnerClicked(type: AddressType) {
         val event = ShowCountrySelector(type, countries)
         triggerEvent(event)
@@ -167,14 +173,52 @@ class AddressViewModel @Inject constructor(
         triggerEvent(event)
     }
 
-    @Suppress("UnusedPrivateMember")
-    fun onDoneSelected(currentFormsState: Map<AddressType, Address>) {
-        // no-op
+    fun onDoneSelected(addDifferentShippingChecked: Boolean? = null) {
+        triggerEvent(
+            Exit(
+                viewState.addressSelectionStates.mapValues { statePair ->
+                    if (addDifferentShippingChecked == false && statePair.key == AddressType.SHIPPING) {
+                        Address.EMPTY
+                    } else {
+                        statePair.value.address
+                    }
+                }
+            )
+        )
+    }
+
+    fun onFieldEdited(
+        addressType: AddressType,
+        field: Field,
+        value: String
+    ) {
+        val currentAddress = viewState.addressSelectionStates.getValue(addressType).address
+        val newAddress = when (field) {
+            Field.FirstName -> currentAddress.copy(firstName = value)
+            Field.LastName -> currentAddress.copy(lastName = value)
+            Field.Company -> currentAddress.copy(company = value)
+            Field.Phone -> currentAddress.copy(phone = value)
+            Field.Address1 -> currentAddress.copy(address1 = value)
+            Field.Address2 -> currentAddress.copy(address2 = value)
+            Field.City -> currentAddress.copy(city = value)
+            Field.State -> currentAddress.copy(state = AmbiguousLocation.Raw(value))
+            Field.Zip -> currentAddress.copy(postcode = value)
+            Field.Email -> currentAddress.copy(email = value)
+        }
+        viewState = viewState.copy(
+            addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
+                if (entry.key == addressType) {
+                    entry.value.copy(address = newAddress)
+                } else {
+                    entry.value
+                }
+            }
+        )
     }
 
     @Parcelize
     data class ViewState(
-        val countryStatePairs: Map<AddressType, AddressSelectionState> = emptyMap(),
+        val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
     ) : Parcelable
 
@@ -202,9 +246,11 @@ class AddressViewModel @Inject constructor(
         val states: List<Location>
     ) : MultiLiveEvent.Event()
 
-    // TODO return map of addresses
     data class Exit(
-        val billingAddress: Address,
-        val shippingAddress: Address
+        val addresses: Map<AddressType, Address>
     ) : MultiLiveEvent.Event()
+
+    enum class Field {
+        FirstName, LastName, Company, Phone, Address1, Address2, City, State, Zip, Email
+    }
 }

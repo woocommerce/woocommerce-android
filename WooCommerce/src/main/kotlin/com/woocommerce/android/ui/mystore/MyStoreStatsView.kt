@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.github.mikephil.charting.charts.Chart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.MarkerImage
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -35,6 +36,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.util.roundToTheNextPowerOfTen
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
@@ -171,17 +173,18 @@ class MyStoreStatsView @JvmOverloads constructor(
                 // Couldn't use the dimension resource here due to the way this component is written :/
                 textSize = 10f
             }
-
-            axisRight.isEnabled = false
             with(axisLeft) {
-                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
+                setLabelCount(3, true)
+                valueFormatter = RevenueAxisFormatter()
                 setDrawGridLines(true)
+                gridLineWidth = 1f
+                gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
                 setDrawAxisLine(false)
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
                 // Couldn't use the dimension resource here due to the way this component is written :/
                 textSize = 10f
             }
-
+            axisRight.isEnabled = false
             description.isEnabled = false
             legend.isEnabled = false
 
@@ -422,7 +425,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         fadeInLabelValue(revenueValue, revenue)
         fadeInLabelValue(ordersValue, orders)
 
-        if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales?.toInt() == 0) {
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales == 0.toDouble()) {
             isRequestingStats = false
             return
         }
@@ -447,6 +450,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         // determine the min revenue so we can set the min value for the left axis, which should be zero unless
         // the stats contain any negative revenue
         val minRevenue = dataSet.values.minOf { it.y }
+        val maxRevenue = dataSet.values.maxOf { it.y }
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(binding.chart) {
             data = LineData(dataSet)
@@ -462,8 +466,8 @@ class MyStoreStatsView @JvmOverloads constructor(
                     setDrawZeroLine(true)
                     zeroLineColor = ContextCompat.getColor(context, R.color.divider_color)
                 }
-                labelCount = 3
-                valueFormatter = RevenueAxisFormatter()
+                axisMinimum = minRevenue.roundToTheNextPowerOfTen()
+                axisMaximum = maxRevenue.roundToTheNextPowerOfTen()
             }
             val dot = MarkerImage(context, R.drawable.chart_highlight_dot)
             val offset = DisplayUtils.dpToPx(context, LINE_CHART_DOT_OFFSET).toFloat()
@@ -549,14 +553,14 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private inner class StartEndDateAxisFormatter : ValueFormatter() {
-        override fun getFormattedValue(value: Float): String {
+        override fun getAxisLabel(value: Float, axis: AxisBase): String {
             var index = round(value).toInt() - 1
             index = if (index == -1) index + 1 else index
             return if (index > -1 && index < chartRevenueStats.keys.size) {
                 // if this is the first entry in the chart, then display the month as well as the date
                 // for weekly and monthly stats
                 val dateString = chartRevenueStats.keys.elementAt(index)
-                if (value == binding.chart.xAxis.mEntries.first()) {
+                if (value == axis.mEntries.first()) {
                     getEntryValue(dateString)
                 } else {
                     getLabelValue(dateString)
@@ -596,13 +600,19 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Custom AxisFormatter for the Y-axis which only displays 3 labels:
-     * the maximum, minimum and 0 value labels
-     */
     private inner class RevenueAxisFormatter : ValueFormatter() {
-        override fun getFormattedValue(value: Float): String {
-            return getFormattedRevenueValue(value.toDouble())
+        override fun getAxisLabel(value: Float, axis: AxisBase): String {
+            return if (-1 < value && value < 1 && value != 0f) {
+                currencyFormatter.formatCurrency(
+                    value.toBigDecimal(),
+                    revenueStatsModel?.currencyCode.orEmpty()
+                )
+            } else {
+                currencyFormatter.formatCurrencyRounded(
+                    value.toDouble(),
+                    revenueStatsModel?.currencyCode.orEmpty()
+                ).replace(".0", "")
+            }
         }
     }
 }

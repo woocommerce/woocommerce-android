@@ -217,4 +217,23 @@ class AppPrefsTest {
             )
         ).isFalse
     }
+
+    @Test
+    fun givenCardReaderStateDescriptorSetWhenGettingDescriptorThenSameDescriptorReturned() {
+        val statementDescriptor = "descriptor"
+        AppPrefs.setCardReaderStatementDescriptor(
+            statementDescriptor = statementDescriptor,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderStatementDescriptor(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(statementDescriptor)
+    }
 }

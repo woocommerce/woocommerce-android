@@ -11,7 +11,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.HashMap
 import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
@@ -145,6 +144,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Orders List
         ORDERS_LIST_FILTER,
+        ORDERS_LIST_SEARCH,
         ORDERS_LIST_LOADED,
         ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
         ORDERS_LIST_PULLED_TO_REFRESH,
@@ -194,6 +194,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_EDIT_FLOW_COMPLETED,
         ORDER_DETAIL_EDIT_FLOW_FAILED,
         ORDER_DETAIL_EDIT_FLOW_CANCELED,
+
+        // -- Order Creation
+        ORDER_ADD_NEW,
+        ORDER_PRODUCT_ADD,
+        ORDER_CUSTOMER_ADD,
+        ORDER_CREATE_BUTTON_TAPPED,
+        ORDER_CREATION_SUCCESS,
+        ORDER_CREATION_FAILED,
 
         // -- Refunds
         CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
@@ -717,6 +725,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ID = "id"
         const val KEY_ORDER_ID = "order_id"
         const val KEY_PRODUCT_ID = "product_id"
+        const val KEY_PRODUCT_COUNT = "product_count"
         const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
@@ -778,6 +787,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PURCHASE_FAILED = "purchase_failed"
         const val VALUE_PURCHASE_SUCCEEDED = "purchase_succeeded"
         const val VALUE_PURCHASE_READY = "purchase_ready"
+
+        const val KEY_FLOW = "flow"
+        const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"
+        const val KEY_HAS_CUSTOMER_DETAILS = "has_customer_details"
+        const val VALUE_FLOW_CREATION = "creation"
+        const val VALUE_FLOW_EDITING = "editing"
 
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
