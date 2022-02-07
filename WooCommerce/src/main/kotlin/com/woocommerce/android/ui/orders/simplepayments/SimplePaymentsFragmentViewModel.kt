@@ -146,11 +146,14 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     private suspend fun Flow<UpdateOrderResult>.collectUpdate() {
-        // TODO nbradbury tracks
         collect { result ->
             when (result) {
                 is OptimisticUpdateResult -> {
                     if (result.event.isError) {
+                        AnalyticsTracker.track(
+                            AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED,
+                            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY)
+                        )
                         result.event.error?.let {
                             WooLog.e(WooLog.T.ORDERS, "Simple payment optimistic update failed with ${it.message}")
                         }
@@ -162,6 +165,10 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 }
                 is UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
+                        AnalyticsTracker.track(
+                            AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED,
+                            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
+                        )
                         result.event.error?.let {
                             WooLog.e(WooLog.T.ORDERS, "Simple payment remote update failed with ${it.message}")
                         }
