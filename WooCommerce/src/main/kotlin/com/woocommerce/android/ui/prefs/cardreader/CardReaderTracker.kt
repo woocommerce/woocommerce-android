@@ -101,6 +101,55 @@ class CardReaderTracker @Inject constructor(
         )
     }
 
+    fun trackReadersDiscovered(count: Int) {
+        trackerWrapper.track(
+            AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED,
+            mapOf("reader_count" to count)
+        )
+    }
+
+    fun trackReaderDiscoveryFailed(errorMessage: String) {
+        trackerWrapper.track(
+            CARD_READER_DISCOVERY_FAILED,
+            this.javaClass.simpleName,
+            null,
+            errorMessage
+        )
+    }
+
+    fun trackAutoConnectionStarted() {
+        trackerWrapper.track(CARD_READER_AUTO_CONNECTION_STARTED)
+    }
+
+    fun trackOnConnectTapped() {
+        trackerWrapper.track(CARD_READER_CONNECTION_TAPPED)
+    }
+
+    fun trackFetchingLocationSucceeded() {
+        trackerWrapper.track(CARD_READER_LOCATION_SUCCESS)
+    }
+
+    fun trackFetchingLocationFailed(errorDescription: String?) {
+        trackerWrapper.track(
+            CARD_READER_LOCATION_FAILURE,
+            this.javaClass.simpleName,
+            null,
+            errorDescription,
+        )
+    }
+
+    fun trackMissingLocationTapped() {
+        trackerWrapper.track(CARD_READER_LOCATION_MISSING_TAPPED)
+    }
+
+    fun trackConnectionFailed() {
+        trackerWrapper.track(CARD_READER_CONNECTION_FAILED)
+    }
+
+    fun trackConnectionSucceeded() {
+        trackerWrapper.track(CARD_READER_CONNECTION_SUCCESS)
+    }
+
     companion object {
         private const val OPTIONAL_UPDATE: String = "Optional"
         private const val REQUIRED_UPDATE: String = "Required"
