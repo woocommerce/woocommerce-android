@@ -7,35 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_EMAIL_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_CANCELED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.RECEIPT_PRINT_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.CHECK_MOBILE_DEVICE
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_OR_SWIPE_CARD
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.MULTIPLE_CONTACTLESS_CARDS_DETECTED
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.RETRY_CARD
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.SWIPE_CARD
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForInput
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.*
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.extensions.exhaustive
@@ -45,19 +23,12 @@ import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
-import com.woocommerce.android.ui.orders.cardreader.ViewState.CapturingPaymentState
-import com.woocommerce.android.ui.orders.cardreader.ViewState.CollectPaymentState
-import com.woocommerce.android.ui.orders.cardreader.ViewState.FailedPaymentState
-import com.woocommerce.android.ui.orders.cardreader.ViewState.LoadingDataState
-import com.woocommerce.android.ui.orders.cardreader.ViewState.PaymentSuccessfulState
-import com.woocommerce.android.ui.orders.cardreader.ViewState.ProcessingPaymentState
-import com.woocommerce.android.ui.orders.cardreader.ViewState.ReFetchingOrderState
+import com.woocommerce.android.ui.orders.cardreader.ViewState.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
-import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
-import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
-import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
+import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.*
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -86,7 +57,7 @@ class CardReaderPaymentViewModel
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
-    private val tracker: AnalyticsTrackerWrapper,
+    private val tracker: CardReaderTracker,
     private val currencyFormatter: CurrencyFormatter,
     private val errorMapper: CardReaderPaymentErrorMapper,
 ) : ScopedViewModel(savedState) {
@@ -141,12 +112,7 @@ class CardReaderPaymentViewModel
                     listenForBluetoothCardReaderMessages()
                 }
             } ?: run {
-                tracker.track(
-                    AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
-                    this@CardReaderPaymentViewModel.javaClass.simpleName,
-                    null,
-                    "Fetching order failed"
-                )
+                tracker.trackPaymentFailed("Fetching order failed")
                 viewState.postValue(
                     FailedPaymentState(
                         errorType = PaymentFlowError.FetchingOrderFailed,
@@ -200,7 +166,7 @@ class CardReaderPaymentViewModel
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             is PaymentCompleted -> {
-                tracker.track(AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+                tracker.trackPaymentSucceeded()
                 onPaymentCompleted(paymentStatus, orderId)
             }
             WaitingForInput -> {
@@ -208,12 +174,7 @@ class CardReaderPaymentViewModel
             }
             is PaymentFailed -> {
                 paymentDataForRetry = paymentStatus.paymentDataForRetry
-                tracker.track(
-                    AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_FAILED,
-                    this@CardReaderPaymentViewModel.javaClass.simpleName,
-                    paymentStatus.type.toString(),
-                    paymentStatus.errorMessage
-                )
+                tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
             }
         }
@@ -313,7 +274,7 @@ class CardReaderPaymentViewModel
     private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
         launch {
             viewState.value = ViewState.PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
-            tracker.track(RECEIPT_PRINT_TAPPED)
+            tracker.trackPrintReceiptTapped()
             startPrintingFlow()
         }
     }
@@ -334,7 +295,7 @@ class CardReaderPaymentViewModel
 
     private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {
         launch {
-            tracker.track(RECEIPT_EMAIL_TAPPED)
+            tracker.trackEmailReceiptTapped()
             triggerEvent(
                 SendReceipt(
                     content = UiStringRes(
@@ -352,20 +313,18 @@ class CardReaderPaymentViewModel
     }
 
     fun onEmailActivityNotFound() {
-        tracker.track(RECEIPT_EMAIL_FAILED)
+        tracker.trackEmailReceiptFailed()
         triggerEvent(ShowSnackbarInDialog(R.string.card_reader_payment_email_client_not_found))
     }
 
     fun onPrintResult(result: PrintJobResult) {
         showPaymentSuccessfulState()
 
-        tracker.track(
-            when (result) {
-                CANCELLED -> RECEIPT_PRINT_CANCELED
-                FAILED -> RECEIPT_PRINT_FAILED
-                STARTED -> RECEIPT_PRINT_SUCCESS
-            }
-        )
+        when (result) {
+            CANCELLED -> tracker.trackPrintReceiptCancelled()
+            FAILED -> tracker.trackPrintReceiptFailed()
+            STARTED -> tracker.trackPrintReceiptSucceeded()
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -387,12 +346,7 @@ class CardReaderPaymentViewModel
         } else {
             viewState.value?.let { paymentState ->
                 if (isStateEligibleForTracking(paymentState)) {
-                    tracker.track(
-                        AnalyticsTracker.Stat.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
-                        this@CardReaderPaymentViewModel.javaClass.simpleName,
-                        null,
-                        "User manually cancelled the payment during state ${getCurrentPaymentState()}"
-                    )
+                    tracker.trackPaymentCancelled(getCurrentPaymentState())
                 }
             }
             triggerEvent(Exit)
