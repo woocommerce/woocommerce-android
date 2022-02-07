@@ -15,6 +15,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -43,8 +44,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         on(it.getString(R.string.taxes)).thenAnswer { "Taxes" }
         on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
         on(it.getString(R.string.and)).thenAnswer { "and" }
-        on(it.getString(any(), any())).thenAnswer {
-            i ->
+        on(it.getString(any(), any())).thenAnswer { i ->
             "You can refund " + i.arguments[1].toString()
         }
     }
@@ -53,6 +53,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
         }
     )
+
+    private val paymentChargeRepository: PaymentChargeRepository = mock()
 
     private val savedState = IssueRefundFragmentArgs(0).initSavedStateHandle()
 
@@ -74,6 +76,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             orderDetailRepository,
             gatewayStore,
             refundStore,
+            paymentChargeRepository,
             orderMapper
         )
     }
@@ -152,6 +155,79 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             assertTrue(viewState!!.isRefundNoticeVisible)
             assertEquals("You can refund multiple shipping lines", viewState!!.refundNotice)
+        }
+    }
+
+    @Test
+    fun `given non cash order, when successfully charge data loaded, then card info is visible`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+
+            var viewState: IssueRefundViewModel.RefundSummaryViewState? = null
+            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+
+            assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card (Visa **** 1234)")
+        }
+    }
+
+    @Test
+    fun `given non cash order, when charge data loaded with error, then card info is not visible`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val chargeId = "charge_id"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+
+            var viewState: IssueRefundViewModel.RefundSummaryViewState? = null
+            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+
+            assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card")
+        }
+    }
+
+    @Test
+    fun `given non cash order and non charge id in order, when charge data loading, then card info is not visible`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+
+            var viewState: IssueRefundViewModel.RefundSummaryViewState? = null
+            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+
+            assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card")
         }
     }
 }

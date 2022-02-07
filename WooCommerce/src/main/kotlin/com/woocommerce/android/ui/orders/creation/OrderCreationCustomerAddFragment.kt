@@ -88,8 +88,11 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                 }
             }
         }
-        addressViewModel.isAnyAddressEdited.observe(viewLifecycleOwner) { isAnyAddressEdited ->
-            doneMenuItem?.isVisible = isAnyAddressEdited
+        addressViewModel.shouldShowDoneButton.observe(viewLifecycleOwner) { shouldShowDoneButton: Boolean ->
+            doneMenuItem?.isVisible = shouldShowDoneButton
+        }
+        addressViewModel.isDifferentShippingAddressChecked.observe(viewLifecycleOwner) { checked ->
+            updateShippingBindingVisibility(checked)
         }
     }
 
@@ -142,7 +145,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         updateShippingBindingVisibility(showShippingAddressFormSwitch?.addressSwitch?.isChecked ?: false)
         showShippingAddressFormSwitch?.let {
             it.addressSwitch.setOnCheckedChangeListener { _, checked ->
-                updateShippingBindingVisibility(checked)
+                addressViewModel.onDifferentShippingAddressChecked(checked)
             }
         }
 
