@@ -219,10 +219,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
         triggerEvent(OnboardingEvent.Continue(storeCountryCode))
     }
 
-    private fun exitFlow() {
-        triggerEvent(Event.Exit)
-    }
-
     private fun convertCountryCodeToCountry(countryCode: String?) =
         Locale("", countryCode.orEmpty()).displayName
 
