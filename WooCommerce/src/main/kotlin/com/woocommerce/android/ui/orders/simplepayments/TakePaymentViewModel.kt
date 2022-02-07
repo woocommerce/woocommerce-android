@@ -150,7 +150,10 @@ class TakePaymentViewModel @Inject constructor(
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
                         AnalyticsTracker.track(
                             AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED,
-                            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD)
+                            mapOf(
+                                AnalyticsTracker.KEY_SOURCE to
+                                    AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD
+                            )
                         )
                     }
                 }
