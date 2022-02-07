@@ -6,12 +6,29 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_TAB_CHANGED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.extensions.calculateTotals
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.joinToString
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.PaymentGateway
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.getMaxRefundQuantities
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -54,7 +71,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.collections.sumBy
@@ -75,6 +92,7 @@ class IssueRefundViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val gatewayStore: WCGatewayStore,
     private val refundStore: WCRefundStore,
+    private val paymentChargeRepository: PaymentChargeRepository,
     private val orderMapper: OrderMapper,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -265,25 +283,17 @@ class IssueRefundViewModel @Inject constructor(
     private fun initRefundSummaryState() {
         if (refundSummaryStateLiveData.hasInitialValue) {
             val manualRefundMethod = resourceProvider.getString(R.string.order_refunds_manual_refund)
-            val paymentTitle: String
-            val isManualRefund: Boolean
 
             if (!order.paymentMethod.isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
-                paymentTitle = if (gateway.title.isNotBlank()) {
+                val paymentTitle = if (gateway.title.isNotBlank()) {
                     resourceProvider.getString(R.string.order_refunds_method, manualRefundMethod, gateway.title)
                 } else {
                     manualRefundMethod
                 }
-                isManualRefund = true
+                updateRefundSummaryState(paymentTitle, isMethodDescriptionVisible = true)
             } else {
-                paymentTitle = if (gateway.title.isNotBlank()) gateway.title else manualRefundMethod
-                isManualRefund = false
+                enrichRefundMethodWithCardDetails(gateway.title.ifBlank { manualRefundMethod })
             }
-
-            refundSummaryState = refundSummaryState.copy(
-                refundMethod = paymentTitle,
-                isMethodDescriptionVisible = isManualRefund
-            )
         }
     }
 
@@ -300,7 +310,7 @@ class IssueRefundViewModel @Inject constructor(
         AnalyticsTracker.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_REFUND_TYPE to RefundType.ITEMS.name,
+                AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
                 AnalyticsTracker.KEY_ORDER_ID to order.id
             )
         )
@@ -653,8 +663,6 @@ class IssueRefundViewModel @Inject constructor(
     private fun isInputValid() = validateInput() == VALID
 
     fun onShippingRefundMainSwitchChanged(isChecked: Boolean) {
-        val productsRefund = refundByItemsState.productsRefund
-
         if (isChecked) {
             val shippingRefund = calculatePartialShippingTotal(allShippingLineIds)
 
@@ -675,8 +683,6 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onFeesRefundMainSwitchChanged(isChecked: Boolean) {
-        val productsRefund = refundByItemsState.productsRefund
-
         if (isChecked) {
             val feesRefund = calculatePartialFeesTotal(allFeeLineIds)
 
@@ -698,7 +704,6 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onShippingLineSwitchChanged(isChecked: Boolean, itemId: Long) {
         val list = refundByItemsState.selectedShippingLines?.toMutableList()
-        val productsRefund = refundByItemsState.productsRefund
         if (list != null) {
             if (isChecked && !list.contains(itemId)) {
                 list += itemId
@@ -722,7 +727,6 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onFeeLineSwitchChanged(isChecked: Boolean, itemId: Long) {
         val list = refundByItemsState.selectedFeeLines?.toMutableList()
-        val productsRefund = refundByItemsState.productsRefund
         if (list != null) {
             if (isChecked && !list.contains(itemId)) {
                 list += itemId
@@ -742,6 +746,40 @@ class IssueRefundViewModel @Inject constructor(
                 formattedFeesRefundTotal = formatCurrency(newFeesRefundTotal)
             )
         }
+    }
+
+    private fun enrichRefundMethodWithCardDetails(refundMethod: String) {
+        val chargeId = order.chargeId
+        if (chargeId != null) {
+            loadCardDetails(chargeId, refundMethod)
+        } else {
+            updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
+        }
+    }
+
+    private fun loadCardDetails(chargeId: String, refundMethod: String) {
+        launch {
+            when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
+                is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
+                    val refundMethodWithCard = result.run {
+                        val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
+                        val last4 = result.cardLast4.orEmpty()
+                        "$refundMethod ($brand **** $last4)"
+                    }
+                    updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
+                }
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
+                    updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
+                }
+            }.exhaustive
+        }
+    }
+
+    private fun updateRefundSummaryState(refundMethod: String, isMethodDescriptionVisible: Boolean) {
+        refundSummaryState = refundSummaryState.copy(
+            refundMethod = refundMethod,
+            isMethodDescriptionVisible = isMethodDescriptionVisible
+        )
     }
 
     private fun getRefundableShippingLineIds(): List<Long> {

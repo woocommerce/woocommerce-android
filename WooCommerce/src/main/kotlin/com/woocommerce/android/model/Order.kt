@@ -63,6 +63,10 @@ data class Order(
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
 
+    @IgnoredOnParcel
+    val chargeId
+        get() = metaData.firstOrNull { it.key == "_charge_id" }?.value
+
     @Parcelize
     data class ShippingMethod(
         val id: String,
