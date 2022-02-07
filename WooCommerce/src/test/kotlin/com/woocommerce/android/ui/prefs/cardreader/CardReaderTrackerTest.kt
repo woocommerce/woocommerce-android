@@ -366,4 +366,74 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
             verify(trackerWrapper).track(CARD_READER_LOCATION_SUCCESS)
         }
+
+    @Test
+    fun `when payment fails, then CARD_PRESENT_COLLECT_PAYMENT_FAILED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val dummyMessage = "error msg"
+            cardReaderTracker.trackPaymentFailed(dummyMessage)
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), anyOrNull(), anyOrNull(), eq(dummyMessage)
+            )
+        }
+
+    @Test
+    fun `when payment completed, then CARD_PRESENT_COLLECT_PAYMENT_SUCCESS tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackPaymentSucceeded()
+
+            verify(trackerWrapper).track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        }
+
+    @Test
+    fun `when user clicks on print receipt button, then RECEIPT_PRINT_TAPPED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackPrintReceiptTapped()
+
+            verify(trackerWrapper).track(RECEIPT_PRINT_TAPPED)
+        }
+
+    @Test
+    fun `when OS accepts the print request, then RECEIPT_PRINT_SUCCESS tracked`() {
+        cardReaderTracker.trackPrintReceiptSucceeded()
+
+        verify(trackerWrapper).track(RECEIPT_PRINT_SUCCESS)
+    }
+
+    @Test
+    fun `when OS refuses the print request, then RECEIPT_PRINT_FAILED tracked`() {
+        cardReaderTracker.trackPrintReceiptFailed()
+
+        verify(trackerWrapper).track(RECEIPT_PRINT_FAILED)
+    }
+
+    @Test
+    fun `when manually cancels the print request, then RECEIPT_PRINT_CANCELED tracked`() {
+        cardReaderTracker.trackPrintReceiptCancelled()
+
+        verify(trackerWrapper).track(RECEIPT_PRINT_CANCELED)
+    }
+
+    @Test
+    fun `when user clicks on send receipt button, then RECEIPT_EMAIL_TAPPED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackEmailReceiptTapped()
+
+            verify(trackerWrapper).track(RECEIPT_EMAIL_TAPPED)
+        }
+
+    @Test
+    fun `when user cancels payment, then CARD_PRESENT_COLLECT_PAYMENT_CANCELLED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val currentPaymentState = "dummy state"
+            cardReaderTracker.trackPaymentCancelled(currentPaymentState)
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
+                anyOrNull(),
+                eq("User manually cancelled the payment during state $currentPaymentState")
+            )
+        }
 }
