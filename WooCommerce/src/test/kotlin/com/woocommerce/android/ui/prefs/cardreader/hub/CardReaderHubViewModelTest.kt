@@ -196,6 +196,24 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             )
     }
 
+    @Test
+    fun `given ipp canada enabled, when user clicks on wp3 manual card reader, then app opens webview with wp3 link`() {
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+        initViewModel()
+
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_wisepad_3_manual_card_reader)
+            }!!.onItemClicked.invoke()
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToManualCardReaderFlow(
+                    AppUrls.WISEPAD_3_MANUAL_CARD_READER
+                )
+            )
+    }
+
     private fun initViewModel() {
         viewModel = CardReaderHubViewModel(SavedStateHandle(), inPersonPaymentsCanadaFeatureFlag)
     }
