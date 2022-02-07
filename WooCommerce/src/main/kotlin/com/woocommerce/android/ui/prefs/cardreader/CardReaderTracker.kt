@@ -198,6 +198,10 @@ class CardReaderTracker @Inject constructor(
         )
     }
 
+    fun trackCollectPaymentTapped() {
+        trackerWrapper.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
+    }
+
     companion object {
         private const val OPTIONAL_UPDATE: String = "Optional"
         private const val REQUIRED_UPDATE: String = "Required"

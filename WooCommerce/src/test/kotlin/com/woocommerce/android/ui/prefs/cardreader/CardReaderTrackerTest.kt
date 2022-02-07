@@ -436,4 +436,12 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 eq("User manually cancelled the payment during state $currentPaymentState")
             )
         }
+
+    @Test
+    fun `when user taps collect payment button, then CARD_PRESENT_COLLECT_PAYMENT_TAPPED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackCollectPaymentTapped()
+
+            verify(trackerWrapper).track(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED)
+        }
 }
