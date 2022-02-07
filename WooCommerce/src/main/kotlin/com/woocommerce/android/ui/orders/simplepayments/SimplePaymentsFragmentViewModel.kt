@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -17,7 +16,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -30,7 +28,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SimplePaymentsFragmentViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val dispatchers: CoroutineDispatchers,
     private val simplePaymentsRepository: SimplePaymentsRepository,
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
