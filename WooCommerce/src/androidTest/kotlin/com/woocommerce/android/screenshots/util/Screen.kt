@@ -237,7 +237,7 @@ open class Screen {
         )
     }
 
-    private fun waitForElementToBeDisplayed(element: ViewInteraction) {
+    fun waitForElementToBeDisplayed(element: ViewInteraction) {
         waitForConditionToBeTrue(
             Supplier<Boolean> {
                 isElementDisplayed(element)
