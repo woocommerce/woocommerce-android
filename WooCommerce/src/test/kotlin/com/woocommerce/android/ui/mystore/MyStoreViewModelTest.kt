@@ -295,22 +295,16 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             val siteBeforeInstallation = SiteModel().apply { setIsJetpackCPConnected(true) }
             val siteAfterInstallation = SiteModel().apply { setIsJetpackConnected(true) }
+
             val siteFlow = MutableStateFlow(siteBeforeInstallation)
             whenever(selectedSite.observe()).thenReturn(siteFlow)
-
-            // Simulate merchants starting with a Jetpack CP site, then going through installation,
-            // and finally returning to My Store.
-            whenever(getStats.invoke(any(), any())).thenReturn(
-                flow {
-                    emit(GetStats.LoadStatsResult.IsJetPackCPEnabled)
-                    siteFlow.value = siteAfterInstallation
-                    emit(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
-                }
-            )
-
             givenNetworkConnectivity(connected = true)
+            givenStatsLoadingResult(GetStats.LoadStatsResult.IsJetPackCPEnabled)
 
             whenViewModelIsCreated()
+
+            givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
+            siteFlow.value = siteAfterInstallation
 
             assertThat(sut.visitorStatsState.value).isNotInstanceOf(
                 MyStoreViewModel.VisitorStatsViewState.JetpackCpConnected::class.java

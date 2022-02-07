@@ -203,9 +203,7 @@ class MyStoreViewModel @Inject constructor(
                 .filter { it?.isJetpackConnected == true }
                 .take(1)
                 .collect {
-                    activeStatsGranularity.value?.let {
-                        loadStoreStats(it)
-                    }
+                    loadStoreStats(_activeStatsGranularity.value)
                 }
         }
     }
