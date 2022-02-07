@@ -15,8 +15,8 @@ import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
+import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
@@ -848,10 +848,16 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private fun buildWCPayPluginInfo(
         isActive: Boolean = true,
         version: String = SUPPORTED_WCPAY_VERSION
-    ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)
+    ) = SitePluginModel().apply {
+        this.version = version
+        this.setIsActive(isActive)
+    }
 
     private fun buildStripeExtensionPluginInfo(
         isActive: Boolean = true,
         version: String = SUPPORTED_STRIPE_EXTENSION_VERSION
-    ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)
+    ) = SitePluginModel().apply {
+        this.version = version
+        this.setIsActive(isActive)
+    }
 }
