@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -43,6 +46,12 @@ class TakePaymentViewModel @Inject constructor(
         get() = order.total
 
     fun onCashPaymentClicked() {
+        AnalyticsTracker.track(
+            AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COLLECT,
+            mapOf(
+                AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
+            )
+        )
         triggerEvent(
             MultiLiveEvent.Event.ShowDialog(
                 titleId = R.string.simple_payments_cash_dlg_title,
@@ -62,6 +71,13 @@ class TakePaymentViewModel @Inject constructor(
     fun onCashPaymentConfirmed() {
         if (networkStatus.isConnected()) {
             launch {
+                AnalyticsTracker.track(
+                    AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
+                    mapOf(
+                        AnalyticsTracker.KEY_AMOUNT to orderTotal.toString(),
+                        AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
+                    )
+                )
                 markOrderCompleted()
             }
         } else {
@@ -70,6 +86,12 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onCardPaymentClicked() {
+        AnalyticsTracker.track(
+            AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COLLECT,
+            mapOf(
+                AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
+            )
+        )
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
             triggerEvent(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id))
         } else {
@@ -90,6 +112,13 @@ class TakePaymentViewModel @Inject constructor(
 
     fun onCardReaderPaymentCompleted() {
         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.card_reader_payment_completed_payment_header))
+        AnalyticsTracker.track(
+            AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
+            mapOf(
+                AnalyticsTracker.KEY_AMOUNT to orderTotal.toString(),
+                AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
+            )
+        )
         launch {
             delay(DELAY_MS)
             triggerEvent(MultiLiveEvent.Event.Exit)

@@ -4,10 +4,10 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -50,7 +50,8 @@ class SimplePaymentsDialogViewModel @Inject constructor(
 
     private fun createSimplePaymentsOrder() {
         if (!networkStatus.isConnected()) {
-            AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
+            AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED,
+            mapOf(KEY_SOURCE))
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
             return
         }
@@ -71,11 +72,6 @@ class SimplePaymentsDialogViewModel @Inject constructor(
                     AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.simple_payments_creation_error))
                 } else {
-                    // TODO nbradbury - move to after card/cash payment is completed
-                    AnalyticsTracker.track(
-                        AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
-                        mapOf(AnalyticsTracker.KEY_AMOUNT to viewState.currentPrice.toString())
-                    )
                     viewState = viewState.copy(createdOrder = orderMapper.toAppModel(result.order!!))
                 }
             }
