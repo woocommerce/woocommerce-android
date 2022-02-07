@@ -442,6 +442,6 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackCollectPaymentTapped()
 
-            verify(trackerWrapper).track(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED)
+            verify(trackerWrapper).track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
         }
 }
