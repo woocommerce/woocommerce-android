@@ -96,6 +96,8 @@ class CardReaderOnboardingChecker @Inject constructor(
         val paymentAccount =
             inPersonPaymentsStore.loadAccount(fluxCPluginType, selectedSite.get()).model ?: return GenericError
 
+        saveStatementDescriptor(paymentAccount.statementDescriptor)
+
         if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
         if (!isPluginSetupCompleted(paymentAccount)) return SetupNotCompleted(preferredPlugin.type)
         if (isPluginInTestModeWithLiveStripeAccount(paymentAccount)) return PluginInTestModeWithLiveStripeAccount
@@ -109,6 +111,16 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isInUndefinedState(paymentAccount)) return GenericError
 
         return OnboardingCompleted(preferredPlugin.type)
+    }
+
+    private fun saveStatementDescriptor(statementDescriptor: String) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderStatementDescriptor(
+            statementDescriptor = statementDescriptor,
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+        )
     }
 
     private fun isBothPluginsActivated(

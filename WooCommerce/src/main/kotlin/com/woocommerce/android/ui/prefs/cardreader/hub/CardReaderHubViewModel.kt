@@ -7,19 +7,24 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import okhttp3.internal.toImmutableList
 import javax.inject.Inject
 
+@HiltViewModel
 class CardReaderHubViewModel @Inject constructor(
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<CardReaderHubViewState>(
         createInitialState()
     )
 
     private fun createInitialState() = CardReaderHubViewState.Content(
-        listOf(
+        mutableListOf(
             CardReaderHubListItemViewState(
                 icon = R.drawable.ic_shopping_cart,
                 label = UiString.UiStringRes(R.string.card_reader_purchase_card_reader),
@@ -40,7 +45,17 @@ class CardReaderHubViewModel @Inject constructor(
                 label = UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader),
                 onItemClicked = ::onM2ManualCardReaderClicked
             )
-        )
+        ).apply {
+            if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
+                add(
+                    CardReaderHubListItemViewState(
+                        icon = R.drawable.ic_card_reader_manual,
+                        label = UiString.UiStringRes(R.string.card_reader_wisepad_3_manual_card_reader),
+                        onItemClicked = ::onWisePad3ManualCardReaderClicked
+                    )
+                )
+            }
+        }.toImmutableList()
     )
 
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
@@ -59,6 +74,10 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onM2ManualCardReaderClicked() {
         triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.M2_MANUAL_CARD_READER))
+    }
+
+    private fun onWisePad3ManualCardReaderClicked() {
+        triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.WISEPAD_3_MANUAL_CARD_READER))
     }
 
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {

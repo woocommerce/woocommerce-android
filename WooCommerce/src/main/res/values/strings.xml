@@ -888,6 +888,7 @@
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
     <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Card Reader Manual</string>
     <!--
         Card Reader Payments
     -->
@@ -1076,12 +1077,12 @@
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">In-Person Payments isn\’t available in Test Mode. Please turn it off to continue.</string>
 
-    <string name="card_reader_onboarding_both_plugins_activated_header">Multiple payment providers detected</string>
-    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">In-Person Payments will only work with one provider activated. Please deactivate one of these to continue:</string>
-    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">In-Person Payments will only work with one provider activated. Please contact a site administrator to deactivate one of these to continue:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">Conflicting payment plugins detected</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">In-Person Payments will only work with one of following plugins activated. Please deactivate one of these plugins to continue:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">In-Person Payments will only work with one of following plugins activated. Please contact a site administrator to deactivate one of these plugins to continue:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe Gateway</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
-    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Go to Plugin Admin</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Manage Plugins</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Refresh after updating</string>
 
 

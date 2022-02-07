@@ -712,6 +712,22 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when payment account loads, then statement descriptor saved`() = testBlocking {
+        val expected = "Woo Site Test"
+        whenever(wcInPersonPaymentsStore.loadAccount(WOOCOMMERCE_PAYMENTS, site))
+            .thenReturn(buildPaymentAccountResult(statementDescriptor = expected))
+
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderStatementDescriptor(
+            eq(expected),
+            anyInt(),
+            anyLong(),
+            anyLong(),
+        )
+    }
+
+    @Test
     fun `when onboarding NOT completed, then onboarding completed NOT saved`() = testBlocking {
         whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
             buildPaymentAccountResult(
@@ -869,13 +885,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         liveAccount: Boolean = true,
         testModeEnabled: Boolean? = false,
         countryCode: String = "US",
+        statementDescriptor: String = "",
     ) = WooResult(
         WCPaymentAccountResult(
             status,
             hasPendingRequirements = hasPendingRequirements,
             hasOverdueRequirements = hadOverdueRequirements,
             currentDeadline = null,
-            statementDescriptor = "",
+            statementDescriptor = statementDescriptor,
             storeCurrencies = WCPaymentAccountResult.WCPaymentAccountStatus.StoreCurrencies("", listOf()),
             country = countryCode,
             isLive = liveAccount,
