@@ -160,6 +160,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SIMPLE_PAYMENTS_FLOW_COMPLETED,
         SIMPLE_PAYMENTS_FLOW_FAILED,
         SIMPLE_PAYMENTS_FLOW_CANCELED,
+        SIMPLE_PAYMENTS_FLOW_NOTE_ADDED,
+        SIMPLE_PAYMENTS_FLOW_TAXES_TOGGLED,
         SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
 
         // -- Order Detail
@@ -816,6 +818,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
+        const val VALUE_STATE_ON = "on"
+        const val VALUE_STATE_OFF = "off"
 
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
 

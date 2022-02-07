@@ -4,6 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_OFF
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_ON
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
@@ -94,6 +97,12 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     fun onChargeTaxesChanged(chargeTaxes: Boolean) {
+        val properties = if (chargeTaxes) {
+            mapOf(KEY_STATE to VALUE_STATE_ON)
+        } else {
+            mapOf(KEY_STATE to VALUE_STATE_OFF)
+        }
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_TAXES_TOGGLED, properties)
         updateViewState(chargeTaxes = chargeTaxes)
     }
 
@@ -102,6 +111,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     fun onCustomerNoteChanged(customerNote: String) {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_NOTE_ADDED)
         viewState = viewState.copy(customerNote = customerNote)
     }
 

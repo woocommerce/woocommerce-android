@@ -71,7 +71,7 @@ class SimplePaymentsDialogViewModel @Inject constructor(
                     AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.simple_payments_creation_error))
                 } else {
-                    // TODO nbradbury - verify this is still the correct place to track this event
+                    // TODO nbradbury - move to after card/cash payment is completed
                     AnalyticsTracker.track(
                         AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
                         mapOf(AnalyticsTracker.KEY_AMOUNT to viewState.currentPrice.toString())
