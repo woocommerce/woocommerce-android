@@ -53,7 +53,7 @@ abstract class BaseAddressEditingFragment :
             .liveData
             .value
             ?.addressSelectionStates
-            ?.getValue(addressType)
+            ?.get(addressType)
             ?.address
             ?: Address.EMPTY
 
@@ -74,10 +74,6 @@ abstract class BaseAddressEditingFragment :
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
         }
         bindTextWatchers()
-
-        addressViewModel.start(
-            mapOf(addressType to storedAddress)
-        )
 
         binding.form.countrySpinner.setClickListener {
             addressViewModel.onCountrySpinnerClicked(addressType)
@@ -163,12 +159,12 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupObservers() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            val newCountryStatePair = new.addressSelectionStates.getValue(addressType)
+            val newCountryStatePair = new.addressSelectionStates[addressType]
 
             new.isLoading.takeIfNotEqualTo(old?.isLoading) {
                 binding.progressBar.isVisible = it
             }
-            binding.form.update(newCountryStatePair)
+            newCountryStatePair?.let { binding.form.update(it) }
         }
 
         sharedViewModel.viewStateData.liveData.combineWith(

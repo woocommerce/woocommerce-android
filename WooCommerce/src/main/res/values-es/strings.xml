@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-01-20 21:41:25+0000
+Translation-Revision-Date: 2022-02-02 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="settings_install_jetpack">Instalar Jetpack</string>
+    <string name="card_reader_onboarding_account_rejected_header">Pagos en persona no está disponible en este momento</string>
+    <string name="order_creation_success_snackbar">Pedido creado</string>
+    <string name="order_creation_failure_snackbar">Se ha producido un error en la creación del pedido</string>
+    <string name="order_creation_loading_dialog_message">Por favor, espera…</string>
+    <string name="order_creation_loading_dialog_title">Creando tu pedido</string>
+    <string name="order_creation_payment_tax_hint">Total, sin incluir impuestos. Los impuestos se calcularán automáticamente en función de los ajustes de tu tienda.</string>
+    <string name="order_creation_payment_order_total">Total del pedido</string>
+    <string name="order_creation_payment_products_total">Total de productos</string>
+    <string name="order_creation_payment">Pago</string>
+    <string name="dashboard_top_performers_net_sales">Ventas netas: %s</string>
+    <string name="dashboard_top_performers_items_sold">Artículos vendidos</string>
+    <string name="dashboard_stats_conversion">Conversión</string>
+    <string name="create">Crear</string>
     <string name="about_automattic_app_icon_description">Icono de la aplicación</string>
     <string name="about_automattic_back_icon_description">Icono de volver</string>
     <string name="about_automattic_logo_description">Logo de Automattic</string>
@@ -316,13 +330,12 @@ Language: es
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Pagos en Persona no está disponible en modo de prueba. Desactívalo para continuar.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Pagos en Persona no está disponible en este momento</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Tu cuenta está pendiente de cumplir algunos requisitos. Completa los requisitos antes del %1$s para seguir aceptando Pagos en Persona.</string>
-    <string name="card_reader_onboarding_account_pending_requirements_header">Tu cuenta de WooCommerce Payments está pendiente de cumplir algunos requisitos.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Tu cuenta está pendiente de cumplir algunos requisitos.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">Tu cuenta no cumple al menos un requisito. Resuélvelo para reanudar Pagos en Persona</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">Pagos en Persona no está disponible en este momento</string>
     <string name="card_reader_onboarding_account_under_review_hint">Podrás aceptar Pagos en Persona en cuanto terminemos de revisar tu cuenta.</string>
     <string name="card_reader_onboarding_account_under_review_header">Pagos en Persona no está disponible en este momento</string>
     <string name="card_reader_onboarding_account_rejected_hint">Lo sentimos, pero no podemos admitir Pagos en Persona para esta tienda.</string>
-    <string name="card_reader_onboarding_account_rejected_header">Pagos en Persona no está disponible para esta tienda</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Recarga la página después de actualizar</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Se ha instalado una versión obsoleta de la extensión WooCommerce Payments en tu tienda. Actualízala para aceptar Pagos en Persona.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Actualizar WooCommerce Payments</string>
@@ -1777,8 +1790,6 @@ Language: es
     <string name="dashboard_action_view_order">Ver pedido</string>
     <string name="dashboard_top_performers_empty">Sin actividad en este periodo</string>
     <string name="dashboard_top_performers_total_orders">Total de pedidos: %s</string>
-    <string name="dashboard_top_performers_total_spend">Gasto total</string>
-    <string name="dashboard_top_performers_description">Obtén detalles sobre el rendimiento de los productos en tu tienda</string>
     <string name="dashboard_top_performers_title">Mejor rendimiento</string>
     <string name="dashboard_stats_updated_date_time">Se ha actualizado el %s</string>
     <string name="dashboard_stats_updated_one_day">Se ha actualizado hace 1 día.</string>

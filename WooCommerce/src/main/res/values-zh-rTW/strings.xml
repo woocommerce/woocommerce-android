@@ -316,13 +316,11 @@ Language: zh_TW
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">測試模式下無法親自收款。 請關閉測試模式以繼續。</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">目前無法親自收款</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">你的帳號中有待處理的要求。 請在 %1$s 前完成這些要求，以便繼續使用親自收款功能。</string>
-    <string name="card_reader_onboarding_account_pending_requirements_header">你的 WooCommerce Payments 帳號有待處理的要求</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">你的帳號中有至少一個逾期要求。 請處理該要求以繼續使用親自收款功能</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">目前無法親自收款</string>
     <string name="card_reader_onboarding_account_under_review_hint">我們審核完你的帳號後，你即可隨即開始親自收款。</string>
     <string name="card_reader_onboarding_account_under_review_header">目前無法親自收款</string>
     <string name="card_reader_onboarding_account_rejected_hint">很抱歉，此商店不支援使用親自收款功能。</string>
-    <string name="card_reader_onboarding_account_rejected_header">此商店無法使用親自收款功能</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">在更新後重新整理</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">貴店安裝的 WooCommerce Payments 擴充功能版本已過期。 若要使用親自收款功能，請更新擴充功能。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">更新 WooCommerce Payments</string>
@@ -1776,8 +1774,6 @@ Language: zh_TW
     <string name="dashboard_action_view_order">查看訂單</string>
     <string name="dashboard_top_performers_empty">此期間沒有任何活動</string>
     <string name="dashboard_top_performers_total_orders">訂單總數：%s</string>
-    <string name="dashboard_top_performers_total_spend">消費總額</string>
-    <string name="dashboard_top_performers_description">深入瞭解產品在商店上的成效</string>
     <string name="dashboard_top_performers_title">成效最佳者</string>
     <string name="dashboard_stats_updated_date_time">更新日期：%s</string>
     <string name="dashboard_stats_updated_one_day">1 天前已更新</string>
