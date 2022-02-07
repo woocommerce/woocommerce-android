@@ -163,7 +163,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         assertThat(
             (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
-        ).isEqualTo(AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER)
+        ).isEqualTo(AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER)
     }
 
     @Test
