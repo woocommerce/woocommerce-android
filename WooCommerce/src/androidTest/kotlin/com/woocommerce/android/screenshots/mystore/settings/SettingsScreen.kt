@@ -10,7 +10,6 @@ import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.Screen
 
-
 class SettingsScreen : Screen {
     companion object {
         const val SELECTED_STORE = R.id.option_store

@@ -14,7 +14,6 @@ import com.woocommerce.android.screenshots.products.ProductListScreen
 import com.woocommerce.android.screenshots.products.SingleProductScreen
 import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
 import com.woocommerce.android.screenshots.reviews.SingleReviewScreen
-import com.woocommerce.android.screenshots.util.Screen
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
