@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.helpers.InitializationRule
@@ -22,28 +23,31 @@ class ReviewsUITest : TestBase() {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val initRule = InitializationRule()
+    val composeTestRule = createComposeRule()
 
     @get:Rule(order = 2)
+    val initRule = InitializationRule()
+
+    @get:Rule(order = 3)
     var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @Before
     fun setUp() {
         WelcomeScreen
-            .logoutIfNeeded()
+            .logoutIfNeeded(composeTestRule)
             .selectLogin()
             .proceedWith(BuildConfig.SCREENSHOTS_URL)
             .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
             .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
-        TabNavComponent().gotoReviewsScreen()
+        TabNavComponent().gotoMoreMenuScreen().openReviewsListScreen(composeTestRule)
     }
 
     @Test
     fun reviewListShowsAllReviews() {
         val reviewsJSONArray = MocksReader().readAllReviewsToArray()
 
-        for (review in reviewsJSONArray.iterator()) {
+        reviewsJSONArray.iterator().forEach { review ->
             val currentReview = ReviewData(
                 review.getInt("product_id"),
                 review.getString("status"),
