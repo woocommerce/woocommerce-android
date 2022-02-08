@@ -227,6 +227,10 @@ class OrderCreationViewModel @Inject constructor(
         }
         triggerEvent(ShowDialog.buildDiscardDialogEvent(
             positiveBtnAction = { _, _ ->
+                val draft = _orderDraft.value
+                if (draft.id != 0L) {
+                    launch { orderCreationRepository.deleteDraftOrder(draft) }
+                }
                 triggerEvent(Exit)
             }
         ))
