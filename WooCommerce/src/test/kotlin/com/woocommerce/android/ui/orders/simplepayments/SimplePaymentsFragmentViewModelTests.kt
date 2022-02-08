@@ -9,6 +9,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
 class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
@@ -40,7 +41,7 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
         SimplePaymentsFragmentArgs(order = testOrder).initSavedStateHandle()
 
     private fun initViewModel() {
-        viewModel = SimplePaymentsFragmentViewModel(savedState)
+        viewModel = SimplePaymentsFragmentViewModel(savedState, mock(), mock())
     }
 
     @Test
