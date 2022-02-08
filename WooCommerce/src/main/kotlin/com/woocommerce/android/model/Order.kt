@@ -9,7 +9,6 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 import java.util.*
@@ -62,6 +61,10 @@ data class Order(
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
+
+    @IgnoredOnParcel
+    val chargeId
+        get() = metaData.firstOrNull { it.key == "_charge_id" }?.value
 
     @Parcelize
     data class ShippingMethod(

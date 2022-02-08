@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-01-20 21:54:58+0000
+Translation-Revision-Date: 2022-02-02 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="settings_install_jetpack">Menginstal Jetpack</string>
+    <string name="card_reader_onboarding_account_rejected_header">Pembayaran Langsung saat ini tidak tersedia</string>
+    <string name="order_creation_success_snackbar">Pesanan dibuat</string>
+    <string name="order_creation_failure_snackbar">Pesanan gagal dibuat</string>
+    <string name="order_creation_loading_dialog_message">Harap tunggu…</string>
+    <string name="order_creation_loading_dialog_title">Membuat pesanan Anda</string>
+    <string name="order_creation_payment_tax_hint">Total belum termasuk pajak. Pajak akan dihitung otomatis berdasarkan pengaturan toko Anda.</string>
+    <string name="order_creation_payment_order_total">Total Pesanan</string>
+    <string name="order_creation_payment_products_total">Total Produk</string>
+    <string name="order_creation_payment">Pembayaran</string>
+    <string name="dashboard_top_performers_net_sales">Penjualan bersih: %s</string>
+    <string name="dashboard_top_performers_items_sold">Item Terjual</string>
+    <string name="dashboard_stats_conversion">Konversi</string>
+    <string name="create">Buat</string>
     <string name="about_automattic_app_icon_description">Ikon aplikasi</string>
     <string name="about_automattic_back_icon_description">Ikon kembali</string>
     <string name="about_automattic_logo_description">Logo Automattic</string>
@@ -316,13 +330,12 @@ Language: id
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Pembayaran Langsung tidak tersedia dalam Mode Pengujian. Harap matikan untuk melanjutkan.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Pembayaran Langsung saat ini tidak tersedia</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Ada persyaratan yang tertunda di akun Anda. Penuhi persyaratan tersebut dengan %1$s agar dapat tetap menerima Pembayaran Langsung.</string>
-    <string name="card_reader_onboarding_account_pending_requirements_header">Akun WooCommerce Payments Anda memiliki persyaratan tertunda</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Ada persyaratan untuk Akun Anda yang belum dipenuhi</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">Anda memiliki setidaknya satu persyaratan yang terlambat di akun Anda. Harap penuhi persyaratan tersebut untuk dapat terus menggunakan Pembayaran Langsung</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">Pembayaran Langsung saat ini tidak tersedia</string>
     <string name="card_reader_onboarding_account_under_review_hint">Anda akan dapat menerima Pembayaran Langsung segera setelah kami selesai meninjau akun Anda.</string>
     <string name="card_reader_onboarding_account_under_review_header">Pembayaran Langsung saat ini tidak tersedia</string>
     <string name="card_reader_onboarding_account_rejected_hint">Mohon maaf, kami tidak dapat mendukung Pembayaran Langsung untuk toko ini.</string>
-    <string name="card_reader_onboarding_account_rejected_header">Pembayaran Langsung tidak tersedia untuk toko ini.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Segarkan setelah memperbarui</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Versi ekstensi WooCommerce Payments yang terpasang di toko Anda sudah usang. Harap perbarui untuk menerima Pembayaran Langsung.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Perbarui WooCommerce Payments</string>
@@ -1776,8 +1789,6 @@ Language: id
     <string name="dashboard_action_view_order">Lihat Pesanan</string>
     <string name="dashboard_top_performers_empty">Tidak ada aktivitas dalam periode ini</string>
     <string name="dashboard_top_performers_total_orders">Total pesanan: %s</string>
-    <string name="dashboard_top_performers_total_spend">Total pengeluaran</string>
-    <string name="dashboard_top_performers_description">Dapatkan informasi mengenai performa produk di toko Anda</string>
     <string name="dashboard_top_performers_title">Produk dengan performa tertinggi</string>
     <string name="dashboard_stats_updated_date_time">Diperbarui pada %s</string>
     <string name="dashboard_stats_updated_one_day">Diperbarui 1 hari lalu</string>

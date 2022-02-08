@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import com.woocommerce.android.model.*
@@ -10,6 +11,7 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -32,8 +34,10 @@ class AddressViewModel @Inject constructor(
         get() = dataStore.getCountries().map { it.toAppModel() }
 
     private fun statesAvailableFor(type: AddressType): List<Location> {
-        return dataStore.getStates(viewState.addressSelectionStates.getValue(type).address.country.code)
-            .map { it.toAppModel() }
+        return viewState.addressSelectionStates[type]?.address?.country?.code?.let { locationCode ->
+            dataStore.getStates(locationCode)
+                .map { it.toAppModel() }
+        }.orEmpty()
     }
 
     private fun statesFor(countryCode: LocationCode): List<Location> {
@@ -46,6 +50,19 @@ class AddressViewModel @Inject constructor(
 
     val isAnyAddressEdited: LiveData<Boolean> = viewStateData.liveData.map { viewState ->
         viewState.addressSelectionStates.mapValues { it.value.address } != initialState
+    }
+
+    private val _isDifferentShippingAddressChecked = MutableLiveData<Boolean>()
+    val isDifferentShippingAddressChecked: LiveData<Boolean> = _isDifferentShippingAddressChecked
+
+    val shouldShowDoneButton = isAnyAddressEdited.combineWith(
+        isDifferentShippingAddressChecked,
+        viewStateData.liveData.map { it.addressSelectionStates[AddressType.SHIPPING]?.address }
+    ) { isAnyAddressEdited, isDifferentShippingAddressChecked, shippingAddress ->
+        val isDifferentShippingAddressDisabled =
+            isDifferentShippingAddressChecked == false && (shippingAddress != Address.EMPTY)
+
+        isAnyAddressEdited == true || isDifferentShippingAddressDisabled
     }
 
     /**
@@ -84,8 +101,9 @@ class AddressViewModel @Inject constructor(
         }
     }
 
-    @Deprecated("Use stateSpinnerStatus of corresponding AddressSelectionState")
-    fun hasStatesFor(type: AddressType) = statesAvailableFor(type).isNotEmpty()
+    fun onDifferentShippingAddressChecked(checked: Boolean) {
+        _isDifferentShippingAddressChecked.value = checked
+    }
 
     /**
      * Even when the [BaseAddressEditingFragment] instance is destroyed the instance of [AddressViewModel] will still

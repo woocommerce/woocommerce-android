@@ -12,7 +12,9 @@ import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
     val viewModel: CardReaderHubViewModel by viewModels()
 

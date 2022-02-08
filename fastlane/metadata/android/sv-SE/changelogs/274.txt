@@ -1,0 +1,2 @@
+8.4:
+Vi håller på att uppdatera appens utseende! Du kommer att märka några snygga visuella förändringar i försäljningsdiagrammet i sektionen Min butik samt en ny konverteringsberäkning. Vi har även slutat att avrunda försäljningsbeloppen för ökad tydlighet. Det här är inte allt – fler uppdateringar är på väg under de kommande veckorna!
