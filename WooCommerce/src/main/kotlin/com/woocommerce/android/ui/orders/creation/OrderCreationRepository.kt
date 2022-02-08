@@ -91,6 +91,7 @@ class OrderCreationRepository @Inject constructor(
     }
 
     suspend fun deleteDraftOrder(order: Order) {
+        // Make sure the request is not cancelled after leaving the screen
         withContext(NonCancellable) {
             orderUpdateStore.deleteOrder(
                 site = selectedSite.get(),
