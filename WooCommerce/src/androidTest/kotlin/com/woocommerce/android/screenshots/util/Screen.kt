@@ -28,7 +28,6 @@ import org.hamcrest.Matchers.`is`
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
 
-
 open class Screen {
     private val elementID: Int
 
@@ -179,7 +178,7 @@ open class Screen {
         val tabLayout = onView(
             allOf(
                 isDescendantOfA(withId(elementParentId)),
-                withClassName(`is` ("com.google.android.material.tabs.TabLayout"))
+                withClassName(`is`("com.google.android.material.tabs.TabLayout"))
             )
         )
 

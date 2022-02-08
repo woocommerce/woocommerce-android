@@ -1,16 +1,13 @@
 package com.woocommerce.android.screenshots.mystore.settings
 
-import android.view.KeyEvent
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.Screen
-import org.hamcrest.Matchers
 
 class SettingsScreen : Screen {
     companion object {
