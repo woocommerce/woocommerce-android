@@ -7,51 +7,19 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_FAILURE
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_MISSING_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.connection.CardReader
-import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
-import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
-import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
-import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
-import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
-import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.*
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.*
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowUpdateInProgress
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingLocationPermissionsError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingMerchantAddressError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.*
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.*
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
@@ -77,7 +45,7 @@ import javax.inject.Inject
 class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    private val tracker: AnalyticsTrackerWrapper,
+    private val tracker: CardReaderTracker,
     private val appPrefs: AppPrefs,
     private val onboardingChecker: CardReaderOnboardingChecker,
     private val locationRepository: CardReaderLocationRepository,
@@ -319,22 +287,14 @@ class CardReaderConnectViewModel @Inject constructor(
                 }
             }
             is ReadersFound -> {
-                tracker.track(
-                    AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED,
-                    mapOf("reader_count" to discoveryEvent.list.size)
-                )
+                tracker.trackReadersDiscovered(discoveryEvent.list.size)
                 onReadersFound(discoveryEvent)
             }
             Succeeded -> {
                 // noop
             }
             is Failed -> {
-                tracker.track(
-                    AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED,
-                    this.javaClass.simpleName,
-                    null,
-                    discoveryEvent.msg
-                )
+                tracker.trackReaderDiscoveryFailed(discoveryEvent.msg)
                 WooLog.e(WooLog.T.CARD_READER, "Scanning failed: ${discoveryEvent.msg}")
                 viewState.value = ScanningFailedState(::restartFlow, ::onCancelClicked)
             }
@@ -358,7 +318,7 @@ class CardReaderConnectViewModel @Inject constructor(
         val availableReaders = discoveryEvent.list.filter { it.id != null }
         val lastKnownReader = findLastKnowReader(availableReaders)
         if (lastKnownReader != null) {
-            tracker.track(AnalyticsTracker.Stat.CARD_READER_AUTO_CONNECTION_STARTED)
+            tracker.trackAutoConnectionStarted()
             connectToReader(lastKnownReader)
         } else {
             viewState.value = when {
@@ -395,7 +355,7 @@ class CardReaderConnectViewModel @Inject constructor(
         )
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
-        tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED)
+        tracker.trackOnConnectTapped()
         connectToReader(cardReader)
     }
 
@@ -407,7 +367,7 @@ class CardReaderConnectViewModel @Inject constructor(
             } else {
                 when (val result = locationRepository.getDefaultLocationId(getPaymentPluginType())) {
                     is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
-                        tracker.track(CARD_READER_LOCATION_SUCCESS)
+                        tracker.trackFetchingLocationSucceeded()
                         cardReaderManager.startConnectionToReader(cardReader, result.locationId)
                     }
                     is CardReaderLocationRepository.LocationIdFetchingResult.Error -> {
@@ -431,7 +391,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 trackLocationFailureFetching("Missing Address")
                 viewState.value = MissingMerchantAddressError(
                     {
-                        tracker.track(CARD_READER_LOCATION_MISSING_TAPPED)
+                        tracker.trackMissingLocationTapped()
                         triggerOpenUrlEventAndExitIfNeeded(result)
                     },
                     {
@@ -451,7 +411,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onReaderConnectionFailed() {
-        tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED)
+        tracker.trackConnectionFailed()
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
         viewState.value = ConnectingFailedState(::restartFlow, ::onCancelClicked)
     }
@@ -473,7 +433,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onReaderConnected(cardReader: CardReader) {
-        tracker.track(AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS)
+        tracker.trackConnectionSucceeded()
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         storeConnectedReader(cardReader)
 
@@ -508,12 +468,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun trackLocationFailureFetching(errorDescription: String?) {
-        tracker.track(
-            CARD_READER_LOCATION_FAILURE,
-            this.javaClass.simpleName,
-            null,
-            errorDescription,
-        )
+        tracker.trackFetchingLocationFailed(errorDescription,)
     }
 
     private suspend fun getStoreCountryCode(): String? {

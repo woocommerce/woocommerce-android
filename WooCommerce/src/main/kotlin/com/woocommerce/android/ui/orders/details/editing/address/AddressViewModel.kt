@@ -34,8 +34,10 @@ class AddressViewModel @Inject constructor(
         get() = dataStore.getCountries().map { it.toAppModel() }
 
     private fun statesAvailableFor(type: AddressType): List<Location> {
-        return dataStore.getStates(viewState.addressSelectionStates.getValue(type).address.country.code)
-            .map { it.toAppModel() }
+        return viewState.addressSelectionStates[type]?.address?.country?.code?.let { locationCode ->
+            dataStore.getStates(locationCode)
+                .map { it.toAppModel() }
+        }.orEmpty()
     }
 
     private fun statesFor(countryCode: LocationCode): List<Location> {

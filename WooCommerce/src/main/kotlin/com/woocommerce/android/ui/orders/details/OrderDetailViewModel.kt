@@ -26,6 +26,7 @@ import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
@@ -63,7 +64,8 @@ final class OrderDetailViewModel @Inject constructor(
     private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
-    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
+    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val cardReaderTracker: CardReaderTracker,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     companion object {
         // The required version to support shipping label creation
@@ -210,7 +212,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
-        AnalyticsTracker.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
+        cardReaderTracker.trackCollectPaymentTapped()
         val site = selectedSite.get()
         when {
             cardReaderManager.readerStatus.value is Connected -> {
