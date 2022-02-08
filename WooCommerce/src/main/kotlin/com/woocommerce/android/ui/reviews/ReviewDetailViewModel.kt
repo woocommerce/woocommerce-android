@@ -6,9 +6,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.model.RequestResult.ERROR
-import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -19,19 +19,20 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @HiltViewModel
 class ReviewDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
-    private val repository: ReviewDetailRepository
+    private val repository: ReviewDetailRepository,
+    private val reviewModerationHandler : ReviewModerationHandler
 ) : ScopedViewModel(savedState) {
     private var remoteReviewId = 0L
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+
 
     fun start(remoteReviewId: Long, launchedFromNotification: Boolean) {
         loadProductReview(remoteReviewId, launchedFromNotification)
@@ -45,7 +46,10 @@ class ReviewDetailViewModel @Inject constructor(
                 val event = OnRequestModerateReviewEvent(
                     ProductReviewModerationRequest(review, newStatus)
                 )
-                EventBus.getDefault().post(event)
+                launch {
+                    reviewModerationHandler.postProductReviewModerationRequest(event)
+                }
+
 
                 // Close the detail view
                 triggerEvent(Exit)

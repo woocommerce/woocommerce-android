@@ -48,6 +48,7 @@ import javax.inject.Inject
 class ReviewListFragment :
     TopLevelFragment(R.layout.fragment_reviews_list),
     ItemDecorationListener,
+    ReviewModeration.View,
     ReviewListAdapter.OnReviewClickListener {
     companion object {
         const val TAG = "ReviewListFragment"
@@ -69,9 +70,7 @@ class ReviewListFragment :
     private val skeletonView = SkeletonView()
     private var menuMarkAllRead: MenuItem? = null
 
-    private var pendingModerationRequest: ProductReviewModerationRequest? = null
-    private var pendingModerationRemoteReviewId: Long? = null
-    private var pendingModerationNewStatus: String? = null
+
     private var changeReviewStatusSnackbar: Snackbar? = null
 
     private var _binding: FragmentReviewsListBinding? = null
@@ -205,7 +204,7 @@ class ReviewListFragment :
             viewLifecycleOwner,
             Observer {
                 if (reviewsAdapter.isEmpty()) {
-                    pendingModerationRequest = it
+                    viewModel.setPendingModerationRequest(it)
                 } else {
                     it?.let { request -> handleReviewModerationRequest(request) }
                 }
@@ -216,9 +215,9 @@ class ReviewListFragment :
             viewLifecycleOwner,
             Observer {
                 showReviewList(it)
-                pendingModerationRequest?.let {
+                viewModel.getPendingModerationRequest()?.let {
                     handleReviewModerationRequest(it)
-                    pendingModerationRequest = null
+                    viewModel.setPendingModerationRequest(null)
                 }
             }
         )
@@ -286,11 +285,8 @@ class ReviewListFragment :
         }
     }
 
-    private fun processNewModerationRequest(request: ProductReviewModerationRequest) {
+    override fun setUpModerationUndo(request: ProductReviewModerationRequest) {
         with(request) {
-            pendingModerationRemoteReviewId = productReview.remoteId
-            pendingModerationNewStatus = newStatus.toString()
-
             var changeReviewStatusCanceled = false
 
             // Listener for the UNDO button in the snackbar
@@ -323,15 +319,18 @@ class ReviewListFragment :
                     it.addCallback(callback)
                     it.show()
                 }
-
-            // Manually remove the product review from the list if it's new
-            // status will be spam or trash
-            if (newStatus == SPAM || newStatus == TRASH) {
-                removeProductReviewFromList(productReview.remoteId)
-            }
-
-            AppRatingDialog.incrementInteractions()
         }
+
+    }
+
+    private fun processNewModerationRequest(request: ProductReviewModerationRequest) {
+        setUpModerationUndo(request)
+        // Manually remove the product review from the list if it's new
+        // status will be spam or trash
+        if (request.newStatus == SPAM || request.newStatus == TRASH) {
+            removeProductReviewFromList(request.productReview.remoteId)
+        }
+        AppRatingDialog.incrementInteractions()
     }
 
     private fun removeProductReviewFromList(remoteReviewId: Long) {
@@ -339,15 +338,14 @@ class ReviewListFragment :
     }
 
     private fun resetPendingModerationVariables() {
-        pendingModerationNewStatus = null
-        pendingModerationRemoteReviewId = null
+        viewModel.resetPendingModerationVariables()
         reviewsAdapter.resetPendingModerationState()
     }
 
     private fun revertPendingModerationState() {
         AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
 
-        pendingModerationNewStatus?.let {
+        viewModel.getPendingModerationNewStatus()?.let {
             val status = ProductReviewStatus.fromString(it)
             if (status == SPAM || status == TRASH) {
                 val itemPos = reviewsAdapter.revertHiddenReviewAndReturnPos()
@@ -375,14 +373,14 @@ class ReviewListFragment :
                     review.remoteId,
                     launchedFromNotification = false,
                     enableModeration = true,
-                    tempStatus = pendingModerationNewStatus
+                    tempStatus = viewModel.getPendingModerationNewStatus()
                 )
             } else {
                 router.showReviewDetailWithSharedTransition(
                     review.remoteId,
                     launchedFromNotification = false,
                     enableModeration = true,
-                    tempStatus = pendingModerationNewStatus,
+                    tempStatus = viewModel.getPendingModerationNewStatus(),
                     sharedView = sharedView
                 )
             }
