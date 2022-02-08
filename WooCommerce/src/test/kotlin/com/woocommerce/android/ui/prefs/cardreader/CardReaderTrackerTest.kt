@@ -264,7 +264,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val dummyMessage = "abcd"
             cardReaderTracker.trackSoftwareUpdateFailed(Failed(mock(), dummyMessage), requiredUpdate = false)
-            // THEN
+
             verify(trackerWrapper).track(
                 CARD_READER_SOFTWARE_UPDATE_FAILED,
                 hashMapOf(
@@ -280,7 +280,6 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackSoftwareUpdateCancelled(false)
 
-            // THEN
             verify(trackerWrapper).track(
                 eq(CARD_READER_SOFTWARE_UPDATE_FAILED),
                 any()
@@ -292,7 +291,6 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackSoftwareUpdateCancelled(requiredUpdate = true)
 
-            // THEN
             verify(trackerWrapper).track(
                 CARD_READER_SOFTWARE_UPDATE_FAILED,
                 hashMapOf(
@@ -308,7 +306,6 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackSoftwareUpdateCancelled(requiredUpdate = false)
 
-            // THEN
             verify(trackerWrapper).track(
                 CARD_READER_SOFTWARE_UPDATE_FAILED,
                 hashMapOf(
@@ -317,5 +314,56 @@ class CardReaderTrackerTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
                 )
             )
+        }
+
+    @Test
+    fun `when auto connection started, then CARD_READER_AUTO_CONNECTION_STARTED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackAutoConnectionStarted()
+
+            verify(trackerWrapper).track(CARD_READER_AUTO_CONNECTION_STARTED)
+        }
+
+    @Test
+    fun `when scanning fails, then CARD_READER_DISCOVERY_FAILED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val dummyErrorMgs = "dummy error"
+            cardReaderTracker.trackReaderDiscoveryFailed(dummyErrorMgs)
+
+            verify(trackerWrapper).track(
+                eq(CARD_READER_DISCOVERY_FAILED), anyOrNull(), anyOrNull(), eq(dummyErrorMgs)
+            )
+        }
+
+    @Test
+    fun `when reader found, then CARD_READER_DISCOVERY_READER_DISCOVERED tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val dummyCount = 99
+            cardReaderTracker.trackReadersDiscovered(dummyCount)
+
+            verify(trackerWrapper)
+                .track(CARD_READER_DISCOVERY_READER_DISCOVERED, mapOf("reader_count" to dummyCount))
+        }
+
+    @Test
+    fun `when location fetching fails, then CARD_READER_LOCATION_FAILURE tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val dummyErrorMgs = "dummy error"
+            cardReaderTracker.trackFetchingLocationFailed(dummyErrorMgs)
+
+            verify(trackerWrapper).track(
+                CARD_READER_LOCATION_FAILURE,
+                "CardReaderTracker",
+                null,
+                dummyErrorMgs
+            )
+        }
+
+    @Test
+    fun `when location fetching succeeds, then CARD_READER_LOCATION_SUCCESS tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackFetchingLocationSucceeded()
+
+            verify(trackerWrapper).track(CARD_READER_LOCATION_SUCCESS)
         }
 }
