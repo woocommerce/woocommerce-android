@@ -7,7 +7,7 @@
                 "equalTo": "true"
             },
             "path": {
-                "matches": "/wc/v1/connect/label/2789(.*)"
+                "matches": "/wc/v1/connect/label/2201(.*)"
             },         
             "locale": {
                 "matches": "(.*)"

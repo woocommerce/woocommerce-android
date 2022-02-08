@@ -7,7 +7,7 @@
                 "equalTo": "true"
             },
             "path": {
-                "matches": "/wc/v2/orders/2789/shipment-trackings(.*)"
+                "matches": "/wc/v1/connect/label/2201/creation_eligibility(.*)"
             },         
             "locale": {
                 "matches": "(.*)"
@@ -17,7 +17,9 @@
     "response": {
         "status": 200,
         "jsonBody": {
-            "data": []
+            "data": {
+                "is_eligible": true
+            }
         },
         "headers": {
             "Content-Type": "application/json",

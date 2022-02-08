@@ -7,7 +7,7 @@
                 "equalTo": "true"
             },
             "path": {
-                "matches": "/wc/v3/orders/2789/refunds(.*)"
+                "matches": "/wc/v2/orders/2201/shipment-trackings(.*)"
             },         
             "locale": {
                 "matches": "(.*)"

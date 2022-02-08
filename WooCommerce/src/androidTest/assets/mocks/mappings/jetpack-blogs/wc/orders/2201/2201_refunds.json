@@ -7,7 +7,7 @@
                 "equalTo": "true"
             },
             "path": {
-                "matches": "/wc/v1/connect/label/2789/creation_eligibility(.*)"
+                "matches": "/wc/v3/orders/2201/refunds(.*)"
             },         
             "locale": {
                 "matches": "(.*)"
@@ -17,9 +17,7 @@
     "response": {
         "status": 200,
         "jsonBody": {
-            "data": {
-                "is_eligible": true
-            }
+            "data": []
         },
         "headers": {
             "Content-Type": "application/json",

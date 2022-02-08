@@ -5,6 +5,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.TabNavComponent
+import com.woocommerce.android.screenshots.orders.OrderListScreen
 import com.woocommerce.android.screenshots.util.CustomMatchers
 import com.woocommerce.android.screenshots.util.ReviewData
 import com.woocommerce.android.screenshots.util.Screen
@@ -23,6 +24,11 @@ class ReviewsListScreen : Screen {
 
     fun selectReviewByTitle(reviewTitle: String): SingleReviewScreen {
         selectListItem(reviewTitle, LIST_VIEW)
+        return SingleReviewScreen()
+    }
+
+    fun selectReviewByIndex(reviewIndex: Int): SingleReviewScreen {
+        selectItemAtIndexInRecyclerView(reviewIndex, LIST_VIEW, LIST_VIEW)
         return SingleReviewScreen()
     }
 

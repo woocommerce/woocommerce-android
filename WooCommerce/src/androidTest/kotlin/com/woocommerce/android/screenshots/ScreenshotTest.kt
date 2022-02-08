@@ -65,6 +65,7 @@ class ScreenshotTest : TestBase() {
 
         // My Store
         MyStoreScreen()
+            .stats.switchToStatsDashboardWeekTab()
             .thenTakeScreenshot<MyStoreScreen>("order-dashboard")
 
         // Orders
@@ -82,7 +83,7 @@ class ScreenshotTest : TestBase() {
         TabNavComponent()
             .gotoReviewsScreen()
             .thenTakeScreenshot<ReviewsListScreen>("review-list")
-            .selectReviewByTitle("Mira Workman left a review on Colorado shades")
+            .selectReviewByIndex(4)
             .thenTakeScreenshot<SingleReviewScreen>("review-details")
             .goBackToReviewsScreen()
 

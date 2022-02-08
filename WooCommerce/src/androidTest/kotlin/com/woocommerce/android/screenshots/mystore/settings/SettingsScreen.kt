@@ -4,11 +4,13 @@ import android.view.KeyEvent
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.Screen
+import org.hamcrest.Matchers
 
 class SettingsScreen : Screen {
     companion object {
@@ -34,25 +36,18 @@ class SettingsScreen : Screen {
     fun setTheme(theme: String): SettingsScreen {
         clickOn(R.id.option_theme)
 
-        val themeSelector: ViewInteraction = Espresso.onView(ViewMatchers.withId(R.id.select_dialog_listview))
+        val themeString = if (theme == "dark")
+            R.string.settings_app_theme_option_dark
+        else
+            R.string.settings_app_theme_option_light
 
-        waitForElementToBeDisplayed(themeSelector)
+        val themeCheckbox: ViewInteraction = Espresso.onView(
+            ViewMatchers.withText(getTranslatedString(themeString))
+        )
 
-        // The theme radio buttons have no IDs, and we can't rely on text
-        // because we need to test under different locales.
-        // This solution relies on buttons order and
-        // will move focus to the top of the list first ("Light"):
-        themeSelector
-            .perform(ViewActions.pressKey(KeyEvent.KEYCODE_DPAD_UP))
-            .perform(ViewActions.pressKey(KeyEvent.KEYCODE_DPAD_UP))
-            .perform(ViewActions.pressKey(KeyEvent.KEYCODE_DPAD_UP))
+        waitForElementToBeDisplayed(themeCheckbox)
+        themeCheckbox.perform(ViewActions.click())
 
-        // Move focus down if we need to set "Dark":
-        if (theme == "dark") {
-            themeSelector.perform(ViewActions.pressKey(KeyEvent.KEYCODE_DPAD_DOWN))
-        }
-
-        themeSelector.perform(ViewActions.pressKey(KeyEvent.KEYCODE_ENTER))
         return this
     }
 

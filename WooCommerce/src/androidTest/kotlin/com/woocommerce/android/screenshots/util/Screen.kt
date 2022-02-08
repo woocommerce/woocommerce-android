@@ -5,9 +5,7 @@ import android.content.res.Configuration
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.closeSoftKeyboard
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
+import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
@@ -18,12 +16,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
@@ -31,8 +24,10 @@ import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers.`is`
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
+
 
 open class Screen {
     private val elementID: Int
@@ -173,6 +168,18 @@ open class Screen {
             allOf(
                 isDescendantOfA(withId(elementParentId)),
                 withId(tabLayout)
+            )
+        )
+
+        tabLayout.perform(selectTabWithText(string))
+    }
+
+    fun selectItemWithTitleInTabLayout(stringID: Int, elementParentId: Int) {
+        val string = getTranslatedString(stringID)
+        val tabLayout = onView(
+            allOf(
+                isDescendantOfA(withId(elementParentId)),
+                withClassName(`is` ("com.google.android.material.tabs.TabLayout"))
             )
         )
 
@@ -332,7 +339,7 @@ open class Screen {
         return mCurrentActivity
     }
 
-    private fun getTranslatedString(resourceID: Int): String {
+    fun getTranslatedString(resourceID: Int): String {
         return getCurrentActivity()!!.resources.getString(resourceID)
     }
 

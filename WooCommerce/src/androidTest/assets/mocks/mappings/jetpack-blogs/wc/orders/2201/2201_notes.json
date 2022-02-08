@@ -7,7 +7,7 @@
                 "equalTo": "true"
             },
             "path": {
-                "matches": "/wc/v3/orders/2789/notes(.*)"
+                "matches": "/wc/v3/orders/2201/notes(.*)"
             },         
             "locale": {
                 "matches": "(.*)"
