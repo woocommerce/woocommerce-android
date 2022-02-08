@@ -6,6 +6,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.LineItem
@@ -86,6 +87,16 @@ class OrderCreationRepository @Inject constructor(
         return when {
             result.isError -> Result.failure(WooException(result.error))
             else -> Result.success(orderMapper.toAppModel(result.model!!))
+        }
+    }
+
+    suspend fun deleteDraftOrder(order: Order) {
+        withContext(NonCancellable) {
+            orderUpdateStore.deleteOrder(
+                site = selectedSite.get(),
+                orderId = order.id,
+                trash = false
+            )
         }
     }
 }
