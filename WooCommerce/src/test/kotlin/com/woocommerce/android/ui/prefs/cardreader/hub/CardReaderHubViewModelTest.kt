@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.prefs.cardreader.hub
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -15,6 +15,9 @@ import org.mockito.kotlin.whenever
 class CardReaderHubViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderHubViewModel
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
+
+    private val countryCode = "US"
+    private val savedState = CardReaderHubFragmentArgs(storeCountryCode = countryCode).initSavedStateHandle()
 
     @Before
     fun setUp() {
@@ -144,14 +147,39 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on purchase card reader, then app opens external webview`() {
+    fun `given ipp canada disabled, when user clicks on purchase card reader, then app opens external webview`() {
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
+        initViewModel()
+
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
                 it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
             }!!.onItemClicked.invoke()
 
         assertThat(viewModel.event.value)
-            .isEqualTo(CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow)
+            .isEqualTo(
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
+                    AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER
+                )
+            )
+    }
+
+    @Test
+    fun `given ipp canada enabled, when user clicks on purchase card reader, then app opens external webview`() {
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+        initViewModel()
+
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
+            }!!.onItemClicked.invoke()
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
+                    "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$countryCode"
+                )
+            )
     }
 
     @Test
@@ -215,6 +243,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     private fun initViewModel() {
-        viewModel = CardReaderHubViewModel(SavedStateHandle(), inPersonPaymentsCanadaFeatureFlag)
+        viewModel = CardReaderHubViewModel(savedState, inPersonPaymentsCanadaFeatureFlag)
     }
 }

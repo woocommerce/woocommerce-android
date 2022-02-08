@@ -39,6 +39,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         onBlocking { it.fetchUserInfo() } doReturn model
     }
     private val selectedSite: SelectedSite = mock()
+    private val countryCode = "US"
 
     @Test
     fun `when screen initialized, then loading state shown`() {
@@ -51,13 +52,13 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when onboarding completed, then navigates to card reader hub screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS)
+                CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS, countryCode)
             )
 
             val viewModel = createVM()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.Continue::class.java)
+                .isInstanceOf(OnboardingEvent.Continue::class.java)
         }
 
     @Test
@@ -477,7 +478,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .thenReturn(
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
-                        PluginType.WOOCOMMERCE_PAYMENTS
+                        PluginType.WOOCOMMERCE_PAYMENTS,
+                        countryCode
                     )
                 )
 
@@ -495,7 +497,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .thenReturn(
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
-                        PluginType.WOOCOMMERCE_PAYMENTS
+                        PluginType.WOOCOMMERCE_PAYMENTS,
+                        countryCode
                     )
                 )
 
@@ -668,7 +671,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .thenReturn(
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
-                        PluginType.WOOCOMMERCE_PAYMENTS
+                        PluginType.WOOCOMMERCE_PAYMENTS,
+                        countryCode
                     )
                 )
 
@@ -738,7 +742,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when onboarding completed, then event NOT tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
+                .thenReturn(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS, countryCode))
 
             createVM()
 

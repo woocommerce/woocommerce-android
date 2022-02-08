@@ -109,10 +109,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
 
     private val locationId = "location_id"
+    private val countryCode = "US"
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        viewModel = initVM(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
+        viewModel = initVM(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS, countryCode))
     }
 
     @Test
