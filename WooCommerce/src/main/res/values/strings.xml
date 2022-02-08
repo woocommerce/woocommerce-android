@@ -1468,8 +1468,6 @@
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
-    <string name="settings_enable_simple_payments_teaser_title">Simple payments</string>
-    <string name="settings_enable_simple_payments_teaser_message">Test out creating orders with minimal information as we get ready to launch</string>
     <string name="settings_enable_order_creation_teaser_title">Order Creation</string>
     <string name="settings_enable_order_creation_teaser_message">Test out creating orders with full details as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>

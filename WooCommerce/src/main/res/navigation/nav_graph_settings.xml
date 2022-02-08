@@ -126,11 +126,7 @@
     <fragment
         android:id="@+id/betaFeaturesFragment"
         android:name="com.woocommerce.android.ui.prefs.BetaFeaturesFragment"
-        android:label="BetaFeaturesFragment">
-        <argument
-            android:name="isCardReaderOnboardingCompleted"
-            app:argType="boolean" />
-    </fragment>
+        android:label="BetaFeaturesFragment" />
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
