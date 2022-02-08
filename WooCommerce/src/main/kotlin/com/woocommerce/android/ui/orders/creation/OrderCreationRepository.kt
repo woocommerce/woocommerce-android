@@ -6,6 +6,8 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -93,11 +95,17 @@ class OrderCreationRepository @Inject constructor(
     suspend fun deleteDraftOrder(order: Order) {
         // Make sure the request is not cancelled after leaving the screen
         withContext(NonCancellable) {
+            WooLog.d(T.ORDERS, "Send a request to delete draft order")
             orderUpdateStore.deleteOrder(
                 site = selectedSite.get(),
                 orderId = order.id,
                 trash = false
-            )
+            ).let {
+                when {
+                    it.isError -> WooLog.w(T.ORDERS, "Deleting the order draft failed, error: ${it.error.message}")
+                    else -> WooLog.d(T.ORDERS, "Draft order deleted successfully")
+                }
+            }
         }
     }
 }
