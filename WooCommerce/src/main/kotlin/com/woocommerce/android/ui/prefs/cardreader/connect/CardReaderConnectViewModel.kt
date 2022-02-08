@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -12,6 +11,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.*
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.*
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -37,6 +37,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,16 +52,10 @@ class CardReaderConnectViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val cardReaderManager: CardReaderManager,
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
+    private val wooStore: WooCommerceStore,
+    private val cardReaderConfigFactory: CardReaderConfigFactory,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val supportedReaders: List<SpecificReader>
-        get() = if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
-            listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3)
-        } else {
-            listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2)
-        }
 
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
@@ -230,7 +226,9 @@ class CardReaderConnectViewModel @Inject constructor(
             cardReaderManager
                 .discoverReaders(
                     isSimulated = BuildConfig.USE_SIMULATED_READER,
-                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(supportedReaders)
+                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(
+                        getSupportedReaders()
+                    )
                 )
                 .flowOn(dispatchers.io)
                 .collect { discoveryEvent ->
@@ -238,6 +236,19 @@ class CardReaderConnectViewModel @Inject constructor(
                 }
         }
     }
+
+    private suspend fun getSupportedReaders() =
+        if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
+            cardReaderConfigFactory.getCardReaderConfigFor(
+                getStoreCountryCode()
+            ).allReaders
+        } else {
+            cardReaderConfigFactory.getCardReaderConfigFor(
+                getStoreCountryCode()
+            ).allReaders.filter { specificReader ->
+                specificReader != SpecificReader.WisePade3
+            }
+        }
 
     private suspend fun listenToConnectionStatus() {
         cardReaderManager.readerStatus.collect { status ->
@@ -458,6 +469,14 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun trackLocationFailureFetching(errorDescription: String?) {
         tracker.trackFetchingLocationFailed(errorDescription,)
+    }
+
+    private suspend fun getStoreCountryCode(): String? {
+        return withContext(dispatchers.io) {
+            wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
+                WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
+            }
+        }
     }
 
     sealed class ListItemViewState {

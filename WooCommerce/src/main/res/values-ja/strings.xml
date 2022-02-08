@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-01-20 21:48:50+0000
+Translation-Revision-Date: 2022-02-02 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="settings_install_jetpack">Jetpack をインストール</string>
+    <string name="card_reader_onboarding_account_rejected_header">オフラインでの支払いは現在利用できません</string>
+    <string name="order_creation_success_snackbar">注文作成済み</string>
+    <string name="order_creation_failure_snackbar">注文作成に失敗しました</string>
+    <string name="order_creation_loading_dialog_message">しばらくお待ちください…</string>
+    <string name="order_creation_loading_dialog_title">注文を作成しています</string>
+    <string name="order_creation_payment_tax_hint">総額に税金は含まれていません。 税金は店舗の設定に基づいて自動的に計算されます。</string>
+    <string name="order_creation_payment_order_total">注文合計</string>
+    <string name="order_creation_payment_products_total">商品の合計</string>
+    <string name="order_creation_payment">支払い</string>
+    <string name="dashboard_top_performers_net_sales">純売上高: %s</string>
+    <string name="dashboard_top_performers_items_sold">販売済み商品</string>
+    <string name="dashboard_stats_conversion">コンバージョン</string>
+    <string name="create">作成</string>
     <string name="about_automattic_app_icon_description">アプリアイコン</string>
     <string name="about_automattic_back_icon_description">「戻る」アイコン</string>
     <string name="about_automattic_logo_description">Automattic ロゴ</string>
@@ -316,13 +330,12 @@ Language: ja_JP
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">テストモードではオフラインの支払いを利用できません。 電源をオフにして続行します。</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">オフラインでの支払いは現在利用できません</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">口座に保留中の要件があります。 引き続きオフラインでのお支払いを受け取る場合は、%1$sまでに要件を完了させてください。</string>
-    <string name="card_reader_onboarding_account_pending_requirements_header">WooCommerce Payments アカウントに保留中の要件があります</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">お使いのアカウントに保留中の要件があります</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">ご使用のアカウントに期限切れの要件があります。 オフラインでの支払いを再開するには、この要件を処理してください</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">オフラインでの支払いは現在利用できません</string>
     <string name="card_reader_onboarding_account_under_review_hint">アカウントのレビューが完了すると、すぐにオフラインでの支払いを受け取れるようになります。</string>
     <string name="card_reader_onboarding_account_under_review_header">オフラインでの支払いは現在利用できません</string>
     <string name="card_reader_onboarding_account_rejected_hint">このストアはオフラインでの支払いに対応していません。</string>
-    <string name="card_reader_onboarding_account_rejected_header">このストアではオフラインでの支払いを使用できません</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">更新後に再読み込みする</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Payments 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments を更新する</string>
@@ -1776,8 +1789,6 @@ Language: ja_JP
     <string name="dashboard_action_view_order">注文を表示</string>
     <string name="dashboard_top_performers_empty">この期間のアクティビティはありません</string>
     <string name="dashboard_top_performers_total_orders">注文合計: %s</string>
-    <string name="dashboard_top_performers_total_spend">支払い合計額</string>
-    <string name="dashboard_top_performers_description">ストアでの商品売り上げ状況の統計概要をチェック</string>
     <string name="dashboard_top_performers_title">成績優秀者</string>
     <string name="dashboard_stats_updated_date_time">%sに更新</string>
     <string name="dashboard_stats_updated_one_day">1日前に更新</string>

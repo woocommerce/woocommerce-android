@@ -316,13 +316,11 @@ Language: zh_CN
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">测试模式中不支持现场付款。 请将其关闭后再继续。</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">当前不支持现场付款</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">您的帐户中存在待处理的要求。 请在 %1$s 之前完成这些要求，以继续接受现场付款。</string>
-    <string name="card_reader_onboarding_account_pending_requirements_header">您的 WooCommerce Payments 帐户中存在待处理的要求。</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">您的帐户中至少有一项逾期要求。 请注意恢复现场付款</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">当前不支持现场付款</string>
     <string name="card_reader_onboarding_account_under_review_hint">我们完成您的帐户审核后，您即可接受现场付款。</string>
     <string name="card_reader_onboarding_account_under_review_header">当前不支持现场付款</string>
     <string name="card_reader_onboarding_account_rejected_hint">抱歉，我们不能为这家商店提供现场付款支持。</string>
-    <string name="card_reader_onboarding_account_rejected_header">这家商店不支持现场付款</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">更新后刷新</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">您的商店中安装的 WooCommerce Payments 扩展程序版本已过时。 请更新，以支持现场付款。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">更新 WooCommerce Payments</string>
@@ -1776,8 +1774,6 @@ Language: zh_CN
     <string name="dashboard_action_view_order">查看订单</string>
     <string name="dashboard_top_performers_empty">这段时间内没有任何活动</string>
     <string name="dashboard_top_performers_total_orders">订单总数： %s</string>
-    <string name="dashboard_top_performers_total_spend">总花费</string>
-    <string name="dashboard_top_performers_description">深入了解商店中产品的销售情况</string>
     <string name="dashboard_top_performers_title">热销产品</string>
     <string name="dashboard_stats_updated_date_time">更新时间：%s</string>
     <string name="dashboard_stats_updated_one_day">更新时间：1 天前</string>

@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.ViewState.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -42,6 +43,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.*
 import javax.inject.Inject
 
@@ -60,6 +63,8 @@ class CardReaderPaymentViewModel
     private val tracker: CardReaderTracker,
     private val currencyFormatter: CurrencyFormatter,
     private val errorMapper: CardReaderPaymentErrorMapper,
+    private val wooStore: WooCommerceStore,
+    private val dispatchers: CoroutineDispatchers,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -136,9 +141,15 @@ class CardReaderPaymentViewModel
 
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
         val customerEmail = order.billingAddress.email
+        val site = selectedSite.get()
         cardReaderManager.collectPayment(
             PaymentInfo(
                 paymentDescription = order.getPaymentDescription(),
+                statementDescriptor = appPrefsWrapper.getCardReaderStatementDescriptor(
+                    localSiteId = site.id,
+                    remoteSiteId = site.siteId,
+                    selfHostedSiteId = site.selfHostedSiteId
+                ),
                 orderId = order.id,
                 amount = order.total,
                 currency = order.currency,
@@ -147,6 +158,7 @@ class CardReaderPaymentViewModel
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
+                countryCode = getStoreCountryCode(),
             )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(order.id, customerEmail, paymentStatus, order.getAmountLabel())
@@ -401,6 +413,14 @@ class CardReaderPaymentViewModel
         .formatAmountWithCurrency(this.currency, this.total.toDouble())
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$id"
+
+    private suspend fun getStoreCountryCode(): String {
+        return withContext(dispatchers.io) {
+            wooStore.getStoreCountryCode(
+                selectedSite.get()
+            ) ?: throw IllegalStateException("Store's country code not found.")
+        }
+    }
 
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 

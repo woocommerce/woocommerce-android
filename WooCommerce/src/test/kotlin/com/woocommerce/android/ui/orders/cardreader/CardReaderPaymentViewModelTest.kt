@@ -41,6 +41,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 
@@ -64,6 +65,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val tracker: CardReaderTracker = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val wooStore: WooCommerceStore = mock()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(Generic, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(Generic, mock(), "dummy msg")
@@ -91,7 +93,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             tracker = tracker,
             appPrefsWrapper = appPrefsWrapper,
             currencyFormatter = currencyFormatter,
-            errorMapper = errorMapper
+            errorMapper = errorMapper,
+            wooStore = wooStore,
+            dispatchers = coroutinesTestRule.testDispatchers
         )
 
         val mockedOrder = mock<Order>()
@@ -121,6 +125,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
         whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test url")
+        whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenReturn("test statement descriptor")
+        whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
+        whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+            flow<BluetoothCardReaderMessages> {}
+        }
     }
 
     @Test
@@ -347,6 +357,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             verify(cardReaderManager).collectPayment(captor.capture())
             assertThat(captor.firstValue.paymentDescription).isEqualTo(expectedResult)
+        }
+
+    @Test
+    fun `when flow started, then correct statement descriptor is propagated to CardReaderManager`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val expectedResult = "hooray"
+            whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
+                .thenReturn(expectedResult)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            viewModel.start()
+
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.statementDescriptor).isEqualTo(expectedResult)
         }
 
     @Test
