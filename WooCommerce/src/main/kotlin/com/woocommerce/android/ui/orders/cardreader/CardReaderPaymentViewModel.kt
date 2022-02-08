@@ -25,8 +25,8 @@ import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.ViewState.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.*
