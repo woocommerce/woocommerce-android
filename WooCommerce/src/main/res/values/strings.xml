@@ -359,7 +359,6 @@
     <string name="order_creation_success_snackbar">Order created</string>
     <string name="order_creation_payment_tax">Taxes</string>
     <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
-    <string name="order_creation_add_fee_title">Add Fee</string>
     <string name="order_creation_add_fee_removal_hint">Remove fee from order</string>
     <string name="order_creation_fee_amount_hint">Amount ($)</string>
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
