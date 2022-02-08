@@ -51,7 +51,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onRequestLogout()
         fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
-        fun onSimplePaymentsOptionChanged(enabled: Boolean)
         fun onOrderCreationOptionChanged(enabled: Boolean)
     }
 
