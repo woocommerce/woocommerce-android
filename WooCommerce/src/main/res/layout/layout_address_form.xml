@@ -37,6 +37,7 @@
             android:hint="@string/order_detail_edit_address_details_first_name"
             android:inputType="textPersonName|textCapWords"
             android:nextFocusForward="@id/last_name"
+            android:saveEnabled="false"
             app:errorEnabled="true" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -47,6 +48,7 @@
             android:hint="@string/order_detail_edit_address_details_last_name"
             android:inputType="textPersonName|textCapWords"
             android:nextFocusForward="@+id/email"
+            android:saveEnabled="false"
             app:errorEnabled="true" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -57,6 +59,7 @@
             android:hint="@string/order_detail_edit_address_details_email"
             android:inputType="textEmailAddress"
             android:nextFocusForward="@+id/phone"
+            android:saveEnabled="false"
             app:errorEnabled="true" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -67,6 +70,7 @@
             android:hint="@string/order_detail_edit_address_details_phone"
             android:inputType="phone"
             android:nextFocusForward="@+id/company"
+            android:saveEnabled="false"
             app:errorEnabled="true" />
 
     </com.woocommerce.android.widgets.WCElevatedLinearLayout>
@@ -104,6 +108,7 @@
             android:hint="@string/order_detail_edit_address_company"
             android:inputType="text"
             android:nextFocusForward="@id/address1"
+            android:saveEnabled="false"
             app:errorEnabled="true" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -114,6 +119,7 @@
             android:hint="@string/order_detail_edit_address_line1"
             android:inputType="textPostalAddress"
             android:nextFocusForward="@+id/address2"
+            android:saveEnabled="false"
             app:errorEnabled="true" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -124,6 +130,7 @@
             android:hint="@string/order_detail_edit_address_line2"
             android:inputType="textPostalAddress"
             android:nextFocusForward="@+id/city"
+            android:saveEnabled="false"
             app:errorEnabled="true" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -134,6 +141,7 @@
             android:hint="@string/order_detail_edit_address_city"
             android:inputType="text"
             android:nextFocusForward="@+id/postcode"
+            android:saveEnabled="false"
             app:errorEnabled="true" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -142,7 +150,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_100"
             android:hint="@string/order_detail_edit_address_zip"
-            android:inputType="phone"
+            android:inputType="textPostalAddress"
+            android:saveEnabled="false"
             app:errorEnabled="true" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
@@ -151,7 +160,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_100"
             android:hint="@string/shipping_label_edit_address_country"
-            android:inputType="text" />
+            android:inputType="text"
+            android:saveEnabled="false" />
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
             android:id="@+id/stateEditText"
@@ -161,6 +171,7 @@
             android:layout_marginTop="@dimen/major_100"
             android:hint="@string/shipping_label_edit_address_state"
             android:inputType="text"
+            android:saveEnabled="false"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -171,7 +182,8 @@
             android:layout_marginHorizontal="@dimen/major_100"
             android:layout_marginVertical="@dimen/major_100"
             android:hint="@string/shipping_label_edit_address_state"
-            android:inputType="text" />
+            android:inputType="text"
+            android:saveEnabled="false" />
 
     </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 

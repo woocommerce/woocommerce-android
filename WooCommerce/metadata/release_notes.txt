@@ -1,1 +1,1 @@
-We’ve improved order refunding to let you refund fees to customers. There are some pretty cool updates coming in the next few weeks! If you’d like to join our early beta program, visit https://woocommercehalo.wordpress.com.
+We’re in the process of refreshing the look of the app! You’ll notice some nice visual changes to the sales graph in My Store and a new conversion calculation. We’re also no longer rounding the sales totals to provide greater clarity. This isn’t the last of it – more updates to come in the next few weeks!

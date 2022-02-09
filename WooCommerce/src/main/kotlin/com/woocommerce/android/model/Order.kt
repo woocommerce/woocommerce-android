@@ -42,6 +42,7 @@ data class Order(
     val items: List<Item>,
     val shippingLines: List<ShippingLine>,
     val feesLines: List<FeeLine>,
+    val taxLines: List<TaxLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
     @IgnoredOnParcel
@@ -53,6 +54,10 @@ data class Order(
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
+
+    @IgnoredOnParcel
+    val chargeId
+        get() = metaData.firstOrNull { it.key == "_charge_id" }?.value
 
     @Parcelize
     data class ShippingMethod(
@@ -87,6 +92,12 @@ data class Order(
 
         @IgnoredOnParcel
         val isVariation: Boolean = variationId != 0L
+
+        @IgnoredOnParcel
+        val pricePreDiscount = if (quantity == 0f) BigDecimal.ZERO else subtotal / quantity.toBigDecimal()
+
+        @IgnoredOnParcel
+        val discount = subtotal - total
 
         @IgnoredOnParcel
         var containsAddons = false
@@ -174,6 +185,14 @@ data class Order(
         val name: String,
         val total: BigDecimal,
         val totalTax: BigDecimal,
+    ) : Parcelable
+
+    @Parcelize
+    data class TaxLine(
+        val id: Long,
+        val compound: Boolean,
+        val taxTotal: String,
+        val ratePercent: Float
     ) : Parcelable
 
     fun getBillingName(defaultValue: String): String {
@@ -284,7 +303,8 @@ data class Order(
                 items = emptyList(),
                 shippingLines = emptyList(),
                 metaData = emptyList(),
-                feesLines = emptyList()
+                feesLines = emptyList(),
+                taxLines = emptyList()
             )
         }
     }

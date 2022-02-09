@@ -27,11 +27,15 @@
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
             app:destination="@id/cardReaderTutorialDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
             app:destination="@id/cardReaderUpdateDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment"
@@ -93,11 +97,15 @@
             android:id="@+id/action_takePaymentFragment_to_cardReaderConnect_Dialog"
             app:destination="@+id/cardReaderConnectDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_takePaymentFragment_to_cardReaderPayment_Dialog"
             app:destination="@+id/cardReaderPaymentDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
 

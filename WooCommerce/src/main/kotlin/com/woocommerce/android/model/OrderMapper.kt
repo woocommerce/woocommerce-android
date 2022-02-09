@@ -7,6 +7,7 @@ import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
+import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.*
@@ -48,6 +49,7 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             items = databaseEntity.getLineItemList().mapLineItems(),
             shippingLines = databaseEntity.getShippingLineList().mapShippingLines(),
             feesLines = databaseEntity.getFeeLineList().mapFeesLines(),
+            taxLines = databaseEntity.getTaxLineList().mapTaxLines(),
             metaData = databaseEntity.getMetaDataList().mapNotNull { it.toAppModel() }
         )
     }
@@ -58,6 +60,15 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             name = it.name ?: StringUtils.EMPTY,
             totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+        )
+    }
+
+    private fun List<TaxLine>.mapTaxLines(): List<Order.TaxLine> = map {
+        Order.TaxLine(
+            id = it.id!!,
+            compound = it.compound ?: false,
+            taxTotal = it.taxTotal ?: StringUtils.EMPTY,
+            ratePercent = it.ratePercent ?: 0f
         )
     }
 

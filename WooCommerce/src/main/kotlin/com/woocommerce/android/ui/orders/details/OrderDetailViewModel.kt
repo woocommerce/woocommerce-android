@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -25,6 +26,7 @@ import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
@@ -62,7 +64,8 @@ final class OrderDetailViewModel @Inject constructor(
     private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
-    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
+    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val cardReaderTracker: CardReaderTracker,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     companion object {
         // The required version to support shipping label creation
@@ -209,7 +212,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
-        AnalyticsTracker.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
+        cardReaderTracker.trackCollectPaymentTapped()
         val site = selectedSite.get()
         when {
             cardReaderManager.readerStatus.value is Connected -> {
@@ -346,7 +349,8 @@ final class OrderDetailViewModel @Inject constructor(
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_FROM to order.status.value,
-                AnalyticsTracker.KEY_TO to updateSource.newStatus
+                AnalyticsTracker.KEY_TO to updateSource.newStatus,
+                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_EDITING
             )
         )
 

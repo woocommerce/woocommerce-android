@@ -3,29 +3,26 @@ package com.woocommerce.android.ui.orders.cardreader
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.*
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Server
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.*
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.PaymentFlowError.*
+import com.woocommerce.android.ui.orders.cardreader.PaymentFlowError.AmountTooSmall
+import com.woocommerce.android.ui.orders.cardreader.PaymentFlowError.Unknown
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.ViewState.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -44,6 +41,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 
@@ -64,9 +62,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private var resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
-    private val tracker: AnalyticsTrackerWrapper = mock()
+    private val tracker: CardReaderTracker = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val wooStore: WooCommerceStore = mock()
 
     private val paymentFailedWithEmptyDataForRetry = PaymentFailed(Generic, null, "dummy msg")
     private val paymentFailedWithValidDataForRetry = PaymentFailed(Generic, mock(), "dummy msg")
@@ -94,7 +93,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             tracker = tracker,
             appPrefsWrapper = appPrefsWrapper,
             currencyFormatter = currencyFormatter,
-            errorMapper = errorMapper
+            errorMapper = errorMapper,
+            wooStore = wooStore,
+            dispatchers = coroutinesTestRule.testDispatchers
         )
 
         val mockedOrder = mock<Order>()
@@ -124,6 +125,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
         whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test url")
+        whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenReturn("test statement descriptor")
+        whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
+        whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+            flow<BluetoothCardReaderMessages> {}
+        }
     }
 
     @Test
@@ -295,9 +302,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), anyOrNull(), anyOrNull(), anyOrNull()
-            )
+            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull())
         }
 
     @Test
@@ -352,6 +357,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             verify(cardReaderManager).collectPayment(captor.capture())
             assertThat(captor.firstValue.paymentDescription).isEqualTo(expectedResult)
+        }
+
+    @Test
+    fun `when flow started, then correct statement descriptor is propagated to CardReaderManager`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val expectedResult = "hooray"
+            whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
+                .thenReturn(expectedResult)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            viewModel.start()
+
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.statementDescriptor).isEqualTo(expectedResult)
         }
 
     @Test
@@ -439,7 +458,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+            verify(tracker).trackPaymentSucceeded()
         }
 
     @Test
@@ -516,7 +535,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).track(eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), any())
+            verify(tracker).trackPaymentFailed(anyOrNull(), anyOrNull())
         }
 
     @Test
@@ -1078,28 +1097,28 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
 
-            verify(tracker).track(RECEIPT_PRINT_TAPPED)
+            verify(tracker).trackPrintReceiptTapped()
         }
 
     @Test
     fun `when OS accepts the print request, then print success event tracked`() {
         viewModel.onPrintResult(STARTED)
 
-        verify(tracker).track(RECEIPT_PRINT_SUCCESS)
+        verify(tracker).trackPrintReceiptSucceeded()
     }
 
     @Test
     fun `when OS refuses the print request, then print failed event tracked`() {
         viewModel.onPrintResult(FAILED)
 
-        verify(tracker).track(RECEIPT_PRINT_FAILED)
+        verify(tracker).trackPrintReceiptFailed()
     }
 
     @Test
     fun `when manually cancels the print request, then print cancelled event tracked`() {
         viewModel.onPrintResult(CANCELLED)
 
-        verify(tracker).track(RECEIPT_PRINT_CANCELED)
+        verify(tracker).trackPrintReceiptCancelled()
     }
 
     @Test
@@ -1125,7 +1144,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
-            verify(tracker).track(RECEIPT_EMAIL_TAPPED)
+            verify(tracker).trackEmailReceiptTapped()
         }
 
     @Test
@@ -1146,7 +1165,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             viewModel.onEmailActivityNotFound()
 
-            verify(tracker).track(RECEIPT_EMAIL_FAILED)
+            verify(tracker).trackEmailReceiptFailed()
         }
 
     @Test
@@ -1169,12 +1188,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onBackPressed()
 
-            verify(tracker).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                eq("User manually cancelled the payment during state Loading")
-            )
+            verify(tracker).trackPaymentCancelled("Loading")
         }
 
     @Test
@@ -1187,12 +1201,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onBackPressed()
 
-            verify(tracker).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                eq("User manually cancelled the payment during state Collecting")
-            )
+            verify(tracker).trackPaymentCancelled("Collecting")
         }
 
     @Test
@@ -1205,12 +1214,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onBackPressed()
 
-            verify(tracker).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                eq("User manually cancelled the payment during state Processing")
-            )
+            verify(tracker).trackPaymentCancelled("Processing")
         }
 
     @Test
@@ -1223,12 +1227,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onBackPressed()
 
-            verify(tracker).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                eq("User manually cancelled the payment during state Capturing")
-            )
+            verify(tracker).trackPaymentCancelled("Capturing")
         }
 
     @Test
@@ -1243,12 +1242,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onBackPressed()
 
-            verify(tracker, never()).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                anyOrNull()
-            )
+            verify(tracker, never()).trackPaymentCancelled(anyOrNull())
         }
 
     @Test
@@ -1261,12 +1255,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onBackPressed()
 
-            verify(tracker, never()).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                anyOrNull()
-            )
+            verify(tracker, never()).trackPaymentCancelled(anyOrNull())
         }
 
     @Test
@@ -1280,12 +1269,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
             viewModel.onBackPressed()
 
-            verify(tracker, never()).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                anyOrNull()
-            )
+            verify(tracker, never()).trackPaymentCancelled(anyOrNull())
         }
 
     @Test
@@ -1299,12 +1283,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onBackPressed()
 
-            verify(tracker, never()).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
-                anyOrNull()
-            )
+            verify(tracker, never()).trackPaymentCancelled(anyOrNull())
         }
 
     @Test

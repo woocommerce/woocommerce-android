@@ -10,11 +10,13 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertTrue
@@ -285,6 +287,27 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             assertThat(sut.topPerformersState.value).isEqualTo(
                 MyStoreViewModel.TopPerformersViewState.Error
+            )
+        }
+
+    @Test
+    fun `Given successful Jetpack installation, When user returns to My Store, Then UI is updated with no JP banner`() =
+        testBlocking {
+            val siteBeforeInstallation = SiteModel().apply { setIsJetpackCPConnected(true) }
+            val siteAfterInstallation = SiteModel().apply { setIsJetpackConnected(true) }
+
+            val siteFlow = MutableStateFlow(siteBeforeInstallation)
+            whenever(selectedSite.observe()).thenReturn(siteFlow)
+            givenNetworkConnectivity(connected = true)
+            givenStatsLoadingResult(GetStats.LoadStatsResult.IsJetPackCPEnabled)
+
+            whenViewModelIsCreated()
+
+            givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
+            siteFlow.value = siteAfterInstallation
+
+            assertThat(sut.visitorStatsState.value).isNotInstanceOf(
+                MyStoreViewModel.VisitorStatsViewState.JetpackCpConnected::class.java
             )
         }
 

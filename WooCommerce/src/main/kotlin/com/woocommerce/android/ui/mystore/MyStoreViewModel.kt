@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -22,6 +23,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -69,18 +71,21 @@ class MyStoreViewModel @Inject constructor(
     val hasOrders: LiveData<OrderState> = _hasOrders
 
     private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    private var activeStatsGranularity = MutableStateFlow(
+    private var _activeStatsGranularity = MutableStateFlow(
         savedState.get<StatsGranularity>(ACTIVE_STATS_GRANULARITY_KEY) ?: StatsGranularity.DAYS
     )
+    val activeStatsGranularity = _activeStatsGranularity.asLiveData()
 
     @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
     @VisibleForTesting val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
+
+    private var jetpackMonitoringJob: Job? = null
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
         viewModelScope.launch {
             combine(
-                activeStatsGranularity,
+                _activeStatsGranularity,
                 refreshTrigger.onStart { emit(Unit) }
             ) { granularity, _ ->
                 granularity
@@ -91,11 +96,6 @@ class MyStoreViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun handleSuccessfulJetpackInstallation() {
-        _visitorStatsState.value =
-            VisitorStatsViewState.PostJetpackInstalled
     }
 
     override fun onCleared() {
@@ -114,7 +114,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onStatsGranularityChanged(granularity: StatsGranularity) {
-        activeStatsGranularity.update { granularity }
+        _activeStatsGranularity.update { granularity }
         savedState[ACTIVE_STATS_GRANULARITY_KEY] = granularity
     }
 
@@ -193,6 +193,19 @@ class MyStoreViewModel @Inject constructor(
                 }
             )
         _visitorStatsState.value = VisitorStatsViewState.JetpackCpConnected(benefitsBanner)
+        monitorJetpackInstallation()
+    }
+
+    private fun monitorJetpackInstallation() {
+        jetpackMonitoringJob?.cancel()
+        jetpackMonitoringJob = viewModelScope.launch {
+            selectedSite.observe()
+                .filter { it?.isJetpackConnected == true }
+                .take(1)
+                .collect {
+                    loadStoreStats(_activeStatsGranularity.value)
+                }
+        }
     }
 
     private suspend fun loadTopPerformersStats(granularity: StatsGranularity) {
@@ -307,8 +320,6 @@ class MyStoreViewModel @Inject constructor(
         data class Content(
             val stats: Map<String, Int>
         ) : VisitorStatsViewState()
-
-        object PostJetpackInstalled : VisitorStatsViewState()
     }
 
     sealed class TopPerformersViewState {

@@ -6,12 +6,29 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_TAB_CHANGED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.extensions.calculateTotals
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.joinToString
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.PaymentGateway
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.getMaxRefundQuantities
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -54,7 +71,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.collections.sumBy
@@ -75,6 +92,7 @@ class IssueRefundViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val gatewayStore: WCGatewayStore,
     private val refundStore: WCRefundStore,
+    private val paymentChargeRepository: PaymentChargeRepository,
     private val orderMapper: OrderMapper,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -220,7 +238,6 @@ class IssueRefundViewModel @Inject constructor(
                 feesSubtotal = formatCurrency(order.feesTotal),
                 feesTaxes = formatCurrency(order.feesLines.sumByBigDecimal { it.totalTax }),
                 formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
-                isNextButtonEnabled = false,
                 formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO),
                 formattedFeesRefundTotal = formatCurrency(BigDecimal.ZERO),
                 refundNotice = getRefundNotice(),
@@ -266,25 +283,17 @@ class IssueRefundViewModel @Inject constructor(
     private fun initRefundSummaryState() {
         if (refundSummaryStateLiveData.hasInitialValue) {
             val manualRefundMethod = resourceProvider.getString(R.string.order_refunds_manual_refund)
-            val paymentTitle: String
-            val isManualRefund: Boolean
 
             if (!order.paymentMethod.isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
-                paymentTitle = if (gateway.title.isNotBlank()) {
+                val paymentTitle = if (gateway.title.isNotBlank()) {
                     resourceProvider.getString(R.string.order_refunds_method, manualRefundMethod, gateway.title)
                 } else {
                     manualRefundMethod
                 }
-                isManualRefund = true
+                updateRefundSummaryState(paymentTitle, isMethodDescriptionVisible = true)
             } else {
-                paymentTitle = if (gateway.title.isNotBlank()) gateway.title else manualRefundMethod
-                isManualRefund = false
+                enrichRefundMethodWithCardDetails(gateway.title.ifBlank { manualRefundMethod })
             }
-
-            refundSummaryState = refundSummaryState.copy(
-                refundMethod = paymentTitle,
-                isMethodDescriptionVisible = isManualRefund
-            )
         }
     }
 
@@ -301,7 +310,7 @@ class IssueRefundViewModel @Inject constructor(
         AnalyticsTracker.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_REFUND_TYPE to RefundType.ITEMS.name,
+                AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
                 AnalyticsTracker.KEY_ORDER_ID to order.id
             )
         )
@@ -533,8 +542,7 @@ class IssueRefundViewModel @Inject constructor(
     fun onProductsRefundAmountChanged(newAmount: BigDecimal) {
         refundByItemsState = refundByItemsState.copy(
             productsRefund = newAmount,
-            formattedProductsRefund = formatCurrency(newAmount),
-            isNextButtonEnabled = newAmount > BigDecimal.ZERO
+            formattedProductsRefund = formatCurrency(newAmount)
         )
     }
 
@@ -558,7 +566,6 @@ class IssueRefundViewModel @Inject constructor(
             formattedProductsRefund = formatCurrency(productsRefund),
             taxes = formatCurrency(taxes),
             subtotal = formatCurrency(subtotal),
-            isNextButtonEnabled = _refundItems.value?.any { it.quantity > 0 } ?: false,
             selectButtonTitle = selectButtonTitle
         )
     }
@@ -656,8 +663,6 @@ class IssueRefundViewModel @Inject constructor(
     private fun isInputValid() = validateInput() == VALID
 
     fun onShippingRefundMainSwitchChanged(isChecked: Boolean) {
-        val productsRefund = refundByItemsState.productsRefund
-
         if (isChecked) {
             val shippingRefund = calculatePartialShippingTotal(allShippingLineIds)
 
@@ -665,7 +670,6 @@ class IssueRefundViewModel @Inject constructor(
                 shippingRefund = shippingRefund,
                 formattedShippingRefundTotal = formatCurrency(shippingRefund),
                 isShippingMainSwitchChecked = true,
-                isNextButtonEnabled = productsRefund.add(shippingRefund) > BigDecimal.ZERO,
                 selectedShippingLines = allShippingLineIds
             )
         } else {
@@ -673,15 +677,12 @@ class IssueRefundViewModel @Inject constructor(
                 shippingRefund = 0.toBigDecimal(),
                 formattedShippingRefundTotal = formatCurrency(0.toBigDecimal()),
                 isShippingMainSwitchChecked = false,
-                isNextButtonEnabled = productsRefund > BigDecimal.ZERO,
                 selectedShippingLines = emptyList()
             )
         }
     }
 
     fun onFeesRefundMainSwitchChanged(isChecked: Boolean) {
-        val productsRefund = refundByItemsState.productsRefund
-
         if (isChecked) {
             val feesRefund = calculatePartialFeesTotal(allFeeLineIds)
 
@@ -689,7 +690,6 @@ class IssueRefundViewModel @Inject constructor(
                 feesRefund = feesRefund,
                 formattedFeesRefundTotal = formatCurrency(feesRefund),
                 isFeesMainSwitchChecked = true,
-                isNextButtonEnabled = productsRefund.add(feesRefund) > BigDecimal.ZERO,
                 selectedFeeLines = allFeeLineIds
             )
         } else {
@@ -697,7 +697,6 @@ class IssueRefundViewModel @Inject constructor(
                 feesRefund = 0.toBigDecimal(),
                 formattedFeesRefundTotal = formatCurrency(0.toBigDecimal()),
                 isFeesMainSwitchChecked = false,
-                isNextButtonEnabled = productsRefund > BigDecimal.ZERO,
                 selectedFeeLines = emptyList()
             )
         }
@@ -705,7 +704,6 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onShippingLineSwitchChanged(isChecked: Boolean, itemId: Long) {
         val list = refundByItemsState.selectedShippingLines?.toMutableList()
-        val productsRefund = refundByItemsState.productsRefund
         if (list != null) {
             if (isChecked && !list.contains(itemId)) {
                 list += itemId
@@ -723,14 +721,12 @@ class IssueRefundViewModel @Inject constructor(
                 shippingTaxes = formatCurrency(calculatePartialShippingTaxes(list)),
                 shippingRefund = newShippingRefundTotal,
                 formattedShippingRefundTotal = formatCurrency(newShippingRefundTotal),
-                isNextButtonEnabled = productsRefund.add(newShippingRefundTotal) > BigDecimal.ZERO
             )
         }
     }
 
     fun onFeeLineSwitchChanged(isChecked: Boolean, itemId: Long) {
         val list = refundByItemsState.selectedFeeLines?.toMutableList()
-        val productsRefund = refundByItemsState.productsRefund
         if (list != null) {
             if (isChecked && !list.contains(itemId)) {
                 list += itemId
@@ -747,10 +743,43 @@ class IssueRefundViewModel @Inject constructor(
                 feesSubtotal = formatCurrency(calculatePartialFeesSubtotal(list)),
                 feesTaxes = formatCurrency(calculatePartialFeesTaxes(list)),
                 feesRefund = newFeesRefundTotal,
-                formattedFeesRefundTotal = formatCurrency(newFeesRefundTotal),
-                isNextButtonEnabled = productsRefund.add(newFeesRefundTotal) > BigDecimal.ZERO
+                formattedFeesRefundTotal = formatCurrency(newFeesRefundTotal)
             )
         }
+    }
+
+    private fun enrichRefundMethodWithCardDetails(refundMethod: String) {
+        val chargeId = order.chargeId
+        if (chargeId != null) {
+            loadCardDetails(chargeId, refundMethod)
+        } else {
+            updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
+        }
+    }
+
+    private fun loadCardDetails(chargeId: String, refundMethod: String) {
+        launch {
+            when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
+                is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
+                    val refundMethodWithCard = result.run {
+                        val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
+                        val last4 = result.cardLast4.orEmpty()
+                        "$refundMethod ($brand **** $last4)"
+                    }
+                    updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
+                }
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
+                    updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
+                }
+            }.exhaustive
+        }
+    }
+
+    private fun updateRefundSummaryState(refundMethod: String, isMethodDescriptionVisible: Boolean) {
+        refundSummaryState = refundSummaryState.copy(
+            refundMethod = refundMethod,
+            isMethodDescriptionVisible = isMethodDescriptionVisible
+        )
     }
 
     private fun getRefundableShippingLineIds(): List<Long> {
@@ -846,7 +875,6 @@ class IssueRefundViewModel @Inject constructor(
     @Parcelize
     data class RefundByItemsViewState(
         val currency: String? = null,
-        val isNextButtonEnabled: Boolean? = null,
         val productsRefund: BigDecimal = BigDecimal.ZERO,
         val formattedProductsRefund: String? = null,
         val subtotal: String? = null,
@@ -871,6 +899,9 @@ class IssueRefundViewModel @Inject constructor(
     ) : Parcelable {
         val grandTotalRefund: BigDecimal
             get() = max(productsRefund + shippingRefund + feesRefund, BigDecimal.ZERO)
+
+        val isNextButtonEnabled: Boolean
+            get() = grandTotalRefund > BigDecimal.ZERO
 
         val isRefundNoticeVisible = !refundNotice.isNullOrEmpty()
     }

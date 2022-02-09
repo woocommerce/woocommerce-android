@@ -4,10 +4,12 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import com.woocommerce.android.extensions.differsFrom
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -27,7 +29,9 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     private var viewState by viewStateData
 
     private val productList = MutableLiveData<List<Product>>()
-    val productListData: LiveData<List<Product>> = productList
+    val productListData: LiveData<List<Product>> = productList.map { products ->
+        products.filter { it.isPurchasable && it.status == PUBLISH }
+    }
 
     val isSearchActive
         get() = viewState.isSearchActive ?: false
@@ -36,12 +40,16 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         get() = viewState.query.orEmpty()
 
     private var searchJob: Job? = null
+    private var loadingJob: Job? = null
+
+    private val isLoading
+        get() = loadingJob?.isActive == true || searchJob?.isActive == true
 
     init {
         loadProductList()
     }
 
-    fun loadProductList(loadMore: Boolean = false) {
+    private fun loadProductList(loadMore: Boolean = false) {
         if (loadMore.not()) {
             viewState = viewState.copy(isSkeletonShown = true)
         }
@@ -51,7 +59,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     }
 
     private fun loadFullProductList(loadMore: Boolean) {
-        launch {
+        loadingJob = launch {
             val cachedProducts = productListRepository.getProductList()
                 .takeIf { it.isNotEmpty() }
                 ?.apply {
@@ -60,7 +68,9 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
                 }
 
             productListRepository.fetchProductList(loadMore)
-                .takeIf { it != cachedProducts }
+                .takeIf {
+                    it != cachedProducts
+                }
                 ?.let { productList.value = it }
 
             viewState = viewState.copy(isSkeletonShown = false)
@@ -117,6 +127,11 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         viewState = viewState.copy(
             query = null
         )
+    }
+
+    fun onLoadMoreRequest() {
+        if (isLoading || !productListRepository.canLoadMoreProducts) return
+        loadProductList(loadMore = true)
     }
 
     @Parcelize
