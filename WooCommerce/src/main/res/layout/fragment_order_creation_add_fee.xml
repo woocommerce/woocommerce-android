@@ -3,13 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/woo_white">
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/fee_type_switch"
-        style="@style/Woo.TextView.Headline6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginEnd="@dimen/major_100"
         android:text="@string/order_creation_fee_percentage_toggle_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
