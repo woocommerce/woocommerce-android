@@ -71,7 +71,7 @@ android {
         } else {
             versionName "8.5-rc-1"
         }
-        versionCode 275
+        versionCode 277
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
