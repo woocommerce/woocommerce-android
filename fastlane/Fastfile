@@ -42,6 +42,8 @@ SUPPORTED_LOCALES = [
   { glotpress: "zh-tw", android: "zh-rTW", google_play: "zh-TW",  promo_config: {} },
 ].freeze
 
+SCREENSHOT_DIRECTORY = File.join(Dir.pwd, 'screenshots')
+
 main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
 update_strings_path = "./fastlane/resources/values/"
 
@@ -514,16 +516,16 @@ platform :android do
   #####################################################################################
   # screenshots
   # -----------------------------------------------------------------------------------
-  # This lane creates screenshots
+  # This lane creates screenshots for light and dark modes
   # -----------------------------------------------------------------------------------
   # Usage:
-  # fastlane screenshots
+  # fastlane take_screenshots
   #
   # Example:
-  # fastlane screenshots
+  # fastlane take_screenshots
   #####################################################################################
   desc "Create raw screenshots"
-  lane :screenshots do |options|
+  lane :take_screenshots do |options|
     # Build the app and test targets
     gradle(task: "assembleVanillaDebug assembleVanillaDebugAndroidTest")
 
@@ -547,7 +549,7 @@ platform :android do
     UI.message("Attempting screenshots for locales: #{locales}")
 
     screenshot_options = {
-      output_directory: screenshots_directory,
+      output_directory: SCREENSHOT_DIRECTORY,
       app_package_name: "com.woocommerce.android",
       app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
       tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
@@ -565,6 +567,7 @@ platform :android do
       skip_open_summary: true
     }
 
+    UI.message("Taking screenshots for Dark theme...")
     screengrab(
       screenshot_options.merge(
         {
@@ -573,6 +576,7 @@ platform :android do
       )
     )
 
+    UI.message("Taking screenshots for Light theme...")
     screengrab(
       screenshot_options.merge(
         {
@@ -580,24 +584,6 @@ platform :android do
         }
       )
     )    
-  end
-
-  desc 'Compose screenshots'
-  lane :create_promo_screenshots do |options|
-    # This value is defined in style.css. It would be good if there was a way
-    # to make it parametric, so that if we update the CSS we don't risk this
-    # getting out of sync.
-    font_name = "ProximaNova-Bold.otf"
-    repo_font_path = File.join(Dir.pwd, "playstoreres/assets/#{font_name}")
-
-    install_font(repo_font_path)
-
-    promo_screenshots(
-      orig_folder: options.fetch(:source, screenshots_directory),
-      metadata_folder: File.join(Dir.pwd, "metadata"),
-      output_folder: File.join(Dir.pwd, "promo_sceenshots"),
-      force: options.fetch(:force, true)
-    )
   end
   #####################################################################################
   # Private lanes
@@ -665,31 +651,5 @@ platform :android do
 
   def universal_apk_name(version)
     "wcandroid-#{version["name"]}-universal.apk"
-  end
-end
-
-def screenshots_directory
-  File.join(Dir.pwd, "screenshots")
-end
-
-def install_font(source_font_path)
-  unless File.exists?(source_font_path)
-    UI.abort_with_message!("Could not find font to install at #{source_font_path}")
-  end
-
-  font_name = File.basename(source_font_path)
-
-  user_font_directory = File.join(Dir.home, "Library/Fonts")
-  user_font_path = File.join(user_font_directory, font_name)
-
-  if File.exists?(user_font_path)
-    UI.message("Custom font #{font_name} is already installed locally.")
-  else
-    UI.message("Installing #{font_name} at #{user_font_path}...")
-
-    `mkdir -p #{user_font_directory}`
-    `cp #{source_font_path} #{user_font_path}`
-
-    UI.success("#{font_name} installed at #{user_font_path}.")
   end
 end
