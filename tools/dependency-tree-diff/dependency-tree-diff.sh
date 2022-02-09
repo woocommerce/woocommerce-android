@@ -16,6 +16,8 @@ githubUrl="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT
 githubResponse="$(curl "$githubUrl" -H "Authorization: token $GITHUB_API_TOKEN")"
 targetBranch=$(echo "$githubResponse" | tr '\r\n' ' ' | jq '.base.ref' | tr -d '"')
 
+echo $targetBranch
+
 git merge "origin/$targetBranch" --no-edit
 
 if [[ $(git diff --name-status "origin/$targetBranch" | grep ".gradle") ]]; then
