@@ -31,6 +31,8 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -216,6 +218,24 @@ class OrderCreationViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    fun onBackButtonClicked() {
+        if (_orderDraft.value.copy(currency = "") == Order.EMPTY) {
+            triggerEvent(Exit)
+            return
+        }
+        triggerEvent(
+            ShowDialog.buildDiscardDialogEvent(
+                positiveBtnAction = { _, _ ->
+                    val draft = _orderDraft.value
+                    if (draft.id != 0L) {
+                        launch { orderCreationRepository.deleteDraftOrder(draft) }
+                    }
+                    triggerEvent(Exit)
+                }
+            )
+        )
     }
 
     /**
