@@ -10,7 +10,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.*
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.navigateBackWithNotice
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
@@ -31,42 +30,41 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun initObservers(binding: FragmentCardReaderOnboardingBinding) {
         viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport -> {
-                        requireActivity().startHelpActivity(HelpActivity.Origin.CARD_READER_ONBOARDING)
-                    }
-                    is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView -> {
-                        findNavController().navigate(
-                            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
-                        )
-                    }
-                    is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView -> {
-                        ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                    }
-                    is CardReaderOnboardingViewModel.OnboardingEvent.Continue -> {
-                        val inSettingsGraph = findNavController().graph.id == R.id.nav_graph_settings
-                        if (inSettingsGraph) {
-                            findNavController().navigateSafely(
-                                R.id.action_cardReaderOnboardingFragment_to_cardReaderHubFragment
-                            )
-                        } else {
-                            navigateBackWithNotice(KEY_READER_ONBOARDING_SUCCESS)
-                        }
-                    }
-                    is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                    else -> event.isHandled = false
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport -> {
+                    requireActivity().startHelpActivity(HelpActivity.Origin.CARD_READER_ONBOARDING)
                 }
+                is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView -> {
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+                    )
+                }
+                is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
+                is CardReaderOnboardingViewModel.OnboardingEvent.Continue -> {
+                    val inSettingsGraph = findNavController().graph.id == R.id.nav_graph_settings
+                    if (inSettingsGraph) {
+                        findNavController().navigate(
+                            CardReaderOnboardingFragmentDirections
+                                .actionCardReaderOnboardingFragmentToCardReaderHubFragment(event.storeCountryCode)
+                        )
+                    } else {
+                        navigateBackWithNotice(KEY_READER_ONBOARDING_SUCCESS)
+                    }
+                }
+                is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
+                else -> event.isHandled = false
             }
-        )
+        }
 
         viewModel.viewStateData.observe(
-            viewLifecycleOwner,
-            { state ->
-                showOnboardingLayout(binding, state)
-            }
-        )
+            viewLifecycleOwner
+        ) { state ->
+            showOnboardingLayout(binding, state)
+        }
     }
 
     private fun showOnboardingLayout(
@@ -124,7 +122,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             state.openWPAdminActionClicked?.invoke()
         }
         binding.refreshAfterUpdating.setOnClickListener {
-            state.onRefreshAfterUpdatingClicked?.invoke()
+            state.onRefreshAfterUpdatingClicked.invoke()
         }
     }
 
