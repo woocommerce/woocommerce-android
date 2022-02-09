@@ -138,6 +138,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 )
             )
         )
+        paymentSection.addFeesButton.setOnClickListener {
+            viewModel.onAddFeeClicked()
+        }
     }
 
     private fun LayoutOrderCreationCustomerInfoBinding.changeState() {
