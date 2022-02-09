@@ -16,7 +16,7 @@ Language: nl
     <string name="order_creation_payment_order_total">Besteltotaal</string>
     <string name="order_creation_payment_products_total">Totaalaantal producten</string>
     <string name="order_creation_payment">Betaling</string>
-    <string name="dashboard_top_performers_net_sales">Netto verkoop: %@ %s</string>
+    <string name="dashboard_top_performers_net_sales">Netto verkoop: %s</string>
     <string name="dashboard_top_performers_items_sold">Verkochte artikelen</string>
     <string name="dashboard_stats_conversion">Conversie</string>
     <string name="create">Aanmaken</string>
