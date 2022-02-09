@@ -8,5 +8,4 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderCreationAddFeeViewModel @Inject constructor(
     savedState: SavedStateHandle
-) : ScopedViewModel(savedState) {
-}
+) : ScopedViewModel(savedState)
