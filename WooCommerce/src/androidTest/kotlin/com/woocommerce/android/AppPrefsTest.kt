@@ -246,12 +246,14 @@ class AppPrefsTest {
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
         )
+
         AppPrefs.setCardReaderStatementDescriptor(
             statementDescriptor = null,
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
         )
+
         assertThat(
             AppPrefs.getCardReaderStatementDescriptor(
                 localSiteId = 0,
