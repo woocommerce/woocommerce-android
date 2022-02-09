@@ -236,4 +236,28 @@ class AppPrefsTest {
             )
         ).isEqualTo(statementDescriptor)
     }
+
+    @Test
+    fun givenCardReaderStatementDescriptorNotEmptyWhenSettingItToNullThenValueOverriddenWithNull() {
+        val statementDescriptor = "descriptor"
+        AppPrefs.setCardReaderStatementDescriptor(
+            statementDescriptor = statementDescriptor,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+        AppPrefs.setCardReaderStatementDescriptor(
+            statementDescriptor = null,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+        assertThat(
+            AppPrefs.getCardReaderStatementDescriptor(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(null)
+    }
 }
