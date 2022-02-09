@@ -1,0 +1,2 @@
+8.4:
+We’re in the process of refreshing the look of the app! You’ll notice some nice visual changes to the sales graph in My Store and a new conversion calculation. We’re also no longer rounding the sales totals to provide greater clarity. This isn’t the last of it – more updates to come in the next few weeks!

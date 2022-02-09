@@ -1,0 +1,2 @@
+8.4:
+Stiamo in fase di aggiornamento dell'aspetto dell'app. Noterai alcune belle modifiche visuali al grafico delle vendite in Il mio negozio e un nuovo calcolo delle conversioni. Inoltre, non stiamo più arrotondando i totali delle vendite per fornire maggiore chiarezza. Questa non è l'ultima novità: altri aggiornamenti saranno disponibili nelle prossime settimane.
