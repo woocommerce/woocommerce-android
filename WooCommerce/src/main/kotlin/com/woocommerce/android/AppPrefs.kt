@@ -12,11 +12,7 @@ import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY
-import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS
-import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
-import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
-import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
-import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
@@ -63,6 +59,7 @@ object AppPrefs {
         USER_EMAIL,
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED_STATUS,
+        CARD_READER_STATEMENT_DESCRIPTOR,
         ORDER_FILTER_PREFIX,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
@@ -449,6 +446,7 @@ object AppPrefs {
             completedStatus == CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
     }
 
+    @Throws(IllegalStateException::class)
     fun getPaymentPluginType(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): PluginType {
         return when (getCardReaderOnboardingCompletedStatus(localSiteId, remoteSiteId, selfHostedSiteId)) {
             CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY,
@@ -503,6 +501,39 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = "$CARD_READER_ONBOARDING_COMPLETED_STATUS:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+
+    fun setCardReaderStatementDescriptor(
+        statementDescriptor: String,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) {
+        PreferenceUtils.setString(
+            getPreferences(),
+            getCardReaderStatementDescriptorKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            statementDescriptor
+        )
+    }
+
+    fun getCardReaderStatementDescriptor(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ): String? = PreferenceUtils.getString(
+        getPreferences(),
+        getCardReaderStatementDescriptorKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        ),
+        null
+    )
+
+    private fun getCardReaderStatementDescriptorKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = "$CARD_READER_STATEMENT_DESCRIPTOR:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
     fun getJetpackBenefitsDismissalDate(): Long {
         return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)

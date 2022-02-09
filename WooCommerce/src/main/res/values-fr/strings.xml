@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-01-19 14:54:04+0000
+Translation-Revision-Date: 2022-02-02 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="settings_install_jetpack">Configurer Jetpack</string>
+    <string name="card_reader_onboarding_account_rejected_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
+    <string name="order_creation_success_snackbar">Commande créée</string>
+    <string name="order_creation_failure_snackbar">La création de commande a échoué.</string>
+    <string name="order_creation_loading_dialog_message">Veuillez patienter…</string>
+    <string name="order_creation_loading_dialog_title">Création de votre commande</string>
+    <string name="order_creation_payment_tax_hint">Total hors taxes. Les taxes seront calculées automatiquement en fonction des réglages de votre boutique.</string>
+    <string name="order_creation_payment_order_total">Total de la commande</string>
+    <string name="order_creation_payment_products_total">Total des produits</string>
+    <string name="order_creation_payment">Paiement</string>
+    <string name="dashboard_top_performers_net_sales">Ventes nettes : %s</string>
+    <string name="dashboard_top_performers_items_sold">Articles vendus</string>
+    <string name="dashboard_stats_conversion">Conversion</string>
+    <string name="create">Créer</string>
     <string name="about_automattic_app_icon_description">Icône de l’application</string>
     <string name="about_automattic_back_icon_description">Icône Retour</string>
     <string name="about_automattic_logo_description">Logo Automattic</string>
@@ -316,13 +330,12 @@ Language: fr
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Les paiements en personne ne sont pas disponibles en Mode test. Veuillez le désactiver pour continuer.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Votre compte comporte des prérequis en attente. Veuillez compléter ces prérequis avant le %1$s afin de continuer à accepter des paiements en personne.</string>
-    <string name="card_reader_onboarding_account_pending_requirements_header">Votre compte WooCommerce Payments comporte des prérequis en attente.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Votre compte comporte des prérequis en attente.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">Votre compte comporte au moins un prérequis en attente. Veuillez y remédier afin de reprendre les paiements en personne.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
     <string name="card_reader_onboarding_account_under_review_hint">Vous pourrez accepter des paiements en personne dès que nous aurons passé votre compte en revue.</string>
     <string name="card_reader_onboarding_account_under_review_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
     <string name="card_reader_onboarding_account_rejected_hint">Malheureusement, nous ne pouvons pas prendre en charge les paiements en personne pour cette boutique.</string>
-    <string name="card_reader_onboarding_account_rejected_header">Les paiements en personne ne sont pas disponibles pour cette boutique.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Rafraîchir après la mise à jour</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">La version de l’extension WooCommerce Payments installée sur votre boutique est obsolète. Veuillez mettre à jour afin d’accepter les paiements en personne.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Mettre à jour WooCommerce Payments</string>
@@ -1777,8 +1790,6 @@ Language: fr
     <string name="dashboard_action_view_order">Voir la commande</string>
     <string name="dashboard_top_performers_empty">Aucune activité sur cette période</string>
     <string name="dashboard_top_performers_total_orders">Commandes totales : %s</string>
-    <string name="dashboard_top_performers_total_spend">Dépense totale</string>
-    <string name="dashboard_top_performers_description">Obtenez des informations sur les performances des produits de votre boutique</string>
     <string name="dashboard_top_performers_title">Produits les plus performants</string>
     <string name="dashboard_stats_updated_date_time">Mises à jour le %s</string>
     <string name="dashboard_stats_updated_one_day">Mises à jour il y a un an</string>

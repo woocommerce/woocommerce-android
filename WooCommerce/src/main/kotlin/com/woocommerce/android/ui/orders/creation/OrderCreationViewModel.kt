@@ -150,7 +150,10 @@ class OrderCreationViewModel @Inject constructor(
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
         AnalyticsTracker.track(
             Stat.ORDER_CUSTOMER_ADD,
-            mapOf(KEY_HAS_DIFFERENT_SHIPPING_DETAILS to hasDifferentShippingDetails)
+            mapOf(
+                KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_HAS_DIFFERENT_SHIPPING_DETAILS to hasDifferentShippingDetails
+            )
         )
 
         _orderDraft.update {
