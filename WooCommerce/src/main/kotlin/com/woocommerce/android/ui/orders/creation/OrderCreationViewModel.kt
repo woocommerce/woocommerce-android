@@ -188,6 +188,10 @@ class OrderCreationViewModel @Inject constructor(
         triggerEvent(AddProduct)
     }
 
+    fun onAddFeeClicked() {
+        triggerEvent(AddFee)
+    }
+
     fun onProductClicked(item: Order.Item) {
         triggerEvent(ShowProductDetails(item))
     }

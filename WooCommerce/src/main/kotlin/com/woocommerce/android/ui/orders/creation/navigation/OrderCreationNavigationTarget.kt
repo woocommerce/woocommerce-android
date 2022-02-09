@@ -7,6 +7,7 @@ sealed class OrderCreationNavigationTarget : Event() {
     object EditCustomer : OrderCreationNavigationTarget()
     object EditCustomerNote : OrderCreationNavigationTarget()
     object AddProduct : OrderCreationNavigationTarget()
+    object AddFee : OrderCreationNavigationTarget()
     data class ShowProductVariations(val productId: Long) : OrderCreationNavigationTarget()
     data class ShowProductDetails(val item: Order.Item) : OrderCreationNavigationTarget()
     data class ShowCreatedOrder(val orderId: Long) : OrderCreationNavigationTarget()
