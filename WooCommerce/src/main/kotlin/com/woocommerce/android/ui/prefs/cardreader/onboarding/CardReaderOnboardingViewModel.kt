@@ -16,14 +16,14 @@ import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.user.WCUserRole.ADMINISTRATOR
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 private const val UNIX_TO_JAVA_TIMESTAMP_OFFSET = 1000L
@@ -54,7 +54,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             cardReaderTracker.trackOnboardingState(state)
             when (state) {
                 is CardReaderOnboardingState.OnboardingCompleted ->
-                    triggerEvent(OnboardingEvent.Continue)
+                    triggerEvent(OnboardingEvent.Continue(state.countryCode))
                 is CardReaderOnboardingState.StoreCountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedCountryState(
                         convertCountryCodeToCountry(state.countryCode),
@@ -105,7 +105,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         .StripeAccountPendingRequirementsState(
                             onContactSupportActionClicked = ::onContactSupportClicked,
                             onLearnMoreActionClicked = ::onLearnMoreClicked,
-                            onButtonActionClicked = ::onSkipPendingRequirementsClicked,
+                            onButtonActionClicked = { onSkipPendingRequirementsClicked(state.countryCode) },
                             dueDate = formatDueDate(state)
                         )
                 CardReaderOnboardingState.StripeAccountOverdueRequirement ->
@@ -161,11 +161,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
             )
     }
 
-    fun onCancelClicked() {
-        WooLog.e(WooLog.T.CARD_READER, "Onboarding flow interrupted by the user.")
-        exitFlow()
-    }
-
     private fun onWPAdminActionClicked() {
         val url = selectedSite.get().url + AppUrls.PLUGIN_MANAGEMENT_SUFFIX
         if (selectedSite.get().isWPCom || selectedSite.get().isWPComAtomic) {
@@ -184,12 +179,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
         triggerEvent(NavigateToUrlInGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
     }
 
-    private fun onSkipPendingRequirementsClicked() {
-        triggerEvent(OnboardingEvent.Continue)
-    }
-
-    private fun exitFlow() {
-        triggerEvent(Event.Exit)
+    private fun onSkipPendingRequirementsClicked(storeCountryCode: String) {
+        triggerEvent(OnboardingEvent.Continue(storeCountryCode))
     }
 
     private fun convertCountryCodeToCountry(countryCode: String?) =
@@ -204,7 +195,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         data class NavigateToUrlInWPComWebView(val url: String) : Event()
         data class NavigateToUrlInGenericWebView(val url: String) : Event()
 
-        object Continue : Event()
+        data class Continue(val storeCountryCode: String) : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
