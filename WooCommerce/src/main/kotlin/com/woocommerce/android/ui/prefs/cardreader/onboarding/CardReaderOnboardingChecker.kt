@@ -115,15 +115,13 @@ class CardReaderOnboardingChecker @Inject constructor(
     }
 
     private fun saveStatementDescriptor(statementDescriptor: String?) {
-        statementDescriptor?.let {
-            val site = selectedSite.get()
-            appPrefsWrapper.setCardReaderStatementDescriptor(
-                statementDescriptor = statementDescriptor,
-                localSiteId = site.id,
-                remoteSiteId = site.siteId,
-                selfHostedSiteId = site.selfHostedSiteId,
-            )
-        }
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderStatementDescriptor(
+            statementDescriptor = statementDescriptor,
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+        )
     }
 
     private fun isBothPluginsActivated(
