@@ -12,4 +12,6 @@ class OrderCreationAddFeeFragment :
     BaseFragment(R.layout.fragment_order_creation_add_fee) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val addFeeViewModel by viewModels<OrderCreationAddFeeViewModel>()
+
+    override fun getFragmentTitle() = getString(R.string.order_creation_add_fee)
 }
