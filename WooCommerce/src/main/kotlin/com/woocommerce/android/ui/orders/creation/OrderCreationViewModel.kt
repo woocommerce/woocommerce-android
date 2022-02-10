@@ -169,7 +169,7 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
-    fun onFeeCreated(feeValue: BigDecimal, feeType: FeeType) {
+    fun onNewFeeSubmitted(feeValue: BigDecimal, feeType: FeeType) {
         val newFee = Order.FeeLine.EMPTY.copy(total = feeValue)
         _orderDraft.value.feesLines.toMutableList()
             .apply { add(newFee) }

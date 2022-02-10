@@ -61,7 +61,7 @@ class OrderCreationAddFeeFragment :
         addFeeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is SubmitFee -> {
-                    sharedViewModel.onFeeCreated(event.amount, event.feeType)
+                    sharedViewModel.onNewFeeSubmitted(event.amount, event.feeType)
                     findNavController().navigateUp()
                 }
             }
