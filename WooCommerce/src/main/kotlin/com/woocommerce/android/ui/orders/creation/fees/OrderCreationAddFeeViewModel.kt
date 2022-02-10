@@ -26,7 +26,7 @@ class OrderCreationAddFeeViewModel @Inject constructor(
         }
 
     fun onDoneSelected() {
-        // TODO: handle possible exception from parsing string to bigDecimal
+        // TODO handle possible exception from parsing string to bigDecimal
         viewState.feeInputValue?.let {
             triggerEvent(SubmitFee(it.toBigDecimal(), currentFeeType))
         }

@@ -25,7 +25,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel.FeeType
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -169,6 +168,7 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
+    @Suppress("UnusedPrivateMember")
     fun onNewFeeSubmitted(feeValue: BigDecimal, feeType: FeeType) {
         val newFee = Order.FeeLine.EMPTY.copy(total = feeValue)
         _orderDraft.value.feesLines.toMutableList()

@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewMo
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-@Suppress("UnusedPrivateMember")
 class OrderCreationAddFeeFragment :
     BaseFragment(R.layout.fragment_order_creation_add_fee) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
