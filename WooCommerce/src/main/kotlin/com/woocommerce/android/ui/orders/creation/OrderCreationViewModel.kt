@@ -25,6 +25,8 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel.FeeType
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -42,6 +44,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -164,6 +167,13 @@ class OrderCreationViewModel @Inject constructor(
                 shippingAddress = shippingAddress.takeIf { it != Address.EMPTY } ?: billingAddress
             )
         }
+    }
+
+    fun onFeeCreated(feeValue: BigDecimal, feeType: FeeType) {
+        val newFee = Order.FeeLine.EMPTY.copy(total = feeValue)
+        _orderDraft.value.feesLines.toMutableList()
+            .apply { add(newFee) }
+            .let { fees -> _orderDraft.update { it.copy(feesLines = fees) } }
     }
 
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
