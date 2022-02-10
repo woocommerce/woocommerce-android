@@ -187,20 +187,31 @@ data class Order(
     ) : Parcelable
 
     @Parcelize
-    data class FeeLine(
-        val id: Long,
-        val name: String,
-        val total: BigDecimal,
-        val totalTax: BigDecimal,
-    ) : Parcelable
-
-    @Parcelize
     data class TaxLine(
         val id: Long,
         val compound: Boolean,
         val taxTotal: String,
         val ratePercent: Float
     ) : Parcelable
+
+    @Parcelize
+    data class FeeLine(
+        val id: Long,
+        val name: String,
+        val total: BigDecimal,
+        val totalTax: BigDecimal,
+    ) : Parcelable {
+        companion object {
+            val EMPTY by lazy {
+                FeeLine(
+                    id = 0,
+                    name = "",
+                    total = BigDecimal(0),
+                    totalTax = BigDecimal(0)
+                )
+            }
+        }
+    }
 
     fun getBillingName(defaultValue: String): String {
         return when {
