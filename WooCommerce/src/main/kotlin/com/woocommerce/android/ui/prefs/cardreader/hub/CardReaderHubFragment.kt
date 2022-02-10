@@ -9,9 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
     val viewModel: CardReaderHubViewModel by viewModels()
 
@@ -39,7 +42,7 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
         ) { event ->
             when (event) {
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderDetail -> {
-                    findNavController().navigate(R.id.action_cardReaderHubFragment_to_cardReaderDetailFragment)
+                    findNavController().navigateSafely(R.id.action_cardReaderHubFragment_to_cardReaderDetailFragment)
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)

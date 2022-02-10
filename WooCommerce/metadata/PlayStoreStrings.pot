@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_084"
+msgid ""
+"8.4:\n"
+"We’re in the process of refreshing the look of the app! You’ll notice some nice visual changes to the sales graph in My Store and a new conversion calculation. We’re also no longer rounding the sales totals to provide greater clarity. This isn’t the last of it – more updates to come in the next few weeks!\n"
+msgstr ""
+
 msgctxt "release_note_083"
 msgid ""
 "8.3:\n"
 "We’ve improved order refunding to let you refund fees to customers. There are some pretty cool updates coming in the next few weeks! If you’d like to join our early beta program, visit https://woocommercehalo.wordpress.com.\n"
-msgstr ""
-
-msgctxt "release_note_082"
-msgid ""
-"8.2:\n"
-"For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all in 2022! Keep your feedback rolling in; it helps us figure out what to work on next. 💜\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

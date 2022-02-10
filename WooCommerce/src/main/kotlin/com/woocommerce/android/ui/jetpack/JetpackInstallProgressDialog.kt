@@ -7,7 +7,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
@@ -21,7 +20,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
-import com.woocommerce.android.ui.mystore.MyStoreViewModel
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -42,7 +40,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
     @Inject lateinit var selectedSite: SelectedSite
 
     private val viewModel: JetpackInstallViewModel by viewModels()
-    private val myStoreViewModel: MyStoreViewModel by activityViewModels()
 
     private var isReturningFromWpAdmin = false
 
@@ -83,7 +80,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 destinationId = R.id.jetpackBenefitsDialog,
                 inclusive = true
             )
-            myStoreViewModel.handleSuccessfulJetpackInstallation()
         }
 
         binding.contactButton.setOnClickListener {
@@ -112,11 +108,13 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         }
     }
 
+    private fun setViewVisibility(visibility: Int, vararg views: View) = views.forEach { it.visibility = visibility }
+
     private fun updateInstallProgressUi(status: InstallStatus, binding: DialogJetpackInstallProgressBinding) {
         when (status) {
             is Installing -> {
-                binding.showStep1Group.show()
-                binding.hideStep1Group.visibility = View.INVISIBLE
+                setViewVisibility(View.INVISIBLE, binding.icon1, binding.progress2, binding.progress3)
+                setViewVisibility(View.VISIBLE, binding.progress1, binding.icon2, binding.icon3, binding.icon4)
                 setViewImage(ICON_NOT_DONE, binding.icon2, binding.icon3, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1)
                 setTextWeight(Typeface.NORMAL, binding.message2, binding.message3, binding.message4)
@@ -124,8 +122,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.jetpackProgressActionButton.hide()
             }
             is Activating -> {
-                binding.showStep2Group.show()
-                binding.hideStep2Group.visibility = View.INVISIBLE
+                setViewVisibility(View.INVISIBLE, binding.progress1, binding.icon2, binding.progress3)
+                setViewVisibility(View.VISIBLE, binding.icon1, binding.progress2, binding.icon3, binding.icon4)
                 setViewImage(ICON_DONE, binding.icon1)
                 setViewImage(ICON_NOT_DONE, binding.icon3, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2)
@@ -134,22 +132,25 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 binding.jetpackProgressActionButton.hide()
             }
             is Connecting -> {
-                binding.showStep3Group.show()
-                binding.hideStep3Group.visibility = View.INVISIBLE
+                setViewVisibility(View.INVISIBLE, binding.progress1, binding.progress2, binding.icon3)
+                setViewVisibility(View.VISIBLE, binding.icon1, binding.icon2, binding.progress3, binding.icon4)
                 setViewImage(ICON_DONE, binding.icon1, binding.icon2)
                 setViewImage(ICON_NOT_DONE, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2, binding.message3)
                 setTextWeight(Typeface.NORMAL, binding.message4)
 
                 if (status.retry) {
-                    binding.messagesGroup.show()
+                    setViewVisibility(
+                        View.VISIBLE,
+                        binding.message1, binding.message2, binding.message3, binding.message4
+                    )
                 }
 
                 binding.jetpackProgressActionButton.hide()
             }
             is Finished -> {
-                binding.showStep4Group.show()
-                binding.hideStep4Group.visibility = View.INVISIBLE
+                setViewVisibility(View.INVISIBLE, binding.progress1, binding.progress2, binding.progress3)
+                setViewVisibility(View.VISIBLE, binding.icon1, binding.icon2, binding.icon3, binding.icon4)
                 setViewImage(ICON_DONE, binding.icon1, binding.icon2, binding.icon3, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2, binding.message3, binding.message4)
 
@@ -164,13 +165,12 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         }
     }
 
+    @Suppress("LongMethod")
     private fun handleFailedState(
         errorType: JetpackInstallViewModel.FailureType,
         binding: DialogJetpackInstallProgressBinding
     ) {
         val ctx = binding.root.context
-
-        // Title copy
         binding.jetpackProgressTitleTextView.text = ctx.getString(
             R.string.jetpack_install_progress_failed_title,
             when (errorType) {
@@ -225,8 +225,12 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         binding.openAdminOrRetryButton.text = btnText
 
         // Visibilities
-        binding.hideFailureGroup.visibility = View.INVISIBLE
-        binding.messagesGroup.visibility = View.INVISIBLE
+        setViewVisibility(
+            View.INVISIBLE,
+            binding.icon1, binding.icon2, binding.icon3, binding.icon4,
+            binding.message1, binding.message2, binding.message3, binding.message4,
+            binding.progress1, binding.progress2, binding.progress3
+        )
         binding.contactButton.show()
         binding.openAdminOrRetryButton.show()
         binding.jetpackProgressActionButton.hide()

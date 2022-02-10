@@ -11,7 +11,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.HashMap
 import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
@@ -145,6 +144,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Orders List
         ORDERS_LIST_FILTER,
+        ORDERS_LIST_SEARCH,
         ORDERS_LIST_LOADED,
         ORDERS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
         ORDERS_LIST_PULLED_TO_REFRESH,
@@ -158,8 +158,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Simple Payments
         SIMPLE_PAYMENTS_FLOW_STARTED,
         SIMPLE_PAYMENTS_FLOW_COMPLETED,
+        SIMPLE_PAYMENTS_FLOW_COLLECT,
         SIMPLE_PAYMENTS_FLOW_FAILED,
         SIMPLE_PAYMENTS_FLOW_CANCELED,
+        SIMPLE_PAYMENTS_FLOW_NOTE_ADDED,
+        SIMPLE_PAYMENTS_FLOW_TAXES_TOGGLED,
         SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
 
         // -- Order Detail
@@ -194,6 +197,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_EDIT_FLOW_COMPLETED,
         ORDER_DETAIL_EDIT_FLOW_FAILED,
         ORDER_DETAIL_EDIT_FLOW_CANCELED,
+
+        // -- Order Creation
+        ORDER_ADD_NEW,
+        ORDER_PRODUCT_ADD,
+        ORDER_CUSTOMER_ADD,
+        ORDER_CREATE_BUTTON_TAPPED,
+        ORDER_CREATION_SUCCESS,
+        ORDER_CREATION_FAILED,
 
         // -- Refunds
         CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
@@ -717,6 +728,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ID = "id"
         const val KEY_ORDER_ID = "order_id"
         const val KEY_PRODUCT_ID = "product_id"
+        const val KEY_PRODUCT_COUNT = "product_count"
         const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
@@ -747,6 +759,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SOFTWARE_UPDATE_TYPE = "software_update_type"
         const val KEY_SUBJECT = "subject"
         const val KEY_DATE_RANGE = "date_range"
+        const val KEY_SOURCE = "source"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -779,6 +792,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PURCHASE_SUCCEEDED = "purchase_succeeded"
         const val VALUE_PURCHASE_READY = "purchase_ready"
 
+        const val KEY_FLOW = "flow"
+        const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"
+        const val KEY_HAS_CUSTOMER_DETAILS = "has_customer_details"
+        const val VALUE_FLOW_CREATION = "creation"
+        const val VALUE_FLOW_EDITING = "editing"
+
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
         const val ORDER_EDIT_BILLING_ADDRESS = "billing_address"
@@ -801,8 +820,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
+        const val VALUE_STATE_ON = "on"
+        const val VALUE_STATE_OFF = "off"
 
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
+        const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
+        const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
+        const val VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT = "amount"
+        const val VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY = "summary"
+        const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
@@ -846,6 +872,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_REFUND_TYPE = "method"
         const val KEY_REFUND_METHOD = "gateway"
         const val KEY_AMOUNT = "amount"
+
+        const val KEY_PAYMENT_METHOD = "payment_method"
 
         const val KEY_IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_conntected"
         const val KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS = "active_jetpack_connection_plugins"

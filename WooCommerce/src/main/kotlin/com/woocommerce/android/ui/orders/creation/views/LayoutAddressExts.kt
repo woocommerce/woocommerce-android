@@ -8,6 +8,26 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel
 
+fun LayoutAddressFormBinding.bindEditFields(
+    addressType: AddressViewModel.AddressType,
+    onFieldEdited: (AddressViewModel.AddressType, AddressViewModel.Field, String) -> Unit
+) {
+    mapOf(
+        firstName to AddressViewModel.Field.FirstName,
+        lastName to AddressViewModel.Field.LastName,
+        company to AddressViewModel.Field.Company,
+        address1 to AddressViewModel.Field.Address1,
+        address2 to AddressViewModel.Field.Address2,
+        phone to AddressViewModel.Field.Phone,
+        city to AddressViewModel.Field.City,
+        postcode to AddressViewModel.Field.Zip,
+        stateEditText to AddressViewModel.Field.State,
+        email to AddressViewModel.Field.Email
+    ).onEach { (editText, field) ->
+        editText.setOnTextChangedListener { onFieldEdited(addressType, field, it?.toString().orEmpty()) }
+    }
+}
+
 fun LayoutAddressFormBinding?.updateLocationStateViews(hasStatesAvailable: AddressViewModel.StateSpinnerStatus) {
     when (hasStatesAvailable) {
         AddressViewModel.StateSpinnerStatus.HAVING_LOCATIONS -> {
@@ -27,31 +47,16 @@ fun LayoutAddressFormBinding?.updateLocationStateViews(hasStatesAvailable: Addre
     }
 }
 
-val LayoutAddressFormBinding?.textFieldsState
-    get() = Address(
-        company = this?.company?.text.orEmpty(),
-        firstName = this?.firstName?.text.orEmpty(),
-        lastName = this?.lastName?.text.orEmpty(),
-        phone = this?.phone?.text.orEmpty(),
-        country = Location.EMPTY,
-        state = AmbiguousLocation.EMPTY,
-        address1 = this?.address1?.text.orEmpty(),
-        address2 = this?.address2?.text.orEmpty(),
-        city = this?.city?.text.orEmpty(),
-        postcode = this?.postcode?.text.orEmpty(),
-        email = this?.email?.text.orEmpty()
-    )
-
 fun LayoutAddressFormBinding?.inflateTextFields(address: Address) {
-    this?.city?.text = address.city
-    this?.company?.text = address.company
-    this?.firstName?.text = address.firstName
-    this?.lastName?.text = address.lastName
-    this?.phone?.text = address.phone
-    this?.address1?.text = address.address1
-    this?.address2?.text = address.address2
-    this?.postcode?.text = address.postcode
-    this?.email?.text = address.email
+    this?.city?.setTextIfDifferent(address.city)
+    this?.company?.setTextIfDifferent(address.company)
+    this?.firstName?.setTextIfDifferent(address.firstName)
+    this?.lastName?.setTextIfDifferent(address.lastName)
+    this?.phone?.setTextIfDifferent(address.phone)
+    this?.address1?.setTextIfDifferent(address.address1)
+    this?.address2?.setTextIfDifferent(address.address2)
+    this?.postcode?.setTextIfDifferent(address.postcode)
+    this?.email?.setTextIfDifferent(address.email)
 }
 
 fun LayoutAddressFormBinding?.inflateLocationFields(countryLocation: Location, stateLocation: AmbiguousLocation) {
@@ -65,7 +70,7 @@ fun LayoutAddressFormBinding?.inflateLocationFields(countryLocation: Location, s
         is AmbiguousLocation.Raw -> {
             this?.stateSpinner?.visibility = View.GONE
             this?.stateEditText?.visibility = View.VISIBLE
-            this?.stateEditText?.text = stateLocation.value
+            this?.stateEditText?.setTextIfDifferent(stateLocation.value)
         }
     }
 }

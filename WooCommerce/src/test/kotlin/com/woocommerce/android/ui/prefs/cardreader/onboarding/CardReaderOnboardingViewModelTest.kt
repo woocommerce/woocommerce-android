@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
@@ -19,11 +22,23 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.user.WCUserModel
+import org.wordpress.android.fluxc.model.user.WCUserRole
+
+private const val DUMMY_SITE_URL = "dummy-site.url"
 
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
-    private val tracker: AnalyticsTrackerWrapper = mock()
+    private val tracker: CardReaderTracker = mock()
+    private val userEligibilityFetcher: UserEligibilityFetcher = mock {
+        val model = mock<WCUserModel>()
+        whenever(model.getUserRoles()).thenReturn(arrayListOf(WCUserRole.ADMINISTRATOR))
+        onBlocking { it.fetchUserInfo() } doReturn model
+    }
+    private val selectedSite: SelectedSite = mock()
+    private val countryCode = "US"
 
     @Test
     fun `when screen initialized, then loading state shown`() {
@@ -36,13 +51,13 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when onboarding completed, then navigates to card reader hub screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS)
+                CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS, countryCode)
             )
 
             val viewModel = createVM()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.Continue::class.java)
+                .isInstanceOf(OnboardingEvent.Continue::class.java)
         }
 
     @Test
@@ -88,8 +103,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
 
-            assertThat(viewModel.event.value)
-                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore::class.java)
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
     @Test
@@ -102,7 +117,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedCountryState).onContactSupportActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport::class.java)
+                .isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -114,8 +129,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
 
-            assertThat(viewModel.event.value)
-                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.ViewLearnMore::class.java)
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
     @Test
@@ -127,8 +142,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onContactSupportActionClicked.invoke()
 
-            assertThat(viewModel.event.value)
-                .isInstanceOf(CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -291,6 +305,160 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given user is admin, when wcpay and stripe extension active, then open wpadmin button shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
+            assertThat(viewStateData.openWPAdminActionClicked != null).isTrue
+            assertThat(viewStateData.openWPAdminLabel).isNotNull
+        }
+
+    @Test
+    fun `when wcpay and stripe extension active, then refresh screen button shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
+            assertThat(viewStateData.onRefreshAfterUpdatingClicked != null).isTrue
+            assertThat(viewStateData.refreshButtonLabel).isNotNull
+        }
+
+    @Test
+    fun `when refresh clicked, then loading screen shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+            val viewModel = createVM()
+            val receivedViewStates = mutableListOf<OnboardingViewState>()
+            viewModel.viewStateData.observeForever {
+                receivedViewStates.add(it)
+            }
+
+            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+                .onRefreshAfterUpdatingClicked.invoke()
+
+            assertThat(receivedViewStates[1]).isEqualTo(LoadingState)
+        }
+
+    @Test
+    fun `given site is self-hosted, when user taps on Go To Plugin Admin, then generic webview shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(selectedSite.get())
+                .thenReturn(
+                    SiteModel()
+                        .apply {
+                            setIsWPComAtomic(false)
+                            setIsWPCom(false)
+                        }
+                )
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+                .openWPAdminActionClicked!!.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(
+                OnboardingEvent.NavigateToUrlInGenericWebView::class.java
+            )
+        }
+
+    @Test
+    fun `given site is wpcom, when user taps on Go To Plugin Admin, then wpcom webview shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel()
+                    .apply {
+                        setIsWPCom(true)
+                    }
+            )
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+                .openWPAdminActionClicked!!.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(
+                OnboardingEvent.NavigateToUrlInWPComWebView::class.java
+            )
+        }
+
+    @Test
+    fun `given site is atomic, when user taps on Go To Plugin Admin, then wpcom webview shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    setIsWPComAtomic(true)
+                }
+            )
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+                .openWPAdminActionClicked!!.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(
+                OnboardingEvent.NavigateToUrlInWPComWebView::class.java
+            )
+        }
+
+    @Test
+    fun `when user taps on Go To Plugin Admin, then app navigates to Plugin Admin url`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    url = DUMMY_SITE_URL
+                }
+            )
+
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+                .openWPAdminActionClicked!!.invoke()
+
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(DUMMY_SITE_URL + AppUrls.PLUGIN_MANAGEMENT_SUFFIX)
+        }
+
+    @Test
+    fun `given user is NOT admin, when wcpay and stripe extension active, then open wpadmin button NOT shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(userEligibilityFetcher.fetchUserInfo()).thenAnswer {
+                val model = mock<WCUserModel>()
+                whenever(model.getUserRoles())
+                    .thenReturn(arrayListOf(WCUserRole.SHOP_MANAGER))
+                model
+            }
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.WcpayAndStripeActivated
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
+            assertThat(viewStateData.openWPAdminLabel).isNull()
+            assertThat(viewStateData.openWPAdminActionClicked == null).isTrue
+        }
+
+    @Test
     fun `when account rejected, then account rejected state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
@@ -309,7 +477,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .thenReturn(
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
-                        PluginType.WOOCOMMERCE_PAYMENTS
+                        PluginType.WOOCOMMERCE_PAYMENTS,
+                        countryCode
                     )
                 )
 
@@ -327,7 +496,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .thenReturn(
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
-                        PluginType.WOOCOMMERCE_PAYMENTS
+                        PluginType.WOOCOMMERCE_PAYMENTS,
+                        countryCode
                     )
                 )
 
@@ -396,187 +566,28 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as GenericErrorState).onLearnMoreActionClicked.invoke()
 
-            verify(tracker).track(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
+            verify(tracker).trackOnboardingLearnMoreTapped()
         }
 
     @Test
-    fun `when generic error occurs, then event tracked`() =
+    fun `when onboarding state checked, then event propagated to tracker`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            val onboardingState: CardReaderOnboardingState = mock()
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.GenericError)
+                .thenReturn(onboardingState)
 
             createVM()
 
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "generic_error")
-            )
-        }
-
-    @Test
-    fun `when store country not supported, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "country_not_supported")
-            )
-        }
-
-    @Test
-    fun `when account country not supported, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(""))
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "account_country_not_supported")
-            )
-        }
-
-    @Test
-    fun `when wcpay not installed, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WcpayNotInstalled)
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "wcpay_not_installed")
-            )
-        }
-
-    @Test
-    fun `when wcpay not activated, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.WcpayNotActivated)
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "wcpay_not_activated")
-            )
-        }
-
-    @Test
-    fun `when wcpay unsupported version, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS))
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "wcpay_unsupported_version")
-            )
-        }
-
-    @Test
-    fun `when wcpay setup not complete, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "wcpay_not_setup")
-            )
-        }
-
-    @Test
-    fun `when account pending requirements, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(
-                    CardReaderOnboardingState.StripeAccountPendingRequirement(
-                        0L,
-                        PluginType.WOOCOMMERCE_PAYMENTS
-                    )
-                )
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "account_pending_requirements")
-            )
-        }
-
-    @Test
-    fun `when account overdue requirements, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountOverdueRequirement)
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "account_overdue_requirements")
-            )
-        }
-
-    @Test
-    fun `when account under review, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountUnderReview)
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "account_under_review")
-            )
-        }
-
-    @Test
-    fun `when account rejected, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountRejected)
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "account_rejected")
-            )
-        }
-
-    @Test
-    fun `when wcpay in test mode with live account, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
-
-            createVM()
-
-            verify(tracker).track(
-                AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "wcpay_in_test_mode_with_live_account")
-            )
-        }
-
-    @Test
-    fun `when onboarding completed, then event NOT tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
-
-            createVM()
-
-            verify(tracker, never()).track(eq(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED), any())
+            verify(tracker).trackOnboardingState(onboardingState)
         }
     // Tracking End
 
-    private fun createVM() = CardReaderOnboardingViewModel(SavedStateHandle(), onboardingChecker, tracker)
+    private fun createVM() =
+        CardReaderOnboardingViewModel(
+            SavedStateHandle(),
+            onboardingChecker,
+            tracker,
+            userEligibilityFetcher,
+            selectedSite
+        )
 }

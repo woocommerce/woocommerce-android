@@ -43,6 +43,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
     fun setup() {
         siteModelMock = mock {
             on { siteId }.doReturn(SITE_ID)
+            on { isJetpackConnected }.doReturn(true)
         }
         selectedSiteMock = mock {
             on { get() }.doReturn(siteModelMock)

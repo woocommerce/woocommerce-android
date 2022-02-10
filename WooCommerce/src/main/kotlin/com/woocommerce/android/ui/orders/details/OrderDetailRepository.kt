@@ -97,7 +97,7 @@ class OrderDetailRepository @Inject constructor(
     ): Flow<UpdateOrderResult> {
         val status = withContext(dispatchers.io) {
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), newStatus)
-                ?: error("Couldn't find a status with key $newStatus")
+                ?: WCOrderStatusModel(statusKey = newStatus)
         }
         return orderStore.updateOrderStatus(
             orderId,

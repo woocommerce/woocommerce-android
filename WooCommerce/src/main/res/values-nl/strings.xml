@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-01-20 21:50:17+0000
+Translation-Revision-Date: 2022-02-02 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="settings_install_jetpack">Jetpack installeren</string>
+    <string name="card_reader_onboarding_account_rejected_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
+    <string name="order_creation_success_snackbar">Bestelling toegevoegd</string>
+    <string name="order_creation_failure_snackbar">Aanmaken van bestelling mislukt</string>
+    <string name="order_creation_loading_dialog_message">Een moment geduld…</string>
+    <string name="order_creation_loading_dialog_title">Je bestelling wordt aangemaakt</string>
+    <string name="order_creation_payment_tax_hint">Totaal exclusief btw. Btw wordt automatisch berekend op basis van je winkelinstellingen.</string>
+    <string name="order_creation_payment_order_total">Besteltotaal</string>
+    <string name="order_creation_payment_products_total">Totaalaantal producten</string>
+    <string name="order_creation_payment">Betaling</string>
+    <string name="dashboard_top_performers_net_sales">Netto verkoop: %s</string>
+    <string name="dashboard_top_performers_items_sold">Verkochte artikelen</string>
+    <string name="dashboard_stats_conversion">Conversie</string>
+    <string name="create">Aanmaken</string>
     <string name="about_automattic_app_icon_description">App-pictogram</string>
     <string name="about_automattic_back_icon_description">Terug-pictogram</string>
     <string name="about_automattic_logo_description">Automattic-logo</string>
@@ -316,13 +330,12 @@ Language: nl
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Fysieke betalingen zijn nog niet beschikbaar in de testmodus. Schakel deze uit om door te gaan.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Er zijn openstaande verplichtingen op je account. Voltooi deze verplichtingen door %1$s om fysieke betalingen te kunnen blijven aannemen.</string>
-    <string name="card_reader_onboarding_account_pending_requirements_header">Je WooCommerce Payments-account heeft verplichtingen open staan</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Je account heeft openstaande verplichtingen.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">Je hebt ten minste openstaande verplichting op je account. Rond de verplichting af om fysieke betalingen te blijven ontvangen</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
     <string name="card_reader_onboarding_account_under_review_hint">Je kunt fysieke betalingen aannemen zodra we je account hebben gecontroleerd.</string>
     <string name="card_reader_onboarding_account_under_review_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
     <string name="card_reader_onboarding_account_rejected_hint">We kunnen helaas fysieke betalingen niet voor deze winkel ondersteunen.</string>
-    <string name="card_reader_onboarding_account_rejected_header">Fysieke betalingen zijn niet beschikbaar voor deze winkel</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Vernieuwen na bijwerken</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Verouderde versie van de WooCommerce Payments-extensie is geïnstalleerd in je winkel. Werk deze bij om fysieke betalingen aan te nemen.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments bijwerken</string>
@@ -1777,8 +1790,6 @@ Language: nl
     <string name="dashboard_action_view_order">Bestelling weergeven</string>
     <string name="dashboard_top_performers_empty">Geen activiteiten deze periode</string>
     <string name="dashboard_top_performers_total_orders">Totaalaantal bestellingen: %s</string>
-    <string name="dashboard_top_performers_total_spend">Totaal uitgegeven</string>
-    <string name="dashboard_top_performers_description">Krijg inzicht in hoe goed producten op je site presteren</string>
     <string name="dashboard_top_performers_title">Toppresteerders</string>
     <string name="dashboard_stats_updated_date_time">Bijgewerkt op %s</string>
     <string name="dashboard_stats_updated_one_day">1 dag geleden bijgewerkt</string>

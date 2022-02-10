@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -62,6 +63,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
     private val addonsRepository: AddonRepository = mock()
     private val cardReaderManager: CardReaderManager = mock()
+    private val cardReaderTracker: CardReaderTracker = mock()
     private val resources: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
@@ -129,6 +131,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 selectedSite,
                 productImageMap,
                 paymentCollectibilityChecker,
+                cardReaderTracker,
             )
         )
 
@@ -1256,5 +1259,17 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Then
             assertThat(viewModel.event.value)
                 .isNotInstanceOf(OrderNavigationTarget.StartCardReaderPaymentFlow::class.java)
+        }
+
+    @Test
+    fun `when user presses collect payment button, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(mock()))
+            // When
+            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
+
+            // Then
+            verify(cardReaderTracker).trackCollectPaymentTapped()
         }
 }

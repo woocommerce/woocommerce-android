@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Order.Item
 import org.wordpress.android.fluxc.model.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
@@ -140,21 +141,7 @@ object OrderTestUtils {
             number = "55",
             status = Order.Status.Pending,
             total = BigDecimal("106.00"),
-            items = listOf(
-                Order.Item(
-                    itemId = 1,
-                    productId = 15,
-                    name = "A test",
-                    price = BigDecimal("10"),
-                    sku = "",
-                    quantity = 1f,
-                    subtotal = BigDecimal("10"),
-                    totalTax = BigDecimal.ZERO,
-                    total = BigDecimal("10"),
-                    variationId = 0,
-                    attributesList = emptyList()
-                )
-            ),
+            items = generateTestOrderItems(productId = 15),
             refundTotal = -BigDecimal.TEN,
         )
     }
@@ -294,5 +281,30 @@ object OrderTestUtils {
             )
         }
         return result
+    }
+
+    fun generateTestOrderItems(
+        count: Int = 1,
+        productId: Long = -1
+    ): List<Item> {
+        val list = mutableListOf<Item>()
+        for (i in 1..count) {
+            list.add(
+                Order.Item(
+                    itemId = i.toLong(),
+                    productId = productId.takeIf { it != -1L } ?: i.toLong(),
+                    name = "A test",
+                    price = BigDecimal("10"),
+                    sku = "",
+                    quantity = 1f,
+                    subtotal = BigDecimal("10"),
+                    totalTax = BigDecimal.ZERO,
+                    total = BigDecimal("10"),
+                    variationId = 0,
+                    attributesList = emptyList()
+                )
+            )
+        }
+        return list
     }
 }
