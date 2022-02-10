@@ -15,7 +15,7 @@ import javax.inject.Inject
 private const val DEFAULT_DECIMAL_PRECISION = 2
 
 @HiltViewModel
-class OrderCreationShippingFeesViewModel @Inject constructor(
+class OrderCreationShippingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore

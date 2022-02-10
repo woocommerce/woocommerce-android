@@ -46,8 +46,13 @@
                 app:argType="long" />
         </action>
         <action
-            android:id="@+id/action_orderCreationFragment_to_orderCreationShippingFeesFragment"
-            app:destination="@id/orderCreationShippingFeesFragment" />
+            android:id="@+id/action_orderCreationFragment_to_orderCreationShippingFragment"
+            app:destination="@id/orderCreationShippingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"
+            />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -126,8 +131,8 @@
             app:argType="long" />
     </fragment>
     <fragment
-        android:id="@+id/orderCreationShippingFeesFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingFeesFragment"
-        android:label="OrderCreationShippingFeesFragment"
-        tools:layout="@layout/fragment_order_creation_shipping_fees" />
+        android:id="@+id/orderCreationShippingFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingFragment"
+        android:label="OrderCreationShippingFragment"
+        tools:layout="@layout/fragment_order_creation_shipping" />
 </navigation>
