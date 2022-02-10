@@ -7,11 +7,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.*
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
@@ -39,6 +35,7 @@ object AppPrefs {
         SUPPORT_NAME,
         IS_USING_V4_API,
         HAS_UNSEEN_REVIEWS,
+        UNSEEN_REVIEWS_COUNT,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
@@ -295,6 +292,12 @@ object AppPrefs {
     fun setHasUnseenReviews(hasUnseen: Boolean) {
         setBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, hasUnseen)
     }
+
+    fun updateUnseenReviewCount(count: Int) {
+        setInt(UNSEEN_REVIEWS_COUNT, count)
+    }
+
+    fun getUnseenReviewCount(): Int = getInt(UNSEEN_REVIEWS_COUNT, default = 0)
 
     fun getNumTimesMarkAllReadSnackShown(): Int =
         getInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, 0)

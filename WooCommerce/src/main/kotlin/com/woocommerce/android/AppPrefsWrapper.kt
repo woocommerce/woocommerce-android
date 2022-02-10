@@ -63,6 +63,12 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setHasUnseenReviews(hasUnseen)
     }
 
+    fun updateUnseenReviewCount(count: Int) {
+        AppPrefs.updateUnseenReviewCount(count)
+    }
+
+    fun getUnseenReviewCount(): Int = AppPrefs.getUnseenReviewCount()
+
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
     }
