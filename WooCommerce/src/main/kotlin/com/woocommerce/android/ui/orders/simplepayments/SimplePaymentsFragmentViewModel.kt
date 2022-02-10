@@ -2,21 +2,35 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import java.math.BigDecimal
 import javax.inject.Inject
 
 @OpenClassOnDebug
 @HiltViewModel
 class SimplePaymentsFragmentViewModel @Inject constructor(
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val simplePaymentsRepository: SimplePaymentsRepository,
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal final var viewState by viewStateLiveData
@@ -92,9 +106,63 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         viewState = viewState.copy(customerNote = customerNote)
     }
 
+    fun onBillingEmailChanged(email: String) {
+        viewState = viewState.copy(billingEmail = email)
+    }
+
     fun onDoneButtonClicked() {
-        // TODO nbradbury - save the order draft, waiting for FluxC changes to do that
-        triggerEvent(ShowTakePaymentScreen)
+        if (!networkStatus.isConnected()) {
+            AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+            return
+        }
+
+        val isEmailValid = viewState.billingEmail.isEmpty() || StringUtils.isValidEmail(viewState.billingEmail)
+        if (!isEmailValid) {
+            viewState = viewState.copy(isBillingEmailValid = false)
+            return
+        }
+
+        viewState = viewState.copy(isBillingEmailValid = true)
+
+        launch {
+            simplePaymentsRepository.updateSimplePayment(
+                order.id,
+                viewState.orderTotal.toString(),
+                viewState.customerNote,
+                viewState.billingEmail,
+                viewState.chargeTaxes
+            ).collectUpdate()
+        }
+    }
+
+    private suspend fun Flow<UpdateOrderResult>.collectUpdate() {
+        // TODO nbradbury tracks
+        collect { result ->
+            when (result) {
+                is OptimisticUpdateResult -> {
+                    if (result.event.isError) {
+                        result.event.error?.let {
+                            WooLog.e(WooLog.T.ORDERS, "Simple payment optimistic update failed with ${it.message}")
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            triggerEvent(ShowTakePaymentScreen)
+                        }
+                    }
+                }
+                is UpdateOrderResult.RemoteUpdateResult -> {
+                    if (result.event.isError) {
+                        result.event.error?.let {
+                            WooLog.e(WooLog.T.ORDERS, "Simple payment remote update failed with ${it.message}")
+                        }
+                        withContext(Dispatchers.Main) {
+                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.simple_payments_update_error))
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Parcelize
@@ -103,7 +171,9 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         val orderSubtotal: BigDecimal = BigDecimal.ZERO,
         val orderTotalTax: BigDecimal = BigDecimal.ZERO,
         val orderTotal: BigDecimal = BigDecimal.ZERO,
-        val customerNote: String = ""
+        val customerNote: String = "",
+        val billingEmail: String = "",
+        val isBillingEmailValid: Boolean = true
     ) : Parcelable
 
     object ShowCustomerNoteEditor : MultiLiveEvent.Event()

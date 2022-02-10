@@ -1,1 +1,3 @@
-We’re in the process of refreshing the look of the app! You’ll notice some nice visual changes to the sales graph in My Store and a new conversion calculation. We’re also no longer rounding the sales totals to provide greater clarity. This isn’t the last of it – more updates to come in the next few weeks!
+- [***] Beta Feature: It's now possible to create Orders from the app. For now only including products, customer notes, shipping and billing addresses.
+- [***] Store admins can now access sites with plugins that have Jetpack Connection Package (e.g. WooCommerce Payments, Jetpack Backup) in the app. These sites do not require Jetpack-the-plugin to connect anymore. Store admins can still install Jetpack-the-plugin from the app through settings or a Jetpack banner. [https://github.com/woocommerce/woocommerce-android/pull/5771]
+

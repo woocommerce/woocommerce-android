@@ -18,6 +18,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     companion object {
         private const val REQUIRED_UPDATE = "Required"
         private const val OPTIONAL_UPDATE = "Optional"
+        private const val COUNTRY_CODE = "US"
     }
 
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -138,7 +139,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when onboarding StripeAccountPendingRequirement WCPay, then reason=account_pending_requirements tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackOnboardingState(
-                CardReaderOnboardingState.StripeAccountPendingRequirement(null, WOOCOMMERCE_PAYMENTS)
+                CardReaderOnboardingState.StripeAccountPendingRequirement(null, WOOCOMMERCE_PAYMENTS, COUNTRY_CODE)
             )
 
             verify(trackerWrapper).track(
@@ -151,7 +152,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when onboarding StripeAccountPendingRequirement Stripe, then reason=account_pending_requirements tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackOnboardingState(
-                CardReaderOnboardingState.StripeAccountPendingRequirement(null, WOOCOMMERCE_PAYMENTS)
+                CardReaderOnboardingState.StripeAccountPendingRequirement(null, WOOCOMMERCE_PAYMENTS, COUNTRY_CODE)
             )
 
             verify(trackerWrapper).track(
@@ -205,7 +206,11 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state OnboardingCompleted WCPay, then event NOT tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS))
+            cardReaderTracker.trackOnboardingState(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    WOOCOMMERCE_PAYMENTS, COUNTRY_CODE
+                )
+            )
 
             verify(trackerWrapper, never()).track(any(), any())
         }
@@ -214,7 +219,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when onboarding state OnboardingCompleted Stripe, then event NOT tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackOnboardingState(
-                CardReaderOnboardingState.OnboardingCompleted(PluginType.STRIPE_EXTENSION_GATEWAY)
+                CardReaderOnboardingState.OnboardingCompleted(PluginType.STRIPE_EXTENSION_GATEWAY, COUNTRY_CODE)
             )
 
             verify(trackerWrapper, never()).track(any(), any())
