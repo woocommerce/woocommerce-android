@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewMo
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -13,7 +14,10 @@ class OrderCreationAddFeeViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     fun onDoneSelected(input: String, isPercentageSelected: Boolean) {
-        triggerEvent(FeeCreationData(input, feeTypeWhen(isPercentageSelected)))
+        // TODO: handle possible exception from parsing string to bigDecimal
+        triggerEvent(
+            FeeCreationData(input.toBigDecimal(), feeTypeWhen(isPercentageSelected))
+        )
     }
 
     fun feeTypeWhen(isPercentageSelected: Boolean) =
@@ -27,7 +31,7 @@ class OrderCreationAddFeeViewModel @Inject constructor(
     }
 
     data class FeeCreationData(
-        val inputValue: String,
+        val amount: BigDecimal,
         val feeType: FeeType
     ) : Event()
 }
