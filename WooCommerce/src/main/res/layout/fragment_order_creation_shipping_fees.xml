@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.woocommerce.android.widgets.WCElevatedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/major_100">
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+        android:id="@+id/amountEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/order_creation_shipping_amount" />
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/nameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/order_creation_shipping_name" />
+
+</com.woocommerce.android.widgets.WCElevatedLinearLayout>
