@@ -21,5 +21,3 @@ fun NotificationModel.getCommentId(): Long {
 class NotificationsUnseenReviewsEvent(var hasUnseen: Boolean)
 
 class NotificationReceivedEvent(var channel: NotificationChannelType)
-
-class NotificationSeenEvent(var channel: NotificationChannelType?)

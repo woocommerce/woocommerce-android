@@ -6,8 +6,11 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_RECEIVED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_TAPPED
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.model.*
+import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
+import com.woocommerce.android.model.Notification
+import com.woocommerce.android.model.isOrderNotification
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -39,7 +42,8 @@ class NotificationMessageHandler @Inject constructor(
     private val notificationBuilder: WooNotificationBuilder,
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val zendeskHelper: ZendeskHelper,
-    private val notificationsParser: NotificationsParser
+    private val notificationsParser: NotificationsParser,
+    private val reviewsNotificationsHandler: ReviewsNotificationsHandler
 ) {
     companion object {
         private const val KEY_PUSH_TYPE_ZENDESK = "zendesk"
@@ -206,6 +210,7 @@ class NotificationMessageHandler @Inject constructor(
             setHasUnseenReviewNotifs(true)
         }
         EventBus.getDefault().post(NotificationReceivedEvent(notification.channelType))
+        updateUnseenCountBy(1, notification.channelType)
     }
 
     private fun getLocalPushId(wpComNoteId: Int, randomNumber: Int) = wpComNoteId + randomNumber
@@ -265,7 +270,7 @@ class NotificationMessageHandler @Inject constructor(
             .forEach { row ->
                 if (row.value.remoteNoteId == remoteNoteId) {
                     notificationBuilder.cancelNotification(row.key)
-                    EventBus.getDefault().post(NotificationSeenEvent(row.value.channelType))
+                    updateUnseenCountBy(-1, row.value.channelType)
                 } else {
                     keptNotifs[row.key] = row.value
                 }
@@ -283,7 +288,7 @@ class NotificationMessageHandler @Inject constructor(
             .forEach { row ->
                 if (row.key == localPushId) {
                     notificationBuilder.cancelNotification(row.key)
-                    EventBus.getDefault().post(NotificationSeenEvent(row.value.channelType))
+                    updateUnseenCountBy(-1, row.value.channelType)
                 } else {
                     keptNotifs[row.key] = row.value
                 }
@@ -301,7 +306,7 @@ class NotificationMessageHandler @Inject constructor(
         ACTIVE_NOTIFICATIONS_MAP.toMap().asSequence().forEach { row ->
             if (row.value.channelType == type && row.value.remoteSiteId == remoteSiteId) {
                 notificationBuilder.cancelNotification(row.key)
-                EventBus.getDefault().post(NotificationSeenEvent(type))
+                updateUnseenCountBy(-1, row.value.channelType)
             } else {
                 keptNotifs[row.key] = row.value
             }
@@ -326,6 +331,13 @@ class NotificationMessageHandler @Inject constructor(
         if (appPrefsWrapper.hasUnseenReviews() != hasUnseen) {
             appPrefsWrapper.setHasUnseenReviews(hasUnseen)
             EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
+            reviewsNotificationsHandler.clearUnseenCount()
+        }
+    }
+
+    private fun updateUnseenCountBy(value: Int, notificationType: NotificationChannelType) {
+        if (notificationType == NotificationChannelType.REVIEW) {
+            reviewsNotificationsHandler.updateUnseenCountBy(value)
         }
     }
 }

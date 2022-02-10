@@ -9,17 +9,17 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.push.NotificationChannelType
+import com.woocommerce.android.push.ReviewsNotificationsHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.moremenu.MenuButtonType.*
+import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
 import com.woocommerce.android.ui.reviews.ReviewListRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.*
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
@@ -28,25 +28,20 @@ class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
-    private val reviewListRepository: ReviewListRepository
+    private val reviewListRepository: ReviewListRepository,
+    private val reviewsNotificationsHandler: ReviewsNotificationsHandler
 ) : ScopedViewModel(savedState) {
     private var _moreMenuViewState = MutableLiveData<MoreMenuViewState>()
     val moreMenuViewState: LiveData<MoreMenuViewState> = _moreMenuViewState
 
     init {
-        EventBus.getDefault().register(this)
-
         _moreMenuViewState.value = MoreMenuViewState(
             moreMenuItems = generateMenuButtons(unseenReviewsCount = 0),
             siteName = getSelectedSiteName(),
             siteUrl = getSelectedSiteAbsoluteUrl(),
             userAvatarUrl = accountStore.account.avatarUrl
         )
-        refreshUnseenReviewsCount()
-    }
-
-    override fun onCleared() {
-        EventBus.getDefault().unregister(this)
+        observeUnseenReviewsCount() //TODO HANDLE SITE SWITCH
     }
 
     private fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
@@ -72,43 +67,21 @@ class MoreMenuViewModel @Inject constructor(
             )
         )
 
-    private fun refreshUnseenReviewsCount() {
+    private fun observeUnseenReviewsCount() {
         viewModelScope.launch {
-            // First we set the cached value
-            _moreMenuViewState.value = _moreMenuViewState.value?.copy(
-                moreMenuItems = generateMenuButtons(getCachedUnseenReviewsCount())
-            )
-
-            // Then we fetch from API the refreshed value and update the UI again
-            when (reviewListRepository.fetchProductReviews(loadMore = false)) {
-                RequestResult.SUCCESS,
-                RequestResult.NO_ACTION_NEEDED -> {
+            reviewsNotificationsHandler.observeUnseenCount()
+                .collect {
                     _moreMenuViewState.value = _moreMenuViewState.value?.copy(
-                        moreMenuItems = generateMenuButtons(getCachedUnseenReviewsCount())
+                        moreMenuItems = generateMenuButtons(it)
                     )
                 }
-                else -> {
-                }
-            }
         }
     }
-
-    private suspend fun getCachedUnseenReviewsCount() =
-        reviewListRepository.getCachedProductReviews()
-            .filter { it.read == false }
-            .count()
 
     fun handleStoreSwitch() {
         _moreMenuViewState.value = _moreMenuViewState.value?.copy(
             siteName = getSelectedSiteName(),
             siteUrl = getSelectedSiteAbsoluteUrl()
-        )
-        refreshUnseenReviewsCount()
-    }
-
-    private fun resetUnseenReviewsBadgeCount() {
-        _moreMenuViewState.value = _moreMenuViewState.value?.copy(
-            moreMenuItems = generateMenuButtons(0)
         )
     }
 
@@ -157,39 +130,6 @@ class MoreMenuViewModel @Inject constructor(
             Stat.HUB_MENU_OPTION_TAPPED,
             mapOf(KEY_OPTION to selectedOption)
         )
-    }
-
-    private fun updateUnseenCountBy(updateByValue: Int) {
-        val currentCount = _moreMenuViewState.value?.moreMenuItems
-            ?.firstOrNull { it.type == PRODUCT_REVIEWS }
-            ?.badgeCount ?: 0
-        _moreMenuViewState.value = _moreMenuViewState.value?.copy(
-            moreMenuItems = generateMenuButtons(currentCount + updateByValue)
-        )
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationReceivedEvent) {
-        if (event.channel == NotificationChannelType.REVIEW) {
-            updateUnseenCountBy(1)
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
-        if (!event.hasUnseen) {
-            resetUnseenReviewsBadgeCount()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationSeenEvent) {
-        if (event.channel == NotificationChannelType.REVIEW) {
-            updateUnseenCountBy(-1)
-        }
     }
 
     data class MoreMenuViewState(
