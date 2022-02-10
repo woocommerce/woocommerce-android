@@ -498,7 +498,7 @@ object AppPrefs {
     ) = "$CARD_READER_ONBOARDING_COMPLETED_STATUS:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
     fun setCardReaderStatementDescriptor(
-        statementDescriptor: String,
+        statementDescriptor: String?,
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
