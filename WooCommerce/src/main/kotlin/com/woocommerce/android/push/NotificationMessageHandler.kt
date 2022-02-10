@@ -7,7 +7,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_RECEIVED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_TAPPED
 import com.woocommerce.android.extensions.NotificationReceivedEvent
-import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
@@ -330,7 +329,6 @@ class NotificationMessageHandler @Inject constructor(
     private fun setHasUnseenReviewNotifs(hasUnseen: Boolean) {
         if (appPrefsWrapper.hasUnseenReviews() != hasUnseen) {
             appPrefsWrapper.setHasUnseenReviews(hasUnseen)
-            EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
             reviewsNotificationsHandler.clearUnseenCount()
         }
     }
