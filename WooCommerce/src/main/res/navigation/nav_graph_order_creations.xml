@@ -32,7 +32,7 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders"
@@ -45,6 +45,9 @@
                 android:name="orderId"
                 app:argType="long" />
         </action>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationShippingFeesFragment"
+            app:destination="@id/orderCreationShippingFeesFragment" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -66,7 +69,7 @@
         android:id="@+id/orderCreationProductSelectionFragment"
         android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragment"
         android:label="OrderCreationProductSelectionFragment"
-        tools:layout="@layout/fragment_order_creation_product_selection" >
+        tools:layout="@layout/fragment_order_creation_product_selection">
         <action
             android:id="@+id/action_orderCreationProductSelectionFragment_to_orderCreationVariationSelectionFragment"
             app:destination="@id/orderCreationVariationSelectionFragment"
@@ -122,4 +125,9 @@
             android:name="productId"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/orderCreationShippingFeesFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingFeesFragment"
+        android:label="OrderCreationShippingFeesFragment"
+        tools:layout="@layout/fragment_order_creation_shipping_fees" />
 </navigation>

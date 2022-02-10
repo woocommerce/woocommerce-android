@@ -28,4 +28,8 @@ class OrderCreationShippingFeesFragment : BaseFragment(R.layout.fragment_order_c
             currencyFormatter = currencyFormatter
         )
     }
+
+    override fun getFragmentTitle(): String {
+        return getString(R.string.order_creation_shipping_title_add)
+    }
 }

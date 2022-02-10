@@ -361,6 +361,7 @@
     <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
     <string name="order_creation_shipping_amount">Amount</string>
     <string name="order_creation_shipping_name">Name</string>
+    <string name="order_creation_shipping_title_add">Add Shipping</string>
     <!--
         Order Filters
     -->
