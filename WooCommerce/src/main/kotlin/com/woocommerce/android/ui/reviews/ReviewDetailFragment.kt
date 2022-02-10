@@ -25,13 +25,11 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.*
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
@@ -49,7 +47,6 @@ class ReviewDetailFragment :
     BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
-    @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private val viewModel: ReviewDetailViewModel by viewModels()
 
@@ -142,11 +139,6 @@ class ReviewDetailFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is MarkNotificationAsRead -> {
-                    notificationMessageHandler.removeNotificationByRemoteIdFromSystemsBar(
-                        event.remoteNoteId
-                    )
-                }
                 is Exit -> exitDetailView()
                 is NavigateBackFromNotification -> exitReviewDetailOpenedFromNotification()
             }

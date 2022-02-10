@@ -8,7 +8,7 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
-import com.woocommerce.android.push.ReviewsNotificationsHandler
+import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
@@ -30,7 +30,7 @@ class MainActivityViewModel @Inject constructor(
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
     private val prefs: AppPrefs,
-    reviewsNotificationsHandler: ReviewsNotificationsHandler
+    unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     init {
         launch {
@@ -38,7 +38,7 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    val unseenReviewsCount = reviewsNotificationsHandler.observeUnseenCount().asLiveData()
+    val unseenReviewsCount = unseenReviewsCountHandler.observeUnseenCount().asLiveData()
 
     fun removeOrderNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(

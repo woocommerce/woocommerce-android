@@ -9,7 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.push.ReviewsNotificationsHandler
+import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
@@ -29,7 +29,7 @@ class MoreMenuViewModel @Inject constructor(
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
     private val reviewListRepository: ReviewListRepository,
-    private val reviewsNotificationsHandler: ReviewsNotificationsHandler
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     private var _moreMenuViewState = MutableLiveData<MoreMenuViewState>()
     val moreMenuViewState: LiveData<MoreMenuViewState> = _moreMenuViewState
@@ -69,7 +69,7 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun observeUnseenReviewsCount() {
         viewModelScope.launch {
-            reviewsNotificationsHandler.observeUnseenCount()
+            unseenReviewsCountHandler.observeUnseenCount()
                 .collect {
                     _moreMenuViewState.value = _moreMenuViewState.value?.copy(
                         moreMenuItems = generateMenuButtons(it)

@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ReviewsNotificationsHandler @Inject constructor(
+class UnseenReviewsCountHandler @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val reviewListRepository: ReviewListRepository,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope

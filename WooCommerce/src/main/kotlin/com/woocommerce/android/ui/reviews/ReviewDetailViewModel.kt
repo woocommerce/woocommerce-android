@@ -9,8 +9,9 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.push.NotificationMessageHandler
+import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -27,7 +28,9 @@ import javax.inject.Inject
 class ReviewDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
-    private val repository: ReviewDetailRepository
+    private val repository: ReviewDetailRepository,
+    private val notificationHandler: NotificationMessageHandler,
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     private var remoteReviewId = 0L
 
@@ -112,9 +115,8 @@ class ReviewDetailViewModel @Inject constructor(
 
     private suspend fun markAsRead(remoteReviewId: Long, launchedFromNotification: Boolean) {
         repository.getCachedNotificationForReview(remoteReviewId)?.let {
-            // remove notification from the notification panel if it exists
-            triggerEvent(MarkNotificationAsRead(it.remoteNoteId))
-
+            notificationHandler.removeNotificationByRemoteIdFromSystemsBar(it.remoteNoteId)
+            unseenReviewsCountHandler.updateUnseenCountBy(-1)
             // send request to mark notification as read to the server
             repository.markNotificationAsRead(it, remoteReviewId)
 
@@ -147,7 +149,6 @@ class ReviewDetailViewModel @Inject constructor(
     ) : Parcelable
 
     sealed class ReviewDetailEvent : Event() {
-        data class MarkNotificationAsRead(val remoteNoteId: Long) : ReviewDetailEvent()
         object NavigateBackFromNotification : ReviewDetailEvent()
     }
 }

@@ -42,7 +42,7 @@ class NotificationMessageHandler @Inject constructor(
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val zendeskHelper: ZendeskHelper,
     private val notificationsParser: NotificationsParser,
-    private val reviewsNotificationsHandler: ReviewsNotificationsHandler
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) {
     companion object {
         private const val KEY_PUSH_TYPE_ZENDESK = "zendesk"
@@ -206,7 +206,9 @@ class NotificationMessageHandler @Inject constructor(
         }
 
         EventBus.getDefault().post(NotificationReceivedEvent(notification.channelType))
-        updateUnseenCountBy(1, notification.channelType)
+        if (notification.isReviewNotification) {
+            unseenReviewsCountHandler.updateUnseenCountBy(1)
+        }
     }
 
     private fun getLocalPushId(wpComNoteId: Int, randomNumber: Int) = wpComNoteId + randomNumber
@@ -256,7 +258,7 @@ class NotificationMessageHandler @Inject constructor(
     fun removeAllNotificationsFromSystemsBar() {
         clearNotifications()
         notificationBuilder.cancelAllNotifications()
-        reviewsNotificationsHandler.clearUnseenCount()
+        unseenReviewsCountHandler.clearUnseenCount()
     }
 
     @Synchronized
@@ -266,7 +268,6 @@ class NotificationMessageHandler @Inject constructor(
             .forEach { row ->
                 if (row.value.remoteNoteId == remoteNoteId) {
                     notificationBuilder.cancelNotification(row.key)
-                    updateUnseenCountBy(-1, row.value.channelType)
                 } else {
                     keptNotifs[row.key] = row.value
                 }
@@ -284,7 +285,6 @@ class NotificationMessageHandler @Inject constructor(
             .forEach { row ->
                 if (row.key == localPushId) {
                     notificationBuilder.cancelNotification(row.key)
-                    updateUnseenCountBy(-1, row.value.channelType)
                 } else {
                     keptNotifs[row.key] = row.value
                 }
@@ -302,7 +302,6 @@ class NotificationMessageHandler @Inject constructor(
         ACTIVE_NOTIFICATIONS_MAP.toMap().asSequence().forEach { row ->
             if (row.value.channelType == type && row.value.remoteSiteId == remoteSiteId) {
                 notificationBuilder.cancelNotification(row.key)
-                updateUnseenCountBy(-1, row.value.channelType)
             } else {
                 keptNotifs[row.key] = row.value
             }
@@ -315,13 +314,6 @@ class NotificationMessageHandler @Inject constructor(
     private fun updateNotificationsState() {
         if (!hasNotifications()) {
             notificationBuilder.cancelAllNotifications()
-            reviewsNotificationsHandler.clearUnseenCount()
-        }
-    }
-
-    private fun updateUnseenCountBy(value: Int, notificationType: NotificationChannelType) {
-        if (notificationType == NotificationChannelType.REVIEW) {
-            reviewsNotificationsHandler.updateUnseenCountBy(value)
         }
     }
 }
