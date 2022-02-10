@@ -205,9 +205,6 @@ class NotificationMessageHandler @Inject constructor(
             }
         }
 
-        if (notification.isReviewNotification) {
-            setHasUnseenReviewNotifs(true)
-        }
         EventBus.getDefault().post(NotificationReceivedEvent(notification.channelType))
         updateUnseenCountBy(1, notification.channelType)
     }
@@ -259,7 +256,7 @@ class NotificationMessageHandler @Inject constructor(
     fun removeAllNotificationsFromSystemsBar() {
         clearNotifications()
         notificationBuilder.cancelAllNotifications()
-        setHasUnseenReviewNotifs(false)
+        reviewsNotificationsHandler.clearUnseenCount()
     }
 
     @Synchronized
@@ -318,17 +315,6 @@ class NotificationMessageHandler @Inject constructor(
     private fun updateNotificationsState() {
         if (!hasNotifications()) {
             notificationBuilder.cancelAllNotifications()
-            setHasUnseenReviewNotifs(false)
-        }
-    }
-
-    /**
-     * Called when we want to update the unseen state of review notifs - changes the related
-     * shared preference and posts an EventBus event so main activity can update the badge
-     */
-    private fun setHasUnseenReviewNotifs(hasUnseen: Boolean) {
-        if (appPrefsWrapper.hasUnseenReviews() != hasUnseen) {
-            appPrefsWrapper.setHasUnseenReviews(hasUnseen)
             reviewsNotificationsHandler.clearUnseenCount()
         }
     }

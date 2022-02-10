@@ -287,12 +287,6 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
 
-    fun getHasUnseenReviews() = getBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, false)
-
-    fun setHasUnseenReviews(hasUnseen: Boolean) {
-        setBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, hasUnseen)
-    }
-
     fun updateUnseenReviewCount(count: Int) {
         setInt(UNSEEN_REVIEWS_COUNT, count)
     }
