@@ -105,12 +105,13 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
         if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
             paymentAccount.currentDeadline,
-            preferredPlugin.type
+            preferredPlugin.type,
+            requireNotNull(countryCode)
         )
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected
         if (isInUndefinedState(paymentAccount)) return GenericError
 
-        return OnboardingCompleted(preferredPlugin.type)
+        return OnboardingCompleted(preferredPlugin.type, requireNotNull(countryCode))
     }
 
     private fun saveStatementDescriptor(statementDescriptor: String) {
@@ -228,7 +229,7 @@ enum class PluginType(val minSupportedVersion: String) {
 }
 
 sealed class CardReaderOnboardingState {
-    data class OnboardingCompleted(val pluginType: PluginType) : CardReaderOnboardingState()
+    data class OnboardingCompleted(val pluginType: PluginType, val countryCode: String) : CardReaderOnboardingState()
 
     /**
      * Store is not located in one of the supported countries.
@@ -281,7 +282,8 @@ sealed class CardReaderOnboardingState {
      */
     data class StripeAccountPendingRequirement(
         val dueDate: Long?,
-        val pluginType: PluginType
+        val pluginType: PluginType,
+        val countryCode: String,
     ) : CardReaderOnboardingState()
 
     /**

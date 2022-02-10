@@ -9,7 +9,6 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 import java.util.*
