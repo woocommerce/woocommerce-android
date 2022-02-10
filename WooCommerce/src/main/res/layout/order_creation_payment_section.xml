@@ -57,9 +57,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="start|center_vertical"
+            android:paddingEnd="0dp"
+            android:paddingStart="0dp"
             android:text="@string/order_creation_add_fee"
             app:icon="@drawable/ic_add"
-            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/products_total_label" />
 
