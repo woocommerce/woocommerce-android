@@ -9,10 +9,7 @@ import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_D
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.support.ZendeskHelper
-import com.woocommerce.android.util.Base64Decoder
-import com.woocommerce.android.util.NotificationsParser
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
+import com.woocommerce.android.util.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -69,6 +66,7 @@ class NotificationMessageHandlerTest {
 
     private val reviewNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(reviewNotificationPayload)!!.toAppModel(resourceProvider)
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock()
 
     @Before
     fun setUp() {
@@ -82,7 +80,8 @@ class NotificationMessageHandlerTest {
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
             zendeskHelper = zendeskHelper,
-            notificationsParser = notificationsParser
+            notificationsParser = notificationsParser,
+            unseenReviewsCountHandler = unseenReviewsCountHandler
         )
 
         doReturn(true).whenever(accountStore).hasAccessToken()
@@ -169,6 +168,13 @@ class NotificationMessageHandlerTest {
         assertThat(actionCaptor.allValues.map { it.payload }).anySatisfy {
             assertThat(it).isNotInstanceOf(FetchNotificationPayload::class.java)
         }
+    }
+
+    @Test
+    fun ` When a new review notifications is received, then increment unseen reviews count by one`() {
+        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload, mock())
+
+        verify(unseenReviewsCountHandler, times(1)).updateUnseenCountBy(1)
     }
 
     @Test

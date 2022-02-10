@@ -5,9 +5,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.push.NotificationMessageHandler
+import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -18,7 +19,6 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -35,6 +35,8 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     }
     private val repository: ReviewDetailRepository = mock()
     private val savedState = SavedStateHandle()
+    private val notificationMessageHandler: NotificationMessageHandler = mock()
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock()
 
     private val review = ProductReviewTestUtils.generateProductReview(id = REVIEW_ID, productId = PRODUCT_ID)
     private lateinit var viewModel: ReviewDetailViewModel
@@ -45,7 +47,9 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         viewModel = ReviewDetailViewModel(
             savedState,
             networkStatus,
-            repository
+            repository,
+            notificationMessageHandler,
+            unseenReviewsCountHandler
         )
     }
 
@@ -62,16 +66,13 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
         }
 
-        var markAsRead: Long? = null
-        viewModel.event.observeForever { if (it is MarkNotificationAsRead) markAsRead = it.remoteNoteId }
-
         viewModel.start(REVIEW_ID, false)
 
         Assertions.assertThat(skeletonShown).containsExactly(true, false)
-        Assertions.assertThat(markAsRead).isEqualTo(NOTIF_ID)
         Assertions.assertThat(productReview).isEqualTo(review)
         verify(repository, times(1)).markNotificationAsRead(any(), any())
-        assertEquals(NOTIF_ID, markAsRead)
+        verify(notificationMessageHandler).removeNotificationByRemoteIdFromSystemsBar(NOTIF_ID)
+        verify(unseenReviewsCountHandler).updateUnseenCountBy(-1)
     }
 
     @Test
@@ -89,10 +90,8 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             }
 
             var snackbar: ShowSnackbar? = null
-            var markAsRead: Long? = null
             viewModel.event.observeForever {
                 when (it) {
-                    is MarkNotificationAsRead -> markAsRead = it.remoteNoteId
                     is ShowSnackbar -> snackbar = it
                 }
             }
@@ -100,7 +99,8 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             viewModel.start(REVIEW_ID, false)
 
             Assertions.assertThat(skeletonShown).containsExactly(true, false)
-            assertEquals(NOTIF_ID, markAsRead)
+            verify(notificationMessageHandler).removeNotificationByRemoteIdFromSystemsBar(NOTIF_ID)
+            verify(unseenReviewsCountHandler).updateUnseenCountBy(-1)
             Assertions.assertThat(productReview).isEqualTo(review)
             verify(repository, times(1)).markNotificationAsRead(any(), any())
             Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
