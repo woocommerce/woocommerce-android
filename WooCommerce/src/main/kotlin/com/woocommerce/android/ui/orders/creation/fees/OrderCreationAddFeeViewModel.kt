@@ -19,24 +19,23 @@ class OrderCreationAddFeeViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    fun onDoneSelected(isPercentageSelected: Boolean) {
-        // TODO: handle possible exception from parsing string to bigDecimal
-        viewState.inputValue?.let {
-            triggerEvent(
-                FeeCreationData(it.toBigDecimal(), feeTypeWhen(isPercentageSelected))
-            )
-        }
-    }
-
-    private fun feeTypeWhen(isPercentageSelected: Boolean) =
-        when (isPercentageSelected) {
+    private val currentFeeType
+        get() = when (viewState.isPercentageSelected) {
             true -> PERCENTAGE
             false -> AMOUNT
         }
 
+    fun onDoneSelected() {
+        // TODO: handle possible exception from parsing string to bigDecimal
+        viewState.inputValue?.let {
+            triggerEvent(FeeCreationData(it.toBigDecimal(), currentFeeType))
+        }
+    }
+
     @Parcelize
     data class ViewState(
-        val inputValue: String? = null
+        val inputValue: String? = null,
+        val isPercentageSelected: Boolean = false
     ) : Parcelable
 
     enum class FeeType {
