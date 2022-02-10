@@ -107,6 +107,10 @@
         <action
             android:id="@+id/action_cardReaderHubFragment_to_cardReaderDetailFragment"
             app:destination="@id/cardReaderDetailFragment" />
+        <argument
+            android:name="storeCountryCode"
+            app:nullable="false"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
