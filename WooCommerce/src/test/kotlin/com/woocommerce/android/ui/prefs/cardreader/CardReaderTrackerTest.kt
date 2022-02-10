@@ -336,7 +336,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackReaderDiscoveryFailed(dummyErrorMgs)
 
             verify(trackerWrapper).track(
-                eq(CARD_READER_DISCOVERY_FAILED), anyOrNull(), anyOrNull(), eq(dummyErrorMgs)
+                eq(CARD_READER_DISCOVERY_FAILED), anyOrNull(), anyOrNull(), anyOrNull(), eq(dummyErrorMgs)
             )
         }
 
@@ -358,6 +358,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
             verify(trackerWrapper).track(
                 CARD_READER_LOCATION_FAILURE,
+                mutableMapOf(),
                 "CardReaderTracker",
                 null,
                 dummyErrorMgs
@@ -379,7 +380,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackPaymentFailed(dummyMessage)
 
             verify(trackerWrapper).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), anyOrNull(), anyOrNull(), eq(dummyMessage)
+                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), anyOrNull(), anyOrNull(), anyOrNull(), eq(dummyMessage)
             )
         }
 
@@ -436,6 +437,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
+                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 eq("User manually cancelled the payment during state $currentPaymentState")

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader
 
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
@@ -13,13 +14,33 @@ import javax.inject.Inject
 class CardReaderTracker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
 ) {
+    private fun track(
+        stat: Stat,
+        properties: MutableMap<String, Any> = mutableMapOf(),
+        errorType: String? = null,
+        errorDescription: String? = null,
+    ) {
+        val isError = errorType != null || errorDescription != null
+        if (isError) {
+            trackerWrapper.track(
+                stat,
+                properties,
+                this.javaClass.simpleName,
+                errorType,
+                errorDescription
+            )
+        } else {
+            trackerWrapper.track(stat, properties)
+        }
+    }
+
     fun trackOnboardingLearnMoreTapped() {
-        trackerWrapper.track(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
+        track(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
     }
 
     fun trackOnboardingState(state: CardReaderOnboardingState) {
         getOnboardingNotCompletedReason(state)?.let {
-            trackerWrapper.track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to it))
+            track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf("reason" to it))
         }
     }
 
@@ -57,11 +78,9 @@ class CardReaderTracker @Inject constructor(
     }
 
     fun trackSoftwareUpdateUnknownStatus() {
-        trackerWrapper.track(
+        track(
             CARD_READER_SOFTWARE_UPDATE_FAILED,
-            this.javaClass.simpleName,
-            null,
-            "Unknown software update status"
+            errorDescription = "Unknown software update status"
         )
     }
 
@@ -87,119 +106,112 @@ class CardReaderTracker @Inject constructor(
         errorDescription: String? = null,
     ) {
         val eventPropertiesMap = errorDescription?.let { description ->
-            hashMapOf(
+            hashMapOf<String, Any>(
                 AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
                 AnalyticsTracker.KEY_ERROR_CONTEXT to this.javaClass.simpleName,
                 AnalyticsTracker.KEY_ERROR_DESC to description
             )
         } ?: run {
-            hashMapOf(
+            hashMapOf<String, Any>(
                 AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE
             )
         }
-        trackerWrapper.track(
+        track(
             event,
             eventPropertiesMap
         )
     }
 
     fun trackReadersDiscovered(count: Int) {
-        trackerWrapper.track(
-            AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED,
-            mapOf("reader_count" to count)
+        track(
+            CARD_READER_DISCOVERY_READER_DISCOVERED,
+            mutableMapOf("reader_count" to count)
         )
     }
 
     fun trackReaderDiscoveryFailed(errorMessage: String) {
-        trackerWrapper.track(
+        track(
             CARD_READER_DISCOVERY_FAILED,
-            this.javaClass.simpleName,
-            null,
-            errorMessage
+            errorDescription = errorMessage
         )
     }
 
     fun trackAutoConnectionStarted() {
-        trackerWrapper.track(CARD_READER_AUTO_CONNECTION_STARTED)
+        track(CARD_READER_AUTO_CONNECTION_STARTED)
     }
 
     fun trackOnConnectTapped() {
-        trackerWrapper.track(CARD_READER_CONNECTION_TAPPED)
+        track(CARD_READER_CONNECTION_TAPPED)
     }
 
     fun trackFetchingLocationSucceeded() {
-        trackerWrapper.track(CARD_READER_LOCATION_SUCCESS)
+        track(CARD_READER_LOCATION_SUCCESS)
     }
 
     fun trackFetchingLocationFailed(errorDescription: String?) {
-        trackerWrapper.track(
+        track(
             CARD_READER_LOCATION_FAILURE,
-            this.javaClass.simpleName,
-            null,
-            errorDescription,
+            errorDescription = errorDescription,
         )
     }
 
     fun trackMissingLocationTapped() {
-        trackerWrapper.track(CARD_READER_LOCATION_MISSING_TAPPED)
+        track(CARD_READER_LOCATION_MISSING_TAPPED)
     }
 
     fun trackConnectionFailed() {
-        trackerWrapper.track(CARD_READER_CONNECTION_FAILED)
+        track(CARD_READER_CONNECTION_FAILED)
     }
 
     fun trackConnectionSucceeded() {
-        trackerWrapper.track(CARD_READER_CONNECTION_SUCCESS)
+        track(CARD_READER_CONNECTION_SUCCESS)
     }
 
     fun trackPaymentFailed(errorMessage: String, errorType: CardPaymentStatusErrorType = Generic) {
-        trackerWrapper.track(
+        track(
             CARD_PRESENT_COLLECT_PAYMENT_FAILED,
-            this.javaClass.simpleName,
-            errorType.toString(),
-            errorMessage
+            errorType = errorType.toString(),
+            errorDescription = errorMessage
         )
     }
 
     fun trackPaymentSucceeded() {
-        trackerWrapper.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
     }
 
     fun trackPrintReceiptTapped() {
-        trackerWrapper.track(RECEIPT_PRINT_TAPPED)
+        track(RECEIPT_PRINT_TAPPED)
     }
 
     fun trackEmailReceiptTapped() {
-        trackerWrapper.track(RECEIPT_EMAIL_TAPPED)
+        track(RECEIPT_EMAIL_TAPPED)
     }
 
     fun trackEmailReceiptFailed() {
-        trackerWrapper.track(RECEIPT_EMAIL_FAILED)
+        track(RECEIPT_EMAIL_FAILED)
     }
 
     fun trackPrintReceiptCancelled() {
-        trackerWrapper.track(RECEIPT_PRINT_CANCELED)
+        track(RECEIPT_PRINT_CANCELED)
     }
 
     fun trackPrintReceiptFailed() {
-        trackerWrapper.track(RECEIPT_PRINT_FAILED)
+        track(RECEIPT_PRINT_FAILED)
     }
 
     fun trackPrintReceiptSucceeded() {
-        trackerWrapper.track(RECEIPT_PRINT_SUCCESS)
+        track(RECEIPT_PRINT_SUCCESS)
     }
 
     fun trackPaymentCancelled(currentPaymentState: String?) {
-        trackerWrapper.track(
+        track(
             CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
-            this.javaClass.simpleName,
-            null,
-            "User manually cancelled the payment during state $currentPaymentState"
+            errorDescription = "User manually cancelled the payment during state $currentPaymentState"
         )
     }
 
     fun trackCollectPaymentTapped() {
-        trackerWrapper.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
+        track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
     }
 
     companion object {
