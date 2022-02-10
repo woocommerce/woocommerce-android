@@ -201,6 +201,10 @@ class OrderCreationViewModel @Inject constructor(
         retryOrderDraftUpdateTrigger.tryEmit(Unit)
     }
 
+    fun onShippingButtonClicked() {
+        triggerEvent(EditShipping)
+    }
+
     fun onCreateOrderClicked(order: Order) {
         trackCreateOrderButtonClick()
         viewModelScope.launch {

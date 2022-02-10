@@ -141,6 +141,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 )
             )
         )
+        paymentSection.shippingButton.setOnClickListener {
+            viewModel.onShippingButtonClicked()
+        }
     }
 
     private fun LayoutOrderCreationCustomerInfoBinding.changeState() {
