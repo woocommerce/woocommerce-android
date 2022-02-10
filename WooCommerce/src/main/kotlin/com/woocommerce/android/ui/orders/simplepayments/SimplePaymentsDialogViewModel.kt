@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.OrderUpdateStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -29,7 +29,7 @@ import javax.inject.Inject
 class SimplePaymentsDialogViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
-    private val orderStore: WCOrderStore,
+    private val orderUpdateStore: OrderUpdateStore,
     private val networkStatus: NetworkStatus,
     private val orderMapper: OrderMapper
 ) : ScopedViewModel(savedState) {
@@ -58,7 +58,7 @@ class SimplePaymentsDialogViewModel @Inject constructor(
         viewState = viewState.copy(isProgressShowing = true, isDoneButtonEnabled = false)
 
         launch(Dispatchers.IO) {
-            val result = orderStore.postSimplePayment(
+            val result = orderUpdateStore.createSimplePayment(
                 site = selectedSite.get(),
                 amount = viewState.currentPrice.toString(),
                 isTaxable = true
@@ -74,7 +74,7 @@ class SimplePaymentsDialogViewModel @Inject constructor(
                     )
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.simple_payments_creation_error))
                 } else {
-                    viewState = viewState.copy(createdOrder = orderMapper.toAppModel(result.order!!))
+                    viewState = viewState.copy(createdOrder = orderMapper.toAppModel(result.model!!))
                 }
             }
         }

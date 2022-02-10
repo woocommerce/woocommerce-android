@@ -114,7 +114,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         return OnboardingCompleted(preferredPlugin.type, requireNotNull(countryCode))
     }
 
-    private fun saveStatementDescriptor(statementDescriptor: String) {
+    private fun saveStatementDescriptor(statementDescriptor: String?) {
         val site = selectedSite.get()
         appPrefsWrapper.setCardReaderStatementDescriptor(
             statementDescriptor = statementDescriptor,
