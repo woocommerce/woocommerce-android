@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationAddFeeBinding
 import com.woocommerce.android.ui.base.BaseFragment
@@ -59,7 +60,10 @@ class OrderCreationAddFeeFragment :
     private fun setupObservers() {
         addFeeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is SubmitFee -> sharedViewModel.onFeeCreated(event.amount, event.feeType)
+                is SubmitFee -> {
+                    sharedViewModel.onFeeCreated(event.amount, event.feeType)
+                    findNavController().navigateUp()
+                }
             }
         }
     }
