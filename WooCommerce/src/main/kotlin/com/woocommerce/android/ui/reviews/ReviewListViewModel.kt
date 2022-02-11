@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -11,9 +12,7 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.model.RequestResult.ERROR
-import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.RequestResult.*
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType.REVIEW
 import com.woocommerce.android.tools.NetworkStatus
@@ -22,7 +21,6 @@ import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.Ma
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -35,9 +33,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_REVIEW_STATUS
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatusPayload
 import javax.inject.Inject
 
@@ -69,16 +64,33 @@ class ReviewListViewModel @Inject constructor(
         EventBus.getDefault().register(this)
         dispatcher.register(this)
         launch {
-            observeModerationRequest()
+            observeModerationEvents()
+        }
+        launch {
+            observerUIEvents()
         }
 
     }
 
-    override suspend fun observeModerationRequest() {
-        reviewModerationHandler.reviewRequest.collect {
-            it?.let {
-                _moderateProductReview.value = it
-                viewState = viewState.copy(isRefreshing = true)
+    override suspend fun observeModerationEvents() {
+       reviewModerationHandler.reviewModerationActionEvents.collect { event ->
+            when(event){
+                is ReviewModeration.Handler.ReviewModerationActionEvent.RemoveHiddenReviews -> relayRemoveHiddenReviews()
+                is ReviewModeration.Handler.ReviewModerationActionEvent.RevertPendingModerationState -> relayRemovePendingModerationState()
+                is ReviewModeration.Handler.ReviewModerationActionEvent.ReloadReviews-> reloadReviews()
+                is ReviewModeration.Handler.ReviewModerationActionEvent.RemoveProductReviewFromList -> relayRemoveProductReviewFromList(event.remoteReviewId)
+                else -> { }
+            }
+        }
+    }
+
+    suspend fun observerUIEvents() {
+        reviewModerationHandler.reviewModerationUIEvents.collect{ uiEvent ->
+            when(uiEvent){
+                is ReviewModeration.Handler.ReviewModerationUIEvent.ShowUndoUI -> relayUndoModerationEvent(uiEvent.productReviewModerationRequest)
+                is ReviewModeration.Handler.ReviewModerationUIEvent.showRefresh -> showRefresh(uiEvent.isRefreshing)
+                is ReviewModeration.Handler.ReviewModerationUIEvent.ShowResponseError -> showError()
+                else -> {}
             }
         }
     }
@@ -176,40 +188,31 @@ class ReviewListViewModel @Inject constructor(
                 newStatus.toString()
             )
             launch {
-                val request = ProductReviewModerationRequest(review,newStatus)
-                val onReviewChanged = reviewModerationHandler.submitReviewStatusChange(request)
-                if(onReviewChanged.isError) {
-                    triggerEvent(ShowSnackbar(R.string.wc_moderate_review_error))
-                    sendReviewModerationUpdate(ActionStatus.ERROR)
-                }
-                else{
-                    sendReviewModerationUpdate(ActionStatus.SUCCESS)
-                    reloadReviewsFromCache()
-                }
+               reviewModerationHandler.submitReviewStatusChange(payload)
             }
 
             AnalyticsTracker.track(
                 Stat.REVIEW_ACTION,
                 mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString())
             )
-
-            sendReviewModerationUpdate(ActionStatus.SUBMITTED)
         } else {
-            // Network is not connected
+            // Network is not connected  // call this form Reviewhandler
             showOfflineSnack()
-            sendReviewModerationUpdate(ActionStatus.ERROR)
+            launch {
+                reviewModerationHandler.handleOffLineError()
+            }
+
         }
     }
 
-    override fun sendReviewModerationUpdate(newRequestStatus: ActionStatus) {
-        _moderateProductReview.value = _moderateProductReview.value?.apply { actionStatus = newRequestStatus }
-
-        // If the request has been completed, set the event to null to prevent issues later.
-        if (newRequestStatus.isComplete()) {
-            _moderateProductReview.value = null
-        }
+    override fun showRefresh(isRefreshing: Boolean) {
+        //Piggy backing on existing implementation
+        viewState = viewState.copy( isRefreshing = isRefreshing)
     }
-    // endregion
+
+    override fun showError() {
+        triggerEvent(ShowSnackbar(R.string.wc_moderate_review_error))
+    }
 
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
@@ -229,7 +232,7 @@ class ReviewListViewModel @Inject constructor(
         viewState = viewState.copy(
             isSkeletonShown = false,
             isLoadingMore = false,
-            isRefreshing = false
+            //isRefreshing = false
         )
     }
 
@@ -270,6 +273,29 @@ class ReviewListViewModel @Inject constructor(
 
     override fun setPendingModerationRequest(request: ProductReviewModerationRequest?) {
         reviewModerationHandler.pendingModerationRequest = request
+    }
+
+    override fun reloadReviews() {
+        reloadReviewsFromCache()
+    }
+
+    override fun relayUndoModerationEvent(productReviewModerationRequest: ProductReviewModerationRequest) {
+        triggerEvent(ReviewModeration.Processing.ReviewModerationEvent.SetUpModerationUndo(productReviewModerationRequest))
+    }
+
+    override fun relayRemoveHiddenReviews() {
+        triggerEvent(ReviewModeration.Processing.ReviewModerationEvent.RemoveHiddenReviews)
+    }
+
+    override fun relayRemovePendingModerationState() {
+        launch {
+            reviewModerationHandler.resetPendingModerationVariables()
+        }
+
+    }
+
+    override fun relayRemoveProductReviewFromList(remoteReviewId: Long) {
+        triggerEvent(ReviewModeration.Processing.ReviewModerationEvent.RemoveProductReviewFromList(remoteReviewId))
     }
 
 

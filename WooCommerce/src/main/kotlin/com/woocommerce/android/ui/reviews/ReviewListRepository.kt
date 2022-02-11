@@ -7,9 +7,7 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.RequestResult.ERROR
-import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.RequestResult.*
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
@@ -26,19 +24,15 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATIONS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
-import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_REVIEW_STATUS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
 import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload
-import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
-import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
+import org.wordpress.android.fluxc.store.NotificationStore.*
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
 
 class ReviewListRepository @Inject constructor(
@@ -333,7 +327,7 @@ class ReviewListRepository @Inject constructor(
         }
     }
 
-    @SuppressWarnings("unused")
+    /*@SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductReviewChanged(event: OnProductReviewChanged) {
         if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
@@ -356,7 +350,7 @@ class ReviewListRepository @Inject constructor(
                 AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
             }
         }
-    }
+    }*/
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)

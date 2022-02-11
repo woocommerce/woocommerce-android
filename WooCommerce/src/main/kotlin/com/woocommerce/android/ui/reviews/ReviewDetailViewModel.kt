@@ -47,7 +47,7 @@ class ReviewDetailViewModel @Inject constructor(
                     ProductReviewModerationRequest(review, newStatus)
                 )
                 launch {
-                    reviewModerationHandler.postProductReviewModerationRequest(event)
+                    reviewModerationHandler.launchProductReviewModerationRequestFlow(event)
                 }
 
 
