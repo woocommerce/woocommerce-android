@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import android.content.Context
 import android.content.SharedPreferences
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -55,7 +56,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefs = mock {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
-        on(it.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenAnswer { true }
+        on(
+            it.getCardReaderOnboardingStatus(
+                anyInt(),
+                anyLong(),
+                anyLong()
+            )
+        ).thenAnswer { CARD_READER_ONBOARDING_COMPLETED }
     }
     private val editor = mock<SharedPreferences.Editor>()
     private val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
@@ -1141,7 +1148,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
-            whenever(appPrefsWrapper.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenReturn(false)
+            whenever(appPrefsWrapper.getCardReaderOnboardingStatus(anyInt(), anyLong(), anyLong())).thenReturn(
+                CARD_READER_ONBOARDING_NOT_COMPLETED
+            )
             viewModel.start()
 
             // When
@@ -1150,6 +1159,50 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Then
             assertThat(viewModel.event.value)
                 .isInstanceOf(OrderNavigationTarget.ShowCardReaderWelcomeDialog::class.java)
+        }
+
+    @Test
+    fun `given onboarding completed, when user clicks on accept card, then do NOT show welcome dialog`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(appPrefsWrapper.getCardReaderOnboardingStatus(anyInt(), anyLong(), anyLong())).thenReturn(
+                CARD_READER_ONBOARDING_COMPLETED
+            )
+            viewModel.start()
+
+            // When
+            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
+
+            // Then
+            assertThat(viewModel.event.value)
+                .isNotInstanceOf(OrderNavigationTarget.ShowCardReaderWelcomeDialog::class.java)
+        }
+
+    @Test
+    fun `given onboarding pending requirements, when user clicks on accept card, then do NOT show welcome dialog`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(appPrefsWrapper.getCardReaderOnboardingStatus(anyInt(), anyLong(), anyLong())).thenReturn(
+                CARD_READER_ONBOARDING_PENDING
+            )
+            viewModel.start()
+
+            // When
+            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
+
+            // Then
+            assertThat(viewModel.event.value)
+                .isNotInstanceOf(OrderNavigationTarget.ShowCardReaderWelcomeDialog::class.java)
         }
 
     @Test

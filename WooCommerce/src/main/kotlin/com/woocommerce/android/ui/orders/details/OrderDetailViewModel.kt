@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
@@ -218,7 +219,11 @@ final class OrderDetailViewModel @Inject constructor(
             cardReaderManager.readerStatus.value is Connected -> {
                 triggerEvent(StartCardReaderPaymentFlow(order.id))
             }
-            !appPrefs.isCardReaderOnboardingCompleted(site.id, site.siteId, site.selfHostedSiteId) -> {
+            appPrefs.getCardReaderOnboardingStatus(
+                site.id,
+                site.siteId,
+                site.selfHostedSiteId
+            ) == CARD_READER_ONBOARDING_NOT_COMPLETED -> {
                 triggerEvent(ShowCardReaderWelcomeDialog)
             }
             else -> {
