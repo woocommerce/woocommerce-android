@@ -141,6 +141,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 )
             )
         )
+        paymentSection.shippingLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.shippingButton.setOnClickListener {
             viewModel.onShippingButtonClicked()
         }
