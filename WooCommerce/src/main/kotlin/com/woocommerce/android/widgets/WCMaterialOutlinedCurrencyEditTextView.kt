@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ViewMaterialOutlinedCurrencyEdittextBinding
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.util.CurrencyFormatter
 import java.math.BigDecimal
 
@@ -66,6 +67,16 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
 
     fun setValue(currentValue: BigDecimal) {
         binding.currencyEditText.setValue(currentValue)
+    }
+
+    /**
+     * Updates the value only if the current one is different from the supplied one.
+     * Helpful when binding the value to a state in the ViewModel without losing the cursor position
+     */
+    fun setValueIfDifferent(newValue: BigDecimal) {
+        if (newValue isNotEqualTo binding.currencyEditText.value.value) {
+            setValue(newValue)
+        }
     }
 
     fun getCurrencyEditText(): CurrencyEditText = binding.currencyEditText

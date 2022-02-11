@@ -1,8 +1,8 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.model.Order.*
+import com.woocommerce.android.extensions.sumByFloat
+import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import kotlinx.parcelize.IgnoredOnParcel
@@ -11,7 +11,8 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @Parcelize
 data class Order(
@@ -184,7 +185,10 @@ data class Order(
         val methodTitle: String,
         val totalTax: BigDecimal,
         val total: BigDecimal
-    ) : Parcelable
+    ) : Parcelable {
+        constructor(methodId: String, methodTitle: String, total: BigDecimal) :
+            this(0L, methodId, methodTitle, BigDecimal.ZERO, total)
+    }
 
     @Parcelize
     data class TaxLine(

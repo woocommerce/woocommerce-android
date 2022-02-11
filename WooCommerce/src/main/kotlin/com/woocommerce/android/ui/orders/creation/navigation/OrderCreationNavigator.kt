@@ -30,6 +30,9 @@ object OrderCreationNavigator {
             is ShowCreatedOrder ->
                 OrderCreationFormFragmentDirections
                     .actionOrderCreationFragmentToOrderDetailFragment(target.orderId)
+            is EditShipping ->
+                OrderCreationFormFragmentDirections
+                    .actionOrderCreationFragmentToOrderCreationShippingFragment()
         }
 
         navController.navigate(action)
