@@ -75,7 +75,7 @@ class MainSettingsPresenter @Inject constructor(
                 localSiteId = it.id,
                 remoteSiteId = it.siteId,
                 selfHostedSiteId = it.selfHostedSiteId
-            )!= CARD_READER_ONBOARDING_NOT_COMPLETED
-        }  ?: false
+            ) != CARD_READER_ONBOARDING_NOT_COMPLETED
+        } ?: false
     }
 }
