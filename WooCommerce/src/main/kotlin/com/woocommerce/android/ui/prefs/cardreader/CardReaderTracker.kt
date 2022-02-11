@@ -136,6 +136,10 @@ class CardReaderTracker @Inject constructor(
         )
     }
 
+    fun trackDiscoveryTapped() {
+        track(CARD_READER_DISCOVERY_TAPPED)
+    }
+
     fun trackAutoConnectionStarted() {
         track(CARD_READER_AUTO_CONNECTION_STARTED)
     }
@@ -212,6 +216,10 @@ class CardReaderTracker @Inject constructor(
 
     fun trackCollectPaymentTapped() {
         track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
+    }
+
+    fun trackDisconnectTapped() {
+        track(CARD_READER_DISCONNECT_TAPPED)
     }
 
     companion object {
