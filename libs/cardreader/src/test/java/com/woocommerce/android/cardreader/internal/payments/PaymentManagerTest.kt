@@ -120,13 +120,13 @@ class PaymentManagerTest {
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
-        whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(true)
+        whenever(paymentUtils.isSupportedCurrency(any(), any())).thenReturn(true)
     }
 
     // BEGIN - Arguments validation and conversion
     @Test
     fun `when currency not supported, then error emitted`() = runBlockingTest {
-        whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(false)
+        whenever(paymentUtils.isSupportedCurrency(any(), any())).thenReturn(false)
         val result = manager.acceptPayment(createPaymentInfo(currency = NONE_USD_CURRENCY)).single()
 
         assertThat(result).isInstanceOf(PaymentFailed::class.java)
@@ -134,7 +134,7 @@ class PaymentManagerTest {
 
     @Test
     fun `when currency supported, then flow initiated`() = runBlockingTest {
-        whenever(paymentUtils.isSupportedCurrency(any())).thenReturn(true)
+        whenever(paymentUtils.isSupportedCurrency(any(), any())).thenReturn(true)
         val result = manager.acceptPayment(createPaymentInfo())
             .takeUntil(InitializingPayment::class).toList()
 
@@ -534,6 +534,7 @@ class PaymentManagerTest {
         customerId: String? = null,
         orderKey: String? = null,
         statementDescriptor: String? = null,
+        countryCode: String = "US"
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -547,5 +548,6 @@ class PaymentManagerTest {
             customerId = customerId,
             orderKey = orderKey,
             statementDescriptor = statementDescriptor,
+            countryCode = countryCode,
         )
 }

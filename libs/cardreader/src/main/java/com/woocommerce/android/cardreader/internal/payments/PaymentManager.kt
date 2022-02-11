@@ -5,6 +5,7 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
@@ -150,7 +151,10 @@ internal class PaymentManager(
 
     private suspend fun FlowCollector<CardPaymentStatus>.isInvalidState(paymentInfo: PaymentInfo) =
         when {
-            !paymentUtils.isSupportedCurrency(paymentInfo.currency) -> {
+            !paymentUtils.isSupportedCurrency(
+                paymentInfo.currency,
+                CardReaderConfigFactory().getCardReaderConfigFor(paymentInfo.countryCode)
+            ) -> {
                 emit(errorMapper.mapError(errorMessage = "Unsupported currency: $paymentInfo.currency"))
                 true
             }
