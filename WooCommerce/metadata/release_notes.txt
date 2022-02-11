@@ -1,3 +1,1 @@
-- [***] Beta Feature: It's now possible to create Orders from the app. For now only including products, customer notes, shipping and billing addresses.
-- [***] Store admins can now access sites with plugins that have Jetpack Connection Package (e.g. WooCommerce Payments, Jetpack Backup) in the app. These sites do not require Jetpack-the-plugin to connect anymore. Store admins can still install Jetpack-the-plugin from the app through settings or a Jetpack banner. [https://github.com/woocommerce/woocommerce-android/pull/5771]
-
+You’ve been asking to create orders in the app. We’re happy to say we have a sneak peek ready if you want to help us test it out! Head over to settings in the app and turn on the beta feature for Order Creation. Right now, you can add products, notes, and addresses, and future releases will have additional functionality.
