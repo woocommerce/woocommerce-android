@@ -132,7 +132,7 @@
         android:name="com.woocommerce.android.ui.prefs.BetaFeaturesFragment"
         android:label="BetaFeaturesFragment">
         <argument
-            android:name="isCardReaderOnboardingCompleted"
+            android:name="canAcceptInPersonPayments"
             app:argType="boolean" />
     </fragment>
     <fragment

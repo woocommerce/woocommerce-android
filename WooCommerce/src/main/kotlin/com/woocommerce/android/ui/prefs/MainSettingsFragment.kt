@@ -151,7 +151,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionBetaFeatures.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
             val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToBetaFeaturesFragment(
-                isCardReaderOnboardingCompleted = presenter.isCardReaderOnboardingCompleted()
+                canAcceptInPersonPayments = presenter.canAcceptInPersonPayments()
             )
             findNavController().navigateSafely(action)
         }
@@ -288,7 +288,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         mutableListOf<String>().apply {
             add(getString(R.string.beta_features_add_ons))
             add(getString(R.string.beta_features_order_creation))
-            if (presenter.isCardReaderOnboardingCompleted()) {
+            if (presenter.canAcceptInPersonPayments()) {
                 add(getString(R.string.beta_features_simple_payments))
             }
         }

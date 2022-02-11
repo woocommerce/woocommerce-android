@@ -56,7 +56,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     }
 
     private fun FragmentSettingsBetaBinding.bindSimplePaymentToggle() {
-        if (navArgs.isCardReaderOnboardingCompleted) {
+        if (navArgs.canAcceptInPersonPayments) {
             switchSimplePaymentsToggle.show()
             switchSimplePaymentsToggle.isChecked = AppPrefs.isSimplePaymentsEnabled
             switchSimplePaymentsToggle.setOnCheckedChangeListener { switch, isChecked ->

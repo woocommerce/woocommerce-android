@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
@@ -68,13 +69,13 @@ class MainSettingsPresenter @Inject constructor(
         }
     }
 
-    override fun isCardReaderOnboardingCompleted(): Boolean {
+    override fun canAcceptInPersonPayments(): Boolean {
         return selectedSite.getIfExists()?.let {
-            AppPrefs.isCardReaderOnboardingCompleted(
+            AppPrefs.getCardReaderOnboardingStatus(
                 localSiteId = it.id,
                 remoteSiteId = it.siteId,
                 selfHostedSiteId = it.selfHostedSiteId
-            )
-        } ?: false
+            )!= CARD_READER_ONBOARDING_NOT_COMPLETED
+        }  ?: false
     }
 }
