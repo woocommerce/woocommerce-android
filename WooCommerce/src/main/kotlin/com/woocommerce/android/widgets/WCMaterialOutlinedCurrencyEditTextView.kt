@@ -71,8 +71,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
 
     /**
      * Updates the value only if the current one is different from the supplied one.
-     * Helpful when this view is inside a RecyclerView to avoid resetting the cursor position and recursive listener
-     * events.
+     * Helpful when binding the value to a state in the ViewModel without losing the cursor position
      */
     fun setValueIfDifferent(newValue: BigDecimal) {
         if (newValue isNotEqualTo binding.currencyEditText.value.value) {
