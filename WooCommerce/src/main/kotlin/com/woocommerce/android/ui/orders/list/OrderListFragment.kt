@@ -173,8 +173,7 @@ class OrderListFragment :
     }
 
     private fun isSimplePaymentsAvailable(): Boolean {
-        return AppPrefs.isSimplePaymentsEnabled &&
-            viewModel.isCardReaderOnboardingCompleted()
+        return AppPrefs.isSimplePaymentsEnabled && viewModel.canAcceptInPersonPayments()
     }
 
     /**
@@ -524,7 +523,7 @@ class OrderListFragment :
     private fun displaySimplePaymentsWIPCard(show: Boolean) {
         if (!show ||
             feedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED ||
-            !viewModel.isCardReaderOnboardingCompleted()
+            !viewModel.canAcceptInPersonPayments()
         ) {
             binding.simplePaymentsWIPcard.isVisible = false
             return

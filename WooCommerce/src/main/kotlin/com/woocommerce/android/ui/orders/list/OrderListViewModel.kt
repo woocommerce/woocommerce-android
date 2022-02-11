@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
 import androidx.paging.PagedList
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -400,13 +401,13 @@ class OrderListViewModel @Inject constructor(
         loadOrders()
     }
 
-    fun isCardReaderOnboardingCompleted(): Boolean {
+    fun canAcceptInPersonPayments(): Boolean {
         return selectedSite.getIfExists()?.let {
-            appPrefsWrapper.isCardReaderOnboardingCompleted(
+            appPrefsWrapper.getCardReaderOnboardingStatus(
                 localSiteId = it.id,
                 remoteSiteId = it.siteId,
                 selfHostedSiteId = it.selfHostedSiteId
-            )
+            ) != CARD_READER_ONBOARDING_NOT_COMPLETED
         } ?: false
     }
 
