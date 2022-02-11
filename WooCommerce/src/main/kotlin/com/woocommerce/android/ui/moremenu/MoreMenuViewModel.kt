@@ -14,7 +14,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
-import com.woocommerce.android.ui.reviews.ReviewListRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +27,6 @@ class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
-    private val reviewListRepository: ReviewListRepository,
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     private var _moreMenuViewState = MutableLiveData<MoreMenuViewState>()
