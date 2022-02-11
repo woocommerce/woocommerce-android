@@ -84,4 +84,3 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
         return getString(R.string.order_creation_shipping_title_add)
     }
 }
-
