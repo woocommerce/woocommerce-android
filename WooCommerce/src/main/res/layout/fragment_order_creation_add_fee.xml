@@ -17,8 +17,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-        android:id="@+id/fee_value"
+    <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+        android:id="@+id/fee_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"

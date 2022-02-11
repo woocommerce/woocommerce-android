@@ -10,9 +10,10 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationAddFeeBinding
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel.SubmitFee
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel.UpdateFee
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,7 +42,7 @@ class OrderCreationAddFeeFragment :
                 addFeeViewModel.onDoneSelected()
                 true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -51,15 +52,15 @@ class OrderCreationAddFeeFragment :
         feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
             addFeeViewModel.onPercentageSwitchChanged(isChecked)
         }
-        feeValue.setOnTextChangedListener {
-            addFeeViewModel.onFeeInputValueChanged(it?.toString().orEmpty())
+        feeEditText.value.observe(viewLifecycleOwner) {
+            addFeeViewModel.onFeeInputValueChanged(it)
         }
     }
 
-    private fun setupObservers() {
+    private fun FragmentOrderCreationAddFeeBinding.setupObservers() {
         addFeeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is SubmitFee -> {
+                is UpdateFee -> {
                     sharedViewModel.onNewFeeSubmitted(event.amount, event.feeType)
                     findNavController().navigateUp()
                 }

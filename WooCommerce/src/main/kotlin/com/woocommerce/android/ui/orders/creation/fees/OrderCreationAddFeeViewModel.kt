@@ -26,23 +26,20 @@ class OrderCreationAddFeeViewModel @Inject constructor(
         }
 
     fun onDoneSelected() {
-        // TODO handle possible exception from parsing string to bigDecimal
-        viewState.feeInputValue?.let {
-            triggerEvent(SubmitFee(it.toBigDecimal(), currentFeeType))
-        }
+        triggerEvent(UpdateFee(viewState.feeInputValue, currentFeeType))
     }
 
     fun onPercentageSwitchChanged(isChecked: Boolean) {
         viewState = viewState.copy(isPercentageSelected = isChecked)
     }
 
-    fun onFeeInputValueChanged(inputValue: String) {
+    fun onFeeInputValueChanged(inputValue: BigDecimal) {
         viewState = viewState.copy(feeInputValue = inputValue)
     }
 
     @Parcelize
     data class ViewState(
-        val feeInputValue: String? = null,
+        val feeInputValue: BigDecimal = BigDecimal.ZERO,
         val isPercentageSelected: Boolean = false
     ) : Parcelable
 
@@ -50,7 +47,7 @@ class OrderCreationAddFeeViewModel @Inject constructor(
         AMOUNT, PERCENTAGE
     }
 
-    data class SubmitFee(
+    data class UpdateFee(
         val amount: BigDecimal,
         val feeType: FeeType
     ) : Event()
