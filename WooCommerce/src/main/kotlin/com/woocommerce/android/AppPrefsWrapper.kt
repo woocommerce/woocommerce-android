@@ -16,9 +16,6 @@ class AppPrefsWrapper @Inject constructor() {
         url: String
     ) = AppPrefs.setReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId, url)
 
-    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        AppPrefs.isCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
-
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -40,6 +37,12 @@ class AppPrefsWrapper @Inject constructor() {
             preferredPlugin
         )
     }
+
+    fun getCardReaderOnboardingStatus(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+    ) = AppPrefs.getCardReaderOnboardingStatus(localSiteId, remoteSiteId, selfHostedSiteId)
 
     fun setCardReaderStatementDescriptor(
         statementDescriptor: String?,

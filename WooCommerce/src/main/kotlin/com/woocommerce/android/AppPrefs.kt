@@ -433,15 +433,6 @@ object AppPrefs {
         )
     }
 
-    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): Boolean {
-        val completedStatus = getCardReaderOnboardingStatus(
-            localSiteId,
-            remoteSiteId,
-            selfHostedSiteId
-        )
-        return completedStatus == CARD_READER_ONBOARDING_COMPLETED
-    }
-
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
