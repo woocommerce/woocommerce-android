@@ -6,6 +6,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationShippingBinding
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.util.CurrencyFormatter
@@ -22,14 +23,37 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentOrderCreationShippingBinding.bind(view)
-        binding.amountEditText.initView(
+        binding.initUi()
+        setupObservers(binding)
+    }
+
+    private fun FragmentOrderCreationShippingBinding.initUi() {
+        amountEditText.initView(
             currency = sharedViewModel.currentDraft.currency,
             decimals = viewModel.currencyDecimals,
             currencyFormatter = currencyFormatter
         )
+        amountEditText.value.observe(viewLifecycleOwner) { amount ->
+            viewModel.onAmountEdited(amount)
+        }
+        nameEditText.setOnTextChangedListener {
+            viewModel.onNameEdited(it?.toString().orEmpty())
+        }
+    }
+
+    private fun setupObservers(binding: FragmentOrderCreationShippingBinding) {
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.amount.takeIfNotEqualTo(old?.amount) { amount ->
+                binding.amountEditText.setValueIfDifferent(amount)
+            }
+            new.name?.takeIfNotEqualTo(old?.name) { name ->
+                binding.nameEditText.setTextIfDifferent(name)
+            }
+        }
     }
 
     override fun getFragmentTitle(): String {
         return getString(R.string.order_creation_shipping_title_add)
     }
 }
+
