@@ -232,7 +232,6 @@ enum class PluginType(val minSupportedVersion: String) {
 sealed class CardReaderOnboardingState(
     open val preferredPlugin: PluginType? = null
 ) {
-
     data class OnboardingCompleted(override val preferredPlugin: PluginType, val countryCode: String) :
         CardReaderOnboardingState()
 
