@@ -82,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2250-fa78866db6b43dade6fb1d43d09c7cace192cb98'
+    fluxCVersion = '2286-b99004a0593b7b3baea613f87d5497aef9eca985'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
