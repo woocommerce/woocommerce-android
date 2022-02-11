@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader
 
+import androidx.annotation.VisibleForTesting
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
@@ -7,19 +9,27 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import javax.inject.Inject
 
 class CardReaderTracker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val selectedSite: SelectedSite,
 ) {
-    private fun track(
+    @VisibleForTesting
+    fun track(
         stat: Stat,
         properties: MutableMap<String, Any> = mutableMapOf(),
         errorType: String? = null,
         errorDescription: String? = null,
     ) {
+        addPreferredPluginSlugProperty(properties)
+
         val isError = errorType != null || errorDescription != null
         if (isError) {
             trackerWrapper.track(
@@ -31,6 +41,20 @@ class CardReaderTracker @Inject constructor(
             )
         } else {
             trackerWrapper.track(stat, properties)
+        }
+    }
+
+    private fun addPreferredPluginSlugProperty(properties: MutableMap<String, Any>) {
+        val site = selectedSite.get()
+        val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
+        properties["plugin_slug"] = when (preferredPlugin) {
+            WOOCOMMERCE_PAYMENTS -> "woocommerce-payments"
+            STRIPE_EXTENSION_GATEWAY -> "woocommerce-gateway-stripe"
+            null -> "unknown"
         }
     }
 
@@ -105,20 +129,13 @@ class CardReaderTracker @Inject constructor(
         requiredUpdate: Boolean,
         errorDescription: String? = null,
     ) {
-        val eventPropertiesMap = errorDescription?.let { description ->
-            hashMapOf<String, Any>(
-                AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
-                AnalyticsTracker.KEY_ERROR_CONTEXT to this.javaClass.simpleName,
-                AnalyticsTracker.KEY_ERROR_DESC to description
-            )
-        } ?: run {
-            hashMapOf<String, Any>(
-                AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE
-            )
-        }
+        val eventPropertiesMap = hashMapOf<String, Any>(
+            AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
+        )
         track(
             event,
-            eventPropertiesMap
+            eventPropertiesMap,
+            errorDescription = errorDescription
         )
     }
 

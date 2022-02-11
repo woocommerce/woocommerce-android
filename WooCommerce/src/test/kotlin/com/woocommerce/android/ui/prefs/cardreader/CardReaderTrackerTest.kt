@@ -1,17 +1,24 @@
 package com.woocommerce.android.ui.prefs.cardreader
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.*
+import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class CardReaderTrackerTest : BaseUnitTest() {
@@ -22,14 +29,24 @@ class CardReaderTrackerTest : BaseUnitTest() {
     }
 
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val cardReaderTracker = CardReaderTracker(trackerWrapper)
+    private val appPrefsWrapper: AppPrefsWrapper = mock() {
+        on(it.getCardReaderPreferredPlugin(anyInt(), anyLong(), anyLong())).thenReturn(WOOCOMMERCE_PAYMENTS)
+    }
+    private val selectedSite: SelectedSite = mock {
+        on(it.get()).thenReturn(SiteModel())
+    }
+
+    private val cardReaderTracker = CardReaderTracker(trackerWrapper, appPrefsWrapper, selectedSite)
 
     @Test
     fun `when track learn more invoked, then CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackOnboardingLearnMoreTapped()
 
-            verify(trackerWrapper).track(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED),
+                any()
+            )
         }
 
     @Test
@@ -38,7 +55,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.GenericError)
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "generic_error")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED), check { assertThat(it["reason"]).isEqualTo("generic_error") }
             )
         }
 
@@ -48,18 +65,24 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StoreCountryNotSupported(""))
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "country_not_supported")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("country_not_supported") }
             )
         }
 
     @Test
     fun `when onboarding state StripeAccountCountryNotSupported, then reason=account_country_not_supported tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountCountryNotSupported(""))
+            cardReaderTracker.trackOnboardingState(
+                CardReaderOnboardingState.StripeAccountCountryNotSupported(
+                    mock(),
+                    ""
+                )
+            )
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "account_country_not_supported")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("account_country_not_supported") }
             )
         }
 
@@ -69,7 +92,8 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.WcpayNotInstalled)
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "wcpay_not_installed")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("wcpay_not_installed") }
             )
         }
 
@@ -79,7 +103,8 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.WcpayNotActivated)
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "wcpay_not_activated")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("wcpay_not_activated") }
             )
         }
 
@@ -91,8 +116,8 @@ class CardReaderTrackerTest : BaseUnitTest() {
             )
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "wcpay_unsupported_version")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("wcpay_unsupported_version") }
             )
         }
 
@@ -104,8 +129,8 @@ class CardReaderTrackerTest : BaseUnitTest() {
             )
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "stripe_extension_unsupported_version")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("stripe_extension_unsupported_version") }
             )
         }
 
@@ -117,8 +142,8 @@ class CardReaderTrackerTest : BaseUnitTest() {
             )
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "wcpay_not_setup")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("wcpay_not_setup") }
             )
         }
 
@@ -130,8 +155,8 @@ class CardReaderTrackerTest : BaseUnitTest() {
             )
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "stripe_extension_not_setup")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("stripe_extension_not_setup") }
             )
         }
 
@@ -143,8 +168,8 @@ class CardReaderTrackerTest : BaseUnitTest() {
             )
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "account_pending_requirements")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("account_pending_requirements") }
             )
         }
 
@@ -156,50 +181,53 @@ class CardReaderTrackerTest : BaseUnitTest() {
             )
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "account_pending_requirements")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("account_pending_requirements") }
             )
         }
 
     @Test
     fun `when onboarding state StripeAccountOverdueRequirement, then reason=account_overdue_requirements tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountOverdueRequirement)
+            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()))
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "account_overdue_requirements")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("account_overdue_requirements") }
             )
         }
 
     @Test
     fun `when onboarding state StripeAccountUnderReview, then reason=account_under_review tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountUnderReview)
+            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountUnderReview(mock()))
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "account_under_review")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("account_under_review") }
             )
         }
 
     @Test
     fun `when onboarding state StripeAccountRejected, then reason=account_rejected tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountRejected)
+            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountRejected(mock()))
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to "account_rejected")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("account_rejected") }
             )
         }
 
     @Test
     fun `when onboarding PluginInTestModeWithLiveStripeAccount, then reason=wcpay_in_test_mode_with_live_account`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
+            cardReaderTracker
+                .trackOnboardingState(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()))
 
             verify(trackerWrapper).track(
-                CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
-                mapOf("reason" to "wcpay_in_test_mode_with_live_account")
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("wcpay_in_test_mode_with_live_account") }
             )
         }
 
@@ -231,10 +259,8 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackSoftwareUpdateStarted(true)
 
             verify(trackerWrapper).track(
-                CARD_READER_SOFTWARE_UPDATE_STARTED,
-                hashMapOf(
-                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE
-                )
+                eq(CARD_READER_SOFTWARE_UPDATE_STARTED),
+                any()
             )
         }
 
@@ -244,10 +270,10 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackSoftwareUpdateStarted(requiredUpdate = true)
 
             verify(trackerWrapper).track(
-                CARD_READER_SOFTWARE_UPDATE_STARTED,
-                hashMapOf(
-                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE
-                )
+                any(),
+                properties = check {
+                    assertThat(it[AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE]).isEqualTo(REQUIRED_UPDATE)
+                }
             )
         }
 
@@ -257,10 +283,10 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackSoftwareUpdateStarted(requiredUpdate = false)
 
             verify(trackerWrapper).track(
-                CARD_READER_SOFTWARE_UPDATE_STARTED,
-                hashMapOf(
-                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE
-                )
+                any(),
+                check {
+                    assertThat(it[AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE]).isEqualTo(OPTIONAL_UPDATE)
+                }
             )
         }
 
@@ -271,12 +297,11 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackSoftwareUpdateFailed(Failed(mock(), dummyMessage), requiredUpdate = false)
 
             verify(trackerWrapper).track(
-                CARD_READER_SOFTWARE_UPDATE_FAILED,
-                hashMapOf(
-                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE,
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderTracker",
-                    AnalyticsTracker.KEY_ERROR_DESC to dummyMessage
-                )
+                eq(CARD_READER_SOFTWARE_UPDATE_FAILED),
+                any(),
+                any(),
+                eq(null),
+                eq(dummyMessage)
             )
         }
 
@@ -286,8 +311,11 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackSoftwareUpdateCancelled(false)
 
             verify(trackerWrapper).track(
-                eq(CARD_READER_SOFTWARE_UPDATE_FAILED),
-                any()
+                stat = eq(CARD_READER_SOFTWARE_UPDATE_FAILED),
+                properties = any(),
+                errorContext = any(),
+                errorType = anyOrNull(),
+                errorDescription = any()
             )
         }
 
@@ -297,12 +325,13 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackSoftwareUpdateCancelled(requiredUpdate = true)
 
             verify(trackerWrapper).track(
-                CARD_READER_SOFTWARE_UPDATE_FAILED,
-                hashMapOf(
-                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to REQUIRED_UPDATE,
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderTracker",
-                    AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
-                )
+                any(),
+                properties = check {
+                    assertThat(it[AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE]).isEqualTo(REQUIRED_UPDATE)
+                },
+                errorContext = any(),
+                errorType = anyOrNull(),
+                errorDescription = any()
             )
         }
 
@@ -312,12 +341,13 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackSoftwareUpdateCancelled(requiredUpdate = false)
 
             verify(trackerWrapper).track(
-                CARD_READER_SOFTWARE_UPDATE_FAILED,
-                hashMapOf(
-                    AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to OPTIONAL_UPDATE,
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to "CardReaderTracker",
-                    AnalyticsTracker.KEY_ERROR_DESC to "User manually cancelled the flow"
-                )
+                any(),
+                properties = check {
+                    assertThat(it[AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE]).isEqualTo(OPTIONAL_UPDATE)
+                },
+                errorContext = any(),
+                errorType = anyOrNull(),
+                errorDescription = any()
             )
         }
 
@@ -326,7 +356,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackAutoConnectionStarted()
 
-            verify(trackerWrapper).track(CARD_READER_AUTO_CONNECTION_STARTED)
+            verify(trackerWrapper).track(eq(CARD_READER_AUTO_CONNECTION_STARTED), any())
         }
 
     @Test
@@ -336,7 +366,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackReaderDiscoveryFailed(dummyErrorMgs)
 
             verify(trackerWrapper).track(
-                eq(CARD_READER_DISCOVERY_FAILED), anyOrNull(), anyOrNull(), anyOrNull(), eq(dummyErrorMgs)
+                eq(CARD_READER_DISCOVERY_FAILED), any(), any(), anyOrNull(), eq(dummyErrorMgs)
             )
         }
 
@@ -347,7 +377,23 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackReadersDiscovered(dummyCount)
 
             verify(trackerWrapper)
-                .track(CARD_READER_DISCOVERY_READER_DISCOVERED, mapOf("reader_count" to dummyCount))
+                .track(
+                    eq(CARD_READER_DISCOVERY_READER_DISCOVERED),
+                    any()
+                )
+        }
+
+    @Test
+    fun `when reader found, then reader_count tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val dummyCount = 99
+            cardReaderTracker.trackReadersDiscovered(dummyCount)
+
+            verify(trackerWrapper)
+                .track(
+                    any(),
+                    check { assertThat(it["reader_count"]).isEqualTo(dummyCount) }
+                )
         }
 
     @Test
@@ -357,11 +403,11 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackFetchingLocationFailed(dummyErrorMgs)
 
             verify(trackerWrapper).track(
-                CARD_READER_LOCATION_FAILURE,
-                mutableMapOf(),
-                "CardReaderTracker",
-                null,
-                dummyErrorMgs
+                eq(CARD_READER_LOCATION_FAILURE),
+                any(),
+                eq("CardReaderTracker"),
+                eq(null),
+                eq(dummyErrorMgs)
             )
         }
 
@@ -370,7 +416,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackFetchingLocationSucceeded()
 
-            verify(trackerWrapper).track(CARD_READER_LOCATION_SUCCESS)
+            verify(trackerWrapper).track(eq(CARD_READER_LOCATION_SUCCESS), any())
         }
 
     @Test
@@ -380,7 +426,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.trackPaymentFailed(dummyMessage)
 
             verify(trackerWrapper).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), anyOrNull(), anyOrNull(), anyOrNull(), eq(dummyMessage)
+                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), anyOrNull(), eq(dummyMessage)
             )
         }
 
@@ -389,7 +435,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackPaymentSucceeded()
 
-            verify(trackerWrapper).track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+            verify(trackerWrapper).track(eq(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS), any())
         }
 
     @Test
@@ -397,28 +443,28 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackPrintReceiptTapped()
 
-            verify(trackerWrapper).track(RECEIPT_PRINT_TAPPED)
+            verify(trackerWrapper).track(eq(RECEIPT_PRINT_TAPPED), any())
         }
 
     @Test
     fun `when OS accepts the print request, then RECEIPT_PRINT_SUCCESS tracked`() {
         cardReaderTracker.trackPrintReceiptSucceeded()
 
-        verify(trackerWrapper).track(RECEIPT_PRINT_SUCCESS)
+        verify(trackerWrapper).track(eq(RECEIPT_PRINT_SUCCESS), any())
     }
 
     @Test
     fun `when OS refuses the print request, then RECEIPT_PRINT_FAILED tracked`() {
         cardReaderTracker.trackPrintReceiptFailed()
 
-        verify(trackerWrapper).track(RECEIPT_PRINT_FAILED)
+        verify(trackerWrapper).track(eq(RECEIPT_PRINT_FAILED), any())
     }
 
     @Test
     fun `when manually cancels the print request, then RECEIPT_PRINT_CANCELED tracked`() {
         cardReaderTracker.trackPrintReceiptCancelled()
 
-        verify(trackerWrapper).track(RECEIPT_PRINT_CANCELED)
+        verify(trackerWrapper).track(eq(RECEIPT_PRINT_CANCELED), any())
     }
 
     @Test
@@ -426,7 +472,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackEmailReceiptTapped()
 
-            verify(trackerWrapper).track(RECEIPT_EMAIL_TAPPED)
+            verify(trackerWrapper).track(eq(RECEIPT_EMAIL_TAPPED), any())
         }
 
     @Test
@@ -437,8 +483,8 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
-                anyOrNull(),
-                anyOrNull(),
+                any(),
+                any(),
                 anyOrNull(),
                 eq("User manually cancelled the payment during state $currentPaymentState")
             )
@@ -449,6 +495,48 @@ class CardReaderTrackerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackCollectPaymentTapped()
 
-            verify(trackerWrapper).track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
+            verify(trackerWrapper).track(eq(CARD_PRESENT_COLLECT_PAYMENT_TAPPED), any())
+        }
+
+    @Test
+    fun `given wcpay is preferred plugin, when event tracked, then wcpay plugin slug tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(WOOCOMMERCE_PAYMENTS)
+
+            cardReaderTracker.track(mock())
+
+            verify(trackerWrapper).track(
+                any(),
+                check { assertThat(it["plugin_slug"]).isEqualTo("woocommerce-payments") }
+            )
+        }
+
+    @Test
+    fun `given stripe is preferred plugin, when event tracked, then stripe plugin slug tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(STRIPE_EXTENSION_GATEWAY)
+
+            cardReaderTracker.track(mock())
+
+            verify(trackerWrapper).track(
+                any(),
+                check { assertThat(it["plugin_slug"]).isEqualTo("woocommerce-gateway-stripe") }
+            )
+        }
+
+    @Test
+    fun `given preferred plugin not stored, when event tracked, then unknown slug tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(null)
+
+            cardReaderTracker.track(mock())
+
+            verify(trackerWrapper).track(
+                any(),
+                check { assertThat(it["plugin_slug"]).isEqualTo("unknown") }
+            )
         }
 }
