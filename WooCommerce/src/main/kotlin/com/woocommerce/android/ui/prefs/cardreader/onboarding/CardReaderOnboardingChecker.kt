@@ -51,11 +51,14 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         return fetchOnboardingState()
             .also {
-                when (it) {
-                    is OnboardingCompleted -> updateOnboardingCompletedStatus(it.pluginType)
-                    is StripeAccountPendingRequirement -> updateOnboardingPendingStatus(it.pluginType)
-                    else -> updateOnboardingCompletedStatus(null)
-                }
+                updateSharedPreferences(
+                    when (it) {
+                        is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED
+                        is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING
+                        else -> CARD_READER_ONBOARDING_NOT_COMPLETED
+                    },
+                    it.preferredPlugin,
+                )
             }
     }
 
@@ -193,23 +196,14 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != COMPLETE
 
-    private fun updateOnboardingCompletedStatus(pluginType: PluginType?) {
+    private fun updateSharedPreferences(status: CardReaderOnboardingStatus, preferredPlugin: PluginType?) {
         val site = selectedSite.get()
-        appPrefsWrapper.setCardReaderOnboardingCompleted(
+        appPrefsWrapper.setCardReaderOnboardingStatusAndPreferredPlugin(
             localSiteId = site.id,
             remoteSiteId = site.siteId,
             selfHostedSiteId = site.selfHostedSiteId,
-            pluginType
-        )
-    }
-
-    private fun updateOnboardingPendingStatus(pluginType: PluginType?) {
-        val site = selectedSite.get()
-        appPrefsWrapper.setCardReaderOnboardingPending(
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId,
-            pluginType
+            status,
+            preferredPlugin,
         )
     }
 }
