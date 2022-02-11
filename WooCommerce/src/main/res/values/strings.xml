@@ -1665,7 +1665,7 @@
     <string name="checking_email">Checking email</string>
     <string name="email_invalid">Enter a valid email address</string>
     <string name="forgot_password">Lost your password?</string>
-    <string name="error_generic">An error occurred</string>
+    <string name="error_generic">Something went wrong</string>
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="invalid_site_url_message">Check that the site URL entered is valid</string>
     <string name="xmlrpc_missing_method_error">Couldn\'t connect. Required XML-RPC methods are missing on the server.</string>
