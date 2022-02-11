@@ -653,7 +653,7 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
-    fun showMoreMenuBadge(show: Boolean) {
+    private fun showMoreMenuBadge(show: Boolean) {
         binding.bottomNav.showMoreMenuBadge(show)
     }
 
