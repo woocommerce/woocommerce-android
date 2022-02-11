@@ -4,6 +4,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -18,6 +19,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 import javax.inject.Inject
 
 private const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
@@ -57,7 +59,8 @@ class OrderCreationRepository @Inject constructor(
             },
             shippingAddress = order.shippingAddress.toShippingAddressModel(),
             billingAddress = order.billingAddress.toBillingAddressModel(),
-            customerNote = order.customerNote
+            customerNote = order.customerNote,
+            shippingLines = order.shippingLines.map { it.toDataModel() }
         )
         val result = if (order.id == 0L) {
             orderUpdateStore.createOrder(selectedSite.get(), request)
@@ -92,7 +95,8 @@ class OrderCreationRepository @Inject constructor(
             },
             shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
-            customerNote = order.customerNote
+            customerNote = order.customerNote,
+            shippingLines = order.shippingLines.map { it.toDataModel() }
         )
 
         val result = if (order.id == 0L) {
@@ -123,4 +127,11 @@ class OrderCreationRepository @Inject constructor(
             }
         }
     }
+
+    private fun ShippingLine.toDataModel() = WCShippingLine(
+        id = itemId.takeIf { it != 0L },
+        methodId = methodId,
+        methodTitle = methodTitle.takeIf { it.isNotEmpty() },
+        total = total.toPlainString()
+    )
 }
