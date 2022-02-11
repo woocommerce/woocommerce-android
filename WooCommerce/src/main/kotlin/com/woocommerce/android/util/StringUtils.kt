@@ -109,10 +109,7 @@ object StringUtils {
      * Returns true if the passed string is an Automattic/A8c email
      */
     fun isA8cEmail(email: String?): Boolean {
-        if (email != null && (AUTOMATTIC in email.lowercase() || A8C in email.lowercase())) {
-            return true
-        }
-        return false
+        return email != null && (AUTOMATTIC in email.lowercase() || A8C in email.lowercase())
     }
 
     /**
