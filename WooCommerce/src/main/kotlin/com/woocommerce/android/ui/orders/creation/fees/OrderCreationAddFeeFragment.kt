@@ -14,13 +14,17 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel.UpdateFee
+import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCreationAddFeeFragment :
     BaseFragment(R.layout.fragment_order_creation_add_fee) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val addFeeViewModel by viewModels<OrderCreationAddFeeViewModel>()
+
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,11 +53,16 @@ class OrderCreationAddFeeFragment :
     override fun getFragmentTitle() = getString(R.string.order_creation_add_fee)
 
     private fun FragmentOrderCreationAddFeeBinding.bindViews() {
-        feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            addFeeViewModel.onPercentageSwitchChanged(isChecked)
-        }
+        feeEditText.initView(
+            currency = sharedViewModel.currentDraft.currency,
+            decimals = addFeeViewModel.currencyDecimals,
+            currencyFormatter = currencyFormatter
+        )
         feeEditText.value.observe(viewLifecycleOwner) {
             addFeeViewModel.onFeeInputValueChanged(it)
+        }
+        feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            addFeeViewModel.onPercentageSwitchChanged(isChecked)
         }
     }
 
