@@ -4,6 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_OFF
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_ON
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
@@ -95,6 +98,12 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     fun onChargeTaxesChanged(chargeTaxes: Boolean) {
+        val properties = if (chargeTaxes) {
+            mapOf(KEY_STATE to VALUE_STATE_ON)
+        } else {
+            mapOf(KEY_STATE to VALUE_STATE_OFF)
+        }
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_TAXES_TOGGLED, properties)
         updateViewState(chargeTaxes = chargeTaxes)
     }
 
@@ -103,6 +112,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     fun onCustomerNoteChanged(customerNote: String) {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_NOTE_ADDED)
         viewState = viewState.copy(customerNote = customerNote)
     }
 
@@ -137,11 +147,14 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     private suspend fun Flow<UpdateOrderResult>.collectUpdate() {
-        // TODO nbradbury tracks
         collect { result ->
             when (result) {
                 is OptimisticUpdateResult -> {
                     if (result.event.isError) {
+                        AnalyticsTracker.track(
+                            AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED,
+                            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY)
+                        )
                         result.event.error?.let {
                             WooLog.e(WooLog.T.ORDERS, "Simple payment optimistic update failed with ${it.message}")
                         }
@@ -153,6 +166,10 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 }
                 is UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
+                        AnalyticsTracker.track(
+                            AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED,
+                            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
+                        )
                         result.event.error?.let {
                             WooLog.e(WooLog.T.ORDERS, "Simple payment remote update failed with ${it.message}")
                         }

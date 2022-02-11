@@ -158,8 +158,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Simple Payments
         SIMPLE_PAYMENTS_FLOW_STARTED,
         SIMPLE_PAYMENTS_FLOW_COMPLETED,
+        SIMPLE_PAYMENTS_FLOW_COLLECT,
         SIMPLE_PAYMENTS_FLOW_FAILED,
         SIMPLE_PAYMENTS_FLOW_CANCELED,
+        SIMPLE_PAYMENTS_FLOW_NOTE_ADDED,
+        SIMPLE_PAYMENTS_FLOW_TAXES_TOGGLED,
         SETTINGS_BETA_FEATURES_SIMPLE_PAYMENTS_TOGGLED,
 
         // -- Order Detail
@@ -756,6 +759,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SOFTWARE_UPDATE_TYPE = "software_update_type"
         const val KEY_SUBJECT = "subject"
         const val KEY_DATE_RANGE = "date_range"
+        const val KEY_SOURCE = "source"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -816,8 +820,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
+        const val VALUE_STATE_ON = "on"
+        const val VALUE_STATE_OFF = "off"
 
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
+        const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
+        const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
+        const val VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT = "amount"
+        const val VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY = "summary"
+        const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
@@ -861,6 +872,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_REFUND_TYPE = "method"
         const val KEY_REFUND_METHOD = "gateway"
         const val KEY_AMOUNT = "amount"
+
+        const val KEY_PAYMENT_METHOD = "payment_method"
 
         const val KEY_IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_conntected"
         const val KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS = "active_jetpack_connection_plugins"
