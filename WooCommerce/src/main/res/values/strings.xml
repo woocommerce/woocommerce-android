@@ -304,7 +304,6 @@
     <string name="orderlist_filters_title">Filtered Orders</string>
     <string name="orderlist_simple_payments_wip_title">Take payments from your device!</string>
     <string name="orderlist_simple_payments_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
@@ -1468,8 +1467,6 @@
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
-    <string name="settings_enable_simple_payments_teaser_title">Simple payments</string>
-    <string name="settings_enable_simple_payments_teaser_message">Test out creating orders with minimal information as we get ready to launch</string>
     <string name="settings_enable_order_creation_teaser_title">Order Creation</string>
     <string name="settings_enable_order_creation_teaser_message">Test out creating orders with full details as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
