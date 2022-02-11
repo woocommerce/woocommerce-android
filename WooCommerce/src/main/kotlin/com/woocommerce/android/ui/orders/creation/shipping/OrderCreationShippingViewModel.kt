@@ -34,9 +34,15 @@ class OrderCreationShippingViewModel @Inject constructor(
         viewState = viewState.copy(name = name)
     }
 
+    fun onDoneButtonClicked() {
+        triggerEvent(UpdateShipping(viewState.amount, viewState.name.orEmpty()))
+    }
+
     @Parcelize
     data class ViewState(
         val amount: BigDecimal = BigDecimal.ZERO,
         val name: String? = null
     ) : Parcelable
+
+    data class UpdateShipping(val amount: BigDecimal, val name: String) : MultiLiveEvent.Event()
 }
