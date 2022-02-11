@@ -58,6 +58,15 @@ class OrderCreationAddFeeFragment :
     }
 
     private fun FragmentOrderCreationAddFeeBinding.setupObservers() {
+        addFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.feeInputValue.takeIfNotEqualTo(old?.feeInputValue) {
+                feeEditText.setValueIfDifferent(it)
+            }
+            new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) {
+                feeTypeSwitch.isChecked = it
+            }
+        }
+
         addFeeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is UpdateFee -> {
