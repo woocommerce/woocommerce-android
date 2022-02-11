@@ -11,16 +11,16 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType.REVIEW
-import com.woocommerce.android.push.NotificationMessageHandler
-import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
+import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
+import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Fail
+import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -49,8 +49,7 @@ class ReviewListViewModel @Inject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
     private val reviewRepository: ReviewListRepository,
-    private val notificationHandler: NotificationMessageHandler,
-    private val unseenReviewsCountHandler: UnseenReviewsCountHandler
+    private val markAllReviewsAsSeen: MarkAllReviewsAsSeen
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val TAG = "ReviewListViewModel"
@@ -134,17 +133,12 @@ class ReviewListViewModel @Inject constructor(
             triggerEvent(MarkAllAsRead(ActionStatus.SUBMITTED))
 
             launch {
-                when (reviewRepository.markAllProductReviewsAsRead()) {
-                    ERROR -> {
+                when (markAllReviewsAsSeen()) {
+                    Fail -> {
                         triggerEvent(MarkAllAsRead(ActionStatus.ERROR))
                         triggerEvent(ShowSnackbar(R.string.wc_mark_all_read_error))
                     }
-                    NO_ACTION_NEEDED, SUCCESS -> {
-                        // Remove all active notifications from the system bar
-                        notificationHandler.removeNotificationsOfTypeFromSystemsBar(
-                            REVIEW, selectedSite.get().siteId
-                        )
-                        unseenReviewsCountHandler.clearUnseenCount()
+                    Success -> {
                         triggerEvent(MarkAllAsRead(ActionStatus.SUCCESS))
                         triggerEvent(ShowSnackbar(R.string.wc_mark_all_read_success))
                         _reviewList.value = reviewRepository.getCachedProductReviews()
@@ -152,7 +146,6 @@ class ReviewListViewModel @Inject constructor(
                 }
             }
         } else {
-            // Network is not connected
             showOfflineSnack()
         }
     }
