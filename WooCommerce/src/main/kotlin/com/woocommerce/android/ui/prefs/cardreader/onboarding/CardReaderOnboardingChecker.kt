@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.annotation.VisibleForTesting
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.extensions.semverCompareTo
@@ -101,17 +103,24 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         saveStatementDescriptor(paymentAccount.statementDescriptor)
 
-        if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(paymentAccount.country)
+        if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(
+            preferredPlugin.type,
+            paymentAccount.country
+        )
         if (!isPluginSetupCompleted(paymentAccount)) return SetupNotCompleted(preferredPlugin.type)
-        if (isPluginInTestModeWithLiveStripeAccount(paymentAccount)) return PluginInTestModeWithLiveStripeAccount
-        if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview
-        if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement
+        if (isPluginInTestModeWithLiveStripeAccount(paymentAccount)) return PluginInTestModeWithLiveStripeAccount(
+            preferredPlugin.type
+        )
+        if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview(preferredPlugin.type)
+        if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement(
+            preferredPlugin.type
+        )
         if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
             paymentAccount.currentDeadline,
             preferredPlugin.type,
             requireNotNull(countryCode)
         )
-        if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected
+        if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
 
         return OnboardingCompleted(preferredPlugin.type, requireNotNull(countryCode))
@@ -220,8 +229,12 @@ enum class PluginType(val minSupportedVersion: String) {
     STRIPE_EXTENSION_GATEWAY(SUPPORTED_STRIPE_EXTENSION_VERSION)
 }
 
-sealed class CardReaderOnboardingState {
-    data class OnboardingCompleted(val pluginType: PluginType, val countryCode: String) : CardReaderOnboardingState()
+sealed class CardReaderOnboardingState(
+    open val preferredPlugin: PluginType? = null
+) {
+
+    data class OnboardingCompleted(override val preferredPlugin: PluginType, val countryCode: String) :
+        CardReaderOnboardingState()
 
     /**
      * Store is not located in one of the supported countries.
@@ -231,27 +244,26 @@ sealed class CardReaderOnboardingState {
     /**
      * WCPay plugin is not installed on the store.
      */
-    object WcpayNotInstalled : CardReaderOnboardingState()
+    object WcpayNotInstalled : CardReaderOnboardingState(preferredPlugin = WOOCOMMERCE_PAYMENTS)
 
     /**
      * Plugin is installed on the store, but the version is out-dated and doesn't contain required APIs
      * for card present payments.
      */
-    data class PluginUnsupportedVersion(val pluginType: PluginType) : CardReaderOnboardingState()
+    data class PluginUnsupportedVersion(override val preferredPlugin: PluginType) : CardReaderOnboardingState()
 
     /**
      * WCPay is installed on the store but is not activated.
      */
-    object WcpayNotActivated : CardReaderOnboardingState()
+    object WcpayNotActivated : CardReaderOnboardingState(preferredPlugin = WOOCOMMERCE_PAYMENTS)
 
     /**
      * Plugin is installed and activated but requires to be setup first.
      */
-    data class SetupNotCompleted(val pluginType: PluginType) : CardReaderOnboardingState()
+    data class SetupNotCompleted(override val preferredPlugin: PluginType) : CardReaderOnboardingState()
 
     /**
-     * The connected Stripe account has not been reviewed by Stripe yet. This is a temporary state and
-     * the user needs to wait.
+     * Both plugins are installed and activated on the site. IPP are not supported in this state.
      */
     object WcpayAndStripeActivated : CardReaderOnboardingState()
 
@@ -259,13 +271,14 @@ sealed class CardReaderOnboardingState {
      * This is a bit special case: WCPay is set to "dev mode" but the connected Stripe account is in live mode.
      * Connecting to a reader or accepting payments is not supported in this state.
      */
-    object PluginInTestModeWithLiveStripeAccount : CardReaderOnboardingState()
+    data class PluginInTestModeWithLiveStripeAccount(override val preferredPlugin: PluginType) :
+        CardReaderOnboardingState()
 
     /**
      * The connected Stripe account has not been reviewed by Stripe yet. This is a temporary state and
      * the user needs to wait.
      */
-    object StripeAccountUnderReview : CardReaderOnboardingState()
+    data class StripeAccountUnderReview(override val preferredPlugin: PluginType) : CardReaderOnboardingState()
 
     /**
      * There are some pending requirements on the connected Stripe account. The merchant still has some time before the
@@ -274,7 +287,7 @@ sealed class CardReaderOnboardingState {
      */
     data class StripeAccountPendingRequirement(
         val dueDate: Long?,
-        val pluginType: PluginType,
+        override val preferredPlugin: PluginType,
         val countryCode: String,
     ) : CardReaderOnboardingState()
 
@@ -282,18 +295,19 @@ sealed class CardReaderOnboardingState {
      * There are some overdue requirements on the connected Stripe account. Connecting to a reader or accepting
      * payments is not supported in this state.
      */
-    object StripeAccountOverdueRequirement : CardReaderOnboardingState()
+    data class StripeAccountOverdueRequirement(override val preferredPlugin: PluginType) : CardReaderOnboardingState()
 
     /**
      * The Stripe account was rejected by Stripe. This can happen for example when the account is flagged as fraudulent
      * or the merchant violates the terms of service
      */
-    object StripeAccountRejected : CardReaderOnboardingState()
+    data class StripeAccountRejected(override val preferredPlugin: PluginType) : CardReaderOnboardingState()
 
     /**
      * The Stripe account is attached to an address in one of the unsupported countries.
      */
-    data class StripeAccountCountryNotSupported(val countryCode: String?) : CardReaderOnboardingState()
+    data class StripeAccountCountryNotSupported(override val preferredPlugin: PluginType, val countryCode: String?) :
+        CardReaderOnboardingState()
 
     /**
      * Generic error - for example, one of the requests failed.

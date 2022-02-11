@@ -49,21 +49,21 @@ class CardReaderTracker @Inject constructor(
         when (state) {
             is CardReaderOnboardingState.OnboardingCompleted -> null
             is CardReaderOnboardingState.StoreCountryNotSupported -> "country_not_supported"
-            CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
+            is CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
             is CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
-            CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
-            CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
+            is CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
+            is CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
             is CardReaderOnboardingState.StripeAccountCountryNotSupported -> "account_country_not_supported"
-            CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
-            CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
-            CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
+            is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
+            is CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
+            is CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
             is CardReaderOnboardingState.SetupNotCompleted ->
-                "${getPluginNameReasonPrefix(state.pluginType)}_not_setup"
+                "${getPluginNameReasonPrefix(state.preferredPlugin)}_not_setup"
             is CardReaderOnboardingState.PluginUnsupportedVersion ->
-                "${getPluginNameReasonPrefix(state.pluginType)}_unsupported_version"
-            CardReaderOnboardingState.GenericError -> "generic_error"
-            CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
-            CardReaderOnboardingState.WcpayAndStripeActivated -> "wcpay_and_stripe_installed_and_activated"
+                "${getPluginNameReasonPrefix(state.preferredPlugin)}_unsupported_version"
+            is CardReaderOnboardingState.GenericError -> "generic_error"
+            is CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
+            is CardReaderOnboardingState.WcpayAndStripeActivated -> "wcpay_and_stripe_installed_and_activated"
         }
 
     private fun getPluginNameReasonPrefix(pluginType: PluginType): String {
