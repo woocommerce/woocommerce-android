@@ -42,6 +42,8 @@ class OrderCreationAddFeeViewModel @Inject constructor(
 
     fun onPercentageSwitchChanged(isChecked: Boolean) {
         viewState = viewState.copy(isPercentageSelected = isChecked)
+        if(isChecked) triggerEvent(DisplayPercentageMode)
+        else triggerEvent(DisplayAmountMode)
     }
 
     fun onFeeInputValueChanged(inputValue: BigDecimal) {
@@ -62,4 +64,7 @@ class OrderCreationAddFeeViewModel @Inject constructor(
         val amount: BigDecimal,
         val feeType: FeeType
     ) : Event()
+
+    object DisplayPercentageMode : Event()
+    object DisplayAmountMode : Event()
 }
