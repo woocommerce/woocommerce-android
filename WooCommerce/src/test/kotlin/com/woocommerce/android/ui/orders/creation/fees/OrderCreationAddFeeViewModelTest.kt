@@ -58,4 +58,60 @@ class OrderCreationAddFeeViewModelTest : BaseUnitTest() {
                 assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.PERCENTAGE)
             } ?: fail("Last event should be of UpdateFee type")
     }
+
+    @Test
+    fun `when submitting fee as amount, then trigger UpdateFee with expected data`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        sut.onFeeAmountChanged(BigDecimal(123))
+        sut.onFeePercentageChanged("25")
+        sut.onPercentageSwitchChanged(isChecked = false)
+
+        sut.onDoneSelected()
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? UpdateFee }
+            ?.let { updateFeeEvent ->
+                assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal(123))
+                assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.AMOUNT)
+            } ?: fail("Last event should be of UpdateFee type")
+    }
+
+    @Test
+    fun `when submitting fee with initial state, then trigger UpdateFee as AMOUNT with zero`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        sut.onDoneSelected()
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? UpdateFee }
+            ?.let { updateFeeEvent ->
+                assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal.ZERO)
+                assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.AMOUNT)
+            } ?: fail("Last event should be of UpdateFee type")
+    }
+
+    @Test
+    fun `when submitting fee with invalid percentage value, then trigger UpdateFee with last valid value`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        sut.onFeePercentageChanged("25")
+        sut.onFeePercentageChanged("9@%@(&*%@@%*SSF-08a")
+        sut.onPercentageSwitchChanged(isChecked = true)
+
+        sut.onDoneSelected()
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? UpdateFee }
+            ?.let { updateFeeEvent ->
+                assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal(25))
+                assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.PERCENTAGE)
+            } ?: fail("Last event should be of UpdateFee type")
+    }
 }
