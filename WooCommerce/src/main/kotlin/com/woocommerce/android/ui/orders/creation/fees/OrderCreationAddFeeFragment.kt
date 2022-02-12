@@ -44,10 +44,7 @@ class OrderCreationAddFeeFragment :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_done -> {
-                addFeeViewModel.onDoneSelected()
-                true
-            }
+            R.id.menu_done -> addFeeViewModel.onDoneSelected().let { true }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -63,6 +60,9 @@ class OrderCreationAddFeeFragment :
         feeAmountEditText.value.observe(viewLifecycleOwner) {
             addFeeViewModel.onFeeAmountChanged(it)
         }
+        feePercentageEditText.setOnTextChangedListener {
+            addFeeViewModel.onFeePercentageChanged(it?.toString().orEmpty())
+        }
         feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
             addFeeViewModel.onPercentageSwitchChanged(isChecked)
         }
@@ -72,6 +72,9 @@ class OrderCreationAddFeeFragment :
         addFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.feeAmount.takeIfNotEqualTo(old?.feeAmount) {
                 feeAmountEditText.setValueIfDifferent(it)
+            }
+            new.feePercentage.takeIfNotEqualTo(old?.feePercentage) {
+                feePercentageEditText.setTextIfDifferent(it.toString())
             }
             new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) {
                 feeTypeSwitch.isChecked = it
