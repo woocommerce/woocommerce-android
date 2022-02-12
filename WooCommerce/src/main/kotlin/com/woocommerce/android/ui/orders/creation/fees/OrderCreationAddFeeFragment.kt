@@ -28,6 +28,7 @@ class OrderCreationAddFeeFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         with(FragmentOrderCreationAddFeeBinding.bind(view)) {
             bindViews()
             setupObservers()
@@ -53,12 +54,12 @@ class OrderCreationAddFeeFragment :
     override fun getFragmentTitle() = getString(R.string.order_creation_add_fee)
 
     private fun FragmentOrderCreationAddFeeBinding.bindViews() {
-        feeEditText.initView(
+        feeAmountEditText.initView(
             currency = sharedViewModel.currentDraft.currency,
             decimals = addFeeViewModel.currencyDecimals,
             currencyFormatter = currencyFormatter
         )
-        feeEditText.value.observe(viewLifecycleOwner) {
+        feeAmountEditText.value.observe(viewLifecycleOwner) {
             addFeeViewModel.onFeeInputValueChanged(it)
         }
         feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -69,7 +70,7 @@ class OrderCreationAddFeeFragment :
     private fun FragmentOrderCreationAddFeeBinding.setupObservers() {
         addFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.feeInputValue.takeIfNotEqualTo(old?.feeInputValue) {
-                feeEditText.setValueIfDifferent(it)
+                feeAmountEditText.setValueIfDifferent(it)
             }
             new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) {
                 feeTypeSwitch.isChecked = it
