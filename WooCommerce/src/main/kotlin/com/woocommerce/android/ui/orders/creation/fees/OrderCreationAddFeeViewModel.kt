@@ -30,14 +30,20 @@ class OrderCreationAddFeeViewModel @Inject constructor(
             ?.currencyDecimalNumber
             ?: DEFAULT_DECIMAL_PRECISION
 
-    private val currentFeeType
+    private val activeFeeType
         get() = when (viewState.isPercentageSelected) {
             true -> PERCENTAGE
             false -> AMOUNT
         }
 
+    private val activeFeeValue
+        get() = when (activeFeeType) {
+            AMOUNT -> viewState.feeAmount
+            PERCENTAGE -> viewState.feePercentage
+        }
+
     fun onDoneSelected() {
-        triggerEvent(UpdateFee(viewState.feeAmount, currentFeeType))
+        triggerEvent(UpdateFee(activeFeeValue, activeFeeType))
     }
 
     fun onPercentageSwitchChanged(isChecked: Boolean) {
