@@ -32,7 +32,8 @@ class OrderCreationAddFeeFragment :
         setHasOptionsMenu(true)
         with(FragmentOrderCreationAddFeeBinding.bind(view)) {
             bindViews()
-            setupObservers()
+            observeEvents()
+            observeViewStateData()
         }
     }
 
@@ -68,19 +69,7 @@ class OrderCreationAddFeeFragment :
         }
     }
 
-    private fun FragmentOrderCreationAddFeeBinding.setupObservers() {
-        addFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.feeAmount.takeIfNotEqualTo(old?.feeAmount) {
-                feeAmountEditText.setValueIfDifferent(it)
-            }
-            new.feePercentage.takeIfNotEqualTo(old?.feePercentage) {
-                feePercentageEditText.setTextIfDifferent(it.toString())
-            }
-            new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) {
-                feeTypeSwitch.isChecked = it
-            }
-        }
-
+    private fun FragmentOrderCreationAddFeeBinding.observeEvents() {
         addFeeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is UpdateFee -> {
@@ -95,6 +84,20 @@ class OrderCreationAddFeeFragment :
                     feeAmountEditText.isVisible = true
                     feePercentageEditText.isVisible = false
                 }
+            }
+        }
+    }
+
+    private fun FragmentOrderCreationAddFeeBinding.observeViewStateData() {
+        addFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.feeAmount.takeIfNotEqualTo(old?.feeAmount) {
+                feeAmountEditText.setValueIfDifferent(it)
+            }
+            new.feePercentage.takeIfNotEqualTo(old?.feePercentage) {
+                feePercentageEditText.setTextIfDifferent(it.toString())
+            }
+            new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) {
+                feeTypeSwitch.isChecked = it
             }
         }
     }
