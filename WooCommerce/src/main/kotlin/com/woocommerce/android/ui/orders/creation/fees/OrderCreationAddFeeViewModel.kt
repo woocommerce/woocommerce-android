@@ -48,7 +48,7 @@ class OrderCreationAddFeeViewModel @Inject constructor(
 
     fun onPercentageSwitchChanged(isChecked: Boolean) {
         viewState = viewState.copy(isPercentageSelected = isChecked)
-        if(isChecked) triggerEvent(DisplayPercentageMode)
+        if (isChecked) triggerEvent(DisplayPercentageMode)
         else triggerEvent(DisplayAmountMode)
     }
 
