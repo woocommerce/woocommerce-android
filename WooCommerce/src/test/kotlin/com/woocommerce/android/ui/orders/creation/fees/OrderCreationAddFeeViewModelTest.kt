@@ -114,4 +114,24 @@ class OrderCreationAddFeeViewModelTest : BaseUnitTest() {
                 assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.PERCENTAGE)
             } ?: fail("Last event should be of UpdateFee type")
     }
+
+    @Test
+    fun `when percentage switch is deactivated, then trigger DisplayAmountMode event`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        sut.onPercentageSwitchChanged(isChecked = false)
+
+        assertThat(lastReceivedEvent).isInstanceOf(DisplayAmountMode::class.java)
+    }
+
+    @Test
+    fun `when percentage switch is activated, then trigger DisplayPercentageMode event`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        sut.onPercentageSwitchChanged(isChecked = true)
+
+        assertThat(lastReceivedEvent).isInstanceOf(DisplayPercentageMode::class.java)
+    }
 }
