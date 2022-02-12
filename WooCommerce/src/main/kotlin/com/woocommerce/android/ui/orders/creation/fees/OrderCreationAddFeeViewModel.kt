@@ -50,9 +50,16 @@ class OrderCreationAddFeeViewModel @Inject constructor(
         viewState = viewState.copy(feeAmount = feeAmount)
     }
 
+    fun onFeePercentageChanged(feePercentage: String) {
+        feePercentage.toBigDecimalOrNull()?.let {
+            viewState = viewState.copy(feePercentage = it)
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val feeAmount: BigDecimal = BigDecimal.ZERO,
+        val feePercentage: BigDecimal = BigDecimal.ZERO,
         val isPercentageSelected: Boolean = false
     ) : Parcelable
 
@@ -60,11 +67,10 @@ class OrderCreationAddFeeViewModel @Inject constructor(
         AMOUNT, PERCENTAGE
     }
 
+    object DisplayPercentageMode : Event()
+    object DisplayAmountMode : Event()
     data class UpdateFee(
         val amount: BigDecimal,
         val feeType: FeeType
     ) : Event()
-
-    object DisplayPercentageMode : Event()
-    object DisplayAmountMode : Event()
 }
