@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -13,7 +14,7 @@ import com.woocommerce.android.databinding.FragmentOrderCreationAddFeeBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel.UpdateFee
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel.*
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -60,7 +61,7 @@ class OrderCreationAddFeeFragment :
             currencyFormatter = currencyFormatter
         )
         feeAmountEditText.value.observe(viewLifecycleOwner) {
-            addFeeViewModel.onFeeInputValueChanged(it)
+            addFeeViewModel.onFeeAmountChanged(it)
         }
         feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
             addFeeViewModel.onPercentageSwitchChanged(isChecked)
@@ -69,7 +70,7 @@ class OrderCreationAddFeeFragment :
 
     private fun FragmentOrderCreationAddFeeBinding.setupObservers() {
         addFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.feeInputValue.takeIfNotEqualTo(old?.feeInputValue) {
+            new.feeAmount.takeIfNotEqualTo(old?.feeAmount) {
                 feeAmountEditText.setValueIfDifferent(it)
             }
             new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) {
@@ -82,6 +83,14 @@ class OrderCreationAddFeeFragment :
                 is UpdateFee -> {
                     sharedViewModel.onNewFeeSubmitted(event.amount, event.feeType)
                     findNavController().navigateUp()
+                }
+                is DisplayPercentageMode -> {
+                    feeAmountEditText.isVisible = false
+                    feePercentageEditText.isVisible = true
+                }
+                is DisplayAmountMode -> {
+                    feeAmountEditText.isVisible = true
+                    feePercentageEditText.isVisible = false
                 }
             }
         }

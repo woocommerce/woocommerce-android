@@ -37,7 +37,7 @@ class OrderCreationAddFeeViewModel @Inject constructor(
         }
 
     fun onDoneSelected() {
-        triggerEvent(UpdateFee(viewState.feeInputValue, currentFeeType))
+        triggerEvent(UpdateFee(viewState.feeAmount, currentFeeType))
     }
 
     fun onPercentageSwitchChanged(isChecked: Boolean) {
@@ -46,13 +46,13 @@ class OrderCreationAddFeeViewModel @Inject constructor(
         else triggerEvent(DisplayAmountMode)
     }
 
-    fun onFeeInputValueChanged(inputValue: BigDecimal) {
-        viewState = viewState.copy(feeInputValue = inputValue)
+    fun onFeeAmountChanged(feeAmount: BigDecimal) {
+        viewState = viewState.copy(feeAmount = feeAmount)
     }
 
     @Parcelize
     data class ViewState(
-        val feeInputValue: BigDecimal = BigDecimal.ZERO,
+        val feeAmount: BigDecimal = BigDecimal.ZERO,
         val isPercentageSelected: Boolean = false
     ) : Parcelable
 
