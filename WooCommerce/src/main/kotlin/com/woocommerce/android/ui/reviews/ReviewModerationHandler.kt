@@ -1,10 +1,14 @@
 package com.woocommerce.android.ui.reviews
 
 import com.woocommerce.android.model.ActionStatus
+import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent
 import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationUIEvent
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatusPayload
 import javax.inject.Inject
@@ -13,49 +17,47 @@ import javax.inject.Singleton
 
 @Singleton
 class ReviewModerationHandler @Inject constructor(
-    private val productStore:WCProductStore
+    private val productStore:WCProductStore,
+    private val selectedSite:SelectedSite,
+    private val networkStatus: NetworkStatus
 ): ReviewModeration.Handler {
 
     private val _reviewModerationActionEvents =
-        MutableStateFlow<ReviewModerationActionEvent>(ReviewModerationActionEvent.Idle)
+        MutableSharedFlow<ReviewModerationActionEvent>(0)
 
     private val _reviewModerationUIEvents =
-        MutableStateFlow<ReviewModerationUIEvent>(ReviewModerationUIEvent.Idle)
+        MutableSharedFlow<ReviewModerationUIEvent>(0)
 
-    override val reviewModerationActionEvents: StateFlow<ReviewModerationActionEvent> = _reviewModerationActionEvents
+    override val reviewModerationActionEvents: SharedFlow<ReviewModerationActionEvent> = _reviewModerationActionEvents.asSharedFlow()
 
-    override val reviewModerationUIEvents: StateFlow<ReviewModerationUIEvent> = _reviewModerationUIEvents
-
-    override var pendingModerationRemoteReviewId: Long? = null
-
-    override var pendingModerationNewStatus: String? = null
+    override val reviewModerationUIEvents: SharedFlow<ReviewModerationUIEvent> = _reviewModerationUIEvents.asSharedFlow()
 
     override var pendingModerationRequest: ProductReviewModerationRequest? = null
+
 
     override suspend fun launchProductReviewModerationRequestFlow(event:OnRequestModerateReviewEvent) {
         pendingModerationRequest = event.request
         processReviewModerationActionStatus(event.request)
     }
 
-    private fun processReviewModerationActionStatus(request:ProductReviewModerationRequest){
+    private suspend fun processReviewModerationActionStatus(request:ProductReviewModerationRequest){
         with(request){
             when(actionStatus){
                 ActionStatus.PENDING -> {
-                    _reviewModerationUIEvents.value = ReviewModerationUIEvent.ShowUndoUI(request)
+                    emitUiEvent(ReviewModerationUIEvent.ShowUndoUI(request))
                     if (newStatus == ProductReviewStatus.SPAM || newStatus == ProductReviewStatus.TRASH) {
-                        _reviewModerationActionEvents.value = ReviewModerationActionEvent.RemoveProductReviewFromList(productReview.remoteId)
-
+                        emitActionEvent(ReviewModerationActionEvent.RemoveProductReviewFromList(productReview.remoteId))
                     }
+                    emitUiEvent(ReviewModerationUIEvent.ShowRefresh(true))
                 }
                 ActionStatus.SUCCESS -> {
-                    _reviewModerationActionEvents.value = ReviewModerationActionEvent.RemoveHiddenReviews
-                    resetPendingModerationVariables()
-                    _reviewModerationActionEvents.value = ReviewModerationActionEvent.ReloadReviews
+                    emitActionEvent(ReviewModerationActionEvent.RemoveHiddenReviews)
+                    pendingModerationRequest = null
+                    emitActionEvent(ReviewModerationActionEvent.ReloadReviews)
                 }
                 ActionStatus.ERROR -> {
-                    _reviewModerationActionEvents.value =
-                        ReviewModerationActionEvent.RevertPendingModerationState
-                    _reviewModerationUIEvents.value = ReviewModerationUIEvent.ShowResponseError
+                    emitUiEvent(ReviewModerationUIEvent.ShowResponseError)
+                    undoReviewModerationAndResetState()
                 }
                 else -> { /* do nothing */
                 }
@@ -70,25 +72,45 @@ class ReviewModerationHandler @Inject constructor(
 
 
 
-    override suspend fun submitReviewStatusChange(payload: UpdateProductReviewStatusPayload) {
-        pendingModerationRemoteReviewId = payload.remoteReviewId
-        pendingModerationNewStatus = payload.newStatus
-        _reviewModerationUIEvents.value = ReviewModerationUIEvent.showRefresh(true)
-        val reviewModerationUpdateResponse = productStore.updateProductReviewStatus(payload)
-        _reviewModerationUIEvents.value = ReviewModerationUIEvent.showRefresh(false)
-        if(reviewModerationUpdateResponse.isError) {
-            pendingModerationRequest?.apply { actionStatus = ActionStatus.ERROR }
+    override suspend fun submitReviewStatusChange(
+        review: ProductReview ,
+        newStatus: ProductReviewStatus) {
+        if (networkStatus.isConnected()) {
+            val payload = UpdateProductReviewStatusPayload(
+                selectedSite.get(),
+                review.remoteId,
+                newStatus.toString()
+            )
+            emitUiEvent(ReviewModerationUIEvent.ShowRefresh(true))
+            val reviewModerationUpdateResponse = productStore.updateProductReviewStatus(payload)
+            emitUiEvent(ReviewModerationUIEvent.ShowRefresh(false))
+            if (reviewModerationUpdateResponse.isError) {
+                pendingModerationRequest?.apply { actionStatus = ActionStatus.ERROR }
+            } else {
+                pendingModerationRequest?.apply { actionStatus = ActionStatus.SUCCESS }
+            }
+            pendingModerationRequest?.let { processReviewModerationActionStatus(it) }
+        } else {
+            emitUiEvent(ReviewModerationUIEvent.ShowRefresh(true))
         }
-        else {
-            pendingModerationRequest?.apply { actionStatus = ActionStatus.SUCCESS }
-        }
-        pendingModerationRequest?.let  { processReviewModerationActionStatus(it) }
     }
 
-    override fun resetPendingModerationVariables() {
-        pendingModerationNewStatus = null
-        pendingModerationRemoteReviewId = null
+
+    override suspend fun undoReviewModerationAndResetState() {
+        val newStatus = pendingModerationRequest?.newStatus
+        val status = ProductReviewStatus.fromString(newStatus.toString())
+        if (status == ProductReviewStatus.SPAM || status == ProductReviewStatus.TRASH) {
+            emitActionEvent(ReviewModerationActionEvent.ResetModeration)
+        }
         pendingModerationRequest = null
+    }
+
+    private suspend fun emitUiEvent(event:ReviewModerationUIEvent){
+       _reviewModerationUIEvents.emit(event)
+    }
+
+    private suspend fun emitActionEvent(event:ReviewModerationActionEvent){
+       _reviewModerationActionEvents.emit(event)
     }
 
 

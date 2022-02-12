@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -24,17 +24,17 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatusPayload
 import javax.inject.Inject
+
 
 @OpenClassOnDebug
 @HiltViewModel
@@ -50,10 +50,6 @@ class ReviewListViewModel @Inject constructor(
         private const val TAG = "ReviewListViewModel"
     }
 
-
-    private val _moderateProductReview = SingleLiveEvent<ProductReviewModerationRequest?>()
-    val moderateProductReview: LiveData<ProductReviewModerationRequest?> = _moderateProductReview
-
     private val _reviewList = MutableLiveData<List<ProductReview>>()
     val reviewList: LiveData<List<ProductReview>> = _reviewList
 
@@ -63,36 +59,29 @@ class ReviewListViewModel @Inject constructor(
     init {
         EventBus.getDefault().register(this)
         dispatcher.register(this)
-        launch {
-            observeModerationEvents()
-        }
-        launch {
-            observerUIEvents()
-        }
+        observeModerationEvents()
 
     }
 
-    override suspend fun observeModerationEvents() {
-       reviewModerationHandler.reviewModerationActionEvents.collect { event ->
+    override fun observeModerationEvents() {
+       reviewModerationHandler.reviewModerationActionEvents.onEach{ event ->
             when(event){
                 is ReviewModeration.Handler.ReviewModerationActionEvent.RemoveHiddenReviews -> relayRemoveHiddenReviews()
-                is ReviewModeration.Handler.ReviewModerationActionEvent.RevertPendingModerationState -> relayRemovePendingModerationState()
                 is ReviewModeration.Handler.ReviewModerationActionEvent.ReloadReviews-> reloadReviews()
                 is ReviewModeration.Handler.ReviewModerationActionEvent.RemoveProductReviewFromList -> relayRemoveProductReviewFromList(event.remoteReviewId)
-                else -> { }
-            }
-        }
-    }
+                is ReviewModeration.Handler.ReviewModerationActionEvent.ResetModeration -> relayResetModeration()
 
-    suspend fun observerUIEvents() {
-        reviewModerationHandler.reviewModerationUIEvents.collect{ uiEvent ->
+            }
+        }.launchIn(viewModelScope)
+        reviewModerationHandler.reviewModerationUIEvents.onEach{ uiEvent ->
             when(uiEvent){
                 is ReviewModeration.Handler.ReviewModerationUIEvent.ShowUndoUI -> relayUndoModerationEvent(uiEvent.productReviewModerationRequest)
-                is ReviewModeration.Handler.ReviewModerationUIEvent.showRefresh -> showRefresh(uiEvent.isRefreshing)
-                is ReviewModeration.Handler.ReviewModerationUIEvent.ShowResponseError -> showError()
-                else -> {}
+                is ReviewModeration.Handler.ReviewModerationUIEvent.ShowRefresh -> showRefresh(uiEvent.isRefreshing)
+                is ReviewModeration.Handler.ReviewModerationUIEvent.ShowResponseError -> showReviewModeratiopnUpdateError()
+                is ReviewModeration.Handler.ReviewModerationUIEvent.ShowOffLineError->showOfflineError()
+
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     override fun onCleared() {
@@ -180,29 +169,15 @@ class ReviewListViewModel @Inject constructor(
     }
 
     // region Review Moderation
+
     override fun submitReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus) {
-        if (networkStatus.isConnected()) {
-            val payload = UpdateProductReviewStatusPayload(
-                selectedSite.get(),
-                review.remoteId,
-                newStatus.toString()
-            )
-            launch {
-               reviewModerationHandler.submitReviewStatusChange(payload)
-            }
-
-            AnalyticsTracker.track(
-                Stat.REVIEW_ACTION,
-                mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString())
-            )
-        } else {
-            // Network is not connected  // call this form Reviewhandler
-            showOfflineSnack()
-            launch {
-                reviewModerationHandler.handleOffLineError()
-            }
-
+        launch {
+            reviewModerationHandler.submitReviewStatusChange(review,newStatus)
         }
+        AnalyticsTracker.track(
+            Stat.REVIEW_ACTION,
+            mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString())
+        )
     }
 
     override fun showRefresh(isRefreshing: Boolean) {
@@ -210,7 +185,7 @@ class ReviewListViewModel @Inject constructor(
         viewState = viewState.copy( isRefreshing = isRefreshing)
     }
 
-    override fun showError() {
+    override fun showReviewModeratiopnUpdateError() {
         triggerEvent(ShowSnackbar(R.string.wc_moderate_review_error))
     }
 
@@ -232,7 +207,7 @@ class ReviewListViewModel @Inject constructor(
         viewState = viewState.copy(
             isSkeletonShown = false,
             isLoadingMore = false,
-            //isRefreshing = false
+            isRefreshing = false
         )
     }
 
@@ -259,16 +234,15 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
-    override fun resetPendingModerationVariables() {
-        reviewModerationHandler.resetPendingModerationVariables()
-    }
-
     override fun getPendingModerationRequest(): ProductReviewModerationRequest? {
         return reviewModerationHandler.pendingModerationRequest
     }
 
     override fun getPendingModerationNewStatus():String? {
-        return reviewModerationHandler.pendingModerationNewStatus
+        reviewModerationHandler.pendingModerationRequest?.let{
+            return it.newStatus.toString()
+        }
+        return null
     }
 
     override fun setPendingModerationRequest(request: ProductReviewModerationRequest?) {
@@ -280,22 +254,35 @@ class ReviewListViewModel @Inject constructor(
     }
 
     override fun relayUndoModerationEvent(productReviewModerationRequest: ProductReviewModerationRequest) {
-        triggerEvent(ReviewModeration.Processing.ReviewModerationEvent.SetUpModerationUndo(productReviewModerationRequest))
+        triggerEvent(ReviewModeration.Processing.ReviewModerationProcessingEvent.SetUpModerationUndo(productReviewModerationRequest))
     }
 
     override fun relayRemoveHiddenReviews() {
-        triggerEvent(ReviewModeration.Processing.ReviewModerationEvent.RemoveHiddenReviews)
+        triggerEvent(ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveHiddenReviews)
     }
 
     override fun relayRemovePendingModerationState() {
-        launch {
-            reviewModerationHandler.resetPendingModerationVariables()
-        }
-
+        TODO("Not yet implemented")
     }
 
+
     override fun relayRemoveProductReviewFromList(remoteReviewId: Long) {
-        triggerEvent(ReviewModeration.Processing.ReviewModerationEvent.RemoveProductReviewFromList(remoteReviewId))
+        triggerEvent(ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveProductReviewFromList(remoteReviewId))
+    }
+
+    override fun showOfflineError() {
+        showOfflineSnack()
+    }
+
+    override fun relayResetModeration() {
+        triggerEvent(ReviewModeration.Processing.ReviewModerationProcessingEvent.UndoReviewModeration)
+    }
+
+    override fun relayUndoReviewModeration() {
+        launch {
+            reviewModerationHandler.undoReviewModerationAndResetState()
+        }
+
     }
 
 

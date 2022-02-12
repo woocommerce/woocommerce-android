@@ -29,9 +29,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -191,17 +188,22 @@ class ReviewListFragment :
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.notifsLoadMoreProgress.isVisible = it }
         }
 
+
+
         viewModel.event.observe(
             viewLifecycleOwner,
             Observer { event ->
                 when (event) {
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
-                    is ReviewModeration.Processing.ReviewModerationEvent.SetUpModerationUndo -> setUpModerationUndo(event.request)
-                    is ReviewModeration.Processing.ReviewModerationEvent.RemoveProductReviewFromList-> removeProductReviewFromList(event.remoteReviewId)
-                    is ReviewModeration.Processing.ReviewModerationEvent.RemoveHiddenReviews -> {
-                        removeHiddenreviews()
-                        resetPendingModerationVariables()
+                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.SetUpModerationUndo -> setUpModerationUndo(event.request)
+                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveProductReviewFromList-> removeProductReviewFromList(event.remoteReviewId)
+                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveHiddenReviews -> {
+                        removeHiddenReviews()
+                        resetPendingModerationState()//TODO make this separate
+                    }
+                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.UndoReviewModeration -> {
+                        undoReviewModeration()
                     }
                 }
             }
@@ -294,7 +296,8 @@ class ReviewListFragment :
 
                 // Add the notification back to the list
                 //Calling this directly from UI
-                revertPendingModerationState(request.newStatus)
+                viewModel.relayUndoReviewModeration()
+                AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
             }
 
             val callback = object : Snackbar.Callback() {
@@ -321,30 +324,25 @@ class ReviewListFragment :
     }
 
 
+
     override fun removeProductReviewFromList(remoteReviewId: Long) {
         reviewsAdapter.hideReviewWithId(remoteReviewId)
     }
 
-    override fun revertPendingModerationState(newStatus: ProductReviewStatus) {
-        AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
-        val status = ProductReviewStatus.fromString(newStatus.toString())
-        if (status == SPAM || status == TRASH) {
-            val itemPos = reviewsAdapter.revertHiddenReviewAndReturnPos()
-            if (itemPos != SectionedRecyclerViewAdapter.INVALID_POSITION && !reviewsAdapter.isEmpty()) {
-                binding.reviewsList.smoothScrollToPosition(itemPos)
-            }
+    override fun undoReviewModeration() {
+        val itemPos = reviewsAdapter.revertHiddenReviewAndReturnPos()
+        if (itemPos != SectionedRecyclerViewAdapter.INVALID_POSITION && !reviewsAdapter.isEmpty()) {
+            binding.reviewsList.smoothScrollToPosition(itemPos)
         }
-
-        resetPendingModerationVariables()
+        resetPendingModerationState()
     }
 
-    override fun removeHiddenreviews() {
+    override fun removeHiddenReviews() {
        reviewsAdapter.removeHiddenReviewFromList()
     }
 
 
-    override fun resetPendingModerationVariables() {
-        viewModel.resetPendingModerationVariables()
+    override fun resetPendingModerationState() {
         reviewsAdapter.resetPendingModerationState()
     }
 
