@@ -52,6 +52,7 @@ class ReviewModerationHandler @Inject constructor(
                 }
                 ActionStatus.SUCCESS -> {
                     emitActionEvent(ReviewModerationActionEvent.RemoveHiddenReviews)
+                    emitActionEvent(ReviewModerationActionEvent.ResetPendingState)
                     pendingModerationRequest = null
                     emitActionEvent(ReviewModerationActionEvent.ReloadReviews)
                 }
@@ -64,13 +65,6 @@ class ReviewModerationHandler @Inject constructor(
             }
         }
     }
-
-    override suspend fun handleOffLineError(){
-        pendingModerationRequest?.apply { actionStatus = ActionStatus.ERROR }
-            ?.also { processReviewModerationActionStatus(it) }
-    }
-
-
 
     override suspend fun submitReviewStatusChange(
         review: ProductReview ,
@@ -91,7 +85,7 @@ class ReviewModerationHandler @Inject constructor(
             }
             pendingModerationRequest?.let { processReviewModerationActionStatus(it) }
         } else {
-            emitUiEvent(ReviewModerationUIEvent.ShowRefresh(true))
+            emitUiEvent(ReviewModerationUIEvent.ShowOffLineError)
         }
     }
 
@@ -100,9 +94,10 @@ class ReviewModerationHandler @Inject constructor(
         val newStatus = pendingModerationRequest?.newStatus
         val status = ProductReviewStatus.fromString(newStatus.toString())
         if (status == ProductReviewStatus.SPAM || status == ProductReviewStatus.TRASH) {
-            emitActionEvent(ReviewModerationActionEvent.ResetModeration)
+            emitActionEvent(ReviewModerationActionEvent.RevertHiddenReviews)
         }
         pendingModerationRequest = null
+        emitActionEvent(ReviewModerationActionEvent.ResetPendingState)
     }
 
     private suspend fun emitUiEvent(event:ReviewModerationUIEvent){

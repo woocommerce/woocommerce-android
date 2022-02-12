@@ -135,6 +135,7 @@ class ReviewListFragment :
         }
 
         setupObservers()
+        setupReviewModerationObserver()
         viewModel.start()
     }
 
@@ -196,15 +197,7 @@ class ReviewListFragment :
                 when (event) {
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
-                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.SetUpModerationUndo -> setUpModerationUndo(event.request)
-                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveProductReviewFromList-> removeProductReviewFromList(event.remoteReviewId)
-                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveHiddenReviews -> {
-                        removeHiddenReviews()
-                        resetPendingModerationState()//TODO make this separate
-                    }
-                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.UndoReviewModeration -> {
-                        undoReviewModeration()
-                    }
+
                 }
             }
         )
@@ -228,6 +221,21 @@ class ReviewListFragment :
                 viewModel.getPendingModerationRequest()?.let {
                     //handleReviewModerationRequest(it)
                     //viewModel.setPendingModerationRequest(null)
+                }
+            }
+        )
+    }
+
+    override fun setupReviewModerationObserver(){
+        viewModel.reviewModerationEvents.observe(
+            viewLifecycleOwner,
+            Observer { event ->
+                when(event){
+                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.SetUpModerationUndo -> setUpModerationUndo(event.request)
+                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveProductReviewFromList-> removeProductReviewFromList(event.remoteReviewId)
+                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveHiddenReviews -> removeHiddenReviews()
+                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.RevertHidenReviews -> revertHiddenReviews()
+                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.ResetPendingModerationState -> resetPendingModerationState()
                 }
             }
         )
@@ -329,12 +337,11 @@ class ReviewListFragment :
         reviewsAdapter.hideReviewWithId(remoteReviewId)
     }
 
-    override fun undoReviewModeration() {
+    override fun revertHiddenReviews() {
         val itemPos = reviewsAdapter.revertHiddenReviewAndReturnPos()
         if (itemPos != SectionedRecyclerViewAdapter.INVALID_POSITION && !reviewsAdapter.isEmpty()) {
             binding.reviewsList.smoothScrollToPosition(itemPos)
         }
-        resetPendingModerationState()
     }
 
     override fun removeHiddenReviews() {
