@@ -34,7 +34,7 @@ interface ReviewModeration {
     }
     interface Processing {
         fun collectModerationEvents()
-        fun submitReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus)
+        fun relaytReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus)
         fun showRefresh(isRefreshing:Boolean = false)
         fun showReviewModeratiopnUpdateError()
         fun getPendingModerationRequest(): ProductReviewModerationRequest?

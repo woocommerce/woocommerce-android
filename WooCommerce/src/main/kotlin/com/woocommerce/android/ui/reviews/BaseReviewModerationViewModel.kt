@@ -9,10 +9,10 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.QueuedLiveData
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+
 /* This class has (almost) all the logic required for ReviewModeration Interaction
  * between View(Fragment) and The ReviewModerationHandler
  * The number of function to be overridden was becoming too large
@@ -25,15 +25,12 @@ import kotlinx.coroutines.launch
  */
 abstract class BaseReviewModerationViewModel (
     savedState: SavedStateHandle,
-    private val reviewModerationHandler : ReviewModerationHandler
+    private val reviewModerationHandler : ReviewModerationHandler,
     ):ScopedViewModel(savedState) ,ReviewModeration.Processing {
 
     private var _reviewModerationEvents = QueuedLiveData<ReviewModeration.Processing.ReviewModerationProcessingEvent>()
     var reviewModerationEvents : LiveData<ReviewModeration.Processing.ReviewModerationProcessingEvent> = _reviewModerationEvents
 
-    init {
-        collectModerationEvents()
-    }
 
 
     override fun collectModerationEvents() {
@@ -58,7 +55,7 @@ abstract class BaseReviewModerationViewModel (
         }.launchIn(viewModelScope)
     }
 
-    override fun submitReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus) {
+    override fun relaytReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus) {
         launch {
             reviewModerationHandler.submitReviewStatusChange(review,newStatus)
         }
@@ -93,9 +90,17 @@ abstract class BaseReviewModerationViewModel (
         triggerModerationEvent(ReviewModeration.Processing.ReviewModerationProcessingEvent.SetUpModerationUndo(productReviewModerationRequest))
 
     }
-
+    /* Using QueuedLiveData all events are reaching the observer , however sometimes it is before onResume
+     * which can lead to undesired consequence  for example when removing a certain review from a list it
+     * will check for its position and will be -1 if it does before resume
+     * this launches a new coroutine every time and ensures
+     * that it always reaches at the correct moment and thus eliminating the need to add delay
+     */
     private fun triggerModerationEvent(event: ReviewModeration.Processing.ReviewModerationProcessingEvent) {
-        _reviewModerationEvents.value = event
+        launch{
+            _reviewModerationEvents.value = event
+        }
+
     }
 
     override fun relayRemoveHiddenReviews() {
@@ -104,25 +109,7 @@ abstract class BaseReviewModerationViewModel (
 
 
     override fun relayRemoveProductReviewFromList(remoteReviewId: Long) {
-        /*The event transmitted from the Handler when  Spam and Trash is selected reaches before the onResume
-         * of the View . when this event is trigerred the logic is to hide the selected review .
-         * Now the logic for reviewAdapter searches for the position of the review
-         * in the list which will always be -1 as this is called before onResume
-         * There are a few ways to fix this
-         * A) Delay emitting event from ReviewModerationHandler, however this is not really handler's problem
-         * B) Run as a post delayed from the view , again this is burdening the client which will
-         * require every client to implement this way or some logic to queue this and implement in onResume
-         * D)Expose a flow from ViewModel which can be used in onResume , again burdening the client
-         * C) Keep this on this base class , where this critical logic will remain  with every extension
-         * yes the time is still an unfortunate requirement and there can be debate about time but this
-         * may not be as bad considering all possibilities. Currently setting this to ActivityPaused
-         * timeout
-         * #https://android.googlesource.com/platform/frameworks/base/+/f76a50c/services/java/com/android/server/am/ActivityStack.java#103
-         */
-        launch {
-            delay(500)
-            triggerModerationEvent(ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveProductReviewFromList(remoteReviewId))
-        }
+        triggerModerationEvent(ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveProductReviewFromList(remoteReviewId))
     }
 
 

@@ -34,6 +34,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     }
     private val repository: ReviewDetailRepository = mock()
     private val savedState = SavedStateHandle()
+    private val reviewModerationHandler : ReviewModerationHandler = mock()
 
     private val review = ProductReviewTestUtils.generateProductReview(id = REVIEW_ID, productId = PRODUCT_ID)
     private lateinit var viewModel: ReviewDetailViewModel
@@ -44,7 +45,8 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         viewModel = ReviewDetailViewModel(
             savedState,
             networkStatus,
-            repository
+            repository,
+            reviewModerationHandler
         )
     }
 

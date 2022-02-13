@@ -13,7 +13,6 @@ import com.woocommerce.android.model.RequestResult.*
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType.REVIEW
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -21,6 +20,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -37,7 +37,7 @@ class ReviewListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val reviewRepository: ReviewListRepository,
-    private val reviewModerationHandler : ReviewModerationHandler
+    reviewModerationHandler : ReviewModerationHandler,
 ) : BaseReviewModerationViewModel (savedState,reviewModerationHandler),
     ReviewModeration.Processing {
     companion object {
@@ -56,6 +56,9 @@ class ReviewListViewModel @Inject constructor(
     init {
         EventBus.getDefault().register(this)
         dispatcher.register(this)
+        /* This called from derived class to avoid the warning
+         * of calling non final method in base class constructor */
+        super.collectModerationEvents()
     }
 
     override fun onCleared() {
@@ -143,7 +146,7 @@ class ReviewListViewModel @Inject constructor(
     }
 
     /*
-     * Reviewmodeartion Override that needs to be done
+     * Reviewmoderation Override that needs to be done
      * in child class
      */
     override fun showRefresh(isRefreshing: Boolean) {

@@ -312,7 +312,7 @@ class ReviewListFragment :
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
                     if (!changeReviewStatusCanceled) {
-                        viewModel.submitReviewStatusChange(productReview, newStatus)
+                        viewModel.relaytReviewStatusChange(productReview, newStatus)
                     }
                 }
             }

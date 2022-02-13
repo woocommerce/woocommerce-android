@@ -12,12 +12,17 @@ import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.Ma
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -27,6 +32,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val reviewListRepository: ReviewListRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val selectedSite: SelectedSite = mock()
+    private val reviewModerationHandler : ReviewModerationHandler = mock()
     private val savedState: SavedStateHandle = SavedStateHandle()
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
@@ -39,8 +45,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
                 savedState,
                 networkStatus,
                 dispatcher,
-                selectedSite,
-                reviewListRepository
+                reviewListRepository,
+                reviewModerationHandler
             )
         )
 
@@ -254,4 +260,24 @@ class ReviewListViewModelTest : BaseUnitTest() {
         Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.ERROR)
         Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_error))
     }
+
+    //@Test
+    fun `relay review moderation status showoffline error`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(false).whenever(networkStatus).isConnected()
+            val actionEvent = MutableSharedFlow<ReviewModeration.Handler.ReviewModerationUIEvent>(0)
+            whenever(reviewModerationHandler.submitReviewStatusChange(any(),any())).doReturn(
+                actionEvent.run {
+                    actionEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowOffLineError)
+                }
+            )
+
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            viewModel.relaytReviewStatusChange(any(),any())
+            Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        }
 }
