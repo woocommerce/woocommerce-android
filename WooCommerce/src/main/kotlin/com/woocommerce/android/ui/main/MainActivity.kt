@@ -709,7 +709,7 @@ class MainActivity :
     }
     // endregion
 
-    // region Fragment Relay
+    // region Fragment Processing
     private fun initFragment(savedInstanceState: Bundle?) {
         setupObservers()
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
