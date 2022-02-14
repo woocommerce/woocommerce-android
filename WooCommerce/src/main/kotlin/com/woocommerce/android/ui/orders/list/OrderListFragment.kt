@@ -1,12 +1,18 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.os.*
-import android.view.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
-import androidx.annotation.StringRes
+import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.core.view.*
+import androidx.core.view.ViewGroupCompat
+import androidx.core.view.doOnPreDraw
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
@@ -172,11 +178,6 @@ class OrderListFragment :
         _binding = null
     }
 
-    private fun isSimplePaymentsAvailable(): Boolean {
-        return AppPrefs.isSimplePaymentsEnabled &&
-            viewModel.isCardReaderOnboardingCompleted()
-    }
-
     /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
      * search menu item to collapse
@@ -208,20 +209,14 @@ class OrderListFragment :
     }
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
-        val isSimplePaymentAvailable = isSimplePaymentsAvailable()
-        val isOrderCreationAvailable = AppPrefs.isOrderCreationEnabled
-
-        if (isSimplePaymentAvailable || isOrderCreationAvailable) {
-            fabButton.visibility = View.VISIBLE
-            fabButton.setOnClickListener {
-                when {
-                    isSimplePaymentAvailable && isOrderCreationAvailable -> showOrderCreationBottomSheet()
-                    isSimplePaymentAvailable -> showSimplePaymentsDialog()
-                    isOrderCreationAvailable -> openOrderCreationFragment()
-                }
+        fabButton.setOnClickListener {
+            if (AppPrefs.isOrderCreationEnabled) {
+                showOrderCreationBottomSheet()
+            } else {
+                showSimplePaymentsDialog()
             }
-            pinFabAboveBottomNavigationBar(fabButton)
         }
+        pinFabAboveBottomNavigationBar(fabButton)
     }
 
     private fun isChildFragmentShowing() = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
@@ -530,20 +525,13 @@ class OrderListFragment :
             return
         }
 
-        val isEnabled = AppPrefs.isSimplePaymentsEnabled
-        @StringRes val messageId = if (isEnabled) {
-            R.string.orderlist_simple_payments_wip_message_enabled
-        } else {
-            R.string.orderlist_simple_payments_wip_message_disabled
-        }
-
         binding.simplePaymentsWIPcard.isVisible = true
         binding.simplePaymentsWIPcard.initView(
             getString(R.string.orderlist_simple_payments_wip_title),
-            getString(messageId),
+            getString(R.string.orderlist_simple_payments_wip_message_enabled),
             onGiveFeedbackClick = { onGiveFeedbackClicked() },
             onDismissClick = { onDismissWIPCardClicked() },
-            showFeedbackButton = isEnabled
+            showFeedbackButton = true
         )
     }
 

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.extensions.areSameAs
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,7 +70,15 @@ class CreateOrUpdateOrderDraft @Inject constructor(
                     this.quantity == newItem.quantity
             }
 
+        val hasSameShippingLines = old.shippingLines
+            .areSameAs(new.shippingLines) { newLine ->
+                this.methodId == newLine.methodId &&
+                    this.methodTitle == newLine.methodTitle &&
+                    this.total isEqualTo newLine.total
+            }
+
         return hasSameItems &&
+            hasSameShippingLines &&
             old.shippingAddress.isSamePhysicalAddress(new.shippingAddress) &&
             old.billingAddress.isSamePhysicalAddress(new.billingAddress)
     }
