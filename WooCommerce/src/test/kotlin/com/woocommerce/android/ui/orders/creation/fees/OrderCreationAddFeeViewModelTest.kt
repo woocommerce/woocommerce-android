@@ -94,7 +94,7 @@ class OrderCreationAddFeeViewModelTest : BaseUnitTest() {
         lastReceivedEvent
             .run { this as? UpdateFee }
             ?.let { updateFeeEvent ->
-                assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal(25))
+                assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal.ZERO)
                 assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.PERCENTAGE)
             } ?: fail("Last event should be of UpdateFee type")
     }

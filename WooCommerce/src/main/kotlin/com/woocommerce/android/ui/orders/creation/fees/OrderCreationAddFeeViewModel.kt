@@ -57,9 +57,9 @@ class OrderCreationAddFeeViewModel @Inject constructor(
     }
 
     fun onFeePercentageChanged(feePercentage: String) {
-        feePercentage.toBigDecimalOrNull()?.let {
-            viewState = viewState.copy(feePercentage = it)
-        }
+        viewState = viewState.copy(
+            feePercentage = feePercentage.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        )
     }
 
     @Parcelize
