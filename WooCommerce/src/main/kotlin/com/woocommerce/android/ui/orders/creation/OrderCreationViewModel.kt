@@ -169,10 +169,7 @@ class OrderCreationViewModel @Inject constructor(
 
     @Suppress("UnusedPrivateMember")
     fun onNewFeeSubmitted(feeValue: BigDecimal, feeType: FeeType) {
-        val newFee = Order.FeeLine.EMPTY.copy(total = feeValue)
-        _orderDraft.value.feesLines.toMutableList()
-            .apply { add(newFee) }
-            .let { fees -> _orderDraft.update { it.copy(feesLines = fees) } }
+        // TODO handle fee submission
     }
 
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
