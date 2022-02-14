@@ -1,5 +1,6 @@
 package com.woocommerce.android.screenshots
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.helpers.InitializationRule
@@ -21,12 +22,15 @@ class ScreenshotTest : TestBase() {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val initRule = InitializationRule()
+    val composeTestRule = createComposeRule()
 
     @get:Rule(order = 2)
-    val localeTestRule = LocaleTestRule()
+    val initRule = InitializationRule()
 
     @get:Rule(order = 3)
+    val localeTestRule = LocaleTestRule()
+
+    @get:Rule(order = 4)
     var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @Test
@@ -34,7 +38,7 @@ class ScreenshotTest : TestBase() {
         Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
 
         WelcomeScreen
-            .logoutIfNeeded()
+            .logoutIfNeeded(composeTestRule)
             .selectLogin()
             // Connect a WooCommerce store by URL
             .proceedWith(BuildConfig.SCREENSHOTS_URL)
