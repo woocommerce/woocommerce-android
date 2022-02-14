@@ -1,20 +1,17 @@
 package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.*
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.push.NotificationChannelType.REVIEW
+import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
@@ -29,6 +26,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -49,11 +47,13 @@ class ReviewListViewModel @Inject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
     private val reviewRepository: ReviewListRepository,
-    private val markAllReviewsAsSeen: MarkAllReviewsAsSeen
+    private val markAllReviewsAsSeen: MarkAllReviewsAsSeen,
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
+
     private val _moderateProductReview = SingleLiveEvent<ProductReviewModerationRequest?>()
     val moderateProductReview: LiveData<ProductReviewModerationRequest?> = _moderateProductReview
 
@@ -66,6 +66,7 @@ class ReviewListViewModel @Inject constructor(
     init {
         EventBus.getDefault().register(this)
         dispatcher.register(this)
+        observeReviewUpdates()
     }
 
     override fun onCleared() {
@@ -210,20 +211,18 @@ class ReviewListViewModel @Inject constructor(
         triggerEvent(ShowSnackbar(R.string.offline_error))
     }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: ConnectionChangeEvent) {
-        if (event.isConnected) {
-            // Refresh data now that a connection is active if needed
-            forceRefreshReviews()
+    private fun observeReviewUpdates() {
+        viewModelScope.launch {
+            unseenReviewsCountHandler.observeUnseenCount()
+                .collect { forceRefreshReviews() }
         }
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationReceivedEvent) {
-        if (event.channel == REVIEW) {
-            // New review notification received. Request the list of reviews be refreshed.
+    fun onEventMainThread(event: ConnectionChangeEvent) {
+        if (event.isConnected) {
+            // Refresh data now that a connection is active if needed
             forceRefreshReviews()
         }
     }

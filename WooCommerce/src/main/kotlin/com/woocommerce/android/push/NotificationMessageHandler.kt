@@ -10,6 +10,9 @@ import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.push.NotificationChannelType.OTHER
+import com.woocommerce.android.push.NotificationChannelType.REVIEW
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -205,9 +208,10 @@ class NotificationMessageHandler @Inject constructor(
             }
         }
 
-        EventBus.getDefault().post(NotificationReceivedEvent(notification.channelType))
-        if (notification.isReviewNotification) {
-            unseenReviewsCountHandler.updateUnseenCountBy(1)
+        when (notification.channelType) {
+            REVIEW -> unseenReviewsCountHandler.updateUnseenCountBy(1)
+            NEW_ORDER,
+            OTHER -> EventBus.getDefault().post(NotificationReceivedEvent(notification.channelType))
         }
     }
 
