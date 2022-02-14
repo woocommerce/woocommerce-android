@@ -126,7 +126,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given Canada flag is disabled, when order in Canada, then it is not collectable`() =
+    fun `given Canada IPP flag is disabled, when order in Canada, then it is not collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = getOrder(currency = "CAD")
             whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
