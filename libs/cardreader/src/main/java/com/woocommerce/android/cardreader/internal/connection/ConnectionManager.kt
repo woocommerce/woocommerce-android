@@ -70,7 +70,7 @@ internal class ConnectionManager(
                 }
 
                 override fun onFailure(e: TerminalException) {
-                    updateReaderStatus(CardReaderStatus.NotConnected)
+                    updateReaderStatus(CardReaderStatus.NotConnected(e.errorMessage))
                 }
             }
 
@@ -86,12 +86,12 @@ internal class ConnectionManager(
     suspend fun disconnectReader() = suspendCoroutine<Boolean> { continuation ->
         terminal.disconnectReader(object : Callback {
             override fun onFailure(e: TerminalException) {
-                updateReaderStatus(CardReaderStatus.NotConnected)
+                updateReaderStatus(CardReaderStatus.NotConnected())
                 continuation.resume(false)
             }
 
             override fun onSuccess() {
-                updateReaderStatus(CardReaderStatus.NotConnected)
+                updateReaderStatus(CardReaderStatus.NotConnected())
                 continuation.resume(true)
             }
         })

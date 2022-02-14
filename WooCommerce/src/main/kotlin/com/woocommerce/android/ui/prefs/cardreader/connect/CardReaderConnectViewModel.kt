@@ -254,9 +254,11 @@ class CardReaderConnectViewModel @Inject constructor(
         cardReaderManager.readerStatus.collect { status ->
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
-                CardReaderStatus.NotConnected -> {
-                    if (connectionStarted) onReaderConnectionFailed()
-                    else Unit
+                is CardReaderStatus.NotConnected -> {
+                    if (connectionStarted) {
+                        status.errorMessage?.let { triggerEvent(ShowToastString(it)) }
+                        onReaderConnectionFailed()
+                    } else Unit
                 }
                 CardReaderStatus.Connecting -> {
                     connectionStarted = true
