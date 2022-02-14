@@ -22,6 +22,8 @@ object StringUtils {
     const val EMPTY = ""
     private const val ONE_MILLION = 1000000
     private const val ONE_THOUSAND = 1000
+    private const val A8C = "@a8c.com"
+    private const val AUTOMATTIC = "@automattic.com"
 
     /**
      * Borrowed and modified from WordPress-Android :)
@@ -101,6 +103,13 @@ object StringUtils {
         return email?.let {
             return Patterns.EMAIL_ADDRESS.matcher(it).matches()
         } ?: false
+    }
+
+    /**
+     * Returns true if the passed string is an Automattic/A8c email
+     */
+    fun isA8cEmail(email: String?): Boolean {
+        return email != null && (AUTOMATTIC in email.lowercase() || A8C in email.lowercase())
     }
 
     /**

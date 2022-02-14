@@ -13,31 +13,6 @@
             android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
             app:destination="@id/nav_graph_jetpack_install" />
     </fragment>
-    <dialog
-        android:id="@+id/simplePaymentsDialog"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
-        android:label="SimplePaymentsDialog" />
-    <fragment
-        android:id="@+id/simplePaymentsFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsFragment"
-        android:label="SimplePaymentsFragment">
-        <argument
-            android:name="order"
-            app:argType="com.woocommerce.android.model.Order"
-            app:nullable="false" />
-        <action
-            android:id="@+id/action_simplePaymentsFragment_to_simplePaymentsCustomerNoteFragment"
-            app:destination="@id/simplePaymentsCustomerNoteFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/simplePaymentsCustomerNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsCustomerNoteFragment"
-        android:label="SimplePaymentsCustomerNoteFragment">
-        <argument
-            android:name="customerNote"
-            android:defaultValue='""'
-            app:argType="string" />
-    </fragment>
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"

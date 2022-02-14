@@ -42,7 +42,6 @@ object AppPrefs {
         DATABASE_DOWNGRADED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
-        IS_SIMPLE_PAYMENTS_ENABLED,
         IS_ORDER_CREATION_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
@@ -152,10 +151,6 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
-
-    var isSimplePaymentsEnabled: Boolean
-        get() = getBoolean(DeletablePrefKey.IS_SIMPLE_PAYMENTS_ENABLED, false)
-        set(value) = setBoolean(DeletablePrefKey.IS_SIMPLE_PAYMENTS_ENABLED, value)
 
     var isOrderCreationEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_ORDER_CREATION_ENABLED, false)
@@ -500,7 +495,7 @@ object AppPrefs {
     ) = "$CARD_READER_ONBOARDING_COMPLETED_STATUS:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
     fun setCardReaderStatementDescriptor(
-        statementDescriptor: String,
+        statementDescriptor: String?,
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
