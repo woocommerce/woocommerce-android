@@ -37,9 +37,9 @@ class OrderCreationAddFeeViewModel @Inject constructor(
         }
 
     private val activeFeeValue
-        get() = when (activeFeeType) {
-            AMOUNT -> viewState.feeAmount
-            PERCENTAGE -> viewState.feePercentage
+        get() = when (viewState.isPercentageSelected) {
+            true -> viewState.feePercentage
+            false -> viewState.feeAmount
         }
 
     fun onDoneSelected() {
