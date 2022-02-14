@@ -20,7 +20,6 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -37,12 +36,13 @@ class ReviewListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val reviewRepository: ReviewListRepository,
-    reviewModerationHandler : ReviewModerationHandler,
+    private val reviewModerationHandler : ReviewModerationHandler,
 ) : BaseReviewModerationViewModel (savedState,reviewModerationHandler),
-    ReviewModeration.Processing {
+    ReviewModeration.Relay {
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
+
 
     private val _reviewList = MutableLiveData<List<ProductReview>>()
     val reviewList: LiveData<List<ProductReview>> = _reviewList
@@ -58,7 +58,7 @@ class ReviewListViewModel @Inject constructor(
         dispatcher.register(this)
         /* This called from derived class to avoid the warning
          * of calling non final method in base class constructor */
-        super.collectModerationEvents()
+        this.collectModerationEvents()
     }
 
     override fun onCleared() {
@@ -144,24 +144,6 @@ class ReviewListViewModel @Inject constructor(
             showOfflineSnack()
         }
     }
-
-    /*
-     * Reviewmoderation Override that needs to be done
-     * in child class
-     */
-    override fun showRefresh(isRefreshing: Boolean) {
-        //Piggy backing on existing implementation
-        viewState = viewState.copy( isRefreshing = isRefreshing)
-    }
-
-    override fun reloadReviews() {
-        reloadReviewsFromCache()
-    }
-
-    override fun showOfflineError() {
-        showOfflineSnack()
-    }
-
 
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {

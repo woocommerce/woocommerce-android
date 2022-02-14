@@ -422,7 +422,7 @@ class CardReaderPaymentViewModel
             is LoadingDataState -> "Loading"
             is CapturingPaymentState -> "Capturing"
             is CollectPaymentState -> "Collecting"
-            is ProcessingPaymentState -> "Processing"
+            is ProcessingPaymentState -> "Relay"
             else -> {
                 WooLog.e(WooLog.T.CARD_READER, "Invalid payment state received")
                 null

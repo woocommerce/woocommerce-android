@@ -31,7 +31,4 @@ internal abstract class MainModule {
     @Binds
     abstract fun provideUiMessageResolver(mainUIMessageResolver: MainUIMessageResolver): UIMessageResolver
 
-    @ActivityRetainedScoped
-    @Binds
-    abstract fun provideModeratioHandler(reviewModerationhandler: ReviewModerationHandler): ReviewModeration.Handler
 }

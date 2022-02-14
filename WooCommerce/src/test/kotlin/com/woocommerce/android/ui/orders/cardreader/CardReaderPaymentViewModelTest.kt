@@ -1233,7 +1233,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
                 anyOrNull(),
                 anyOrNull(),
-                eq("User manually cancelled the payment during state Processing")
+                eq("User manually cancelled the payment during state Relay")
             )
         }
 

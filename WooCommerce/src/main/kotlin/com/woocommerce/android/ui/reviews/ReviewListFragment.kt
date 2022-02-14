@@ -231,14 +231,21 @@ class ReviewListFragment :
             viewLifecycleOwner,
             Observer { event ->
                 when(event){
-                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.SetUpModerationUndo -> setUpModerationUndo(event.request)
-                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveProductReviewFromList-> removeProductReviewFromList(event.remoteReviewId)
-                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.RemoveHiddenReviews -> removeHiddenReviews()
-                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.RevertHidenReviews -> revertHiddenReviews()
-                    is ReviewModeration.Processing.ReviewModerationProcessingEvent.ResetPendingModerationState -> resetPendingModerationState()
+                    is ReviewModeration.Relay.ReviewModerationRelayEvent.SetUpModerationUndo -> setUpModerationUndo(event.request)
+                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RemoveProductReviewFromList-> removeProductReviewFromList(event.remoteReviewId)
+                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveHiddenReviews -> removeHiddenReviews()
+                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRevertHidenReviews -> revertHiddenReviews()
+                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState -> resetPendingModerationState()
+                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayReloadReviews -> reloadReviews()
+                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError -> showError(event.resID)
+                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh -> toggleRefreshUI(event.isRefreshing)
                 }
             }
         )
+    }
+
+    override fun showError(resID:Int) {
+        uiMessageResolver.showSnack(resID)
     }
 
     private fun handleMarkAllAsReadEvent(status: ActionStatus) {
@@ -383,4 +390,12 @@ class ReviewListFragment :
     }
 
     override fun shouldExpandToolbar() = binding.reviewsList.computeVerticalScrollOffset() == 0
+
+    override fun reloadReviews() {
+        viewModel.reloadReviewsFromCache()
+    }
+
+    override fun toggleRefreshUI(isRefreshing: Boolean) {
+        binding.notifsRefreshLayout.isRefreshing = isRefreshing
+    }
 }

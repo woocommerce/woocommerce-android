@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -129,6 +130,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         }
 
         viewModel.moderateReview(SPAM)
+        verify(reviewModerationHandler,times(1)).launchProductReviewModerationRequestFlow(any())
         assertTrue(exitCalled)
     }
 
@@ -158,6 +160,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.moderateReview(SPAM)
+            verify(reviewModerationHandler,times(0)).launchProductReviewModerationRequestFlow(any())
             assertFalse(exitCalled)
             Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
         }

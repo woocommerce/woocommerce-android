@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent
 import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationUIEvent
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -14,8 +15,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatu
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
-@Singleton
+@ActivityRetainedScoped
 class ReviewModerationHandler @Inject constructor(
     private val productStore:WCProductStore,
     private val selectedSite:SelectedSite,
@@ -28,11 +28,11 @@ class ReviewModerationHandler @Inject constructor(
     private val _reviewModerationUIEvents =
         MutableSharedFlow<ReviewModerationUIEvent>(0)
 
-    override val reviewModerationActionEvents: SharedFlow<ReviewModerationActionEvent> = _reviewModerationActionEvents.asSharedFlow()
+    private val reviewModerationActionEvents: SharedFlow<ReviewModerationActionEvent> = _reviewModerationActionEvents.asSharedFlow()
 
-    override val reviewModerationUIEvents: SharedFlow<ReviewModerationUIEvent> = _reviewModerationUIEvents.asSharedFlow()
+    private  val reviewModerationUIEvents: SharedFlow<ReviewModerationUIEvent> = _reviewModerationUIEvents.asSharedFlow()
 
-    override var pendingModerationRequest: ProductReviewModerationRequest? = null
+    private var pendingModerationRequest: ProductReviewModerationRequest? = null
 
 
     override suspend fun launchProductReviewModerationRequestFlow(event:OnRequestModerateReviewEvent) {
@@ -98,6 +98,7 @@ class ReviewModerationHandler @Inject constructor(
         }
         pendingModerationRequest = null
         emitActionEvent(ReviewModerationActionEvent.ResetPendingState)
+        emitUiEvent(ReviewModerationUIEvent.ShowRefresh(false))
     }
 
     private suspend fun emitUiEvent(event:ReviewModerationUIEvent){
@@ -107,6 +108,12 @@ class ReviewModerationHandler @Inject constructor(
     private suspend fun emitActionEvent(event:ReviewModerationActionEvent){
        _reviewModerationActionEvents.emit(event)
     }
+
+    fun getReviewModerationUiEventFlow():SharedFlow<ReviewModerationUIEvent> = reviewModerationUIEvents
+
+    fun getReviewModerationActionEventFlow():SharedFlow<ReviewModerationActionEvent> = reviewModerationActionEvents
+
+    fun getPendingReviewModerationRequest() = pendingModerationRequest
 
 
 
