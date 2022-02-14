@@ -875,6 +875,32 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given error message is not null, when connecting to reader fails, then toast is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val errorMessage = "error_message"
+
+            init()
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected(errorMessage))
+
+            assertThat(viewModel.event.value).isEqualTo(ShowToastString(errorMessage))
+        }
+
+    @Test
+    fun `given error message is null, when connecting to reader fails, then toast is not shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected())
+
+            assertThat(viewModel.event.value).isNotInstanceOf(ShowToastString::class.java)
+        }
+
+    @Test
     fun `when connecting to reader fails, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init()
