@@ -10,9 +10,6 @@ import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
-import com.woocommerce.android.push.NotificationChannelType.OTHER
-import com.woocommerce.android.push.NotificationChannelType.REVIEW
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -44,8 +41,7 @@ class NotificationMessageHandler @Inject constructor(
     private val notificationBuilder: WooNotificationBuilder,
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val zendeskHelper: ZendeskHelper,
-    private val notificationsParser: NotificationsParser,
-    private val unseenReviewsCountHandler: UnseenReviewsCountHandler
+    private val notificationsParser: NotificationsParser
 ) {
     companion object {
         private const val KEY_PUSH_TYPE_ZENDESK = "zendesk"
@@ -208,11 +204,7 @@ class NotificationMessageHandler @Inject constructor(
             }
         }
 
-        when (notification.channelType) {
-            REVIEW -> unseenReviewsCountHandler.updateUnseenCountBy(1)
-            NEW_ORDER,
-            OTHER -> EventBus.getDefault().post(NotificationReceivedEvent(notification.channelType))
-        }
+        EventBus.getDefault().post(NotificationReceivedEvent(notification.channelType))
     }
 
     private fun getLocalPushId(wpComNoteId: Int, randomNumber: Int) = wpComNoteId + randomNumber
@@ -262,7 +254,6 @@ class NotificationMessageHandler @Inject constructor(
     fun removeAllNotificationsFromSystemsBar() {
         clearNotifications()
         notificationBuilder.cancelAllNotifications()
-        unseenReviewsCountHandler.clearUnseenCount()
     }
 
     @Synchronized
