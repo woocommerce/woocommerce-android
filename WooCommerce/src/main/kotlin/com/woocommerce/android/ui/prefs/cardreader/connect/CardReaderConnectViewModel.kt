@@ -213,7 +213,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 is CardReaderOnboardingState.OnboardingCompleted -> {
                     triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
                 }
-                else -> triggerEvent(CardReaderConnectEvent.NavigateToOnboardingFlow)
+                else -> triggerEvent(NavigateToOnboardingFlow)
             }
         }
     }
@@ -304,7 +304,7 @@ class CardReaderConnectViewModel @Inject constructor(
     fun onUpdateReaderResult(updateResult: CardReaderUpdateViewModel.UpdateResult) {
         when (updateResult) {
             CardReaderUpdateViewModel.UpdateResult.FAILED -> {
-                triggerEvent(CardReaderConnectEvent.ShowToast(R.string.card_reader_detail_connected_update_failed))
+                triggerEvent(ShowToast(R.string.card_reader_detail_connected_update_failed))
                 exitFlow(connected = false)
             }
             CardReaderUpdateViewModel.UpdateResult.SUCCESS -> {
@@ -420,9 +420,9 @@ class CardReaderConnectViewModel @Inject constructor(
         result: CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress
     ) {
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(CardReaderConnectEvent.OpenWPComWebView(result.url))
+            triggerEvent(OpenWPComWebView(result.url))
         } else {
-            triggerEvent(CardReaderConnectEvent.OpenGenericWebView(result.url))
+            triggerEvent(OpenGenericWebView(result.url))
             exitFlow(connected = false)
         }
     }
@@ -468,7 +468,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun trackLocationFailureFetching(errorDescription: String?) {
-        tracker.trackFetchingLocationFailed(errorDescription,)
+        tracker.trackFetchingLocationFailed(errorDescription)
     }
 
     private suspend fun getStoreCountryCode(): String? {
