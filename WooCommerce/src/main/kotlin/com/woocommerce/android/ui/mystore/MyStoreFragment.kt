@@ -48,7 +48,6 @@ import kotlin.math.abs
 class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
-        private const val STATE_KEY_TAB_POSITION = "tab-stats-position"
 
         fun newInstance() = MyStoreFragment()
 
@@ -67,14 +66,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     private var errorSnackbar: Snackbar? = null
 
-    private var tabStatsPosition: Int = 0 // Save the current position of stats tab view
-    private val activeGranularity: StatsGranularity
-        get() {
-            return tabLayout.getTabAt(tabStatsPosition)?.let {
-                it.tag as StatsGranularity
-            } ?: DEFAULT_STATS_GRANULARITY
-        }
-
     private var _tabLayout: TabLayout? = null
     private val tabLayout
         get() = _tabLayout!!
@@ -89,10 +80,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            tabStatsPosition = tab.position
-            viewModel.onStatsGranularityChanged(activeGranularity)
-            binding.myStoreStats.loadDashboardStats(activeGranularity)
-            binding.myStoreTopPerformers.onDateGranularityChanged(activeGranularity)
+            viewModel.onStatsGranularityChanged(tab.tag as StatsGranularity)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -115,10 +103,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             binding.myStoreStats.clearChartData()
         }
 
-        savedInstanceState?.let { bundle ->
-            tabStatsPosition = bundle.getInt(STATE_KEY_TAB_POSITION)
-        }
-
         // Create tabs and add to appbar
         StatsGranularity.values().forEach { granularity ->
             val tab = tabLayout.newTab().apply {
@@ -126,15 +110,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 tag = granularity
             }
             tabLayout.addTab(tab)
-
-            // Start with the given time period selected
-            if (granularity == activeGranularity) {
-                tab.select()
-            }
         }
 
         binding.myStoreStats.initView(
-            activeGranularity,
+            viewModel.activeStatsGranularity.value ?: DEFAULT_STATS_GRANULARITY,
             selectedSite,
             dateUtils,
             currencyFormatter
@@ -158,6 +137,14 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     @Suppress("ComplexMethod")
     private fun setupStateObservers() {
+        viewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
+            if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
+                val index = StatsGranularity.values().indexOf(activeGranularity)
+                tabLayout.getTabAt(index)?.select()
+            }
+            binding.myStoreStats.loadDashboardStats(activeGranularity)
+            binding.myStoreTopPerformers.onDateGranularityChanged(activeGranularity)
+        }
         viewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
             when (revenueStats) {
                 is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats)
@@ -295,11 +282,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         }
     }
      */
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(STATE_KEY_TAB_POSITION, tabStatsPosition)
-    }
 
     private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
         addTabLayoutToAppBar()

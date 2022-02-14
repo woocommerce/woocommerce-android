@@ -107,6 +107,10 @@
         <action
             android:id="@+id/action_cardReaderHubFragment_to_cardReaderDetailFragment"
             app:destination="@id/cardReaderDetailFragment" />
+        <argument
+            android:name="storeCountryCode"
+            app:nullable="false"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -126,11 +130,7 @@
     <fragment
         android:id="@+id/betaFeaturesFragment"
         android:name="com.woocommerce.android.ui.prefs.BetaFeaturesFragment"
-        android:label="BetaFeaturesFragment">
-        <argument
-            android:name="isCardReaderOnboardingCompleted"
-            app:argType="boolean" />
-    </fragment>
+        android:label="BetaFeaturesFragment" />
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"

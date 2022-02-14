@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -16,9 +16,10 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,6 +28,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     private val viewModel: SimplePaymentsFragmentViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,9 +36,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
         val binding = FragmentSimplePaymentsBinding.bind(view)
         binding.buttonDone.setOnClickListener {
-            if (validateEmail(binding.editEmail)) {
-                viewModel.onDoneButtonClicked()
-            }
+            viewModel.onDoneButtonClicked()
         }
 
         setupObservers(binding)
@@ -44,6 +44,11 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
 
         binding.switchChargeTaxes.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onChargeTaxesChanged(isChecked)
+        }
+
+        binding.editEmail.addTextChangedListener {
+            val email = binding.editEmail.text.toString()
+            viewModel.onBillingEmailChanged(email)
         }
 
         binding.notesSection.setAddButtons(
@@ -71,6 +76,9 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
             viewLifecycleOwner,
             { event ->
                 when (event) {
+                    is MultiLiveEvent.Event.ShowSnackbar -> {
+                        uiMessageResolver.showSnack(event.message)
+                    }
                     is SimplePaymentsFragmentViewModel.ShowCustomerNoteEditor -> {
                         showCustomerNoteEditor()
                     }
@@ -111,6 +119,13 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
             new.customerNote.takeIfNotEqualTo(old?.customerNote) { customerNote ->
                 bindNotesSection(binding.notesSection, customerNote)
             }
+            new.isBillingEmailValid.takeIfNotEqualTo(old?.isBillingEmailValid) { isValidEmail ->
+                if (isValidEmail) {
+                    binding.editEmail.error = null
+                } else {
+                    binding.editEmail.error = getString(R.string.email_invalid)
+                }
+            }
         }
     }
 
@@ -143,16 +158,6 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
         SimplePaymentsFragmentDirections
             .actionSimplePaymentsFragmentToTakePaymentFragment(viewModel.orderDraft)
             .let { findNavController().navigateSafely(it) }
-    }
-
-    private fun validateEmail(emailEditText: EditText): Boolean {
-        val email = emailEditText.text.toString()
-        return if (email.isEmpty() || StringUtils.isValidEmail(email)) {
-            true
-        } else {
-            emailEditText.error = getString(R.string.email_invalid)
-            false
-        }
     }
 
     override fun getFragmentTitle() = getString(R.string.simple_payments_title)

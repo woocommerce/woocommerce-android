@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-01-19 16:54:04+0000
+Translation-Revision-Date: 2022-02-02 13:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="settings_install_jetpack">젯팩 설치</string>
+    <string name="card_reader_onboarding_account_rejected_header">현재 직접 결제 사용 불가능</string>
+    <string name="order_creation_success_snackbar">주문 생성됨</string>
+    <string name="order_creation_failure_snackbar">주문 생성 실패</string>
+    <string name="order_creation_loading_dialog_message">기다려주세요…</string>
+    <string name="order_creation_loading_dialog_title">주문 생성 중</string>
+    <string name="order_creation_payment_tax_hint">제외되는 세금 합계. 스토어 설정에 따라 세금이 자동으로 계산됩니다.</string>
+    <string name="order_creation_payment_order_total">주문 합계</string>
+    <string name="order_creation_payment_products_total">상품 합계</string>
+    <string name="order_creation_payment">결제</string>
+    <string name="dashboard_top_performers_net_sales">순매출액: %s</string>
+    <string name="dashboard_top_performers_items_sold">판매된 아이템</string>
+    <string name="dashboard_stats_conversion">전환</string>
+    <string name="create">생성</string>
     <string name="about_automattic_app_icon_description">앱 아이콘</string>
     <string name="about_automattic_back_icon_description">뒤로 아이콘</string>
     <string name="about_automattic_logo_description">Automattic 로고</string>
@@ -316,13 +330,12 @@ Language: ko_KR
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">테스트 모드에서는 대면 결제 사용 불가능 계속하려면 끄기로 전환하세요.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">현재 대면 결제 사용 불가능</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">계정에 대기 중인 요구 사항이 있습니다. 대면 결제 수락을 유지하려면 %1$s을(를) 통해 해당 요구 사항을 완료하세요.</string>
-    <string name="card_reader_onboarding_account_pending_requirements_header">WooCommerce 결제 계정에 대기 중인 요구 사항이 있습니다.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">계정에 대기 중인 요구 사항이 있습니다.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">계정에 기한이 지난 요구 사항이 하나 이상 있습니다. 대면 결제를 다시 시작하려면 해당 요구 사항을 처리하세요.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">현재 대면 결제 사용 불가능</string>
     <string name="card_reader_onboarding_account_under_review_hint">계정 검토를 완료하는 즉시 대면 결제를 수락할 수 있습니다.</string>
     <string name="card_reader_onboarding_account_under_review_header">현재 대면 결제 사용 불가능</string>
     <string name="card_reader_onboarding_account_rejected_hint">죄송합니다. 이 스토어에서는 대면 결제가 지원되지 않습니다.</string>
-    <string name="card_reader_onboarding_account_rejected_header">이 스토어에서 대면 결제 사용 불가능</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">업데이트 후 새로 고침</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">WooCommerce 결제 확장 기능의 오래된 버전이 스토어에 설치되어 있습니다. 대면 결제를 수락하려면 해당 확장 기능을 업데이트하세요.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce 결제 업데이트</string>
@@ -1776,8 +1789,6 @@ Language: ko_KR
     <string name="dashboard_action_view_order">주문 보기</string>
     <string name="dashboard_top_performers_empty">이 기간에 활동이 없음</string>
     <string name="dashboard_top_performers_total_orders">총 주문 수: %s</string>
-    <string name="dashboard_top_performers_total_spend">총 지출</string>
-    <string name="dashboard_top_performers_description">스토어의 상품 실적에 대한 인사이트 확인</string>
     <string name="dashboard_top_performers_title">최고 인기 상품</string>
     <string name="dashboard_stats_updated_date_time">%s에 업데이트됨</string>
     <string name="dashboard_stats_updated_one_day">어제 업데이트됨</string>

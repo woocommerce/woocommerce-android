@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-01-20 21:55:05+0000
+Translation-Revision-Date: 2022-02-02 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="settings_install_jetpack">Installera Jetpack</string>
+    <string name="card_reader_onboarding_account_rejected_header">Personliga betalningar är för närvarande inte tillgängliga</string>
+    <string name="order_creation_success_snackbar">Beställning skapad</string>
+    <string name="order_creation_failure_snackbar">Misslyckades att skapa beställning</string>
+    <string name="order_creation_loading_dialog_message">Vänta …</string>
+    <string name="order_creation_loading_dialog_title">Skapar din beställning</string>
+    <string name="order_creation_payment_tax_hint">Totalbelopp exklusive moms. Moms beräknas automatiskt baserat på dina butiksinställningar.</string>
+    <string name="order_creation_payment_order_total">Beställningens totalsumma</string>
+    <string name="order_creation_payment_products_total">Produktbelopp</string>
+    <string name="order_creation_payment">Betalning</string>
+    <string name="dashboard_top_performers_net_sales">Nettoförsäljning: %s</string>
+    <string name="dashboard_top_performers_items_sold">Sålda artiklar</string>
+    <string name="dashboard_stats_conversion">Konvertering</string>
+    <string name="create">Skapa</string>
     <string name="about_automattic_app_icon_description">App-ikon</string>
     <string name="about_automattic_back_icon_description">Ikon för tillbaka</string>
     <string name="about_automattic_logo_description">Logga för Automattic</string>
@@ -316,13 +330,12 @@ Language: sv_SE
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Personliga betalningar är inte tillgängliga i testläget. Stäng av det för att fortsätta.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Personliga betalningar är för närvarande inte tillgängliga</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Det finns krav som inväntar granskning i ditt konto. Slutför dessa krav senast den %1$s för att fortsätta ta emot personliga betalningar.</string>
-    <string name="card_reader_onboarding_account_pending_requirements_header">Ditt WooCommerce Payments-konto har krav som inväntar granskning</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Ditt konto har krav som inväntar granskning</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">Du har minst ett försenat krav i ditt konto. Ta hand om det för att återuppta personliga betalningar.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">Personliga betalningar är för närvarande inte tillgängliga</string>
     <string name="card_reader_onboarding_account_under_review_hint">Du kommer att kunna ta emot personliga betalningar så snart vi har slutfört granskningen av ditt konto.</string>
     <string name="card_reader_onboarding_account_under_review_header">Personliga betalningar är för närvarande inte tillgängliga</string>
     <string name="card_reader_onboarding_account_rejected_hint">Tyvärr kan vi inte erbjuda personliga betalningar för den här butiken.</string>
-    <string name="card_reader_onboarding_account_rejected_header">Personliga betalningar är inte tillgängliga för den här butiken</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Uppdatera efter uppdatering</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Payments är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Uppdatera WooCommerce Payments</string>
@@ -1777,8 +1790,6 @@ Language: sv_SE
     <string name="dashboard_action_view_order">Visa order</string>
     <string name="dashboard_top_performers_empty">Ingen aktivitet denna period</string>
     <string name="dashboard_top_performers_total_orders">Totalt antal beställningar: %s</string>
-    <string name="dashboard_top_performers_total_spend">Spenderat totalt</string>
-    <string name="dashboard_top_performers_description">Få insikt i hur produkter presterar i din butik</string>
     <string name="dashboard_top_performers_title">Toppresterande</string>
     <string name="dashboard_stats_updated_date_time">Uppdaterad den %s</string>
     <string name="dashboard_stats_updated_one_day">Uppdaterad för 1 dag sedan</string>

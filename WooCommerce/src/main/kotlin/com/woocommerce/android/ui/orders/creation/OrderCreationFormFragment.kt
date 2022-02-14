@@ -26,6 +26,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator
@@ -37,13 +38,15 @@ import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusVie
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form) {
+class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form), BackPressListener {
     private val viewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -138,6 +141,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 )
             )
         )
+        paymentSection.shippingLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
+        paymentSection.shippingButton.setOnClickListener {
+            viewModel.onShippingButtonClicked()
+        }
     }
 
     private fun LayoutOrderCreationCustomerInfoBinding.changeState() {
@@ -184,7 +191,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
-        paymentSection.taxGroup.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
+        paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
 
         paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
@@ -273,6 +280,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                         orderStatusList = event.orderStatusList
                     ).let { findNavController().navigateSafely(it) }
             is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+            is ShowDialog -> event.showDialog()
+            is Exit -> findNavController().navigateUp()
         }
     }
 
@@ -312,4 +321,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     override fun getFragmentTitle() = getString(R.string.order_creation_fragment_title)
+
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked()
+        return false
+    }
 }

@@ -18,8 +18,8 @@ import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
+import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.persistence.WCPluginSqlUtils
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
@@ -40,6 +40,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     private val site = SiteModel()
 
+    private val countryCode = "US"
+
     @Before
     fun setUp() = testBlocking {
         checker = CardReaderOnboardingChecker(
@@ -55,7 +57,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
-        whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn(countryCode)
         whenever(wcInPersonPaymentsStore.loadAccount(WOOCOMMERCE_PAYMENTS, site))
             .thenReturn(buildPaymentAccountResult())
         whenever(wcInPersonPaymentsStore.loadAccount(STRIPE, site))
@@ -186,7 +188,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    countryCode
+                )
+            )
         }
 
     @Test
@@ -218,7 +225,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    countryCode
+                )
+            )
         }
 
     @Test
@@ -235,7 +247,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.OnboardingCompleted(
-                    PluginType.STRIPE_EXTENSION_GATEWAY
+                    PluginType.STRIPE_EXTENSION_GATEWAY,
+                    countryCode
                 )
             )
         }
@@ -305,7 +318,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    countryCode
+                )
+            )
         }
 
     @Test
@@ -352,7 +370,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.OnboardingCompleted(
-                    PluginType.STRIPE_EXTENSION_GATEWAY
+                    PluginType.STRIPE_EXTENSION_GATEWAY,
+                    countryCode
                 )
             )
         }
@@ -903,10 +922,16 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private fun buildWCPayPluginInfo(
         isActive: Boolean = true,
         version: String = SUPPORTED_WCPAY_VERSION
-    ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)
+    ) = SitePluginModel().apply {
+        this.version = version
+        this.setIsActive(isActive)
+    }
 
     private fun buildStripeExtensionPluginInfo(
         isActive: Boolean = true,
         version: String = SUPPORTED_STRIPE_EXTENSION_VERSION
-    ) = WCPluginSqlUtils.WCPluginModel(1, 1, isActive, "", "", version)
+    ) = SitePluginModel().apply {
+        this.version = version
+        this.setIsActive(isActive)
+    }
 }

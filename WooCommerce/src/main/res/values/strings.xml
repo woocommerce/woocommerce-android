@@ -312,7 +312,6 @@
     <string name="orderlist_filters_title">Filtered Orders</string>
     <string name="orderlist_simple_payments_wip_title">Take payments from your device!</string>
     <string name="orderlist_simple_payments_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
@@ -322,7 +321,8 @@
     <string name="simple_payments_dialog_title">Take payment</string>
     <string name="simple_payments_title">Simple payment</string>
     <string name="simple_payments_enter_amount">Enter amount</string>
-    <string name="simple_payments_creation_error">Unable to create order</string>
+    <string name="simple_payments_creation_error">Unable to create simple payment order</string>
+    <string name="simple_payments_update_error">Unable to update simple payment order</string>
     <string name="simple_payments_edit_email_hint">Enter email</string>
     <string name="simple_payments_custom_amount">Custom amount</string>
     <string name="simple_payments_charge_taxes">Charge taxes</string>
@@ -366,6 +366,10 @@
     <string name="order_creation_success_snackbar">Order created</string>
     <string name="order_creation_payment_tax">Taxes</string>
     <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
+    <string name="order_creation_shipping_amount">Amount</string>
+    <string name="order_creation_shipping_name">Name</string>
+    <string name="order_creation_shipping_title_add">Add Shipping</string>
+    <string name="order_creation_add_shipping">Add shipping</string>
     <!--
         Order Filters
     -->
@@ -895,6 +899,7 @@
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
     <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Card Reader Manual</string>
     <!--
         Card Reader Payments
     -->
@@ -1083,12 +1088,12 @@
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">In-Person Payments isn\’t available in Test Mode. Please turn it off to continue.</string>
 
-    <string name="card_reader_onboarding_both_plugins_activated_header">Multiple payment providers detected</string>
-    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">In-Person Payments will only work with one provider activated. Please deactivate one of these to continue:</string>
-    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">In-Person Payments will only work with one provider activated. Please contact a site administrator to deactivate one of these to continue:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">Conflicting payment plugins detected</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">In-Person Payments will only work with one of following plugins activated. Please deactivate one of these plugins to continue:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">In-Person Payments will only work with one of following plugins activated. Please contact a site administrator to deactivate one of these plugins to continue:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe Gateway</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
-    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Go to Plugin Admin</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Manage Plugins</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Refresh after updating</string>
 
 
@@ -1474,8 +1479,6 @@
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
-    <string name="settings_enable_simple_payments_teaser_title">Simple payments</string>
-    <string name="settings_enable_simple_payments_teaser_message">Test out creating orders with minimal information as we get ready to launch</string>
     <string name="settings_enable_order_creation_teaser_title">Order Creation</string>
     <string name="settings_enable_order_creation_teaser_message">Test out creating orders with full details as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
@@ -1535,6 +1538,7 @@
     <string name="support_help">Help &amp; support</string>
     <string name="support_email_subject">WooCommerce Android %s support</string>
     <string name="invalid_email_message">Your email address isn\'t valid</string>
+    <string name="a8c_email_message">Please use a non-Automattic email to submit a support ticket</string>
     <string name="support_identity_input_dialog_enter_email_and_name">To continue please enter your email address and name</string>
     <string name="support_identity_input_dialog_enter_email">Please enter your email address</string>
     <string name="support_identity_input_dialog_email_label">Email</string>
@@ -1671,7 +1675,7 @@
     <string name="checking_email">Checking email</string>
     <string name="email_invalid">Enter a valid email address</string>
     <string name="forgot_password">Lost your password?</string>
-    <string name="error_generic">An error occurred</string>
+    <string name="error_generic">Something went wrong</string>
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="invalid_site_url_message">Check that the site URL entered is valid</string>
     <string name="xmlrpc_missing_method_error">Couldn\'t connect. Required XML-RPC methods are missing on the server.</string>
