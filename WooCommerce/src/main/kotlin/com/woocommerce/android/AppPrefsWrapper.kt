@@ -57,12 +57,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun isOrderNotificationsChaChingEnabled() = AppPrefs.isOrderNotificationsChaChingEnabled()
 
-    fun updateUnseenReviewCount(count: Int) {
-        AppPrefs.updateUnseenReviewCount(count)
-    }
-
-    fun getUnseenReviewCount(): Int = AppPrefs.getUnseenReviewCount()
-
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
     }

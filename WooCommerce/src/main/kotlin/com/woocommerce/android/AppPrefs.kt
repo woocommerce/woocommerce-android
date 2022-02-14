@@ -35,7 +35,6 @@ object AppPrefs {
         SUPPORT_NAME,
         IS_USING_V4_API,
         HAS_UNSEEN_REVIEWS,
-        UNSEEN_REVIEWS_COUNT,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
@@ -281,12 +280,6 @@ object AppPrefs {
     fun setOrderNotificationsChaChingEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
-
-    fun updateUnseenReviewCount(count: Int) {
-        setInt(UNSEEN_REVIEWS_COUNT, count)
-    }
-
-    fun getUnseenReviewCount(): Int = getInt(UNSEEN_REVIEWS_COUNT, default = 0)
 
     fun getNumTimesMarkAllReadSnackShown(): Int =
         getInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, 0)
