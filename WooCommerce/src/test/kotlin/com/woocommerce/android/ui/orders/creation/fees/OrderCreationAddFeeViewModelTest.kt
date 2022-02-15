@@ -80,7 +80,7 @@ class OrderCreationAddFeeViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when submitting fee with invalid percentage value, then trigger UpdateFee with last valid value`() {
+    fun `when submitting fee with invalid percentage value, then trigger UpdateFee with zero as amount`() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
@@ -114,7 +114,7 @@ class OrderCreationAddFeeViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when percentage switch is activated, then trigger DisplayPercentageMode event`() {
+    fun `when percentage switch is activated, then trigger ChangePercentageEditTextVisibility event set as true`() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
