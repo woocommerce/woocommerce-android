@@ -8,6 +8,23 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent.ReloadReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent.RemoveHiddenReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent.RemoveProductReviewFromList
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent.ResetPendingState
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent.RevertHiddenReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationUIEvent.ShowOffLineError
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationUIEvent.ShowRefresh
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationUIEvent.ShowResponseError
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationUIEvent.ShowUndoUI
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayReloadReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveHiddenReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveProductReviewFromList
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRevertHiddenReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelaySetUpModerationUndo
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,12 +55,11 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val actionEvent = _actionEvent.asSharedFlow()
     private val uiEvent = _uiEvent.asSharedFlow()
 
-    private val reviewModerationHandler : ReviewModerationHandler = mock {
-        on {getReviewModerationUiEventFlow()} doReturn uiEvent
-        on {getReviewModerationActionEventFlow()} doReturn actionEvent
+    private val reviewModerationHandler: ReviewModerationHandler = mock {
+        on { reviewModerationUIEvents } doReturn uiEvent
+        on { reviewModerationActionEvents } doReturn actionEvent
     }
 
-    //private val reviewModerationHandler : ReviewModerationHandler = mock()
     @Before
     fun setup() {
         viewModel = spy(
@@ -268,85 +284,88 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `relay review moderation status showoffline error event`() =
+    fun `Relay review moderation status showoffline error event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(reviewModerationHandler.submitReviewStatusChange(any(),any())).doReturn(
+            whenever(reviewModerationHandler.submitReviewStatusChange(any(), any())).doReturn(
                 _uiEvent.run {
-                    _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowOffLineError)
+                    _uiEvent.emit(ShowOffLineError)
                 }
             )
-            var errorEvent: ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError? = null
+            var errorEvent: RelayShowError? = null
             viewModel.reviewModerationEvents.observeForever {
-                when(it) {
+                when (it) {
                     is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError -> errorEvent = it
-                    else -> {} //avoid warning
+                    else -> {} // avoid warning
                 }
             }
 
-            viewModel.relaytReviewStatusChange(mock(),mock())
-            verify(reviewModerationHandler,times(1)).submitReviewStatusChange(any(), any())
+            viewModel.relaytReviewStatusChange(mock(), mock())
+            verify(reviewModerationHandler, times(1)).submitReviewStatusChange(any(), any())
             assertNotNull(errorEvent)
             Assertions.assertThat(errorEvent!!.resID).isEqualTo(R.string.offline_error)
         }
 
     @Test
-    fun `relay review moderation status success`() =
+    fun `Relay review moderation status success`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-           whenever(reviewModerationHandler.submitReviewStatusChange(any(),any())).doReturn(
+            whenever(reviewModerationHandler.submitReviewStatusChange(any(), any())).doReturn(
                 _actionEvent.run {
-                    _actionEvent.emit(ReviewModeration.Handler.ReviewModerationActionEvent.RemoveHiddenReviews)
-                    _actionEvent.emit(ReviewModeration.Handler.ReviewModerationActionEvent.ResetPendingState)
-                    _actionEvent.emit(ReviewModeration.Handler.ReviewModerationActionEvent.ReloadReviews)
+                    _actionEvent.emit(RemoveHiddenReviews)
+                    _actionEvent.emit(ResetPendingState)
+                    _actionEvent.emit(ReloadReviews)
                 }
             )
 
-            var removeHiddenReviews :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveHiddenReviews? = null
-            var resetPendingState :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState? = null
-            var reloadReviews :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayReloadReviews? = null
+            var removeHiddenReviews: RelayRemoveHiddenReviews? = null
+            var resetPendingState: RelayResetPendingModerationState? = null
+            var reloadReviews: RelayReloadReviews? = null
 
-            viewModel.reviewModerationEvents.observeForever{
-                when(it){
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveHiddenReviews -> removeHiddenReviews = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState -> resetPendingState = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayReloadReviews -> reloadReviews = it
-                    else -> {} //avoid warning
+            viewModel.reviewModerationEvents.observeForever {
+                when (it) {
+                    is RelayRemoveHiddenReviews -> removeHiddenReviews = it
+                    is RelayResetPendingModerationState -> resetPendingState = it
+                    is RelayReloadReviews -> reloadReviews = it
+                    else -> {
+                    } // avoid warning
                 }
             }
 
-            viewModel.relaytReviewStatusChange(mock(),mock())
-            verify(reviewModerationHandler,times(1)).submitReviewStatusChange(any(), any())
+            viewModel.relaytReviewStatusChange(mock(), mock())
+
+            verify(reviewModerationHandler, times(1)).submitReviewStatusChange(any(), any())
             assertNotNull(removeHiddenReviews)
             assertNotNull(resetPendingState)
             assertNotNull(reloadReviews)
         }
 
     @Test
-    fun `relay review moderation status error`() =
+    fun `Relay review moderation status error`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-           whenever(reviewModerationHandler.submitReviewStatusChange(any(),any())).doReturn(
+            whenever(reviewModerationHandler.submitReviewStatusChange(any(), any())).doReturn(
                 _actionEvent.run {
-                    _actionEvent.emit(ReviewModeration.Handler.ReviewModerationActionEvent.ResetPendingState)
+                    _actionEvent.emit(ResetPendingState)
                 }.also {
-                    _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowResponseError)
-                    _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowRefresh(false))
+                    _uiEvent.emit(ShowResponseError)
+                    _uiEvent.emit(ShowRefresh(false))
                 }
             )
 
-            var showResponseError :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError? = null
-            var resetPendingState :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState? = null
-            var refresh :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh? = null
+            var showResponseError: RelayShowError? = null
+            var resetPendingState: RelayResetPendingModerationState? = null
+            var refresh: RelayToggleRefresh? = null
 
-            viewModel.reviewModerationEvents.observeForever{
-                when(it){
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError -> showResponseError = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState -> resetPendingState = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh -> refresh = it
-                    else -> {} //avoid warning
+            viewModel.reviewModerationEvents.observeForever {
+                when (it) {
+                    is RelayShowError -> showResponseError = it
+                    is RelayResetPendingModerationState -> resetPendingState = it
+                    is RelayToggleRefresh -> refresh = it
+                    else -> {
+                    } // avoid warning
                 }
             }
 
-            viewModel.relaytReviewStatusChange(mock(),mock())
-            verify(reviewModerationHandler,times(1)).submitReviewStatusChange(any(), any())
+            viewModel.relaytReviewStatusChange(mock(), mock())
+            verify(reviewModerationHandler, times(1)).submitReviewStatusChange(any(), any())
             assertNotNull(showResponseError)
             assertNotNull(resetPendingState)
             assertNotNull(refresh)
@@ -355,35 +374,35 @@ class ReviewListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `relay review moderation status error for spam or trash`() =
+    fun `Relay review moderation status error for spam or trash`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(reviewModerationHandler.submitReviewStatusChange(any(),any())).doReturn(
+            whenever(reviewModerationHandler.submitReviewStatusChange(any(), any())).doReturn(
                 _actionEvent.run {
-                    _actionEvent.emit(ReviewModeration.Handler.ReviewModerationActionEvent.ResetPendingState)
-                    _actionEvent.emit(ReviewModeration.Handler.ReviewModerationActionEvent.RevertHiddenReviews)
+                    _actionEvent.emit(ResetPendingState)
+                    _actionEvent.emit(RevertHiddenReviews)
                 }.also {
-                    _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowResponseError)
-                    _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowRefresh(false))
+                    _uiEvent.emit(ShowResponseError)
+                    _uiEvent.emit(ShowRefresh(false))
                 }
             )
 
-            var showResponseError :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError? = null
-            var resetPendingState :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState? = null
-            var refresh :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh? = null
-            var removeHiddenReview :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRevertHidenReviews? = null
+            var showResponseError: RelayShowError? = null
+            var resetPendingState: RelayResetPendingModerationState? = null
+            var refresh: RelayToggleRefresh? = null
+            var removeHiddenReview: RelayRevertHiddenReviews? = null
 
-            viewModel.reviewModerationEvents.observeForever{
-                when(it){
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError -> showResponseError = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState -> resetPendingState = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh -> refresh = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRevertHidenReviews -> removeHiddenReview = it
-                    else -> {} //avoid warning
+            viewModel.reviewModerationEvents.observeForever {
+                when (it) {
+                    is RelayShowError -> showResponseError = it
+                    is RelayResetPendingModerationState -> resetPendingState = it
+                    is RelayToggleRefresh -> refresh = it
+                    is RelayRevertHiddenReviews -> removeHiddenReview = it
+                    else -> {} // avoid warning
                 }
             }
 
-            viewModel.relaytReviewStatusChange(mock(),mock())
-            verify(reviewModerationHandler,times(1)).submitReviewStatusChange(any(), any())
+            viewModel.relaytReviewStatusChange(mock(), mock())
+            verify(reviewModerationHandler, times(1)).submitReviewStatusChange(any(), any())
             assertNotNull(showResponseError)
             assertNotNull(resetPendingState)
             assertNotNull(refresh)
@@ -393,139 +412,133 @@ class ReviewListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `receive review moderation pending status`() =
+    fun `Receive review moderation pending status`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val request = ProductReviewModerationRequest(reviews[0],ProductReviewStatus.HOLD)
+            val request = ProductReviewModerationRequest(reviews[0], ProductReviewStatus.HOLD)
             val productReviewmModerationEvent = OnRequestModerateReviewEvent(request)
             whenever(reviewModerationHandler.launchProductReviewModerationRequestFlow(any())).doReturn(
                 _uiEvent.run {
-                    _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowUndoUI(request))
-                    _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowRefresh(true))
+                    _uiEvent.emit(ShowUndoUI(request))
+                    _uiEvent.emit(ShowRefresh(true))
                 }
             )
 
-            var setupUndo :ReviewModeration.Relay.ReviewModerationRelayEvent.SetUpModerationUndo? = null
-            var refresh :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh? = null
+            var setupUndoRelay: RelaySetUpModerationUndo? = null
+            var refresh: RelayToggleRefresh? = null
 
-            viewModel.reviewModerationEvents.observeForever{
-                when(it){
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.SetUpModerationUndo -> setupUndo = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh -> refresh = it
-                    else -> {} //avoid warning
+            viewModel.reviewModerationEvents.observeForever {
+                when (it) {
+                    is RelaySetUpModerationUndo -> setupUndoRelay = it
+                    is RelayToggleRefresh -> refresh = it
+                    else -> {} // avoid warning
                 }
             }
 
             reviewModerationHandler.launchProductReviewModerationRequestFlow(productReviewmModerationEvent)
 
-
-            assertNotNull(setupUndo)
+            assertNotNull(setupUndoRelay)
             assertNotNull(refresh)
             Assertions.assertThat(refresh!!.isRefreshing).isEqualTo(true)
-            Assertions.assertThat(setupUndo!!.request).isEqualTo(request)
+            Assertions.assertThat(setupUndoRelay!!.request).isEqualTo(request)
         }
 
     @Test
-    fun `receive review moderation pending status for spam or trash`() =
+    fun `Receive review moderation pending status for spam or trash`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val request = ProductReviewModerationRequest(reviews[0],ProductReviewStatus.SPAM)
+            val request = ProductReviewModerationRequest(reviews[0], ProductReviewStatus.SPAM)
             val productReviewmModerationEvent = OnRequestModerateReviewEvent(request)
             whenever(reviewModerationHandler.launchProductReviewModerationRequestFlow(any())).doReturn(
                 _uiEvent.run {
-                    _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowUndoUI(request))
-                    _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowRefresh(true))
+                    _uiEvent.emit(ShowUndoUI(request))
+                    _uiEvent.emit(ShowRefresh(true))
                 }.also {
-                    _actionEvent.emit(ReviewModeration.Handler.ReviewModerationActionEvent.RemoveProductReviewFromList(reviews[0].remoteId))
+                    _actionEvent.emit(RemoveProductReviewFromList(reviews[0].remoteId))
                 }
             )
 
-            var setupUndo :ReviewModeration.Relay.ReviewModerationRelayEvent.SetUpModerationUndo? = null
-            var refresh :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh? = null
-            var removeProductFromList: ReviewModeration.Relay.ReviewModerationRelayEvent.RemoveProductReviewFromList? = null
+            var setupUndoRelay: RelaySetUpModerationUndo? = null
+            var refresh: RelayToggleRefresh? = null
+            var relayRemoveProductFromList: RelayRemoveProductReviewFromList? = null
 
-            viewModel.reviewModerationEvents.observeForever{
-                when(it){
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.SetUpModerationUndo -> setupUndo = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh -> refresh = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RemoveProductReviewFromList -> removeProductFromList = it
-                    else -> {} //avoid warning
+            viewModel.reviewModerationEvents.observeForever {
+                when (it) {
+                    is RelaySetUpModerationUndo -> setupUndoRelay = it
+                    is RelayToggleRefresh -> refresh = it
+                    is RelayRemoveProductReviewFromList -> relayRemoveProductFromList = it
+                    else -> {} // avoid warning
                 }
             }
 
             reviewModerationHandler.launchProductReviewModerationRequestFlow(productReviewmModerationEvent)
 
-
-            assertNotNull(setupUndo)
+            assertNotNull(setupUndoRelay)
             assertNotNull(refresh)
-            assertNotNull(removeProductFromList)
+            assertNotNull(relayRemoveProductFromList)
             Assertions.assertThat(refresh!!.isRefreshing).isEqualTo(true)
-            Assertions.assertThat(setupUndo!!.request).isEqualTo(request)
-            Assertions.assertThat(removeProductFromList!!.remoteReviewId).isEqualTo(reviews[0].remoteId)
+            Assertions.assertThat(setupUndoRelay!!.request).isEqualTo(request)
+            Assertions.assertThat(relayRemoveProductFromList!!.remoteReviewId).isEqualTo(reviews[0].remoteId)
         }
 
     @Test
-    fun `relay undo review moderation`() =
+    fun `Relay undo review moderation`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(reviewModerationHandler.undoReviewModerationAndResetState()).doReturn(
                 _actionEvent.run {
-                    _actionEvent.emit(ReviewModeration.Handler.ReviewModerationActionEvent.ResetPendingState)
+                    _actionEvent.emit(ResetPendingState)
                 }.also {
-                    _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowRefresh(false))
+                    _uiEvent.emit(ShowRefresh(false))
                 }
             )
 
+            var resetPendingState: RelayResetPendingModerationState? = null
+            var refresh: RelayToggleRefresh? = null
 
-            var resetPendingState :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState? = null
-            var refresh :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh? = null
-
-
-            viewModel.reviewModerationEvents.observeForever{
-                when(it){
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState -> resetPendingState = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh -> refresh = it
-                    else -> {} //avoid warning
+            viewModel.reviewModerationEvents.observeForever {
+                when (it) {
+                    is RelayResetPendingModerationState -> resetPendingState = it
+                    is RelayToggleRefresh -> refresh = it
+                    else -> {} // avoid warning
                 }
             }
+
             viewModel.relayUndoReviewModeration()
-            verify(reviewModerationHandler,times(1)).undoReviewModerationAndResetState()
+
+            verify(reviewModerationHandler, times(1)).undoReviewModerationAndResetState()
             assertNotNull(refresh)
             assertNotNull(resetPendingState)
             Assertions.assertThat(refresh!!.isRefreshing).isEqualTo(false)
-
         }
 
     @Test
-    fun `relay undo review moderation for spam or trash`() =
+    fun `Relay undo review moderation for spam or trash`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(reviewModerationHandler.undoReviewModerationAndResetState()).doReturn(
                 _actionEvent.run {
-                    _actionEvent.emit(ReviewModeration.Handler.ReviewModerationActionEvent.ResetPendingState)
-                    _actionEvent.emit(ReviewModeration.Handler.ReviewModerationActionEvent.RevertHiddenReviews)
+                    _actionEvent.emit(ResetPendingState)
+                    _actionEvent.emit(RevertHiddenReviews)
                 }.also {
                     _uiEvent.emit(ReviewModeration.Handler.ReviewModerationUIEvent.ShowRefresh(false))
                 }
             )
 
+            var resetPendingState: RelayResetPendingModerationState? = null
+            var refresh: RelayToggleRefresh? = null
+            var revertHiddenreviews: RelayRevertHiddenReviews? = null
 
-            var resetPendingState :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState? = null
-            var refresh :ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh? = null
-            var revertHiddenreviews: ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRevertHidenReviews? = null
-
-
-            viewModel.reviewModerationEvents.observeForever{
-                when(it){
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState -> resetPendingState = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh -> refresh = it
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRevertHidenReviews -> revertHiddenreviews = it
-                    else -> {} //avoid warning
+            viewModel.reviewModerationEvents.observeForever {
+                when (it) {
+                    is RelayResetPendingModerationState -> resetPendingState = it
+                    is RelayToggleRefresh -> refresh = it
+                    is RelayRevertHiddenReviews -> revertHiddenreviews = it
+                    else -> {} // avoid warning
                 }
             }
 
             viewModel.relayUndoReviewModeration()
-            verify(reviewModerationHandler,times(1)).undoReviewModerationAndResetState()
+            verify(reviewModerationHandler, times(1)).undoReviewModerationAndResetState()
             assertNotNull(refresh)
             assertNotNull(resetPendingState)
             assertNotNull(revertHiddenreviews)
             Assertions.assertThat(refresh!!.isRefreshing).isEqualTo(false)
-
         }
 }

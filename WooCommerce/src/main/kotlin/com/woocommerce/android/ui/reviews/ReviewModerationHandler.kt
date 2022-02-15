@@ -13,14 +13,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatusPayload
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @ActivityRetainedScoped
 class ReviewModerationHandler @Inject constructor(
-    private val productStore:WCProductStore,
-    private val selectedSite:SelectedSite,
+    private val productStore: WCProductStore,
+    private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus
-): ReviewModeration.Handler {
+) : ReviewModeration.Handler {
 
     private val _reviewModerationActionEvents =
         MutableSharedFlow<ReviewModerationActionEvent>(0)
@@ -28,21 +27,22 @@ class ReviewModerationHandler @Inject constructor(
     private val _reviewModerationUIEvents =
         MutableSharedFlow<ReviewModerationUIEvent>(0)
 
-    private val reviewModerationActionEvents: SharedFlow<ReviewModerationActionEvent> = _reviewModerationActionEvents.asSharedFlow()
+    val reviewModerationActionEvents: SharedFlow<ReviewModerationActionEvent> =
+        _reviewModerationActionEvents.asSharedFlow()
 
-    private  val reviewModerationUIEvents: SharedFlow<ReviewModerationUIEvent> = _reviewModerationUIEvents.asSharedFlow()
+    val reviewModerationUIEvents: SharedFlow<ReviewModerationUIEvent> = _reviewModerationUIEvents.asSharedFlow()
 
+    // This can only be read from outside this class.
     private var pendingModerationRequest: ProductReviewModerationRequest? = null
 
-
-    override suspend fun launchProductReviewModerationRequestFlow(event:OnRequestModerateReviewEvent) {
+    override suspend fun launchProductReviewModerationRequestFlow(event: OnRequestModerateReviewEvent) {
         pendingModerationRequest = event.request
         processReviewModerationActionStatus(event.request)
     }
 
-    private suspend fun processReviewModerationActionStatus(request:ProductReviewModerationRequest){
-        with(request){
-            when(actionStatus){
+    private suspend fun processReviewModerationActionStatus(request: ProductReviewModerationRequest) {
+        with(request) {
+            when (actionStatus) {
                 ActionStatus.PENDING -> {
                     emitUiEvent(ReviewModerationUIEvent.ShowUndoUI(request))
                     if (newStatus == ProductReviewStatus.SPAM || newStatus == ProductReviewStatus.TRASH) {
@@ -67,8 +67,9 @@ class ReviewModerationHandler @Inject constructor(
     }
 
     override suspend fun submitReviewStatusChange(
-        review: ProductReview ,
-        newStatus: ProductReviewStatus) {
+        review: ProductReview,
+        newStatus: ProductReviewStatus
+    ) {
         if (networkStatus.isConnected()) {
             val payload = UpdateProductReviewStatusPayload(
                 selectedSite.get(),
@@ -89,7 +90,6 @@ class ReviewModerationHandler @Inject constructor(
         }
     }
 
-
     override suspend fun undoReviewModerationAndResetState() {
         val newStatus = pendingModerationRequest?.newStatus
         val status = ProductReviewStatus.fromString(newStatus.toString())
@@ -101,20 +101,13 @@ class ReviewModerationHandler @Inject constructor(
         emitUiEvent(ReviewModerationUIEvent.ShowRefresh(false))
     }
 
-    private suspend fun emitUiEvent(event:ReviewModerationUIEvent){
-       _reviewModerationUIEvents.emit(event)
+    private suspend fun emitUiEvent(event: ReviewModerationUIEvent) {
+        _reviewModerationUIEvents.emit(event)
     }
 
-    private suspend fun emitActionEvent(event:ReviewModerationActionEvent){
-       _reviewModerationActionEvents.emit(event)
+    private suspend fun emitActionEvent(event: ReviewModerationActionEvent) {
+        _reviewModerationActionEvents.emit(event)
     }
-
-    fun getReviewModerationUiEventFlow():SharedFlow<ReviewModerationUIEvent> = reviewModerationUIEvents
-
-    fun getReviewModerationActionEventFlow():SharedFlow<ReviewModerationActionEvent> = reviewModerationActionEvents
 
     fun getPendingReviewModerationRequest() = pendingModerationRequest
-
-
-
 }

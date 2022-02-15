@@ -6,6 +6,23 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent.ReloadReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent.RemoveHiddenReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent.RemoveProductReviewFromList
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent.ResetPendingState
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationActionEvent.RevertHiddenReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationUIEvent.ShowOffLineError
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationUIEvent.ShowRefresh
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationUIEvent.ShowResponseError
+import com.woocommerce.android.ui.reviews.ReviewModeration.Handler.ReviewModerationUIEvent.ShowUndoUI
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayReloadReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveHiddenReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveProductReviewFromList
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRevertHiddenReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelaySetUpModerationUndo
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh
 import com.woocommerce.android.viewmodel.QueuedLiveData
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -22,41 +39,37 @@ import kotlinx.coroutines.launch
  * implementation . Any viewmodel class can implement ReviewHandler.Relay
  * interface to execute the same functionality.
  */
-abstract class BaseReviewModerationViewModel (
+abstract class BaseReviewModerationViewModel(
     savedState: SavedStateHandle,
-    private val reviewModerationHandler : ReviewModerationHandler
-    ):ScopedViewModel(savedState) ,ReviewModeration.Relay {
+    private val reviewModerationHandler: ReviewModerationHandler
+) : ScopedViewModel(savedState), ReviewModeration.Relay {
 
     private var _reviewModerationEvents = QueuedLiveData<ReviewModeration.Relay.ReviewModerationRelayEvent>()
-    var reviewModerationEvents : LiveData<ReviewModeration.Relay.ReviewModerationRelayEvent> = _reviewModerationEvents
-
-
+    var reviewModerationEvents: LiveData<ReviewModeration.Relay.ReviewModerationRelayEvent> = _reviewModerationEvents
 
     override fun collectModerationEvents() {
-        reviewModerationHandler.getReviewModerationActionEventFlow().onEach{ event ->
-            when(event){
-                is ReviewModeration.Handler.ReviewModerationActionEvent.RemoveHiddenReviews -> relayRemoveHiddenReviews()
-                is ReviewModeration.Handler.ReviewModerationActionEvent.ReloadReviews-> relayReloadReviews()
-                is ReviewModeration.Handler.ReviewModerationActionEvent.RemoveProductReviewFromList -> relayRemoveProductReviewFromList(event.remoteReviewId)
-                is ReviewModeration.Handler.ReviewModerationActionEvent.RevertHiddenReviews -> relayRevertHiddenReviews()
-                is ReviewModeration.Handler.ReviewModerationActionEvent.ResetPendingState -> relayResetPendingState()
-
+        reviewModerationHandler.reviewModerationActionEvents.onEach { event ->
+            when (event) {
+                is RemoveHiddenReviews -> relayRemoveHiddenReviews()
+                is ReloadReviews -> relayReloadReviews()
+                is RemoveProductReviewFromList -> relayRemoveProductReviewFromList(event.remoteReviewId)
+                is RevertHiddenReviews -> relayRevertHiddenReviews()
+                is ResetPendingState -> relayResetPendingState()
             }
         }.launchIn(viewModelScope)
-        reviewModerationHandler.getReviewModerationUiEventFlow().onEach{ uiEvent ->
-            when(uiEvent){
-                is ReviewModeration.Handler.ReviewModerationUIEvent.ShowUndoUI -> relayUndoModerationEvent(uiEvent.productReviewModerationRequest)
-                is ReviewModeration.Handler.ReviewModerationUIEvent.ShowRefresh -> relayRefresh(uiEvent.isRefreshing)
-                is ReviewModeration.Handler.ReviewModerationUIEvent.ShowResponseError -> relayReviewModerationUpdateError()
-                is ReviewModeration.Handler.ReviewModerationUIEvent.ShowOffLineError->relayShowOffLineError()
-
+        reviewModerationHandler.reviewModerationUIEvents.onEach { uiEvent ->
+            when (uiEvent) {
+                is ShowUndoUI -> relayUndoModerationEvent(uiEvent.productReviewModerationRequest)
+                is ShowRefresh -> relayRefresh(uiEvent.isRefreshing)
+                is ShowResponseError -> relayReviewModerationUpdateError()
+                is ShowOffLineError -> relayShowOffLineError()
             }
         }.launchIn(viewModelScope)
     }
 
     override fun relaytReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus) {
         launch {
-            reviewModerationHandler.submitReviewStatusChange(review,newStatus)
+            reviewModerationHandler.submitReviewStatusChange(review, newStatus)
         }
         AnalyticsTracker.track(
             AnalyticsTracker.Stat.REVIEW_ACTION,
@@ -64,27 +77,19 @@ abstract class BaseReviewModerationViewModel (
         )
     }
 
-
-
     override fun getPendingModerationRequest(): ProductReviewModerationRequest? {
         return reviewModerationHandler.getPendingReviewModerationRequest()
     }
 
-    override fun getPendingModerationNewStatus():String? {
-        reviewModerationHandler.getPendingReviewModerationRequest()?.let{
+    override fun getPendingModerationNewStatus(): String? {
+        reviewModerationHandler.getPendingReviewModerationRequest()?.let {
             return it.newStatus.toString()
         }
         return null
     }
 
-    override fun setPendingModerationRequest(request: ProductReviewModerationRequest?) {
-        //reviewModerationHandler.pendingModerationRequest = request
-        TODO()
-    }
-
     override fun relayUndoModerationEvent(productReviewModerationRequest: ProductReviewModerationRequest) {
-        triggerModerationEvent(ReviewModeration.Relay.ReviewModerationRelayEvent.SetUpModerationUndo(productReviewModerationRequest))
-
+        triggerModerationEvent(RelaySetUpModerationUndo(productReviewModerationRequest))
     }
     /* Using QueuedLiveData all events are reaching the observer , however sometimes it is before onResume
      * which can lead to undesired consequence  for example when removing a certain review from a list it
@@ -93,52 +98,46 @@ abstract class BaseReviewModerationViewModel (
      * that it always reaches at the correct moment and thus eliminating the need to add delay
      */
     private fun triggerModerationEvent(event: ReviewModeration.Relay.ReviewModerationRelayEvent) {
-        launch{
+        launch {
             _reviewModerationEvents.value = event
         }
-
     }
 
     override fun relayRemoveHiddenReviews() {
-        triggerModerationEvent(ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveHiddenReviews)
+        triggerModerationEvent(RelayRemoveHiddenReviews)
     }
-
 
     override fun relayRemoveProductReviewFromList(remoteReviewId: Long) {
-        triggerModerationEvent(ReviewModeration.Relay.ReviewModerationRelayEvent.RemoveProductReviewFromList(remoteReviewId))
+        triggerModerationEvent(RelayRemoveProductReviewFromList(remoteReviewId))
     }
 
-
-
     override fun relayRevertHiddenReviews() {
-        triggerModerationEvent(ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRevertHidenReviews)
+        triggerModerationEvent(RelayRevertHiddenReviews)
     }
 
     override fun relayResetPendingState() {
-        triggerModerationEvent(ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState)
+        triggerModerationEvent(RelayResetPendingModerationState)
     }
 
     override fun relayReloadReviews() {
-        triggerModerationEvent(ReviewModeration.Relay.ReviewModerationRelayEvent.RelayReloadReviews)
+        triggerModerationEvent(RelayReloadReviews)
     }
 
     override fun relayShowOffLineError() {
-        triggerModerationEvent(ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError(R.string.offline_error))
+        triggerModerationEvent(RelayShowError(R.string.offline_error))
     }
 
     override fun relayReviewModerationUpdateError() {
-        triggerModerationEvent(ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError(R.string.wc_moderate_review_error))
+        triggerModerationEvent(RelayShowError(R.string.wc_moderate_review_error))
     }
 
     override fun relayRefresh(isRefreshing: Boolean) {
-        triggerModerationEvent(ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh(isRefreshing))
+        triggerModerationEvent(RelayToggleRefresh(isRefreshing))
     }
 
     override fun relayUndoReviewModeration() {
         launch {
             reviewModerationHandler.undoReviewModerationAndResetState()
         }
-
     }
-
 }

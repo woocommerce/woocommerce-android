@@ -6,7 +6,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -33,9 +32,10 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
     }
+
     private val repository: ReviewDetailRepository = mock()
     private val savedState = SavedStateHandle()
-    private val reviewModerationHandler : ReviewModerationHandler = mock()
+    private val reviewModerationHandler: ReviewModerationHandler = mock()
 
     private val review = ProductReviewTestUtils.generateProductReview(id = REVIEW_ID, productId = PRODUCT_ID)
     private lateinit var viewModel: ReviewDetailViewModel
@@ -130,7 +130,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         }
 
         viewModel.moderateReview(SPAM)
-        verify(reviewModerationHandler,times(1)).launchProductReviewModerationRequestFlow(any())
+        verify(reviewModerationHandler, times(1)).launchProductReviewModerationRequestFlow(any())
         assertTrue(exitCalled)
     }
 
@@ -160,7 +160,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.moderateReview(SPAM)
-            verify(reviewModerationHandler,times(0)).launchProductReviewModerationRequestFlow(any())
+            verify(reviewModerationHandler, times(0)).launchProductReviewModerationRequestFlow(any())
             assertFalse(exitCalled)
             Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
         }

@@ -17,14 +17,14 @@ open class QueuedLiveData<T> : MutableLiveData<T>() {
     private val isActive = AtomicBoolean(false)
 
     override fun onActive() {
-        isActive.compareAndSet(false,true)
+        isActive.compareAndSet(false, true)
         while (values.isNotEmpty()) {
             setValue(values.poll())
         }
     }
 
     override fun onInactive() {
-        isActive.compareAndSet(true,false)
+        isActive.compareAndSet(true, false)
     }
 
     override fun setValue(value: T?) {
@@ -34,5 +34,4 @@ open class QueuedLiveData<T> : MutableLiveData<T>() {
             values.add(value)
         }
     }
-
 }

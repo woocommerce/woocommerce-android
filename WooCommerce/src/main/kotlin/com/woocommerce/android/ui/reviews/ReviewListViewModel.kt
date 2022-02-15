@@ -28,7 +28,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import javax.inject.Inject
 
-
 @OpenClassOnDebug
 @HiltViewModel
 class ReviewListViewModel @Inject constructor(
@@ -36,22 +35,18 @@ class ReviewListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val reviewRepository: ReviewListRepository,
-    private val reviewModerationHandler : ReviewModerationHandler,
-) : BaseReviewModerationViewModel (savedState,reviewModerationHandler),
+    reviewModerationHandler: ReviewModerationHandler
+) : BaseReviewModerationViewModel(savedState, reviewModerationHandler),
     ReviewModeration.Relay {
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
-
 
     private val _reviewList = MutableLiveData<List<ProductReview>>()
     val reviewList: LiveData<List<ProductReview>> = _reviewList
 
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
-
-
-
 
     init {
         EventBus.getDefault().register(this)
@@ -67,8 +62,6 @@ class ReviewListViewModel @Inject constructor(
         dispatcher.unregister(this)
         reviewRepository.onCleanup()
     }
-
-
 
     /**
      * Fetch and load cached reviews from the database, then fetch fresh reviews
@@ -190,9 +183,6 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
-
-
-
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
@@ -204,5 +194,4 @@ class ReviewListViewModel @Inject constructor(
     sealed class ReviewListEvent : Event() {
         data class MarkAllAsRead(val status: ActionStatus) : ReviewListEvent()
     }
-
 }

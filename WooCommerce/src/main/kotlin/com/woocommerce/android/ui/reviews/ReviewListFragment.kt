@@ -30,6 +30,14 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayReloadReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveHiddenReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveProductReviewFromList
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRevertHiddenReviews
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelaySetUpModerationUndo
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError
+import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -68,9 +76,7 @@ class ReviewListFragment :
     private val skeletonView = SkeletonView()
     private var menuMarkAllRead: MenuItem? = null
 
-
     private var changeReviewStatusSnackbar: Snackbar? = null
-
     private var _binding: FragmentReviewsListBinding? = null
     private val binding get() = _binding!!
 
@@ -168,7 +174,6 @@ class ReviewListFragment :
 
     override fun onStop() {
         super.onStop()
-
         changeReviewStatusSnackbar?.dismiss()
     }
 
@@ -189,62 +194,43 @@ class ReviewListFragment :
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.notifsLoadMoreProgress.isVisible = it }
         }
 
-
-
         viewModel.event.observe(
             viewLifecycleOwner,
             Observer { event ->
                 when (event) {
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
-
                 }
             }
         )
-
-        /*viewModel.moderateProductReview.observe(
-            viewLifecycleOwner,
-            Observer {
-                if (reviewsAdapter.isEmpty()) {
-                    viewModel.setPendingModerationRequest(it)
-                } else {
-                    it?.let { request -> handleReviewModerationRequest(request) }
-                }
-            }
-        )*/
 
         viewModel.reviewList.observe(
             viewLifecycleOwner,
             Observer {
                 showReviewList(it)
-                //check this use case
-                viewModel.getPendingModerationRequest()?.let {
-                    //handleReviewModerationRequest(it)
-                    //viewModel.setPendingModerationRequest(null)
-                }
             }
         )
     }
 
-    override fun setupReviewModerationObserver(){
+    override fun setupReviewModerationObserver() {
         viewModel.reviewModerationEvents.observe(
             viewLifecycleOwner,
             Observer { event ->
-                when(event){
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.SetUpModerationUndo -> setUpModerationUndo(event.request)
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RemoveProductReviewFromList-> removeProductReviewFromList(event.remoteReviewId)
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRemoveHiddenReviews -> removeHiddenReviews()
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayRevertHidenReviews -> revertHiddenReviews()
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayResetPendingModerationState -> resetPendingModerationState()
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayReloadReviews -> reloadReviews()
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayShowError -> showError(event.resID)
-                    is ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh -> toggleRefreshUI(event.isRefreshing)
+                when (event) {
+                    is RelaySetUpModerationUndo -> setUpModerationUndo(event.request)
+                    is RelayRemoveProductReviewFromList -> removeProductReviewFromList(event.remoteReviewId)
+                    is RelayRemoveHiddenReviews -> removeHiddenReviews()
+                    is RelayRevertHiddenReviews -> revertHiddenReviews()
+                    is RelayResetPendingModerationState -> resetPendingModerationState()
+                    is RelayReloadReviews -> reloadReviews()
+                    is RelayShowError -> showError(event.resID)
+                    is RelayToggleRefresh -> toggleRefreshUI(event.isRefreshing)
                 }
             }
         )
     }
 
-    override fun showError(resID:Int) {
+    override fun showError(resID: Int) {
         uiMessageResolver.showSnack(resID)
     }
 
@@ -297,7 +283,6 @@ class ReviewListFragment :
         menuMarkAllRead?.let { if (it.isVisible != show) it.isVisible = show }
     }
 
-
     override fun setUpModerationUndo(request: ProductReviewModerationRequest) {
         with(request) {
             var changeReviewStatusCanceled = false
@@ -310,7 +295,6 @@ class ReviewListFragment :
                 changeReviewStatusCanceled = true
 
                 // Add the notification back to the list
-                //Calling this directly from UI
                 viewModel.relayUndoReviewModeration()
                 AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
             }
@@ -338,8 +322,6 @@ class ReviewListFragment :
         AppRatingDialog.incrementInteractions()
     }
 
-
-
     override fun removeProductReviewFromList(remoteReviewId: Long) {
         reviewsAdapter.hideReviewWithId(remoteReviewId)
     }
@@ -352,9 +334,8 @@ class ReviewListFragment :
     }
 
     override fun removeHiddenReviews() {
-       reviewsAdapter.removeHiddenReviewFromList()
+        reviewsAdapter.removeHiddenReviewFromList()
     }
-
 
     override fun resetPendingModerationState() {
         reviewsAdapter.resetPendingModerationState()

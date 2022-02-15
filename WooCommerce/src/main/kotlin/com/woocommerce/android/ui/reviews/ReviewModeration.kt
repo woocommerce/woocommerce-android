@@ -5,69 +5,71 @@ import com.woocommerce.android.model.ProductReview
 interface ReviewModeration {
     interface Handler {
         suspend fun submitReviewStatusChange(
-            review: ProductReview ,
-            newStatus: ProductReviewStatus)
+            review: ProductReview,
+            newStatus: ProductReviewStatus
+        )
+
         suspend fun launchProductReviewModerationRequestFlow(event: OnRequestModerateReviewEvent)
         suspend fun undoReviewModerationAndResetState()
-        sealed class ReviewModerationActionEvent {
-            object RemoveHiddenReviews:ReviewModerationActionEvent()
-            object ReloadReviews: ReviewModerationActionEvent()
-            data class RemoveProductReviewFromList(val remoteReviewId: Long):ReviewModerationActionEvent()
-            object RevertHiddenReviews: ReviewModerationActionEvent()
-            object ResetPendingState: ReviewModerationActionEvent()
 
+        sealed class ReviewModerationActionEvent {
+            object RemoveHiddenReviews : ReviewModerationActionEvent()
+            object ReloadReviews : ReviewModerationActionEvent()
+            data class RemoveProductReviewFromList(val remoteReviewId: Long) : ReviewModerationActionEvent()
+            object RevertHiddenReviews : ReviewModerationActionEvent()
+            object ResetPendingState : ReviewModerationActionEvent()
         }
+
         sealed class ReviewModerationUIEvent {
             data class ShowUndoUI(
-                val productReviewModerationRequest :ProductReviewModerationRequest ): ReviewModerationUIEvent()
-            data class ShowRefresh(val isRefreshing:Boolean = false): ReviewModerationUIEvent()
-            object ShowResponseError: ReviewModerationUIEvent()
-            object ShowOffLineError:ReviewModerationUIEvent()
+                val productReviewModerationRequest: ProductReviewModerationRequest
+            ) : ReviewModerationUIEvent()
+            data class ShowRefresh(val isRefreshing: Boolean = false) : ReviewModerationUIEvent()
+            object ShowResponseError : ReviewModerationUIEvent()
+            object ShowOffLineError : ReviewModerationUIEvent()
         }
-
     }
+
     interface Relay {
         fun collectModerationEvents()
         fun relaytReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus)
-        fun relayRefresh(isRefreshing:Boolean = false)
+        fun relayRefresh(isRefreshing: Boolean = false)
         fun relayReviewModerationUpdateError()
         fun relayShowOffLineError()
         fun getPendingModerationRequest(): ProductReviewModerationRequest?
         fun getPendingModerationNewStatus(): String?
-        fun setPendingModerationRequest(request: ProductReviewModerationRequest?)
         fun relayUndoModerationEvent(productReviewModerationRequest: ProductReviewModerationRequest)
         fun relayRemoveHiddenReviews()
         fun relayRemoveProductReviewFromList(remoteReviewId: Long)
         fun relayRevertHiddenReviews()
         fun relayUndoReviewModeration()
         fun relayResetPendingState()
+        fun relayReloadReviews()
 
         sealed class ReviewModerationRelayEvent {
-            data class SetUpModerationUndo(val request: ProductReviewModerationRequest) : ReviewModerationRelayEvent()
-            data class RemoveProductReviewFromList(val remoteReviewId: Long ) :ReviewModerationRelayEvent()
+            data class RelaySetUpModerationUndo(
+                val request: ProductReviewModerationRequest
+            ) : ReviewModerationRelayEvent()
+            data class RelayRemoveProductReviewFromList(val remoteReviewId: Long) : ReviewModerationRelayEvent()
             data class RelayToggleRefresh(val isRefreshing: Boolean) : ReviewModerationRelayEvent()
-            object RelayResetPendingModerationState: ReviewModerationRelayEvent()
-            object RelayRevertHidenReviews :ReviewModerationRelayEvent()
-            object RelayRemoveHiddenReviews: ReviewModerationRelayEvent()
+            object RelayResetPendingModerationState : ReviewModerationRelayEvent()
+            object RelayRevertHiddenReviews : ReviewModerationRelayEvent()
+            object RelayRemoveHiddenReviews : ReviewModerationRelayEvent()
             object RelayReloadReviews : ReviewModerationRelayEvent()
-            data class RelayShowError(val resID:Int) : ReviewModerationRelayEvent()
+            data class RelayShowError(val resID: Int) : ReviewModerationRelayEvent()
         }
-
-        fun relayReloadReviews()
     }
 
-
     interface View {
-        //host UI functions
+        // host UI functions
         fun setUpModerationUndo(request: ProductReviewModerationRequest)
         fun removeProductReviewFromList(remoteReviewId: Long)
         fun revertHiddenReviews()
         fun removeHiddenReviews()
         fun resetPendingModerationState()
         fun setupReviewModerationObserver()
-        fun showError(resID:Int)
+        fun showError(resID: Int)
         fun reloadReviews()
         fun toggleRefreshUI(isRefreshing: Boolean)
-
     }
 }
