@@ -30,7 +30,7 @@ class CardReaderTracker @Inject constructor(
     ) {
         addPreferredPluginSlugProperty(properties)
 
-        val isError = errorType != null || errorDescription != null
+        val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
         if (isError) {
             trackerWrapper.track(
                 stat,
