@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.cardreader
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnSupportedCountry
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlin.test.assertFalse
@@ -84,6 +85,19 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
             ).thenReturn(CardReaderConfigForUSA)
 
             val isCurrencySupported = cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("CAD")
+
+            assertFalse(isCurrencySupported)
+        }
+
+    @Test
+    fun `given usd currency, when store location in unsupported country, then isCurrencySupported returns false`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("IN")
+            whenever(
+                cardReaderConfigFactory.getCardReaderConfigFor("IN")
+            ).thenReturn(CardReaderConfigForUnSupportedCountry)
+
+            val isCurrencySupported = cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("USD")
 
             assertFalse(isCurrencySupported)
         }
