@@ -2,7 +2,7 @@
 
 8.6
 -----
-
+- [***] All merchants can create Simple Payments orders. [https://github.com/woocommerce/woocommerce-android/issues/5804]
 
 8.5
 -----
