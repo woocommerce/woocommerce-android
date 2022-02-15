@@ -30,4 +30,3 @@ class MarkAllReviewsAsSeen @Inject constructor(
     object Fail : MarkReviewAsSeenResult()
     object Success : MarkReviewAsSeenResult()
 }
-

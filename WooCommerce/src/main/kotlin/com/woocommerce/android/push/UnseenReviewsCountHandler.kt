@@ -48,5 +48,4 @@ class UnseenReviewsCountHandler @Inject constructor(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
         ).filter { !it.read }.count()
-
 }
