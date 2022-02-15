@@ -84,7 +84,7 @@ class OrderCreationProductsAdapter(
                     }
                 }
                 append(" • ")
-                append(currencyFormatter(productModel.item.total))
+                append(currencyFormatter(productModel.item.total).replace(" ", "\u00A0"))
             }
 
             binding.productSku.text =
