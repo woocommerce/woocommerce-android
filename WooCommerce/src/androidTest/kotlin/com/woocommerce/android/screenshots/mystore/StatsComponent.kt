@@ -33,8 +33,10 @@ class StatsComponent : Screen(STATS_DASHBOARD) {
         }
     }
 
-    fun switchToStatsDashboardYearsTab() {
-        selectItemWithTitleInTabLayout(R.string.this_year, R.id.stats_tab_layout, R.id.app_bar_layout)
+    fun switchToStatsDashboardWeekTab(): MyStoreScreen {
+        selectItemWithTitleInTabLayout(R.string.this_week, R.id.app_bar_layout)
         waitForGraphToLoad()
+
+        return MyStoreScreen()
     }
 }
