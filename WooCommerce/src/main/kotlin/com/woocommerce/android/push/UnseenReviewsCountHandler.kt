@@ -21,8 +21,7 @@ class UnseenReviewsCountHandler @Inject constructor(
 ) {
 
     private val unseenReviewsCount: StateFlow<Int> =
-        notificationStore.observeNotificationChanges()
-            .filter { onlyNotificationUpdates(it) }
+        merge(unseenNotificationUpdates(), selectedSite.observe())
             .mapLatest { getUnreadReviewsNotificationCount() }
             .flowOn(Dispatchers.IO)
             .stateIn(
@@ -30,6 +29,10 @@ class UnseenReviewsCountHandler @Inject constructor(
                 SharingStarted.WhileSubscribed(),
                 getUnreadReviewsNotificationCount()
             )
+
+    private fun unseenNotificationUpdates() = notificationStore
+        .observeNotificationChanges()
+        .filter { onlyNotificationUpdates(it) }
 
     fun observeUnseenCount(): Flow<Int> = unseenReviewsCount
 

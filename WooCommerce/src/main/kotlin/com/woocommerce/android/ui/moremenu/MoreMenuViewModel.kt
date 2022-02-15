@@ -39,7 +39,7 @@ class MoreMenuViewModel @Inject constructor(
             siteUrl = getSelectedSiteAbsoluteUrl(),
             userAvatarUrl = accountStore.account.avatarUrl
         )
-        observeUnseenReviewsCount() //TODO HANDLE SITE SWITCH
+        observeUnseenReviewsCount()
     }
 
     private fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
