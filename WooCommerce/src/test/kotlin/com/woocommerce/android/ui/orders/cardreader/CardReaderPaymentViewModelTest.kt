@@ -334,10 +334,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((events[0] as ShowSnackbar).message)
-                .isEqualTo(R.string.card_reader_payment_order_paid_payment_cancelled)
+            assertThat(
+                (events[0] as ShowSnackbar).message
+            ).isEqualTo(
+                R.string.card_reader_payment_order_paid_payment_cancelled
+            )
             assertThat(events[1]).isInstanceOf(Exit::class.java)
-    }
+        }
 
     @Test
     fun `when flow started, then correct payment description is propagated to CardReaderManager`() =

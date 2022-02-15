@@ -4,9 +4,9 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactor
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import javax.inject.Inject
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import javax.inject.Inject
 
 class CardReaderPaymentCurrencySupportedChecker @Inject constructor(
     private val dispatchers: CoroutineDispatchers,

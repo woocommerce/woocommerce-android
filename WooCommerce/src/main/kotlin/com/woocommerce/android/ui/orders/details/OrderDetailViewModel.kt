@@ -44,6 +44,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -51,7 +52,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.Optimist
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
-import kotlinx.coroutines.withContext
 
 @OpenClassOnDebug
 @HiltViewModel
@@ -498,7 +498,8 @@ final class OrderDetailViewModel @Inject constructor(
                     orderInfo = OrderInfo(
                         order = order,
                         isPaymentCollectableWithCardReader = isPaymentCollectable,
-                        isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() && !loadReceiptUrl().isNullOrEmpty()
+                        isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() &&
+                            !loadReceiptUrl().isNullOrEmpty()
                     ),
                     orderStatus = orderStatus,
                     toolbarTitle = resourceProvider.getString(
