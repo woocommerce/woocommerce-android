@@ -77,6 +77,9 @@ open class Screen {
         val modeSuffix = if (isDarkTheme()) "dark" else "light"
         val screenshotName = "$screenshotCount-$name-$modeSuffix"
 //        try {
+        // Wait for 2 seconds to increase the probability of all
+        // screen components to be loaded properly
+        idleFor(2000)
         Screengrab.screenshot(screenshotName)
 //        } catch (e: Throwable) {
 //            Log.w("screenshots", "Error capturing $screenshotName", e)
@@ -342,7 +345,7 @@ open class Screen {
         return getCurrentActivity()!!.resources.getString(resourceID)
     }
 
-    protected fun idleFor(milliseconds: Int) {
+    fun idleFor(milliseconds: Int) {
         try {
             Thread.sleep(milliseconds.toLong())
         } catch (ex: Exception) {
