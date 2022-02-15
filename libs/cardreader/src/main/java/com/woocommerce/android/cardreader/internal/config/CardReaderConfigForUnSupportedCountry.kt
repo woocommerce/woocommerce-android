@@ -9,9 +9,9 @@ object CardReaderConfigForUnSupportedCountry : CardReaderConfig {
     override val countryCode: String
         get() = "N/A"
     override val supportedReaders: List<SpecificReader>
-        get() = listOf()
+        get() = emptyList()
     override val paymentMethodType: List<PaymentMethodType>
-        get() = listOf()
+        get() = emptyList()
     override val isStripeExtensionSupported: Boolean
         get() = false
 }
