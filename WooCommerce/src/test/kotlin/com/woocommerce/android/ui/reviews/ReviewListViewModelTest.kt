@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
@@ -29,6 +30,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen = mock()
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock()
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
     private lateinit var viewModel: ReviewListViewModel
@@ -42,7 +44,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
                 dispatcher,
                 selectedSite,
                 reviewListRepository,
-                markAllReviewsAsSeen
+                markAllReviewsAsSeen,
+                unseenReviewsCountHandler
             )
         )
 

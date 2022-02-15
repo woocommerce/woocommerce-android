@@ -66,7 +66,6 @@ class NotificationMessageHandlerTest {
 
     private val reviewNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(reviewNotificationPayload)!!.toAppModel(resourceProvider)
-    private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock()
 
     @Before
     fun setUp() {
@@ -81,7 +80,6 @@ class NotificationMessageHandlerTest {
             analyticsTracker = notificationAnalyticsTracker,
             zendeskHelper = zendeskHelper,
             notificationsParser = notificationsParser,
-            unseenReviewsCountHandler = unseenReviewsCountHandler
         )
 
         doReturn(true).whenever(accountStore).hasAccessToken()
@@ -168,13 +166,6 @@ class NotificationMessageHandlerTest {
         assertThat(actionCaptor.allValues.map { it.payload }).anySatisfy {
             assertThat(it).isNotInstanceOf(FetchNotificationPayload::class.java)
         }
-    }
-
-    @Test
-    fun ` When a new review notifications is received, then increment unseen reviews count by one`() {
-        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload, mock())
-
-        verify(unseenReviewsCountHandler, times(1)).updateUnseenCountBy(1)
     }
 
     @Test
