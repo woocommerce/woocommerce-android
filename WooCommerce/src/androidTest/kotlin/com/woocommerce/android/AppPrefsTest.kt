@@ -119,7 +119,7 @@ class AppPrefsTest {
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
-            status = CARD_READER_ONBOARDING_PENDING,
+            status = CARD_READER_ONBOARDING_COMPLETED,
             preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
         )
 
@@ -254,7 +254,7 @@ class AppPrefsTest {
                 remoteSiteId = 0L,
                 selfHostedSiteId = 0L
             )
-        ).isTrue
+        ).isFalse
     }
 
     @Test
