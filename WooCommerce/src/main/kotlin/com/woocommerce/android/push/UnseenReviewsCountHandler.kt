@@ -1,5 +1,6 @@
 package com.woocommerce.android.push
 
+import android.util.Log
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.CoroutineScope
@@ -22,12 +23,12 @@ class UnseenReviewsCountHandler @Inject constructor(
 
     private val unseenReviewsCount: StateFlow<Int> =
         merge(unseenNotificationUpdates(), selectedSite.observe())
-            .mapLatest { getUnreadReviewsNotificationCount() }
+            .mapLatest { getUnseenReviewsNotificationCount() }
             .flowOn(Dispatchers.IO)
             .stateIn(
-                appCoroutineScope,
-                SharingStarted.WhileSubscribed(),
-                getUnreadReviewsNotificationCount()
+                scope = appCoroutineScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = getUnseenReviewsNotificationCount()
             )
 
     private fun unseenNotificationUpdates() = notificationStore
@@ -36,16 +37,21 @@ class UnseenReviewsCountHandler @Inject constructor(
 
     fun observeUnseenCount(): Flow<Int> = unseenReviewsCount
 
-    private fun onlyNotificationUpdates(it: NotificationStore.OnNotificationChanged) =
-        when (it.causeOfChange) {
-            NotificationAction.UPDATE_NOTIFICATION,
-            NotificationAction.MARK_NOTIFICATIONS_SEEN -> true
+    private fun onlyNotificationUpdates(it: NotificationStore.OnNotificationChanged): Boolean {
+        Log.i("TEST_UNSEEN", "UnseenReviewsCountHandler onlyNotificationUpdates: ${it.causeOfChange.toString()}")
+        return when (it.causeOfChange) {
+            NotificationAction.MARK_NOTIFICATIONS_SEEN,
+            NotificationAction.FETCH_NOTIFICATION -> true
             else -> false
         }
+    }
 
-    private fun getUnreadReviewsNotificationCount() =
-        notificationStore.getNotificationsForSite(
+    private fun getUnseenReviewsNotificationCount(): Int {
+        val count = notificationStore.getNotificationsForSite(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
         ).filter { !it.read }.count()
+        Log.i("TEST_UNSEEN", "UnseenReviewsCountHandler getUnseenReviewsNotificationCount: $count")
+        return count
+    }
 }
