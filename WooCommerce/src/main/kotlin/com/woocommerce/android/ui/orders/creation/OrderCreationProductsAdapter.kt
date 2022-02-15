@@ -43,7 +43,7 @@ class OrderCreationProductsAdapter(
     inner class ProductViewHolder(private val binding: OrderCreationProductItemBinding) : ViewHolder(binding.root) {
         private val context = binding.root.context
         private val safePosition: Int?
-            get() = adapterPosition.takeIf { it != NO_POSITION }
+            get() = bindingAdapterPosition.takeIf { it != NO_POSITION }
 
         init {
             binding.root.setOnClickListener {
