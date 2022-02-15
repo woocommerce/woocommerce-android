@@ -1,6 +1,5 @@
 package com.woocommerce.android.push
 
-import android.util.Log
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.CoroutineScope
@@ -31,27 +30,23 @@ class UnseenReviewsCountHandler @Inject constructor(
                 initialValue = getUnseenReviewsNotificationCount()
             )
 
+    fun observeUnseenCount(): Flow<Int> = unseenReviewsCount
+
     private fun unseenNotificationUpdates() = notificationStore
         .observeNotificationChanges()
         .filter { onlyNotificationUpdates(it) }
 
-    fun observeUnseenCount(): Flow<Int> = unseenReviewsCount
-
-    private fun onlyNotificationUpdates(it: NotificationStore.OnNotificationChanged): Boolean {
-        Log.i("TEST_UNSEEN", "UnseenReviewsCountHandler onlyNotificationUpdates: ${it.causeOfChange.toString()}")
-        return when (it.causeOfChange) {
+    private fun onlyNotificationUpdates(it: NotificationStore.OnNotificationChanged) =
+        when (it.causeOfChange) {
             NotificationAction.MARK_NOTIFICATIONS_SEEN,
             NotificationAction.FETCH_NOTIFICATION -> true
             else -> false
         }
-    }
 
-    private fun getUnseenReviewsNotificationCount(): Int {
-        val count = notificationStore.getNotificationsForSite(
+    private fun getUnseenReviewsNotificationCount() =
+        notificationStore.getNotificationsForSite(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
         ).filter { !it.read }.count()
-        Log.i("TEST_UNSEEN", "UnseenReviewsCountHandler getUnseenReviewsNotificationCount: $count")
-        return count
-    }
+
 }
