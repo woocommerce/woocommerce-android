@@ -20,10 +20,10 @@ import java.util.Date
 @ExperimentalCoroutinesApi
 class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
-    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
+    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
     private val checker: CardReaderPaymentCollectibilityChecker = CardReaderPaymentCollectibilityChecker(
         repository,
-        inPersonPaymentsCanadaFeatureFlag
+        cardReaderPaymentCurrencySupportedChecker,
     )
 
     private val generatedOrder = OrderTestUtils.generateTestOrder()
@@ -31,7 +31,9 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     @Before
     fun setUp() {
         doReturn(false).whenever(repository).hasSubscriptionProducts(any())
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
+        runBlockingTest {
+            whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
+        }
     }
 
     @Test
@@ -78,7 +80,6 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun `when total amount greater than zero, then show collect button`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = getOrder(total = BigDecimal(2))
-
             val isCollectable = checker.isCollectable(order)
 
             assertThat(isCollectable).isTrue()
@@ -108,6 +109,9 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun `when order in not supported country then it is not collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = getOrder(currency = "INR")
+            whenever(
+                cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("INR")
+            ).thenReturn(false)
 
             val isCollectable = checker.isCollectable(order)
 
@@ -118,7 +122,9 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun `given Canada flag is enabled, when order in Canada, then it is collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = getOrder(currency = "CAD")
-            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(
+                cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("CAD")
+            ).thenReturn(true)
 
             val isCollectable = checker.isCollectable(order)
 
@@ -129,7 +135,9 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun `given Canada IPP flag is disabled, when order in Canada, then it is not collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = getOrder(currency = "CAD")
-            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
+            whenever(
+                cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("CAD")
+            ).thenReturn(false)
 
             val isCollectable = checker.isCollectable(order)
 

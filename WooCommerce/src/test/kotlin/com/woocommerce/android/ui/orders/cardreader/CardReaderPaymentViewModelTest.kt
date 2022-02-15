@@ -324,18 +324,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when payment not collectable, then flow terminated and snackbar shown`() {
-        whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
-        val events = mutableListOf<Event>()
-        viewModel.event.observeForever {
-            events.add(it)
-        }
+    fun `when payment not collectable, then flow terminated and snackbar shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
 
-        viewModel.start()
+            viewModel.start()
 
-        assertThat((events[0] as ShowSnackbar).message)
-            .isEqualTo(R.string.card_reader_payment_order_paid_payment_cancelled)
-        assertThat(events[1]).isInstanceOf(Exit::class.java)
+            assertThat((events[0] as ShowSnackbar).message)
+                .isEqualTo(R.string.card_reader_payment_order_paid_payment_cancelled)
+            assertThat(events[1]).isInstanceOf(Exit::class.java)
     }
 
     @Test
