@@ -100,13 +100,17 @@ class OrderCreationAddFeeViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when percentage switch is deactivated, then trigger DisplayAmountMode event`() {
+    fun `when percentage switch is deactivated, then trigger ChangePercentageEditTextVisibility event set as false`() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
         sut.onPercentageSwitchChanged(isChecked = false)
 
-        assertThat(lastReceivedEvent).isInstanceOf(DisplayAmountMode::class.java)
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? ChangePercentageEditTextVisibility }
+            ?.let { event -> assertThat(event.visible).isFalse }
+            ?: fail("Last event should be of ChangePercentageEditTextVisibility type")
     }
 
     @Test
@@ -116,6 +120,10 @@ class OrderCreationAddFeeViewModelTest : BaseUnitTest() {
 
         sut.onPercentageSwitchChanged(isChecked = true)
 
-        assertThat(lastReceivedEvent).isInstanceOf(DisplayPercentageMode::class.java)
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? ChangePercentageEditTextVisibility }
+            ?.let { event -> assertThat(event.visible).isTrue }
+            ?: fail("Last event should be of ChangePercentageEditTextVisibility type")
     }
 }

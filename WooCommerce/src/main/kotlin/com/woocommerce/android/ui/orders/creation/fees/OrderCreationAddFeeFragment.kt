@@ -76,13 +76,9 @@ class OrderCreationAddFeeFragment :
                     sharedViewModel.onNewFeeSubmitted(event.amount, event.feeType)
                     findNavController().navigateUp()
                 }
-                is DisplayPercentageMode -> {
-                    feeAmountEditText.isVisible = false
-                    feePercentageEditText.isVisible = true
-                }
-                is DisplayAmountMode -> {
-                    feeAmountEditText.isVisible = true
-                    feePercentageEditText.isVisible = false
+                is ChangePercentageEditTextVisibility -> {
+                    feePercentageEditText.isVisible = event.visible
+                    feeAmountEditText.isVisible = event.visible.not()
                 }
             }
         }
