@@ -340,7 +340,7 @@
     <string name="order_creation_add_customer_note">Add note</string>
     <string name="order_creation_products">Products</string>
     <string name="order_creation_add_products">Add Product</string>
-    <string name="order_creation_add_fee">Add Fee</string>
+    <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_new_customer">New customer</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
     <string name="order_creation_product_instock">In stock</string>
@@ -366,7 +366,7 @@
     <string name="order_creation_add_fee_removal_hint">Remove fee from order</string>
     <string name="order_creation_fee_amount_hint">Amount ($)</string>
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
-    <string name="order_creation_fee_percentage_toggle_text">Percentage</string>
+    <string name="order_creation_fee_percentage_toggle_text">Percentage fee</string>
     <!--
         Order Filters
     -->
