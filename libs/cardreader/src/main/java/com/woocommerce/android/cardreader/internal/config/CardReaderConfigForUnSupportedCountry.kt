@@ -5,9 +5,9 @@ import com.woocommerce.android.cardreader.connection.SpecificReader
 
 object CardReaderConfigForUnSupportedCountry : CardReaderConfig {
     override val currency: String
-        get() = "NA"
+        get() = "N/A"
     override val countryCode: String
-        get() = "NA"
+        get() = "N/A"
     override val supportedReaders: List<SpecificReader>
         get() = listOf()
     override val paymentMethodType: List<PaymentMethodType>
