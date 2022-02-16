@@ -74,7 +74,6 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         }
 
     init {
-        viewState = viewState.copy(customerNote = order.customerNote)
         val hasTaxes = order.totalTax > BigDecimal.ZERO
         updateViewState(hasTaxes)
     }
