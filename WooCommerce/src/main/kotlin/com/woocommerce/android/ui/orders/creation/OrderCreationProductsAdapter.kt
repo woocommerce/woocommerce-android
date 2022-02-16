@@ -43,7 +43,7 @@ class OrderCreationProductsAdapter(
     inner class ProductViewHolder(private val binding: OrderCreationProductItemBinding) : ViewHolder(binding.root) {
         private val context = binding.root.context
         private val safePosition: Int?
-            get() = adapterPosition.takeIf { it != NO_POSITION }
+            get() = bindingAdapterPosition.takeIf { it != NO_POSITION }
 
         init {
             binding.root.setOnClickListener {
@@ -69,18 +69,22 @@ class OrderCreationProductsAdapter(
             }
 
             binding.productAttributes.text = buildString {
-                if (productModel.isStockManaged) {
-                    append(
-                        context.getString(
-                            R.string.order_creation_product_stock_quantity,
-                            productModel.stockQuantity.formatToString()
-                        )
-                    )
+                if (productModel.item.isVariation && productModel.item.attributesDescription.isNotEmpty()) {
+                    append(productModel.item.attributesDescription)
                 } else {
-                    append(context.getString(R.string.order_creation_product_instock))
+                    if (productModel.isStockManaged) {
+                        append(
+                            context.getString(
+                                R.string.order_creation_product_stock_quantity,
+                                productModel.stockQuantity.formatToString()
+                            )
+                        )
+                    } else {
+                        append(context.getString(R.string.order_creation_product_instock))
+                    }
                 }
                 append(" • ")
-                append(currencyFormatter(productModel.item.total))
+                append(currencyFormatter(productModel.item.total).replace(" ", "\u00A0"))
             }
 
             binding.productSku.text =
