@@ -98,4 +98,18 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
                 assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.PERCENTAGE)
             } ?: fail("Last event should be of UpdateFee type")
     }
+
+    @Test
+    fun `when percentage switch is changed, then change viewState to the respective value`() {
+        var lastReceivedChange: Boolean? = null
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.isPercentageSelected
+        }
+
+        sut.onPercentageSwitchChanged(isChecked = true)
+        assertThat(lastReceivedChange).isTrue
+
+        sut.onPercentageSwitchChanged(isChecked = false)
+        assertThat(lastReceivedChange).isFalse
+    }
 }
