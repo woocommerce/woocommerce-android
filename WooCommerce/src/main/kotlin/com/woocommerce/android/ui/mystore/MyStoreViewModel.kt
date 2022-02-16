@@ -50,7 +50,8 @@ class MyStoreViewModel @Inject constructor(
     private val getTopPerformers: GetTopPerformers,
     private val currencyFormatter: CurrencyFormatter,
     private val selectedSite: SelectedSite,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
 ) : ScopedViewModel(savedState) {
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
@@ -114,6 +115,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onStatsGranularityChanged(granularity: StatsGranularity) {
+        usageTracksEventEmitter.interacted()
         _activeStatsGranularity.update { granularity }
         savedState[ACTIVE_STATS_GRANULARITY_KEY] = granularity
     }
