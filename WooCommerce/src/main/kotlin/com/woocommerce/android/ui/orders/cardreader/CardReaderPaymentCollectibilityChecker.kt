@@ -8,11 +8,12 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 class CardReaderPaymentCollectibilityChecker @Inject constructor(
-    private val orderDetailRepository: OrderDetailRepository
+    private val orderDetailRepository: OrderDetailRepository,
+    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
 ) {
-    fun isCollectable(order: Order): Boolean {
+    suspend fun isCollectable(order: Order): Boolean {
         return with(order) {
-            currency.equals("USD", ignoreCase = true) &&
+            cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
                 (listOf(Order.Status.Pending, Order.Status.Processing, Order.Status.OnHold)).any { it == status } &&
                 !isOrderPaid &&
                 order.total.compareTo(BigDecimal.ZERO) == 1 &&
