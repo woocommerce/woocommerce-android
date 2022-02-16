@@ -2,7 +2,7 @@
 
 8.6
 -----
-
+- [**] In-Person Payments: Add support for Stripe by WooCommerce extension
 
 8.5
 -----
