@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.UpdateFee
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -66,6 +67,7 @@ class OrderCreationEditFeeFragment :
             editFeeViewModel.onFeePercentageChanged(it?.toString().orEmpty())
         }
         feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            ActivityUtils.hideKeyboard(activity)
             feePercentageEditText.isVisible = isChecked
             feeAmountEditText.isVisible = isChecked.not()
             editFeeViewModel.onPercentageSwitchChanged(isChecked)
