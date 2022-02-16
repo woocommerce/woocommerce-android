@@ -223,7 +223,9 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when wcpay in test mode with live account, then wcpay_in_test_mode_with_live_account`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker
-                .trackOnboardingState(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()))
+                .trackOnboardingState(
+                    CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(WOOCOMMERCE_PAYMENTS)
+                )
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -235,7 +237,9 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when stripe in test mode with live account, then stripe_extension_in_test_mode_with_live_account`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker
-                .trackOnboardingState(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()))
+                .trackOnboardingState(
+                    CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(STRIPE_EXTENSION_GATEWAY)
+                )
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
