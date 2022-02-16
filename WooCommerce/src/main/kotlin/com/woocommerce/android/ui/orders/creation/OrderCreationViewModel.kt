@@ -47,7 +47,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -76,13 +75,6 @@ class OrderCreationViewModel @Inject constructor(
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
-        .onEach {
-            viewState = viewState.copy(
-                isOrderValidForCreation = it.items.isNotEmpty() &&
-                    it.shippingAddress != Address.EMPTY &&
-                    it.billingAddress != Address.EMPTY
-            )
-        }
         .asLiveData()
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
@@ -312,12 +304,11 @@ class OrderCreationViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
-        private val isOrderValidForCreation: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
-        val canCreateOrder: Boolean = isOrderValidForCreation && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        val canCreateOrder: Boolean = !isUpdatingOrderDraft && !showOrderUpdateSnackbar
     }
 }
 
