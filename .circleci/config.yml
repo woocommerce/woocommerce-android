@@ -100,6 +100,7 @@ jobs:
       - android/restore-gradle-cache:
           cache-prefix: tests-cache-v1
       - copy-gradle-properties
+      - update-gradle-memory
       - run:
           # The instrumentation tests are not currently used and do tend to get
           # out of date when the UI changes, failing to build.

@@ -90,6 +90,8 @@ android {
         packagingOptions {
             exclude 'META-INF/gradle/incremental.annotation.processors'
             exclude("META-INF/*.kotlin_module")
+            pickFirst 'META-INF/AL2.0'
+            pickFirst 'META-INF/LGPL2.1'
         }
     }
 
@@ -334,7 +336,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
     implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
     implementation "com.google.android.material:compose-theme-adapter:$composeVersion"
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.0.5'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
