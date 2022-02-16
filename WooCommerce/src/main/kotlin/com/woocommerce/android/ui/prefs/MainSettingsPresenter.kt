@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.prefs
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
@@ -66,15 +65,5 @@ class MainSettingsPresenter @Inject constructor(
                     .collect { setupJetpackInstallOption() }
             }
         }
-    }
-
-    override fun isCardReaderOnboardingCompleted(): Boolean {
-        return selectedSite.getIfExists()?.let {
-            AppPrefs.isCardReaderOnboardingCompleted(
-                localSiteId = it.id,
-                remoteSiteId = it.siteId,
-                selfHostedSiteId = it.selfHostedSiteId
-            )
-        } ?: false
     }
 }

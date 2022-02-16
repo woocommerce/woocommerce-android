@@ -324,19 +324,23 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when payment not collectable, then flow terminated and snackbar shown`() {
-        whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
-        val events = mutableListOf<Event>()
-        viewModel.event.observeForever {
-            events.add(it)
+    fun `when payment not collectable, then flow terminated and snackbar shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
+
+            viewModel.start()
+
+            assertThat(
+                (events[0] as ShowSnackbar).message
+            ).isEqualTo(
+                R.string.card_reader_payment_order_paid_payment_cancelled
+            )
+            assertThat(events[1]).isInstanceOf(Exit::class.java)
         }
-
-        viewModel.start()
-
-        assertThat((events[0] as ShowSnackbar).message)
-            .isEqualTo(R.string.card_reader_payment_order_paid_payment_cancelled)
-        assertThat(events[1]).isInstanceOf(Exit::class.java)
-    }
 
     @Test
     fun `when flow started, then correct payment description is propagated to CardReaderManager`() =

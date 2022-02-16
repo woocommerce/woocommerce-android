@@ -10,6 +10,8 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PA
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
@@ -77,6 +79,7 @@ class PaymentManagerTest {
     private val cancelPaymentAction: CancelPaymentAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
     private val paymentUtils: PaymentUtils = mock()
+    private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
 
     private val expectedSequence = listOf(
         InitializingPayment::class,
@@ -97,6 +100,7 @@ class PaymentManagerTest {
             cancelPaymentAction,
             paymentUtils,
             paymentErrorMapper,
+            cardReaderConfigFactory,
         )
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
         whenever(createPaymentAction.createPaymentIntent(any()))
@@ -120,6 +124,7 @@ class PaymentManagerTest {
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
         whenever(paymentUtils.isSupportedCurrency(any(), any())).thenReturn(true)
     }
 

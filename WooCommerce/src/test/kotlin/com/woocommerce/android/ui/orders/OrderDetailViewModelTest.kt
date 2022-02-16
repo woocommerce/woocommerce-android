@@ -118,6 +118,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
         doReturn(site).whenever(selectedSite).getIfExists()
         doReturn(site).whenever(selectedSite).get()
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        }
 
         viewModel = spy(
             OrderDetailViewModel(
@@ -155,6 +158,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
 
         val expectedViewState = orderWithParameters.copy(orderInfo = orderInfo.copy(order = nonRefundedOrder))
+
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
 
         doReturn(nonRefundedOrder).whenever(repository).getOrderById(any())
 

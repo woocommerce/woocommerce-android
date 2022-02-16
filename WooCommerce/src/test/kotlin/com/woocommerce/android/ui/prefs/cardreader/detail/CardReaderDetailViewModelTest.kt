@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.prefs.cardreader.detail
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -12,6 +10,7 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailab
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
@@ -38,7 +37,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
 
-    private val tracker: AnalyticsTrackerWrapper = mock()
+    private val tracker: CardReaderTracker = mock()
     private val appPrefs: AppPrefs = mock()
 
     @Test
@@ -347,7 +346,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as NotConnectedState).onPrimaryActionClicked.invoke()
 
             // THEN
-            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_TAPPED)
+            verify(tracker).trackDiscoveryTapped()
         }
 
     @Test
@@ -362,7 +361,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
 
             // THEN
-            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
+            verify(tracker).trackDisconnectTapped()
         }
 
     @Test

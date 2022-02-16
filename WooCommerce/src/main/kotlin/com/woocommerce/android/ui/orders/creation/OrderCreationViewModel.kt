@@ -23,9 +23,15 @@ import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.AddProduct
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomer
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomerNote
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditShipping
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowCreatedOrder
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -37,11 +43,17 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -201,6 +213,10 @@ class OrderCreationViewModel @Inject constructor(
         retryOrderDraftUpdateTrigger.tryEmit(Unit)
     }
 
+    fun onShippingButtonClicked() {
+        triggerEvent(EditShipping)
+    }
+
     fun onCreateOrderClicked(order: Order) {
         trackCreateOrderButtonClick()
         viewModelScope.launch {
@@ -283,6 +299,14 @@ class OrderCreationViewModel @Inject constructor(
                 KEY_HAS_CUSTOMER_DETAILS to _orderDraft.value.billingAddress.hasInfo()
             )
         )
+    }
+
+    fun onShippingEdited(amount: BigDecimal, name: String) {
+        _orderDraft.update { draft ->
+            val shipping = draft.shippingLines.firstOrNull()?.copy(total = amount, methodTitle = name)
+                ?: ShippingLine(methodId = "other", total = amount, methodTitle = name)
+            draft.copy(shippingLines = listOf(shipping))
+        }
     }
 
     @Parcelize

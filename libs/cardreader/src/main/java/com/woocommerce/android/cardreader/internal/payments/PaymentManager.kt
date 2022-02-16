@@ -35,6 +35,7 @@ internal class PaymentManager(
     private val cancelPaymentAction: CancelPaymentAction,
     private val paymentUtils: PaymentUtils,
     private val errorMapper: PaymentErrorMapper,
+    private val cardReaderConfigFactory: CardReaderConfigFactory,
 ) {
     suspend fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
         if (isInvalidState(paymentInfo)) return@flow
@@ -153,7 +154,7 @@ internal class PaymentManager(
         when {
             !paymentUtils.isSupportedCurrency(
                 paymentInfo.currency,
-                CardReaderConfigFactory().getCardReaderConfigFor(paymentInfo.countryCode)
+                cardReaderConfigFactory.getCardReaderConfigFor(paymentInfo.countryCode)
             ) -> {
                 emit(errorMapper.mapError(errorMessage = "Unsupported currency: $paymentInfo.currency"))
                 true

@@ -360,11 +360,11 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun getPaymentPluginType(): PluginType = appPrefs.getPaymentPluginType(
+    private fun getPaymentPluginType(): PluginType = appPrefs.getCardReaderPreferredPlugin(
         selectedSite.get().id,
         selectedSite.get().siteId,
         selectedSite.get().selfHostedSiteId
-    )
+    )!!
 
     private fun handleLocationFetchingError(result: CardReaderLocationRepository.LocationIdFetchingResult.Error) {
         this@CardReaderConnectViewModel.coroutineContext.cancelChildren()
