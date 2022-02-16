@@ -7,8 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
@@ -19,6 +17,7 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState.ButtonState
@@ -42,7 +41,7 @@ private const val PERCENT_100 = 100
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
-    private val tracker: AnalyticsTrackerWrapper,
+    private val tracker: CardReaderTracker,
     private val appPrefs: AppPrefs,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -136,7 +135,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onConnectBtnClicked() {
-        tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_TAPPED)
+        tracker.trackDiscoveryTapped()
         triggerEvent(CardReaderConnectScreen)
     }
 
@@ -145,7 +144,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun onDisconnectClicked() {
-        tracker.track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
+        tracker.trackDisconnectTapped()
         launch {
             clearLastKnowReader()
             val disconnectionResult = cardReaderManager.disconnectReader()

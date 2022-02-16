@@ -39,11 +39,11 @@ class CardReaderModule {
     ) = object : CardReaderStore {
         override suspend fun fetchCustomerIdByOrderId(orderId: Long): String? {
             return inPersonPaymentsStore.createCustomerByOrderId(
-                appPrefs.getPaymentPluginType(
+                appPrefs.getCardReaderPreferredPlugin(
                     selectedSite.get().id,
                     selectedSite.get().siteId,
                     selectedSite.get().selfHostedSiteId
-                ).toInPersonPaymentsPluginType(),
+                )!!.toInPersonPaymentsPluginType(),
                 selectedSite.get(),
                 orderId
             ).model?.customerId
@@ -51,11 +51,11 @@ class CardReaderModule {
 
         override suspend fun fetchConnectionToken(): String {
             val result = inPersonPaymentsStore.fetchConnectionToken(
-                appPrefs.getPaymentPluginType(
+                appPrefs.getCardReaderPreferredPlugin(
                     selectedSite.get().id,
                     selectedSite.get().siteId,
                     selectedSite.get().selfHostedSiteId
-                ).toInPersonPaymentsPluginType(),
+                )!!.toInPersonPaymentsPluginType(),
                 selectedSite.get()
             )
             return result.model?.token.orEmpty()
@@ -63,11 +63,11 @@ class CardReaderModule {
 
         override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): CapturePaymentResponse {
             val response = inPersonPaymentsStore.capturePayment(
-                appPrefs.getPaymentPluginType(
+                appPrefs.getCardReaderPreferredPlugin(
                     selectedSite.get().id,
                     selectedSite.get().siteId,
                     selectedSite.get().selfHostedSiteId
-                ).toInPersonPaymentsPluginType(),
+                )!!.toInPersonPaymentsPluginType(),
                 selectedSite.get(),
                 paymentId,
                 orderId

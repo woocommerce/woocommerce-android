@@ -75,7 +75,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account country not supported, then country not supported state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(""))
+                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
 
             val viewModel = createVM()
 
@@ -124,7 +124,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given account country not supported, when learn more clicked, then app shows learn more section`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(""))
+                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
             val viewModel = createVM()
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
@@ -137,7 +137,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given account country not supported, when contact support clicked, then app navigates to support screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(""))
+                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
             val viewModel = createVM()
 
             (viewModel.viewStateData.value as UnsupportedCountryState).onContactSupportActionClicked.invoke()
@@ -229,7 +229,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay in test mode with live stripe account, then wcpay in test mode state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
+                .thenReturn(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()))
 
             val viewModel = createVM()
 
@@ -462,7 +462,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account rejected, then account rejected state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountRejected)
+                .thenReturn(CardReaderOnboardingState.StripeAccountRejected(mock()))
 
             val viewModel = createVM()
 
@@ -512,7 +512,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account overdue requirements, then account overdue requirements state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountOverdueRequirement)
+                .thenReturn(CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()))
 
             val viewModel = createVM()
 
@@ -525,7 +525,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account under review, then account under review state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountUnderReview)
+                .thenReturn(CardReaderOnboardingState.StripeAccountUnderReview(mock()))
 
             val viewModel = createVM()
 
