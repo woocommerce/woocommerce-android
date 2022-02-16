@@ -91,7 +91,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                             )
                     }
                 is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount ->
-                    viewState.value = OnboardingViewState.StripeAcountError.WCPayInTestModeWithLiveAccountState(
+                    viewState.value = OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
@@ -327,7 +327,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
             )
 
-            data class WCPayInTestModeWithLiveAccountState(
+            data class PluginInTestModeWithLiveAccountState(
                 override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit
             ) : StripeAcountError(
