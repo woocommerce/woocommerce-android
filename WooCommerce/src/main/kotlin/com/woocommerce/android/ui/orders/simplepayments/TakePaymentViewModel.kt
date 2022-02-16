@@ -128,7 +128,6 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onCardReaderPaymentCompleted() {
-        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.card_reader_payment_completed_payment_header))
         AnalyticsTracker.track(
             AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
             mapOf(
