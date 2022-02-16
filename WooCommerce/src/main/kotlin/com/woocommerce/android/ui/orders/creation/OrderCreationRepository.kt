@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.Address.Companion
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.OrderMapper
