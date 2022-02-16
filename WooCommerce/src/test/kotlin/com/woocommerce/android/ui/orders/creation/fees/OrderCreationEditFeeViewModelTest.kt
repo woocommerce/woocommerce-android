@@ -98,32 +98,4 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
                 assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.PERCENTAGE)
             } ?: fail("Last event should be of UpdateFee type")
     }
-
-    @Test
-    fun `when percentage switch is deactivated, then trigger ChangePercentageEditTextVisibility event set as false`() {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever { lastReceivedEvent = it }
-
-        sut.onPercentageSwitchChanged(isChecked = false)
-
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? ChangePercentageEditTextVisibility }
-            ?.let { event -> assertThat(event.visible).isFalse }
-            ?: fail("Last event should be of ChangePercentageEditTextVisibility type")
-    }
-
-    @Test
-    fun `when percentage switch is activated, then trigger ChangePercentageEditTextVisibility event set as true`() {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever { lastReceivedEvent = it }
-
-        sut.onPercentageSwitchChanged(isChecked = true)
-
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? ChangePercentageEditTextVisibility }
-            ?.let { event -> assertThat(event.visible).isTrue }
-            ?: fail("Last event should be of ChangePercentageEditTextVisibility type")
-    }
 }

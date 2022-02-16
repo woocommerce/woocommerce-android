@@ -48,7 +48,6 @@ class OrderCreationEditFeeViewModel @Inject constructor(
 
     fun onPercentageSwitchChanged(isChecked: Boolean) {
         viewState = viewState.copy(isPercentageSelected = isChecked)
-        triggerEvent(ChangePercentageEditTextVisibility(visible = isChecked))
     }
 
     fun onFeeAmountChanged(feeAmount: BigDecimal) {
@@ -71,10 +70,6 @@ class OrderCreationEditFeeViewModel @Inject constructor(
     enum class FeeType {
         AMOUNT, PERCENTAGE
     }
-
-    data class ChangePercentageEditTextVisibility(
-        val visible: Boolean
-    ) : Event()
     data class UpdateFee(
         val amount: BigDecimal,
         val feeType: FeeType

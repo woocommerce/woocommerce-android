@@ -14,7 +14,6 @@ import com.woocommerce.android.databinding.FragmentOrderCreationEditFeeBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.ChangePercentageEditTextVisibility
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.UpdateFee
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,22 +66,9 @@ class OrderCreationEditFeeFragment :
             editFeeViewModel.onFeePercentageChanged(it?.toString().orEmpty())
         }
         feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            feePercentageEditText.isVisible = isChecked
+            feeAmountEditText.isVisible = isChecked.not()
             editFeeViewModel.onPercentageSwitchChanged(isChecked)
-        }
-    }
-
-    private fun FragmentOrderCreationEditFeeBinding.observeEvents() {
-        editFeeViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is UpdateFee -> {
-                    sharedViewModel.onFeeEdited(event.amount, event.feeType)
-                    findNavController().navigateUp()
-                }
-                is ChangePercentageEditTextVisibility -> {
-                    feePercentageEditText.isVisible = event.visible
-                    feeAmountEditText.isVisible = event.visible.not()
-                }
-            }
         }
     }
 
@@ -96,6 +82,17 @@ class OrderCreationEditFeeFragment :
             }
             new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) {
                 feeTypeSwitch.isChecked = it
+            }
+        }
+    }
+
+    private fun observeEvents() {
+        editFeeViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is UpdateFee -> {
+                    sharedViewModel.onFeeEdited(event.amount, event.feeType)
+                    findNavController().navigateUp()
+                }
             }
         }
     }
