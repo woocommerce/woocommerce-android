@@ -3,7 +3,6 @@ package com.woocommerce.android.push
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
@@ -18,24 +17,20 @@ class UnseenReviewsCountHandler @Inject constructor(
     private val notificationStore: NotificationStore,
     private val selectedSite: SelectedSite
 ) {
-    private val unseenReviewsCount: StateFlow<Int> =
-        merge(
-            notificationStore.observeNotificationChanges(),
-            selectedSite.observe()
-        )
-            .mapLatest { getUnseenReviewsNotificationCount() }
-            .flowOn(Dispatchers.IO)
-            .stateIn(
+    private val unseenReviewsCount: SharedFlow<Int> =
+        selectedSite.observe().flatMapLatest {
+            notificationStore.observeNotificationsForSite(
+                site = selectedSite.get(),
+                filterBySubtype = listOf(STORE_REVIEW.toString())
+            )
+        }
+            .map { it.count { notification -> !notification.read } }
+            .distinctUntilChanged()
+            .shareIn(
                 scope = appCoroutineScope,
                 started = SharingStarted.WhileSubscribed(),
-                initialValue = getUnseenReviewsNotificationCount()
+                replay = 1
             )
 
     fun observeUnseenCount(): Flow<Int> = unseenReviewsCount
-
-    private fun getUnseenReviewsNotificationCount() =
-        notificationStore.getNotificationsForSite(
-            site = selectedSite.get(),
-            filterBySubtype = listOf(STORE_REVIEW.toString())
-        ).filter { !it.read }.count()
 }
