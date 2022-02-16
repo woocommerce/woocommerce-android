@@ -146,8 +146,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             viewModel.onShippingButtonClicked()
         }
         paymentSection.feesLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
-        paymentSection.addFeesButton.setOnClickListener {
-            viewModel.onAddFeeClicked()
+        paymentSection.editFeesButton.setOnClickListener {
+            viewModel.onFeeButtonClicked()
         }
     }
 

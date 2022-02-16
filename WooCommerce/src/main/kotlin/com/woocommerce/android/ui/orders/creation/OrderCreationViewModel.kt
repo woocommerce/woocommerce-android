@@ -26,7 +26,7 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel.FeeType
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.FeeType
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -168,7 +168,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     @Suppress("UnusedPrivateMember")
-    fun onNewFeeSubmitted(feeValue: BigDecimal, feeType: FeeType) {
+    fun onFeeEdited(feeValue: BigDecimal, feeType: FeeType) {
         // TODO handle fee submission
     }
 
@@ -199,16 +199,16 @@ class OrderCreationViewModel @Inject constructor(
         triggerEvent(AddProduct)
     }
 
-    fun onAddFeeClicked() {
-        triggerEvent(AddFee)
-    }
-
     fun onProductClicked(item: Order.Item) {
         triggerEvent(ShowProductDetails(item))
     }
 
     fun onRetryPaymentsClicked() {
         retryOrderDraftUpdateTrigger.tryEmit(Unit)
+    }
+
+    fun onFeeButtonClicked() {
+        triggerEvent(EditFee)
     }
 
     fun onShippingButtonClicked() {

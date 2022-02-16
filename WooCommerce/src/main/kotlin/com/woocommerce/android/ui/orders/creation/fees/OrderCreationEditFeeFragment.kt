@@ -10,27 +10,29 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentOrderCreationAddFeeBinding
+import com.woocommerce.android.databinding.FragmentOrderCreationEditFeeBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel.*
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.ChangePercentageEditTextVisibility
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.UpdateFee
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderCreationAddFeeFragment :
-    BaseFragment(R.layout.fragment_order_creation_add_fee) {
+class OrderCreationEditFeeFragment :
+    BaseFragment(R.layout.fragment_order_creation_edit_fee) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
-    private val addFeeViewModel by viewModels<OrderCreationAddFeeViewModel>()
+    private val editFeeViewModel by viewModels<OrderCreationEditFeeViewModel>()
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        with(FragmentOrderCreationAddFeeBinding.bind(view)) {
+        with(FragmentOrderCreationEditFeeBinding.bind(view)) {
             bindViews()
             observeEvents()
             observeViewStateData()
@@ -45,35 +47,35 @@ class OrderCreationAddFeeFragment :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_done -> addFeeViewModel.onDoneSelected().let { true }
+            R.id.menu_done -> editFeeViewModel.onDoneSelected().let { true }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun getFragmentTitle() = getString(R.string.order_creation_add_fee)
 
-    private fun FragmentOrderCreationAddFeeBinding.bindViews() {
+    private fun FragmentOrderCreationEditFeeBinding.bindViews() {
         feeAmountEditText.initView(
             currency = sharedViewModel.currentDraft.currency,
-            decimals = addFeeViewModel.currencyDecimals,
+            decimals = editFeeViewModel.currencyDecimals,
             currencyFormatter = currencyFormatter
         )
         feeAmountEditText.value.observe(viewLifecycleOwner) {
-            addFeeViewModel.onFeeAmountChanged(it)
+            editFeeViewModel.onFeeAmountChanged(it)
         }
         feePercentageEditText.setOnTextChangedListener {
-            addFeeViewModel.onFeePercentageChanged(it?.toString().orEmpty())
+            editFeeViewModel.onFeePercentageChanged(it?.toString().orEmpty())
         }
         feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            addFeeViewModel.onPercentageSwitchChanged(isChecked)
+            editFeeViewModel.onPercentageSwitchChanged(isChecked)
         }
     }
 
-    private fun FragmentOrderCreationAddFeeBinding.observeEvents() {
-        addFeeViewModel.event.observe(viewLifecycleOwner) { event ->
+    private fun FragmentOrderCreationEditFeeBinding.observeEvents() {
+        editFeeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is UpdateFee -> {
-                    sharedViewModel.onNewFeeSubmitted(event.amount, event.feeType)
+                    sharedViewModel.onFeeEdited(event.amount, event.feeType)
                     findNavController().navigateUp()
                 }
                 is ChangePercentageEditTextVisibility -> {
@@ -84,8 +86,8 @@ class OrderCreationAddFeeFragment :
         }
     }
 
-    private fun FragmentOrderCreationAddFeeBinding.observeViewStateData() {
-        addFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+    private fun FragmentOrderCreationEditFeeBinding.observeViewStateData() {
+        editFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.feeAmount.takeIfNotEqualTo(old?.feeAmount) {
                 feeAmountEditText.setValueIfDifferent(it)
             }

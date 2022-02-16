@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.fees
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationAddFeeViewModel.*
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import org.assertj.core.api.Assertions.assertThat
@@ -11,12 +11,12 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import java.math.BigDecimal
 
-class OrderCreationAddFeeViewModelTest : BaseUnitTest() {
-    private lateinit var sut: OrderCreationAddFeeViewModel
+class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
+    private lateinit var sut: OrderCreationEditFeeViewModel
 
     @Before
     fun setUp() {
-        sut = OrderCreationAddFeeViewModel(
+        sut = OrderCreationEditFeeViewModel(
             SavedStateHandle(),
             mock(),
             mock()

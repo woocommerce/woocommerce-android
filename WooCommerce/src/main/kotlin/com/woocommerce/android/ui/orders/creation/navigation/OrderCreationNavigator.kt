@@ -17,8 +17,8 @@ object OrderCreationNavigator {
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             is AddProduct ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
-            is AddFee ->
-                OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationAddFeeFragment()
+            is EditFee ->
+                OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment()
             is ShowProductDetails ->
                 OrderCreationFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(target.item)
