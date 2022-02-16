@@ -1,6 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfig
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigSupportedCountry
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -19,7 +19,7 @@ internal class PaymentUtils {
 
     fun isSupportedCurrency(
         currency: String,
-        cardReaderConfig: CardReaderConfig
+        cardReaderConfig: CardReaderConfigSupportedCountry
     ): Boolean = currency.equals(
         cardReaderConfig.currency, ignoreCase = true
     )
