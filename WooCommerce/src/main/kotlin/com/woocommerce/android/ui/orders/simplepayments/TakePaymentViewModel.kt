@@ -129,8 +129,9 @@ class TakePaymentViewModel @Inject constructor(
 
     fun onCardReaderPaymentCompleted() {
         launch {
-            // this fun is called even when the payment fails, so we check the status of the order to
-            // determine whether payment succeeded
+            // this function is called even when the payment fails - in other words, it tells us
+            // the card reader flow completed but not necessarily successfully -, so we check the
+            // status of the order to determine whether payment succeeded
             val status = orderStore.getOrderByIdAndSite(navArgs.order.id, selectedSite.get())?.status
             if (status == CoreOrderStatus.COMPLETED.value) {
                 AnalyticsTracker.track(
@@ -149,6 +150,7 @@ class TakePaymentViewModel @Inject constructor(
                     )
                 )
             }
+
             delay(DELAY_MS)
             triggerEvent(MultiLiveEvent.Event.Exit)
         }
