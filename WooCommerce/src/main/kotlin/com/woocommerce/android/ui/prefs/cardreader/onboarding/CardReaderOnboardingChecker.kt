@@ -26,7 +26,7 @@ import javax.inject.Inject
 const val SUPPORTED_WCPAY_VERSION = "3.2.1"
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-const val SUPPORTED_STRIPE_EXTENSION_VERSION = "5.8.1"
+const val SUPPORTED_STRIPE_EXTENSION_VERSION = "6.2.0"
 
 class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
