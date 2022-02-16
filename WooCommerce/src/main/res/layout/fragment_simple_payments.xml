@@ -8,7 +8,8 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/major_100">
 
         <LinearLayout
             android:id="@+id/container"
