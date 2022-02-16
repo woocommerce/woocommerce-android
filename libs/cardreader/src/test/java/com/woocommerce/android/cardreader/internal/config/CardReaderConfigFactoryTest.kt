@@ -35,10 +35,13 @@ class CardReaderConfigFactoryTest {
         assertThat(cardReaderConfig).isInstanceOf(expectedCardReaderConfig::class.java)
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun `given invalid country code, then exception is thrown`() {
+    @Test
+    fun `given unsupported country code, then unsupported country card reader config is returned`() {
         val countryCode = "invalid country code"
+        val expectedCardReaderConfig = CardReaderConfigForUnSupportedCountry
 
-        cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
+        val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
+
+        assertThat(cardReaderConfig).isInstanceOf(expectedCardReaderConfig::class.java)
     }
 }
