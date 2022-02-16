@@ -106,7 +106,7 @@ ext {
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = "2.3.0"
     mediapickerVersion = 'trunk-00947a9086ecdf2192b0bdc95a22e1647696d0b1'
-    wordPressLoginVersion = '78/bc6e1dc665af6188a99c2f64af3e5f331358828e'
+    wordPressLoginVersion = '78-bc6e1dc665af6188a99c2f64af3e5f331358828e'
     aboutAutomatticVersion = '0.0.4'
 }
 
