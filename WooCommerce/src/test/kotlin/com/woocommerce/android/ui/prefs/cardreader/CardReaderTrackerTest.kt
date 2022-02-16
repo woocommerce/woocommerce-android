@@ -220,7 +220,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when onboarding PluginInTestModeWithLiveStripeAccount, then reason=wcpay_in_test_mode_with_live_account`() =
+    fun `when wcpay in test mode with live account, then wcpay_in_test_mode_with_live_account`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker
                 .trackOnboardingState(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()))
@@ -228,6 +228,18 @@ class CardReaderTrackerTest : BaseUnitTest() {
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
                 check { assertThat(it["reason"]).isEqualTo("wcpay_in_test_mode_with_live_account") }
+            )
+        }
+
+    @Test
+    fun `when stripe in test mode with live account, then stripe_extension_in_test_mode_with_live_account`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker
+                .trackOnboardingState(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()))
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("stripe_extension_in_test_mode_with_live_account") }
             )
         }
 
