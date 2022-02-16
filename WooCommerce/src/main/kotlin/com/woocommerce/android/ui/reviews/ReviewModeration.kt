@@ -2,6 +2,34 @@ package com.woocommerce.android.ui.reviews
 
 import com.woocommerce.android.model.ProductReview
 
+/* This is the ReviewModeration interface
+ * It consists of 3 parts implemented by 3 different classes
+ *
+ * The first is the ReviewModerationHandler
+ * This class contains all the business logic for Review Moderation
+ * It is responsible for
+ * a) Receiving the moderation event from DetailReviewFragment
+ * b) Updating the ProductStore with review status and share the result
+ * c) Decide what needs to be done to the UI at various stage of moderation
+ * e) It primarily publishes events via shared flow
+ *
+ * @see com.woocommerce.android.ui.reviews.ReviewModerationHandler
+ *
+ * The next is the class implementing relay interface
+ * A base class implementation is done as ViewModel
+ * This class receives events from the Handler via a collector
+ * and "relays" them to the View as Live Data events .
+ *
+ * @see com.woocommerce.android.ui.reviews.BaseReviewModerationViewModel
+ *
+ * Finally  we come to the View
+ * This class implements all the UI related functionality for showing the intermediate  moderation UI
+ * (like showing undo snackbar and refresh loader) and updating
+ * the Reviews list as per the events received from handler via the Relay Class
+ *
+ * @see com.woocommerce.android.ui.reviews.ReviewListViewModel
+ *
+ */
 interface ReviewModeration {
     interface Handler {
         suspend fun submitReviewStatusChange(

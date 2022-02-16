@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-/* This class has (almost) all the logic required for ReviewModeration Interaction
+/* This class has all the logic required for ReviewModeration Interaction
  * between View(Fragment) and The ReviewModerationHandler
  * The number of function to be overridden was becoming too large
  * to contain in the RewviewlistViewModel. There are few functions
