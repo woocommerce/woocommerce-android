@@ -13,16 +13,12 @@ class PaymentChargeRepository @Inject constructor(
     private val appPrefs: AppPrefs
 ) {
     private val activePlugin: WCInPersonPaymentsStore.InPersonPaymentsPluginType?
-        get() = try {
-            appPrefs.getPaymentPluginType(
-                selectedSite.get().id,
-                selectedSite.get().siteId,
-                selectedSite.get().selfHostedSiteId
-            ).toInPersonPaymentsPluginType()
-        } catch (e: IllegalStateException) {
-            WooLog.e(WooLog.T.ORDERS, "Active Payment Plugin is not set")
-            null
-        }
+        get() = appPrefs.getCardReaderPreferredPlugin(
+            selectedSite.get().id,
+            selectedSite.get().siteId,
+            selectedSite.get().selfHostedSiteId
+        )?.toInPersonPaymentsPluginType()
+            ?: null.also { WooLog.e(WooLog.T.ORDERS, "Active Payment Plugin is not set") }
 
     suspend fun fetchCardDataUsedForOrderPayment(chargeId: String): CardDataUsedForOrderPaymentResult {
         val plugin = activePlugin
