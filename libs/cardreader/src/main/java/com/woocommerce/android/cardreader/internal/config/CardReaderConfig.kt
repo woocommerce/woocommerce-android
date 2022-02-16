@@ -5,7 +5,7 @@ import com.woocommerce.android.cardreader.connection.SpecificReader
 
 sealed class CardReaderConfig
 
-sealed class CardReaderConfigSupportedCountry(
+sealed class CardReaderConfigForSupportedCountry(
     val currency: String,
     val countryCode: String,
     val supportedReaders: List<SpecificReader>,
@@ -13,4 +13,4 @@ sealed class CardReaderConfigSupportedCountry(
     val isStripeExtensionSupported: Boolean,
 ) : CardReaderConfig()
 
-object CardReaderConfigUnSupportedCountry : CardReaderConfig()
+object CardReaderConfigForUnsupportedCountry : CardReaderConfig()

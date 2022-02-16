@@ -7,7 +7,7 @@ import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigSupportedCountry
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
@@ -57,7 +57,7 @@ internal class CreatePaymentAction(
     private fun createParams(paymentInfo: PaymentInfo): PaymentIntentParameters {
         val amountInSmallestCurrencyUnit = paymentUtils.convertBigDecimalInDollarsToLongInCents(paymentInfo.amount)
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(paymentInfo.countryCode)
-            as CardReaderConfigSupportedCountry
+            as CardReaderConfigForSupportedCountry
         val builder = paymentIntentParametersFactory.createBuilder(
             cardReaderConfig.paymentMethodType
         )

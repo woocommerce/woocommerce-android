@@ -5,7 +5,7 @@ class CardReaderConfigFactory {
         return when (countryCode) {
             "US" -> CardReaderConfigForUSA
             "CA" -> CardReaderConfigForCanada
-            else -> CardReaderConfigUnSupportedCountry
+            else -> CardReaderConfigForUnsupportedCountry
         }
     }
 }

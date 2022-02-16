@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.cardreader
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.test.runBlockingTest
@@ -94,7 +95,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("IN")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("IN")
-            ).thenReturn(CardReaderConfigForUnSupportedCountry)
+            ).thenReturn(CardReaderConfigForUnsupportedCountry)
 
             val isCurrencySupported = cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("USD")
 

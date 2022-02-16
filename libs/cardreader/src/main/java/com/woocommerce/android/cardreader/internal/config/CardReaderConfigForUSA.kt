@@ -3,7 +3,7 @@ package com.woocommerce.android.cardreader.internal.config
 import com.stripe.stripeterminal.external.models.PaymentMethodType
 import com.woocommerce.android.cardreader.connection.SpecificReader
 
-object CardReaderConfigForUSA : CardReaderConfigSupportedCountry(
+object CardReaderConfigForUSA : CardReaderConfigForSupportedCountry(
     currency = "USD",
     countryCode = "US",
     supportedReaders = listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2),
