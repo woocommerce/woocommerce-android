@@ -66,9 +66,6 @@ class OrderCreationEditFeeFragment :
             editFeeViewModel.onFeePercentageChanged(it?.toString().orEmpty())
         }
         feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            ActivityUtils.hideKeyboard(activity)
-            feePercentageEditText.isVisible = isChecked
-            feeAmountEditText.isVisible = isChecked.not()
             editFeeViewModel.onPercentageSwitchChanged(isChecked)
         }
     }
@@ -81,8 +78,11 @@ class OrderCreationEditFeeFragment :
             new.feePercentage.takeIfNotEqualTo(old?.feePercentage) {
                 feePercentageEditText.setTextIfDifferent(it.toString())
             }
-            new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) {
-                feeTypeSwitch.isChecked = it
+            new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) { isChecked ->
+                ActivityUtils.hideKeyboard(activity)
+                feePercentageEditText.isVisible = isChecked
+                feeAmountEditText.isVisible = isChecked.not()
+                feeTypeSwitch.isChecked = isChecked
             }
         }
     }
