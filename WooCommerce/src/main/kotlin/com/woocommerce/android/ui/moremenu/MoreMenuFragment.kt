@@ -54,8 +54,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
 
         val view = binding.root
         binding.menu.apply {
-            // Dispose of the Composition when the view's LifecycleOwner
-            // is destroyed
+            // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme {
@@ -111,6 +110,8 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     }
 
     private fun navigateToInbox() {
-        // TODO open new Inbox screen
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuFragmentToInboxFragment()
+        )
     }
 }
