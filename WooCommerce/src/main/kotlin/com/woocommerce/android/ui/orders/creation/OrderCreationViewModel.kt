@@ -57,6 +57,7 @@ class OrderCreationViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
+        private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -166,9 +167,12 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
-    @Suppress("UnusedPrivateMember")
     fun onFeeEdited(feeValue: BigDecimal) {
-        // TODO handle fee submission
+        val newFee = Order.FeeLine.EMPTY.copy(
+            name = ORDER_CUSTOM_FEE_NAME,
+            total = feeValue
+        )
+        _orderDraft.update { it.copy(feesLines = listOf(newFee)) }
     }
 
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
