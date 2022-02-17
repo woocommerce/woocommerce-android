@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
@@ -16,6 +17,8 @@ import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardi
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -37,7 +40,10 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         whenever(model.getUserRoles()).thenReturn(arrayListOf(WCUserRole.ADMINISTRATOR))
         onBlocking { it.fetchUserInfo() } doReturn model
     }
-    private val selectedSite: SelectedSite = mock()
+    private val selectedSite: SelectedSite = mock {
+        on(it.get()).thenReturn(SiteModel())
+    }
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val countryCode = "US"
 
     @Test
@@ -118,6 +124,54 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.event.value)
                 .isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
+        }
+
+    @Test
+    fun `given preferred plugin Stripe, when learn more clicked, then app navigates to Stripe docs`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(STRIPE_EXTENSION_GATEWAY)
+
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
+
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS)
+        }
+
+    @Test
+    fun `given preferred plugin WCPay, when learn more clicked, then app navigates to wcpay docs`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(WOOCOMMERCE_PAYMENTS)
+
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
+
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+        }
+
+    @Test
+    fun `given preferred plugin null, when learn more clicked, then app navigates to wcpay docs`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(null)
+
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as UnsupportedCountryState).onLearnMoreActionClicked.invoke()
+
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
     @Test
@@ -588,6 +642,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             onboardingChecker,
             tracker,
             userEligibilityFetcher,
-            selectedSite
+            selectedSite,
+            appPrefsWrapper,
         )
 }
