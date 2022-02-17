@@ -174,7 +174,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
-
     @Test
     fun `given account country not supported, when learn more clicked, then app shows learn more section`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
