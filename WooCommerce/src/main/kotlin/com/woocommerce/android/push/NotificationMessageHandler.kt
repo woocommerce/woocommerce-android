@@ -6,8 +6,10 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_RECEIVED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_TAPPED
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.model.*
+import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.model.Notification
+import com.woocommerce.android.model.isOrderNotification
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -202,9 +204,6 @@ class NotificationMessageHandler @Inject constructor(
             }
         }
 
-        if (notification.isReviewNotification) {
-            setHasUnseenReviewNotifs(true)
-        }
         EventBus.getDefault().post(NotificationReceivedEvent(notification.channelType))
     }
 
@@ -255,7 +254,6 @@ class NotificationMessageHandler @Inject constructor(
     fun removeAllNotificationsFromSystemsBar() {
         clearNotifications()
         notificationBuilder.cancelAllNotifications()
-        setHasUnseenReviewNotifs(false)
     }
 
     @Synchronized
@@ -265,7 +263,6 @@ class NotificationMessageHandler @Inject constructor(
             .forEach { row ->
                 if (row.value.remoteNoteId == remoteNoteId) {
                     notificationBuilder.cancelNotification(row.key)
-                    EventBus.getDefault().post(NotificationSeenEvent(row.value.channelType))
                 } else {
                     keptNotifs[row.key] = row.value
                 }
@@ -283,7 +280,6 @@ class NotificationMessageHandler @Inject constructor(
             .forEach { row ->
                 if (row.key == localPushId) {
                     notificationBuilder.cancelNotification(row.key)
-                    EventBus.getDefault().post(NotificationSeenEvent(row.value.channelType))
                 } else {
                     keptNotifs[row.key] = row.value
                 }
@@ -301,7 +297,6 @@ class NotificationMessageHandler @Inject constructor(
         ACTIVE_NOTIFICATIONS_MAP.toMap().asSequence().forEach { row ->
             if (row.value.channelType == type && row.value.remoteSiteId == remoteSiteId) {
                 notificationBuilder.cancelNotification(row.key)
-                EventBus.getDefault().post(NotificationSeenEvent(type))
             } else {
                 keptNotifs[row.key] = row.value
             }
@@ -314,18 +309,6 @@ class NotificationMessageHandler @Inject constructor(
     private fun updateNotificationsState() {
         if (!hasNotifications()) {
             notificationBuilder.cancelAllNotifications()
-            setHasUnseenReviewNotifs(false)
-        }
-    }
-
-    /**
-     * Called when we want to update the unseen state of review notifs - changes the related
-     * shared preference and posts an EventBus event so main activity can update the badge
-     */
-    private fun setHasUnseenReviewNotifs(hasUnseen: Boolean) {
-        if (appPrefsWrapper.hasUnseenReviews() != hasUnseen) {
-            appPrefsWrapper.setHasUnseenReviews(hasUnseen)
-            EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
         }
     }
 }
