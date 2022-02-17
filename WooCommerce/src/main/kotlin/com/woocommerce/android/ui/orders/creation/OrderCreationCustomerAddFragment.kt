@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -40,6 +41,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     private val addressViewModel: AddressViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
 
+    private var fragmentViewBinding: FragmentCreationEditCustomerAddressBinding? = null
     private var shippingBinding: LayoutAddressFormBinding? = null
     private var billingBinding: LayoutAddressFormBinding? = null
     private var showShippingAddressFormSwitch: LayoutAddressSwitchBinding? = null
@@ -75,6 +77,8 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
 
     private fun observeViewState() {
         addressViewModel.viewStateData.observe(viewLifecycleOwner) { _, new ->
+            fragmentViewBinding?.progressIndicator?.isVisible = new.isLoading
+
             val newBilling = new.addressSelectionStates[BILLING]
             val newShipping = new.addressSelectionStates[SHIPPING]
 
@@ -136,10 +140,13 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
 
         showShippingAddressFormSwitch = LayoutAddressSwitchBinding.inflate(layoutInflater)
 
-        FragmentCreationEditCustomerAddressBinding.bind(view).container.apply {
-            addView(billingBinding?.root)
-            addView(showShippingAddressFormSwitch?.root)
-            addView(shippingBinding?.root)
+        fragmentViewBinding = FragmentCreationEditCustomerAddressBinding.bind(view)
+        fragmentViewBinding?.container.apply {
+            if (this != null) {
+                addView(billingBinding?.root)
+                addView(showShippingAddressFormSwitch?.root)
+                addView(shippingBinding?.root)
+            }
         }
 
         updateShippingBindingVisibility(showShippingAddressFormSwitch?.addressSwitch?.isChecked ?: false)
@@ -254,6 +261,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
 
     override fun onDestroyView() {
         super.onDestroyView()
+        fragmentViewBinding = null
         shippingBinding = null
         billingBinding = null
         showShippingAddressFormSwitch = null

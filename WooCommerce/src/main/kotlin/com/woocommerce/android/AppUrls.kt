@@ -40,6 +40,8 @@ object AppUrls {
     const val WPCOM_ADD_PAYMENT_METHOD = "https://wordpress.com/me/purchases/add-payment-method"
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS =
         "https://docs.woocommerce.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/"
+    const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS =
+        "https://docs.woocommerce.com/document/stripe/accept-in-person-payments-with-stripe/"
 
     const val WOOCOMMERCE_M2_PURCHASE_CARD_READER = "https://woocommerce.com/products/m2-card-reader/"
     const val WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY = "https://woocommerce.com/products/hardware/"
