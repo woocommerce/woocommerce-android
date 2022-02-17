@@ -34,9 +34,12 @@ class OrderCreationEditFeeViewModel @Inject constructor(
             ?.currencyDecimalNumber
             ?: DEFAULT_DECIMAL_PRECISION
 
+    private val appliedPercentageFromOrderTotal
+        get() = (navArgs.orderTotal * viewState.feePercentage) / PERCENTAGE_BASE
+
     private val activeFeeValue
         get() = when (viewState.isPercentageSelected) {
-            true -> viewState.feePercentage.calculateFromOrderTotal()
+            true -> appliedPercentageFromOrderTotal
             false -> viewState.feeAmount
         }
 
@@ -57,9 +60,6 @@ class OrderCreationEditFeeViewModel @Inject constructor(
             feePercentage = feePercentage.toBigDecimalOrNull() ?: BigDecimal.ZERO
         )
     }
-
-    private fun BigDecimal.calculateFromOrderTotal() =
-        (navArgs.orderTotal * viewState.feePercentage) / PERCENTAGE_BASE
 
     @Parcelize
     data class ViewState(
