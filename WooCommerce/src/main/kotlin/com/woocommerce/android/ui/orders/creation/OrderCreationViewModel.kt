@@ -208,7 +208,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onFeeButtonClicked() {
-        triggerEvent(EditFee)
+        triggerEvent(EditFee(_orderDraft.value.total))
     }
 
     fun onShippingButtonClicked() {
