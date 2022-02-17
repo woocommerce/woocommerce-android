@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.orders.creation.fees
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.FeeType.AMOUNT
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.FeeType.PERCENTAGE
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -35,12 +33,6 @@ class OrderCreationEditFeeViewModel @Inject constructor(
         get() = wooCommerceStore.getSiteSettings(selectedSite.get())
             ?.currencyDecimalNumber
             ?: DEFAULT_DECIMAL_PRECISION
-
-    private val activeFeeType
-        get() = when (viewState.isPercentageSelected) {
-            true -> PERCENTAGE
-            false -> AMOUNT
-        }
 
     private val activeFeeValue
         get() = when (viewState.isPercentageSelected) {
@@ -76,9 +68,6 @@ class OrderCreationEditFeeViewModel @Inject constructor(
         val isPercentageSelected: Boolean = false
     ) : Parcelable
 
-    enum class FeeType {
-        AMOUNT, PERCENTAGE
-    }
     data class UpdateFee(
         val amount: BigDecimal
     ) : Event()
