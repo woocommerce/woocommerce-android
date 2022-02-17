@@ -91,7 +91,7 @@ class OrderCreationEditFeeFragment :
         editFeeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is UpdateFee -> {
-                    sharedViewModel.onFeeEdited(event.amount, event.feeType)
+                    sharedViewModel.onFeeEdited(event.amount)
                     findNavController().navigateUp()
                 }
             }

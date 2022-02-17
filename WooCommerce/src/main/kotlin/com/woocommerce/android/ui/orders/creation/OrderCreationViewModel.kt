@@ -168,7 +168,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     @Suppress("UnusedPrivateMember")
-    fun onFeeEdited(feeValue: BigDecimal, feeType: FeeType) {
+    fun onFeeEdited(feeValue: BigDecimal) {
         // TODO handle fee submission
     }
 

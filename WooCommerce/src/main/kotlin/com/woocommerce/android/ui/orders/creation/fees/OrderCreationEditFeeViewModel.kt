@@ -46,7 +46,7 @@ class OrderCreationEditFeeViewModel @Inject constructor(
         }
 
     fun onDoneSelected() {
-        triggerEvent(UpdateFee(activeFeeValue, activeFeeType))
+        triggerEvent(UpdateFee(activeFeeValue))
     }
 
     fun onPercentageSwitchChanged(isChecked: Boolean) {
@@ -74,7 +74,6 @@ class OrderCreationEditFeeViewModel @Inject constructor(
         AMOUNT, PERCENTAGE
     }
     data class UpdateFee(
-        val amount: BigDecimal,
-        val feeType: FeeType
+        val amount: BigDecimal
     ) : Event()
 }
