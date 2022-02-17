@@ -150,5 +150,9 @@
         android:id="@+id/orderCreationEditFeeFragment"
         android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeFragment"
         android:label="OrderCreationEditFeeFragment"
-        tools:layout="@layout/fragment_order_creation_edit_fee" />
+        tools:layout="@layout/fragment_order_creation_edit_fee" >
+        <argument
+            android:name="orderTotal"
+            app:argType="java.math.BigDecimal" />
+    </fragment>
 </navigation>

@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewM
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -22,6 +23,8 @@ class OrderCreationEditFeeViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState) {
+    private val navArgs: OrderCreationEditFeeFragmentArgs by savedState.navArgs()
+
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
