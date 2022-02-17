@@ -39,7 +39,6 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
             .run { this as? UpdateFee }
             ?.let { updateFeeEvent ->
                 assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal(25))
-                assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.PERCENTAGE)
             } ?: fail("Last event should be of UpdateFee type")
     }
 
@@ -59,7 +58,6 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
             .run { this as? UpdateFee }
             ?.let { updateFeeEvent ->
                 assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal(123))
-                assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.AMOUNT)
             } ?: fail("Last event should be of UpdateFee type")
     }
 
@@ -75,7 +73,6 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
             .run { this as? UpdateFee }
             ?.let { updateFeeEvent ->
                 assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal.ZERO)
-                assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.AMOUNT)
             } ?: fail("Last event should be of UpdateFee type")
     }
 
@@ -95,7 +92,6 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
             .run { this as? UpdateFee }
             ?.let { updateFeeEvent ->
                 assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal.ZERO)
-                assertThat(updateFeeEvent.feeType).isEqualTo(FeeType.PERCENTAGE)
             } ?: fail("Last event should be of UpdateFee type")
     }
 
