@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.moremenu
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
@@ -69,6 +71,11 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         setupObservers()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -77,6 +84,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
+                is ViewInboxEvent -> navigateToInbox()
             }
         }
     }
@@ -102,8 +110,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         )
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun navigateToInbox() {
+        // TODO open new Inbox screen
     }
 }

@@ -1,25 +1,37 @@
 package com.woocommerce.android.ui.moremenu
 
 import androidx.core.net.toUri
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.NotificationSeenEvent
+import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.moremenu.MenuButtonType.*
+import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
+import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
 import com.woocommerce.android.ui.reviews.ReviewListRepository
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
@@ -69,6 +81,13 @@ class MoreMenuViewModel @Inject constructor(
                 icon = R.drawable.ic_more_menu_reviews,
                 badgeCount = unseenReviewsCount,
                 onClick = ::onReviewsButtonClick
+            ),
+            MenuUiButton(
+                type = INBOX,
+                text = R.string.more_menu_button_inbox,
+                icon = R.drawable.ic_more_menu_inbox,
+                isEnabled = FeatureFlag.MORE_MENU_INBOX.isEnabled(),
+                onClick = ::onInboxButtonClick
             )
         )
 
@@ -152,6 +171,11 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewReviewsEvent)
     }
 
+    private fun onInboxButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_INBOX)
+        triggerEvent(MoreMenuEvent.ViewInboxEvent)
+    }
+
     private fun trackMoreMenuOptionSelected(selectedOption: String) {
         AnalyticsTracker.track(
             Stat.HUB_MENU_OPTION_TAPPED,
@@ -205,5 +229,6 @@ class MoreMenuViewModel @Inject constructor(
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
+        object ViewInboxEvent : MoreMenuEvent()
     }
 }
