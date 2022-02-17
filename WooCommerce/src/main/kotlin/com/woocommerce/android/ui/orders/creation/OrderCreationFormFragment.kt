@@ -193,6 +193,18 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
+        bindFeesSubSection(paymentSection, newOrderData)
+
+        paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
+        paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
+        paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
+
+        paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
+        paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
+        paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
+    }
+
+    private fun bindFeesSubSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         newOrderData.feesLines.firstOrNull()
             ?.takeIf { it.total > BigDecimal.ZERO }
             ?.let {
@@ -203,14 +215,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             feeTotalLayout.isVisible = false
             editFeesButton.isVisible = true
         }
-
-        paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
-        paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
-        paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
-
-        paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
-        paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
-        paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
     }
 
     private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {
