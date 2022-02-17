@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.moremenu
 
 import androidx.core.net.toUri
-import androidx.lifecycle.*
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
@@ -17,8 +18,9 @@ import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
@@ -27,20 +29,20 @@ class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
-    private val unseenReviewsCountHandler: UnseenReviewsCountHandler
+    unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
-    private var _moreMenuViewState = MutableLiveData<MoreMenuViewState>()
-    val moreMenuViewState: LiveData<MoreMenuViewState> = _moreMenuViewState
-
-    init {
-        _moreMenuViewState.value = MoreMenuViewState(
-            moreMenuItems = generateMenuButtons(unseenReviewsCount = 0),
-            siteName = getSelectedSiteName(),
-            siteUrl = getSelectedSiteAbsoluteUrl(),
-            userAvatarUrl = accountStore.account.avatarUrl
-        )
-        observeUnseenReviewsCount()
-    }
+    val moreMenuViewState =
+        combine(
+            unseenReviewsCountHandler.observeUnseenCount(),
+            selectedSite.observe().filterNotNull()
+        ) { count, selectedSite ->
+            MoreMenuViewState(
+                moreMenuItems = generateMenuButtons(unseenReviewsCount = count),
+                siteName = selectedSite.getSelectedSiteName(),
+                siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
+                userAvatarUrl = accountStore.account.avatarUrl
+            )
+        }.asLiveData()
 
     private fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
         listOf(
@@ -65,34 +67,14 @@ class MoreMenuViewModel @Inject constructor(
             )
         )
 
-    private fun observeUnseenReviewsCount() {
-        viewModelScope.launch {
-            unseenReviewsCountHandler.observeUnseenCount()
-                .collect {
-                    _moreMenuViewState.value = _moreMenuViewState.value?.copy(
-                        moreMenuItems = generateMenuButtons(it)
-                    )
-                }
+    private fun SiteModel.getSelectedSiteName(): String =
+        if (!displayName.isNullOrBlank()) {
+            displayName
+        } else {
+            name
         }
-    }
 
-    fun handleStoreSwitch() {
-        _moreMenuViewState.value = _moreMenuViewState.value?.copy(
-            siteName = getSelectedSiteName(),
-            siteUrl = getSelectedSiteAbsoluteUrl()
-        )
-    }
-
-    private fun getSelectedSiteName(): String =
-        selectedSite.getIfExists()?.let { site ->
-            if (!site.displayName.isNullOrBlank()) {
-                site.displayName
-            } else {
-                site.name
-            }
-        } ?: ""
-
-    private fun getSelectedSiteAbsoluteUrl(): String = selectedSite.get().url.toUri().host ?: ""
+    private fun SiteModel.getSelectedSiteAbsoluteUrl(): String = url.toUri().host ?: ""
 
     fun onSettingsClick() {
         AnalyticsTracker.track(
