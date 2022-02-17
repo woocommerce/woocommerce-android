@@ -15,14 +15,17 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
-private const val DEFAULT_DECIMAL_PRECISION = 2
-
 @HiltViewModel
 class OrderCreationEditFeeViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState) {
+    companion object {
+        private const val DEFAULT_DECIMAL_PRECISION = 2
+        private val PERCENTAGE_BASE = BigDecimal(100)
+    }
+
     private val navArgs: OrderCreationEditFeeFragmentArgs by savedState.navArgs()
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -41,7 +44,7 @@ class OrderCreationEditFeeViewModel @Inject constructor(
 
     private val activeFeeValue
         get() = when (viewState.isPercentageSelected) {
-            true -> viewState.feePercentage
+            true -> viewState.feePercentage.calculateFromOrderTotal()
             false -> viewState.feeAmount
         }
 
@@ -62,6 +65,9 @@ class OrderCreationEditFeeViewModel @Inject constructor(
             feePercentage = feePercentage.toBigDecimalOrNull() ?: BigDecimal.ZERO
         )
     }
+
+    private fun BigDecimal.calculateFromOrderTotal() =
+        (navArgs.orderTotal * viewState.feePercentage) / PERCENTAGE_BASE
 
     @Parcelize
     data class ViewState(
