@@ -194,7 +194,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         newOrderData.feesLines.firstOrNull()
-            ?.takeIf { it.total != BigDecimal.ZERO }
+            ?.takeIf { it.total > BigDecimal.ZERO }
             ?.let {
                 paymentSection.feeTotalLayout.isVisible = true
                 paymentSection.editFeesButton.isVisible = false
