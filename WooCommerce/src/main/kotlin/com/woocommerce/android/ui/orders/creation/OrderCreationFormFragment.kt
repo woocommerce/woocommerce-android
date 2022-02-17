@@ -38,11 +38,10 @@ import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusVie
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -145,7 +144,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         paymentSection.shippingButton.setOnClickListener {
             viewModel.onShippingButtonClicked()
         }
-        paymentSection.feesLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
+        paymentSection.feesContainer.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.editFeesButton.setOnClickListener {
             viewModel.onFeeButtonClicked()
         }
@@ -194,6 +193,17 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
+        newOrderData.feesLines.firstOrNull()
+            ?.takeIf { it.total != BigDecimal.ZERO }
+            ?.let {
+                paymentSection.feeTotalLayout.isVisible = true
+                paymentSection.editFeesButton.isVisible = false
+                paymentSection.feeTotal.text = bigDecimalFormatter(it.total)
+            } ?: paymentSection.apply {
+            feeTotalLayout.isVisible = false
+            editFeesButton.isVisible = true
+        }
+
         paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
         paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
