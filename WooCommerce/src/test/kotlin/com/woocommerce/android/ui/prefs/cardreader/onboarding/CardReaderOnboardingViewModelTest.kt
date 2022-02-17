@@ -234,7 +234,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                StripeAcountError.WCPayInTestModeWithLiveAccountState::class.java
+                StripeAcountError.PluginInTestModeWithLiveAccountState::class.java
             )
         }
 

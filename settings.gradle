@@ -99,3 +99,15 @@ if (localBuilds.exists()) {
         }
     }
 }
+
+// Use the build cache in CI
+if (System.getenv().containsKey("CI")) {
+    buildCache {
+        remote(HttpBuildCache) {
+            url = "http://10.0.2.215:5071/cache/"
+            allowUntrustedServer = true
+            allowInsecureProtocol = true
+            push = true
+        }
+    }
+}
