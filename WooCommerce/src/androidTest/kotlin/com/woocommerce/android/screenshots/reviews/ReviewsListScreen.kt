@@ -19,6 +19,11 @@ class ReviewsListScreen : Screen(LIST_VIEW) {
         return SingleReviewScreen()
     }
 
+    fun selectReviewByIndex(reviewIndex: Int): SingleReviewScreen {
+        selectItemAtIndexInRecyclerView(reviewIndex, LIST_VIEW, LIST_VIEW)
+        return SingleReviewScreen()
+    }
+
     fun scrollToReview(reviewTitle: String): ReviewsListScreen {
         scrollToListItem(reviewTitle, LIST_VIEW)
         return ReviewsListScreen()

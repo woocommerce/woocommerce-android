@@ -12,6 +12,7 @@ import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
 import java.util.UUID
+import kotlin.collections.HashMap
 
 class AnalyticsTracker private constructor(private val context: Context) {
     // region Track Event Enums
@@ -929,17 +930,35 @@ class AnalyticsTracker private constructor(private val context: Context) {
          * @param errorDescription The error text or other description.
          */
         fun track(stat: Stat, errorContext: String?, errorType: String?, errorDescription: String?) {
-            val props = HashMap<String, String>()
+            track(stat, mapOf(), errorContext, errorType, errorDescription)
+        }
+
+        /**
+         * A convenience method for logging an error event with some additional meta data.
+         * @param stat The stat to track.
+         * @param properties Map of additional properties
+         * @param errorContext A string providing additional context (if any) about the error.
+         * @param errorType The type of error.
+         * @param errorDescription The error text or other description.
+         */
+        fun track(
+            stat: Stat,
+            properties: Map<String, Any>,
+            errorContext: String?,
+            errorType: String?,
+            errorDescription: String?
+        ) {
+            val mutableProperties = HashMap<String, Any>(properties)
             errorContext?.let {
-                props[KEY_ERROR_CONTEXT] = it
+                mutableProperties[KEY_ERROR_CONTEXT] = it
             }
             errorType?.let {
-                props[KEY_ERROR_TYPE] = it
+                mutableProperties[KEY_ERROR_TYPE] = it
             }
             errorDescription?.let {
-                props[KEY_ERROR_DESC] = it
+                mutableProperties[KEY_ERROR_DESC] = it
             }
-            track(stat, props)
+            track(stat, mutableProperties)
         }
 
         /**

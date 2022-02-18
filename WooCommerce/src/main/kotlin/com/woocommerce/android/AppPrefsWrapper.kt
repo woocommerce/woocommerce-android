@@ -1,5 +1,6 @@
 package com.woocommerce.android
 
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import javax.inject.Inject
 
@@ -18,19 +19,27 @@ class AppPrefsWrapper @Inject constructor() {
     fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
         AppPrefs.isCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
 
-    fun setCardReaderOnboardingCompleted(
+    fun getCardReaderPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
-        selfHostedSiteId: Long,
-        pluginType: PluginType?
-    ) = AppPrefs.setCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId, pluginType)
+        selfHostedSiteId: Long
+    ): PluginType? = AppPrefs.getCardReaderPreferredPlugin(localSiteId, remoteSiteId, selfHostedSiteId)
 
-    fun setCardReaderOnboardingPending(
+    fun setCardReaderOnboardingStatusAndPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long,
-        pluginType: PluginType?
-    ) = AppPrefs.setCardReaderOnboardingPending(localSiteId, remoteSiteId, selfHostedSiteId, pluginType)
+        status: CardReaderOnboardingStatus,
+        preferredPlugin: PluginType?,
+    ) {
+        AppPrefs.setCardReaderOnboardingStatusAndPreferredPlugin(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId,
+            status,
+            preferredPlugin
+        )
+    }
 
     fun setCardReaderStatementDescriptor(
         statementDescriptor: String?,

@@ -49,7 +49,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val chargeId = "charge_id"
-            whenever(appPrefs.getPaymentPluginType(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
+            whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
                 .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
             whenever(
                 ippStore.fetchPaymentCharge(
@@ -73,11 +73,11 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given active plugin saved and response notsuccessful when fetching data then error returned`() {
+    fun `given active plugin saved and response not successful when fetching data then error returned`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val chargeId = "charge_id"
-            whenever(appPrefs.getPaymentPluginType(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
+            whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
                 .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
             whenever(
                 ippStore.fetchPaymentCharge(
@@ -102,8 +102,8 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val chargeId = "charge_id"
-            whenever(appPrefs.getPaymentPluginType(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
-                .thenThrow(IllegalStateException())
+            whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
+                .thenReturn(null)
 
             // WHEN
             val result = repo.fetchCardDataUsedForOrderPayment(chargeId)
