@@ -892,7 +892,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     fun `given Canada flag false, when store is Canada, then STORE_COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
 
         val result = checker.getOnboardingState()
 
