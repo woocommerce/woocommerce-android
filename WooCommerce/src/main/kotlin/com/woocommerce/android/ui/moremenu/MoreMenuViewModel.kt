@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
@@ -10,11 +11,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
 import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
-import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
