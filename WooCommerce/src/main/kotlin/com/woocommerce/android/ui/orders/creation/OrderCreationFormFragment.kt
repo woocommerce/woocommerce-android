@@ -196,7 +196,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
 
-        val currentShipping = newOrderData.shippingLines.firstOrNull { it.methodId.isNotEmpty() }
+        val currentShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
         paymentSection.shippingButton.setText(
             if (currentShipping != null) R.string.order_creation_edit_shipping
             else R.string.order_creation_add_shipping

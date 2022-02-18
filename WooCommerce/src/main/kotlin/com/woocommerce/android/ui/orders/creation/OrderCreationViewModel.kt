@@ -212,7 +212,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onShippingButtonClicked() {
-        triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId.isNotEmpty() }))
+        triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
 
     fun onCreateOrderClicked(order: Order) {
