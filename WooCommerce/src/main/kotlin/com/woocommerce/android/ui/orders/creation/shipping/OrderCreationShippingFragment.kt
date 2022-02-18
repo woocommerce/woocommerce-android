@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -14,6 +15,7 @@ import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.RemoveShipping
 import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.UpdateShipping
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,6 +62,9 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
         nameEditText.setOnTextChangedListener {
             viewModel.onNameEdited(it?.toString().orEmpty())
         }
+        removeShippingButton.setOnClickListener {
+            viewModel.onRemoveShippingClicked()
+        }
     }
 
     private fun setupObservers(binding: FragmentOrderCreationShippingBinding) {
@@ -70,11 +75,18 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
             new.name?.takeIfNotEqualTo(old?.name) { name ->
                 binding.nameEditText.setTextIfDifferent(name)
             }
+            new.isEditFlow.takeIfNotEqualTo(old?.isEditFlow) { isEditFlow ->
+                binding.removeShippingButton.isVisible = isEditFlow
+            }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is UpdateShipping -> {
                     sharedViewModel.onShippingEdited(event.amount, event.name)
+                    findNavController().navigateUp()
+                }
+                is RemoveShipping -> {
+                    sharedViewModel.onShippingRemoved()
                     findNavController().navigateUp()
                 }
             }

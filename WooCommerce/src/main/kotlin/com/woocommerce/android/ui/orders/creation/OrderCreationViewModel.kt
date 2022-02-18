@@ -307,6 +307,16 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
+    fun onShippingRemoved() {
+        _orderDraft.update { draft ->
+            // We are iterating over all shipping lines, but on the current feature, we support only one shipping item
+            val shippingLines = draft.shippingLines.map {
+                it.copy(methodId = null)
+            }
+            draft.copy(shippingLines = shippingLines)
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
