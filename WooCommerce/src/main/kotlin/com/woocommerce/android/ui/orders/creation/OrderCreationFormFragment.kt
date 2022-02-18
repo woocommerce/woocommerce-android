@@ -38,9 +38,7 @@ import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusVie
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -197,6 +195,18 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
         paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
+
+        val hasShipping = newOrderData.shippingLines.any { it.methodId.isNotEmpty() }
+        paymentSection.shippingButton.setText(
+            if (hasShipping) R.string.order_creation_edit_shipping
+            else R.string.order_creation_add_shipping
+        )
+        paymentSection.shippingButton.setIconResource(
+            if (hasShipping) 0
+            else R.drawable.ic_add
+        )
+        paymentSection.shippingValue.isVisible = hasShipping
+        paymentSection.shippingValue.text = bigDecimalFormatter(newOrderData.shippingLines.sumOf { it.total })
 
         paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
         paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
