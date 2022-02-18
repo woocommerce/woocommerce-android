@@ -4,10 +4,14 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -19,6 +23,8 @@ import javax.inject.Inject
 class CardReaderHubViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
 
@@ -27,7 +33,15 @@ class CardReaderHubViewModel @Inject constructor(
             // todo fix the URL when decided
             "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}${arguments.storeCountryCode}"
         } else {
-            AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER
+            val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
+                selectedSite.get().id,
+                selectedSite.get().siteId,
+                selectedSite.get().selfHostedSiteId
+            )
+            when (preferredPlugin) {
+                STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_M2_PURCHASE_CARD_READER
+                WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER
+            }
         }
     }
 
