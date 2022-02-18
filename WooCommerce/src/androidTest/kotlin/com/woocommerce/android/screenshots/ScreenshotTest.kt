@@ -105,6 +105,7 @@ class ScreenshotTest : TestBase() {
             .selectReviewByIndex(4)
             .thenTakeScreenshot<SingleReviewScreen>("review-details")
             .goBackToReviewsScreen()
+            .goBackToMoreMenuScreen()
 
         // Products
         TabNavComponent()
