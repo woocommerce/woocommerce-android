@@ -7,8 +7,8 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationShippingBinding
 import com.woocommerce.android.extensions.drop
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creation_shipping) {
     private val viewModel: OrderCreationShippingViewModel by viewModels()
-    private val sharedViewModel: OrderCreationViewModel by navGraphViewModels(R.id.nav_graph_order_creations)
+    private val sharedViewModel: OrderCreationViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
