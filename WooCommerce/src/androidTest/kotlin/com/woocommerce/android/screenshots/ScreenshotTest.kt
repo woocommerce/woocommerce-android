@@ -7,6 +7,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.helpers.InitializationRule
 import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.login.WelcomeScreen
+import com.woocommerce.android.screenshots.moremenu.MoreMenuScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.orders.OrderListScreen
 import com.woocommerce.android.screenshots.orders.OrderSearchScreen
@@ -18,7 +19,10 @@ import com.woocommerce.android.screenshots.reviews.SingleReviewScreen
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.*
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import tools.fastlane.screengrab.Screengrab
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
 import tools.fastlane.screengrab.cleanstatusbar.CleanStatusBar
@@ -33,13 +37,10 @@ class ScreenshotTest : TestBase() {
     val composeTestRule = createComposeRule()
 
     @get:Rule(order = 2)
-    val initRule = InitializationRule()
+    var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @get:Rule(order = 3)
-    val localeTestRule = LocaleTestRule()
-
-    @get:Rule(order = 4)
-    var activityRule = ActivityTestRule(MainActivity::class.java)
+    val initRule = InitializationRule()
 
     @Rule @JvmField
     val localeTestRule = LocaleTestRule()
@@ -67,7 +68,12 @@ class ScreenshotTest : TestBase() {
             .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
         if (testedTheme == "light" || testedTheme == "dark") {
-            MyStoreScreen().openSettingsPane().setTheme(testedTheme).goBackToMyStoreScreen()
+            TabNavComponent()
+                .gotoMoreMenuScreen()
+                .openSettings(composeTestRule)
+                .setTheme(testedTheme)
+                .goBackToMoreMenuScreen()
+            TabNavComponent().gotoMyStoreScreen()
         }
 
         // My Store
@@ -86,9 +92,15 @@ class ScreenshotTest : TestBase() {
             .thenTakeScreenshot<OrderSearchScreen>("order-search")
             .cancel()
 
+        // More Menu
+        TabNavComponent()
+            .gotoMoreMenuScreen()
+            .thenTakeScreenshot<MoreMenuScreen>("more-menu")
+
         // Reviews
         TabNavComponent()
-            .gotoReviewsScreen()
+            .gotoMoreMenuScreen()
+            .openReviewsListScreen(composeTestRule)
             .thenTakeScreenshot<ReviewsListScreen>("review-list")
             .selectReviewByIndex(4)
             .thenTakeScreenshot<SingleReviewScreen>("review-details")
