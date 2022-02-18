@@ -653,11 +653,8 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
-    override fun showMoreMenuBadge(show: Boolean) {
+    private fun showMoreMenuBadge(show: Boolean) {
         binding.bottomNav.showMoreMenuBadge(show)
-        if (!show) {
-            viewModel.removeReviewNotifications()
-        }
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
@@ -754,6 +751,10 @@ class MainActivity :
                     navController.navigateSafely(action)
                 }
             }
+        }
+
+        viewModel.unseenReviewsCount.observe(this) { count ->
+            showMoreMenuBadge(count > 0)
         }
     }
 

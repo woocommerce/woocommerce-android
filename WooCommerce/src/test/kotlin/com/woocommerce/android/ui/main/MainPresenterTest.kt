@@ -7,7 +7,9 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -20,12 +22,16 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.store.*
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import kotlin.test.*
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class MainPresenterTest : BaseUnitTest() {
@@ -158,24 +164,6 @@ class MainPresenterTest : BaseUnitTest() {
         )
 
         verify(mainContractView).hideOrderBadge()
-    }
-
-    @Test
-    fun `Given unread reviews, when presenter is takes view, then show badge on more menu tab`() {
-        whenever(appPrefs.hasUnseenReviews()).thenReturn(true)
-
-        mainPresenter.takeView(mainContractView)
-
-        verify(mainContractView).showMoreMenuBadge(true)
-    }
-
-    @Test
-    fun `Given no unread reviews, when presenter is takes view, then show badge on more menu tab`() {
-        whenever(appPrefs.hasUnseenReviews()).thenReturn(false)
-
-        mainPresenter.takeView(mainContractView)
-
-        verify(mainContractView).showMoreMenuBadge(false)
     }
 
     @Test

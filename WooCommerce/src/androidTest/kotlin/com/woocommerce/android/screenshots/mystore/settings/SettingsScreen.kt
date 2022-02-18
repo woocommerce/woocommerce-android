@@ -1,9 +1,11 @@
 package com.woocommerce.android.screenshots.mystore.settings
 
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.ViewInteraction
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
-import com.woocommerce.android.screenshots.mystore.MyStoreScreen
+import com.woocommerce.android.screenshots.moremenu.MoreMenuScreen
 import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.Screen
 
@@ -23,9 +25,27 @@ class SettingsScreen : Screen {
         return BetaFeaturesScreen()
     }
 
-    fun goBackToMyStoreScreen(): MyStoreScreen {
+    fun goBackToMoreMenuScreen(): MoreMenuScreen {
         pressBack()
-        return MyStoreScreen()
+        return MoreMenuScreen()
+    }
+
+    fun setTheme(theme: String): SettingsScreen {
+        clickOn(R.id.option_theme)
+
+        val themeString = if (theme == "dark")
+            R.string.settings_app_theme_option_dark
+        else
+            R.string.settings_app_theme_option_light
+
+        val themeCheckbox: ViewInteraction = Espresso.onView(
+            ViewMatchers.withText(getTranslatedString(themeString))
+        )
+
+        waitForElementToBeDisplayed(themeCheckbox)
+        themeCheckbox.perform(ViewActions.click())
+
+        return this
     }
 
     fun logOut() {
