@@ -28,7 +28,6 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.setCurrentOrder(sharedViewModel.currentDraft)
         setHasOptionsMenu(true)
         val binding = FragmentOrderCreationShippingBinding.bind(view)
         binding.initUi()
