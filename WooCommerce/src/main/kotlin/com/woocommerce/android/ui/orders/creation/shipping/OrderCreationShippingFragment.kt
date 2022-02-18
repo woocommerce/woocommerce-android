@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationShippingBinding
+import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
@@ -27,6 +28,7 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.setCurrentOrder(sharedViewModel.currentDraft)
         setHasOptionsMenu(true)
         val binding = FragmentOrderCreationShippingBinding.bind(view)
         binding.initUi()
@@ -53,8 +55,8 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
             decimals = viewModel.currencyDecimals,
             currencyFormatter = currencyFormatter
         )
-        amountEditText.value.observe(viewLifecycleOwner) { amount ->
-            viewModel.onAmountEdited(amount)
+        amountEditText.value.drop(1).observe(viewLifecycleOwner) {
+            viewModel.onAmountEdited(it)
         }
         nameEditText.setOnTextChangedListener {
             viewModel.onNameEdited(it?.toString().orEmpty())
