@@ -34,13 +34,13 @@ class ScreenshotTest : TestBase() {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val composeTestRule = createComposeRule()
+    val initRule = InitializationRule()
 
     @get:Rule(order = 2)
-    var activityRule = ActivityTestRule(MainActivity::class.java)
+    val composeTestRule = createComposeRule()
 
     @get:Rule(order = 3)
-    val initRule = InitializationRule()
+    var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @Rule @JvmField
     val localeTestRule = LocaleTestRule()
