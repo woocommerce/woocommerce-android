@@ -108,7 +108,7 @@ ext {
     mediapickerVersion = 'trunk-00947a9086ecdf2192b0bdc95a22e1647696d0b1'
     wordPressLoginVersion = '0.10.0'
     composeVersion = "1.0.5"
-    aboutAutomatticVersion = '0.0.4'
+    aboutAutomatticVersion = '31-7189fc92038bfe93525487efea80bd62bfa02680'
 }
 
 // Onboarding and dev env setup tasks
