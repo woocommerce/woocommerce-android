@@ -196,17 +196,19 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
 
-        val hasShipping = newOrderData.shippingLines.any { it.methodId.isNotEmpty() }
+        val currentShipping = newOrderData.shippingLines.firstOrNull { it.methodId.isNotEmpty() }
         paymentSection.shippingButton.setText(
-            if (hasShipping) R.string.order_creation_edit_shipping
+            if (currentShipping != null) R.string.order_creation_edit_shipping
             else R.string.order_creation_add_shipping
         )
         paymentSection.shippingButton.setIconResource(
-            if (hasShipping) 0
+            if (currentShipping != null) 0
             else R.drawable.ic_add
         )
-        paymentSection.shippingValue.isVisible = hasShipping
-        paymentSection.shippingValue.text = bigDecimalFormatter(newOrderData.shippingLines.sumOf { it.total })
+        paymentSection.shippingValue.isVisible = currentShipping != null
+        currentShipping?.let {
+            paymentSection.shippingValue.text = bigDecimalFormatter(it.total)
+        }
 
         paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
         paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
