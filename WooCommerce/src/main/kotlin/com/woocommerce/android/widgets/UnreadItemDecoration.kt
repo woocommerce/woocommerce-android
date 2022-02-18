@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.State
@@ -34,11 +35,9 @@ class UnreadItemDecoration(context: Context, private val decorListener: ItemDeco
 
     private val bounds = Rect()
 
-    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        for (i in 0 until parent.childCount - 1) {
-            val child = parent.getChildAt(i)
-            val position = child?.let { parent.getChildAdapterPosition(it) }
-                ?: SectionedRecyclerViewAdapter.INVALID_POSITION
+    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: State) {
+        parent.forEach { child ->
+            val position = child.let { parent.getChildAdapterPosition(it) }
             if (position != SectionedRecyclerViewAdapter.INVALID_POSITION) {
                 /*
                  * note that we have to draw the indicator for all items rather than just unread ones
