@@ -67,8 +67,8 @@ class CardReaderOnboardingChecker @Inject constructor(
     @Suppress("ReturnCount", "ComplexMethod")
     private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
-        val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
+        val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError

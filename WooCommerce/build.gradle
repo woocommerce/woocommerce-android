@@ -69,9 +69,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.5-rc-2"
+            versionName "8.5-rc-3"
         }
-        versionCode 278
+        versionCode 279
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -90,10 +90,13 @@ android {
         packagingOptions {
             exclude 'META-INF/gradle/incremental.annotation.processors'
             exclude("META-INF/*.kotlin_module")
+            pickFirst 'META-INF/AL2.0'
+            pickFirst 'META-INF/LGPL2.1'
         }
     }
 
     buildFeatures {
+        compose true
         viewBinding true
     }
 
@@ -104,6 +107,11 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion composeVersion
+        kotlinCompilerVersion gradle.ext.kotlinVersion
     }
 
     flavorDimensions "buildType"
@@ -287,13 +295,13 @@ dependencies {
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.3.0"
 
-    implementation ("com.zendesk:support:5.0.6") {
+    implementation ("com.zendesk:support:5.0.8") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 
     // ViewModel and LiveData
     implementation "androidx.fragment:fragment-ktx:1.4.0"
-    implementation "androidx.activity:activity-ktx:1.3.1"
+    implementation "androidx.activity:activity-ktx:1.4.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
@@ -319,6 +327,17 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
     }
+
+    // Jetpack Compose
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation "androidx.compose.material:material:$composeVersion"
+    implementation "androidx.compose.animation:animation:$composeVersion"
+    implementation "androidx.compose.ui:ui-tooling:$composeVersion"
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
+    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
+    implementation "com.google.android.material:compose-theme-adapter:$composeVersion"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
