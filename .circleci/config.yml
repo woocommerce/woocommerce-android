@@ -7,15 +7,9 @@ commands:
       - run:
           name: Enable build time reporting
           command: sed -i "s/tracksEnabled = false/tracksEnabled = true/" gradle.properties
-  update-gradle-memory:
-      parameters:
-        jvmargs:
-          type: string
-          default: "Xmx2048m"
-      steps:
-        - run:
-            name: Update memory setting
-            command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-<< parameters.jvmargs >>/" gradle.properties
+      - run:
+          name: Update default gradle memory
+          command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx2048m/" gradle.properties
 
 orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
@@ -127,8 +121,6 @@ jobs:
       - git/shallow-checkout
       - android/restore-gradle-cache
       - copy-gradle-properties
-      - update-gradle-memory:
-          jvmargs: "Xmx2048m"
       - run:
           name: Build
           command: ./gradlew WooCommerce:assembleVanillaDebug --stacktrace
@@ -173,7 +165,6 @@ jobs:
       - run:
           name: Copy Secrets
           command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
-      - update-gradle-memory
       - android/restore-gradle-cache
       - run:
           name: Build APK
@@ -207,7 +198,6 @@ jobs:
       - run:
           name: Copy Secrets
           command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
-      - update-gradle-memory
       - android/restore-gradle-cache
       - run:
           name: Build APK
