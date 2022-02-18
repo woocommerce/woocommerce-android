@@ -69,9 +69,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.5-rc-1"
+            versionName "8.5-rc-3"
         }
-        versionCode 277
+        versionCode 279
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -174,7 +174,7 @@ dependencies {
     }
 
     implementation 'com.google.firebase:firebase-messaging-ktx:23.0.0'
-    implementation 'com.google.android.gms:play-services-auth:20.0.0'
+    implementation 'com.google.android.gms:play-services-auth:20.1.0'
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"

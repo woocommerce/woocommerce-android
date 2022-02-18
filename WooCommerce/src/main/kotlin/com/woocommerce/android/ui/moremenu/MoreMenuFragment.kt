@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
@@ -35,10 +34,6 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     private val binding get() = _binding!!
 
     private val viewModel: MoreMenuViewModel by viewModels()
-
-    private val requestSitePicker = registerForActivityResult(StartActivityForResult()) {
-        viewModel.handleStoreSwitch()
-    }
 
     override fun scrollToTop() {
         return
@@ -97,7 +92,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
 
     private fun startSitePicker() {
         val sitePickerIntent = Intent(context, SitePickerActivity::class.java)
-        requestSitePicker.launch(sitePickerIntent)
+        requireActivity().startActivity(sitePickerIntent)
     }
 
     private fun openInBrowser(url: String) {

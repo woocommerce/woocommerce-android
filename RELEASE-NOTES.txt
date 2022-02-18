@@ -2,7 +2,9 @@
 
 8.6
 -----
-
+- [**] In-Person Payments: Add support for Stripe by WooCommerce extension
+- [***] All merchants can create Simple Payments orders. [https://github.com/woocommerce/woocommerce-android/issues/5804]
+- [***] Introduced a new main navigation tab called "More", where you can browse different sub-sections of the app: Switch Store, Settings, WooCommerce Admin, View Store and Reviews. [https://github.com/woocommerce/woocommerce-android/pull/5897]
 
 8.5
 -----

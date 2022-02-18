@@ -10,7 +10,7 @@ class CardReaderConfigFactory {
                 CardReaderConfigForCanada
             }
             else -> {
-                throw IllegalStateException("Invalid country code")
+                CardReaderConfigForUnSupportedCountry
             }
         }
     }

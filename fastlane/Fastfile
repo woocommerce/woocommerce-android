@@ -42,6 +42,8 @@ SUPPORTED_LOCALES = [
   { glotpress: "zh-tw", android: "zh-rTW", google_play: "zh-TW",  promo_config: {} },
 ].freeze
 
+SCREENSHOT_DIRECTORY = File.join(Dir.pwd, 'screenshots')
+
 main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
 update_strings_path = "./fastlane/resources/values/"
 
@@ -511,7 +513,78 @@ platform :android do
     end
     "#{build_dir}#{name}"
   end
+  #####################################################################################
+  # screenshots
+  # -----------------------------------------------------------------------------------
+  # This lane creates screenshots for light and dark modes
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # fastlane take_screenshots
+  #
+  # Example:
+  # fastlane take_screenshots
+  #####################################################################################
+  desc "Create raw screenshots"
+  lane :take_screenshots do |options|
+    # Build the app and test targets
+    gradle(task: "assembleVanillaDebug assembleVanillaDebugAndroidTest")
 
+    if options[:locales]
+      locales = options[:locales].split(',')
+    else
+      locales = SUPPORTED_LOCALES.
+        # Depending on how automated this is, possibly on whether we wipe the
+        # emulator before running or not, the zh-CN locale might break due to
+        # Pinwin Keyboard wanting contacts access. If that's the case, you can
+        # skip it by uncommeting the following line.
+        #reject { |locale| locale[:glotpress] == 'zh-cn' }.
+        map { |locale|  locale[:google_play] }
+    end
+
+    # Override the locales array with one locale until 
+    # https://github.com/fastlane/fastlane/issues/19521
+    # is fixed:
+    locales = ["en-EN"]
+
+    UI.message("Attempting screenshots for locales: #{locales}")
+
+    screenshot_options = {
+      output_directory: SCREENSHOT_DIRECTORY,
+      app_package_name: "com.woocommerce.android",
+      app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
+      tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
+      use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
+      reinstall_app: false,
+      # By default, don't clear previous because we differentiate between light
+      # and dark mode
+      clear_previous_screenshots: options.fetch(:clear_previous_screenshots, false),
+      # Needs to be root to save screenshots consistently
+      use_adb_root: true,
+      locales: locales,
+      use_timestamp_suffix: false,
+      test_instrumentation_runner: "com.woocommerce.android.WooCommerceTestRunner",
+      # Don't care about the .html summary
+      skip_open_summary: true
+    }
+
+    UI.message("Taking screenshots for Dark theme...")
+    screengrab(
+      screenshot_options.merge(
+        {
+          launch_arguments: ["theme dark"]
+        }
+      )
+    )
+
+    UI.message("Taking screenshots for Light theme...")
+    screengrab(
+      screenshot_options.merge(
+        {
+          launch_arguments: ["theme light"]
+        }
+      )
+    )    
+  end
   #####################################################################################
   # Private lanes
   #####################################################################################

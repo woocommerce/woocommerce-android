@@ -4,7 +4,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.NotificationReceivedEvent
-import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
@@ -18,14 +17,22 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
-import org.wordpress.android.fluxc.action.WCOrderAction.*
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
+import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
+import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
-import org.wordpress.android.fluxc.store.*
-import org.wordpress.android.fluxc.store.AccountStore.*
-import org.wordpress.android.fluxc.store.WCOrderStore.*
+import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
+import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(
@@ -42,9 +49,7 @@ class MainPresenter @Inject constructor(
     private var isHandlingMagicLink: Boolean = false
     private var pendingUnfilledOrderCountCheck: Boolean = false
 
-    override fun takeView(
-        view: MainContract.View
-    ) {
+    override fun takeView(view: MainContract.View) {
         mainView = view
         dispatcher.register(this)
         ConnectionChangeReceiver.getEventBus().register(this)
@@ -66,9 +71,6 @@ class MainPresenter @Inject constructor(
                     }
                 }
             }
-        }
-        if (selectedSite.exists()) {
-            mainView?.showMoreMenuBadge(appPrefsWrapper.hasUnseenReviews())
         }
     }
 
@@ -205,12 +207,6 @@ class MainPresenter @Inject constructor(
         if (event.channel == NEW_ORDER) {
             fetchUnfilledOrderCount()
         }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
-        mainView?.showMoreMenuBadge(event.hasUnseen)
     }
 
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
