@@ -2,14 +2,9 @@ package com.woocommerce.android.ui.reviews
 
 import android.content.Context
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.view.View.OnClickListener
-import androidx.core.view.ViewGroupCompat
-import androidx.core.view.doOnPreDraw
-import androidx.core.view.isVisible
+import androidx.core.view.*
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -23,10 +18,8 @@ import com.woocommerce.android.databinding.FragmentReviewsListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
@@ -40,19 +33,17 @@ import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModeratio
 import com.woocommerce.android.ui.reviews.ReviewModeration.Relay.ReviewModerationRelayEvent.RelayToggleRefresh
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.widgets.AppRatingDialog
-import com.woocommerce.android.widgets.SkeletonView
-import com.woocommerce.android.widgets.UnreadItemDecoration
+import com.woocommerce.android.widgets.*
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReviewListFragment :
-    TopLevelFragment(R.layout.fragment_reviews_list),
+    BaseFragment(R.layout.fragment_reviews_list),
     ItemDecorationListener,
     ReviewModeration.View,
     ReviewListAdapter.OnReviewClickListener {
@@ -65,7 +56,6 @@ class ReviewListFragment :
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private var _reviewsAdapter: ReviewListAdapter? = null
     private val reviewsAdapter: ReviewListAdapter
@@ -194,15 +184,12 @@ class ReviewListFragment :
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.notifsLoadMoreProgress.isVisible = it }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
             }
-        )
+        }
 
         viewModel.reviewList.observe(
             viewLifecycleOwner,
@@ -242,11 +229,6 @@ class ReviewListFragment :
             ActionStatus.SUCCESS -> {
                 menuMarkAllRead?.actionView = null
                 showMarkAllReadMenuItem(show = false)
-
-                // Remove all active notifications from the system bar
-                notificationMessageHandler.removeNotificationsOfTypeFromSystemsBar(
-                    NotificationChannelType.REVIEW, selectedSite.get().siteId
-                )
             }
             ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
             else -> {
@@ -343,10 +325,6 @@ class ReviewListFragment :
 
     override fun getFragmentTitle() = getString(R.string.review_notifications)
 
-    override fun scrollToTop() {
-        binding.reviewsList.smoothScrollToPosition(0)
-    }
-
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 
     override fun onReviewClick(review: ProductReview, sharedView: View?) {
@@ -369,8 +347,6 @@ class ReviewListFragment :
             }
         }
     }
-
-    override fun shouldExpandToolbar() = binding.reviewsList.computeVerticalScrollOffset() == 0
 
     override fun reloadReviews() {
         viewModel.reloadReviewsFromCache()

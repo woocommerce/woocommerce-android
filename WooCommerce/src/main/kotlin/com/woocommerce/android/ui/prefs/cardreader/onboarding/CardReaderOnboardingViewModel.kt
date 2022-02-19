@@ -5,26 +5,28 @@ import androidx.annotation.LayoutRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
-import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.user.WCUserRole.ADMINISTRATOR
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 private const val UNIX_TO_JAVA_TIMESTAMP_OFFSET = 1000L
@@ -33,9 +35,10 @@ private const val UNIX_TO_JAVA_TIMESTAMP_OFFSET = 1000L
 class CardReaderOnboardingViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderChecker: CardReaderOnboardingChecker,
-    private val trackerWrapper: AnalyticsTrackerWrapper,
+    private val cardReaderTracker: CardReaderTracker,
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState) {
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
@@ -52,10 +55,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
         launch {
             viewState.value = OnboardingViewState.LoadingState
             val state = cardReaderChecker.getOnboardingState()
-            trackState(state)
+            cardReaderTracker.trackOnboardingState(state)
             when (state) {
                 is CardReaderOnboardingState.OnboardingCompleted ->
-                    triggerEvent(OnboardingEvent.Continue)
+                    triggerEvent(OnboardingEvent.Continue(state.countryCode))
                 is CardReaderOnboardingState.StoreCountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedCountryState(
                         convertCountryCodeToCountry(state.countryCode),
@@ -66,7 +69,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value =
                         OnboardingViewState.WCPayError.WCPayNotInstalledState(::refreshState, ::onLearnMoreClicked)
                 is CardReaderOnboardingState.PluginUnsupportedVersion ->
-                    when (state.pluginType) {
+                    when (state.preferredPlugin) {
                         PluginType.WOOCOMMERCE_PAYMENTS ->
                             viewState.value =
                                 OnboardingViewState.WCPayError.WCPayUnsupportedVersionState(
@@ -83,7 +86,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     viewState.value =
                         OnboardingViewState.WCPayError.WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
                 is CardReaderOnboardingState.SetupNotCompleted ->
-                    viewState.value = when (state.pluginType) {
+                    viewState.value = when (state.preferredPlugin) {
                         PluginType.WOOCOMMERCE_PAYMENTS ->
                             OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
                         PluginType.STRIPE_EXTENSION_GATEWAY ->
@@ -91,12 +94,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
                                 ::refreshState, ::onLearnMoreClicked
                             )
                     }
-                CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount ->
-                    viewState.value = OnboardingViewState.StripeAcountError.WCPayInTestModeWithLiveAccountState(
+                is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount ->
+                    viewState.value = OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
-                CardReaderOnboardingState.StripeAccountUnderReview ->
+                is CardReaderOnboardingState.StripeAccountUnderReview ->
                     viewState.value = OnboardingViewState.StripeAcountError.StripeAccountUnderReviewState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
@@ -106,15 +109,15 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         .StripeAccountPendingRequirementsState(
                             onContactSupportActionClicked = ::onContactSupportClicked,
                             onLearnMoreActionClicked = ::onLearnMoreClicked,
-                            onButtonActionClicked = ::onSkipPendingRequirementsClicked,
+                            onButtonActionClicked = { onSkipPendingRequirementsClicked(state.countryCode) },
                             dueDate = formatDueDate(state)
                         )
-                CardReaderOnboardingState.StripeAccountOverdueRequirement ->
+                is CardReaderOnboardingState.StripeAccountOverdueRequirement ->
                     viewState.value = OnboardingViewState.StripeAcountError.StripeAccountOverdueRequirementsState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
-                CardReaderOnboardingState.StripeAccountRejected ->
+                is CardReaderOnboardingState.StripeAccountRejected ->
                     viewState.value = OnboardingViewState.StripeAcountError.StripeAccountRejectedState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
@@ -162,46 +165,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
             )
     }
 
-    private fun trackState(state: CardReaderOnboardingState) {
-        getTrackingReason(state)?.let {
-            trackerWrapper.track(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to it))
-        }
-    }
-
-    @Suppress("ComplexMethod")
-    private fun getTrackingReason(state: CardReaderOnboardingState): String? =
-        when (state) {
-            is CardReaderOnboardingState.OnboardingCompleted -> null
-            is CardReaderOnboardingState.StoreCountryNotSupported -> "country_not_supported"
-            CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
-            is CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
-            CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
-            CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
-            is CardReaderOnboardingState.StripeAccountCountryNotSupported -> "account_country_not_supported"
-            CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
-            CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
-            CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
-            is CardReaderOnboardingState.SetupNotCompleted ->
-                "${getPluginNameForAnalyticsFrom(state.pluginType)}_not_setup"
-            is CardReaderOnboardingState.PluginUnsupportedVersion ->
-                "${getPluginNameForAnalyticsFrom(state.pluginType)}_unsupported_version"
-            CardReaderOnboardingState.GenericError -> "generic_error"
-            CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
-            CardReaderOnboardingState.WcpayAndStripeActivated -> "wcpay_and_stripe_installed_and_activated"
-        }
-
-    private fun getPluginNameForAnalyticsFrom(pluginType: PluginType): String {
-        return when (pluginType) {
-            PluginType.WOOCOMMERCE_PAYMENTS -> "wcpay"
-            PluginType.STRIPE_EXTENSION_GATEWAY -> "stripe_extension"
-        }
-    }
-
-    fun onCancelClicked() {
-        WooLog.e(WooLog.T.CARD_READER, "Onboarding flow interrupted by the user.")
-        exitFlow()
-    }
-
     private fun onWPAdminActionClicked() {
         val url = selectedSite.get().url + AppUrls.PLUGIN_MANAGEMENT_SUFFIX
         if (selectedSite.get().isWPCom || selectedSite.get().isWPComAtomic) {
@@ -216,16 +179,21 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onLearnMoreClicked() {
-        trackerWrapper.track(AnalyticsTracker.Stat.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
-        triggerEvent(NavigateToUrlInGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
+        cardReaderTracker.trackOnboardingLearnMoreTapped()
+        val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
+            selectedSite.get().id,
+            selectedSite.get().siteId,
+            selectedSite.get().selfHostedSiteId
+        )
+        val learnMoreUrl = when (preferredPlugin) {
+            STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS
+            WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        }
+        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrl))
     }
 
-    private fun onSkipPendingRequirementsClicked() {
-        triggerEvent(OnboardingEvent.Continue)
-    }
-
-    private fun exitFlow() {
-        triggerEvent(Event.Exit)
+    private fun onSkipPendingRequirementsClicked(storeCountryCode: String) {
+        triggerEvent(OnboardingEvent.Continue(storeCountryCode))
     }
 
     private fun convertCountryCodeToCountry(countryCode: String?) =
@@ -240,7 +208,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         data class NavigateToUrlInWPComWebView(val url: String) : Event()
         data class NavigateToUrlInGenericWebView(val url: String) : Event()
 
-        object Continue : Event()
+        data class Continue(val storeCountryCode: String) : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
@@ -310,7 +278,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
 
         class UnsupportedCountryState(
-            val countryDisplayName: String,
+            countryDisplayName: String,
             val onContactSupportActionClicked: (() -> Unit),
             val onLearnMoreActionClicked: (() -> Unit)
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_unsupported_country) {
@@ -372,7 +340,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
             )
 
-            data class WCPayInTestModeWithLiveAccountState(
+            data class PluginInTestModeWithLiveAccountState(
                 override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit
             ) : StripeAcountError(

@@ -7,7 +7,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -19,6 +18,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderUpdateScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState
@@ -44,12 +44,6 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
-
-        val learnMoreListener = View.OnClickListener {
-            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
-        }
-        binding.readerConnectedState.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener(learnMoreListener)
-        binding.readerDisconnectedState.cardReaderDetailLearnMoreTv.learnMore.setOnClickListener(learnMoreListener)
 
         observeEvents(binding)
         observeViewState(binding)
@@ -91,6 +85,8 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         binding.readerConnectedState.primaryActionBtn.announceForAccessibility(
                             getString(event.accessibilityConnectedText)
                         )
+                    is NavigateToUrlInGenericWebView ->
+                        ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                     else -> event.isHandled = false
                 }
             }
@@ -126,6 +122,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                             with(cardReaderDetailLearnMoreTv.root) {
                                 movementMethod = LinkMovementMethod.getInstance()
                                 UiHelpers.setTextOrHide(this, state.learnMoreLabel)
+                                setOnClickListener { state.onLearnMoreClicked.invoke() }
                             }
                         }
                     }
@@ -144,6 +141,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                             with(cardReaderDetailLearnMoreTv.root) {
                                 movementMethod = LinkMovementMethod.getInstance()
                                 UiHelpers.setTextOrHide(this, state.learnMoreLabel)
+                                setOnClickListener { state.onLearnMoreClicked.invoke() }
                             }
                         }
                     }

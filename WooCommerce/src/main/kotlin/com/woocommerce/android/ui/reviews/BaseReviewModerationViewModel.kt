@@ -43,7 +43,6 @@ abstract class BaseReviewModerationViewModel(
     savedState: SavedStateHandle,
     private val reviewModerationHandler: ReviewModerationHandler
 ) : ScopedViewModel(savedState), ReviewModeration.Relay {
-
     private var _reviewModerationEvents = QueuedLiveData<ReviewModeration.Relay.ReviewModerationRelayEvent>()
     var reviewModerationEvents: LiveData<ReviewModeration.Relay.ReviewModerationRelayEvent> = _reviewModerationEvents
 

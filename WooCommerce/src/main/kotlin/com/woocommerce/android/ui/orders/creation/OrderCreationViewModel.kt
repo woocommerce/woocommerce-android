@@ -23,15 +23,17 @@ import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.FeeType
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,6 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,13 +65,6 @@ class OrderCreationViewModel @Inject constructor(
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
-        .onEach {
-            viewState = viewState.copy(
-                isOrderValidForCreation = it.items.isNotEmpty() &&
-                    it.shippingAddress != Address.EMPTY &&
-                    it.billingAddress != Address.EMPTY
-            )
-        }
         .asLiveData()
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
@@ -164,6 +160,11 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
+    @Suppress("UnusedPrivateMember")
+    fun onFeeEdited(feeValue: BigDecimal, feeType: FeeType) {
+        // TODO handle fee submission
+    }
+
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
         launch(dispatchers.io) {
             orderDetailRepository
@@ -199,6 +200,14 @@ class OrderCreationViewModel @Inject constructor(
         retryOrderDraftUpdateTrigger.tryEmit(Unit)
     }
 
+    fun onFeeButtonClicked() {
+        triggerEvent(EditFee)
+    }
+
+    fun onShippingButtonClicked() {
+        triggerEvent(EditShipping)
+    }
+
     fun onCreateOrderClicked(order: Order) {
         trackCreateOrderButtonClick()
         viewModelScope.launch {
@@ -216,6 +225,24 @@ class OrderCreationViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    fun onBackButtonClicked() {
+        if (_orderDraft.value.copy(currency = "") == Order.EMPTY) {
+            triggerEvent(Exit)
+            return
+        }
+        triggerEvent(
+            ShowDialog.buildDiscardDialogEvent(
+                positiveBtnAction = { _, _ ->
+                    val draft = _orderDraft.value
+                    if (draft.id != 0L) {
+                        launch { orderCreationRepository.deleteDraftOrder(draft) }
+                    }
+                    triggerEvent(Exit)
+                }
+            )
+        )
     }
 
     /**
@@ -265,15 +292,22 @@ class OrderCreationViewModel @Inject constructor(
         )
     }
 
+    fun onShippingEdited(amount: BigDecimal, name: String) {
+        _orderDraft.update { draft ->
+            val shipping = draft.shippingLines.firstOrNull()?.copy(total = amount, methodTitle = name)
+                ?: ShippingLine(methodId = "other", total = amount, methodTitle = name)
+            draft.copy(shippingLines = listOf(shipping))
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
-        private val isOrderValidForCreation: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
-        val canCreateOrder: Boolean = isOrderValidForCreation && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        val canCreateOrder: Boolean = !isUpdatingOrderDraft && !showOrderUpdateSnackbar
     }
 }
 

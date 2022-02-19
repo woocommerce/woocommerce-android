@@ -20,7 +20,6 @@ class ReviewModerationHandler @Inject constructor(
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus
 ) : ReviewModeration.Handler {
-
     private val _reviewModerationActionEvents =
         MutableSharedFlow<ReviewModerationActionEvent>(0)
 

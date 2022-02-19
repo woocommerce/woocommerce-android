@@ -1,5 +1,9 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.stripe.stripeterminal.external.models.PaymentMethodType
+import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfig
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -15,15 +19,27 @@ class PaymentUtilsTest {
     private val paymentUtils = PaymentUtils()
 
     @Test
-    fun `given currency not USD, when is currency supported invoked, then false returned`() = runBlockingTest {
-        val result = paymentUtils.isSupportedCurrency(NONE_USD_CURRENCY)
+    fun `given not supported country, when is currency supported invoked, then false returned`() = runBlockingTest {
+        val nonSupportedCountry = object : CardReaderConfig {
+            override val currency: String
+                get() = ""
+            override val countryCode: String
+                get() = ""
+            override val supportedReaders: List<SpecificReader>
+                get() = listOf()
+            override val paymentMethodType: List<PaymentMethodType>
+                get() = listOf()
+            override val isStripeExtensionSupported: Boolean
+                get() = false
+        }
+        val result = paymentUtils.isSupportedCurrency(NONE_USD_CURRENCY, nonSupportedCountry)
 
         assertThat(result).isFalse()
     }
 
     @Test
-    fun `given currency USD, when is currency supported invoked, then true returned`() = runBlockingTest {
-        val result = paymentUtils.isSupportedCurrency(USD_CURRENCY)
+    fun `given supported country, when is currency supported invoked, then true returned`() = runBlockingTest {
+        val result = paymentUtils.isSupportedCurrency(USD_CURRENCY, CardReaderConfigForUSA)
 
         assertThat(result).isTrue()
     }

@@ -25,7 +25,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.*
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
 import com.woocommerce.android.util.WooLog.T
@@ -51,12 +50,12 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onRequestLogout()
         fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
-        fun onSimplePaymentsOptionChanged(enabled: Boolean)
         fun onOrderCreationOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
 
+    @Suppress("ForbiddenComment", "LongMethod")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -150,9 +149,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionBetaFeatures.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
-            val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToBetaFeaturesFragment(
-                isCardReaderOnboardingCompleted = presenter.isCardReaderOnboardingCompleted()
-            )
+            val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToBetaFeaturesFragment()
             findNavController().navigateSafely(action)
         }
 
@@ -176,6 +173,14 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
+        /*
+        Hide "Switch Store" option in Settings, because it is moved to the "More" screen.
+        We temporarily comment out the code instead of deleting, because we might want to restore it later,
+        based on merchants feedbacks.
+
+        TODO: Maybe restore "Switch Store" option in Settings, depending on merchants feedbacks.
+        For more context: https://github.com/woocommerce/woocommerce-android/issues/5586
+
         if (presenter.hasMultipleStores()) {
             val storeClickListener = View.OnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
@@ -186,6 +191,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         } else {
             binding.optionSwitchStore.hide()
         }
+        */
+        binding.optionSwitchStore.hide()
 
         binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)
         binding.optionTheme.setOnClickListener {
@@ -288,9 +295,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         mutableListOf<String>().apply {
             add(getString(R.string.beta_features_add_ons))
             add(getString(R.string.beta_features_order_creation))
-            if (presenter.isCardReaderOnboardingCompleted()) {
-                add(getString(R.string.beta_features_simple_payments))
-            }
         }
 
     /**

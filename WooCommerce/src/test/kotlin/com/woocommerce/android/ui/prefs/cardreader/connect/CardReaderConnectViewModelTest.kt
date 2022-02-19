@@ -2,16 +2,6 @@ package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_AUTO_CONNECTION_STARTED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_CONNECTION_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_CONNECTION_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_CONNECTION_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_DISCOVERY_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_FAILURE
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_MISSING_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CARD_READER_LOCATION_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
@@ -27,35 +17,13 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.NavigateToOnboardingFlow
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.FAILED
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.MULTIPLE_READERS_FOUND
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.READER_FOUND
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ConnectingState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MissingLocationPermissionsError
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.ScanningState
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.*
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.*
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
@@ -71,15 +39,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.argThat
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -88,7 +48,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
-    private val tracker: AnalyticsTrackerWrapper = mock()
+    private val tracker: CardReaderTracker = mock()
     private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected)
     private val cardReaderManager: CardReaderManager = mock {
         on { readerStatus }.thenReturn(readerStatusFlow)
@@ -109,10 +69,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
 
     private val locationId = "location_id"
+    private val countryCode = "US"
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        viewModel = initVM(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS))
+        viewModel = initVM(CardReaderOnboardingState.OnboardingCompleted(PluginType.WOOCOMMERCE_PAYMENTS, countryCode))
     }
 
     @Test
@@ -524,7 +485,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             init(scanState = READER_FOUND)
 
-            verify(tracker).track(CARD_READER_AUTO_CONNECTION_STARTED)
+            verify(tracker).trackAutoConnectionStarted()
         }
 
     @Test
@@ -560,9 +521,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = FAILED)
 
-            verify(tracker).track(
-                eq(CARD_READER_DISCOVERY_FAILED), anyOrNull(), anyOrNull(), anyOrNull()
-            )
+            verify(tracker).trackReaderDiscoveryFailed(any())
         }
 
     @Test
@@ -571,7 +530,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = READER_FOUND)
 
             verify(tracker)
-                .track(CARD_READER_DISCOVERY_READER_DISCOVERED, mapOf("reader_count" to 1))
+                .trackReadersDiscovered(1)
         }
 
     @Test
@@ -580,7 +539,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = MULTIPLE_READERS_FOUND)
 
             verify(tracker)
-                .track(CARD_READER_DISCOVERY_READER_DISCOVERED, mapOf("reader_count" to 2))
+                .trackReadersDiscovered(2)
         }
 
     @Test
@@ -593,12 +552,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(tracker).track(
-                CARD_READER_LOCATION_FAILURE,
-                "CardReaderConnectViewModel",
-                null,
-                "Missing Address"
-            )
+            verify(tracker).trackFetchingLocationFailed("Missing Address")
         }
 
     @Test
@@ -611,12 +565,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(tracker).track(
-                CARD_READER_LOCATION_FAILURE,
-                "CardReaderConnectViewModel",
-                null,
-                "Invalid Postal Code"
-            )
+            verify(tracker).trackFetchingLocationFailed("Invalid Postal Code")
         }
 
     @Test
@@ -629,12 +578,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(tracker).track(
-                CARD_READER_LOCATION_FAILURE,
-                "CardReaderConnectViewModel",
-                null,
-                "selected site missing"
-            )
+            verify(tracker).trackFetchingLocationFailed("selected site missing")
         }
 
     @Test
@@ -649,7 +593,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CardReaderConnectViewState.MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
 
-            verify(tracker).track(CARD_READER_LOCATION_MISSING_TAPPED)
+            verify(tracker).trackMissingLocationTapped()
         }
 
     @Test
@@ -662,7 +606,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(tracker).track(CARD_READER_LOCATION_SUCCESS)
+            verify(tracker).trackFetchingLocationSucceeded()
         }
 
     @Test
@@ -850,8 +794,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            verify(tracker)
-                .track(CARD_READER_CONNECTION_TAPPED)
+            verify(tracker).trackOnConnectTapped()
         }
 
     @Test
@@ -862,8 +805,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
-            verify(tracker)
-                .track(CARD_READER_CONNECTION_TAPPED)
+            verify(tracker).trackOnConnectTapped()
         }
 
     @Test
@@ -906,7 +848,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connected(reader))
 
-            verify(tracker).track(CARD_READER_CONNECTION_SUCCESS)
+            verify(tracker).trackConnectionSucceeded()
         }
 
     @Test
@@ -949,7 +891,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected)
 
-            verify(tracker).track(CARD_READER_CONNECTION_FAILED)
+            verify(tracker).trackConnectionFailed()
         }
 
     @Test
@@ -1453,7 +1395,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
         (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
         (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
-        whenever(appPrefs.getPaymentPluginType(any(), any(), any())).thenReturn(
+        whenever(appPrefs.getCardReaderPreferredPlugin(any(), any(), any())).thenReturn(
             PluginType.WOOCOMMERCE_PAYMENTS
         )
     }

@@ -91,7 +91,7 @@ ext {
     constraintLayoutVersion = '1.2.0'
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.3.1'
-    googlePlayCoreVersion = '1.10.2'
+    googlePlayCoreVersion = '1.10.3'
     coroutinesVersion = '1.5.2'
     lifecycleVersion = '2.4.0'
     assertjVersion = '3.11.1'
@@ -107,6 +107,7 @@ ext {
     wordPressUtilsVersion = "2.3.0"
     mediapickerVersion = 'trunk-00947a9086ecdf2192b0bdc95a22e1647696d0b1'
     wordPressLoginVersion = '0.10.0'
+    composeVersion = "1.0.5"
     aboutAutomatticVersion = '0.0.4'
 }
 
@@ -171,5 +172,17 @@ tasks.register("configureApply") {
     dependsOn applyCredentials
     doLast {
         println("Done")
+    }
+}
+
+buildScan {
+    // Always run Gradle scan on CI builds
+    if (System.getenv('CI')) {
+        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+        termsOfServiceAgree = 'yes'
+        tag 'CI'
+        publishAlways()
+        // Otherwise CI might shut down before it's uploaded
+        uploadInBackground = false
     }
 }

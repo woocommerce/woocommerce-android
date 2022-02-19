@@ -7,7 +7,8 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
+import com.woocommerce.android.ui.reviews.domain.MarkReviewAsSeen
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -17,7 +18,6 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -35,7 +35,9 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
     private val repository: ReviewDetailRepository = mock()
     private val savedState = SavedStateHandle()
+
     private val reviewModerationHandler: ReviewModerationHandler = mock()
+    private val markReviewAsSeen: MarkReviewAsSeen = mock()
 
     private val review = ProductReviewTestUtils.generateProductReview(id = REVIEW_ID, productId = PRODUCT_ID)
     private lateinit var viewModel: ReviewDetailViewModel
@@ -47,12 +49,13 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             savedState,
             networkStatus,
             repository,
-            reviewModerationHandler
+            reviewModerationHandler,
+            markReviewAsSeen
         )
     }
 
     @Test
-    fun `Load the product review detail correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Load the product review detail correctly`() = testBlocking {
         doReturn(review).whenever(repository).getCachedProductReview(any())
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
         doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
@@ -64,49 +67,40 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
         }
 
-        var markAsRead: Long? = null
-        viewModel.event.observeForever { if (it is MarkNotificationAsRead) markAsRead = it.remoteNoteId }
+        viewModel.start(REVIEW_ID, false)
+
+        Assertions.assertThat(skeletonShown).containsExactly(true, false)
+        Assertions.assertThat(productReview).isEqualTo(review)
+        verify(markReviewAsSeen, times(1)).invoke(REVIEW_ID, notification)
+    }
+
+    @Test
+    fun `Handle error in loading product review detail correctly`() = testBlocking {
+        doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
+        doReturn(review).whenever(repository).getCachedProductReview(any())
+        doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
+
+        val skeletonShown = mutableListOf<Boolean>()
+        var productReview: ProductReview? = null
+        viewModel.viewStateData.observeForever { old, new ->
+            new.productReview?.takeIfNotEqualTo(old?.productReview) { productReview = it }
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
+        }
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            when (it) {
+                is ShowSnackbar -> snackbar = it
+            }
+        }
 
         viewModel.start(REVIEW_ID, false)
 
         Assertions.assertThat(skeletonShown).containsExactly(true, false)
-        Assertions.assertThat(markAsRead).isEqualTo(NOTIF_ID)
         Assertions.assertThat(productReview).isEqualTo(review)
-        verify(repository, times(1)).markNotificationAsRead(any(), any())
-        assertEquals(NOTIF_ID, markAsRead)
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
+        verify(markReviewAsSeen, times(1)).invoke(REVIEW_ID, notification)
     }
-
-    @Test
-    fun `Handle error in loading product review detail correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
-            doReturn(review).whenever(repository).getCachedProductReview(any())
-            doReturn(RequestResult.ERROR).whenever(repository).fetchProductReview(any())
-
-            val skeletonShown = mutableListOf<Boolean>()
-            var productReview: ProductReview? = null
-            viewModel.viewStateData.observeForever { old, new ->
-                new.productReview?.takeIfNotEqualTo(old?.productReview) { productReview = it }
-                new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
-            }
-
-            var snackbar: ShowSnackbar? = null
-            var markAsRead: Long? = null
-            viewModel.event.observeForever {
-                when (it) {
-                    is MarkNotificationAsRead -> markAsRead = it.remoteNoteId
-                    is ShowSnackbar -> snackbar = it
-                }
-            }
-
-            viewModel.start(REVIEW_ID, false)
-
-            Assertions.assertThat(skeletonShown).containsExactly(true, false)
-            assertEquals(NOTIF_ID, markAsRead)
-            Assertions.assertThat(productReview).isEqualTo(review)
-            verify(repository, times(1)).markNotificationAsRead(any(), any())
-            Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
-        }
 
     /**
      * Verifies the `exit` LiveData event is called when a request to moderate
@@ -164,4 +158,24 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             assertFalse(exitCalled)
             Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
         }
+
+    @Test
+    fun `Given review detail opened from notification, when navigating back, trigger NavigateBackFromNotification`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+        viewModel.start(REVIEW_ID, launchedFromNotification = true)
+
+        viewModel.onBackPressed()
+
+        Assertions.assertThat(viewModel.event.value).isEqualTo(NavigateBackFromNotification)
+    }
+
+    @Test
+    fun `Given review detail not opened from notification, when navigating back, trigger Exit`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+        viewModel.start(REVIEW_ID, launchedFromNotification = false)
+
+        viewModel.onBackPressed()
+
+        Assertions.assertThat(viewModel.event.value).isEqualTo(Exit)
+    }
 }

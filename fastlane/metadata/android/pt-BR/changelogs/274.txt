@@ -1,0 +1,2 @@
+8.4:
+Estamos atualizando a aparência do aplicativo! Você verá algumas alterações visuais no gráfico de vendas em Minha loja e um novo cálculo de conversão. Além disso, não estamos mais arredondando o total de vendas, para deixar tudo mais claro. E não para por aí: tem mais atualizações a caminho para as próximas semanas!

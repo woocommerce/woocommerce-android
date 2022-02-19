@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  * observer becomes active
  */
 open class QueuedLiveData<T> : MutableLiveData<T>() {
-
     private val values: Queue<T> = LinkedList()
 
     private val isActive = AtomicBoolean(false)

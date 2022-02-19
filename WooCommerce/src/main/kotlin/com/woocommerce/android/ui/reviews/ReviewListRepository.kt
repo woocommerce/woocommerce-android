@@ -4,21 +4,17 @@ import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.getCommentId
-import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.model.ProductReviewProduct
-import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.RequestResult.*
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.*
+import com.woocommerce.android.model.RequestResult.ERROR
+import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -326,31 +322,6 @@ class ReviewListRepository @Inject constructor(
             }
         }
     }
-
-    /*@SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onProductReviewChanged(event: OnProductReviewChanged) {
-        if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
-            if (event.isError) {
-                AnalyticsTracker.track(
-                    Stat.REVIEW_ACTION_FAILED,
-                    mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                    )
-                )
-
-                WooLog.e(
-                    REVIEWS,
-                    "${ReviewListFragment.TAG} - Error pushing product review status " +
-                        "changes to server!: ${event.error?.type} - ${event.error?.message}"
-                )
-            } else {
-                AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
-            }
-        }
-    }*/
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)

@@ -26,6 +26,7 @@ import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
@@ -43,6 +44,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -63,7 +65,8 @@ final class OrderDetailViewModel @Inject constructor(
     private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
-    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker
+    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val cardReaderTracker: CardReaderTracker,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     companion object {
         // The required version to support shipping label creation
@@ -210,7 +213,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
-        AnalyticsTracker.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
+        cardReaderTracker.trackCollectPaymentTapped()
         val site = selectedSite.get()
         when {
             cardReaderManager.readerStatus.value is Connected -> {
@@ -487,19 +490,30 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     private fun updateOrderState() {
-        val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
-        viewState = viewState.copy(
-            orderInfo = OrderInfo(
-                order = order,
-                isPaymentCollectableWithCardReader = paymentCollectibilityChecker
-                    .isCollectable(order),
-                isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() && !loadReceiptUrl().isNullOrEmpty()
-            ),
-            orderStatus = orderStatus,
-            toolbarTitle = resourceProvider.getString(
-                string.orderdetail_orderstatus_ordernum, order.number
-            )
-        )
+        launch {
+            val isPaymentCollectable = isPaymentCollectable(order)
+            withContext(coroutineDispatchers.main) {
+                val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
+                viewState = viewState.copy(
+                    orderInfo = OrderInfo(
+                        order = order,
+                        isPaymentCollectableWithCardReader = isPaymentCollectable,
+                        isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() &&
+                            !loadReceiptUrl().isNullOrEmpty()
+                    ),
+                    orderStatus = orderStatus,
+                    toolbarTitle = resourceProvider.getString(
+                        string.orderdetail_orderstatus_ordernum, order.number
+                    )
+                )
+            }
+        }
+    }
+
+    private suspend fun isPaymentCollectable(order: Order): Boolean {
+        return async {
+            paymentCollectibilityChecker.isCollectable(order)
+        }.await()
     }
 
     private fun loadOrderNotes() {

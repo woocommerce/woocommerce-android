@@ -18,6 +18,4 @@ fun NotificationModel.getCommentId(): Long {
     return this.meta?.ids?.comment ?: 0L
 }
 
-class NotificationsUnseenReviewsEvent(var hasUnseen: Boolean)
-
 class NotificationReceivedEvent(var channel: NotificationChannelType)
