@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-02 11:54:03+0000
+Translation-Revision-Date: 2022-02-15 18:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Rafraîchir après la mise à jour</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Gérer les extensions</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">Paiements WooCommerce</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe Gateway</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Les paiements en personne ne fonctionnent que si l’une des extensions suivantes est activée. Veuillez demander à un administrateur du site de désactiver l’une des extensions suivantes afin de pouvoir continuer :</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Les paiements en personne ne fonctionnent que si l’une des extensions suivantes est activée. Veuillez désactiver l’une de ces extensions pour pouvoir continuer :</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">Nous avons détecté des extensions de paiement en conflit</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">Manuel du lecteur de carte WisePad 3</string>
+    <string name="order_creation_price_calculation_failed">Impossible de changer le prix</string>
+    <string name="order_creation_payment_tax">Taxes</string>
+    <string name="order_creation_payment_tax_hint">Les taxes seront calculées automatiquement en fonction des réglages de votre boutique.</string>
+    <string name="exclusive_or">ou</string>
     <string name="settings_install_jetpack">Configurer Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
     <string name="order_creation_success_snackbar">Commande créée</string>
     <string name="order_creation_failure_snackbar">La création de commande a échoué.</string>
     <string name="order_creation_loading_dialog_message">Veuillez patienter…</string>
     <string name="order_creation_loading_dialog_title">Création de votre commande</string>
-    <string name="order_creation_payment_tax_hint">Total hors taxes. Les taxes seront calculées automatiquement en fonction des réglages de votre boutique.</string>
     <string name="order_creation_payment_order_total">Total de la commande</string>
     <string name="order_creation_payment_products_total">Total des produits</string>
     <string name="order_creation_payment">Paiement</string>
