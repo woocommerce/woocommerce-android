@@ -194,6 +194,8 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
 
+    implementation 'com.gu.android:toolargetool:0.3.0' // TODO nbradbury remove
+
     implementation("org.wordpress:utils:$wordPressUtilsVersion") {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"

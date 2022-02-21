@@ -8,6 +8,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import javax.inject.Inject
+import com.gu.toolargetool.TooLargeTool
 
 open class WooCommerce : Application(), HasAndroidInjector {
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
@@ -25,6 +26,8 @@ open class WooCommerce : Application(), HasAndroidInjector {
 
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
         WellSql.init(wellSqlConfig)
+
+        TooLargeTool.startLogging(this) // TODO nbradbury remove
 
         appInitializer.get().init(this)
     }
