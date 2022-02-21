@@ -201,6 +201,11 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun bindFeesSubSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
+        FeatureFlag.ORDER_CREATION_M2
+            .takeIf { it.isEnabled() }
+            ?.let { paymentSection.feesContainer.isVisible = true }
+            ?: return
+
         paymentSection.editFeesButton.setOnClickListener { viewModel.onFeeButtonClicked() }
         paymentSection.feeTotalLayout.setOnClickListener { viewModel.onFeeButtonClicked() }
 
