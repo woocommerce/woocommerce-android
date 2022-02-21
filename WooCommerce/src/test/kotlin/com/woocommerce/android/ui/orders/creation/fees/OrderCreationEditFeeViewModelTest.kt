@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.orders.creation.fees
 
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.*
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.UpdateFee
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import org.assertj.core.api.Assertions.assertThat
@@ -26,9 +26,9 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
 
     private fun initSut() {
         sut = OrderCreationEditFeeViewModel(
-                savedState,
-                mock(),
-                mock()
+            savedState,
+            mock(),
+            mock()
         )
     }
 
