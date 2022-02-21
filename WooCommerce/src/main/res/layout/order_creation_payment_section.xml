@@ -75,7 +75,6 @@
                 android:layout_weight="1"
                 android:gravity="start|center_vertical"
                 android:text="@string/order_creation_add_shipping"
-                android:layout_marginEnd="@dimen/major_100"
                 app:icon="@drawable/ic_add"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tax_label" />
@@ -86,6 +85,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
                 tools:text="$20.00" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
