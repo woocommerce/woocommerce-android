@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import com.google.android.material.composethemeadapter.MdcTheme
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentInboxBinding
 import com.woocommerce.android.ui.base.BaseFragment
@@ -31,7 +31,7 @@ class InboxFragment : BaseFragment(R.layout.fragment_inbox) {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MaterialTheme {
+                MdcTheme {
                     Inbox(viewModel = viewModel)
                 }
             }
