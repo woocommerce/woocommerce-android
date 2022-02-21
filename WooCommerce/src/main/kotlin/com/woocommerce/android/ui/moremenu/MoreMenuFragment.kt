@@ -66,6 +66,11 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         setupObservers()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -74,6 +79,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
+                is ViewInboxEvent -> navigateToInbox()
             }
         }
     }
@@ -99,8 +105,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         )
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun navigateToInbox() {
+        // TODO open new Inbox screen
     }
 }
