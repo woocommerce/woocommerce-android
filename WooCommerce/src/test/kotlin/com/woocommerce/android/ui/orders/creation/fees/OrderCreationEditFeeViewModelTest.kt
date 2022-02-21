@@ -13,18 +13,42 @@ import java.math.BigDecimal
 
 class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
     companion object {
-        private val ORDER_TOTAL = BigDecimal(2000)
+        private val DEFAULT_ORDER_TOTAL = BigDecimal(2000)
+        private val DEFAULT_FEE_VALUE = BigDecimal(250)
     }
     private lateinit var sut: OrderCreationEditFeeViewModel
-    private val savedState = OrderCreationEditFeeFragmentArgs(ORDER_TOTAL).initSavedStateHandle()
+    private var savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL).initSavedStateHandle()
 
     @Before
-    fun setUp() {
+    fun setUp() = initSut()
+
+    private fun initSut() {
         sut = OrderCreationEditFeeViewModel(
-            savedState,
-            mock(),
-            mock()
+                savedState,
+                mock(),
+                mock()
         )
+    }
+
+    @Test
+    fun `when initializing the viewModel with existing navArgs currentFeeValue, then set fee amount based on it`() {
+        var lastReceivedEvent: Event? = null
+
+        savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL, DEFAULT_FEE_VALUE)
+            .initSavedStateHandle()
+
+        initSut()
+
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        sut.onDoneSelected()
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? UpdateFee }
+            ?.let { updateFeeEvent ->
+                assertThat(updateFeeEvent.amount).isEqualTo(DEFAULT_FEE_VALUE)
+            } ?: fail("Last event should be of UpdateFee type")
     }
 
     @Test
