@@ -63,6 +63,11 @@
             <argument
                 android:name="orderTotal"
                 app:argType="java.math.BigDecimal" />
+            <argument
+                android:name="currentFeeValue"
+                app:argType="java.math.BigDecimal"
+                app:nullable="true"
+                android:defaultValue="@null"/>
         </action>
     </fragment>
     <dialog
@@ -154,5 +159,10 @@
         <argument
             android:name="orderTotal"
             app:argType="java.math.BigDecimal" />
+        <argument
+            android:name="currentFeeValue"
+            app:argType="java.math.BigDecimal"
+            app:nullable="true"
+            android:defaultValue="@null"/>
     </fragment>
 </navigation>
