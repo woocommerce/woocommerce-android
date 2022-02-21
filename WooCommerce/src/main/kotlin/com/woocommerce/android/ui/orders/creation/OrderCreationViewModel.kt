@@ -210,7 +210,7 @@ class OrderCreationViewModel @Inject constructor(
         retryOrderDraftUpdateTrigger.tryEmit(Unit)
     }
 
-    fun onFeeButtonClicked() {
+    fun onFeeButtonClicked(isEditingFee: Boolean = false) {
         triggerEvent(EditFee(_orderDraft.value.total))
     }
 
