@@ -144,10 +144,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         paymentSection.shippingButton.setOnClickListener {
             viewModel.onShippingButtonClicked()
         }
-        paymentSection.feesContainer.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
-        paymentSection.editFeesButton.setOnClickListener {
-            viewModel.onFeeButtonClicked()
-        }
     }
 
     private fun LayoutOrderCreationCustomerInfoBinding.changeState() {
@@ -205,6 +201,11 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun bindFeesSubSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
+        paymentSection.feesContainer.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
+        paymentSection.feesContainer.setOnClickListener {
+            viewModel.onFeeButtonClicked()
+        }
+
         newOrderData.feesLines.firstOrNull()
             ?.takeIf { it.total > BigDecimal.ZERO }
             ?.let {
