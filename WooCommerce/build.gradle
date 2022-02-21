@@ -111,7 +111,6 @@ android {
 
     composeOptions {
         kotlinCompilerExtensionVersion composeVersion
-        kotlinCompilerVersion gradle.ext.kotlinVersion
     }
 
     flavorDimensions "buildType"
@@ -335,7 +334,7 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling:$composeVersion"
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
     implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
-    implementation "com.google.android.material:compose-theme-adapter:$composeVersion"
+    implementation "com.google.android.material:compose-theme-adapter:1.1.2"// Updated to $composeVersion (1.1.0-rc01)
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
 }
