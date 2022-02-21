@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.fees
 
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -10,6 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import java.math.BigDecimal
+import kotlin.test.assertTrue
 
 class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
     companion object {
@@ -48,6 +50,29 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
             .run { this as? UpdateFee }
             ?.let { updateFeeEvent ->
                 assertThat(updateFeeEvent.amount).isEqualTo(DEFAULT_FEE_VALUE)
+            } ?: fail("Last event should be of UpdateFee type")
+    }
+
+    @Test
+    fun `when initializing the viewModel with existing navArgs currentFeeValue, then set fee percentage based on it`() {
+        var lastReceivedEvent: Event? = null
+
+        savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL, DEFAULT_FEE_VALUE)
+            .initSavedStateHandle()
+
+        initSut()
+
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        sut.onPercentageSwitchChanged(isChecked = true)
+        sut.onDoneSelected()
+
+        assertTrue(sut.viewStateData.liveData.value?.feePercentage.isEqualTo(BigDecimal(12.5)))
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? UpdateFee }
+            ?.let { updateFeeEvent ->
+                assert(updateFeeEvent.amount.isEqualTo(DEFAULT_FEE_VALUE))
             } ?: fail("Last event should be of UpdateFee type")
     }
 
