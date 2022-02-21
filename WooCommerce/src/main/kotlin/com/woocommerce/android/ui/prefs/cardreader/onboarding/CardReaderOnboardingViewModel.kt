@@ -5,6 +5,7 @@ import androidx.annotation.LayoutRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.exhaustive
@@ -16,6 +17,8 @@ import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -35,6 +38,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState) {
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
@@ -91,7 +95,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                             )
                     }
                 is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount ->
-                    viewState.value = OnboardingViewState.StripeAcountError.WCPayInTestModeWithLiveAccountState(
+                    viewState.value = OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
                         onLearnMoreActionClicked = ::onLearnMoreClicked
                     )
@@ -176,7 +180,16 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun onLearnMoreClicked() {
         cardReaderTracker.trackOnboardingLearnMoreTapped()
-        triggerEvent(NavigateToUrlInGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
+        val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
+            selectedSite.get().id,
+            selectedSite.get().siteId,
+            selectedSite.get().selfHostedSiteId
+        )
+        val learnMoreUrl = when (preferredPlugin) {
+            STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS
+            WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        }
+        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrl))
     }
 
     private fun onSkipPendingRequirementsClicked(storeCountryCode: String) {
@@ -327,7 +340,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
             )
 
-            data class WCPayInTestModeWithLiveAccountState(
+            data class PluginInTestModeWithLiveAccountState(
                 override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit
             ) : StripeAcountError(

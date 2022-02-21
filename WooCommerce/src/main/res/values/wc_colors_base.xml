@@ -59,4 +59,6 @@
 
     <color name="jetpack_green_40">#069e08</color>
     <color name="jetpack_black">#0B2621</color>
+
+    <color name="wp_blue">#399CE3</color>
 </resources>

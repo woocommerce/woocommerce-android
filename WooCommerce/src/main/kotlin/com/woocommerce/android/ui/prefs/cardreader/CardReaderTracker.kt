@@ -78,7 +78,8 @@ class CardReaderTracker @Inject constructor(
             is CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
             is CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
             is CardReaderOnboardingState.StripeAccountCountryNotSupported -> "account_country_not_supported"
-            is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
+            is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount ->
+                "${getPluginNameReasonPrefix(state.preferredPlugin)}_in_test_mode_with_live_account"
             is CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
             is CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
             is CardReaderOnboardingState.SetupNotCompleted ->

@@ -9,10 +9,7 @@ import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_D
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.support.ZendeskHelper
-import com.woocommerce.android.util.Base64Decoder
-import com.woocommerce.android.util.NotificationsParser
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
+import com.woocommerce.android.util.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -82,7 +79,7 @@ class NotificationMessageHandlerTest {
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
             zendeskHelper = zendeskHelper,
-            notificationsParser = notificationsParser
+            notificationsParser = notificationsParser,
         )
 
         doReturn(true).whenever(accountStore).hasAccessToken()

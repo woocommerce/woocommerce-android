@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-02 13:54:03+0000
+Translation-Revision-Date: 2022-02-15 18:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Vernieuwen na bijwerken</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Beheer plugins</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe-gateway</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Fysieke betalingen werken alleen als een van de volgende plugins is geactiveerd. Om verder te gaan, neem contact op met een sitebeheerder om een van deze plugins te deactiveren:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Fysieke betalingen werken alleen als een van de volgende plugins is geactiveerd. Deactiveer een van deze plugins om verder te gaan:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">Tegenstrijdige plugins voor betalingen gedetecteerd</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">Handleiding WisePad3-kaartlezer</string>
+    <string name="order_creation_price_calculation_failed">Kon prijzen niet bijwerken</string>
+    <string name="order_creation_payment_tax">Belastingen</string>
+    <string name="order_creation_payment_tax_hint">Btw wordt automatisch berekend op basis van je winkelinstellingen.</string>
+    <string name="exclusive_or">of</string>
     <string name="settings_install_jetpack">Jetpack installeren</string>
     <string name="card_reader_onboarding_account_rejected_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
     <string name="order_creation_success_snackbar">Bestelling toegevoegd</string>
     <string name="order_creation_failure_snackbar">Aanmaken van bestelling mislukt</string>
     <string name="order_creation_loading_dialog_message">Een moment geduld…</string>
     <string name="order_creation_loading_dialog_title">Je bestelling wordt aangemaakt</string>
-    <string name="order_creation_payment_tax_hint">Totaal exclusief btw. Btw wordt automatisch berekend op basis van je winkelinstellingen.</string>
     <string name="order_creation_payment_order_total">Besteltotaal</string>
     <string name="order_creation_payment_products_total">Totaalaantal producten</string>
     <string name="order_creation_payment">Betaling</string>

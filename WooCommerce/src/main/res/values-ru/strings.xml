@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-01 10:54:03+0000
+Translation-Revision-Date: 2022-02-15 09:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Перезагрузите после обновления</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Управление плагинами</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">Платежи WooCommerce</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe Gateway</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Очные платежи будут работать только с одним из следующих активированных плагинов. Для продолжения обратитесь к администратору сайта, чтобы деактивировать один из следующих плагинов:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Очные платежи будут работать только с одним из следующих активированных плагинов. Для продолжения деактивируйте один из следующих плагинов:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">Обнаружены конфликтующие плагины оплаты</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">Руководство по работе с платёжным терминалом WisePad 3</string>
+    <string name="order_creation_price_calculation_failed">Не удалось обновить цены</string>
+    <string name="order_creation_payment_tax">Налоги</string>
+    <string name="order_creation_payment_tax_hint">Налоги будут рассчитаны автоматически на основе настроек магазина.</string>
+    <string name="exclusive_or">или</string>
     <string name="settings_install_jetpack">Установить Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">В настоящее время очные платежи недоступны</string>
     <string name="order_creation_success_snackbar">Заказ создан</string>
     <string name="order_creation_failure_snackbar">Не удалось создать заказ</string>
     <string name="order_creation_loading_dialog_message">Пожалуйста, подождите…</string>
     <string name="order_creation_loading_dialog_title">Выполняется создание заказа</string>
-    <string name="order_creation_payment_tax_hint">Итог без налогов. Налоги будут рассчитаны автоматически на основе настроек магазина.</string>
     <string name="order_creation_payment_order_total">Итог заказа</string>
     <string name="order_creation_payment_products_total">Итог по товарам</string>
     <string name="order_creation_payment">Оплата</string>
