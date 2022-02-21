@@ -201,10 +201,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun bindFeesSubSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
-        paymentSection.feesContainer.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
-        paymentSection.feesContainer.setOnClickListener {
-            viewModel.onFeeButtonClicked()
-        }
+        paymentSection.editFeesButton.setOnClickListener { viewModel.onFeeButtonClicked() }
+        paymentSection.feeTotalLayout.setOnClickListener { viewModel.onFeeButtonClicked() }
 
         newOrderData.feesLines.firstOrNull()
             ?.takeIf { it.total > BigDecimal.ZERO }
