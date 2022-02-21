@@ -24,7 +24,8 @@ class OrderCreationShippingViewModel @Inject constructor(
     private val navArgs: OrderCreationShippingFragmentArgs by savedStateHandle.navArgs()
 
     val viewStateData = LiveDataDelegate(
-        savedStateHandle, ViewState(
+        savedState = savedStateHandle,
+        initialValue = ViewState(
             amount = navArgs.currentShippingLine?.total ?: BigDecimal.ZERO,
             name = navArgs.currentShippingLine?.methodTitle,
             isEditFlow = navArgs.currentShippingLine != null
