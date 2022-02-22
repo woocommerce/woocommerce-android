@@ -60,6 +60,10 @@ class OrderCreationEditFeeViewModel @Inject constructor(
         triggerEvent(UpdateFee(activeFeeValue))
     }
 
+    fun onRemoveFeeClicked() {
+        triggerEvent(UpdateFee(BigDecimal.ZERO))
+    }
+
     fun onPercentageSwitchChanged(isChecked: Boolean) {
         viewState = viewState.copy(isPercentageSelected = isChecked)
     }

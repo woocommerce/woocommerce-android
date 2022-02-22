@@ -173,6 +173,27 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when remove fee button is clicked, then trigger UpdateFee with zero as amount`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        sut.start()
+        sut.onFeeAmountChanged(BigDecimal(123))
+        sut.onFeePercentageChanged("25")
+        sut.onFeePercentageChanged("9@%@(&*%@@%*SSF-08a")
+        sut.onPercentageSwitchChanged(isChecked = true)
+
+        sut.onRemoveFeeClicked()
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? UpdateFee }
+            ?.let { updateFeeEvent ->
+                assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal.ZERO)
+            } ?: fail("Last event should be of UpdateFee type")
+    }
+
+    @Test
     fun `when percentage switch is changed, then change viewState to the respective value`() {
         var lastReceivedChange: Boolean? = null
         sut.viewStateData.observeForever { _, viewState ->
