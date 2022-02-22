@@ -72,7 +72,30 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         lastReceivedEvent
             .run { this as? UpdateFee }
             ?.let { updateFeeEvent ->
-                assert(updateFeeEvent.amount.isEqualTo(DEFAULT_FEE_VALUE))
+                assertTrue(updateFeeEvent.amount.isEqualTo(DEFAULT_FEE_VALUE))
+            } ?: fail("Last event should be of UpdateFee type")
+    }
+
+    @Test
+    fun `when initializing the viewModel with order total as zero and valid currentFeeValue, then set fee percentage as zero`() {
+        var lastReceivedEvent: Event? = null
+
+        savedState = OrderCreationEditFeeFragmentArgs(BigDecimal.ZERO, DEFAULT_FEE_VALUE)
+            .initSavedStateHandle()
+
+        initSut()
+
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        sut.onPercentageSwitchChanged(isChecked = true)
+        sut.onDoneSelected()
+
+        assertTrue(sut.viewStateData.liveData.value?.feePercentage.isEqualTo(BigDecimal.ZERO))
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? UpdateFee }
+            ?.let { updateFeeEvent ->
+                assertTrue(updateFeeEvent.amount.isEqualTo(BigDecimal.ZERO))
             } ?: fail("Last event should be of UpdateFee type")
     }
 
