@@ -26,7 +26,8 @@ class OrderCreationEditFeeFragment :
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val editFeeViewModel by viewModels<OrderCreationEditFeeViewModel>()
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,6 +74,9 @@ class OrderCreationEditFeeFragment :
         feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
             editFeeViewModel.onPercentageSwitchChanged(isChecked)
         }
+        removeFeeButton.setOnClickListener {
+            editFeeViewModel.onRemoveFeeClicked()
+        }
     }
 
     private fun FragmentOrderCreationEditFeeBinding.observeViewStateData() {
@@ -88,6 +92,9 @@ class OrderCreationEditFeeFragment :
                 feePercentageEditText.isVisible = isChecked
                 feeAmountEditText.isVisible = isChecked.not()
                 feeTypeSwitch.isChecked = isChecked
+            }
+            new.shouldDisplayRemoveFeeButton.takeIfNotEqualTo(old?.shouldDisplayRemoveFeeButton) {
+                removeFeeButton.isVisible = it
             }
         }
     }
