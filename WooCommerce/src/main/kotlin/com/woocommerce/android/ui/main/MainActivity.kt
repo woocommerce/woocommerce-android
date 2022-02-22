@@ -810,13 +810,10 @@ class MainActivity :
             binding.bottomNav.active(MORE.position)
         }
 
-        val action = MoreMenuFragmentDirections.actionMoreMenuFragmentToReviewDetailFragment(
-            remoteReviewId = remoteReviewId,
-            tempStatus = tempStatus,
-            launchedFromNotification = launchedFromNotification,
-            enableModeration = enableModeration
-        )
-        navController.navigateSafely(action)
+        val query = "?remoteReviewId=$remoteReviewId&tempStatus=$tempStatus" +
+            "&launchedFromNotification=$launchedFromNotification&enableModeration=$enableModeration"
+        val deeplink = "wcandroid://reviewDetail$query"
+        navController.navigate(Uri.parse(deeplink))
     }
 
     override fun showReviewDetailWithSharedTransition(
