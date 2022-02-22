@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.inbox
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InboxViewModel @Inject constructor(
+    private val resourceProvider: ResourceProvider,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
     val inboxState = loadInboxNotes().asLiveData()
@@ -26,8 +29,9 @@ class InboxViewModel @Inject constructor(
                         updatedTime = "5h ago",
                         callToActionText = "Learn more",
                         onCallToActionClick = {},
-                        dismissText = "Dismiss",
+                        dismissText = resourceProvider.getString(R.string.dismiss_inbox_note),
                         onDismissNote = {},
+                        isRead = false
                     ),
                     InboxNoteUi(
                         id = "2",
@@ -37,8 +41,9 @@ class InboxViewModel @Inject constructor(
                         updatedTime = "22 minutes ago",
                         callToActionText = "Learn more",
                         onCallToActionClick = {},
-                        dismissText = "Dismiss",
+                        dismissText = resourceProvider.getString(R.string.dismiss_inbox_note),
                         onDismissNote = {},
+                        isRead = false
                     ),
                     InboxNoteUi(
                         id = "1",
@@ -48,8 +53,9 @@ class InboxViewModel @Inject constructor(
                         updatedTime = "5h ago",
                         callToActionText = "Learn more",
                         onCallToActionClick = {},
-                        dismissText = "Dismiss",
+                        dismissText = resourceProvider.getString(R.string.dismiss_inbox_note),
                         onDismissNote = {},
+                        isRead = false
                     ),
                     InboxNoteUi(
                         id = "1",
@@ -59,8 +65,9 @@ class InboxViewModel @Inject constructor(
                         updatedTime = "5h ago",
                         callToActionText = "Learn more",
                         onCallToActionClick = {},
-                        dismissText = "Dismiss",
+                        dismissText = resourceProvider.getString(R.string.dismiss_inbox_note),
                         onDismissNote = {},
+                        isRead = false
                     )
                 )
             )
@@ -83,5 +90,6 @@ class InboxViewModel @Inject constructor(
         val onCallToActionClick: (String) -> Unit,
         val dismissText: String,
         val onDismissNote: (String) -> Unit,
+        val isRead: Boolean
     )
 }
