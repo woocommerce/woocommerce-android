@@ -170,7 +170,7 @@
     <color name="disconnected_state_number_background_color">@color/woo_gray_0</color>
 
     <!--
-    Jetpack plugin installation dialog
+        Jetpack plugin installation dialog
     -->
     <color name="jetpack_button_color">@color/color_secondary</color>
     <color name="jetpack_install_progressbar">@color/jetpack_green_40</color>
@@ -184,4 +184,10 @@
     -->
     <color name="color_media_picker_toolbar_background">@color/color_toolbar</color>
     <color name="color_media_picker_toolbar_foreground">@color/color_on_surface</color>
+
+    <!--
+    More menu button
+    -->
+    <color name="more_menu_button_background">@color/color_surface</color>
+    <color name="more_menu_button_icon_background">@color/woo_gray_0</color>
 </resources>

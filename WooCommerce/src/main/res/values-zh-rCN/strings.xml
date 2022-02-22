@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-01-20 21:46:34+0000
+Translation-Revision-Date: 2022-02-15 18:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">更新后刷新</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">管理插件</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe 网关</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">必须启用下面其中一个插件，才能进行现场付款。 请联系站点管理员，禁用下面其中一个插件，然后再继续：</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">必须启用下面其中一个插件，才能进行现场付款。 请禁用下面其中一个插件，然后再继续：</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">检测到存在冲突的付款插件</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 读卡器手册</string>
+    <string name="order_creation_price_calculation_failed">无法更新定价</string>
+    <string name="order_creation_payment_tax">税费</string>
+    <string name="order_creation_payment_tax_hint">系统会根据您的商店设置自动计算税费。</string>
+    <string name="exclusive_or">或</string>
+    <string name="settings_install_jetpack">安装 Jetpack</string>
+    <string name="card_reader_onboarding_account_rejected_header">当前不支持现场付款</string>
+    <string name="order_creation_success_snackbar">订单已创建</string>
+    <string name="order_creation_failure_snackbar">订单创建失败</string>
+    <string name="order_creation_loading_dialog_message">请稍候…</string>
+    <string name="order_creation_loading_dialog_title">创建您的订单</string>
+    <string name="order_creation_payment_order_total">订单总计</string>
+    <string name="order_creation_payment_products_total">产品总计</string>
+    <string name="order_creation_payment">付款</string>
+    <string name="dashboard_top_performers_net_sales">净销售额：%s</string>
+    <string name="dashboard_top_performers_items_sold">已售商品</string>
+    <string name="dashboard_stats_conversion">转化</string>
+    <string name="create">创建</string>
     <string name="about_automattic_app_icon_description">应用程序图标</string>
     <string name="about_automattic_back_icon_description">返回图标</string>
     <string name="about_automattic_logo_description">Automattic 徽标</string>
@@ -316,6 +341,7 @@ Language: zh_CN
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">测试模式中不支持现场付款。 请将其关闭后再继续。</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">当前不支持现场付款</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">您的帐户中存在待处理的要求。 请在 %1$s 之前完成这些要求，以继续接受现场付款。</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">您的账户中存在待处理的请求</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">您的帐户中至少有一项逾期要求。 请注意恢复现场付款</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">当前不支持现场付款</string>
     <string name="card_reader_onboarding_account_under_review_hint">我们完成您的帐户审核后，您即可接受现场付款。</string>

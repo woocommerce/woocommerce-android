@@ -1,0 +1,2 @@
+8.5:
+Jullie hebben gevraagd om in de app bestellingen te kunnen creëren. We hebben vanaf nu een sneakpeek beschikbaar voor mensen die ons willen helpen met uittesten! Ga naar de instellingen in de app en zet de bèta-functie aan voor Aanmaken van bestellingen. Op dit moment kan je producten, opmerkingen en adressen toevoegen. Toekomstige releases zullen nog extra functies toevoegen.

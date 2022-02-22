@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-02 17:54:02+0000
+Translation-Revision-Date: 2022-02-16 12:54:07+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Güncellemeden sonra yenileyin</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Eklentileri Yönet</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Ödemeler</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe ödeme geçidi</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Şahsen Ödemeler yalnızca aşağıdaki eklentilerden biri etkinleştirildiğinde çalışır. Devam etmek üzere bu eklentilerden birini devre dışı bırakması için lütfen bir site yöneticisiyle iletişime geçin:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Şahsen Ödemeler yalnızca aşağıdaki eklentilerden biri etkinleştirildiğinde çalışır. Devam etmek için lütfen bu eklentilerden birini devre dışı bırakın:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">Çakışan ödeme eklentileri algılandı</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Kart Okuyucu Kılavuzu</string>
+    <string name="order_creation_price_calculation_failed">Fiyatlandırma güncellenemedi</string>
+    <string name="order_creation_payment_tax">Vergiler</string>
+    <string name="order_creation_payment_tax_hint">Vergiler mağaza ayarlarınıza göre otomatik olarak hesaplanır.</string>
+    <string name="exclusive_or">veya</string>
     <string name="settings_install_jetpack">Jetpack\'i Kur</string>
     <string name="card_reader_onboarding_account_rejected_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
     <string name="order_creation_success_snackbar">Sipariş oluşturuldu</string>
     <string name="order_creation_failure_snackbar">Sipariş oluşturulamadı</string>
     <string name="order_creation_loading_dialog_message">Lütfen bekleyin…</string>
     <string name="order_creation_loading_dialog_title">Siparişiniz oluşturuluyor</string>
-    <string name="order_creation_payment_tax_hint">Vergiler hariç toplam. Vergiler mağaza ayarlarınıza göre otomatik olarak hesaplanır.</string>
     <string name="order_creation_payment_order_total">Sipariş toplamı</string>
     <string name="order_creation_payment_products_total">Ürünlerin Toplamı</string>
     <string name="order_creation_payment">Ödeme</string>
