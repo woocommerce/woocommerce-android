@@ -50,7 +50,8 @@ class OrderCreationEditFeeViewModel @Inject constructor(
         navArgs.currentFeeValue?.let {
             viewState = viewState.copy(
                 feeAmount = it,
-                feePercentage = appliedPercentageFromCurrentFeeValue
+                feePercentage = appliedPercentageFromCurrentFeeValue,
+                shouldDisplayRemoveFeeButton = true
             )
         }
     }
@@ -77,7 +78,8 @@ class OrderCreationEditFeeViewModel @Inject constructor(
     data class ViewState(
         val feeAmount: BigDecimal = BigDecimal.ZERO,
         val feePercentage: BigDecimal = BigDecimal.ZERO,
-        val isPercentageSelected: Boolean = false
+        val isPercentageSelected: Boolean = false,
+        val shouldDisplayRemoveFeeButton: Boolean = false
     ) : Parcelable
 
     data class UpdateFee(
