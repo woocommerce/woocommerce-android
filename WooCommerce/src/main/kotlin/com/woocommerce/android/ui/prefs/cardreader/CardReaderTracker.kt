@@ -73,6 +73,8 @@ class CardReaderTracker @Inject constructor(
         when (state) {
             is CardReaderOnboardingState.OnboardingCompleted -> null
             is CardReaderOnboardingState.StoreCountryNotSupported -> "country_not_supported"
+            is CardReaderOnboardingState.PluginIsNotSupportedInTheCountry ->
+                "${getPluginNameReasonPrefix(state.preferredPlugin)}_is_not_supported_in_{${state.countryCode}}"
             is CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
             is CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
             is CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"

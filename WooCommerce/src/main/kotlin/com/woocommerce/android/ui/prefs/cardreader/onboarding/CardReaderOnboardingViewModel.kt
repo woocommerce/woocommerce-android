@@ -60,23 +60,38 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 is CardReaderOnboardingState.OnboardingCompleted ->
                     triggerEvent(OnboardingEvent.Continue(state.countryCode))
                 is CardReaderOnboardingState.StoreCountryNotSupported ->
-                    viewState.value = OnboardingViewState.UnsupportedCountryState(
+                    viewState.value = OnboardingViewState.UnsupportedErrorState.Country(
                         convertCountryCodeToCountry(state.countryCode),
                         ::onContactSupportClicked,
                         ::onLearnMoreClicked
                     )
+                is CardReaderOnboardingState.PluginIsNotSupportedInTheCountry ->
+                    viewState.value = when (state.preferredPlugin) {
+                        WOOCOMMERCE_PAYMENTS ->
+                            OnboardingViewState.UnsupportedErrorState.StripeInCountry(
+                                convertCountryCodeToCountry(state.countryCode),
+                                ::onContactSupportClicked,
+                                ::onLearnMoreClicked
+                            )
+                        STRIPE_EXTENSION_GATEWAY ->
+                            OnboardingViewState.UnsupportedErrorState.WcPayInCountry(
+                                convertCountryCodeToCountry(state.countryCode),
+                                ::onContactSupportClicked,
+                                ::onLearnMoreClicked
+                            )
+                    }
                 CardReaderOnboardingState.WcpayNotInstalled ->
                     viewState.value =
                         OnboardingViewState.WCPayError.WCPayNotInstalledState(::refreshState, ::onLearnMoreClicked)
                 is CardReaderOnboardingState.PluginUnsupportedVersion ->
                     when (state.preferredPlugin) {
-                        PluginType.WOOCOMMERCE_PAYMENTS ->
+                        WOOCOMMERCE_PAYMENTS ->
                             viewState.value =
                                 OnboardingViewState.WCPayError.WCPayUnsupportedVersionState(
                                     ::refreshState,
                                     ::onLearnMoreClicked
                                 )
-                        PluginType.STRIPE_EXTENSION_GATEWAY ->
+                        STRIPE_EXTENSION_GATEWAY ->
                             viewState.value =
                                 OnboardingViewState.StripeExtensionError.StripeExtensionUnsupportedVersionState(
                                     ::refreshState, ::onLearnMoreClicked
@@ -87,9 +102,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         OnboardingViewState.WCPayError.WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
                 is CardReaderOnboardingState.SetupNotCompleted ->
                     viewState.value = when (state.preferredPlugin) {
-                        PluginType.WOOCOMMERCE_PAYMENTS ->
+                        WOOCOMMERCE_PAYMENTS ->
                             OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
-                        PluginType.STRIPE_EXTENSION_GATEWAY ->
+                        STRIPE_EXTENSION_GATEWAY ->
                             OnboardingViewState.StripeExtensionError.StripeExtensionNotSetupState(
                                 ::refreshState, ::onLearnMoreClicked
                             )
@@ -132,7 +147,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         onRetryButtonActionClicked = ::refreshState
                     )
                 is CardReaderOnboardingState.StripeAccountCountryNotSupported ->
-                    viewState.value = OnboardingViewState.UnsupportedCountryState(
+                    viewState.value = OnboardingViewState.UnsupportedErrorState.Country(
                         convertCountryCodeToCountry(state.countryCode),
                         ::onContactSupportClicked,
                         ::onLearnMoreClicked
@@ -277,19 +292,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val illustration = R.drawable.ic_woo_error_state
         }
 
-        class UnsupportedCountryState(
-            countryDisplayName: String,
-            val onContactSupportActionClicked: (() -> Unit),
-            val onLearnMoreActionClicked: (() -> Unit)
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_unsupported_country) {
-            val headerLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_country_not_supported_header,
-                params = listOf(UiString.UiStringText(countryDisplayName))
-            )
-            val illustration = R.drawable.img_hot_air_balloon
-            val hintLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_country_not_supported_hint
-            )
+        sealed class UnsupportedErrorState(
+            val headerLabel: UiString,
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_unsupported) {
+            abstract val onContactSupportActionClicked: (() -> Unit)
+            abstract val onLearnMoreActionClicked: (() -> Unit)
+
             val contactSupportLabel = UiString.UiStringRes(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,
                 containsHtml = true
@@ -297,6 +305,43 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val learnMoreLabel = UiString.UiStringRes(
                 stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
                 containsHtml = true
+            )
+            val illustration = R.drawable.img_hot_air_balloon
+            val hintLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_hint
+            )
+
+            data class Country(
+                val countryDisplayName: String,
+                override val onContactSupportActionClicked: (() -> Unit),
+                override val onLearnMoreActionClicked: (() -> Unit)
+            ) : UnsupportedErrorState(
+                headerLabel = UiString.UiStringRes(
+                    stringRes = R.string.card_reader_onboarding_country_not_supported_header,
+                    params = listOf(UiString.UiStringText(countryDisplayName))
+                )
+            )
+
+            data class StripeInCountry(
+                val countryDisplayName: String,
+                override val onContactSupportActionClicked: (() -> Unit),
+                override val onLearnMoreActionClicked: (() -> Unit)
+            ) : UnsupportedErrorState(
+                headerLabel = UiString.UiStringRes(
+                    stringRes = R.string.card_reader_onboarding_stripe_unsupported_in_country_header,
+                    params = listOf(UiString.UiStringText(countryDisplayName))
+                )
+            )
+
+            data class WcPayInCountry(
+                val countryDisplayName: String,
+                override val onContactSupportActionClicked: (() -> Unit),
+                override val onLearnMoreActionClicked: (() -> Unit)
+            ) : UnsupportedErrorState(
+                headerLabel = UiString.UiStringRes(
+                    stringRes = R.string.card_reader_onboarding_wcpay_unsupported_in_country_header,
+                    params = listOf(UiString.UiStringText(countryDisplayName))
+                )
             )
         }
 
