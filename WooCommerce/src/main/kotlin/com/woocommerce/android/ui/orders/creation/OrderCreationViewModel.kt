@@ -171,6 +171,10 @@ class OrderCreationViewModel @Inject constructor(
         _orderDraft.update { it.copy(feesLines = listOf(newFee)) }
     }
 
+    fun onFeeRemoved() {
+
+    }
+
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
         launch(dispatchers.io) {
             orderDetailRepository

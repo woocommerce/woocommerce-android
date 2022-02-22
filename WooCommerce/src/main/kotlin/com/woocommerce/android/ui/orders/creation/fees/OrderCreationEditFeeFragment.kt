@@ -14,6 +14,7 @@ import com.woocommerce.android.databinding.FragmentOrderCreationEditFeeBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.RemoveFee
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.UpdateFee
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -102,11 +103,10 @@ class OrderCreationEditFeeFragment :
     private fun observeEvents() {
         editFeeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is UpdateFee -> {
-                    sharedViewModel.onFeeEdited(event.amount)
-                    findNavController().navigateUp()
-                }
+                is UpdateFee -> sharedViewModel.onFeeEdited(event.amount)
+                is RemoveFee -> sharedViewModel.onFeeRemoved()
             }
+            findNavController().navigateUp()
         }
     }
 }
