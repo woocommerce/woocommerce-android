@@ -49,7 +49,7 @@ class OrderCreationEditFeeViewModel @Inject constructor(
             false -> viewState.feeAmount
         }
 
-    init {
+    fun start() {
         navArgs.currentFeeValue?.let {
             viewState = viewState.copy(
                 feeAmount = it,

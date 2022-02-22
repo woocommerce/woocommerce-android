@@ -38,6 +38,11 @@ class OrderCreationEditFeeFragment :
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        editFeeViewModel.start()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
