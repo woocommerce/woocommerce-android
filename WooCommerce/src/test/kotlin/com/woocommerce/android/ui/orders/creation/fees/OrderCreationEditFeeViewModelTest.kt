@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation.fees
 
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.RemoveFee
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.UpdateFee
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -186,11 +187,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         sut.onRemoveFeeClicked()
 
         assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? UpdateFee }
-            ?.let { updateFeeEvent ->
-                assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal.ZERO)
-            } ?: fail("Last event should be of UpdateFee type")
+        assertThat(lastReceivedEvent).isInstanceOf(RemoveFee::class.java)
     }
 
     @Test
