@@ -186,4 +186,36 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         sut.onPercentageSwitchChanged(isChecked = false)
         assertThat(lastReceivedChange).isFalse
     }
+
+    @Test
+    fun `when current fee is existent, then set showDisplayRemoveFeeButton to true`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL, DEFAULT_FEE_VALUE)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.shouldDisplayRemoveFeeButton
+        }
+
+        sut.start()
+
+        assertThat(lastReceivedChange).isTrue
+    }
+
+    @Test
+    fun `when current fee is null, then set showDisplayRemoveFeeButton to false`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.shouldDisplayRemoveFeeButton
+        }
+
+        sut.start()
+
+        assertThat(lastReceivedChange).isFalse
+    }
 }
