@@ -67,7 +67,8 @@ fun InboxNoteRow(note: InboxNoteUi) {
         )
         Row(modifier = Modifier.fillMaxWidth()) {
             TextButton(
-                onClick = { note.onCallToActionClick(note.id) }) {
+                onClick = { note.onCallToActionClick(note.id) }
+            ) {
                 Text(
                     text = note.callToActionText.uppercase(),
                     color = colorResource(id = R.color.color_secondary)

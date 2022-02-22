@@ -21,7 +21,8 @@ class InboxViewModel @Inject constructor(
                     InboxNoteUi(
                         id = "1",
                         title = "Install the Facebook free extension",
-                        description = "Now that your store is set up, you’re ready to begin marketing it. Head over to the WooCommerce marketing panel to get started.",
+                        description = "Now that your store is set up, you’re ready to begin marketing it. " +
+                            "Head over to the WooCommerce marketing panel to get started.",
                         updatedTime = "5h ago",
                         callToActionText = "Learn more",
                         onCallToActionClick = {},
@@ -31,7 +32,8 @@ class InboxViewModel @Inject constructor(
                     InboxNoteUi(
                         id = "2",
                         title = "Connect with your audience",
-                        description = "Grow your customer base and increase your sales with marketing tools built for WooCommerce.",
+                        description = "Grow your customer base and increase your sales with marketing tools " +
+                            "built for WooCommerce.",
                         updatedTime = "22 minutes ago",
                         callToActionText = "Learn more",
                         onCallToActionClick = {},
@@ -41,7 +43,8 @@ class InboxViewModel @Inject constructor(
                     InboxNoteUi(
                         id = "1",
                         title = "Install the Facebook free extension",
-                        description = "Now that your store is set up, you’re ready to begin marketing it. Head over to the WooCommerce marketing panel to get started.",
+                        description = "Now that your store is set up, you’re ready to begin marketing it. " +
+                            "Head over to the WooCommerce marketing panel to get started.",
                         updatedTime = "5h ago",
                         callToActionText = "Learn more",
                         onCallToActionClick = {},
@@ -51,7 +54,8 @@ class InboxViewModel @Inject constructor(
                     InboxNoteUi(
                         id = "1",
                         title = "Install the Facebook free extension",
-                        description = "Now that your store is set up, you’re ready to begin marketing it. Head over to the WooCommerce marketing panel to get started.",
+                        description = "Now that your store is set up, you’re ready to begin marketing it. " +
+                            "Head over to the WooCommerce marketing panel to get started.",
                         updatedTime = "5h ago",
                         callToActionText = "Learn more",
                         onCallToActionClick = {},
