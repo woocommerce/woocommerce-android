@@ -9,7 +9,7 @@ commands:
           command: sed -i "s/tracksEnabled = false/tracksEnabled = true/" gradle.properties
       - run:
           name: Update default gradle memory
-          command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx2048m/" gradle.properties
+          command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx4096m/" gradle.properties
 
 orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
