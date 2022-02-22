@@ -38,11 +38,10 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
 
         savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL, DEFAULT_FEE_VALUE)
             .initSavedStateHandle()
-
         initSut()
-
         sut.event.observeForever { lastReceivedEvent = it }
 
+        sut.start()
         sut.onDoneSelected()
 
         assertThat(lastReceivedEvent).isNotNull
@@ -59,11 +58,10 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
 
         savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL, DEFAULT_FEE_VALUE)
             .initSavedStateHandle()
-
         initSut()
-
         sut.event.observeForever { lastReceivedEvent = it }
 
+        sut.start()
         sut.onPercentageSwitchChanged(isChecked = true)
         sut.onDoneSelected()
 
@@ -82,11 +80,10 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
 
         savedState = OrderCreationEditFeeFragmentArgs(BigDecimal.ZERO, DEFAULT_FEE_VALUE)
             .initSavedStateHandle()
-
         initSut()
-
         sut.event.observeForever { lastReceivedEvent = it }
 
+        sut.start()
         sut.onPercentageSwitchChanged(isChecked = true)
         sut.onDoneSelected()
 
@@ -104,6 +101,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
+        sut.start()
         sut.onFeeAmountChanged(BigDecimal(123))
         sut.onFeePercentageChanged("25")
         sut.onPercentageSwitchChanged(isChecked = true)
@@ -123,6 +121,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
+        sut.start()
         sut.onFeeAmountChanged(BigDecimal(123))
         sut.onFeePercentageChanged("25")
         sut.onPercentageSwitchChanged(isChecked = false)
@@ -142,6 +141,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
+        sut.start()
         sut.onDoneSelected()
 
         assertThat(lastReceivedEvent).isNotNull
@@ -157,6 +157,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
+        sut.start()
         sut.onFeePercentageChanged("25")
         sut.onFeePercentageChanged("9@%@(&*%@@%*SSF-08a")
         sut.onPercentageSwitchChanged(isChecked = true)
@@ -178,6 +179,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
             lastReceivedChange = viewState.isPercentageSelected
         }
 
+        sut.start()
         sut.onPercentageSwitchChanged(isChecked = true)
         assertThat(lastReceivedChange).isTrue
 
