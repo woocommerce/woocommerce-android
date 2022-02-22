@@ -1,9 +1,6 @@
 package com.woocommerce.android.extensions
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.*
 
 fun <T> MutableLiveData<MutableList<T>>.addNewItem(item: T) {
     val oldValue = this.value ?: mutableListOf()
@@ -46,4 +43,18 @@ fun <T, R> LiveData<T>.mapAsync(mapper: suspend (T) -> R): LiveData<R> = switchM
     liveData {
         emit(mapper(value))
     }
+}
+
+fun <T> LiveData<T>.drop(number: Int): LiveData<T> {
+    val outputLiveData: MediatorLiveData<T> = MediatorLiveData<T>()
+    var remainingItemsToSkip: Int = number
+    outputLiveData.addSource(this) {
+        if (it == null) return@addSource
+        if (remainingItemsToSkip != 0) {
+            remainingItemsToSkip--
+            return@addSource
+        }
+        outputLiveData.value = it
+    }
+    return outputLiveData
 }

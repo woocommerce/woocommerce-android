@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.navigation
 
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.math.BigDecimal
 
@@ -11,7 +12,7 @@ sealed class OrderCreationNavigationTarget : Event() {
     data class ShowProductVariations(val productId: Long) : OrderCreationNavigationTarget()
     data class ShowProductDetails(val item: Order.Item) : OrderCreationNavigationTarget()
     data class ShowCreatedOrder(val orderId: Long) : OrderCreationNavigationTarget()
-    object EditShipping : OrderCreationNavigationTarget()
+    data class EditShipping(val currentShippingLine: ShippingLine?) : OrderCreationNavigationTarget()
     data class EditFee(
         val orderTotal: BigDecimal,
         val currentFeeValue: BigDecimal? = null

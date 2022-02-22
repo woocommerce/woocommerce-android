@@ -211,7 +211,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onShippingButtonClicked() {
-        triggerEvent(EditShipping)
+        triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
 
     fun onCreateOrderClicked(order: Order) {
@@ -303,6 +303,16 @@ class OrderCreationViewModel @Inject constructor(
             val shipping = draft.shippingLines.firstOrNull()?.copy(total = amount, methodTitle = name)
                 ?: ShippingLine(methodId = "other", total = amount, methodTitle = name)
             draft.copy(shippingLines = listOf(shipping))
+        }
+    }
+
+    fun onShippingRemoved() {
+        _orderDraft.update { draft ->
+            // We are iterating over all shipping lines, but on the current feature, we support only one shipping item
+            val shippingLines = draft.shippingLines.map {
+                it.copy(methodId = null)
+            }
+            draft.copy(shippingLines = shippingLines)
         }
     }
 

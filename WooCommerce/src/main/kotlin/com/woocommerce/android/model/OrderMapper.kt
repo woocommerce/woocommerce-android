@@ -75,11 +75,11 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
 
     private fun List<WCShippingLine>.mapShippingLines(): List<Order.ShippingLine> = map {
         Order.ShippingLine(
-            it.id!!,
-            it.methodId ?: StringUtils.EMPTY,
-            it.methodTitle ?: StringUtils.EMPTY,
-            it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            itemId = it.id!!,
+            methodId = it.methodId,
+            methodTitle = it.methodTitle ?: StringUtils.EMPTY,
+            totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
         )
     }
 
