@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
@@ -43,23 +42,24 @@ class ProductDetailBottomSheetBuilder(
     fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
         return when (product.productType) {
             SIMPLE -> {
-                listOfNotNull(
-                    product.getShipping(),
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription(),
-                    product.getLinkedProducts(),
-                    product.getDownloadableFiles()
-                )
-            }
-            VIRTUAL -> {
-                listOfNotNull(
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription(),
-                    product.getLinkedProducts(),
-                    product.getDownloadableFiles()
-                )
+                if (product.isVirtual) {
+                    listOfNotNull(
+                        product.getCategories(),
+                        product.getTags(),
+                        product.getShortDescription(),
+                        product.getLinkedProducts(),
+                        product.getDownloadableFiles()
+                    )
+                } else {
+                    listOfNotNull(
+                        product.getShipping(),
+                        product.getCategories(),
+                        product.getTags(),
+                        product.getShortDescription(),
+                        product.getLinkedProducts(),
+                        product.getDownloadableFiles()
+                    )
+                }
             }
             EXTERNAL -> {
                 listOfNotNull(
