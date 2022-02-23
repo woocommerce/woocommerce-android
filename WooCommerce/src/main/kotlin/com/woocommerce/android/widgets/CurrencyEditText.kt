@@ -7,8 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.textfield.TextInputEditText
 import com.woocommerce.android.util.CurrencyFormatter
+import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
-import java.math.RoundingMode.DOWN
 import java.math.RoundingMode.HALF_UP
 import kotlin.math.pow
 
@@ -25,6 +26,8 @@ class CurrencyEditText : TextInputEditText {
     private val _value = MutableLiveData<BigDecimal>()
     val value: LiveData<BigDecimal> = _value
 
+    private var wcSiteSettings: WCSettingsModel? = null
+
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -40,6 +43,11 @@ class CurrencyEditText : TextInputEditText {
         value.value?.let {
             setValue(it)
         }
+    }
+
+    fun initView(siteSettings: WCSettingsModel, decimals: Int) {
+        this.wcSiteSettings = siteSettings
+        this.decimals = decimals
     }
 
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
@@ -63,15 +71,17 @@ class CurrencyEditText : TextInputEditText {
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
-            val cleanValue = clean(
-                text = text,
-                decimals = decimals,
-                lengthBefore = lengthBefore,
-                lengthAfter = lengthAfter
-            )
+            clean(text, decimals)?.let { updatedValue ->
+                val formattedValue = wcSiteSettings?.let {
+                    WCCurrencyUtils.formatCurrencyForDisplay(updatedValue.toDouble(), it)
+                } ?: text
 
-            _value.value = cleanValue
-            setText(formatCurrency(cleanValue))
+                _value.value = updatedValue
+                setText(formattedValue)
+            } ?: run {
+                // TODO _value.value = null
+                setText("")
+            }
 
             isChangingText = false
         }
@@ -81,36 +91,12 @@ class CurrencyEditText : TextInputEditText {
         /**
          * Cleans the [text] so that it only has numerical characters and has the correct number of fractional digits.
          */
-        fun clean(text: CharSequence?, decimals: Int, lengthBefore: Int, lengthAfter: Int): BigDecimal {
+        fun clean(text: CharSequence?, decimals: Int): BigDecimal? {
             val nonNumericPattern = Regex("[^\\d]")
-            var cleanValue = text.toString().replace(nonNumericPattern, "").toBigDecimalOrNull() ?: BigDecimal.ZERO
+            var cleanValue = text.toString().replace(nonNumericPattern, "").toBigDecimalOrNull() ?: return null
 
             if (decimals > 0) {
                 cleanValue = cleanValue.divide(BigDecimal(10f.pow(decimals).toInt()), decimals, HALF_UP)
-            }
-
-            // Check if a backspace was pressed.
-            if (lengthBefore > lengthAfter) {
-                // If backspace was pressed, we want the last digit to be removed if there is a non-numeric character
-                // (i.e. the currency symbol) on the right. Or if there is no non-numeric character at all. This means
-                // that the backspace only deleted the currency symbol character and not the digit.
-                //
-                // If we don't handle this manually, it will look like the user _did not delete anything_.
-                //
-                // Example scenario:
-                //
-                // 1. If the current text is "123.79CA$" (French Canada places the dollar symbol on the right)
-                // 2. The user presses backspace
-                // 3. The [CurrencyEditText.onTextChanged] will be called with [text] equal to "123.79CA"
-                //
-                // If keep this as is and reformat again, we'll end up with same text, "123.79CA$". So it'll look like
-                // the backspace was ignored.
-
-                // https://regexr.com/6b5tk
-                val startsWithDigitPattern = Regex("^\\d.*")
-                if (text.toString().matches(startsWithDigitPattern)) {
-                    cleanValue = cleanValue.divide(BigDecimal(10f.pow(lengthBefore - lengthAfter).toInt()), DOWN)
-                }
             }
 
             return cleanValue
