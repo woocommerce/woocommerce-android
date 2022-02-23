@@ -3,16 +3,16 @@ package com.woocommerce.android.widgets
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.material.textfield.TextInputEditText
 import com.woocommerce.android.util.CurrencyFormatter
 import java.math.BigDecimal
 import java.math.RoundingMode.DOWN
 import java.math.RoundingMode.HALF_UP
 import kotlin.math.pow
 
-class CurrencyEditText : AppCompatEditText {
+class CurrencyEditText : TextInputEditText {
     private var formatCurrency: (BigDecimal) -> String = { "" }
     private var isChangingSelection = false
     private var isChangingText = false

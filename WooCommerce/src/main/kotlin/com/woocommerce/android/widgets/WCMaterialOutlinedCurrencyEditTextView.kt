@@ -12,8 +12,13 @@ import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ViewMaterialOutlinedCurrencyEdittextBinding
 import com.woocommerce.android.extensions.isNotEqualTo
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
+import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.*
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import javax.inject.Inject
 
 /**
  * Custom View that mimics a TextInputEditText that supports a prefix to the EditText using [CurrencyEditText].
@@ -28,6 +33,7 @@ import java.math.BigDecimal
  * and deprecate this class.
  *
  */
+@AndroidEntryPoint
 class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -38,6 +44,10 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     companion object {
         private const val KEY_SUPER_STATE = "WC-OUTLINED-CURRENCY-VIEW-SUPER-STATE"
     }
+
+    @Inject lateinit var wcStore: WooCommerceStore
+    @Inject lateinit var selectedSite: SelectedSite
+
     init {
         if (attrs != null) {
             val a = context.obtainStyledAttributes(
@@ -48,6 +58,15 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
                 isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
             } finally {
                 a.recycle()
+            }
+        }
+
+        selectedSite.getIfExists()?.let {
+            val siteSettings = wcStore.getSiteSettings(it) ?: return@let
+            val currencySymbol = wcStore.getSiteCurrency(it, siteSettings.currencyCode)
+            when (siteSettings.currencyPosition) {
+                LEFT, LEFT_SPACE -> prefixText = currencySymbol
+                RIGHT, RIGHT_SPACE -> suffixText = currencySymbol
             }
         }
     }
