@@ -371,6 +371,8 @@
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
+    <string name="order_creation_edit_shipping">Shipping</string>
+    <string name="order_creation_remove_shipping">Remove shipping from order</string>
     <string name="order_creation_add_fee_removal_hint">Remove fee from order</string>
     <string name="order_creation_fee_amount_hint">Amount ($)</string>
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
@@ -1680,7 +1682,7 @@
     <string name="checking_email">Checking email</string>
     <string name="email_invalid">Enter a valid email address</string>
     <string name="forgot_password">Lost your password?</string>
-    <string name="error_generic">Something went wrong</string>
+    
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="invalid_site_url_message">Check that the site URL entered is valid</string>
     <string name="xmlrpc_missing_method_error">Couldn\'t connect. Required XML-RPC methods are missing on the server.</string>
@@ -2239,4 +2241,5 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
+    <string name="error_generic">An error occurred</string>
 </resources>
