@@ -30,6 +30,16 @@ const val SUPPORTED_WCPAY_VERSION = "3.2.1"
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 const val SUPPORTED_STRIPE_EXTENSION_VERSION = "6.2.0"
 
+/**
+ * This class is used to check if the selected store is ready to accept In Person Payments. The app should check store's
+ * eligibility every time it attempts to connect to a card reader.
+ *
+ * This class contains a side-effect, it stores "onboarding completed"/"onboarding not completed"/"onboarding pending"
+ * and Preferred Plugin (either WCPay or Stripe Extension) into shared preferences.
+ *
+ * Onboarding Pending means that the store is ready to accept in person payments, but the Stripe account contains some
+ * pending requirements and will be disabled if the requirements are not met.
+ */
 class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,

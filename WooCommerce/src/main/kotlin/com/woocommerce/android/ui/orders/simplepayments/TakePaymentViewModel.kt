@@ -128,15 +128,29 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onCardReaderPaymentCompleted() {
-        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.card_reader_payment_completed_payment_header))
-        AnalyticsTracker.track(
-            AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
-            mapOf(
-                AnalyticsTracker.KEY_AMOUNT to orderTotal.toString(),
-                AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
-            )
-        )
         launch {
+            // this function is called even when the payment fails - in other words, it tells us
+            // the card reader flow completed but not necessarily successfully -, so we check the
+            // status of the order to determine whether payment succeeded
+            val status = orderStore.getOrderByIdAndSite(navArgs.order.id, selectedSite.get())?.status
+            if (status == CoreOrderStatus.COMPLETED.value) {
+                AnalyticsTracker.track(
+                    AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_COMPLETED,
+                    mapOf(
+                        AnalyticsTracker.KEY_AMOUNT to orderTotal.toString(),
+                        AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
+                    )
+                )
+            } else {
+                AnalyticsTracker.track(
+                    AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_SOURCE to
+                            AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD
+                    )
+                )
+            }
+
             delay(DELAY_MS)
             triggerEvent(MultiLiveEvent.Event.Exit)
         }

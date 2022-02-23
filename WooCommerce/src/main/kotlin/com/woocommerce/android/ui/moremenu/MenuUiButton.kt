@@ -8,11 +8,13 @@ data class MenuUiButton(
     @StringRes val text: Int,
     @DrawableRes val icon: Int,
     val badgeCount: Int = 0,
+    val isEnabled: Boolean = true,
     val onClick: () -> Unit = {},
 )
 
 enum class MenuButtonType {
     VIEW_ADMIN,
     VIEW_STORE,
-    PRODUCT_REVIEWS
+    PRODUCT_REVIEWS,
+    INBOX
 }
