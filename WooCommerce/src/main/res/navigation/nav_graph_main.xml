@@ -206,6 +206,25 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </action>
+    <action
+        android:id="@+id/action_global_reviewDetailFragment"
+        app:destination="@id/reviewDetailFragment">
+        <argument
+            android:name="remoteReviewId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="tempStatus"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="launchedFromNotification"
+            app:argType="boolean" />
+        <argument
+            android:name="enableModeration"
+            app:argType="boolean" />
+    </action>
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
@@ -229,7 +248,6 @@
             android:id="@+id/action_reviewDetailFromNotification_to_reviewListFragment"
             app:destination="@id/reviews"
             app:popUpTo="@+id/moreMenu" />
-        <deepLink app:uri="wcandroid://reviewDetail?remoteReviewId={remoteReviewId}&amp;tempStatus={tempStatus}&amp;launchedFromNotification={launchedFromNotification}&amp;enableModeration={enableModeration}" />
     </fragment>
 
     <include app:graph="@navigation/nav_graph_orders" />
