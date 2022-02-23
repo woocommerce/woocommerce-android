@@ -68,7 +68,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         sut.onPercentageSwitchChanged(isChecked = true)
         sut.onDoneSelected()
 
-        assertTrue(sut.viewStateData.liveData.value?.feePercentage.isEqualTo(BigDecimal(12.5)))
+        assertThat(sut.viewStateData.liveData.value?.feePercentage).isEqualTo(BigDecimal(12.5))
         assertThat(lastReceivedEvent).isNotNull
         lastReceivedEvent
             .run { this as? UpdateFee }
@@ -90,7 +90,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         sut.onPercentageSwitchChanged(isChecked = true)
         sut.onDoneSelected()
 
-        assertTrue(sut.viewStateData.liveData.value?.feePercentage.isEqualTo(BigDecimal.ZERO))
+        assertThat(sut.viewStateData.liveData.value?.feePercentage).isEqualTo(BigDecimal.ZERO)
         assertThat(lastReceivedEvent).isNotNull
         lastReceivedEvent
             .run { this as? UpdateFee }
@@ -108,7 +108,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
 
         val expectedPercentageValue =
             // obtaining percentage value from order total and fee total values
-            feeTotal.divide(orderTotal, 4, HALF_UP) * percentageBase
+            (feeTotal.divide(orderTotal, 4, HALF_UP) * percentageBase).stripTrailingZeros()
 
         val expectedRecalculatedFeeTotal =
             ((orderTotal * expectedPercentageValue) / percentageBase)
@@ -124,7 +124,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         sut.onPercentageSwitchChanged(isChecked = true)
         sut.onDoneSelected()
 
-        assertTrue(sut.viewStateData.liveData.value?.feePercentage.isEqualTo(expectedPercentageValue))
+        assertThat(sut.viewStateData.liveData.value?.feePercentage).isEqualTo(expectedPercentageValue)
         assertThat(lastReceivedEvent).isNotNull
         lastReceivedEvent
             .run { this as? UpdateFee }
