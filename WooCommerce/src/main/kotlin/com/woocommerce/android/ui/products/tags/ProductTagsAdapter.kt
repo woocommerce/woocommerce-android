@@ -72,7 +72,6 @@ class ProductTagsAdapter(
     fun setFilter(filter: String) {
         if (filter != currentFilter) {
             currentFilter = filter
-            notifyDataSetChanged()
         }
     }
 
