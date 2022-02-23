@@ -243,6 +243,8 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                 }
                 is CardReaderConnectEvent.ShowToast ->
                     ToastUtils.showToast(requireContext(), getString(event.message))
+                is CardReaderConnectEvent.ShowToastString ->
+                    ToastUtils.showToast(requireContext(), event.message)
                 is CardReaderConnectEvent.OpenWPComWebView ->
                     findNavController().navigateSafely(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
