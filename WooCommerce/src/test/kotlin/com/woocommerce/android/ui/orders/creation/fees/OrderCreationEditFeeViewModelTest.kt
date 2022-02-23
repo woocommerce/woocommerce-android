@@ -12,6 +12,8 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode.HALF_UP
 import kotlin.test.assertTrue
 
 class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
@@ -94,6 +96,40 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
             .run { this as? UpdateFee }
             ?.let { updateFeeEvent ->
                 assertTrue(updateFeeEvent.amount.isEqualTo(BigDecimal.ZERO))
+            } ?: fail("Last event should be of UpdateFee type")
+    }
+
+    @Test
+    fun `when initializing the viewModel with huge relative percentage fee, then divide BigDecimals with expected rounding`() {
+        var lastReceivedEvent: Event? = null
+        val percentageBase = BigDecimal(100)
+        val orderTotal = BigDecimal(15)
+        val feeTotal = BigDecimal(500)
+
+        val expectedPercentageValue =
+            // obtaining percentage value from order total and fee total values
+            feeTotal.divide(orderTotal, 4, HALF_UP) * percentageBase
+
+        val expectedRecalculatedFeeTotal =
+            ((orderTotal * expectedPercentageValue) / percentageBase)
+                .round(MathContext(4))
+
+
+        savedState = OrderCreationEditFeeFragmentArgs(orderTotal, feeTotal)
+            .initSavedStateHandle()
+        initSut()
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        sut.start()
+        sut.onPercentageSwitchChanged(isChecked = true)
+        sut.onDoneSelected()
+
+        assertTrue(sut.viewStateData.liveData.value?.feePercentage.isEqualTo(expectedPercentageValue))
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? UpdateFee }
+            ?.let { updateFeeEvent ->
+                assertTrue(updateFeeEvent.amount.isEqualTo(expectedRecalculatedFeeTotal))
             } ?: fail("Last event should be of UpdateFee type")
     }
 
