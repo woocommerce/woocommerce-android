@@ -816,7 +816,7 @@ class MainActivity :
             launchedFromNotification = launchedFromNotification,
             enableModeration = enableModeration
         )
-        navController.navigate(action)
+        navController.navigateSafely(action)
     }
 
     override fun showReviewDetailWithSharedTransition(
