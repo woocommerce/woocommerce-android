@@ -1,4 +1,9 @@
 commands:
+  update-gradle-memory:
+    steps:
+      - run:
+          name: Update default gradle memory
+          command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx2048m/" gradle.properties
   copy-gradle-properties:
     steps:
       - run:
@@ -7,9 +12,7 @@ commands:
       - run:
           name: Enable build time reporting
           command: sed -i "s/tracksEnabled = false/tracksEnabled = true/" gradle.properties
-      - run:
-          name: Update default gradle memory
-          command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx4096m/" gradle.properties
+      - update-gradle-memory
 
 orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
@@ -164,6 +167,7 @@ jobs:
       - run:
           name: Copy Secrets
           command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
+      - update-gradle-memory
       - android/restore-gradle-cache
       - run:
           name: Build APK
@@ -197,6 +201,7 @@ jobs:
       - run:
           name: Copy Secrets
           command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
+      - update-gradle-memory
       - android/restore-gradle-cache
       - run:
           name: Build APK
