@@ -48,12 +48,6 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     @Inject lateinit var wcStore: WooCommerceStore
     @Inject lateinit var selectedSite: SelectedSite
 
-    private val siteSettings by lazy {
-        selectedSite.getIfExists()?.let {
-            wcStore.getSiteSettings(it)
-        }
-    }
-
     init {
         if (attrs != null) {
             val a = context.obtainStyledAttributes(
@@ -67,13 +61,18 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             }
         }
 
-        siteSettings?.let { siteSettings ->
+        val siteSettings = selectedSite.getIfExists()?.let {
+            wcStore.getSiteSettings(it)
+        }
+
+        siteSettings?.let {
             val currencySymbol = wcStore.getSiteCurrency(selectedSite.get(), siteSettings.currencyCode)
             when (siteSettings.currencyPosition) {
                 LEFT, LEFT_SPACE -> prefixText = currencySymbol
                 RIGHT, RIGHT_SPACE -> suffixText = currencySymbol
             }
         }
+        binding.currencyEditText.initView(siteSettings)
     }
 
     val value: LiveData<BigDecimal>
@@ -84,7 +83,6 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         decimals: Int,
         currencyFormatter: CurrencyFormatter
     ) {
-        siteSettings?.let { binding.currencyEditText.initView(it, it.currencyDecimalNumber) }
     }
 
     fun getText() = binding.currencyEditText.text.toString()

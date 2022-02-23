@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.textfield.TextInputEditText
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.model.WCSettingsModel
@@ -14,80 +15,76 @@ import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 import kotlin.math.pow
 
-class CurrencyEditText : TextInputEditText {
-    private var formatCurrency: (BigDecimal) -> String = { "" }
+class CurrencyEditText @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = R.attr.editTextStyle
+) : TextInputEditText(context, attrs, defStyleAttr) {
     private var isChangingText = false
-    private var decimals = 2
+    private val decimals
+        get() = siteSettings?.currencyDecimalNumber ?: 0
 
-    @Suppress("SENSELESS_COMPARISON")
-    private val isInitialized
-        get() = formatCurrency != null
+    private var isInitialized = false
 
     private val _value = MutableLiveData<BigDecimal>()
     val value: LiveData<BigDecimal> = _value
 
-    private var wcSiteSettings: WCSettingsModel? = null
-
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    private var siteSettings: WCSettingsModel? = null
 
     init {
         this.inputType = InputType.TYPE_CLASS_NUMBER
     }
 
     fun initView(currency: String, decimals: Int, currencyFormatter: CurrencyFormatter) {
-        this.formatCurrency = currencyFormatter.buildBigDecimalFormatter(currency)
-        this.decimals = decimals
-
-        value.value?.let {
-            setValue(it)
-        }
     }
 
-    fun initView(siteSettings: WCSettingsModel, decimals: Int) {
-        this.wcSiteSettings = siteSettings
-        this.decimals = decimals
+    fun initView(siteSettings: WCSettingsModel?) {
+        isInitialized = true
+        this.siteSettings = siteSettings
     }
 
     fun setValue(value: BigDecimal) {
-        isChangingText = true
-        setText(formatCurrency(value))
-        _value.value = value
-        isChangingText = false
+        setText(value.toPlainString())
     }
 
     override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
-            val currentSelectionPosition = selectionStart
-            clean(text, decimals)?.let { value ->
+            val cleanValue = clean(text, decimals)
+            if (cleanValue != null) {
                 // When the user types backspace on a field that already contained `0`
-                val shouldEmptyTheView = lengthAfter < lengthBefore &&
+                val shouldClearTheField = lengthAfter < lengthBefore &&
                     _value.value?.isEqualTo(BigDecimal.ZERO) == true &&
-                    value.isEqualTo(BigDecimal.ZERO)
-
-                if (shouldEmptyTheView) {
-                    // TODO _value.value = null
-                    setText("")
+                    cleanValue.isEqualTo(BigDecimal.ZERO)
+                if (shouldClearTheField) {
+                    clearValue()
                 } else {
-                    val formattedValue = wcSiteSettings?.let {
-                        WCCurrencyUtils.formatCurrencyForDisplay(value.toDouble(), it)
-                    } ?: text
-
-                    _value.value = value
-                    setText(formattedValue)
-                    val selectionOffset = (formattedValue?.length ?: 0) - (text?.length ?: 0)
-                    setSelection(currentSelectionPosition + selectionOffset)
+                    formatAndUpdateValue(text, cleanValue)
                 }
-            } ?: run {
-                // TODO _value.value = null
-                setText("")
+            } else {
+                clearValue()
             }
-
             isChangingText = false
         }
+    }
+
+    private fun formatAndUpdateValue(currentText: CharSequence?, cleanValue: BigDecimal) {
+        val currentSelectionPosition = selectionStart
+
+        val formattedValue = siteSettings?.let {
+            WCCurrencyUtils.formatCurrencyForDisplay(cleanValue.toDouble(), it)
+        } ?: currentText
+
+        _value.value = cleanValue
+        setText(formattedValue)
+        val selectionOffset = (formattedValue?.length ?: 0) - (currentText?.length ?: 0)
+        setSelection(currentSelectionPosition + selectionOffset)
+    }
+
+    private fun clearValue() {
+        // TODO _value.value = null
+        setText("")
     }
 
     companion object TextCleaner {
