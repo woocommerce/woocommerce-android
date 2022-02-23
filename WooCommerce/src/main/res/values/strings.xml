@@ -371,6 +371,8 @@
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
+    <string name="order_creation_edit_shipping">Shipping</string>
+    <string name="order_creation_remove_shipping">Remove shipping from order</string>
     <string name="order_creation_add_fee_removal_hint">Remove fee from order</string>
     <string name="order_creation_fee_amount_hint">Amount ($)</string>
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>

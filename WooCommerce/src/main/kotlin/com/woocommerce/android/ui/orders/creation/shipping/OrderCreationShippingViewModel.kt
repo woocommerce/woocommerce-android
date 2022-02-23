@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -20,7 +21,16 @@ class OrderCreationShippingViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedStateHandle) {
-    val viewStateData = LiveDataDelegate(savedStateHandle, ViewState())
+    private val navArgs: OrderCreationShippingFragmentArgs by savedStateHandle.navArgs()
+
+    val viewStateData = LiveDataDelegate(
+        savedState = savedStateHandle,
+        initialValue = ViewState(
+            amount = navArgs.currentShippingLine?.total ?: BigDecimal.ZERO,
+            name = navArgs.currentShippingLine?.methodTitle,
+            isEditFlow = navArgs.currentShippingLine != null
+        )
+    )
     private var viewState by viewStateData
 
     val currencyDecimals: Int
@@ -38,11 +48,17 @@ class OrderCreationShippingViewModel @Inject constructor(
         triggerEvent(UpdateShipping(viewState.amount, viewState.name.orEmpty()))
     }
 
+    fun onRemoveShippingClicked() {
+        triggerEvent(RemoveShipping)
+    }
+
     @Parcelize
     data class ViewState(
-        val amount: BigDecimal = BigDecimal.ZERO,
-        val name: String? = null
+        val amount: BigDecimal,
+        val name: String?,
+        val isEditFlow: Boolean
     ) : Parcelable
 
     data class UpdateShipping(val amount: BigDecimal, val name: String) : MultiLiveEvent.Event()
+    object RemoveShipping : MultiLiveEvent.Event()
 }
