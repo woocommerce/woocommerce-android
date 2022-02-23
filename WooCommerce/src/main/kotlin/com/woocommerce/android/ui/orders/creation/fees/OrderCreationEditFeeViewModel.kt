@@ -48,6 +48,7 @@ class OrderCreationEditFeeViewModel @Inject constructor(
         get() = navArgs.currentFeeValue
             ?.takeIf { navArgs.orderTotal > BigDecimal.ZERO }
             ?.let { it.divide(navArgs.orderTotal, DEFAULT_SCALE_QUOTIENT, HALF_UP) * PERCENTAGE_BASE }
+            ?.stripTrailingZeros()
             ?: BigDecimal.ZERO
 
     fun start() {
