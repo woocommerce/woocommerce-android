@@ -163,18 +163,6 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
-    fun onFeeEdited(feeValue: BigDecimal) {
-        val newFee = Order.FeeLine.EMPTY.copy(
-            name = ORDER_CUSTOM_FEE_NAME,
-            total = feeValue
-        )
-        _orderDraft.update { it.copy(feesLines = listOf(newFee)) }
-    }
-
-    fun onFeeRemoved() {
-
-    }
-
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
         launch(dispatchers.io) {
             orderDetailRepository
@@ -318,6 +306,18 @@ class OrderCreationViewModel @Inject constructor(
             }
             draft.copy(shippingLines = shippingLines)
         }
+    }
+
+    fun onFeeEdited(feeValue: BigDecimal) {
+        val newFee = Order.FeeLine.EMPTY.copy(
+            name = ORDER_CUSTOM_FEE_NAME,
+            total = feeValue
+        )
+        _orderDraft.update { it.copy(feesLines = listOf(newFee)) }
+    }
+
+    fun onFeeRemoved() {
+        _orderDraft.update { it.copy(feesLines = emptyList()) }
     }
 
     @Parcelize
