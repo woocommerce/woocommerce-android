@@ -6,17 +6,16 @@ import android.util.AttributeSet
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.textfield.TextInputEditText
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
-import kotlin.math.min
 import kotlin.math.pow
 
 class CurrencyEditText : TextInputEditText {
     private var formatCurrency: (BigDecimal) -> String = { "" }
-    private var isChangingSelection = false
     private var isChangingText = false
     private var decimals = 2
 
@@ -63,15 +62,25 @@ class CurrencyEditText : TextInputEditText {
             isChangingText = true
 
             val currentSelectionPosition = selectionStart
-            clean(text, decimals)?.let { updatedValue ->
-                val formattedValue = wcSiteSettings?.let {
-                    WCCurrencyUtils.formatCurrencyForDisplay(updatedValue.toDouble(), it)
-                } ?: text
+            clean(text, decimals)?.let { value ->
+                // When the user types backspace on a field that already contained `0`
+                val shouldEmptyTheView = lengthAfter < lengthBefore &&
+                    _value.value?.isEqualTo(BigDecimal.ZERO) == true &&
+                    value.isEqualTo(BigDecimal.ZERO)
 
-                _value.value = updatedValue
-                setText(formattedValue)
-                val selectionOffset = (formattedValue?.length ?: 0) - (text?.length ?: 0)
-                setSelection(currentSelectionPosition + selectionOffset)
+                if (shouldEmptyTheView) {
+                    // TODO _value.value = null
+                    setText("")
+                } else {
+                    val formattedValue = wcSiteSettings?.let {
+                        WCCurrencyUtils.formatCurrencyForDisplay(value.toDouble(), it)
+                    } ?: text
+
+                    _value.value = value
+                    setText(formattedValue)
+                    val selectionOffset = (formattedValue?.length ?: 0) - (text?.length ?: 0)
+                    setSelection(currentSelectionPosition + selectionOffset)
+                }
             } ?: run {
                 // TODO _value.value = null
                 setText("")
@@ -80,7 +89,7 @@ class CurrencyEditText : TextInputEditText {
             isChangingText = false
         }
     }
-    
+
     companion object TextCleaner {
         /**
          * Cleans the [text] so that it only has numerical characters and has the correct number of fractional digits.
