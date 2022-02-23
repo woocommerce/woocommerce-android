@@ -11,6 +11,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode.HALF_UP
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +23,7 @@ class OrderCreationEditFeeViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
+        private const val DEFAULT_SCALE_QUOTIENT = 4
         private val PERCENTAGE_BASE = BigDecimal(100)
     }
 
@@ -36,14 +39,15 @@ class OrderCreationEditFeeViewModel @Inject constructor(
 
     private val activeFeeValue
         get() = when (viewState.isPercentageSelected) {
-            true -> (navArgs.orderTotal * viewState.feePercentage) / PERCENTAGE_BASE
+            true -> ((navArgs.orderTotal * viewState.feePercentage) / PERCENTAGE_BASE)
+                .round(MathContext(DEFAULT_SCALE_QUOTIENT))
             false -> viewState.feeAmount
         }
 
     private val appliedPercentageFromCurrentFeeValue
         get() = navArgs.currentFeeValue
             ?.takeIf { navArgs.orderTotal > BigDecimal.ZERO }
-            ?.let { it.divide(navArgs.orderTotal) * PERCENTAGE_BASE }
+            ?.let { it.divide(navArgs.orderTotal, DEFAULT_SCALE_QUOTIENT, HALF_UP) * PERCENTAGE_BASE }
             ?: BigDecimal.ZERO
 
     fun start() {
