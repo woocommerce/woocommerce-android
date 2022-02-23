@@ -68,13 +68,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 is CardReaderOnboardingState.PluginIsNotSupportedInTheCountry ->
                     viewState.value = when (state.preferredPlugin) {
                         WOOCOMMERCE_PAYMENTS ->
-                            OnboardingViewState.UnsupportedErrorState.StripeInCountry(
+                            OnboardingViewState.UnsupportedErrorState.WcPayInCountry(
                                 convertCountryCodeToCountry(state.countryCode),
                                 ::onContactSupportClicked,
                                 ::onLearnMoreClicked
                             )
                         STRIPE_EXTENSION_GATEWAY ->
-                            OnboardingViewState.UnsupportedErrorState.WcPayInCountry(
+                            OnboardingViewState.UnsupportedErrorState.StripeInCountry(
                                 convertCountryCodeToCountry(state.countryCode),
                                 ::onContactSupportClicked,
                                 ::onLearnMoreClicked
