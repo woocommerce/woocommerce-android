@@ -129,6 +129,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         customerSection.setOnEditButtonClicked {
             viewModel.onCustomerClicked()
         }
+        customerSection.setEditButtonContentDescription(
+            contentDescription = getString(R.string.order_creation_customer_edit_content_description)
+        )
         productsSection.setAddButtons(
             listOf(
                 AddButton(
