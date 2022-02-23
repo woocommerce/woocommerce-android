@@ -279,7 +279,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given stripe account country not supported, when contact support clicked, then app navigates to support screen`() =
+    fun `given stripe account country not supported, when contact support clicked, then app navs to support screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
