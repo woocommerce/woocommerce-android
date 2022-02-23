@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
+import kotlin.math.min
 import kotlin.math.pow
 
 class CurrencyEditText : TextInputEditText {
@@ -50,16 +51,6 @@ class CurrencyEditText : TextInputEditText {
         this.decimals = decimals
     }
 
-    override fun onSelectionChanged(selStart: Int, selEnd: Int) {
-        super.onSelectionChanged(selStart, selEnd)
-
-        if (isInitialized && !isChangingSelection) {
-            isChangingSelection = true
-            setSelection(this.length())
-            isChangingSelection = false
-        }
-    }
-
     fun setValue(value: BigDecimal) {
         isChangingText = true
         setText(formatCurrency(value))
@@ -71,6 +62,7 @@ class CurrencyEditText : TextInputEditText {
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
+            val currentSelectionPosition = selectionStart
             clean(text, decimals)?.let { updatedValue ->
                 val formattedValue = wcSiteSettings?.let {
                     WCCurrencyUtils.formatCurrencyForDisplay(updatedValue.toDouble(), it)
@@ -78,6 +70,8 @@ class CurrencyEditText : TextInputEditText {
 
                 _value.value = updatedValue
                 setText(formattedValue)
+                val selectionOffset = (formattedValue?.length ?: 0) - (text?.length ?: 0)
+                setSelection(currentSelectionPosition + selectionOffset)
             } ?: run {
                 // TODO _value.value = null
                 setText("")
@@ -86,7 +80,7 @@ class CurrencyEditText : TextInputEditText {
             isChangingText = false
         }
     }
-
+    
     companion object TextCleaner {
         /**
          * Cleans the [text] so that it only has numerical characters and has the correct number of fractional digits.
