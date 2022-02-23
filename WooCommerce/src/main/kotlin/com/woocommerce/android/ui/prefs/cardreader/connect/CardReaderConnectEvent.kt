@@ -38,6 +38,8 @@ sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
 
     data class ShowToast(@StringRes val message: Int) : CardReaderConnectEvent()
 
+    data class ShowToastString(val message: String) : CardReaderConnectEvent()
+
     data class OpenWPComWebView(val url: String) : CardReaderConnectEvent()
 
     data class OpenGenericWebView(val url: String) : CardReaderConnectEvent()

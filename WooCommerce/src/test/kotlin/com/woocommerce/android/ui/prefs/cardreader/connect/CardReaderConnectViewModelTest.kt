@@ -10,15 +10,11 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
@@ -41,7 +37,6 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 @InternalCoroutinesApi
@@ -49,7 +44,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
     private val tracker: CardReaderTracker = mock()
-    private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected)
+    private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
     private val cardReaderManager: CardReaderManager = mock {
         on { readerStatus }.thenReturn(readerStatusFlow)
         on { softwareUpdateStatus }.thenReturn(flow { SoftwareUpdateStatus.Unknown })
@@ -64,10 +59,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         on { getIfExists() }.thenReturn(siteModel)
         on { get() }.thenReturn(siteModel)
     }
-    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
-    private val wooStore: WooCommerceStore = mock()
-    private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
-
     private val locationId = "location_id"
     private val countryCode = "US"
 
@@ -385,7 +376,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init()
 
             assertThat(viewModel.event.value).isEqualTo(
-                CardReaderConnectEvent.ShowUpdateInProgress
+                ShowUpdateInProgress
             )
         }
 
@@ -401,7 +392,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init()
 
             assertThat(viewModel.event.value).isEqualTo(
-                CardReaderConnectEvent.ShowUpdateInProgress
+                ShowUpdateInProgress
             )
         }
 
@@ -590,7 +581,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             )
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
-            (viewModel.viewStateData.value as CardReaderConnectViewState.MissingMerchantAddressError)
+            (viewModel.viewStateData.value as MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
 
             verify(tracker).trackMissingLocationTapped()
@@ -635,7 +626,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                CardReaderConnectViewState.MissingMerchantAddressError::class.java
+                MissingMerchantAddressError::class.java
             )
         }
 
@@ -651,7 +642,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                CardReaderConnectViewState.InvalidMerchantAddressPostCodeError::class.java
+                InvalidMerchantAddressPostCodeError::class.java
             )
         }
 
@@ -666,14 +657,14 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             )
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            (viewModel.viewStateData.value as CardReaderConnectViewState.MissingMerchantAddressError)
+            (viewModel.viewStateData.value as MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
-                CardReaderConnectEvent.OpenWPComWebView::class.java
+                OpenWPComWebView::class.java
             )
             assertThat(
-                (viewModel.event.value as CardReaderConnectEvent.OpenWPComWebView).url
+                (viewModel.event.value as OpenWPComWebView).url
             ).isEqualTo(url)
         }
 
@@ -688,14 +679,14 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             )
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            (viewModel.viewStateData.value as CardReaderConnectViewState.MissingMerchantAddressError)
+            (viewModel.viewStateData.value as MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
-                CardReaderConnectEvent.OpenWPComWebView::class.java
+                OpenWPComWebView::class.java
             )
             assertThat(
-                (viewModel.event.value as CardReaderConnectEvent.OpenWPComWebView).url
+                (viewModel.event.value as OpenWPComWebView).url
             ).isEqualTo(url)
         }
 
@@ -716,14 +707,14 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             )
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
-            (viewModel.viewStateData.value as CardReaderConnectViewState.MissingMerchantAddressError)
+            (viewModel.viewStateData.value as MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
 
             assertThat(events[events.size - 2]).isInstanceOf(
-                CardReaderConnectEvent.OpenGenericWebView::class.java
+                OpenGenericWebView::class.java
             )
             assertThat(
-                (events[events.size - 2] as CardReaderConnectEvent.OpenGenericWebView).url
+                (events[events.size - 2] as OpenGenericWebView).url
             ).isEqualTo(url)
         }
 
@@ -738,7 +729,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
-            (viewModel.viewStateData.value as CardReaderConnectViewState.MissingMerchantAddressError)
+            (viewModel.viewStateData.value as MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
@@ -878,9 +869,35 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
-            readerStatusFlow.emit(CardReaderStatus.NotConnected)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
+        }
+
+    @Test
+    fun `given error message is not null, when connecting to reader fails, then toast is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val errorMessage = "error_message"
+
+            init()
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected(errorMessage))
+
+            assertThat(viewModel.event.value).isEqualTo(ShowToastString(errorMessage))
+        }
+
+    @Test
+    fun `given error message is null, when connecting to reader fails, then toast is not shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            init()
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected())
+
+            assertThat(viewModel.event.value).isNotInstanceOf(ShowToastString::class.java)
         }
 
     @Test
@@ -889,7 +906,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
-            readerStatusFlow.emit(CardReaderStatus.NotConnected)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
             verify(tracker).trackConnectionFailed()
         }
@@ -900,7 +917,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
-            readerStatusFlow.emit(CardReaderStatus.NotConnected)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
             (viewModel.viewStateData.value as ConnectingFailedState).onPrimaryActionClicked()
 
@@ -969,7 +986,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init()
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
-            readerStatusFlow.emit(CardReaderStatus.NotConnected)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
             (viewModel.viewStateData.value as ConnectingFailedState).onSecondaryActionClicked()
 
@@ -1093,7 +1110,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
-            readerStatusFlow.emit(CardReaderStatus.NotConnected)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
@@ -1117,7 +1134,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `when app in missing address failed state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = READER_FOUND)
-            readerStatusFlow.emit(CardReaderStatus.NotConnected)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected())
             val url = "https://wordpress.com"
             whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
@@ -1126,7 +1143,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                CardReaderConnectViewState.MissingMerchantAddressError::class.java
+                MissingMerchantAddressError::class.java
             )
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .isEqualTo(UiStringRes(R.string.card_reader_connect_missing_address))
@@ -1144,7 +1161,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given invalid postcode state, when connecting to reader, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = READER_FOUND)
-            readerStatusFlow.emit(CardReaderStatus.NotConnected)
+            readerStatusFlow.emit(CardReaderStatus.NotConnected())
             whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
             )
@@ -1152,7 +1169,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                CardReaderConnectViewState.InvalidMerchantAddressPostCodeError::class.java
+                InvalidMerchantAddressPostCodeError::class.java
             )
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .isEqualTo(UiStringRes(R.string.card_reader_connect_invalid_postal_code_header))
@@ -1295,7 +1312,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         viewModel.onUpdateReaderResult(result)
 
         assertThat(events[events.size - 2]).isEqualTo(
-            CardReaderConnectEvent.ShowToast(
+            ShowToast(
                 R.string.card_reader_detail_connected_update_failed
             )
         )
@@ -1311,33 +1328,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when canada flag is disabled, then supported readers does not contains Wisepad 3`() {
+    fun `when discovery readers, then supported readers list used`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
             val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders>()
-            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
-            whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
-
-            init()
-
-            verify(cardReaderManager).discoverReaders(anyBoolean(), captor.capture())
-            assertThat(captor.firstValue).isEqualTo(
-                CardReaderTypesToDiscover.SpecificReaders(
-                    listOf(
-                        SpecificReader.Chipper2X, SpecificReader.StripeM2
-                    )
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `when Canada flag is enabled, then supported readers contains Wisepad 3`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
-            val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders>()
-            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
-            whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
 
             init()
 
@@ -1358,9 +1351,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     ): CardReaderConnectViewModel {
         val savedState = CardReaderConnectDialogFragmentArgs(skipOnboarding = skipOnboarding).initSavedStateHandle()
         whenever(onboardingChecker.getOnboardingState()).thenReturn(onboardingState)
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
-        whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
         return CardReaderConnectViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,
@@ -1370,9 +1360,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             locationRepository,
             selectedSite,
             cardReaderManager,
-            inPersonPaymentsCanadaFeatureFlag,
-            wooStore,
-            cardReaderConfigFactory,
         )
     }
 

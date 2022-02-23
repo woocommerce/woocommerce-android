@@ -143,7 +143,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model init with not connected state should emit not connected view state`() {
         // GIVEN
-        val status = MutableStateFlow(CardReaderStatus.NotConnected)
+        val status = MutableStateFlow(CardReaderStatus.NotConnected())
         whenever(cardReaderManager.readerStatus).thenReturn(status)
 
         // WHEN
@@ -156,7 +156,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model init with not connected state should emit correct values not connected state`() {
         // GIVEN
-        val status = MutableStateFlow(CardReaderStatus.NotConnected)
+        val status = MutableStateFlow(CardReaderStatus.NotConnected())
         whenever(cardReaderManager.readerStatus).thenReturn(status)
 
         // WHEN
@@ -345,7 +345,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when connect button clicked should track event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
             val viewModel = createViewModel()
 
@@ -375,7 +375,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when card reader disconnected successfully, then trigger accessibility announcement`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
 
             // WHEN

@@ -16,19 +16,19 @@ class TerminalListenerImplTest {
     fun `when reader unexpectedly disconnected, then not connected status emitted`() {
         listener.onUnexpectedReaderDisconnect(mock())
 
-        assertThat(listener.readerStatus.value).isEqualTo(CardReaderStatus.NotConnected)
+        assertThat(listener.readerStatus.value).isEqualTo(CardReaderStatus.NotConnected())
     }
 
     @Test
     fun `when reader disconnected, then not connected status emitted`() {
         listener.onConnectionStatusChange(ConnectionStatus.NOT_CONNECTED)
 
-        assertThat(listener.readerStatus.value).isEqualTo(CardReaderStatus.NotConnected)
+        assertThat(listener.readerStatus.value).isEqualTo(CardReaderStatus.NotConnected())
     }
 
     @Test
     fun `when update reader status with not connected, then not connected status emitted`() {
-        val newStatus = CardReaderStatus.NotConnected
+        val newStatus = CardReaderStatus.NotConnected()
 
         listener.updateReaderStatus(newStatus)
 
