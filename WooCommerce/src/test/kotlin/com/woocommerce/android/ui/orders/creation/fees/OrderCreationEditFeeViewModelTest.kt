@@ -100,7 +100,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when initializing the viewModel with huge relative percentage fee, then divide BigDecimals with expected rounding`() {
+    fun `when initializing the viewModel with non-terminating decimal percentage value, then divide BigDecimals with expected rounding`() {
         var lastReceivedEvent: Event? = null
         val percentageBase = BigDecimal(100)
         val orderTotal = BigDecimal(15)
