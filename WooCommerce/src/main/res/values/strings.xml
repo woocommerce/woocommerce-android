@@ -1054,6 +1054,7 @@
 
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">We don\'t support Stripe in %1$s</string>
     <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">We don\'t support WooCommerce Payments in %1$s</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">We don\'t support Stripe accounts registered in %1$s</string>
 
     <string name="card_reader_onboarding_wcpay_not_installed_header">Install WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_installed_hint">You\’ll need to install the free WooCommerce Payments extension on your store to accept In-Person Payments.</string>

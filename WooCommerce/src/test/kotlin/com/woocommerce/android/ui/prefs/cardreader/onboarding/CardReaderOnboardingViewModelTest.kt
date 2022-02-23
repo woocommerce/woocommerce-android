@@ -104,14 +104,16 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when account country not supported, then country not supported state shown`() =
+    fun `when stripe account country not supported, then country not supported state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.Country::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                UnsupportedErrorState.StripeAccountInUnsupportedCountry::class.java
+            )
         }
 
     @Test
@@ -263,26 +265,28 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given account country not supported, when learn more clicked, then app shows learn more section`() =
+    fun `given stripe account country not supported, when learn more clicked, then app shows learn more section`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
             val viewModel = createVM()
 
-            (viewModel.viewStateData.value as UnsupportedErrorState.Country).onLearnMoreActionClicked.invoke()
+            (viewModel.viewStateData.value as UnsupportedErrorState.StripeAccountInUnsupportedCountry)
+                .onLearnMoreActionClicked.invoke()
 
             val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
     @Test
-    fun `given account country not supported, when contact support clicked, then app navigates to support screen`() =
+    fun `given stripe account country not supported, when contact support clicked, then app navigates to support screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
             val viewModel = createVM()
 
-            (viewModel.viewStateData.value as UnsupportedErrorState.Country).onContactSupportActionClicked.invoke()
+            (viewModel.viewStateData.value as UnsupportedErrorState.StripeAccountInUnsupportedCountry)
+                .onContactSupportActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
         }
@@ -442,7 +446,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                OnboardingViewState.WcPayAndStripeInstalledState::class.java
+                WcPayAndStripeInstalledState::class.java
             )
         }
 
@@ -455,7 +459,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
+            val viewStateData = viewModel.viewStateData.value as WcPayAndStripeInstalledState
             assertThat(viewStateData.openWPAdminActionClicked != null).isTrue
             assertThat(viewStateData.openWPAdminLabel).isNotNull
         }
@@ -469,8 +473,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
-            assertThat(viewStateData.onRefreshAfterUpdatingClicked != null).isTrue
+            val viewStateData = viewModel.viewStateData.value as WcPayAndStripeInstalledState
             assertThat(viewStateData.refreshButtonLabel).isNotNull
         }
 
@@ -486,7 +489,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 receivedViewStates.add(it)
             }
 
-            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+            (viewModel.viewStateData.value as WcPayAndStripeInstalledState)
                 .onRefreshAfterUpdatingClicked.invoke()
 
             assertThat(receivedViewStates[1]).isEqualTo(LoadingState)
@@ -508,7 +511,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
             val viewModel = createVM()
 
-            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+            (viewModel.viewStateData.value as WcPayAndStripeInstalledState)
                 .openWPAdminActionClicked!!.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
@@ -530,7 +533,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
             val viewModel = createVM()
 
-            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+            (viewModel.viewStateData.value as WcPayAndStripeInstalledState)
                 .openWPAdminActionClicked!!.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
@@ -551,7 +554,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
             val viewModel = createVM()
 
-            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+            (viewModel.viewStateData.value as WcPayAndStripeInstalledState)
                 .openWPAdminActionClicked!!.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
@@ -573,7 +576,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
             val viewModel = createVM()
 
-            (viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState)
+            (viewModel.viewStateData.value as WcPayAndStripeInstalledState)
                 .openWPAdminActionClicked!!.invoke()
 
             val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
@@ -595,7 +598,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.WcPayAndStripeInstalledState
+            val viewStateData = viewModel.viewStateData.value as WcPayAndStripeInstalledState
             assertThat(viewStateData.openWPAdminLabel).isNull()
             assertThat(viewStateData.openWPAdminActionClicked == null).isTrue
         }

@@ -147,7 +147,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         onRetryButtonActionClicked = ::refreshState
                     )
                 is CardReaderOnboardingState.StripeAccountCountryNotSupported ->
-                    viewState.value = OnboardingViewState.UnsupportedErrorState.Country(
+                    viewState.value = OnboardingViewState.UnsupportedErrorState.StripeAccountInUnsupportedCountry(
                         convertCountryCodeToCountry(state.countryCode),
                         ::onContactSupportClicked,
                         ::onLearnMoreClicked
@@ -340,6 +340,17 @@ class CardReaderOnboardingViewModel @Inject constructor(
             ) : UnsupportedErrorState(
                 headerLabel = UiString.UiStringRes(
                     stringRes = R.string.card_reader_onboarding_wcpay_unsupported_in_country_header,
+                    params = listOf(UiString.UiStringText(countryDisplayName))
+                )
+            )
+
+            data class StripeAccountInUnsupportedCountry(
+                val countryDisplayName: String,
+                override val onContactSupportActionClicked: (() -> Unit),
+                override val onLearnMoreActionClicked: (() -> Unit)
+            ) : UnsupportedErrorState(
+                headerLabel = UiString.UiStringRes(
+                    stringRes = R.string.card_reader_onboarding_stripe_account_in_unsupported_country,
                     params = listOf(UiString.UiStringText(countryDisplayName))
                 )
             )
