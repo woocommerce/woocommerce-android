@@ -55,7 +55,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             findNavController().navigateUp()
         }
 
-        val editText = binding.editPrice.getCurrencyEditText()
+        val editText = binding.editPrice.currencyEditText
         if (!isLandscape && editText.requestFocus()) {
             binding.editPrice.postDelayed(
                 {

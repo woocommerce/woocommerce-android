@@ -54,7 +54,7 @@
 
     <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
         android:id="@+id/editPrice"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:boxBackgroundMode="none"
         android:gravity="center"
@@ -65,6 +65,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:supportsNegativeValues="false"
         app:supportsEmptyState="false"
+        app:editTextLayoutMode="wrap"
         tools:hint="0.00" />
 
     <com.google.android.material.button.MaterialButton
