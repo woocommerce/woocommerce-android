@@ -8,7 +8,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.mock
 import java.math.BigDecimal
 
 class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
@@ -17,9 +16,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         sut = OrderCreationEditFeeViewModel(
-            SavedStateHandle(),
-            mock(),
-            mock()
+            SavedStateHandle()
         )
     }
 
