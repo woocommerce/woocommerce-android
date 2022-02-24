@@ -250,14 +250,21 @@ private class CurrencyEditText @JvmOverloads constructor(
 
         _value.value = cleanValue
         setText(formattedValue)
-        val selectionOffset = (formattedValue?.length ?: 0) - (currentText?.length ?: 0)
+        val selectionOffset = formattedValue.length - (currentText?.length ?: 0)
         setSelection(currentSelectionPosition + selectionOffset)
     }
 
+    override fun setText(text: CharSequence?, type: BufferType?) {
+        super.setText(text, type)
+    }
+
     private fun clearValue() {
-        if (!supportsEmptyState) return
-        _value.value = null
-        setText("")
+        if (supportsEmptyState) {
+            _value.value = null
+            setText("")
+        } else {
+            setValue(BigDecimal.ZERO)
+        }
     }
 
     private fun formatValue(value: BigDecimal): String {
