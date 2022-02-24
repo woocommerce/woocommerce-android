@@ -198,10 +198,10 @@ private class CurrencyEditText @JvmOverloads constructor(
     private var isInitialized = false
     private var siteSettings: WCSettingsModel? = null
     var supportsNegativeValues: Boolean
-        get() = this.inputType and InputType.TYPE_NUMBER_FLAG_DECIMAL != 0
+        get() = this.inputType and InputType.TYPE_NUMBER_FLAG_SIGNED != 0
         set(value) {
             if (value) {
-                this.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                this.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
             } else {
                 this.inputType = InputType.TYPE_CLASS_NUMBER
             }
@@ -257,9 +257,14 @@ private class CurrencyEditText @JvmOverloads constructor(
     private fun formatAndUpdateValue(currentText: CharSequence?, cleanValue: BigDecimal) {
         val currentSelectionPosition = selectionStart
 
-        val formattedValue = siteSettings?.let {
+        var formattedValue = siteSettings?.let {
             WCCurrencyUtils.formatCurrencyForDisplay(cleanValue.toDouble(), it)
         } ?: currentText
+
+        if (currentText?.startsWith("-") == true && cleanValue.isEqualTo(BigDecimal.ZERO)) {
+            // A special case for negative values if the actual value is still 0
+            formattedValue = "-$formattedValue"
+        }
 
         _value.value = cleanValue
         setText(formattedValue)
@@ -278,7 +283,7 @@ private class CurrencyEditText @JvmOverloads constructor(
          * Cleans the [text] so that it only has numerical characters and has the correct number of fractional digits.
          */
         fun clean(text: CharSequence?, decimals: Int): BigDecimal? {
-            val nonNumericPattern = Regex("[^\\d]")
+            val nonNumericPattern = Regex("[^\\d-]")
             var cleanValue = text.toString().replace(nonNumericPattern, "").toBigDecimalOrNull() ?: return null
 
             if (decimals > 0) {
