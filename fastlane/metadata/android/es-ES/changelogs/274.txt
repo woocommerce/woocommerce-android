@@ -1,2 +1,0 @@
-8.4:
-¡Vamos a dar a la app una cara renovada! Por eso, observarás algunos cambios visuales en el gráfico de ventas de “Mi tienda”, y una nueva calculadora de conversiones. Además, ya no redondeamos los totales de ventas, para que la información esté más clara. Pero eso no es todo, y en las próximas semanas llegarán aún más novedades.

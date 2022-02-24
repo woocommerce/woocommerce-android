@@ -53,6 +53,12 @@ open class BaseFragment : Fragment, BaseFragmentView {
         }
     }
 
+    protected fun hideToolbar() {
+        if (isAdded && !isHidden && activity is MainActivity) {
+            (activity as MainActivity).hideToolbar()
+        }
+    }
+
     override fun getFragmentTitle(): String {
         return activity?.title?.toString() ?: ""
     }

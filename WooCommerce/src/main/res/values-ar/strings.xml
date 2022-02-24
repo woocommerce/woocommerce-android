@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-01 21:54:03+0000
+Translation-Revision-Date: 2022-02-15 18:54:07+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">التنشيط بعد التحديث</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">إدارة الإضافات</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">المدفوعات WooCommerce</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">بوابة الدفع WooCommerce Stripe</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">لن تعمل المدفوعات الشخصية سوى مع تفعيل إحدى الإضافات الآتية. يرجى الاتصال بمسؤول الموقع لتعطيل إحدى هذه الإضافات للمتابعة:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">لن تعمل المدفوعات الشخصية سوى مع تفعيل إحدى الإضافات الآتية. يرجى تعطيل إحدى هذه الإضافات للمتابعة:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">تم اكتشاف إضافات دفع متعارضة</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">دليل قارئ بطاقة WisePad 3</string>
+    <string name="order_creation_price_calculation_failed">يتعذر تحديث الأسعار</string>
+    <string name="order_creation_payment_tax">الضرائب</string>
+    <string name="order_creation_payment_tax_hint">سيتم حساب الضرائب تلقائيًا بناءً على إعدادات مخزنك.</string>
+    <string name="exclusive_or">أو</string>
     <string name="settings_install_jetpack">تثبيت Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">المدفوعات الشخصية غير متاحة في الوقت الحالي</string>
     <string name="order_creation_success_snackbar">إنشاء طلب</string>
     <string name="order_creation_failure_snackbar">فشل إنشاء الطلب</string>
     <string name="order_creation_loading_dialog_message">يُرجى الانتظار…</string>
     <string name="order_creation_loading_dialog_title">إنشاء طلبك</string>
-    <string name="order_creation_payment_tax_hint">الإجمالي باستثناء الضرائب. سيتم حساب الضرائب تلقائيًا بناءً على إعدادات مخزنك.</string>
     <string name="order_creation_payment_order_total">مجموع الطلب</string>
     <string name="order_creation_payment_products_total">إجمالي المنتجات</string>
     <string name="order_creation_payment">الدفع</string>

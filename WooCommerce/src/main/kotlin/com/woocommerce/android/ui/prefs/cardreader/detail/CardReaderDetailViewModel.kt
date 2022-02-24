@@ -5,7 +5,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -17,12 +18,16 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState.ButtonState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
@@ -42,7 +47,8 @@ private const val PERCENT_100 = 100
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
     private val tracker: CardReaderTracker,
-    private val appPrefs: AppPrefs,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>(Loading)
@@ -96,7 +102,8 @@ class CardReaderDetailViewModel @Inject constructor(
         if (::softwareUpdateAvailabilityJob.isInitialized) {
             softwareUpdateAvailabilityJob.cancel()
         }
-        viewState.value = NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked)
+        viewState.value =
+            NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked, onLearnMoreClicked = ::onLearnMoreClicked)
     }
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
@@ -117,6 +124,7 @@ class CardReaderDetailViewModel @Inject constructor(
                     text = UiStringRes(R.string.card_reader_detail_connected_disconnect_reader)
                 ),
                 onReaderNameLongClick = { onReadersNameLongClick(readerStatus.cardReader.id) },
+                onLearnMoreClicked = ::onLearnMoreClicked,
             )
         } else {
             ConnectedState(
@@ -130,8 +138,22 @@ class CardReaderDetailViewModel @Inject constructor(
                 ),
                 secondaryButtonState = null,
                 onReaderNameLongClick = { onReadersNameLongClick(readerStatus.cardReader.id) },
+                onLearnMoreClicked = ::onLearnMoreClicked,
             )
         }
+    }
+
+    private fun onLearnMoreClicked() {
+        val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
+            selectedSite.get().id,
+            selectedSite.get().siteId,
+            selectedSite.get().selfHostedSiteId
+        )
+        val learnMoreUrl = when (preferredPlugin) {
+            STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS
+            WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        }
+        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrl))
     }
 
     private fun onConnectBtnClicked() {
@@ -165,7 +187,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     private fun clearLastKnowReader() {
-        appPrefs.removeLastConnectedCardReaderId()
+        appPrefsWrapper.removeLastConnectedCardReaderId()
     }
 
     private fun onReadersNameLongClick(readersName: String?) {
@@ -180,6 +202,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     sealed class CardReaderDetailEvent : Event() {
+        data class NavigateToUrlInGenericWebView(val url: String) : CardReaderDetailEvent()
         data class CopyReadersNameToClipboard(val readersName: String) : CardReaderDetailEvent()
         data class CardReaderDisconnected(
             @StringRes val accessibilityDisconnectedText: Int =
@@ -193,7 +216,8 @@ class CardReaderDetailViewModel @Inject constructor(
 
     sealed class ViewState {
         data class NotConnectedState(
-            val onPrimaryActionClicked: (() -> Unit)
+            val onPrimaryActionClicked: (() -> Unit),
+            val onLearnMoreClicked: (() -> Unit),
         ) : ViewState() {
             val headerLabel = UiStringRes(R.string.card_reader_detail_not_connected_header)
 
@@ -217,6 +241,7 @@ class CardReaderDetailViewModel @Inject constructor(
             val primaryButtonState: ButtonState?,
             val secondaryButtonState: ButtonState?,
             val onReaderNameLongClick: (() -> Unit),
+            val onLearnMoreClicked: (() -> Unit),
         ) : ViewState() {
             val learnMoreLabel = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true)
 

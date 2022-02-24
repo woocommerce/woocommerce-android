@@ -1,2 +1,0 @@
-8.4:
-We zijn het uiterlijk van de app aan het verbeteren! Je zult zien dat we de verkoopgrafiek in Mijn winkel wat mooier hebben gemaakt en een nieuwe conversiecalculator hebben toegevoegd. En we ronden de verkooptotalen niet langer af voor meer duidelijkheid. Dit zijn nog niet de laatste wijzigingen, de komende weken komen er nog meer updates!

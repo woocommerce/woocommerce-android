@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-03 09:54:03+0000
+Translation-Revision-Date: 2022-02-15 18:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Recarregar a página depois de atualizar</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Gerenciar plugins</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">Gateway da Stripe para WooCommerce</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Os pagamentos presenciais só vão funcionar com um dos seguintes plugins ativados. Entre em contato com um administrador do site para desativar um destes plugins para continuar:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Os pagamentos presenciais só vão funcionar com um dos seguintes plugins ativados. Desative um destes plugins para continuar:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">Conflito de plugins de pagamento detectado</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">Manual do leitor de cartão WisePad 3</string>
+    <string name="order_creation_price_calculation_failed">Não foi possível atualizar o preço</string>
+    <string name="order_creation_payment_tax">Impostos</string>
+    <string name="order_creation_payment_tax_hint">Os impostos serão calculados automaticamente de acordo com as configurações da sua loja.</string>
+    <string name="exclusive_or">ou</string>
     <string name="settings_install_jetpack">Instalar Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">O pagamento presencial não está disponível</string>
     <string name="order_creation_success_snackbar">Pedido criado</string>
     <string name="order_creation_failure_snackbar">Falha na criação do pedido</string>
     <string name="order_creation_loading_dialog_message">Aguarde…</string>
     <string name="order_creation_loading_dialog_title">Criando seu pedido</string>
-    <string name="order_creation_payment_tax_hint">Valor total sem impostos. Os impostos serão calculados automaticamente de acordo com as configurações da sua loja.</string>
     <string name="order_creation_payment_order_total">Total do pedido</string>
     <string name="order_creation_payment_products_total">Total de produtos</string>
     <string name="order_creation_payment">Pagamento</string>

@@ -5,7 +5,7 @@ import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
-import com.woocommerce.android.screenshots.mystore.MyStoreScreen
+import com.woocommerce.android.screenshots.moremenu.MoreMenuScreen
 import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.Screen
 
@@ -25,9 +25,9 @@ class SettingsScreen : Screen {
         return BetaFeaturesScreen()
     }
 
-    fun goBackToMyStoreScreen(): MyStoreScreen {
+    fun goBackToMoreMenuScreen(): MoreMenuScreen {
         pressBack()
-        return MyStoreScreen()
+        return MoreMenuScreen()
     }
 
     fun setTheme(theme: String): SettingsScreen {

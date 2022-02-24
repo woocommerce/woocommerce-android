@@ -53,6 +53,13 @@
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right"
             />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationEditFeeFragment"
+            app:destination="@id/orderCreationEditFeeFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -134,5 +141,15 @@
         android:id="@+id/orderCreationShippingFragment"
         android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingFragment"
         android:label="OrderCreationShippingFragment"
-        tools:layout="@layout/fragment_order_creation_shipping" />
+        tools:layout="@layout/fragment_order_creation_shipping" >
+        <argument
+            android:name="currentShippingLine"
+            app:nullable="true"
+            app:argType="com.woocommerce.android.model.Order$ShippingLine" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationEditFeeFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeFragment"
+        android:label="OrderCreationEditFeeFragment"
+        tools:layout="@layout/fragment_order_creation_edit_fee" />
 </navigation>

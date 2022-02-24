@@ -126,4 +126,10 @@
     <color name="reader_update_progress_color">@color/woo_purple_40</color>
     <color name="reader_update_rest_color">@color/woo_purple_20</color>
     <color name="reader_update_border_color">#7F54B3</color>
+
+    <!--
+    More menu button
+    -->
+    <color name="more_menu_button_background">#232323</color>
+    <color name="more_menu_button_icon_background">#383838</color>
 </resources>
