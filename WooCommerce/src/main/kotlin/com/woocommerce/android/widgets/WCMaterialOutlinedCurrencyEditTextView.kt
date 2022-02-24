@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.SparseArray
+import android.util.TypedValue
 import android.view.LayoutInflater
 import androidx.annotation.AttrRes
 import androidx.lifecycle.LiveData
@@ -65,6 +66,26 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             R.styleable.WCMaterialOutlinedCurrencyEditTextView
         ).use { a ->
             isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
+            if (a.hasValue(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize)) {
+                binding.currencyEditText.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX, a.getDimension(
+                        R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize, 0f
+                    )
+                )
+                prefixTextView.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX, a.getDimension(
+                        R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize, 0f
+                    )
+                )
+                suffixTextView.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX, a.getDimension(
+                        R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize, 0f
+                    )
+                )
+            }
+            binding.currencyEditText.gravity = a.getInt(
+                R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_gravity, binding.currencyEditText.gravity
+            )
             supportsNegativeValues = a.getBoolean(
                 R.styleable.WCMaterialOutlinedCurrencyEditTextView_supportsNegativeValues, supportsNegativeValues
             )

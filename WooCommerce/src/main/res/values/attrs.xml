@@ -86,6 +86,8 @@
 
     <declare-styleable name="WCMaterialOutlinedCurrencyEditTextView">
         <attr name="android:enabled" />
+        <attr name="android:textSize" />
+        <attr name="android:gravity" />
         <attr name="supportsNegativeValues" format="boolean" />
         <attr name="supportsEmptyState" format="boolean" />
     </declare-styleable>
