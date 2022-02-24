@@ -115,13 +115,6 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     val value: LiveData<BigDecimal>
         get() = binding.currencyEditText.value
 
-    fun initView(
-        currency: String,
-        decimals: Int,
-        currencyFormatter: CurrencyFormatter
-    ) {
-    }
-
     fun getText() = binding.currencyEditText.text.toString()
 
     fun setValue(currentValue: BigDecimal) {

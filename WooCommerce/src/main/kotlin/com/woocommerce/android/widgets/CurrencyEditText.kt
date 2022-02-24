@@ -41,9 +41,6 @@ class CurrencyEditText @JvmOverloads constructor(
     private val _value = MutableLiveData<BigDecimal>()
     val value: LiveData<BigDecimal> = _value
 
-    fun initView(currency: String, decimals: Int, currencyFormatter: CurrencyFormatter) {
-    }
-
     fun initView(
         siteSettings: WCSettingsModel?,
         supportsNegativeValues: Boolean,

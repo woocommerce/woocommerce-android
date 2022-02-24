@@ -13,8 +13,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
-private const val DEFAULT_DECIMAL_PRECISION = 2
-
 @HiltViewModel
 class OrderCreationShippingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -32,9 +30,6 @@ class OrderCreationShippingViewModel @Inject constructor(
         )
     )
     private var viewState by viewStateData
-
-    val currencyDecimals: Int
-        get() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber ?: DEFAULT_DECIMAL_PRECISION
 
     fun onAmountEdited(amount: BigDecimal) {
         viewState = viewState.copy(amount = amount)

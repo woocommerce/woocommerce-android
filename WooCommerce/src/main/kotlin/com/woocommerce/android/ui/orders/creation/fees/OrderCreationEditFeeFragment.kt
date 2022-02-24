@@ -54,11 +54,6 @@ class OrderCreationEditFeeFragment :
     override fun getFragmentTitle() = getString(R.string.order_creation_add_fee)
 
     private fun FragmentOrderCreationEditFeeBinding.bindViews() {
-        feeAmountEditText.initView(
-            currency = sharedViewModel.currentDraft.currency,
-            decimals = editFeeViewModel.currencyDecimals,
-            currencyFormatter = currencyFormatter
-        )
         feeAmountEditText.value.observe(viewLifecycleOwner) {
             editFeeViewModel.onFeeAmountChanged(it)
         }

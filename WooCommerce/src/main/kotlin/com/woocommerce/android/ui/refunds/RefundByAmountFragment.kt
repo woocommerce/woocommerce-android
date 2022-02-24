@@ -54,9 +54,6 @@ class RefundByAmountFragment : BaseFragment(R.layout.fragment_refund_by_amount) 
             new.availableForRefund?.takeIfNotEqualTo(old?.availableForRefund) {
                 binding.issueRefundTxtAvailableForRefund.text = it
             }
-            new.currency?.takeIfNotEqualTo(old?.currency) {
-                binding.issueRefundRefundAmount.initView(new.currency, new.decimals, currencyFormatter)
-            }
             new.enteredAmount.takeIfNotEqualTo(old?.enteredAmount) {
                 binding.issueRefundRefundAmount.setValue(new.enteredAmount)
             }

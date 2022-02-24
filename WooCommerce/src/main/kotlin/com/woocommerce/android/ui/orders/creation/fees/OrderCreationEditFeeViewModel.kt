@@ -14,8 +14,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
-private const val DEFAULT_DECIMAL_PRECISION = 2
-
 @HiltViewModel
 class OrderCreationEditFeeViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -24,11 +22,6 @@ class OrderCreationEditFeeViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
-
-    val currencyDecimals: Int
-        get() = wooCommerceStore.getSiteSettings(selectedSite.get())
-            ?.currencyDecimalNumber
-            ?: DEFAULT_DECIMAL_PRECISION
 
     private val activeFeeType
         get() = when (viewState.isPercentageSelected) {

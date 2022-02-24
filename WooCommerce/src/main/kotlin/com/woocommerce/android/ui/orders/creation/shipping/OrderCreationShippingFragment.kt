@@ -51,11 +51,6 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
     }
 
     private fun FragmentOrderCreationShippingBinding.initUi() {
-        amountEditText.initView(
-            currency = sharedViewModel.currentDraft.currency,
-            decimals = viewModel.currencyDecimals,
-            currencyFormatter = currencyFormatter
-        )
         amountEditText.value.drop(1).observe(viewLifecycleOwner) {
             viewModel.onAmountEdited(it)
         }
