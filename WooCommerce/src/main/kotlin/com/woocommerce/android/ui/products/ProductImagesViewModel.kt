@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products
 import android.net.Uri
 import android.os.Parcelable
 import androidx.core.net.toUri
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
@@ -42,17 +44,25 @@ class ProductImagesViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
-    private val originalImages = navArgs.images.toList()
+
+    private var originalImages = navArgs.images.toList()
 
     val isMultiSelectionAllowed = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES
+
+    private val _productImages = MutableLiveData<List<Image>>()
+    val productImages: LiveData<List<Image>> = _productImages
+
+    private val _uploadingImageUris = MutableLiveData<List<Uri>>()
+    val uploadingImageUris: LiveData<List<Uri>> = _uploadingImageUris
+
+    private val _productImagesState = MutableLiveData<ProductImagesState>()
+    val productImagesState: LiveData<ProductImagesState> = _productImagesState
 
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
             showSourceChooser = navArgs.showChooser,
-            uploadingImageUris = emptyList(),
             isImageDeletingAllowed = true,
-            images = navArgs.images.toList(),
             isWarningVisible = !isMultiSelectionAllowed,
             isDragDropDescriptionVisible = isMultiSelectionAllowed
         )
@@ -64,8 +74,11 @@ class ProductImagesViewModel @Inject constructor(
     }
     private var viewState by viewStateData
 
-    val images
-        get() = viewState.images ?: emptyList()
+    private val imageCount
+        get() = _productImages.value?.size ?: 0
+
+    private val uploadingImageCount
+        get() = _uploadingImageUris.value?.size ?: 0
 
     val isImageDeletingAllowed
         get() = viewState.isImageDeletingAllowed ?: true
@@ -79,6 +92,9 @@ class ProductImagesViewModel @Inject constructor(
             triggerEvent(ShowImageDetail(navArgs.selectedImage!!, true))
         }
 
+        _productImages.value = originalImages // TODO nbradbury - this will reset images on recreation
+        _productImagesState.value = Browsing
+
         observeImageUploadEvents()
     }
 
@@ -91,7 +107,7 @@ class ProductImagesViewModel @Inject constructor(
         mediaFileUploadHandler.enqueueUpload(remoteProductId, localUriList.map { it.toString() })
 
         if (!isMultiSelectionAllowed) {
-            viewState = viewState.copy(images = emptyList())
+            _productImages.value = emptyList() // TODO nbradbury - verify this is correct
         }
     }
 
@@ -120,14 +136,30 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun onImageRemoved(imageId: Long) {
-        viewState = viewState.copy(images = images.filter { it.id != imageId })
+        _productImages.value = _productImages.value?.filter { it.id != imageId }
     }
 
     fun onMediaLibraryImagesAdded(newImages: List<Image>) {
-        viewState = if (isMultiSelectionAllowed) {
-            viewState.copy(images = images + newImages)
+        addImages(newImages)
+    }
+
+    private fun addImages(images: List<Image>) {
+        if (isMultiSelectionAllowed) {
+            _productImages.value = _productImages.value?.let {
+                it + images
+            } ?: images
         } else {
-            viewState.copy(images = newImages)
+            _productImages.value = images
+        }
+    }
+
+    private fun addSingleImage(image: Image) {
+        if (isMultiSelectionAllowed) {
+            _productImages.value = _productImages.value?.let {
+                it + image
+            } ?: listOf(image)
+        } else {
+            _productImages.value = listOf(image)
         }
     }
 
@@ -143,29 +175,27 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun onValidateButtonClicked() {
-        viewState = viewState.copy(productImagesState = Browsing)
+        _productImagesState.value = Browsing
     }
 
     fun onNavigateBackButtonClicked() {
-        when (val productImagesState = viewState.productImagesState) {
+        when (val productImagesState = _productImagesState.value) {
             is Dragging -> {
-                viewState = viewState.copy(
-                    productImagesState = Browsing,
-                    images = productImagesState.initialState
-                )
+                _productImagesState.value = Browsing
+                _productImages.value = productImagesState.initialState
             }
             Browsing -> {
-                if (images.areSameImagesAs(originalImages)) {
+                if (_productImages.value?.areSameImagesAs(originalImages) == true) {
                     triggerEvent(Exit)
                 } else {
-                    triggerEvent(ExitWithResult(images))
+                    triggerEvent(ExitWithResult(_productImages.value))
                 }
             }
         }
     }
 
     private fun updateButtonStates() {
-        val numImages = (viewState.images?.size ?: 0) + (viewState.uploadingImageUris?.size ?: 0)
+        val numImages = imageCount + uploadingImageCount
         viewState = viewState.copy(
             chooserButtonButtonTitleRes = when {
                 isMultiSelectionAllowed -> string.product_add_photos
@@ -177,7 +207,7 @@ class ProductImagesViewModel @Inject constructor(
 
     private fun updateDragAndDropDescriptionStates() {
         viewState = viewState.copy(
-            isDragDropDescriptionVisible = viewState.productImagesState is Dragging || images.size > 1
+            isDragDropDescriptionVisible = _productImagesState.value is Dragging || imageCount > 1
         )
     }
 
@@ -190,16 +220,12 @@ class ProductImagesViewModel @Inject constructor(
         val remoteProductId = navArgs.remoteId
         mediaFileUploadHandler.observeCurrentUploads(remoteProductId)
             .map { list -> list.map { it.toUri() } }
-            .onEach { viewState = viewState.copy(uploadingImageUris = it) }
+            .onEach { _uploadingImageUris.value = it }
             .launchIn(this)
 
         mediaFileUploadHandler.observeSuccessfulUploads(remoteProductId)
             .onEach { media ->
-                viewState = if (isMultiSelectionAllowed) {
-                    viewState.copy(images = images + media.toAppModel())
-                } else {
-                    viewState.copy(images = listOf(media.toAppModel()))
-                }
+                addSingleImage(media.toAppModel())
             }
             .launchIn(this)
 
@@ -215,9 +241,8 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun onGalleryImageDragStarted() {
-        when (viewState.productImagesState) {
-            is Dragging -> { /* no-op*/ }
-            Browsing -> viewState = viewState.copy(productImagesState = Dragging(images))
+        if (_productImagesState.value == Browsing) {
+            _productImagesState.value = Dragging(_productImages.value!!)
         }
     }
 
@@ -226,27 +251,23 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun onDeleteImageConfirmed(image: Image) {
-        viewState = viewState.copy(images = images - image)
+        _productImages.value = _productImages.value!! - image
     }
 
     fun onGalleryImageMoved(from: Int, to: Int) {
-        val canSwap = from >= 0 && from < images.size && to >= 0 && to < images.size
+        val canSwap = from >= 0 && from < imageCount && to >= 0 && to < imageCount
         if (canSwap) {
-            val reorderedImages = images.swap(from, to)
-            viewState = viewState.copy(images = reorderedImages)
+            _productImages.value = _productImages.value!!.swap(from, to)
         }
     }
 
     @Parcelize
     data class ViewState(
         val showSourceChooser: Boolean? = null,
-        val uploadingImageUris: List<Uri>? = null,
         val isImageDeletingAllowed: Boolean? = null,
-        val images: List<Image>? = null,
         val chooserButtonButtonTitleRes: Int? = null,
         val isWarningVisible: Boolean? = null,
         val isDragDropDescriptionVisible: Boolean? = null,
-        val productImagesState: ProductImagesState = Browsing
     ) : Parcelable
 
     object ShowImageSourceDialog : Event()

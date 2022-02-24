@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.Menu
@@ -28,29 +27,18 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.mediapicker.MediaPickerUtil.processDeviceMediaResult
 import com.woocommerce.android.mediapicker.MediaPickerUtil.processMediaLibraryResult
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.ui.products.ProductImagesViewModel.*
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
@@ -96,7 +84,7 @@ class ProductImagesFragment :
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        when (viewModel.viewStateData.liveData.value?.productImagesState) {
+        when (viewModel.productImagesState.value) {
             is Dragging -> {
                 inflater.inflate(R.menu.menu_dragging, menu)
                 setHomeIcon(R.drawable.ic_gridicons_cross_24dp)
@@ -109,7 +97,7 @@ class ProductImagesFragment :
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (viewModel.viewStateData.liveData.value?.productImagesState) {
+        return when (viewModel.productImagesState.value) {
             is Dragging -> {
                 when (item.itemId) {
                     R.id.menu_validate -> {
@@ -146,22 +134,25 @@ class ProductImagesFragment :
     }
 
     private fun setupObservers(viewModel: ProductImagesViewModel) {
-        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.uploadingImageUris.takeIfNotEqualTo(old?.uploadingImageUris) { uris ->
-                updateImages(new.images ?: emptyList(), uris)
+        viewModel.productImages.observe(
+            viewLifecycleOwner,
+            {
+                updateImages()
             }
-            new.images.takeIfNotEqualTo(old?.images) { images ->
-                updateImages(images ?: emptyList(), new.uploadingImageUris)
+        )
+
+        viewModel.uploadingImageUris.observe(
+            viewLifecycleOwner,
+            {
+                updateImages()
             }
-            new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { isVisible ->
-                binding.textWarning.isVisible = isVisible
-            }
-            new.chooserButtonButtonTitleRes?.takeIfNotEqualTo(old?.chooserButtonButtonTitleRes) { titleRes ->
-                binding.addImageButton.setText(titleRes)
-            }
-            new.productImagesState.takeIfNotEqualTo(old?.productImagesState) {
+        )
+
+        viewModel.productImagesState.observe(
+            viewLifecycleOwner,
+            { state ->
                 requireActivity().invalidateOptionsMenu()
-                when (new.productImagesState) {
+                when (state) {
                     Browsing -> {
                         binding.addImageButton.isEnabled = true
                         binding.imageGallery.setDraggingState(isDragging = false)
@@ -171,6 +162,15 @@ class ProductImagesFragment :
                         binding.imageGallery.setDraggingState(isDragging = true)
                     }
                 }
+            }
+        )
+
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { isVisible ->
+                binding.textWarning.isVisible = isVisible
+            }
+            new.chooserButtonButtonTitleRes?.takeIfNotEqualTo(old?.chooserButtonButtonTitleRes) { titleRes ->
+                binding.addImageButton.setText(titleRes)
             }
             new.isDragDropDescriptionVisible?.takeIfNotEqualTo(old?.isDragDropDescriptionVisible) { isVisible ->
                 binding.dragAndDropDescription.isVisible = isVisible
@@ -223,9 +223,13 @@ class ProductImagesFragment :
         imageUploadErrorsSnackbar?.show()
     }
 
-    private fun updateImages(images: List<Image>, uris: List<Uri>?) {
-        binding.imageGallery.showProductImages(images, this)
-        binding.imageGallery.setPlaceholderImageUris(uris)
+    private fun updateImages() {
+        viewModel.productImages.value?.let { images ->
+            binding.imageGallery.showProductImages(images, this)
+        }
+        viewModel.uploadingImageUris.value?.let { uris->
+            binding.imageGallery.setPlaceholderImageUris(uris)
+        }
     }
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)

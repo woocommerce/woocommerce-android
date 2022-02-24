@@ -124,7 +124,7 @@ class ProductImageViewerFragment :
 
     private fun resetAdapter() {
         val images = ArrayList<Product.Image>()
-        images.addAll(viewModel.images)
+        viewModel.productImages.value?.let { images.addAll(it) }
 
         pagerAdapter = ImageViewerAdapter(this, images)
         binding.viewPager.adapter = pagerAdapter
