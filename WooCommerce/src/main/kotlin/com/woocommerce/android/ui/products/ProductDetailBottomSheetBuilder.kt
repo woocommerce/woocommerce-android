@@ -42,24 +42,14 @@ class ProductDetailBottomSheetBuilder(
     fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
         return when (product.productType) {
             SIMPLE -> {
-                if (product.isVirtual) {
-                    listOfNotNull(
-                        product.getCategories(),
-                        product.getTags(),
-                        product.getShortDescription(),
-                        product.getLinkedProducts(),
-                        product.getDownloadableFiles()
-                    )
-                } else {
-                    listOfNotNull(
-                        product.getShipping(),
-                        product.getCategories(),
-                        product.getTags(),
-                        product.getShortDescription(),
-                        product.getLinkedProducts(),
-                        product.getDownloadableFiles()
-                    )
-                }
+                listOfNotNull(
+                    product.getShipping(),
+                    product.getCategories(),
+                    product.getTags(),
+                    product.getShortDescription(),
+                    product.getLinkedProducts(),
+                    product.getDownloadableFiles()
+                )
             }
             EXTERNAL -> {
                 listOfNotNull(
