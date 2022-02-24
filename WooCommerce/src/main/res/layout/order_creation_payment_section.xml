@@ -91,48 +91,31 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/fees_container"
+            android:id="@+id/fee_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:minHeight="@dimen/major_300"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/edit_fees_button"
                 style="@style/Woo.Button.TextButton.Secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="start|center_vertical"
                 android:text="@string/order_creation_add_fee"
                 app:icon="@drawable/ic_add" />
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/fee_total_layout"
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/fee_total"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:minHeight="@dimen/major_300"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                android:paddingHorizontal="@dimen/major_100">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/fee_label"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/order_creation_payment_fee"
-                    android:textAppearance="?attr/textAppearanceSubtitle1" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/fee_total"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceSubtitle1"
-                    tools:text="$0.00" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                tools:text="$20.00" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

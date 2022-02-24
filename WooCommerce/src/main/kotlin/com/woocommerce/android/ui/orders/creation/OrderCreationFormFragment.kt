@@ -189,7 +189,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
-        bindFeesSubSection(paymentSection, newOrderData)
+        paymentSection.bindFeesSubSection(newOrderData)
 
         paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
         paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
@@ -214,23 +214,24 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
     }
 
-    private fun bindFeesSubSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
+    private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
         FeatureFlag.ORDER_CREATION_M2.isEnabled()
-            .apply { paymentSection.feesContainer.isVisible = this }
+            .apply { feeLayout.isVisible = this }
             .also { if (it.not()) return }
 
-        paymentSection.editFeesButton.setOnClickListener { viewModel.onFeeButtonClicked() }
-        paymentSection.feeTotalLayout.setOnClickListener { viewModel.onFeeButtonClicked() }
+        editFeesButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
         newOrderData.feesLines.firstOrNull { it.name != null }
             ?.takeIf { it.total > BigDecimal.ZERO }
             ?.let {
-                paymentSection.feeTotalLayout.isVisible = true
-                paymentSection.editFeesButton.isVisible = false
-                paymentSection.feeTotal.text = bigDecimalFormatter(it.total)
-            } ?: paymentSection.apply {
-            feeTotalLayout.isVisible = false
-            editFeesButton.isVisible = true
+                editFeesButton.setText(R.string.order_creation_add_fee)
+                editFeesButton.setIconResource(R.drawable.ic_add)
+                feeTotal.isVisible = true
+                feeTotal.text = bigDecimalFormatter(it.total)
+            } ?: apply {
+            editFeesButton.setText(R.string.order_creation_payment_fee)
+            editFeesButton.setIconResource(0)
+            feeTotal.isVisible = false
         }
     }
 
