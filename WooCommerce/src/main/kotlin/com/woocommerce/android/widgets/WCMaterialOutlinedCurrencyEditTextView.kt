@@ -30,19 +30,6 @@ import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlin.math.pow
 
-/**
- * Custom View that mimics a TextInputEditText that supports a prefix to the EditText using [CurrencyEditText].
- * This view will display a text box with a prefix. The entire view acts as a single component.
- *
- * This is a temporary view created to handle adding a prefix to the EditText. The material-components-android
- * already provides a way to add prefix to an EditText but this is currently in alpha.
- *
- * https://github.com/material-components/material-components-android/releases/tag/1.2.0-alpha01
- *
- * Once a release version is provided, we can update the [WCMaterialOutlinedEditTextView] to use a prefix
- * and deprecate this class.
- *
- */
 @AndroidEntryPoint
 class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     ctx: Context,
