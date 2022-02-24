@@ -222,7 +222,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         paymentSection.editFeesButton.setOnClickListener { viewModel.onFeeButtonClicked() }
         paymentSection.feeTotalLayout.setOnClickListener { viewModel.onFeeButtonClicked() }
 
-        newOrderData.feesLines.firstOrNull()
+        newOrderData.feesLines.firstOrNull { it.name != null }
             ?.takeIf { it.total > BigDecimal.ZERO }
             ?.let {
                 paymentSection.feeTotalLayout.isVisible = true
