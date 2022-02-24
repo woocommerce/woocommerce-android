@@ -12,10 +12,8 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.filterNonNull
-import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.util.ActivityUtils
 import java.math.BigDecimal
 

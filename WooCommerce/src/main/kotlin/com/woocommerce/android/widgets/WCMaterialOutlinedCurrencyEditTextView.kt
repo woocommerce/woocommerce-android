@@ -64,10 +64,9 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             attrs,
             R.styleable.WCMaterialOutlinedCurrencyEditTextView
         ).use { a ->
-            val mode = EditTextLayoutMode.values()[a.getInt(
-                R.styleable.WCMaterialOutlinedCurrencyEditTextView_editTextLayoutMode,
-                FILL.ordinal
-            )]
+            val mode = EditTextLayoutMode.values()[
+                a.getInt(R.styleable.WCMaterialOutlinedCurrencyEditTextView_editTextLayoutMode, FILL.ordinal)
+            ]
             val width = when (mode) {
                 FILL -> ViewGroup.LayoutParams.MATCH_PARENT
                 WRAP -> ViewGroup.LayoutParams.WRAP_CONTENT
@@ -78,19 +77,16 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
             if (a.hasValue(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize)) {
                 currencyEditText.setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX, a.getDimension(
-                        R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize, 0f
-                    )
+                    TypedValue.COMPLEX_UNIT_PX,
+                    a.getDimension(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize, 0f)
                 )
                 prefixTextView.setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX, a.getDimension(
-                        R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize, 0f
-                    )
+                    TypedValue.COMPLEX_UNIT_PX,
+                    a.getDimension(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize, 0f)
                 )
                 suffixTextView.setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX, a.getDimension(
-                        R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize, 0f
-                    )
+                    TypedValue.COMPLEX_UNIT_PX,
+                    a.getDimension(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize, 0f)
                 )
             }
             currencyEditText.gravity = a.getInt(

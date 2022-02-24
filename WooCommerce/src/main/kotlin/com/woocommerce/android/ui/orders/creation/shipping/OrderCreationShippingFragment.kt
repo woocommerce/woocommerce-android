@@ -55,8 +55,8 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
         amountEditText.value.filterNonNull()
             .drop(1)
             .observe(viewLifecycleOwner) {
-            viewModel.onAmountEdited(it)
-        }
+                viewModel.onAmountEdited(it)
+            }
         nameEditText.setOnTextChangedListener {
             viewModel.onNameEdited(it?.toString().orEmpty())
         }

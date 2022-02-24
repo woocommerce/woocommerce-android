@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.creation.fees
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.FeeType.AMOUNT
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.FeeType.PERCENTAGE
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -10,15 +9,12 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
 class OrderCreationEditFeeViewModel @Inject constructor(
-    savedState: SavedStateHandle,
-    private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
