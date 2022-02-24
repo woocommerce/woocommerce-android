@@ -224,13 +224,13 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         newOrderData.feesLines.firstOrNull { it.name != null }
             ?.takeIf { it.total > BigDecimal.ZERO }
             ?.let {
-                editFeesButton.setText(R.string.order_creation_add_fee)
-                editFeesButton.setIconResource(R.drawable.ic_add)
+                editFeesButton.setText(R.string.order_creation_payment_fee)
+                editFeesButton.setIconResource(0)
                 feeTotal.isVisible = true
                 feeTotal.text = bigDecimalFormatter(it.total)
             } ?: apply {
-            editFeesButton.setText(R.string.order_creation_payment_fee)
-            editFeesButton.setIconResource(0)
+            editFeesButton.setText(R.string.order_creation_add_fee)
+            editFeesButton.setIconResource(R.drawable.ic_add)
             feeTotal.isVisible = false
         }
     }
