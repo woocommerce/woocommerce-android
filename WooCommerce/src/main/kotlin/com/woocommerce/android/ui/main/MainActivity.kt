@@ -810,7 +810,7 @@ class MainActivity :
             binding.bottomNav.active(MORE.position)
         }
 
-        val action = MoreMenuFragmentDirections.actionMoreMenuFragmentToReviewDetailFragment(
+        val action = NavGraphMainDirections.actionGlobalReviewDetailFragment(
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
             launchedFromNotification = launchedFromNotification,
