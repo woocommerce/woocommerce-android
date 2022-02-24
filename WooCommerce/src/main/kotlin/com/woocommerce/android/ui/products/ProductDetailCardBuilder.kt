@@ -234,7 +234,7 @@ class ProductDetailCardBuilder(
             inventory[resources.getString(string.product_sku)] = this.sku
         }
 
-        if ((productType == SIMPLE && !isVirtual) || productType == VARIABLE) {
+        if ((productType == SIMPLE) || productType == VARIABLE) {
             if (this.isStockManaged) {
                 inventory[resources.getString(string.product_stock_quantity)] =
                     StringUtils.formatCountDecimal(this.stockQuantity)
