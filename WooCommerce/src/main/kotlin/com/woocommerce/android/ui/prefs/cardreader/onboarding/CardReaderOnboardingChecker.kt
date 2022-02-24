@@ -5,6 +5,7 @@ import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -79,6 +80,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         val countryCode = getStoreCountryCode()
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
+            as CardReaderConfigForSupportedCountry
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
