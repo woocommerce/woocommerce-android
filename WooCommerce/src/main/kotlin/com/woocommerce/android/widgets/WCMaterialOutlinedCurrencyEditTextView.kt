@@ -6,15 +6,15 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.util.TypedValue
-import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.lifecycle.LiveData
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.ViewMaterialOutlinedCurrencyEdittextBinding
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.FILL
+import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.WRAP
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.*
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -40,11 +40,11 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     @AttrRes defStyleRes: Int = R.attr.wcMaterialOutlinedCurrencyEditTextViewStyle
 ) : TextInputLayout(ctx, attrs, defStyleRes) {
-    private val binding = ViewMaterialOutlinedCurrencyEdittextBinding.inflate(LayoutInflater.from(context), this)
-
     companion object {
         private const val KEY_SUPER_STATE = "WC-OUTLINED-CURRENCY-VIEW-SUPER-STATE"
     }
+
+    val currencyEditText: CurrencyEditText = CurrencyEditText(context)
 
     @Inject lateinit var wcStore: WooCommerceStore
     @Inject lateinit var selectedSite: SelectedSite
@@ -52,12 +52,12 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     var supportsNegativeValues: Boolean = true
         set(value) {
             field = value
-            binding.currencyEditText.supportsNegativeValues = value
+            currencyEditText.supportsNegativeValues = value
         }
     var supportsEmptyState: Boolean = true
         set(value) {
             field = value
-            binding.currencyEditText.supportsEmptyState = value
+            currencyEditText.supportsEmptyState = value
         }
 
     init {
@@ -65,9 +65,20 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             attrs,
             R.styleable.WCMaterialOutlinedCurrencyEditTextView
         ).use { a ->
+            val mode = EditTextLayoutMode.values()[a.getInt(
+                R.styleable.WCMaterialOutlinedCurrencyEditTextView_editTextLayoutMode,
+                FILL.ordinal
+            )]
+            val width = when (mode) {
+                FILL -> ViewGroup.LayoutParams.MATCH_PARENT
+                WRAP -> ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+            currencyEditText.layoutParams = LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+            addView(currencyEditText)
             isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
             if (a.hasValue(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize)) {
-                binding.currencyEditText.setTextSize(
+                currencyEditText.setTextSize(
                     TypedValue.COMPLEX_UNIT_PX, a.getDimension(
                         R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_textSize, 0f
                     )
@@ -83,8 +94,8 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
                     )
                 )
             }
-            binding.currencyEditText.gravity = a.getInt(
-                R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_gravity, binding.currencyEditText.gravity
+            currencyEditText.gravity = a.getInt(
+                R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_gravity, currencyEditText.gravity
             )
             supportsNegativeValues = a.getBoolean(
                 R.styleable.WCMaterialOutlinedCurrencyEditTextView_supportsNegativeValues, supportsNegativeValues
@@ -105,7 +116,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
                 RIGHT, RIGHT_SPACE -> suffixText = currencySymbol
             }
         }
-        binding.currencyEditText.initView(
+        currencyEditText.initView(
             siteSettings = siteSettings,
             supportsNegativeValues = supportsNegativeValues,
             supportsEmptyState = supportsEmptyState
@@ -113,12 +124,12 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 
     val value: LiveData<BigDecimal>
-        get() = binding.currencyEditText.value
+        get() = currencyEditText.value
 
-    fun getText() = binding.currencyEditText.text.toString()
+    fun getText() = currencyEditText.text.toString()
 
     fun setValue(currentValue: BigDecimal) {
-        binding.currencyEditText.setValue(currentValue)
+        currencyEditText.setValue(currentValue)
     }
 
     /**
@@ -126,16 +137,14 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
      * Helpful when binding the value to a state in the ViewModel without losing the cursor position
      */
     fun setValueIfDifferent(newValue: BigDecimal) {
-        if (newValue isNotEqualTo binding.currencyEditText.value.value) {
+        if (newValue isNotEqualTo currencyEditText.value.value) {
             setValue(newValue)
         }
     }
 
-    fun getCurrencyEditText(): CurrencyEditText = binding.currencyEditText
-
     override fun onSaveInstanceState(): Parcelable? {
         val bundle = Bundle()
-        binding.currencyEditText.onSaveInstanceState()?.let {
+        currencyEditText.onSaveInstanceState()?.let {
             bundle.putParcelable(KEY_SUPER_STATE, WCSavedState(super.onSaveInstanceState(), it))
         }
         return bundle
@@ -149,7 +158,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 
     private fun restoreViewState(state: WCSavedState): Parcelable {
-        binding.currencyEditText.onRestoreInstanceState(state.savedState)
+        currencyEditText.onRestoreInstanceState(state.savedState)
         return state.superState
     }
 
@@ -159,5 +168,9 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
 
     override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>) {
         super.dispatchThawSelfOnly(container)
+    }
+
+    private enum class EditTextLayoutMode {
+        FILL, WRAP
     }
 }

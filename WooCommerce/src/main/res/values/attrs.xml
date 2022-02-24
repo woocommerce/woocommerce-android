@@ -88,6 +88,11 @@
         <attr name="android:enabled" />
         <attr name="android:textSize" />
         <attr name="android:gravity" />
+        <attr name="editTextLayoutMode" format="enum">
+            <enum name="fill" value="0" />
+            <enum name="wrap" value="1" />
+        </attr>
+        <attr name="editTextHeight" format="dimension" />
         <attr name="supportsNegativeValues" format="boolean" />
         <attr name="supportsEmptyState" format="boolean" />
     </declare-styleable>
