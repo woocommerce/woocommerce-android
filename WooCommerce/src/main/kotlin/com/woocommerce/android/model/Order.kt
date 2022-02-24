@@ -201,7 +201,7 @@ data class Order(
     @Parcelize
     data class FeeLine(
         val id: Long,
-        val name: String,
+        val name: String?,
         val total: BigDecimal,
         val totalTax: BigDecimal,
     ) : Parcelable {
