@@ -134,36 +134,27 @@ class ProductImagesFragment :
     }
 
     private fun setupObservers(viewModel: ProductImagesViewModel) {
-        viewModel.productImages.observe(
-            viewLifecycleOwner,
-            {
-                updateImages()
-            }
-        )
+        viewModel.productImages.observe(viewLifecycleOwner) {
+            updateImages()
+        }
 
-        viewModel.uploadingImageUris.observe(
-            viewLifecycleOwner,
-            {
-                updateImages()
-            }
-        )
+        viewModel.uploadingImageUris.observe(viewLifecycleOwner) {
+            updateImages()
+        }
 
-        viewModel.productImagesState.observe(
-            viewLifecycleOwner,
-            { state ->
-                requireActivity().invalidateOptionsMenu()
-                when (state) {
-                    Browsing -> {
-                        binding.addImageButton.isEnabled = true
-                        binding.imageGallery.setDraggingState(isDragging = false)
-                    }
-                    is Dragging -> {
-                        binding.addImageButton.isEnabled = false
-                        binding.imageGallery.setDraggingState(isDragging = true)
-                    }
+        viewModel.productImagesState.observe(viewLifecycleOwner) { state ->
+            requireActivity().invalidateOptionsMenu()
+            when (state) {
+                Browsing -> {
+                    binding.addImageButton.isEnabled = true
+                    binding.imageGallery.setDraggingState(isDragging = false)
+                }
+                is Dragging -> {
+                    binding.addImageButton.isEnabled = false
+                    binding.imageGallery.setDraggingState(isDragging = true)
                 }
             }
-        )
+        }
 
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { isVisible ->
@@ -178,25 +169,24 @@ class ProductImagesFragment :
         }
 
         viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is Exit -> findNavController().navigateUp()
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
-                    is ProductNavigationTarget -> navigator.navigate(this, event)
-                    is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
-                    is ShowDialog -> event.showDialog()
-                    ShowImageSourceDialog -> showImageSourceDialog()
-                    is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
-                    ShowStorageChooser -> showLocalDeviceMediaPicker()
-                    ShowCamera -> captureProductImage()
-                    ShowWPMediaPicker -> showMediaLibraryPicker()
-                    is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
-                    else -> event.isHandled = false
-                }
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is Exit -> findNavController().navigateUp()
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                is ProductNavigationTarget -> navigator.navigate(this, event)
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
+                is ShowDialog -> event.showDialog()
+                ShowImageSourceDialog -> showImageSourceDialog()
+                is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
+                ShowStorageChooser -> showLocalDeviceMediaPicker()
+                ShowCamera -> captureProductImage()
+                ShowWPMediaPicker -> showMediaLibraryPicker()
+                is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showConfirmationDialog(image: Image) {
@@ -227,7 +217,7 @@ class ProductImagesFragment :
         viewModel.productImages.value?.let { images ->
             binding.imageGallery.showProductImages(images, this)
         }
-        viewModel.uploadingImageUris.value?.let { uris->
+        viewModel.uploadingImageUris.value?.let { uris ->
             binding.imageGallery.setPlaceholderImageUris(uris)
         }
     }
