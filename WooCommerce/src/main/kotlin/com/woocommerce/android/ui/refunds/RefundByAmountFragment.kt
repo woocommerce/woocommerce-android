@@ -7,7 +7,7 @@ import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentRefundByAmountBinding
-import com.woocommerce.android.extensions.filterNonNull
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
@@ -74,7 +74,7 @@ class RefundByAmountFragment : BaseFragment(R.layout.fragment_refund_by_amount) 
             }
         )
 
-        binding.issueRefundRefundAmount.value.filterNonNull().observe(
+        binding.issueRefundRefundAmount.value.filterNotNull().observe(
             viewLifecycleOwner,
             Observer {
                 viewModel.onManualRefundAmountChanged(it)

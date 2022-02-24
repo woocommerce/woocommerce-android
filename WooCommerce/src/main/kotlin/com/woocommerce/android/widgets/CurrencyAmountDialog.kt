@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.filterNonNull
+import com.woocommerce.android.extensions.filterNotNull
 import org.wordpress.android.util.ActivityUtils
 import java.math.BigDecimal
 
@@ -67,7 +67,7 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
         builder.setNegativeButton(R.string.cancel, this)
         builder.setView(view)
 
-        currencyEditTextLayout.value.filterNonNull().observe(
+        currencyEditTextLayout.value.filterNotNull().observe(
             this,
             Observer {
                 currentValue = if (it > maxValue) maxValue else it

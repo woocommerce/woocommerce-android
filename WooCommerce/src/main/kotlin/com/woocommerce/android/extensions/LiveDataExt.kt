@@ -59,7 +59,7 @@ fun <T> LiveData<T>.drop(number: Int): LiveData<T> {
     return outputLiveData
 }
 
-fun <T : Any> LiveData<T?>.filterNonNull(): LiveData<T> {
+fun <T : Any> LiveData<T?>.filterNotNull(): LiveData<T> {
     val mediator = MediatorLiveData<T>()
     mediator.addSource(this) {
         if (it != null) {
