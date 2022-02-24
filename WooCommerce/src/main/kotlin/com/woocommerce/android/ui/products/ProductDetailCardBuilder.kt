@@ -72,13 +72,7 @@ class ProductDetailCardBuilder(
         cards.addIfNotEmpty(getPrimaryCard(product))
 
         when (product.productType) {
-            SIMPLE -> {
-                if (product.isVirtual) {
-                    cards.addIfNotEmpty(getOtherProductCard(product))
-                } else {
-                    cards.addIfNotEmpty(getSimpleProductCard(product))
-                }
-            }
+            SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
             VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
@@ -644,6 +638,7 @@ class ProductDetailCardBuilder(
                 }
             )
         }
+
     private fun Product.warning(): ProductProperty? {
         val variations = variationRepository.getProductVariationList(this.remoteId)
 
