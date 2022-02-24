@@ -99,7 +99,7 @@
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/edit_fees_button"
+                android:id="@+id/fee_button"
                 style="@style/Woo.Button.TextButton.Secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
                 app:icon="@drawable/ic_add" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/fee_total"
+                android:id="@+id/fee_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/major_100"

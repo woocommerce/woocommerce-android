@@ -16,7 +16,7 @@ import java.math.RoundingMode.HALF_UP
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreationEditFeeViewModel @Inject constructor(
+class OrderCreationFeeViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore

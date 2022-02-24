@@ -14,8 +14,8 @@ import com.woocommerce.android.databinding.FragmentOrderCreationEditFeeBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.RemoveFee
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.UpdateFee
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.RemoveFee
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.UpdateFee
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class OrderCreationEditFeeFragment :
     BaseFragment(R.layout.fragment_order_creation_edit_fee) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
-    private val editFeeViewModel by viewModels<OrderCreationEditFeeViewModel>()
+    private val editFeeViewModel by viewModels<OrderCreationFeeViewModel>()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 

@@ -219,19 +219,19 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             .apply { feeLayout.isVisible = this }
             .also { if (it.not()) return }
 
-        editFeesButton.setOnClickListener { viewModel.onFeeButtonClicked() }
+        feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
         newOrderData.feesLines.firstOrNull { it.name != null }
             ?.takeIf { it.total > BigDecimal.ZERO }
             ?.let {
-                editFeesButton.setText(R.string.order_creation_payment_fee)
-                editFeesButton.setIconResource(0)
-                feeTotal.isVisible = true
-                feeTotal.text = bigDecimalFormatter(it.total)
+                feeButton.setText(R.string.order_creation_payment_fee)
+                feeButton.setIconResource(0)
+                feeValue.isVisible = true
+                feeValue.text = bigDecimalFormatter(it.total)
             } ?: apply {
-            editFeesButton.setText(R.string.order_creation_add_fee)
-            editFeesButton.setIconResource(R.drawable.ic_add)
-            feeTotal.isVisible = false
+            feeButton.setText(R.string.order_creation_add_fee)
+            feeButton.setIconResource(R.drawable.ic_add)
+            feeValue.isVisible = false
         }
     }
 
