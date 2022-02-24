@@ -134,7 +134,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         )
     }
 
-    val value: LiveData<BigDecimal>
+    val value: LiveData<BigDecimal?>
         get() = currencyEditText.value
 
     fun getText() = currencyEditText.text.toString()
@@ -209,8 +209,8 @@ private class CurrencyEditText @JvmOverloads constructor(
 
     var supportsEmptyState: Boolean = true
 
-    private val _value = MutableLiveData<BigDecimal>()
-    val value: LiveData<BigDecimal> = _value
+    private val _value = MutableLiveData<BigDecimal?>()
+    val value: LiveData<BigDecimal?> = _value
 
     fun initView(
         siteSettings: WCSettingsModel?,
@@ -269,7 +269,7 @@ private class CurrencyEditText @JvmOverloads constructor(
 
     private fun clearValue() {
         if (!supportsEmptyState) return
-        // TODO _value.value = null
+        _value.value = null
         setText("")
     }
 
