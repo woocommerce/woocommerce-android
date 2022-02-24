@@ -17,23 +17,13 @@
         android:layout_marginEnd="@dimen/major_150"
         tools:text="Headline 6" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
         android:id="@+id/currencyAmount_refundAmountInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_150"
         android:layout_marginEnd="@dimen/major_150"
-        android:importantForAccessibility="no">
-
-        <com.woocommerce.android.widgets.CurrencyEditText
-            android:id="@+id/currencyAmount_refundAmount"
-            style="@style/Woo.EditText"
-            android:layout_margin="@dimen/minor_00"
-            android:imeOptions="flagNoExtractUi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+        android:importantForAccessibility="no"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/currencyAmount_message"
