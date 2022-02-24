@@ -27,8 +27,9 @@ class OrderCreationFeeViewModel @Inject constructor(
         private val PERCENTAGE_BASE = BigDecimal(100)
     }
 
-    private val navArgs: OrderCreationEditFeeFragmentArgs by savedState.navArgs()
-    private val orderSubtotal = navArgs.orderTotal - (navArgs.currentFeeValue ?: BigDecimal.ZERO)
+    private val navArgs: OrderCreationFeeFragmentArgs by savedState.navArgs()
+    private val orderSubtotal
+        get() = navArgs.orderTotal - (navArgs.currentFeeValue ?: BigDecimal.ZERO)
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
