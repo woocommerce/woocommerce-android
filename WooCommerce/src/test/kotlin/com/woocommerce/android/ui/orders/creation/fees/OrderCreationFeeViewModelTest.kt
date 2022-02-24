@@ -22,7 +22,7 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
         private val DEFAULT_FEE_VALUE = BigDecimal(250)
     }
     private lateinit var sut: OrderCreationFeeViewModel
-    private var savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL).initSavedStateHandle()
+    private var savedState = OrderCreationFeeFragmentArgs(DEFAULT_ORDER_TOTAL).initSavedStateHandle()
 
     @Before
     fun setUp() = initSut()
@@ -39,7 +39,7 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     fun `when initializing the viewModel with existing navArgs currentFeeValue, then set fee amount based on it`() {
         var lastReceivedEvent: Event? = null
 
-        savedState = OrderCreationEditFeeFragmentArgs(
+        savedState = OrderCreationFeeFragmentArgs(
             orderTotal = DEFAULT_ORDER_TOTAL + DEFAULT_FEE_VALUE,
             currentFeeValue = DEFAULT_FEE_VALUE
         ).initSavedStateHandle()
@@ -61,7 +61,7 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     fun `when initializing the viewModel with existing navArgs currentFeeValue, then set fee percentage based on it`() {
         var lastReceivedEvent: Event? = null
 
-        savedState = OrderCreationEditFeeFragmentArgs(
+        savedState = OrderCreationFeeFragmentArgs(
             orderTotal = DEFAULT_ORDER_TOTAL + DEFAULT_FEE_VALUE,
             currentFeeValue = DEFAULT_FEE_VALUE
         ).initSavedStateHandle()
@@ -85,7 +85,7 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     fun `when initializing the viewModel with order total with only the fee, then set fee percentage as zero`() {
         var lastReceivedEvent: Event? = null
 
-        savedState = OrderCreationEditFeeFragmentArgs(
+        savedState = OrderCreationFeeFragmentArgs(
             orderTotal = DEFAULT_FEE_VALUE,
             currentFeeValue = DEFAULT_FEE_VALUE
         ).initSavedStateHandle()
@@ -121,7 +121,7 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
             ((orderSubtotal * expectedPercentageValue) / percentageBase)
                 .round(MathContext(4))
 
-        savedState = OrderCreationEditFeeFragmentArgs(orderTotal, feeTotal)
+        savedState = OrderCreationFeeFragmentArgs(orderTotal, feeTotal)
             .initSavedStateHandle()
         initSut()
         sut.event.observeForever { lastReceivedEvent = it }
@@ -250,7 +250,7 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     @Test
     fun `when current fee is existent, then set showDisplayRemoveFeeButton to true`() {
         var lastReceivedChange: Boolean? = null
-        savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL, DEFAULT_FEE_VALUE)
+        savedState = OrderCreationFeeFragmentArgs(DEFAULT_ORDER_TOTAL, DEFAULT_FEE_VALUE)
             .initSavedStateHandle()
         initSut()
 
@@ -266,7 +266,7 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     @Test
     fun `when current fee is null, then set showDisplayRemoveFeeButton to false`() {
         var lastReceivedChange: Boolean? = null
-        savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL)
+        savedState = OrderCreationFeeFragmentArgs(DEFAULT_ORDER_TOTAL)
             .initSavedStateHandle()
         initSut()
 
