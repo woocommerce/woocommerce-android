@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -108,6 +109,10 @@ class MainActivity :
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
+
+    private val sitePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        handleSitePickerResult()
+    }
 
     private val appBarOffsetListener by lazy {
         AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
@@ -613,6 +618,16 @@ class MainActivity :
         // Complete UI initialization
         binding.bottomNav.init(navController, this)
         initFragment(null)
+    }
+
+    fun startSitePicker() {
+        val sitePickerIntent = Intent(this, SitePickerActivity::class.java)
+        sitePickerLauncher.launch(sitePickerIntent)
+    }
+
+    private fun handleSitePickerResult() {
+        presenter.selectedSiteChanged(selectedSite.get())
+        restart()
     }
 
     /**
