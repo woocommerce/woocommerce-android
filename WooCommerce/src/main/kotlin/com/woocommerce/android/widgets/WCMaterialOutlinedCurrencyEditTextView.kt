@@ -48,17 +48,29 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     @Inject lateinit var wcStore: WooCommerceStore
     @Inject lateinit var selectedSite: SelectedSite
 
+    var supportsNegativeValues: Boolean = true
+        set(value) {
+            field = value
+            binding.currencyEditText.supportsNegativeValues = value
+        }
+    var supportsEmptyState: Boolean = true
+        set(value) {
+            field = value
+            binding.currencyEditText.supportsEmptyState = value
+        }
+
     init {
-        if (attrs != null) {
-            val a = context.obtainStyledAttributes(
-                attrs,
-                R.styleable.WCMaterialOutlinedCurrencyEditTextView
+        context.obtainStyledAttributes(
+            attrs,
+            R.styleable.WCMaterialOutlinedCurrencyEditTextView
+        ).use { a ->
+            isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
+            supportsNegativeValues = a.getBoolean(
+                R.styleable.WCMaterialOutlinedCurrencyEditTextView_supportsNegativeValues, supportsNegativeValues
             )
-            try {
-                isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
-            } finally {
-                a.recycle()
-            }
+            supportsEmptyState = a.getBoolean(
+                R.styleable.WCMaterialOutlinedCurrencyEditTextView_supportsEmptyState, supportsEmptyState
+            )
         }
 
         val siteSettings = selectedSite.getIfExists()?.let {
@@ -72,7 +84,11 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
                 RIGHT, RIGHT_SPACE -> suffixText = currencySymbol
             }
         }
-        binding.currencyEditText.initView(siteSettings)
+        binding.currencyEditText.initView(
+            siteSettings = siteSettings,
+            supportsNegativeValues = supportsNegativeValues,
+            supportsEmptyState = supportsEmptyState
+        )
     }
 
     val value: LiveData<BigDecimal>

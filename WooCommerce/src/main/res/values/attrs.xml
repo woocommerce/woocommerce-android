@@ -86,6 +86,8 @@
 
     <declare-styleable name="WCMaterialOutlinedCurrencyEditTextView">
         <attr name="android:enabled" />
+        <attr name="supportsNegativeValues" format="boolean" />
+        <attr name="supportsEmptyState" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="ShippingLabelItemView">

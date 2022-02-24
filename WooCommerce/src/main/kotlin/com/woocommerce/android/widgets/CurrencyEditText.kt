@@ -25,22 +25,37 @@ class CurrencyEditText @JvmOverloads constructor(
         get() = siteSettings?.currencyDecimalNumber ?: 0
 
     private var isInitialized = false
+    private var siteSettings: WCSettingsModel? = null
+    var supportsNegativeValues: Boolean
+        get() = this.inputType and InputType.TYPE_NUMBER_FLAG_DECIMAL != 0
+        set(value) {
+            if (value) {
+                this.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+            } else {
+                this.inputType = InputType.TYPE_CLASS_NUMBER
+            }
+        }
+
+    var supportsEmptyState: Boolean = true
 
     private val _value = MutableLiveData<BigDecimal>()
     val value: LiveData<BigDecimal> = _value
 
-    private var siteSettings: WCSettingsModel? = null
-
-    init {
-        this.inputType = InputType.TYPE_CLASS_NUMBER
-    }
-
     fun initView(currency: String, decimals: Int, currencyFormatter: CurrencyFormatter) {
     }
 
-    fun initView(siteSettings: WCSettingsModel?) {
-        isInitialized = true
+    fun initView(
+        siteSettings: WCSettingsModel?,
+        supportsNegativeValues: Boolean,
+        supportsEmptyState: Boolean
+    ) {
         this.siteSettings = siteSettings
+        this.supportsNegativeValues = supportsNegativeValues
+        this.supportsEmptyState = supportsEmptyState
+        isInitialized = true
+        if (!supportsEmptyState) {
+            setValue(BigDecimal.ZERO)
+        }
     }
 
     fun setValue(value: BigDecimal) {
@@ -54,7 +69,8 @@ class CurrencyEditText @JvmOverloads constructor(
             val cleanValue = clean(text, decimals)
             if (cleanValue != null) {
                 // When the user types backspace on a field that already contained `0`
-                val shouldClearTheField = lengthAfter < lengthBefore &&
+                val shouldClearTheField = supportsEmptyState &&
+                    lengthAfter < lengthBefore &&
                     _value.value?.isEqualTo(BigDecimal.ZERO) == true &&
                     cleanValue.isEqualTo(BigDecimal.ZERO)
                 if (shouldClearTheField) {
@@ -83,6 +99,7 @@ class CurrencyEditText @JvmOverloads constructor(
     }
 
     private fun clearValue() {
+        if (!supportsEmptyState) return
         // TODO _value.value = null
         setText("")
     }
