@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogSimplePaymentsBinding
+import com.woocommerce.android.extensions.filterNonNull
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -68,7 +69,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     }
 
     private fun setupObservers(binding: DialogSimplePaymentsBinding) {
-        binding.editPrice.value.observe(
+        binding.editPrice.value.filterNonNull().observe(
             this,
             {
                 viewModel.currentPrice = it

@@ -1,6 +1,7 @@
 package com.woocommerce.android.extensions
 
 import androidx.lifecycle.*
+import org.wordpress.android.mediapicker.util.filter
 
 fun <T> MutableLiveData<MutableList<T>>.addNewItem(item: T) {
     val oldValue = this.value ?: mutableListOf()
@@ -57,4 +58,14 @@ fun <T> LiveData<T>.drop(number: Int): LiveData<T> {
         outputLiveData.value = it
     }
     return outputLiveData
+}
+
+fun <T:Any> LiveData<T?>.filterNonNull(): LiveData<T> {
+    val mediator = MediatorLiveData<T>()
+    mediator.addSource(this) {
+        if (it != null) {
+            mediator.value = it
+        }
+    }
+    return mediator
 }

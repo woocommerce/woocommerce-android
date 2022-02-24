@@ -11,6 +11,7 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationEditFeeBinding
+import com.woocommerce.android.extensions.filterNonNull
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
@@ -54,7 +55,7 @@ class OrderCreationEditFeeFragment :
     override fun getFragmentTitle() = getString(R.string.order_creation_add_fee)
 
     private fun FragmentOrderCreationEditFeeBinding.bindViews() {
-        feeAmountEditText.value.observe(viewLifecycleOwner) {
+        feeAmountEditText.value.filterNonNull().observe(viewLifecycleOwner) {
             editFeeViewModel.onFeeAmountChanged(it)
         }
         feePercentageEditText.setOnTextChangedListener {

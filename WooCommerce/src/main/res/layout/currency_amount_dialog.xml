@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
@@ -23,7 +24,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_150"
         android:layout_marginEnd="@dimen/major_150"
-        android:importantForAccessibility="no"/>
+        android:importantForAccessibility="no"
+        app:supportsEmptyState="false"
+        app:supportsNegativeValues="false" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/currencyAmount_message"
