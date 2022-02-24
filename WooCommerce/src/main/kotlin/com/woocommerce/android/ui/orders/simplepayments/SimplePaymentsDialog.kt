@@ -55,11 +55,10 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             findNavController().navigateUp()
         }
 
-        val editText = binding.editPrice.currencyEditText
-        if (!isLandscape && editText.requestFocus()) {
+        if (!isLandscape && binding.editPrice.editText.requestFocus()) {
             binding.editPrice.postDelayed(
                 {
-                    ActivityUtils.showKeyboard(editText)
+                    ActivityUtils.showKeyboard(binding.editPrice.editText)
                 },
                 KEYBOARD_DELAY
             )
