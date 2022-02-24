@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
+import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 
 private const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
 private const val AUTO_DRAFT = "auto-draft"
@@ -96,7 +97,8 @@ class OrderCreationRepository @Inject constructor(
             shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
             customerNote = order.customerNote,
-            shippingLines = order.shippingLines.map { it.toDataModel() }
+            shippingLines = order.shippingLines.map { it.toDataModel() },
+            feeLines = order.feesLines.map { it.toDataModel() }
         )
 
         val result = if (order.id == 0L) {
@@ -134,4 +136,10 @@ class OrderCreationRepository @Inject constructor(
         methodTitle = methodTitle.takeIf { it.isNotEmpty() },
         total = total.toPlainString()
     )
+
+    private fun Order.FeeLine.toDataModel() = WCFeeLine().also {
+        it.id = id
+        it.name = name
+        it.total = total.toPlainString()
+    }
 }
