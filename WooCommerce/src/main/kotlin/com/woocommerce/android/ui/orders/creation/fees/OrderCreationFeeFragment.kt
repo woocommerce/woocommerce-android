@@ -85,7 +85,7 @@ class OrderCreationFeeFragment :
                 feeAmountEditText.setValueIfDifferent(it)
             }
             new.feePercentage.takeIfNotEqualTo(old?.feePercentage) {
-                feePercentageEditText.setTextIfDifferent(it.toString())
+                feePercentageEditText.setTextIfDifferent(it.toPlainString())
             }
             new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) { isChecked ->
                 ActivityUtils.hideKeyboard(activity)
