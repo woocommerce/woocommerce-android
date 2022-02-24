@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.util.SparseArray
 import android.util.TypedValue
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.annotation.AttrRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -40,7 +41,9 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         private const val KEY_SUPER_STATE = "WC-OUTLINED-CURRENCY-VIEW-SUPER-STATE"
     }
 
-    private val currencyEditText: CurrencyEditText = CurrencyEditText(context)
+    private val currencyEditText: CurrencyEditText = CurrencyEditText(context).apply {
+        imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
+    }
 
     val editText: TextInputEditText
         get() = currencyEditText
