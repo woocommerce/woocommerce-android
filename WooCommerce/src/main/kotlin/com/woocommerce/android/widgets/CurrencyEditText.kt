@@ -55,6 +55,7 @@ class CurrencyEditText @JvmOverloads constructor(
         isInitialized = true
         if (!supportsEmptyState) {
             setValue(BigDecimal.ZERO)
+            setSelection(text!!.length)
         }
     }
 

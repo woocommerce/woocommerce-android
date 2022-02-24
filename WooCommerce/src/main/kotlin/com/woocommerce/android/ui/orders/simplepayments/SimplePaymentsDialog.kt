@@ -5,7 +5,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -26,7 +25,6 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: SimplePaymentsDialogViewModel by viewModels()
-    private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +47,6 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         }
 
         val binding = DialogSimplePaymentsBinding.bind(view)
-        binding.editPrice.initView(sharedViewModel.currencyCode, sharedViewModel.decimals, currencyFormatter)
         binding.buttonDone.setOnClickListener {
             viewModel.onDoneButtonClicked()
         }
@@ -58,10 +55,11 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             findNavController().navigateUp()
         }
 
-        if (!isLandscape && binding.editPrice.requestFocus()) {
+        val editText = binding.editPrice.getCurrencyEditText()
+        if (!isLandscape && editText.requestFocus()) {
             binding.editPrice.postDelayed(
                 {
-                    ActivityUtils.showKeyboard(binding.editPrice)
+                    ActivityUtils.showKeyboard(editText)
                 },
                 KEYBOARD_DELAY
             )
