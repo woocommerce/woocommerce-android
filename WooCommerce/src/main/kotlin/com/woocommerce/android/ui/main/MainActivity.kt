@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -88,10 +89,14 @@ class MainActivity :
         }
     }
 
-    @Inject lateinit var presenter: MainContract.Presenter
-    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var presenter: MainContract.Presenter
+    @Inject
+    lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject
+    lateinit var selectedSite: SelectedSite
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -111,7 +116,7 @@ class MainActivity :
     private lateinit var toolbar: Toolbar
 
     private val sitePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        handleSitePickerResult()
+        handleSitePickerResult(it)
     }
 
     private val appBarOffsetListener by lazy {
@@ -625,9 +630,11 @@ class MainActivity :
         sitePickerLauncher.launch(sitePickerIntent)
     }
 
-    private fun handleSitePickerResult() {
-        presenter.selectedSiteChanged(selectedSite.get())
-        restart()
+    private fun handleSitePickerResult(activityResult: ActivityResult) {
+        if (activityResult.resultCode == RESULT_OK) {
+            presenter.selectedSiteChanged(selectedSite.get())
+            restart()
+        }
     }
 
     /**
