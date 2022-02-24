@@ -27,8 +27,7 @@ class OrderCreationEditFeeFragment :
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
     private val editFeeViewModel by viewModels<OrderCreationEditFeeViewModel>()
 
-    @Inject
-    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

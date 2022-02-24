@@ -20,8 +20,8 @@ import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
+import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
 private const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
 private const val AUTO_DRAFT = "auto-draft"

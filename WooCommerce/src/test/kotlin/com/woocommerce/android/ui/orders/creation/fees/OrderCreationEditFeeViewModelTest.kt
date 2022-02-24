@@ -78,7 +78,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when initializing the viewModel with order total as zero and valid currentFeeValue, then set fee percentage as zero`() {
+    fun `when initializing the viewModel with order total as zero and valid fee, then set fee percentage as zero`() {
         var lastReceivedEvent: Event? = null
 
         savedState = OrderCreationEditFeeFragmentArgs(BigDecimal.ZERO, DEFAULT_FEE_VALUE)
@@ -100,7 +100,7 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when initializing the viewModel with non-terminating decimal percentage value, then divide BigDecimals with expected rounding`() {
+    fun `when initializing the viewModel with non-terminating decimal percentage, then divide with rounding`() {
         var lastReceivedEvent: Event? = null
         val percentageBase = BigDecimal(100)
         val orderTotal = BigDecimal(15)
@@ -113,7 +113,6 @@ class OrderCreationEditFeeViewModelTest : BaseUnitTest() {
         val expectedRecalculatedFeeTotal =
             ((orderTotal * expectedPercentageValue) / percentageBase)
                 .round(MathContext(4))
-
 
         savedState = OrderCreationEditFeeFragmentArgs(orderTotal, feeTotal)
             .initSavedStateHandle()

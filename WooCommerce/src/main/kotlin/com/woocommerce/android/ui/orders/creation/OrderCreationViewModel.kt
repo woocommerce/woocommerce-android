@@ -318,9 +318,9 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onFeeRemoved() {
         _orderDraft.update { draft ->
-            draft.feesLines.map {
-                it.copy(name = null)
-            }.let { draft.copy(feesLines = it) }
+            draft.feesLines
+                .map { it.copy(name = null) }
+                .let { draft.copy(feesLines = it) }
         }
     }
 
