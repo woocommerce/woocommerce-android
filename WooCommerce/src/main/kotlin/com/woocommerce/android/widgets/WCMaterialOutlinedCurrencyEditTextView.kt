@@ -26,6 +26,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
+import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -228,7 +229,7 @@ private class CurrencyEditText @JvmOverloads constructor(
     }
 
     fun setValue(value: BigDecimal) {
-        setText(value.toPlainString())
+        setText(formatValue(value))
     }
 
     override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
@@ -257,9 +258,7 @@ private class CurrencyEditText @JvmOverloads constructor(
     private fun formatAndUpdateValue(currentText: CharSequence?, cleanValue: BigDecimal) {
         val currentSelectionPosition = selectionStart
 
-        var formattedValue = siteSettings?.let {
-            WCCurrencyUtils.formatCurrencyForDisplay(cleanValue.toDouble(), it)
-        } ?: currentText
+        var formattedValue = formatValue(cleanValue)
 
         if (currentText?.startsWith("-") == true && cleanValue.isEqualTo(BigDecimal.ZERO)) {
             // A special case for negative values if the actual value is still 0
@@ -276,6 +275,16 @@ private class CurrencyEditText @JvmOverloads constructor(
         if (!supportsEmptyState) return
         _value.value = null
         setText("")
+    }
+
+    private fun formatValue(value: BigDecimal): String {
+        val siteSettings = siteSettings
+        return if (siteSettings != null) {
+            WCCurrencyUtils.formatCurrencyForDisplay(value.toDouble(), siteSettings)
+        } else {
+            val decimalFormat = DecimalFormat("0.${"0".repeat(decimals)}")
+            decimalFormat.format(value)
+        }
     }
 
     companion object TextCleaner {
