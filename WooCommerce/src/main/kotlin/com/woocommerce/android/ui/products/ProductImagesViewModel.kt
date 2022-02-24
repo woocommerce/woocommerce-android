@@ -84,6 +84,12 @@ class ProductImagesViewModel @Inject constructor(
         get() = viewState.isImageDeletingAllowed ?: true
 
     init {
+        if (viewState.isInitialCreation) {
+            viewState = viewState.copy(isInitialCreation = false)
+            _productImages.value = originalImages
+            _productImagesState.value = Browsing
+        }
+
         if (viewState.showSourceChooser == true) {
             viewState = viewState.copy(showSourceChooser = false)
             clearImageUploadErrors()
@@ -91,9 +97,6 @@ class ProductImagesViewModel @Inject constructor(
         } else if (navArgs.selectedImage != null) {
             triggerEvent(ShowImageDetail(navArgs.selectedImage!!, true))
         }
-
-        _productImages.value = originalImages // TODO nbradbury - this will reset images on recreation
-        _productImagesState.value = Browsing
 
         observeImageUploadEvents()
     }
@@ -107,7 +110,7 @@ class ProductImagesViewModel @Inject constructor(
         mediaFileUploadHandler.enqueueUpload(remoteProductId, localUriList.map { it.toString() })
 
         if (!isMultiSelectionAllowed) {
-            _productImages.value = emptyList() // TODO nbradbury - verify this is correct
+            _productImages.value = emptyList()
         }
     }
 
@@ -268,6 +271,7 @@ class ProductImagesViewModel @Inject constructor(
         val chooserButtonButtonTitleRes: Int? = null,
         val isWarningVisible: Boolean? = null,
         val isDragDropDescriptionVisible: Boolean? = null,
+        val isInitialCreation: Boolean = true
     ) : Parcelable
 
     object ShowImageSourceDialog : Event()
