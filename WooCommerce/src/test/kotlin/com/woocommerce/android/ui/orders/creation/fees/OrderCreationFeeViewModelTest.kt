@@ -39,8 +39,10 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     fun `when initializing the viewModel with existing navArgs currentFeeValue, then set fee amount based on it`() {
         var lastReceivedEvent: Event? = null
 
-        savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL, DEFAULT_FEE_VALUE)
-            .initSavedStateHandle()
+        savedState = OrderCreationEditFeeFragmentArgs(
+            orderTotal = DEFAULT_ORDER_TOTAL + DEFAULT_FEE_VALUE,
+            currentFeeValue = DEFAULT_FEE_VALUE
+        ).initSavedStateHandle()
         initSut()
         sut.event.observeForever { lastReceivedEvent = it }
 
@@ -59,8 +61,10 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     fun `when initializing the viewModel with existing navArgs currentFeeValue, then set fee percentage based on it`() {
         var lastReceivedEvent: Event? = null
 
-        savedState = OrderCreationEditFeeFragmentArgs(DEFAULT_ORDER_TOTAL, DEFAULT_FEE_VALUE)
-            .initSavedStateHandle()
+        savedState = OrderCreationEditFeeFragmentArgs(
+            orderTotal = DEFAULT_ORDER_TOTAL + DEFAULT_FEE_VALUE,
+            currentFeeValue = DEFAULT_FEE_VALUE
+        ).initSavedStateHandle()
         initSut()
         sut.event.observeForever { lastReceivedEvent = it }
 
@@ -78,11 +82,13 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when initializing the viewModel with order total as zero and valid fee, then set fee percentage as zero`() {
+    fun `when initializing the viewModel with order total with only the fee, then set fee percentage as zero`() {
         var lastReceivedEvent: Event? = null
 
-        savedState = OrderCreationEditFeeFragmentArgs(BigDecimal.ZERO, DEFAULT_FEE_VALUE)
-            .initSavedStateHandle()
+        savedState = OrderCreationEditFeeFragmentArgs(
+            orderTotal = DEFAULT_FEE_VALUE,
+            currentFeeValue = DEFAULT_FEE_VALUE
+        ).initSavedStateHandle()
         initSut()
         sut.event.observeForever { lastReceivedEvent = it }
 
@@ -103,15 +109,16 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     fun `when initializing the viewModel with non-terminating decimal percentage, then divide with rounding`() {
         var lastReceivedEvent: Event? = null
         val percentageBase = BigDecimal(100)
-        val orderTotal = BigDecimal(15)
         val feeTotal = BigDecimal(500)
+        val orderTotal = BigDecimal(515)
+        val orderSubtotal = orderTotal - feeTotal
 
         val expectedPercentageValue =
             // obtaining percentage value from order total and fee total values
-            (feeTotal.divide(orderTotal, 4, HALF_UP) * percentageBase).stripTrailingZeros()
+            (feeTotal.divide(orderSubtotal, 4, HALF_UP) * percentageBase).stripTrailingZeros()
 
         val expectedRecalculatedFeeTotal =
-            ((orderTotal * expectedPercentageValue) / percentageBase)
+            ((orderSubtotal * expectedPercentageValue) / percentageBase)
                 .round(MathContext(4))
 
         savedState = OrderCreationEditFeeFragmentArgs(orderTotal, feeTotal)

@@ -28,6 +28,7 @@ class OrderCreationFeeViewModel @Inject constructor(
     }
 
     private val navArgs: OrderCreationEditFeeFragmentArgs by savedState.navArgs()
+    private val orderSubtotal = navArgs.orderTotal - (navArgs.currentFeeValue ?: BigDecimal.ZERO)
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -39,15 +40,15 @@ class OrderCreationFeeViewModel @Inject constructor(
 
     private val activeFeeValue
         get() = when (viewState.isPercentageSelected) {
-            true -> ((navArgs.orderTotal * viewState.feePercentage) / PERCENTAGE_BASE)
+            true -> ((orderSubtotal * viewState.feePercentage) / PERCENTAGE_BASE)
                 .round(MathContext(DEFAULT_SCALE_QUOTIENT))
             false -> viewState.feeAmount
         }
 
     private val appliedPercentageFromCurrentFeeValue
         get() = navArgs.currentFeeValue
-            ?.takeIf { navArgs.orderTotal > BigDecimal.ZERO }
-            ?.let { it.divide(navArgs.orderTotal, DEFAULT_SCALE_QUOTIENT, HALF_UP) * PERCENTAGE_BASE }
+            ?.takeIf { orderSubtotal > BigDecimal.ZERO }
+            ?.let { it.divide(orderSubtotal, DEFAULT_SCALE_QUOTIENT, HALF_UP) * PERCENTAGE_BASE }
             ?.stripTrailingZeros()
             ?: BigDecimal.ZERO
 
