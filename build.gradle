@@ -107,7 +107,7 @@ ext {
     wordPressUtilsVersion = "2.3.0"
     mediapickerVersion = 'trunk-00947a9086ecdf2192b0bdc95a22e1647696d0b1'
     wordPressLoginVersion = '0.10.0'
-    composeVersion = "1.0.5"
+    composeVersion = "1.1.1"
     aboutAutomatticVersion = '0.0.4'
 }
 
