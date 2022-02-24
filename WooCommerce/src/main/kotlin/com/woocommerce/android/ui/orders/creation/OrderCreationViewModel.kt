@@ -317,7 +317,11 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onFeeRemoved() {
-        _orderDraft.update { it.copy(feesLines = emptyList()) }
+        _orderDraft.update { draft ->
+            draft.feesLines.map {
+                it.copy(name = null)
+            }.let { draft.copy(feesLines = it) }
+        }
     }
 
     @Parcelize
